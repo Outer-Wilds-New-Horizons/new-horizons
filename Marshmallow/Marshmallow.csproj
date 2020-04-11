@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>6bde7833-a385-4a73-a121-8335d5e875c0</ProjectGuid>
+    <ProjectGuid>{6BDE7833-A385-4A73-A121-8335D5E875C0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Marshmallow</RootNamespace>
@@ -31,20 +31,86 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
-    
-    
-    <Reference Include="System.Data"/>
-    
-    <Reference Include="System.Xml"/>
+    <Reference Include="0Harmony, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lib.Harmony.1.2.0.1\lib\net35\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="NAudio-Unity, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\NAudio-Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Json.Net.Unity3D.9.0.1\lib\net35\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML.Common, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML.ModHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.ModHelper.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML.ModHelper.Assets, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.ModHelper.Assets.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML.ModHelper.Events, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.ModHelper.Events.dll</HintPath>
+    </Reference>
+    <Reference Include="OWML.ModHelper.Menus, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\OWML.0.3.43\lib\net35\OWML.ModHelper.Menus.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UnityEngine">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>E:\Epic\Epic Games\OuterWilds\OuterWilds_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="MakeAir.cs" />
+    <Compile Include="MakeAmbientLight.cs" />
+    <Compile Include="MakeAtmosphere.cs" />
+    <Compile Include="MakeBaseEffects.cs" />
+    <Compile Include="MakeClouds.cs" />
+    <Compile Include="MakeFieldDetector.cs" />
+    <Compile Include="MakeGravityWell.cs" />
+    <Compile Include="MakeMapMarker.cs" />
+    <Compile Include="MakeOrbitingAstroObject.cs" />
+    <Compile Include="MakeRFVolume.cs" />
+    <Compile Include="MakeSpawnPoint.cs" />
+    <Compile Include="MakeSunOverride.cs" />
+    <Compile Include="MakeVolumes.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
- </Project>
+</Project>
