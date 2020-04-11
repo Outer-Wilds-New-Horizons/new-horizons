@@ -1,7 +1,9 @@
-﻿using OWML.Common;
+﻿using Newtonsoft.Json;
+using OWML.Common;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
@@ -18,6 +20,8 @@ namespace Marshmallow
 
         public static IModHelper helper;
 
+        static List<PlanetConfig> planetList = new List<PlanetConfig>();
+
         void Start()
         {
             base.ModHelper.Events.Subscribe<Flashlight>(Events.AfterStart);
@@ -25,6 +29,13 @@ namespace Marshmallow
             events.OnEvent = (Action<MonoBehaviour, Events>)Delegate.Combine(events.OnEvent, new Action<MonoBehaviour, Events>(this.OnEvent));
 
             helper = base.ModHelper;
+
+            foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
+            {
+                planetList.Add(ModHelper.Storage.Load<PlanetConfig>(file));
+            }
+
+            Main.Log("Loaded [" + planetList.Count + "] planet config files.");
         }
 
         private void OnEvent(MonoBehaviour behaviour, Events ev)
@@ -32,9 +43,14 @@ namespace Marshmallow
             bool flag = behaviour.GetType() == typeof(Flashlight) && ev == Events.AfterStart;
             if (flag)
             {
+                foreach (var config in planetList)
+                {
+                    var planet = GenerateBody(config);
+                }
+
                 PlanetStructure inputStructure = new PlanetStructure
                 {
-                    name = "invisibleplanet",
+                    name = "Mister_Nebula's Custom Planet!",
 
                     primaryBody = Locator.GetAstroObject(AstroObject.Name.Sun),
                     aoType = AstroObject.Type.Planet,
@@ -82,8 +98,10 @@ namespace Marshmallow
             }
         }
 
-        private GameObject GenerateBody(PlanetStructure planet)
+        private GameObject GenerateBody(PlanetConfig config)
         {
+            Main.Log("Begin generation sequence of planet [" + planet.name + "] ...");
+
             float groundScale = 400f;
 
             GameObject body;
@@ -99,7 +117,7 @@ namespace Marshmallow
 
             if (planet.hasMapMarker)
             {
-                General.MakeMapMarker.Make(body);
+                General.MakeMapMarker.Make(body, planet.name);
             }
 
             SECTOR = Body.MakeSector.Make(body, planet.topCloudSize.Value);
@@ -126,6 +144,8 @@ namespace Marshmallow
             {
                 SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, groundScale+10, 0));
             }
+
+            Main.Log("Generation of planet [" + planet.name + "] completed.");
 
             return body;
         }

@@ -93,20 +93,25 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="AddToUITable.cs" />
+    <Compile Include="Main.cs" />
     <Compile Include="MakeAir.cs" />
     <Compile Include="MakeAmbientLight.cs" />
     <Compile Include="MakeAtmosphere.cs" />
     <Compile Include="MakeBaseEffects.cs" />
     <Compile Include="MakeClouds.cs" />
     <Compile Include="MakeFieldDetector.cs" />
+    <Compile Include="MakeGeometry.cs" />
     <Compile Include="MakeGravityWell.cs" />
     <Compile Include="MakeMapMarker.cs" />
     <Compile Include="MakeOrbitingAstroObject.cs" />
     <Compile Include="MakeRFVolume.cs" />
+    <Compile Include="MakeSector.cs" />
     <Compile Include="MakeSpawnPoint.cs" />
     <Compile Include="MakeSunOverride.cs" />
     <Compile Include="MakeVolumes.cs" />
+    <Compile Include="MakeWater.cs" />
+    <Compile Include="PlanetStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
