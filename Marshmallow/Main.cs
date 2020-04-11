@@ -13,7 +13,6 @@ namespace Marshmallow
 {
     public class Main : ModBehaviour
     {
-        GameObject generatedPlanet;
         public static OWRigidbody OWRB;
         public static Sector SECTOR;
         public static SpawnPoint SPAWN;
@@ -32,10 +31,18 @@ namespace Marshmallow
 
             foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
             {
-                planetList.Add(ModHelper.Storage.Load<PlanetConfig>(file));
+                var config = ModHelper.Storage.Load<PlanetConfig>(file);
+                planetList.Add(config);
             }
 
-            Main.Log("Loaded [" + planetList.Count + "] planet config files.");
+            if (planetList.Count != 0)
+            {
+                Main.Log("Loaded [" + planetList.Count + "] planet config files.");
+            }
+            else
+            {
+                Main.Log("ERROR! - No planet config files found!");
+            }
         }
 
         private void OnEvent(MonoBehaviour behaviour, Events ev)
@@ -46,6 +53,18 @@ namespace Marshmallow
                 foreach (var config in planetList)
                 {
                     var planet = GenerateBody(config);
+
+                    if (config.GetSettingsValue<AstroObject>("primaryBody") == Locator.GetAstroObject(AstroObject.Name.Sun))
+                    {
+                        planet.transform.parent = Locator.GetRootTransform();
+                    }
+                    else
+                    {
+                        planet.transform.parent = config.GetSettingsValue<AstroObject>("primaryBody").transform;
+                    }
+
+                    planet.transform.position = config.GetSettingsValue<Vector3>("position");
+                    planet.SetActive(true);
                 }
 
                 PlanetStructure inputStructure = new PlanetStructure
@@ -81,71 +100,60 @@ namespace Marshmallow
 
                     hasOrbit = true
                 };
-
-                generatedPlanet = GenerateBody(inputStructure);
-
-                if (inputStructure.primaryBody = Locator.GetAstroObject(AstroObject.Name.Sun))
-                {
-                    generatedPlanet.transform.parent = Locator.GetRootTransform();
-                }
-                else
-                {
-                    generatedPlanet.transform.parent = inputStructure.primaryBody.transform;
-                }
-
-                generatedPlanet.transform.position = inputStructure.position;
-                generatedPlanet.SetActive(true);
             }
         }
 
         private GameObject GenerateBody(PlanetConfig config)
         {
-            Main.Log("Begin generation sequence of planet [" + planet.name + "] ...");
+            Main.Log("Begin generation sequence of planet [" + config.GetSettingsValue<string>("name") + "] ...");
 
             float groundScale = 400f;
 
+            var name = config.GetSettingsValue<string>("name");
+            var topCloudSize = config.GetSettingsValue<float>("topCloudSize");
+            var bottomCloudSize = config.GetSettingsValue<float>("topCloudSize");
+
             GameObject body;
 
-            body = new GameObject();
-            body.name = planet.name;
+            body = new GameObject(name);
             body.SetActive(false);
 
             Body.MakeGeometry.Make(body, groundScale);
 
-            General.MakeOrbitingAstroObject.Make(body, planet.primaryBody, 0.02f, planet.hasGravity, planet.surfaceAccel, groundScale);
+            General.MakeOrbitingAstroObject.Make(body, config.GetSettingsValue<AstroObject>("primaryBody"), 0.02f, config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
             General.MakeRFVolume.Make(body);
 
-            if (planet.hasMapMarker)
+            if (config.GetSettingsValue<bool>("hasMapMarker"))
             {
-                General.MakeMapMarker.Make(body, planet.name);
+                General.MakeMapMarker.Make(body, name);
             }
 
-            SECTOR = Body.MakeSector.Make(body, planet.topCloudSize.Value);
+            SECTOR = Body.MakeSector.Make(body, topCloudSize);
 
-            if (planet.hasClouds)
+            if (config.GetSettingsValue<bool>("hasClouds"))
             {
-                Atmosphere.MakeClouds.Make(body, planet.topCloudSize.Value, planet.bottomCloudSize.Value, planet.cloudTint.Value);
-                Atmosphere.MakeSunOverride.Make(body, planet.topCloudSize.Value, planet.bottomCloudSize.Value, planet.waterSize.Value);
+                Atmosphere.MakeClouds.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<Color>("cloudTint"));
+                Atmosphere.MakeSunOverride.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<float>("waterSize"));
             }
 
-            Atmosphere.MakeAir.Make(body, planet.topCloudSize.Value / 2, planet.hasRain);
+            Atmosphere.MakeAir.Make(body, topCloudSize / 2, config.GetSettingsValue<bool>("hasRain"));
 
-            if (planet.hasWater)
+            if (config.GetSettingsValue<bool>("hasWater"))
             {
-                Body.MakeWater.Make(body, planet.waterSize.Value);
+                Body.MakeWater.Make(body, config.GetSettingsValue<float>("waterSize"));
             }
 
             Atmosphere.MakeBaseEffects.Make(body);
-            Atmosphere.MakeVolumes.Make(body, groundScale, planet.topCloudSize.Value);
+            Atmosphere.MakeVolumes.Make(body, groundScale, topCloudSize);
             General.MakeAmbientLight.Make(body);
-            Atmosphere.MakeAtmosphere.Make(body, planet.topCloudSize.Value, planet.hasFog, planet.fogDensity, planet.fogTint);
+            Atmosphere.MakeAtmosphere.Make(body, topCloudSize, config.GetSettingsValue<bool>("hasFog"), config.GetSettingsValue<float>("fogDensity"), config.GetSettingsValue<Color>("fogTint"));
 
-            if (planet.makeSpawnPoint)
+            if (config.GetSettingsValue<bool>("makeSpawnPoint"))
             {
                 SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, groundScale+10, 0));
             }
 
-            Main.Log("Generation of planet [" + planet.name + "] completed.");
+            Main.Log("Generation of planet [" + name + "] completed.");
 
             return body;
         }

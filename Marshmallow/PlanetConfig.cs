@@ -14,6 +14,7 @@ namespace Marshmallow
 
 		public T GetSettingsValue<T>(string key)
 		{
+			Main.Log("start");
 			bool flag = !this.Settings.ContainsKey(key);
 			T result;
 			if (flag)
