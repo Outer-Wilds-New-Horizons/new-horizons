@@ -14,7 +14,8 @@ This list will update as more options are added. Structure JSON file like so :
       "fogDensity" : 0.5
   }
 }
-```      
+```
+Everything in required is always needed, and so is every tabbed line in an option.
 ### Required :
 - name - The name of the planet.
 - position - The Vector3 positon of the planet in world space. Write as \[x, y, z].
