@@ -15,7 +15,7 @@ This list will update as more options are added. Structure JSON file like so :
   }
 }
 ```
-Everything in required is always needed, and so is every tabbed line in an option.
+Everything in "Required" is always needed, and so is every tabbed line in an option.
 ### Required :
 - name - The name of the planet.
 - position - The Vector3 positon of the planet in world space. Write as \[x, y, z].
@@ -30,7 +30,7 @@ Everything in required is always needed, and so is every tabbed line in an optio
   - waterSize - Size of the water sphere.
 - hasRain - Set to "true" if you want it to be raining.
 - hasGravity - Set to "true" if you want gravity.
-  - surfaceAcelleration - Strength of gravity.
+  - surfaceAcceleration - Strength of gravity.
 - hasMapMarker - Set to "true" if you want the planet name on the map.
 - hasFog - Set to "true" if you want fog.
   - fogTint - The color of the fog. Write as \[r, g, b, a] in byte form. (0-255)
