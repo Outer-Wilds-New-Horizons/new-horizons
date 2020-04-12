@@ -112,7 +112,6 @@
     <Compile Include="MakeVolumes.cs" />
     <Compile Include="MakeWater.cs" />
     <Compile Include="PlanetConfig.cs" />
-    <Compile Include="PlanetStructure.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

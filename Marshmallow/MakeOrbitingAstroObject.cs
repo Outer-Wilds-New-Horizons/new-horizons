@@ -5,7 +5,7 @@ namespace Marshmallow.General
 {
     static class MakeOrbitingAstroObject
     {
-        public static void Make(GameObject body, AstroObject primaryBody, float angularSpeed, bool hasGravity, float surfaceAccel, float groundSize)
+        public static void Make(GameObject body, float angularSpeed, float orbitAngle, bool hasGravity, float surfaceAccel, float groundSize)
         {
             Rigidbody RB = body.AddComponent<Rigidbody>();
             RB.mass = 10000;
@@ -23,8 +23,8 @@ namespace Marshmallow.General
             Main.OWRB.SetValue("_maintainOriginalCenterOfMass", true);
 
             InitialMotion IM = body.AddComponent<InitialMotion>();
-            IM.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
-            IM.SetValue("_orbitAngle", 0f);
+            IM.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun).GetAttachedOWRigidbody());
+            IM.SetValue("_orbitAngle", orbitAngle);
             IM.SetValue("_isGlobalAxis", false);
             IM.SetValue("_initAngularSpeed", angularSpeed);
             IM.SetValue("_initLinearSpeed", 0f);
@@ -40,8 +40,8 @@ namespace Marshmallow.General
 
             AstroObject AO = body.AddComponent<AstroObject>();
             AO.SetValue("_type", AstroObject.Type.Planet);
-            AO.SetValue("_name", AstroObject.Name.InvisiblePlanet);
-            AO.SetPrimaryBody(primaryBody);
+            AO.SetValue("_name", AstroObject.Name.None);
+            AO.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun));
             if (hasGravity)
             {
                 GravityVolume GV = MakeGravityWell.Make(body, surfaceAccel, groundSize, groundSize);

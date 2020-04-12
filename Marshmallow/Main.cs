@@ -1,13 +1,9 @@
-﻿using Newtonsoft.Json;
-using OWML.Common;
+﻿using OWML.Common;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace Marshmallow
 {
@@ -31,8 +27,12 @@ namespace Marshmallow
 
             foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
             {
-                var config = ModHelper.Storage.Load<PlanetConfig>(file);
+                PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
+
                 planetList.Add(config);
+
+                Log(config.GetSettingsValue<Vector3>("position").ToString());
+                Log(config.GetSettingsValue<Color32>("fogTint").ToString());
             }
 
             if (planetList.Count != 0)
@@ -54,52 +54,11 @@ namespace Marshmallow
                 {
                     var planet = GenerateBody(config);
 
-                    if (config.GetSettingsValue<AstroObject>("primaryBody") == Locator.GetAstroObject(AstroObject.Name.Sun))
-                    {
-                        planet.transform.parent = Locator.GetRootTransform();
-                    }
-                    else
-                    {
-                        planet.transform.parent = config.GetSettingsValue<AstroObject>("primaryBody").transform;
-                    }
+                    planet.transform.parent = Locator.GetRootTransform();
 
                     planet.transform.position = config.GetSettingsValue<Vector3>("position");
                     planet.SetActive(true);
                 }
-
-                PlanetStructure inputStructure = new PlanetStructure
-                {
-                    name = "Mister_Nebula's Custom Planet!",
-
-                    primaryBody = Locator.GetAstroObject(AstroObject.Name.Sun),
-                    aoType = AstroObject.Type.Planet,
-                    aoName = AstroObject.Name.InvisiblePlanet,
-
-                    position = new Vector3(0, 0, 30000),
-
-                    makeSpawnPoint = true,
-
-                    hasClouds = true,
-                    topCloudSize = 650f,
-                    bottomCloudSize = 600f,
-                    cloudTint = new Color32(0, 75, 15, 128),
-
-                    hasWater = true,
-                    waterSize = 401f,
-
-                    hasRain = true,
-
-                    hasGravity = true,
-                    surfaceAccel = 12f,
-
-                    hasMapMarker = true,
-
-                    hasFog = true,
-                    fogTint = new Color32(0, 75, 15, 128),
-                    fogDensity = 0.75f,
-
-                    hasOrbit = true
-                };
             }
         }
 
@@ -111,7 +70,7 @@ namespace Marshmallow
 
             var name = config.GetSettingsValue<string>("name");
             var topCloudSize = config.GetSettingsValue<float>("topCloudSize");
-            var bottomCloudSize = config.GetSettingsValue<float>("topCloudSize");
+            var bottomCloudSize = config.GetSettingsValue<float>("bottomCloudSize");
 
             GameObject body;
 
@@ -120,7 +79,7 @@ namespace Marshmallow
 
             Body.MakeGeometry.Make(body, groundScale);
 
-            General.MakeOrbitingAstroObject.Make(body, config.GetSettingsValue<AstroObject>("primaryBody"), 0.02f, config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
+            General.MakeOrbitingAstroObject.Make(body, 0.02f, config.GetSettingsValue<float>("orbitAngle"), config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
             General.MakeRFVolume.Make(body);
 
             if (config.GetSettingsValue<bool>("hasMapMarker"))
@@ -132,7 +91,7 @@ namespace Marshmallow
 
             if (config.GetSettingsValue<bool>("hasClouds"))
             {
-                Atmosphere.MakeClouds.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<Color>("cloudTint"));
+                Atmosphere.MakeClouds.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<Color32>("cloudTint"));
                 Atmosphere.MakeSunOverride.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<float>("waterSize"));
             }
 
@@ -146,11 +105,11 @@ namespace Marshmallow
             Atmosphere.MakeBaseEffects.Make(body);
             Atmosphere.MakeVolumes.Make(body, groundScale, topCloudSize);
             General.MakeAmbientLight.Make(body);
-            Atmosphere.MakeAtmosphere.Make(body, topCloudSize, config.GetSettingsValue<bool>("hasFog"), config.GetSettingsValue<float>("fogDensity"), config.GetSettingsValue<Color>("fogTint"));
+            Atmosphere.MakeAtmosphere.Make(body, topCloudSize, config.GetSettingsValue<bool>("hasFog"), config.GetSettingsValue<float>("fogDensity"), config.GetSettingsValue<Color32>("fogTint"));
 
             if (config.GetSettingsValue<bool>("makeSpawnPoint"))
             {
-                SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, groundScale+10, 0));
+                SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, groundScale + 10, 0));
             }
 
             Main.Log("Generation of planet [" + name + "] completed.");

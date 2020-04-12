@@ -32,7 +32,7 @@ namespace Marshmallow.Body
 
             GameObject fog1 = new GameObject();
             fog1.transform.parent = waterBase.transform;
-            fog1.transform.localScale = new Vector3(1,1,1);
+            fog1.transform.localScale = new Vector3(1, 1, 1);
             fog1.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog1.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog1.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
@@ -53,7 +53,7 @@ namespace Marshmallow.Body
 
             waterBase.SetActive(true);
 
-            Main.Log("Water - waterScale : " + waterScale);
+            //Main.Log("Water - waterScale : " + waterScale);
         }
     }
 }

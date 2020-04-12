@@ -14,13 +14,18 @@ namespace Marshmallow.Atmosphere
             GameObject cloudsTop = new GameObject();
             cloudsTop.SetActive(false);
             cloudsTop.transform.parent = cloudsMain.transform;
-            cloudsTop.transform.localScale = new Vector3(topCloudScale/2, topCloudScale/2, topCloudScale/2);
+            cloudsTop.transform.localScale = new Vector3(topCloudScale / 2, topCloudScale / 2, topCloudScale / 2);
 
             MeshFilter MF = cloudsTop.AddComponent<MeshFilter>();
             MF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
             MeshRenderer MR = cloudsTop.AddComponent<MeshRenderer>();
             MR.materials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().materials;
+
+            foreach (var item in MR.materials)
+            {
+                item.SetColor("_Color", cloudTint.Value);
+            }
 
             RotateTransform RT = cloudsTop.AddComponent<RotateTransform>();
             RT.SetValue("_localAxis", Vector3.up);
@@ -39,7 +44,7 @@ namespace Marshmallow.Atmosphere
             GameObject cloudsBottom = new GameObject();
             cloudsBottom.SetActive(false);
             cloudsBottom.transform.parent = cloudsMain.transform;
-            cloudsBottom.transform.localScale = new Vector3(bottomCloudScale/2, bottomCloudScale/2, bottomCloudScale/2);
+            cloudsBottom.transform.localScale = new Vector3(bottomCloudScale / 2, bottomCloudScale / 2, bottomCloudScale / 2);
 
             TessellatedSphereRenderer TSR = cloudsBottom.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
@@ -64,7 +69,7 @@ namespace Marshmallow.Atmosphere
 
             SphereCollider cloudSC = cloudsFluid.AddComponent<SphereCollider>();
             cloudSC.isTrigger = true;
-            cloudSC.radius = topCloudScale/2;
+            cloudSC.radius = topCloudScale / 2;
 
             OWShellCollider cloudShell = cloudsFluid.AddComponent<OWShellCollider>();
             cloudShell.SetValue("_innerRadius", bottomCloudScale);
@@ -82,7 +87,7 @@ namespace Marshmallow.Atmosphere
             cloudsFluid.SetActive(true);
             cloudsMain.SetActive(true);
 
-            Main.Log("Clouds - topCloudScale : " + topCloudScale + ", bottomCloudScale : " + bottomCloudScale + ", cloudTint : " + cloudTint);
+            //Main.Log("Clouds - topCloudScale : " + topCloudScale + ", bottomCloudScale : " + bottomCloudScale + ", cloudTint : " + cloudTint);
         }
     }
 }

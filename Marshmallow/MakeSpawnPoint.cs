@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Marshmallow.General
 {
@@ -16,7 +12,7 @@ namespace Marshmallow.General
 
             spawn.transform.localPosition = position;
 
-            Main.Log("Made spawnpoint on [" + body.name + "] at " + position);
+            //Main.Log("Made spawnpoint on [" + body.name + "] at " + position);
 
             return spawn.AddComponent<SpawnPoint>();
         }
