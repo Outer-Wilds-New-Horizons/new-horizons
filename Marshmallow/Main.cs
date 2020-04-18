@@ -12,6 +12,7 @@ namespace Marshmallow
         public static OWRigidbody OWRB;
         public static Sector SECTOR;
         public static SpawnPoint SPAWN;
+        public static AstroObject ASTROOBJECT;
 
         public static IModHelper helper;
 
@@ -25,14 +26,23 @@ namespace Marshmallow
 
             helper = base.ModHelper;
 
-            foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
+            Main.Log("Begin load of planet config...");
+
+            try
             {
-                PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
+                foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
+                {
+                    PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
 
-                planetList.Add(config);
+                    planetList.Add(config);
 
-                Log(config.GetSettingsValue<Vector3>("position").ToString());
-                Log(config.GetSettingsValue<Color32>("fogTint").ToString());
+                    Log(config.GetSettingsValue<Vector3>("position").ToString());
+                    Log(config.GetSettingsValue<Color32>("fogTint").ToString());
+                }
+            }
+            catch (Exception ex)
+            {
+                Main.Log("Error! - " + ex.Message);
             }
 
             if (planetList.Count != 0)
@@ -58,6 +68,8 @@ namespace Marshmallow
 
                     planet.transform.position = config.GetSettingsValue<Vector3>("position");
                     planet.SetActive(true);
+
+                    General.MakeOrbitLine.Make(planet, ASTROOBJECT);
                 }
             }
         }
@@ -70,7 +82,9 @@ namespace Marshmallow
 
             var name = config.GetSettingsValue<string>("name");
             var topCloudSize = config.GetSettingsValue<float>("topCloudSize");
+            Log("Got top cloud size as " + topCloudSize);
             var bottomCloudSize = config.GetSettingsValue<float>("bottomCloudSize");
+            Log("Got bottom cloud size as " + bottomCloudSize);
 
             GameObject body;
 
@@ -79,7 +93,7 @@ namespace Marshmallow
 
             Body.MakeGeometry.Make(body, groundScale);
 
-            General.MakeOrbitingAstroObject.Make(body, 0.02f, config.GetSettingsValue<float>("orbitAngle"), config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
+            ASTROOBJECT = General.MakeOrbitingAstroObject.Make(body, 0.02f, config.GetSettingsValue<float>("orbitAngle"), config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
             General.MakeRFVolume.Make(body);
 
             if (config.GetSettingsValue<bool>("hasMapMarker"))
@@ -119,7 +133,7 @@ namespace Marshmallow
 
         public static void Log(string text)
         {
-            helper.Console.WriteLine("[Marshmallow] : " + text);
+            helper.Console.WriteLine(text);
         }
     }
 }

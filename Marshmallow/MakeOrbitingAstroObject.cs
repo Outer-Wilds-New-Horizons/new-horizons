@@ -5,7 +5,7 @@ namespace Marshmallow.General
 {
     static class MakeOrbitingAstroObject
     {
-        public static void Make(GameObject body, float angularSpeed, float orbitAngle, bool hasGravity, float surfaceAccel, float groundSize)
+        public static AstroObject Make(GameObject body, float angularSpeed, float orbitAngle, bool hasGravity, float surfaceAccel, float groundSize)
         {
             Rigidbody RB = body.AddComponent<Rigidbody>();
             RB.mass = 10000;
@@ -25,6 +25,7 @@ namespace Marshmallow.General
             InitialMotion IM = body.AddComponent<InitialMotion>();
             IM.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun).GetAttachedOWRigidbody());
             IM.SetValue("_orbitAngle", orbitAngle);
+            Main.Log("Got orbit angle as " + orbitAngle);
             IM.SetValue("_isGlobalAxis", false);
             IM.SetValue("_initAngularSpeed", angularSpeed);
             IM.SetValue("_initLinearSpeed", 0f);
@@ -47,6 +48,9 @@ namespace Marshmallow.General
                 GravityVolume GV = MakeGravityWell.Make(body, surfaceAccel, groundSize, groundSize);
                 AO.SetValue("_gravityVolume", GV);
             }
+
+            return AO;
+            //General.MakeOrbitLine.Make(body, AO);
         }
     }
 }
