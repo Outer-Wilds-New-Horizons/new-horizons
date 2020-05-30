@@ -1,7 +1,18 @@
 # Marshmallow
 A planet creator for Outer Wilds.
 
-## List of available options :
+Planets are created using a JSON file format structure, and placed in the `planets` folder.
+
+- Moon support is coming *very* soon!
+- Support for mods to create custom planets / moons is also coming soon!
+
+<!-- TOC -->
+
+- [Creating a planet file](#creating-a-planet-file)
+
+<!-- /TOC -->
+
+## Creating a planet file :
 This list will update as more options are added. Structure JSON file like so :
 ```
 {
