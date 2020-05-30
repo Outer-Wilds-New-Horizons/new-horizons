@@ -48,6 +48,6 @@ Everything in "Required" is always needed, and so is every tabbed line in an opt
   - fogTint - The color of the fog. Write as \[r, g, b, a] in byte form. (0-255)
   - fogDensity - The thickness of the fog. \[0-1]
   
-  ## Submit bugs / Chat about life :
-  Did you know we have a nice [Outer Wilds discord](https://discord.gg/Sftcc9Z)? Drop by to submit bugs, ask questions, and chat about whatever.
+## Submit bugs / Chat about life :
+Did you know we have a nice [Outer Wilds discord](https://discord.gg/Sftcc9Z)? Drop by to submit bugs, ask questions, and chat about whatever.
 Join us modding folk in the `#modding` channel!
