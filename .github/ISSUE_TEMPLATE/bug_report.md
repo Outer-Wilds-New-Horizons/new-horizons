@@ -7,18 +7,18 @@ assignees: ''
 
 ---
 
-**Describe the bug**
+**What is the bug? :**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
+**Faulty setting(s) :**
 What config file setting(s) cause the issue?
 
-**Expected behavior**
+**Expected behavior :**
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
+**Screenshots :**
 If applicable, add screenshots to help show your problem.
 
-**Game Information**
- - Game Version [e.g. 1.0.6]
- - Platform [Steam or Epic]
+**Game Information :**
+ - Game Version : [e.g. 1.0.6]
+ - Platform : [Steam or Epic]
