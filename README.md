@@ -1,7 +1,19 @@
 # Marshmallow
 A planet creator for Outer Wilds.
 
-## List of available options :
+Planets are created using a JSON file format structure, and placed in the `planets` folder.
+
+Moon support is coming soon!
+Support for mods to create custom planets / moons is also coming soon!
+
+<!-- TOC -->
+
+- [Creating a planet file](#creating-a-planet-file-)
+- [Submit bugs / Chat about life](#submit-bugs--chat-about-life-)
+
+<!-- /TOC -->
+
+## Creating a planet file :
 This list will update as more options are added. Structure JSON file like so :
 ```
 {
@@ -35,3 +47,7 @@ Everything in "Required" is always needed, and so is every tabbed line in an opt
 - hasFog - Set to "true" if you want fog.
   - fogTint - The color of the fog. Write as \[r, g, b, a] in byte form. (0-255)
   - fogDensity - The thickness of the fog. \[0-1]
+  
+## Submit bugs / Chat about life :
+Did you know we have a nice [Outer Wilds discord](https://discord.gg/Sftcc9Z)? Drop by to submit bugs, ask questions, and chat about whatever.
+Join us modding folk in the `#modding` channel!
