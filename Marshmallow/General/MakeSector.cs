@@ -20,7 +20,7 @@ namespace Marshmallow.Body
             sphereshape.radius = 700f;
             sphereshape.center = Vector3.zero;
 
-            OWTriggerVolume trigVol = sectorBase.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigVol = */sectorBase.AddComponent<OWTriggerVolume>();
 
             Sector sector = sectorBase.AddComponent<Sector>();
             sector.SetValue("_name", Sector.Name.InvisiblePlanet);

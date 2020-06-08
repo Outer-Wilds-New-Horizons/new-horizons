@@ -1,11 +1,12 @@
-﻿using OWML.ModHelper.Events;
+﻿using Newtonsoft.Json.Linq;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.Atmosphere
 {
     static class MakeClouds
     {
-        public static void Make(GameObject body, float topCloudScale, float bottomCloudScale, Color? cloudTint = null)
+        public static void Make(GameObject body, float topCloudScale, float bottomCloudScale, Color32 lowerCloudTint, Color32 upperCloudTint)
         {
             GameObject cloudsMain = new GameObject();
             cloudsMain.SetActive(false);
@@ -24,7 +25,7 @@ namespace Marshmallow.Atmosphere
 
             foreach (var item in MR.materials)
             {
-                item.SetColor("_Color", cloudTint.Value);
+                item.SetColor("_Color", upperCloudTint);
             }
 
             RotateTransform RT = cloudsTop.AddComponent<RotateTransform>();
@@ -52,7 +53,7 @@ namespace Marshmallow.Atmosphere
 
             foreach (var item in TSR.sharedMaterials)
             {
-                item.SetColor("_Color", cloudTint.Value);
+                item.SetColor("_Color", lowerCloudTint);
             }
 
             TSR.maxLOD = 6;
@@ -87,7 +88,7 @@ namespace Marshmallow.Atmosphere
             cloudsFluid.SetActive(true);
             cloudsMain.SetActive(true);
 
-            //Main.Log("Clouds - topCloudScale : " + topCloudScale + ", bottomCloudScale : " + bottomCloudScale + ", cloudTint : " + cloudTint);
+            Main.Log("Clouds - topCloudScale : " + topCloudScale + ", bottomCloudScale : " + bottomCloudScale + ", cloudTint : " + lowerCloudTint);
         }
     }
 }

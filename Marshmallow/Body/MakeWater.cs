@@ -30,6 +30,8 @@ namespace Marshmallow.Body
 
             // Because assetbundles were a bitch...
 
+            /*
+
             GameObject fog1 = new GameObject();
             fog1.transform.parent = waterBase.transform;
             fog1.transform.localScale = new Vector3(1, 1, 1);
@@ -50,6 +52,8 @@ namespace Marshmallow.Body
             fog3.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog3.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
+
+            */
 
             waterBase.SetActive(true);
 

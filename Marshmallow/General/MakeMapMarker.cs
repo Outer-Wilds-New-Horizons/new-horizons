@@ -9,7 +9,7 @@ namespace Marshmallow.General
         public static void Make(GameObject body, string name)
         {
             var MM = body.AddComponent<MapMarker>();
-            MM.SetValue("_labelID", (UITextType)UI.AddToUITable.Add(name));
+            MM.SetValue("_labelID", (UITextType)Utility.AddToUITable.Add(name));
             MM.SetValue("_markerType", MM.GetType().GetNestedType("MarkerType", BindingFlags.NonPublic).GetField("Planet").GetValue(MM));
 
             Main.Log("Map Marker - body : " + body.name + ", labelID : " + name);

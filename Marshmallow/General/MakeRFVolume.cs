@@ -7,8 +7,7 @@ namespace Marshmallow.General
     {
         public static void Make(GameObject body)
         {
-            GameObject RFVolume = new GameObject();
-            RFVolume.name = "RFVolume";
+            GameObject RFVolume = new GameObject("RFVolume");
             RFVolume.transform.parent = body.transform;
             RFVolume.layer = 19;
             RFVolume.SetActive(false);

@@ -21,7 +21,7 @@ namespace Marshmallow.Atmosphere
             ss.pointChecksOnly = true;
             ss.radius = topCloudSize;
 
-            OWTriggerVolume trigvol = ruleset.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigvol = */ruleset.AddComponent<OWTriggerVolume>();
 
             PlanetoidRuleset prule = ruleset.AddComponent<PlanetoidRuleset>();
             prule.SetValue("_altitudeFloor", groundSize);

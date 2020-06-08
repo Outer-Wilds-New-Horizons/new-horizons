@@ -19,6 +19,8 @@ namespace Marshmallow.General
             var ol = orbit.AddComponent<OrbitLine>();
             ol.SetValue("_astroObject", astroobject);
             ol.SetValue("_fade", false);
+
+            var lr = orbit.AddComponent<LineRenderer>();
         }
     }
 }

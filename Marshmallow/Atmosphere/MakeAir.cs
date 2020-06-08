@@ -50,7 +50,7 @@ namespace Marshmallow.Atmosphere
                 owas.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
                 owas.SetTrack(OWAudioMixer.TrackName.Environment);
 
-                AudioVolume av = air.AddComponent<AudioVolume>();
+                /*AudioVolume av = */air.AddComponent<AudioVolume>();
             }
 
             air.SetActive(true);

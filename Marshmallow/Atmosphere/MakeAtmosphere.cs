@@ -4,7 +4,7 @@ namespace Marshmallow.Atmosphere
 {
     static class MakeAtmosphere
     {
-        public static void Make(GameObject body, float topCloudScale, bool hasFog, float fogDensity, Color fogTint)
+        public static void Make(GameObject body, float topCloudScale, bool hasFog, float fogDensity, Color32 fogTint)
         {
             topCloudScale /= 2;
 

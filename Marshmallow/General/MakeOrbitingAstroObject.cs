@@ -21,6 +21,7 @@ namespace Marshmallow.General
             Main.OWRB.SetValue("_autoGenerateCenterOfMass", true);
             Main.OWRB.SetIsTargetable(true);
             Main.OWRB.SetValue("_maintainOriginalCenterOfMass", true);
+            Main.OWRB.SetValue("_rigidbody", RB);
 
             InitialMotion IM = body.AddComponent<InitialMotion>();
             IM.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun).GetAttachedOWRigidbody());
@@ -33,12 +34,6 @@ namespace Marshmallow.General
 
             MakeFieldDetector.Make(body);
 
-            if (hasGravity)
-            {
-                GravityVolume GV = MakeGravityWell.Make(body, surfaceAccel, groundSize, groundSize);
-            }
-
-
             AstroObject AO = body.AddComponent<AstroObject>();
             AO.SetValue("_type", AstroObject.Type.Planet);
             AO.SetValue("_name", AstroObject.Name.None);
@@ -48,9 +43,9 @@ namespace Marshmallow.General
                 GravityVolume GV = MakeGravityWell.Make(body, surfaceAccel, groundSize, groundSize);
                 AO.SetValue("_gravityVolume", GV);
             }
-
+            MakeOrbitLine.Make(body, AO);
             return AO;
-            //General.MakeOrbitLine.Make(body, AO);
+            
         }
     }
 }

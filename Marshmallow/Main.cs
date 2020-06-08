@@ -1,4 +1,7 @@
-﻿using OWML.Common;
+﻿using Marshmallow.External;
+using Marshmallow.Utility;
+using Newtonsoft.Json.Linq;
+using OWML.Common;
 using OWML.ModHelper;
 using System;
 using System.Collections.Generic;
@@ -16,7 +19,14 @@ namespace Marshmallow
 
         public static IModHelper helper;
 
+        GameObject planet;
+
         static List<PlanetConfig> planetList = new List<PlanetConfig>();
+
+        public override object GetApi()
+        {
+            return new MarshmallowApi();
+        }
 
         void Start()
         {
@@ -33,11 +43,9 @@ namespace Marshmallow
                 foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
                 {
                     PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
-
                     planetList.Add(config);
 
-                    Log(config.GetSettingsValue<Vector3>("position").ToString());
-                    Log(config.GetSettingsValue<Color32>("fogTint").ToString());
+                    Main.Log("* " + config.name + " at position " + config.position.ToVector3());
                 }
             }
             catch (Exception ex)
@@ -62,78 +70,131 @@ namespace Marshmallow
             {
                 foreach (var config in planetList)
                 {
-                    var planet = GenerateBody(config);
+                    planet = GenerateBody(config);
 
                     planet.transform.parent = Locator.GetRootTransform();
-
-                    planet.transform.position = config.GetSettingsValue<Vector3>("position");
+                    planet.transform.position = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.primaryBody)).gameObject.transform.position + config.position.ToVector3();
                     planet.SetActive(true);
 
-                    General.MakeOrbitLine.Make(planet, ASTROOBJECT);
+                    try
+                    {
+                        OWRB.SetVelocity(Locator.GetCenterOfTheUniverse().GetOffsetVelocity());
+                        var primary = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.primaryBody)).GetAttachedOWRigidbody();
+                        var initialMotion = primary.GetComponent<InitialMotion>();
+                        if (initialMotion != null)
+                        {
+                            OWRB.AddVelocityChange(-initialMotion.GetInitVelocity());
+                        }
+                        OWRB.AddVelocityChange(primary.GetVelocity());
+                    }
+                    catch { }
                 }
             }
         }
 
-        private GameObject GenerateBody(PlanetConfig config)
+        public static GameObject GenerateBody(IPlanetConfig config)
         {
-            Main.Log("Begin generation sequence of planet [" + config.GetSettingsValue<string>("name") + "] ...");
-
-            float groundScale = 400f;
-
-            var name = config.GetSettingsValue<string>("name");
-            var topCloudSize = config.GetSettingsValue<float>("topCloudSize");
-            Log("Got top cloud size as " + topCloudSize);
-            var bottomCloudSize = config.GetSettingsValue<float>("bottomCloudSize");
-            Log("Got bottom cloud size as " + bottomCloudSize);
+            Main.Log("Begin generation sequence of planet [" + config.name + "] ...");
 
             GameObject body;
 
-            body = new GameObject(name);
+            body = new GameObject(config.name);
             body.SetActive(false);
 
-            Body.MakeGeometry.Make(body, groundScale);
+            Body.MakeGeometry.Make(body, config.groundSize);
 
-            ASTROOBJECT = General.MakeOrbitingAstroObject.Make(body, 0.02f, config.GetSettingsValue<float>("orbitAngle"), config.GetSettingsValue<bool>("hasGravity"), config.GetSettingsValue<float>("surfaceAcceleration"), groundScale);
+            ASTROOBJECT = General.MakeOrbitingAstroObject.Make(body, 0.02f, config.orbitAngle, config.hasGravity, config.surfaceAcceleration, config.groundSize);
             General.MakeRFVolume.Make(body);
 
-            if (config.GetSettingsValue<bool>("hasMapMarker"))
+            if (config.hasMapMarker)
             {
-                General.MakeMapMarker.Make(body, name);
+                General.MakeMapMarker.Make(body, config.name);
             }
 
-            SECTOR = Body.MakeSector.Make(body, topCloudSize);
+            SECTOR = Body.MakeSector.Make(body, config.topCloudSize);
 
-            if (config.GetSettingsValue<bool>("hasClouds"))
+            if (config.hasClouds)
             {
-                Atmosphere.MakeClouds.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<Color32>("cloudTint"));
-                Atmosphere.MakeSunOverride.Make(body, topCloudSize, bottomCloudSize, config.GetSettingsValue<float>("waterSize"));
+                Atmosphere.MakeClouds.Make(body, config.topCloudSize, config.bottomCloudSize, config.bottomCloudTint.ToColor32(), config.topCloudTint.ToColor32());
+                Atmosphere.MakeSunOverride.Make(body, config.topCloudSize, config.bottomCloudSize, config.waterSize);
             }
 
-            Atmosphere.MakeAir.Make(body, topCloudSize / 2, config.GetSettingsValue<bool>("hasRain"));
+            Atmosphere.MakeAir.Make(body, config.topCloudSize / 2, config.hasRain);
 
-            if (config.GetSettingsValue<bool>("hasWater"))
+            if (config.hasWater)
             {
-                Body.MakeWater.Make(body, config.GetSettingsValue<float>("waterSize"));
+                Body.MakeWater.Make(body, config.waterSize);
             }
 
             Atmosphere.MakeBaseEffects.Make(body);
-            Atmosphere.MakeVolumes.Make(body, groundScale, topCloudSize);
+            Atmosphere.MakeVolumes.Make(body, config.groundSize, config.topCloudSize);
             General.MakeAmbientLight.Make(body);
-            Atmosphere.MakeAtmosphere.Make(body, topCloudSize, config.GetSettingsValue<bool>("hasFog"), config.GetSettingsValue<float>("fogDensity"), config.GetSettingsValue<Color32>("fogTint"));
+            Atmosphere.MakeAtmosphere.Make(body, config.topCloudSize, config.hasFog, config.fogDensity, config.fogTint.ToColor32());
 
-            if (config.GetSettingsValue<bool>("makeSpawnPoint"))
+            if (config.hasSpawnPoint)
             {
-                SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, groundScale + 10, 0));
+                SPAWN = General.MakeSpawnPoint.Make(body, new Vector3(0, config.groundSize + 10, 0));
             }
 
-            Main.Log("Generation of planet [" + name + "] completed.");
+            Main.Log("Generation of planet [" + config.name + "] completed.");
 
             return body;
+        }
+
+        public static void CreateBody(IPlanetConfig config)
+        {
+            var planet = Main.GenerateBody(config);
+
+            planet.transform.parent = Locator.GetRootTransform();
+            planet.transform.position = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.primaryBody)).gameObject.transform.position + config.position.ToVector3();
+            planet.SetActive(true);
+
+            planet.GetComponent<OWRigidbody>().SetVelocity(Locator.GetCenterOfTheUniverse().GetOffsetVelocity());
+
+            var primary = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.primaryBody)).GetAttachedOWRigidbody();
+            var initialMotion = primary.GetComponent<InitialMotion>();
+            if (initialMotion != null)
+            {
+                planet.GetComponent<OWRigidbody>().AddVelocityChange(-initialMotion.GetInitVelocity());
+                planet.GetComponent<OWRigidbody>().AddVelocityChange(primary.GetVelocity());
+            }
         }
 
         public static void Log(string text)
         {
             helper.Console.WriteLine(text);
+        }
+    }
+
+    public class MarshmallowApi
+    {
+        public void Create(Dictionary<string, object> config)
+        {
+            var planetConfig = new PlanetConfig
+            {
+                name = (string)config["name"],
+                position = (MVector3)config["position"],
+                orbitAngle = (int)config["orbitAngle"],
+                primaryBody = (string)config["primaryBody"],
+                hasSpawnPoint = (bool)config["hasSpawnPoint"],
+                hasClouds = (bool)config["hasClouds"],
+                topCloudSize = (float)config["topCloudSize"],
+                bottomCloudSize = (float)config["bottomCloudSize"],
+                topCloudTint = (MColor32)config["topCloudTint"],
+                bottomCloudTint = (MColor32)config["bottomCloudTint"],
+                hasWater = (bool)config["hasWater"],
+                waterSize = (float)config["waterSize"],
+                hasRain = (bool)config["hasRain"],
+                hasGravity = (bool)config["hasGravity"],
+                surfaceAcceleration = (float)config["surfaceAcceleration"],
+                hasMapMarker = (bool)config["hasMapMarker"],
+                hasFog = (bool)config["hasFog"],
+                fogTint = (MColor32)config["fogTint"],
+                fogDensity = (float)config["fogDensity"],
+                groundSize = (float)config["groundScale"]
+            };
+
+            Main.CreateBody(planetConfig);
         }
     }
 }

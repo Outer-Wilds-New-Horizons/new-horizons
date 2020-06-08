@@ -2,7 +2,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Marshmallow.UI
+namespace Marshmallow.Utility
 {
     static class AddToUITable
     {
@@ -12,7 +12,7 @@ namespace Marshmallow.UI
 
             instance.Insert_UI(instance.theUITable.Keys.Max() + 1, text);
 
-            Main.Log("Added [" + text + "] to UI table with key [" + instance.theUITable.Keys.Max() + "]");
+            Main.Log($"Added [{text}] to UI table with key [{instance.theUITable.Keys.Max()}]");
 
             return instance.theUITable.Keys.Max();
         }

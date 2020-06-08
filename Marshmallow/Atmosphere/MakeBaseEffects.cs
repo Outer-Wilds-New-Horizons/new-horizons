@@ -23,7 +23,7 @@ namespace Marshmallow.Atmosphere
             rain.SetActive(false);
             rain.transform.parent = main.transform;
 
-            ParticleSystem ps = GameObject.Instantiate(GameObject.Find("Effects_GD_Rain").GetComponent<ParticleSystem>());
+            /*ParticleSystem ps = */GameObject.Instantiate(GameObject.Find("Effects_GD_Rain").GetComponent<ParticleSystem>());
 
             VectionFieldEmitter vfe = rain.AddComponent<VectionFieldEmitter>();
             vfe.fieldRadius = 20f;
