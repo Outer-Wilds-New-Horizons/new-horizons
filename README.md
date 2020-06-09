@@ -99,7 +99,7 @@ var configDict = new Dictionary<string, object>
                     { "surfaceAcceleration", 12f },
                     { "hasMapMarker", true },
                     { "hasFog", true },
-                    { "fogTint", new Color32(255, 0, 0, 128 },
+                    { "fogTint", new Color32(255, 0, 0, 128) },
                     { "fogDensity", 0.5f },
                 };
 ```
