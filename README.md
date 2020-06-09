@@ -9,8 +9,8 @@ Support for mods to create custom planets / moons is also coming soon!
 <!-- TOC -->
 
 - [Creating a planet file](#creating-a-planet-file-)
-- [Submit bugs / Chat about life](#submit-bugs--chat-about-life-)
 - [Using Marshmallow from other mods](#using-marshmallow-from-other-mods-)
+- [Submit bugs / Chat about life](#submit-bugs--chat-about-life-)
 
 <!-- /TOC -->
 
