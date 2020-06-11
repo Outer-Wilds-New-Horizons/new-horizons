@@ -113,3 +113,12 @@ marshmallowApi.Create(configDict);
 ## Submit bugs / Chat about life :
 Did you know we have a nice [Outer Wilds discord](https://discord.gg/Sftcc9Z)? Drop by to submit bugs, ask questions, and chat about whatever.
 Join us modding folk in the `#modding` channel!
+
+## Credits :
+Written by Mister_Nebula
+
+With help from :
+- TAImatem
+- AmazingAlek
+- Raicuparta
+and the Outer Wilds discord server.
