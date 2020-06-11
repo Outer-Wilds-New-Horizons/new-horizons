@@ -42,6 +42,7 @@ Everything in "Required" is always needed, and so is every tabbed line in an opt
 - position - The Vector3 positon of the planet in world space.
 - orbitAngle - The angle of the orbit.
 - primaryBody - The AstroObject ID of the body this planet orbits.
+- isMoon - Is the body a moon or not a moon (a planet)?
 
 ### Optional :
 - hasGround - Set to "true" if you want to have a sphere as a ground.
@@ -69,6 +70,8 @@ To use the API, first define this interface in your mod.
 public interface IMarshmallow
 {
     void Create(Dictionary<string, object> config);
+    
+    GameObject GetPlanet(string name);
 }
 ```
 Then, you need to find the Marshmallow API. This can be done using the interaction helpers of OWML.
