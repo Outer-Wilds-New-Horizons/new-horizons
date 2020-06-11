@@ -88,6 +88,7 @@ var configDict = new Dictionary<string, object>
                     { "position", new Vector3(0, 0, 3000) },
                     { "orbitAngle", 0 },
                     { "primaryBody", "SUN" },
+		    { "isMoon" : false },
                     { "hasSpawnPoint", true },
                     { "hasGround", true },
                     { "groundSize", 400f },
