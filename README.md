@@ -16,25 +16,52 @@ Moon support is coming soon!
 <!-- /TOC -->
 
 ## Creating a planet file :
-This list will update as more options are added. Structure JSON file like so :
+This list will update as more options are added. Here is an example of a file :
 ```
 {
-    	"name" : "Test Planet",
-      "position" : {
-		      "x" : 0,
-		      "y" : 0,
-		      "z" : 5000
-	    },
-      "orbitAngle" : 0,
-      "primaryBody" : "SUN",
-      "hasFog" : true,
-      "fogTint" : {
-		      "r" : 255,
-		      "g" : 100,
-		      "b" : 0,
-		      "a" : 128
-	    },
-      "fogDensity" : 0.5
+	"name" : "Gallifrey",
+	"position" : {
+		"x" : 0,
+		"y" : 0,
+		"z" : 10000
+	},
+	"orbitAngle" : 45,
+	"primaryBody" : "SUN",
+	"isMoon" : false,
+	"hasSpawnPoint" : true,
+	"hasClouds" : true,
+	"topCloudSize" : 650,
+	"bottomCloudSize" : 600,
+	"bottomCloudTint" : 
+	{
+		"r" : 255,
+		"g" : 0,
+		"b" : 0,
+		"a" : 128
+	},
+	"topCloudTint" : 
+	{
+		"r" : 255,
+		"g" : 0,
+		"b" : 0,
+		"a" : 128
+	},
+	"hasWater" : true,
+	"waterSize" : 401,
+	"hasRain" : true,
+	"hasGravity" : true,
+	"surfaceAcceleration" : 12,
+	"hasMapMarker" : true,
+	"hasFog" : true,
+	"fogTint" : 
+	{
+		"r" : 255,
+		"g" : 100,
+		"b" : 0,
+		"a" : 128
+	},
+	"fogDensity" : 0.75,
+	"groundSize" : 400
 }
 ```
 Everything in "Required" is always needed, and so is every tabbed line in an option.
