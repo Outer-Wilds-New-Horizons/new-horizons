@@ -11,6 +11,7 @@ Moon support is coming soon!
 - [Creating a planet file](#creating-a-planet-file-)
 - [Using Marshmallow from other mods](#using-marshmallow-from-other-mods-)
 - [Submit bugs / Chat about life](#submit-bugs--chat-about-life-)
+- [Credits](#credits-)
 
 <!-- /TOC -->
 
