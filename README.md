@@ -121,4 +121,4 @@ With help from :
 - TAImatem
 - AmazingAlek
 - Raicuparta
-and the Outer Wilds discord server.
+- and the Outer Wilds discord server.
