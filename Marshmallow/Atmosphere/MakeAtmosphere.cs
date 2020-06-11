@@ -1,44 +1,46 @@
-﻿using UnityEngine;
+﻿using Marshmallow.External;
+using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
     static class MakeAtmosphere
     {
-        public static void Make(GameObject body, float topCloudScale, bool hasFog, float fogDensity, Color32 fogTint)
+        public static void Make(GameObject body, IPlanetConfig config)
         {
-            topCloudScale /= 2;
+            GameObject atmoGO = new GameObject();
+            atmoGO.SetActive(false);
+            atmoGO.name = "Atmosphere";
+            atmoGO.transform.parent = body.transform;
 
-            GameObject atmoM = new GameObject();
-            atmoM.SetActive(false);
-            atmoM.name = "Atmosphere";
-            atmoM.transform.parent = body.transform;
-
-            if (hasFog)
+            if (config.HasFog)
             {
-                GameObject fog = new GameObject();
-                fog.SetActive(false);
-                fog.name = "FogSphere";
-                fog.transform.parent = atmoM.transform;
-                fog.transform.localScale = new Vector3(topCloudScale + 10, topCloudScale + 10, topCloudScale + 10);
+                GameObject fogGO = new GameObject();
+                fogGO.SetActive(false);
+                fogGO.name = "FogSphere";
+                fogGO.transform.parent = atmoGO.transform;
+                fogGO.transform.localScale = new Vector3((config.TopCloudSize / 2) + 10, (config.TopCloudSize / 2) + 10, (config.TopCloudSize / 2) + 10);
 
-                MeshFilter mf = fog.AddComponent<MeshFilter>();
-                mf.mesh = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshFilter>().mesh;
+                MeshFilter MF = fogGO.AddComponent<MeshFilter>();
+                MF.mesh = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshFilter>().mesh;
 
-                MeshRenderer mr = fog.AddComponent<MeshRenderer>();
-                mr.materials = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshRenderer>().materials;
-                mr.allowOcclusionWhenDynamic = true;
+                MeshRenderer MR = fogGO.AddComponent<MeshRenderer>();
+                MR.materials = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshRenderer>().materials;
+                MR.allowOcclusionWhenDynamic = true;
 
-                PlanetaryFogController pfc = fog.AddComponent<PlanetaryFogController>();
-                pfc.fogLookupTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogLookupTexture;
-                pfc.fogRadius = topCloudScale + 10;
-                pfc.fogDensity = fogDensity;
-                pfc.fogExponent = 1f;
-                pfc.fogColorRampTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogColorRampTexture;
-                pfc.fogColorRampIntensity = 1f;
-                pfc.fogTint = fogTint;
+                PlanetaryFogController PFC = fogGO.AddComponent<PlanetaryFogController>();
+                PFC.fogLookupTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogLookupTexture;
+                PFC.fogRadius = (config.TopCloudSize / 2) + 10;
+                PFC.fogDensity = config.FogDensity;
+                PFC.fogExponent = 1f;
+                PFC.fogColorRampTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogColorRampTexture;
+                PFC.fogColorRampIntensity = 1f;
+                PFC.fogTint = config.FogTint.ToColor32();
 
-                fog.SetActive(true);
+                fogGO.SetActive(true);
             }
+
+            Logger.Log("Re-add LOD atmosphere!", Logger.LogType.Todo);
 
             /*
             GameObject atmo = new GameObject();
@@ -99,7 +101,7 @@ namespace Marshmallow.Atmosphere
             */
 
             //atmo.SetActive(true);
-            atmoM.SetActive(true);
+            atmoGO.SetActive(true);
         }
     }
 }

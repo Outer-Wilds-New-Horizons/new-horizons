@@ -1,32 +1,33 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.Body
 {
     static class MakeWater
     {
-        public static void Make(GameObject body, float waterScale)
+        public static void Make(GameObject body, Sector sector, IPlanetConfig config)
         {
-            GameObject waterBase = new GameObject();
-            waterBase.SetActive(false);
-            waterBase.layer = 15;
-            waterBase.transform.parent = body.transform;
-            waterBase.transform.localScale = new Vector3(waterScale / 2, waterScale / 2, waterScale / 2);
-            waterBase.DestroyAllComponents<SphereCollider>();
+            GameObject waterGO = new GameObject();
+            waterGO.SetActive(false);
+            waterGO.layer = 15;
+            waterGO.transform.parent = body.transform;
+            waterGO.transform.localScale = new Vector3(config.WaterSize / 2, config.WaterSize / 2, config.WaterSize / 2);
+            waterGO.DestroyAllComponents<SphereCollider>();
 
-            TessellatedSphereRenderer tsr = waterBase.AddComponent<TessellatedSphereRenderer>();
-            tsr.tessellationMeshGroup = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            tsr.sharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
-            tsr.maxLOD = 7;
-            tsr.LODBias = 2;
-            tsr.LODRadius = 2f;
+            TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
+            TSR.tessellationMeshGroup = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
+            TSR.sharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            TSR.maxLOD = 7;
+            TSR.LODBias = 2;
+            TSR.LODRadius = 2f;
 
-            TessSphereSectorToggle toggle = waterBase.AddComponent<TessSphereSectorToggle>();
-            toggle.SetValue("_sector", Main.SECTOR);
+            TessSphereSectorToggle TSST = waterGO.AddComponent<TessSphereSectorToggle>();
+            TSST.SetValue("_sector", sector);
 
-            OceanEffectController effectC = waterBase.AddComponent<OceanEffectController>();
-            effectC.SetValue("_sector", Main.SECTOR);
-            effectC.SetValue("_ocean", tsr);
+            OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
+            OEC.SetValue("_sector", sector);
+            OEC.SetValue("_ocean", TSR);
 
             // Because assetbundles were a bitch...
 
@@ -55,9 +56,9 @@ namespace Marshmallow.Body
 
             */
 
-            waterBase.SetActive(true);
+            waterGO.SetActive(true);
 
-            //Main.Log("Water - waterScale : " + waterScale);
+            //Logger.Log("Water - waterScale : " + waterScale);
         }
     }
 }

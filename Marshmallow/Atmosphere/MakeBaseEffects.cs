@@ -6,42 +6,42 @@ namespace Marshmallow.Atmosphere
 {
     static class MakeBaseEffects
     {
-        public static void Make(GameObject body)
+        public static void Make(GameObject body, Sector sector)
         {
-            GameObject main = new GameObject();
-            main.SetActive(false);
-            main.transform.parent = body.transform;
+            GameObject effectsGO = new GameObject();
+            effectsGO.SetActive(false);
+            effectsGO.transform.parent = body.transform;
 
-            SectorCullGroup maincull = main.AddComponent<SectorCullGroup>();
-            maincull.SetValue("_sector", Main.SECTOR);
-            maincull.SetValue("_particleSystemSuspendMode", CullGroup.ParticleSystemSuspendMode.Stop);
-            maincull.SetValue("_occlusionCulling", false);
-            maincull.SetValue("_dynamicCullingBounds", false);
-            maincull.SetValue("_waitForStreaming", false);
+            SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
+            SCG.SetValue("_sector", sector);
+            SCG.SetValue("_particleSystemSuspendMode", CullGroup.ParticleSystemSuspendMode.Stop);
+            SCG.SetValue("_occlusionCulling", false);
+            SCG.SetValue("_dynamicCullingBounds", false);
+            SCG.SetValue("_waitForStreaming", false);
 
-            GameObject rain = new GameObject();
-            rain.SetActive(false);
-            rain.transform.parent = main.transform;
+            GameObject rainGO = new GameObject();
+            rainGO.SetActive(false);
+            rainGO.transform.parent = effectsGO.transform;
 
             /*ParticleSystem ps = */GameObject.Instantiate(GameObject.Find("Effects_GD_Rain").GetComponent<ParticleSystem>());
 
-            VectionFieldEmitter vfe = rain.AddComponent<VectionFieldEmitter>();
-            vfe.fieldRadius = 20f;
-            vfe.particleCount = 10;
-            vfe.emitOnLeadingEdge = false;
-            vfe.emitDirection = VectionFieldEmitter.EmitDirection.Radial;
-            vfe.reverseDir = true;
-            vfe.SetValue("_affectingForces", new ForceVolume[0]);
-            vfe.SetValue("_applyForcePerParticle", false);
+            VectionFieldEmitter VFE = rainGO.AddComponent<VectionFieldEmitter>();
+            VFE.fieldRadius = 20f;
+            VFE.particleCount = 10;
+            VFE.emitOnLeadingEdge = false;
+            VFE.emitDirection = VectionFieldEmitter.EmitDirection.Radial;
+            VFE.reverseDir = true;
+            VFE.SetValue("_affectingForces", new ForceVolume[0]);
+            VFE.SetValue("_applyForcePerParticle", false);
 
-            PlanetaryVectionController pvc = rain.AddComponent<PlanetaryVectionController>();
-            pvc.SetValue("_followTarget", pvc.GetType().GetNestedType("FollowTarget", BindingFlags.NonPublic).GetField("Player").GetValue(pvc));
-            pvc.SetValue("_activeInSector", Main.SECTOR);
+            PlanetaryVectionController PVC = rainGO.AddComponent<PlanetaryVectionController>();
+            PVC.SetValue("_followTarget", PVC.GetType().GetNestedType("FollowTarget", BindingFlags.NonPublic).GetField("Player").GetValue(PVC));
+            PVC.SetValue("_activeInSector", sector);
 
-            rain.GetComponent<Renderer>().material = GameObject.Find("Effects_GD_Rain").GetComponent<Renderer>().material;
+            rainGO.GetComponent<Renderer>().material = GameObject.Find("Effects_GD_Rain").GetComponent<Renderer>().material;
 
-            main.SetActive(true);
-            rain.SetActive(true);
+            effectsGO.SetActive(true);
+            rainGO.SetActive(true);
         }
     }
 }

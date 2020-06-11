@@ -10,25 +10,26 @@ namespace Marshmallow.External
 {
     public interface IPlanetConfig
     {
-        string name { get; }
-        MVector3 position { get; }
-        int orbitAngle { get; }
-        string primaryBody { get; }
-        bool hasSpawnPoint { get; }
-        bool hasClouds { get; }
-        float topCloudSize { get; }
-        float bottomCloudSize { get; }
-        MColor32 topCloudTint { get; }
-        MColor32 bottomCloudTint { get; }
-        bool hasWater { get; }
-        float waterSize { get; }
-        bool hasRain { get; }
-        bool hasGravity { get; }
-        float surfaceAcceleration { get; }
-        bool hasMapMarker { get; }
-        bool hasFog { get; }
-        MColor32 fogTint { get; }
-        float fogDensity { get; }
-        float groundSize { get; }
+        string Name { get; }
+        MVector3 Position { get; }
+        int OrbitAngle { get; }
+        string PrimaryBody { get; }
+        bool IsMoon { get; }
+        bool HasSpawnPoint { get; }
+        bool HasClouds { get; }
+        float TopCloudSize { get; }
+        float BottomCloudSize { get; }
+        MColor32 TopCloudTint { get; }
+        MColor32 BottomCloudTint { get; }
+        bool HasWater { get; }
+        float WaterSize { get; }
+        bool HasRain { get; }
+        bool HasGravity { get; }
+        float SurfaceAcceleration { get; }
+        bool HasMapMarker { get; }
+        bool HasFog { get; }
+        MColor32 FogTint { get; }
+        float FogDensity { get; }
+        float GroundSize { get; }
     }
 }

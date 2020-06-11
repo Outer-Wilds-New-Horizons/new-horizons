@@ -1,38 +1,39 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.Atmosphere
 {
     static class MakeVolumes
     {
-        public static void Make(GameObject body, float groundSize, float topCloudSize)
+        public static void Make(GameObject body, IPlanetConfig config)
         {
-            GameObject volumes = new GameObject();
-            volumes.SetActive(false);
-            volumes.transform.parent = body.transform;
+            GameObject volumesGO = new GameObject();
+            volumesGO.SetActive(false);
+            volumesGO.transform.parent = body.transform;
 
-            GameObject ruleset = new GameObject();
-            ruleset.transform.parent = volumes.transform;
+            GameObject rulesetGO = new GameObject();
+            rulesetGO.transform.parent = volumesGO.transform;
 
-            SphereShape ss = ruleset.AddComponent<SphereShape>();
-            ss.SetCollisionMode(Shape.CollisionMode.Volume);
-            ss.SetLayer(Shape.Layer.Sector);
-            ss.layerMask = -1;
-            ss.pointChecksOnly = true;
-            ss.radius = topCloudSize;
+            SphereShape SS = rulesetGO.AddComponent<SphereShape>();
+            SS.SetCollisionMode(Shape.CollisionMode.Volume);
+            SS.SetLayer(Shape.Layer.Sector);
+            SS.layerMask = -1;
+            SS.pointChecksOnly = true;
+            SS.radius = config.TopCloudSize;
 
-            /*OWTriggerVolume trigvol = */ruleset.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigvol = */rulesetGO.AddComponent<OWTriggerVolume>();
 
-            PlanetoidRuleset prule = ruleset.AddComponent<PlanetoidRuleset>();
-            prule.SetValue("_altitudeFloor", groundSize);
-            prule.SetValue("_altitudeCeiling", topCloudSize);
+            PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
+            PR.SetValue("_altitudeFloor", config.GroundSize);
+            PR.SetValue("_altitudeCeiling", config.TopCloudSize);
 
-            EffectRuleset er = ruleset.AddComponent<EffectRuleset>();
-            er.SetValue("_type", EffectRuleset.BubbleType.Underwater);
-            er.SetValue("_material", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material"));
-            er.SetValue("_cloudMaterial", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial"));
+            EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
+            ER.SetValue("_type", EffectRuleset.BubbleType.Underwater);
+            ER.SetValue("_material", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material"));
+            ER.SetValue("_cloudMaterial", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial"));
 
-            volumes.SetActive(true);
+            volumesGO.SetActive(true);
         }
     }
 }

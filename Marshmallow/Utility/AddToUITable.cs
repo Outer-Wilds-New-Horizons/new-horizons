@@ -12,7 +12,7 @@ namespace Marshmallow.Utility
 
             instance.Insert_UI(instance.theUITable.Keys.Max() + 1, text);
 
-            Main.Log($"Added [{text}] to UI table with key [{instance.theUITable.Keys.Max()}]");
+            Logger.Log($"Added [{text}] to UI table with key [{instance.theUITable.Keys.Max()}]", Logger.LogType.Log);
 
             return instance.theUITable.Keys.Max();
         }

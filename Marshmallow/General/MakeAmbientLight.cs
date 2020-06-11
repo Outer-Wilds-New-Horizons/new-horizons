@@ -4,23 +4,24 @@ namespace Marshmallow.General
 {
     static class MakeAmbientLight
     {
-        public static void Make(GameObject body)
+        public static void Make(GameObject body, Sector sector)
         {
-            GameObject light = new GameObject();
-            light.SetActive(false);
-            light.transform.parent = body.transform;
-            Light l = light.AddComponent<Light>();
-            l.type = LightType.Point;
-            l.range = 700f;
-            l.color = Color.red;
-            l.intensity = 0.8f;
-            l.shadows = LightShadows.None;
-            l.cookie = GameObject.Find("AmbientLight_GD").GetComponent<Light>().cookie;
+            GameObject lightGO = new GameObject();
+            lightGO.SetActive(false);
+            lightGO.transform.parent = body.transform;
 
-            SectorLightsCullGroup cg = light.AddComponent<SectorLightsCullGroup>();
-            cg.SetSector(Main.SECTOR);
+            Light L = lightGO.AddComponent<Light>();
+            L.type = LightType.Point;
+            L.range = 700f;
+            L.color = Color.red;
+            L.intensity = 0.8f;
+            L.shadows = LightShadows.None;
+            L.cookie = GameObject.Find("AmbientLight_GD").GetComponent<Light>().cookie;
 
-            light.SetActive(true);
+            SectorLightsCullGroup SLCG = lightGO.AddComponent<SectorLightsCullGroup>();
+            SLCG.SetSector(sector);
+
+            lightGO.SetActive(true);
         }
     }
 }

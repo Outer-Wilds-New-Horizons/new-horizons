@@ -1,11 +1,13 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using Marshmallow.Utility;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.General
 {
     static class MakeOrbitingAstroObject
     {
-        public static AstroObject Make(GameObject body, float angularSpeed, float orbitAngle, bool hasGravity, float surfaceAccel, float groundSize)
+        public static OWRigidbody Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
             Rigidbody RB = body.AddComponent<Rigidbody>();
             RB.mass = 10000;
@@ -16,36 +18,36 @@ namespace Marshmallow.General
             RB.interpolation = RigidbodyInterpolation.None;
             RB.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
-            Main.OWRB = body.AddComponent<OWRigidbody>();
-            Main.OWRB.SetValue("_kinematicSimulation", true);
-            Main.OWRB.SetValue("_autoGenerateCenterOfMass", true);
-            Main.OWRB.SetIsTargetable(true);
-            Main.OWRB.SetValue("_maintainOriginalCenterOfMass", true);
-            Main.OWRB.SetValue("_rigidbody", RB);
+            OWRigidbody OWRB = body.AddComponent<OWRigidbody>();
+            OWRB.SetValue("_kinematicSimulation", true);
+            OWRB.SetValue("_autoGenerateCenterOfMass", true);
+            OWRB.SetIsTargetable(true);
+            OWRB.SetValue("_maintainOriginalCenterOfMass", true);
+            OWRB.SetValue("_rigidbody", RB);
 
             InitialMotion IM = body.AddComponent<InitialMotion>();
-            IM.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun).GetAttachedOWRigidbody());
-            IM.SetValue("_orbitAngle", orbitAngle);
-            Main.Log("Got orbit angle as " + orbitAngle);
+            IM.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
+            IM.SetValue("_orbitAngle", config.OrbitAngle);
             IM.SetValue("_isGlobalAxis", false);
-            IM.SetValue("_initAngularSpeed", angularSpeed);
+            IM.SetValue("_initAngularSpeed", 0.02f);
             IM.SetValue("_initLinearSpeed", 0f);
-            IM.SetValue("_isGlobalAxis", false);
 
-            MakeFieldDetector.Make(body);
+            MakeFieldDetector.Make(body, primaryBody, config);
 
             AstroObject AO = body.AddComponent<AstroObject>();
             AO.SetValue("_type", AstroObject.Type.Planet);
             AO.SetValue("_name", AstroObject.Name.None);
-            AO.SetPrimaryBody(Locator.GetAstroObject(AstroObject.Name.Sun));
-            if (hasGravity)
+            AO.SetPrimaryBody(primaryBody);
+            if (config.HasGravity)
             {
-                GravityVolume GV = MakeGravityWell.Make(body, surfaceAccel, groundSize, groundSize);
+                GravityVolume GV = MakeGravityWell.Make(body, config.SurfaceAcceleration, config.GroundSize, config.GroundSize);
                 AO.SetValue("_gravityVolume", GV);
             }
+
             MakeOrbitLine.Make(body, AO);
-            return AO;
-            
+
+            //return new Tuple(AO, rigidbody);
+            return OWRB;
         }
     }
 }

@@ -6,30 +6,30 @@ namespace Marshmallow.Body
 {
     static class MakeSector
     {
-        public static Sector Make(GameObject body, float sectorSize)
+        public static Sector Make(GameObject body, OWRigidbody rigidbody, float sectorSize)
         {
-            GameObject sectorBase = new GameObject();
-            sectorBase.SetActive(false);
-            sectorBase.transform.parent = body.transform;
+            GameObject sectorGO = new GameObject();
+            sectorGO.SetActive(false);
+            sectorGO.transform.parent = body.transform;
 
-            SphereShape sphereshape = sectorBase.AddComponent<SphereShape>();
-            sphereshape.SetCollisionMode(Shape.CollisionMode.Volume);
-            sphereshape.SetLayer(Shape.Layer.Sector);
-            sphereshape.layerMask = -1;
-            sphereshape.pointChecksOnly = true;
-            sphereshape.radius = 700f;
-            sphereshape.center = Vector3.zero;
+            SphereShape SS = sectorGO.AddComponent<SphereShape>();
+            SS.SetCollisionMode(Shape.CollisionMode.Volume);
+            SS.SetLayer(Shape.Layer.Sector);
+            SS.layerMask = -1;
+            SS.pointChecksOnly = true;
+            SS.radius = 700f;
+            SS.center = Vector3.zero;
 
-            /*OWTriggerVolume trigVol = */sectorBase.AddComponent<OWTriggerVolume>();
+            /*OWTriggerVolume trigVol = */sectorGO.AddComponent<OWTriggerVolume>();
 
-            Sector sector = sectorBase.AddComponent<Sector>();
-            sector.SetValue("_name", Sector.Name.InvisiblePlanet);
-            sector.SetValue("__attachedOWRigidbody", Main.OWRB);
-            sector.SetValue("_subsectors", new List<Sector>());
+            Sector S = sectorGO.AddComponent<Sector>();
+            S.SetValue("_name", Sector.Name.InvisiblePlanet);
+            S.SetValue("__attachedOWRigidbody", rigidbody);
+            S.SetValue("_subsectors", new List<Sector>());
 
-            sectorBase.SetActive(true);
+            sectorGO.SetActive(true);
 
-            return sector;
+            return S;
         }
     }
 }

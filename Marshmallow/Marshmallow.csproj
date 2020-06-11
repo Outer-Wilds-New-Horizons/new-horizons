@@ -106,9 +106,12 @@
     <Compile Include="Atmosphere\MakeVolumes.cs" />
     <Compile Include="Body\MakeWater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\MarshmallowExtensions.cs" />
     <Compile Include="Utility\MVector3.cs" />
     <Compile Include="Utility\MColor32.cs" />
+    <Compile Include="Utility\MarshmallowBody.cs" />
+    <Compile Include="Utility\Tuple.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

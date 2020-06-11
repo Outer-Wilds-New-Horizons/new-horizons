@@ -1,24 +1,26 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.General
 {
     static class MakeFieldDetector
     {
-        public static void Make(GameObject body)
+        public static void Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
-            GameObject FieldDetector = new GameObject();
-            FieldDetector.SetActive(false);
-            FieldDetector.name = "FieldDetector";
-            FieldDetector.transform.parent = body.transform;
-            FieldDetector.layer = 20;
+            GameObject detectorGO = new GameObject();
+            detectorGO.SetActive(false);
+            detectorGO.name = "FieldDetector";
+            detectorGO.transform.parent = body.transform;
+            detectorGO.layer = 20;
 
-            ConstantForceDetector CFD = FieldDetector.AddComponent<ConstantForceDetector>();
+            ConstantForceDetector CFD = detectorGO.AddComponent<ConstantForceDetector>();
             ForceVolume[] temp = new ForceVolume[1];
-            temp[0] = Locator.GetAstroObject(AstroObject.Name.Sun).GetGravityVolume();
+            temp[0] = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
             CFD.SetValue("_detectableFields", temp);
-            CFD.SetValue("_inheritElement0", false);
-            FieldDetector.SetActive(true);
+            CFD.SetValue("_inheritElement0", config.IsMoon);
+
+            detectorGO.SetActive(true);
         }
     }
 }

@@ -8,13 +8,13 @@ namespace Marshmallow.General
     {
         public static GravityVolume Make(GameObject body, float surfaceAccel, float upperSurface, float lowerSurface)
         {
-            GameObject GravityWell = new GameObject();
-            GravityWell.transform.parent = body.transform;
-            GravityWell.name = "GravityWell";
-            GravityWell.layer = 17;
-            GravityWell.SetActive(false);
+            GameObject gravityGO = new GameObject();
+            gravityGO.transform.parent = body.transform;
+            gravityGO.name = "GravityWell";
+            gravityGO.layer = 17;
+            gravityGO.SetActive(false);
 
-            GravityVolume GV = GravityWell.AddComponent<GravityVolume>();
+            GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
             GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("linear").GetValue(GV));
             GV.SetValue("_alignmentRadius", 600f);
@@ -28,13 +28,15 @@ namespace Marshmallow.General
             GV.SetValue("_isPlanetGravityVolume", true);
             GV.SetValue("_cutoffRadius", 55f);
 
-            SphereCollider GV_SC = GravityWell.AddComponent<SphereCollider>();
-            GV_SC.isTrigger = true;
-            GV_SC.radius = 4000;
+            SphereCollider SC = gravityGO.AddComponent<SphereCollider>();
+            SC.isTrigger = true;
+            SC.radius = 4000;
 
-            OWCollider GV_OWC = GravityWell.AddComponent<OWCollider>();
-            GV_OWC.SetLODActivationMask(DynamicOccupant.Player);
-            GravityWell.SetActive(true);
+            OWCollider OWC = gravityGO.AddComponent<OWCollider>();
+            OWC.SetLODActivationMask(DynamicOccupant.Player);
+
+            gravityGO.SetActive(true);
+
             return GV;
         }
     }

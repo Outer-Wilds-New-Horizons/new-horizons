@@ -7,53 +7,53 @@ namespace Marshmallow.Atmosphere
     {
         public static void Make(GameObject body, float airScale, bool isRaining)
         {
-            GameObject air = new GameObject();
-            air.layer = 17;
-            air.SetActive(false);
-            air.transform.parent = body.transform;
+            GameObject airGO = new GameObject();
+            airGO.SetActive(false);
+            airGO.layer = 17;
+            airGO.transform.parent = body.transform;
 
-            SphereCollider atmoSC = air.AddComponent<SphereCollider>();
-            atmoSC.isTrigger = true;
-            atmoSC.radius = airScale;
+            SphereCollider SC = airGO.AddComponent<SphereCollider>();
+            SC.isTrigger = true;
+            SC.radius = airScale;
 
-            SimpleFluidVolume sfv = air.AddComponent<SimpleFluidVolume>();
-            sfv.SetValue("_layer", 5);
-            sfv.SetValue("_priority", 1);
-            sfv.SetValue("_density", 1.2f);
-            sfv.SetValue("_fluidType", FluidVolume.Type.AIR);
-            sfv.SetValue("_allowShipAutoroll", true);
-            sfv.SetValue("_disableOnStart", false);
+            SimpleFluidVolume SFV = airGO.AddComponent<SimpleFluidVolume>();
+            SFV.SetValue("_layer", 5);
+            SFV.SetValue("_priority", 1);
+            SFV.SetValue("_density", 1.2f);
+            SFV.SetValue("_fluidType", FluidVolume.Type.AIR);
+            SFV.SetValue("_allowShipAutoroll", true);
+            SFV.SetValue("_disableOnStart", false);
 
             if (isRaining)
             {
-                VisorRainEffectVolume vref = air.AddComponent<VisorRainEffectVolume>();
-                vref.SetValue("_rainDirection", VisorRainEffectVolume.RainDirection.Radial);
-                vref.SetValue("_layer", 0);
-                vref.SetValue("_priority", 0);
+                VisorRainEffectVolume VREF = airGO.AddComponent<VisorRainEffectVolume>();
+                VREF.SetValue("_rainDirection", VisorRainEffectVolume.RainDirection.Radial);
+                VREF.SetValue("_layer", 0);
+                VREF.SetValue("_priority", 0);
 
-                AudioSource auds = air.AddComponent<AudioSource>();
-                auds.mute = false;
-                auds.bypassEffects = false;
-                auds.bypassListenerEffects = false;
-                auds.bypassReverbZones = false;
-                auds.playOnAwake = false;
-                auds.loop = true;
-                auds.priority = 128;
-                auds.volume = 0.35f;
-                auds.pitch = 1f;
-                auds.panStereo = 0f;
-                auds.spatialBlend = 0f;
-                auds.reverbZoneMix = 1f;
+                AudioSource AS = airGO.AddComponent<AudioSource>();
+                AS.mute = false;
+                AS.bypassEffects = false;
+                AS.bypassListenerEffects = false;
+                AS.bypassReverbZones = false;
+                AS.playOnAwake = false;
+                AS.loop = true;
+                AS.priority = 128;
+                AS.volume = 0.35f;
+                AS.pitch = 1f;
+                AS.panStereo = 0f;
+                AS.spatialBlend = 0f;
+                AS.reverbZoneMix = 1f;
 
-                OWAudioSource owas = air.AddComponent<OWAudioSource>();
-                owas.SetAudioLibraryClip(AudioType.GD_RainAmbient_LP);
-                owas.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
-                owas.SetTrack(OWAudioMixer.TrackName.Environment);
+                OWAudioSource OWAS = airGO.AddComponent<OWAudioSource>();
+                OWAS.SetAudioLibraryClip(AudioType.GD_RainAmbient_LP);
+                OWAS.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
+                OWAS.SetTrack(OWAudioMixer.TrackName.Environment);
 
-                /*AudioVolume av = */air.AddComponent<AudioVolume>();
+                /*AudioVolume av = */airGO.AddComponent<AudioVolume>();
             }
 
-            air.SetActive(true);
+            airGO.SetActive(true);
         }
     }
 }

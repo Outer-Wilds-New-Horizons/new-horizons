@@ -1,24 +1,25 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using OWML.ModHelper.Events;
 using UnityEngine;
 
 namespace Marshmallow.Atmosphere
 {
     static class MakeSunOverride
     {
-        public static void Make(GameObject body, float topCloudScale, float bottomCloudScale, float waterSize)
+        public static void Make(GameObject body, Sector sector, IPlanetConfig config)
         {
-            GameObject sunov = new GameObject();
-            sunov.SetActive(false);
-            sunov.transform.parent = body.transform;
+            GameObject overrideGO = new GameObject();
+            overrideGO.SetActive(false);
+            overrideGO.transform.parent = body.transform;
 
-            GiantsDeepSunOverrideVolume vol = sunov.AddComponent<GiantsDeepSunOverrideVolume>();
-            vol.SetValue("_sector", Main.SECTOR);
-            vol.SetValue("_cloudsOuterRadius", topCloudScale / 2);
-            vol.SetValue("_cloudsInnerRadius", bottomCloudScale / 2);
-            vol.SetValue("_waterOuterRadius", waterSize / 2);
-            vol.SetValue("_waterInnerRadius", 402.5f);
+            GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
+            GDSOV.SetValue("_sector", sector);
+            GDSOV.SetValue("_cloudsOuterRadius", config.TopCloudSize / 2);
+            GDSOV.SetValue("_cloudsInnerRadius", config.BottomCloudSize / 2);
+            GDSOV.SetValue("_waterOuterRadius", config.WaterSize / 2);
+            GDSOV.SetValue("_waterInnerRadius", 402.5f);
 
-            sunov.SetActive(true);
+            overrideGO.SetActive(true);
         }
     }
 }

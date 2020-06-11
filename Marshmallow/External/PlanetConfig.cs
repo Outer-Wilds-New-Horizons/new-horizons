@@ -11,25 +11,26 @@ namespace Marshmallow.External
 {
     public class PlanetConfig : IPlanetConfig
     {
-        public string name { get; set; }
-        public MVector3 position { get; set; }
-        public int orbitAngle { get; set; }
-        public string primaryBody { get; set; }
-        public bool hasSpawnPoint { get; set; }
-        public bool hasClouds { get; set; }
-        public float topCloudSize { get; set; }
-        public float bottomCloudSize { get; set; }
-        public MColor32 topCloudTint { get; set; }
-        public MColor32 bottomCloudTint { get; set; }
-        public bool hasWater { get; set; }
-        public float waterSize { get; set; }
-        public bool hasRain { get; set; }
-        public bool hasGravity { get; set; }
-        public float surfaceAcceleration { get; set; }
-        public bool hasMapMarker { get; set; }
-        public bool hasFog { get; set; }
-        public MColor32 fogTint { get; set; }
-        public float fogDensity { get; set; }
-        public float groundSize { get; set; }
+        public string Name { get; set; }
+        public MVector3 Position { get; set; }
+        public int OrbitAngle { get; set; }
+        public string PrimaryBody { get; set; }
+        public bool IsMoon { get; set; }
+        public bool HasSpawnPoint { get; set; }
+        public bool HasClouds { get; set; }
+        public float TopCloudSize { get; set; }
+        public float BottomCloudSize { get; set; }
+        public MColor32 TopCloudTint { get; set; }
+        public MColor32 BottomCloudTint { get; set; }
+        public bool HasWater { get; set; }
+        public float WaterSize { get; set; }
+        public bool HasRain { get; set; }
+        public bool HasGravity { get; set; }
+        public float SurfaceAcceleration { get; set; }
+        public bool HasMapMarker { get; set; }
+        public bool HasFog { get; set; }
+        public MColor32 FogTint { get; set; }
+        public float FogDensity { get; set; }
+        public float GroundSize { get; set; }
 	}
 }

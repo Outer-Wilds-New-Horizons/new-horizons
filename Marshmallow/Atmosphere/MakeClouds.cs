@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Marshmallow.External;
+using Newtonsoft.Json.Linq;
 using OWML.ModHelper.Events;
 using UnityEngine;
 
@@ -6,32 +7,32 @@ namespace Marshmallow.Atmosphere
 {
     static class MakeClouds
     {
-        public static void Make(GameObject body, float topCloudScale, float bottomCloudScale, Color32 lowerCloudTint, Color32 upperCloudTint)
+        public static void Make(GameObject body, Sector sector, IPlanetConfig config)
         {
-            GameObject cloudsMain = new GameObject();
-            cloudsMain.SetActive(false);
-            cloudsMain.transform.parent = body.transform;
+            GameObject cloudsMainGO = new GameObject();
+            cloudsMainGO.SetActive(false);
+            cloudsMainGO.transform.parent = body.transform;
 
-            GameObject cloudsTop = new GameObject();
-            cloudsTop.SetActive(false);
-            cloudsTop.transform.parent = cloudsMain.transform;
-            cloudsTop.transform.localScale = new Vector3(topCloudScale / 2, topCloudScale / 2, topCloudScale / 2);
+            GameObject cloudsTopGO = new GameObject();
+            cloudsTopGO.SetActive(false);
+            cloudsTopGO.transform.parent = cloudsMainGO.transform;
+            cloudsTopGO.transform.localScale = new Vector3(config.TopCloudSize / 2, config.TopCloudSize / 2, config.TopCloudSize / 2);
 
-            MeshFilter MF = cloudsTop.AddComponent<MeshFilter>();
-            MF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+            MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
+            topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
-            MeshRenderer MR = cloudsTop.AddComponent<MeshRenderer>();
-            MR.materials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().materials;
+            MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
+            topMR.materials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().materials;
 
-            foreach (var item in MR.materials)
+            foreach (var material in topMR.materials)
             {
-                item.SetColor("_Color", upperCloudTint);
+                material.SetColor("_Color", config.TopCloudTint.ToColor32());
             }
 
-            RotateTransform RT = cloudsTop.AddComponent<RotateTransform>();
-            RT.SetValue("_localAxis", Vector3.up);
-            RT.SetValue("degreesPerSecond", 10);
-            RT.SetValue("randomizeRotationRate", false);
+            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+            topRT.SetValue("_localAxis", Vector3.up);
+            topRT.SetValue("degreesPerSecond", 10);
+            topRT.SetValue("randomizeRotationRate", false);
 
             /*
             SectorCullGroup scg = cloudsTop.AddComponent<SectorCullGroup>();
@@ -42,53 +43,50 @@ namespace Marshmallow.Atmosphere
             scg.SetValue("_waitForStreaming", false);
             */
 
-            GameObject cloudsBottom = new GameObject();
-            cloudsBottom.SetActive(false);
-            cloudsBottom.transform.parent = cloudsMain.transform;
-            cloudsBottom.transform.localScale = new Vector3(bottomCloudScale / 2, bottomCloudScale / 2, bottomCloudScale / 2);
+            GameObject cloudsBottomGO = new GameObject();
+            cloudsBottomGO.SetActive(false);
+            cloudsBottomGO.transform.parent = cloudsMainGO.transform;
+            cloudsBottomGO.transform.localScale = new Vector3(config.BottomCloudSize / 2, config.BottomCloudSize / 2, config.BottomCloudSize / 2);
 
-            TessellatedSphereRenderer TSR = cloudsBottom.AddComponent<TessellatedSphereRenderer>();
-            TSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            TSR.sharedMaterials = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
+            bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
+            bottomTSR.sharedMaterials = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            bottomTSR.maxLOD = 6;
+            bottomTSR.LODBias = 0;
+            bottomTSR.LODRadius = 1f;
 
-            foreach (var item in TSR.sharedMaterials)
+            foreach (Material material in bottomTSR.sharedMaterials)
             {
-                item.SetColor("_Color", lowerCloudTint);
+                material.SetColor("_Color", config.BottomCloudTint.ToColor32());
             }
 
-            TSR.maxLOD = 6;
-            TSR.LODBias = 0;
-            TSR.LODRadius = 1f;
+            TessSphereSectorToggle bottomTSST = cloudsBottomGO.AddComponent<TessSphereSectorToggle>();
+            bottomTSST.SetValue("_sector", sector);
 
-            TessSphereSectorToggle TSST = cloudsBottom.AddComponent<TessSphereSectorToggle>();
-            TSST.SetValue("_sector", Main.SECTOR);
+            GameObject cloudsFluidGO = new GameObject();
+            cloudsFluidGO.SetActive(false);
+            cloudsFluidGO.layer = 17;
+            cloudsFluidGO.transform.parent = cloudsMainGO.transform;
 
-            GameObject cloudsFluid = new GameObject();
-            cloudsFluid.layer = 17;
-            cloudsFluid.SetActive(false);
-            cloudsFluid.transform.parent = cloudsMain.transform;
+            SphereCollider fluidSC = cloudsFluidGO.AddComponent<SphereCollider>();
+            fluidSC.isTrigger = true;
+            fluidSC.radius = config.TopCloudSize / 2;
 
-            SphereCollider cloudSC = cloudsFluid.AddComponent<SphereCollider>();
-            cloudSC.isTrigger = true;
-            cloudSC.radius = topCloudScale / 2;
+            OWShellCollider fluidOWSC = cloudsFluidGO.AddComponent<OWShellCollider>();
+            fluidOWSC.SetValue("_innerRadius", config.BottomCloudSize);
 
-            OWShellCollider cloudShell = cloudsFluid.AddComponent<OWShellCollider>();
-            cloudShell.SetValue("_innerRadius", bottomCloudScale);
+            CloudLayerFluidVolume fluidCLFV = cloudsFluidGO.AddComponent<CloudLayerFluidVolume>();
+            fluidCLFV.SetValue("_layer", 5);
+            fluidCLFV.SetValue("_priority", 1);
+            fluidCLFV.SetValue("_density", 1.2f);
+            fluidCLFV.SetValue("_fluidType", FluidVolume.Type.CLOUD);
+            fluidCLFV.SetValue("_allowShipAutoroll", true);
+            fluidCLFV.SetValue("_disableOnStart", false);
 
-            CloudLayerFluidVolume cloudLayer = cloudsFluid.AddComponent<CloudLayerFluidVolume>();
-            cloudLayer.SetValue("_layer", 5);
-            cloudLayer.SetValue("_priority", 1);
-            cloudLayer.SetValue("_density", 1.2f);
-            cloudLayer.SetValue("_fluidType", FluidVolume.Type.CLOUD);
-            cloudLayer.SetValue("_allowShipAutoroll", true);
-            cloudLayer.SetValue("_disableOnStart", false);
-
-            cloudsTop.SetActive(true);
-            cloudsBottom.SetActive(true);
-            cloudsFluid.SetActive(true);
-            cloudsMain.SetActive(true);
-
-            Main.Log("Clouds - topCloudScale : " + topCloudScale + ", bottomCloudScale : " + bottomCloudScale + ", cloudTint : " + lowerCloudTint);
+            cloudsTopGO.SetActive(true);
+            cloudsBottomGO.SetActive(true);
+            cloudsFluidGO.SetActive(true);
+            cloudsMainGO.SetActive(true);
         }
     }
 }

@@ -6,15 +6,17 @@ namespace Marshmallow.General
     {
         public static SpawnPoint Make(GameObject body, Vector3 position)
         {
-            GameObject spawn = new GameObject();
-            spawn.transform.parent = body.transform;
-            spawn.layer = 8;
+            GameObject spawnGO = new GameObject();
+            spawnGO.transform.parent = body.transform;
+            spawnGO.layer = 8;
 
-            spawn.transform.localPosition = position;
+            spawnGO.transform.localPosition = position;
 
-            //Main.Log("Made spawnpoint on [" + body.name + "] at " + position);
+            //Logger.Log("Made spawnpoint on [" + body.name + "] at " + position);
 
-            return spawn.AddComponent<SpawnPoint>();
+            var SS = spawnGO.AddComponent<SpawnPoint>();
+
+            return SS;
         }
     }
 }

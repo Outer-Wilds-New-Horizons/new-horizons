@@ -6,14 +6,12 @@ namespace Marshmallow.Body
     {
         public static void Make(GameObject body, float groundScale)
         {
-
-
-            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.transform.parent = body.transform;
-            sphere.transform.localScale = new Vector3(groundScale / 2, groundScale / 2, groundScale / 2);
-            sphere.GetComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
-            sphere.GetComponent<SphereCollider>().radius = 1f;
-            sphere.SetActive(true);
+            GameObject groundGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            groundGO.transform.parent = body.transform;
+            groundGO.transform.localScale = new Vector3(groundScale / 2, groundScale / 2, groundScale / 2);
+            groundGO.GetComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+            groundGO.GetComponent<SphereCollider>().radius = 1f;
+            groundGO.SetActive(true);
 
             /*
             GameObject sphere = new GameObject();
