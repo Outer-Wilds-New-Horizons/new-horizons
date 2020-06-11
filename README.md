@@ -1,4 +1,5 @@
-# Marshmallow
+![logo](logo.png)
+
 A planet creator for Outer Wilds.
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder.
