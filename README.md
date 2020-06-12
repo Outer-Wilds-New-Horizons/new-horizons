@@ -4,7 +4,7 @@ A planet creator for Outer Wilds.
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder.
 
-Moon support is coming soon!
+There is an example planet bundled with the mod - change some values and see what happens!
 
 <!-- TOC -->
 
