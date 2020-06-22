@@ -1,4 +1,7 @@
-﻿using Marshmallow.External;
+﻿using Marshmallow.Atmosphere;
+using Marshmallow.Body;
+using Marshmallow.External;
+using Marshmallow.General;
 using Marshmallow.Utility;
 using OWML.Common;
 using OWML.ModHelper;
@@ -16,27 +19,30 @@ namespace Marshmallow
     {
         public static IModHelper helper;
 
-        public static List<MarshmallowBody> planetList = new List<MarshmallowBody>();
+        public static List<MarshmallowBody> bodyList = new List<MarshmallowBody>();
 
-        public override object GetApi()
-        {
-            return new MarshmallowApi();
-        }
+        bool finishNext = false;
+
+        //public override object GetApi()
+        //{
+        //    return new MarshmallowApi();
+        //}
 
         void Start()
-        {
+        { 
+
             SceneManager.sceneLoaded += OnSceneLoaded;
 
             helper = base.ModHelper;
 
-            Logger.Log("Begin load of planet config...", Logger.LogType.Log);
+            Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
             try
             {
                 foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
                 {
                     PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
-                    planetList.Add(new MarshmallowBody(config));
+                    bodyList.Add(new MarshmallowBody(config));
 
                     Logger.Log("* " + config.Name + " at position " + config.Position.ToVector3() + " relative to " + config.PrimaryBody + ". Moon? : " + config.IsMoon, Logger.LogType.Log);
                 }
@@ -46,77 +52,93 @@ namespace Marshmallow
                 Logger.Log("Error! - " + ex.Message, Logger.LogType.Error);
             }
 
-            if (planetList.Count != 0)
+            if (bodyList.Count != 0)
             {
-                Logger.Log("Loaded [" + planetList.Count + "] planet config files.", Logger.LogType.Log);
+                Logger.Log("Loaded [" + bodyList.Count + "] config files.", Logger.LogType.Log);
             }
             else
             {
-                Logger.Log("No planet config files found!", Logger.LogType.Warning);
+                Logger.Log("No config files found!", Logger.LogType.Warning);
             }
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            foreach (var planet in planetList)
+            foreach (var body in bodyList)
             {
-                var planetObject = GenerateBody(planet.Config);
+                var planetObject = GenerateBody(body.Config);
 
-                var primayBody = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(planet.Config.PrimaryBody));
+                var primayBody = Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(body.Config.PrimaryBody));
 
                 planetObject.transform.parent = Locator.GetRootTransform();
-                planetObject.transform.position = primayBody.gameObject.transform.position + planet.Config.Position.ToVector3();
+                planetObject.transform.position = primayBody.gameObject.transform.position + body.Config.Position.ToVector3();
                 planetObject.SetActive(true);
 
-                planet.Object = planetObject;
+                body.Object = planetObject;
+
+                finishNext = true;
+            }
+        }
+
+        void Update()
+        {
+            if (finishNext)
+            {
+                foreach (var body in bodyList)
+                {
+                    OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>());
+                }
+                finishNext = false;
             }
         }
 
         public static GameObject GenerateBody(IPlanetConfig config)
         {
-            Logger.Log("Begin generation sequence of planet [" + config.Name + "] ...", Logger.LogType.Log);
+            Logger.Log("Begin generation sequence of [" + config.Name + "] ...", Logger.LogType.Log);
 
-            GameObject body;
-
-            body = new GameObject(config.Name);
+            var body = new GameObject(config.Name);
             body.SetActive(false);
 
-            Body.MakeGeometry.Make(body, config.GroundSize);
+            GeometryBuilder.Make(body, config.GroundSize);
 
-            var owRigidbody = General.MakeOrbitingAstroObject.Make(body, Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.PrimaryBody)), config);
-            General.MakeRFVolume.Make(body, owRigidbody);
+            var outputTuple = BaseBuilder.Make(body, Locator.GetAstroObject(AstroObject.StringIDToAstroObjectName(config.PrimaryBody)), config);
+
+            var owRigidbody = (OWRigidbody)outputTuple.Items[1];
+            RFVolumeBuilder.Make(body, owRigidbody, config);
 
             if (config.HasMapMarker)
             {
-                General.MakeMapMarker.Make(body, config);
+                MarkerBuilder.Make(body, config);
             }
 
-            var sector = Body.MakeSector.Make(body, owRigidbody, config.TopCloudSize);
+            var sector = MakeSector.Make(body, owRigidbody, config);
 
             if (config.HasClouds)
             {
-                Atmosphere.MakeClouds.Make(body, sector, config);
-                Atmosphere.MakeSunOverride.Make(body, sector, config);
+                CloudsBuilder.Make(body, sector, config);
+                SunOverrideBuilder.Make(body, sector, config);
             }
 
-            Atmosphere.MakeAir.Make(body, config.TopCloudSize / 2, config.HasRain);
+            AirBuilder.Make(body, config.TopCloudSize / 2, config.HasRain);
 
             if (config.HasWater)
             {
-                Body.MakeWater.Make(body, sector, config);
+                WaterBuilder.Make(body, sector, config);
             }
 
-            Atmosphere.MakeBaseEffects.Make(body, sector);
-            Atmosphere.MakeVolumes.Make(body, config);
-            General.MakeAmbientLight.Make(body, sector);
-            Atmosphere.MakeAtmosphere.Make(body, config);
-
+            EffectsBuilder.Make(body, sector);
+            VolumesBuilder.Make(body, config);
+            AmbientLightBuilder.Make(body, sector, config);
+            AtmosphereBuilder.Make(body, config);
+            
+            /*
             if (config.HasSpawnPoint)
             {
-                General.MakeSpawnPoint.Make(body, new Vector3(0, config.GroundSize + 10, 0));
+                SpawnpointBuilder.Make(body, new Vector3(0, config.GroundSize + 10, 0));
             }
+            */
 
-            Logger.Log("Generation of planet [" + config.Name + "] completed.", Logger.LogType.Log);
+            Logger.Log("Generation of [" + config.Name + "] completed.", Logger.LogType.Log);
 
             return body;
         }
@@ -147,27 +169,28 @@ namespace Marshmallow
         {
             var planetConfig = new PlanetConfig
             {
-                Name = (string)config["name"],
-                Position = (MVector3)config["position"],
-                OrbitAngle = (int)config["orbitAngle"],
-                IsMoon = (bool)config["isMoon"],
-                PrimaryBody = (string)config["primaryBody"],
-                HasSpawnPoint = (bool)config["hasSpawnPoint"],
-                HasClouds = (bool)config["hasClouds"],
-                TopCloudSize = (float)config["topCloudSize"],
-                BottomCloudSize = (float)config["bottomCloudSize"],
-                TopCloudTint = (MColor32)config["topCloudTint"],
-                BottomCloudTint = (MColor32)config["bottomCloudTint"],
-                HasWater = (bool)config["hasWater"],
-                WaterSize = (float)config["waterSize"],
-                HasRain = (bool)config["hasRain"],
-                HasGravity = (bool)config["hasGravity"],
-                SurfaceAcceleration = (float)config["surfaceAcceleration"],
-                HasMapMarker = (bool)config["hasMapMarker"],
-                HasFog = (bool)config["hasFog"],
-                FogTint = (MColor32)config["fogTint"],
-                FogDensity = (float)config["fogDensity"],
-                GroundSize = (float)config["groundScale"]
+                Name = (string)config["Name"],
+                Position = (MVector3)config["Position"],
+                OrbitAngle = (int)config["OrbitAngle"],
+                IsMoon = (bool)config["IsMoon"],
+                PrimaryBody = (string)config["PrimaryBody"],
+                //HasSpawnPoint = (bool)config["HasSpawnPoint"],
+                HasClouds = (bool)config["HasClouds"],
+                TopCloudSize = (float)config["TopCloudSize"],
+                BottomCloudSize = (float)config["BottomCloudSize"],
+                TopCloudTint = (MColor32)config["TopCloudTint"],
+                BottomCloudTint = (MColor32)config["BottomCloudTint"],
+                HasWater = (bool)config["HasWater"],
+                WaterSize = (float)config["WaterSize"],
+                HasRain = (bool)config["HasRain"],
+                HasGravity = (bool)config["HasGravity"],
+                SurfaceAcceleration = (float)config["SurfaceAcceleration"],
+                HasMapMarker = (bool)config["HasMapMarker"],
+                HasFog = (bool)config["HasFog"],
+                FogTint = (MColor32)config["FogTint"],
+                FogDensity = (float)config["FogDensity"],
+                GroundSize = (float)config["GroundScale"],
+                IsTidallyLocked = (bool)config["IsTidallyLocked"]
             };
 
             Main.CreateBody(planetConfig);
@@ -175,7 +198,7 @@ namespace Marshmallow
 
         public GameObject GetPlanet(string name)
         {
-            return Main.planetList.FirstOrDefault(x => x.Config.Name == name).Object;
+            return Main.bodyList.FirstOrDefault(x => x.Config.Name == name).Object;
         }
     }
 }

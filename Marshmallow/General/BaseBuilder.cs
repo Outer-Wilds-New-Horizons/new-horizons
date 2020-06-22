@@ -2,12 +2,13 @@
 using Marshmallow.Utility;
 using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.General
 {
-    static class MakeOrbitingAstroObject
+    static class BaseBuilder
     {
-        public static OWRigidbody Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
+        public static MTuple Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
             Rigidbody RB = body.AddComponent<Rigidbody>();
             RB.mass = 10000;
@@ -32,22 +33,26 @@ namespace Marshmallow.General
             IM.SetValue("_initAngularSpeed", 0.02f);
             IM.SetValue("_initLinearSpeed", 0f);
 
-            MakeFieldDetector.Make(body, primaryBody, config);
+            DetectorBuilder.Make(body, primaryBody);
 
             AstroObject AO = body.AddComponent<AstroObject>();
             AO.SetValue("_type", AstroObject.Type.Planet);
             AO.SetValue("_name", AstroObject.Name.None);
-            AO.SetPrimaryBody(primaryBody);
+            AO.SetValue("_primaryBody", primaryBody);
             if (config.HasGravity)
             {
-                GravityVolume GV = MakeGravityWell.Make(body, config.SurfaceAcceleration, config.GroundSize, config.GroundSize);
+                GravityVolume GV = GravityBuilder.Make(body, config.SurfaceAcceleration, config.GroundSize, config.GroundSize);
                 AO.SetValue("_gravityVolume", GV);
             }
 
-            MakeOrbitLine.Make(body, AO);
+            if (config.IsTidallyLocked)
+            {
+                RotateToAstroObject RTAO = body.AddComponent<RotateToAstroObject>();
+                RTAO.SetValue("_astroObjectLock", primaryBody);
+            }
 
-            //return new Tuple(AO, rigidbody);
-            return OWRB;
+            Logger.Log("Finished building base", Logger.LogType.Log);
+            return new MTuple(AO, OWRB);
         }
     }
 }

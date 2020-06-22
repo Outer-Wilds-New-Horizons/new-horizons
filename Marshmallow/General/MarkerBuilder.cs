@@ -2,10 +2,11 @@
 using OWML.ModHelper.Events;
 using System.Reflection;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.General
 {
-    static class MakeMapMarker
+    static class MarkerBuilder
     {
         public static void Make(GameObject body, IPlanetConfig config)
         {
@@ -20,6 +21,7 @@ namespace Marshmallow.General
             {
                 MM.SetValue("_markerType", MM.GetType().GetNestedType("MarkerType", BindingFlags.NonPublic).GetField("Planet").GetValue(MM));
             }
+            Logger.Log("Finished building map marker", Logger.LogType.Log);
         }
     }
 }

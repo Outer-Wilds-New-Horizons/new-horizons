@@ -1,12 +1,13 @@
 ﻿using Marshmallow.External;
 using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.General
 {
-    static class MakeFieldDetector
+    static class DetectorBuilder
     {
-        public static void Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
+        public static void Make(GameObject body, AstroObject primaryBody)
         {
             GameObject detectorGO = new GameObject();
             detectorGO.SetActive(false);
@@ -18,9 +19,10 @@ namespace Marshmallow.General
             ForceVolume[] temp = new ForceVolume[1];
             temp[0] = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
             CFD.SetValue("_detectableFields", temp);
-            CFD.SetValue("_inheritElement0", config.IsMoon);
+            CFD.SetValue("_inheritElement0", true);
 
             detectorGO.SetActive(true);
+            Logger.Log("Finished building detector", Logger.LogType.Log);
         }
     }
 }

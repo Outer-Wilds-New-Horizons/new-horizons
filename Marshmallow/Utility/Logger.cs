@@ -11,7 +11,6 @@ namespace Marshmallow.Utility
         {
             Main.helper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text);
         }
-
         public enum LogType
         {
             Log,

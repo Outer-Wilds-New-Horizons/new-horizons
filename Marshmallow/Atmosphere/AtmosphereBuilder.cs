@@ -4,7 +4,7 @@ using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
-    static class MakeAtmosphere
+    static class AtmosphereBuilder
     {
         public static void Make(GameObject body, IPlanetConfig config)
         {
@@ -30,7 +30,7 @@ namespace Marshmallow.Atmosphere
 
                 PlanetaryFogController PFC = fogGO.AddComponent<PlanetaryFogController>();
                 PFC.fogLookupTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogLookupTexture;
-                PFC.fogRadius = (config.TopCloudSize / 2) + 10;
+                PFC.fogRadius = (config.WaterSize / 2) + 50;
                 PFC.fogDensity = config.FogDensity;
                 PFC.fogExponent = 1f;
                 PFC.fogColorRampTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogColorRampTexture;
@@ -40,25 +40,17 @@ namespace Marshmallow.Atmosphere
                 fogGO.SetActive(true);
             }
 
-            Logger.Log("Re-add LOD atmosphere!", Logger.LogType.Todo);
+            //Logger.Log("Re-add LOD atmosphere!", Logger.LogType.Todo);
+
+            GameObject atmo = GameObject.Instantiate(GameObject.Find("Atmosphere_TH/AtmoSphere"));
+            atmo.transform.parent = atmoGO.transform;
+            atmo.transform.localPosition = Vector3.zero;
+            atmo.transform.localScale = new Vector3(config.TopCloudSize, config.TopCloudSize, config.TopCloudSize);
 
             /*
-            GameObject atmo = new GameObject();
-            atmo.SetActive(false);
-            atmo.transform.parent = atmoM.transform;
-            atmo.transform.localScale = new Vector3(topCloudScale + 100, topCloudScale + 100, topCloudScale + 100);
-
-            Material mat = GameObject.Find("Atmosphere_LOD0").GetComponent<MeshRenderer>().material;
-
-            GameObject lod0 = new GameObject();
-            lod0.transform.parent = atmo.transform;
-            MeshFilter f0 = lod0.AddComponent<MeshFilter>();
-            f0.mesh = GameObject.Find("Atmosphere_LOD0").GetComponent<MeshFilter>().mesh;
-            MeshRenderer r0 = lod0.AddComponent<MeshRenderer>();
-            r0.material = mat;
-
             GameObject lod1 = new GameObject();
-            lod0.transform.parent = atmo.transform;
+            lod1.transform.parent = atmo.transform;
+            lod1.transform.localPosition = Vector3.zero;
             MeshFilter f1 = lod1.AddComponent<MeshFilter>();
             f1.mesh = GameObject.Find("Atmosphere_LOD1").GetComponent<MeshFilter>().mesh;
             MeshRenderer r1 = lod1.AddComponent<MeshRenderer>();
@@ -66,6 +58,7 @@ namespace Marshmallow.Atmosphere
 
             GameObject lod2 = new GameObject();
             lod2.transform.parent = atmo.transform;
+            lod2.transform.localPosition = Vector3.zero;
             MeshFilter f2 = lod2.AddComponent<MeshFilter>();
             f2.mesh = GameObject.Find("Atmosphere_LOD2").GetComponent<MeshFilter>().mesh;
             MeshRenderer r2 = lod2.AddComponent<MeshRenderer>();
@@ -73,13 +66,16 @@ namespace Marshmallow.Atmosphere
 
             GameObject lod3 = new GameObject();
             lod3.transform.parent = atmo.transform;
+            lod3.transform.localPosition = Vector3.zero;
             MeshFilter f3 = lod3.AddComponent<MeshFilter>();
             f3.mesh = GameObject.Find("Atmosphere_LOD3").GetComponent<MeshFilter>().mesh;
             MeshRenderer r3 = lod3.AddComponent<MeshRenderer>();
             r3.material = mat;
+            */
 
             // THIS FUCKING THING. do NOT ask why i have done this. IT WORKS.
             // This creates an LOD group in the worst way possible. i am so sorry.
+            /*
             LODGroup lodg = atmo.AddComponent<LODGroup>();
             
             LOD[] lodlist = new LOD[4];
@@ -100,8 +96,9 @@ namespace Marshmallow.Atmosphere
             lodg.fadeMode = LODFadeMode.None;
             */
 
-            //atmo.SetActive(true);
+            atmo.SetActive(true);
             atmoGO.SetActive(true);
+            Logger.Log("Finished building atmosphere.", Logger.LogType.Log);
         }
     }
 }

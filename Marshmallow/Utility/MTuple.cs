@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Marshmallow.Utility
 {
-    public class Tuple
+    public class MTuple
     {
-        public Tuple(params object[] _items)
+        public MTuple(params object[] _items)
         {
             Items = _items.ToList();
         }

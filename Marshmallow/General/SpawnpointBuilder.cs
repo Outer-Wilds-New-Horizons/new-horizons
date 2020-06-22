@@ -2,7 +2,7 @@
 
 namespace Marshmallow.General
 {
-    static class MakeSpawnPoint
+    static class SpawnpointBuilder
     {
         public static SpawnPoint Make(GameObject body, Vector3 position)
         {

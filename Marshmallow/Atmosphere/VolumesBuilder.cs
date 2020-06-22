@@ -1,10 +1,11 @@
 ﻿using Marshmallow.External;
 using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
-    static class MakeVolumes
+    static class VolumesBuilder
     {
         public static void Make(GameObject body, IPlanetConfig config)
         {
@@ -13,6 +14,7 @@ namespace Marshmallow.Atmosphere
             volumesGO.transform.parent = body.transform;
 
             GameObject rulesetGO = new GameObject();
+            rulesetGO.SetActive(false);
             rulesetGO.transform.parent = volumesGO.transform;
 
             SphereShape SS = rulesetGO.AddComponent<SphereShape>();
@@ -33,7 +35,9 @@ namespace Marshmallow.Atmosphere
             ER.SetValue("_material", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material"));
             ER.SetValue("_cloudMaterial", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial"));
 
+            rulesetGO.SetActive(true);
             volumesGO.SetActive(true);
+            Logger.Log("Finished building volumes", Logger.LogType.Log);
         }
     }
 }

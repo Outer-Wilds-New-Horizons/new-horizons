@@ -1,5 +1,4 @@
 ﻿using Marshmallow.Utility;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,7 +14,7 @@ namespace Marshmallow.External
         int OrbitAngle { get; }
         string PrimaryBody { get; }
         bool IsMoon { get; }
-        bool HasSpawnPoint { get; }
+        //bool HasSpawnPoint { get; }
         bool HasClouds { get; }
         float TopCloudSize { get; }
         float BottomCloudSize { get; }
@@ -31,5 +30,7 @@ namespace Marshmallow.External
         MColor32 FogTint { get; }
         float FogDensity { get; }
         float GroundSize { get; }
+        bool IsTidallyLocked { get; }
+        MColor32 LightTint { get; }
     }
 }

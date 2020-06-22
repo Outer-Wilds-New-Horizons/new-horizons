@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Body
 {
-    static class MakeGeometry
+    static class GeometryBuilder
     {
         public static void Make(GameObject body, float groundScale)
         {
@@ -48,6 +49,7 @@ namespace Marshmallow.Body
             geo.SetActive(true);
             
             */
+            Logger.Log("Finished building geometry", Logger.LogType.Log);
         }
     }
 }

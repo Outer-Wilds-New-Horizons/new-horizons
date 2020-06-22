@@ -1,10 +1,11 @@
 ﻿using OWML.ModHelper.Events;
 using System.Reflection;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.General
 {
-    static class MakeGravityWell
+    static class GravityBuilder
     {
         public static GravityVolume Make(GameObject body, float surfaceAccel, float upperSurface, float lowerSurface)
         {
@@ -17,7 +18,7 @@ namespace Marshmallow.General
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
             GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("linear").GetValue(GV));
-            GV.SetValue("_alignmentRadius", 600f);
+            GV.SetValue("_alignmentRadius", 1.5f * upperSurface);
             GV.SetValue("_upperSurfaceRadius", upperSurface);
             GV.SetValue("_lowerSurfaceRadius", lowerSurface);
             GV.SetValue("_layer", 3);
@@ -30,13 +31,14 @@ namespace Marshmallow.General
 
             SphereCollider SC = gravityGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = 4000;
+            SC.radius = 4 * upperSurface;
 
             OWCollider OWC = gravityGO.AddComponent<OWCollider>();
             OWC.SetLODActivationMask(DynamicOccupant.Player);
 
             gravityGO.SetActive(true);
 
+            Logger.Log("Finished building gravity", Logger.LogType.Log);
             return GV;
         }
     }

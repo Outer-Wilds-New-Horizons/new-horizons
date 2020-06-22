@@ -1,11 +1,13 @@
-﻿using OWML.ModHelper.Events;
+﻿using Marshmallow.External;
+using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.General
 {
-    static class MakeRFVolume
+    static class RFVolumeBuilder
     {
-        public static void Make(GameObject body, OWRigidbody rigidbody)
+        public static void Make(GameObject body, OWRigidbody rigidbody, IPlanetConfig config)
         {
             GameObject rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = body.transform;
@@ -14,7 +16,7 @@ namespace Marshmallow.General
 
             SphereCollider SC = rfGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = 600f;
+            SC.radius = config.GroundSize * 4;
 
             ReferenceFrameVolume RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
@@ -31,11 +33,12 @@ namespace Marshmallow.General
 
             RFV.SetValue("_referenceFrame", RV);
             RFV.SetValue("_minColliderRadius", 300);
-            RFV.SetValue("_maxColliderRadius", 2000);
+            RFV.SetValue("_maxColliderRadius", config.GroundSize * 4);
             RFV.SetValue("_isPrimaryVolume", true);
             RFV.SetValue("_isCloseRangeVolume", false);
 
             rfGO.SetActive(true);
+            Logger.Log("Finished building rfvolume", Logger.LogType.Log);
         }
     }
 }

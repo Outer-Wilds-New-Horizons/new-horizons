@@ -1,11 +1,12 @@
 ﻿using Marshmallow.External;
-using Newtonsoft.Json.Linq;
+using Marshmallow.Utility;
 using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
-    static class MakeClouds
+    static class CloudsBuilder
     {
         public static void Make(GameObject body, Sector sector, IPlanetConfig config)
         {
@@ -21,13 +22,31 @@ namespace Marshmallow.Atmosphere
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
+            var tempArray = new Material[2];
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
-            topMR.materials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().materials;
+            for (int i = 0; i < 2; i++)
+            {
+                tempArray[i] = GameObject.Instantiate(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
+            }
+            topMR.sharedMaterials = tempArray;
 
-            foreach (var material in topMR.materials)
+            foreach (var material in topMR.sharedMaterials)
             {
                 material.SetColor("_Color", config.TopCloudTint.ToColor32());
+
+                var image = ImageUtilities.LoadImage(Main.helper.Manifest.ModFolderPath + "clouds_top.png");
+                image = ImageUtilities.TintImage(image, config.TopCloudTint.ToColor32());
+                material.SetTexture("_MainTex", image);
+
+                image = ImageUtilities.LoadImage(Main.helper.Manifest.ModFolderPath + "clouds_top_ramp.png");
+                image = ImageUtilities.TintImage(image, config.TopCloudTint.ToColor32());
+                material.SetTexture("_RampTex", image);
+
+                image = ImageUtilities.LoadImage(Main.helper.Manifest.ModFolderPath + "clouds_cap.png");
+                image = ImageUtilities.TintImage(image, config.TopCloudTint.ToColor32());
+                material.SetTexture("_CapTex", image);
             }
+            
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             topRT.SetValue("_localAxis", Vector3.up);
@@ -87,6 +106,7 @@ namespace Marshmallow.Atmosphere
             cloudsBottomGO.SetActive(true);
             cloudsFluidGO.SetActive(true);
             cloudsMainGO.SetActive(true);
+            Logger.Log("Finished building clouds.", Logger.LogType.Log);
         }
     }
 }

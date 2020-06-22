@@ -1,9 +1,10 @@
 ﻿using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
-    static class MakeAir
+    static class AirBuilder
     {
         public static void Make(GameObject body, float airScale, bool isRaining)
         {
@@ -54,6 +55,7 @@ namespace Marshmallow.Atmosphere
             }
 
             airGO.SetActive(true);
+            Logger.Log("Finished building air.", Logger.LogType.Log);
         }
     }
 }

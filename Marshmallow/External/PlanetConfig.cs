@@ -16,7 +16,7 @@ namespace Marshmallow.External
         public int OrbitAngle { get; set; }
         public string PrimaryBody { get; set; }
         public bool IsMoon { get; set; }
-        public bool HasSpawnPoint { get; set; }
+        //public bool HasSpawnPoint { get; set; }
         public bool HasClouds { get; set; }
         public float TopCloudSize { get; set; }
         public float BottomCloudSize { get; set; }
@@ -32,5 +32,7 @@ namespace Marshmallow.External
         public MColor32 FogTint { get; set; }
         public float FogDensity { get; set; }
         public float GroundSize { get; set; }
+        public bool IsTidallyLocked { get; set; }
+        public MColor32 LightTint { get; set; }
 	}
 }

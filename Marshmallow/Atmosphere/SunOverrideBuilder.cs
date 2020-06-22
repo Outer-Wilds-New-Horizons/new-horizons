@@ -1,10 +1,11 @@
 ﻿using Marshmallow.External;
 using OWML.ModHelper.Events;
 using UnityEngine;
+using Logger = Marshmallow.Utility.Logger;
 
 namespace Marshmallow.Atmosphere
 {
-    static class MakeSunOverride
+    static class SunOverrideBuilder
     {
         public static void Make(GameObject body, Sector sector, IPlanetConfig config)
         {
@@ -20,6 +21,7 @@ namespace Marshmallow.Atmosphere
             GDSOV.SetValue("_waterInnerRadius", 402.5f);
 
             overrideGO.SetActive(true);
+            Logger.Log("Finished building sun override.", Logger.LogType.Log);
         }
     }
 }
