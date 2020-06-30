@@ -21,18 +21,16 @@ namespace Marshmallow
 
         public static List<MarshmallowBody> bodyList = new List<MarshmallowBody>();
 
-        bool finishNext = false;
+        private bool finishNextUpdate = false;
 
-        //public override object GetApi()
-        //{
-        //    return new MarshmallowApi();
-        //}
+        public override object GetApi()
+        {
+            return new MarshmallowApi();
+        }
 
         void Start()
         { 
-
             SceneManager.sceneLoaded += OnSceneLoaded;
-
             helper = base.ModHelper;
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
@@ -75,20 +73,20 @@ namespace Marshmallow
                 planetObject.SetActive(true);
 
                 body.Object = planetObject;
-
-                finishNext = true;
             }
+
+            finishNextUpdate = true;
         }
 
         void Update()
         {
-            if (finishNext)
+            if (finishNextUpdate)
             {
                 foreach (var body in bodyList)
                 {
                     OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>());
                 }
-                finishNext = false;
+                finishNextUpdate = false;
             }
         }
 
@@ -167,19 +165,20 @@ namespace Marshmallow
     {
         public void Create(Dictionary<string, object> config)
         {
+            Logger.Log("Recieved API request to create planet " + (string)config["Name"] + " at position " + (Vector3)config["Position"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig
             {
                 Name = (string)config["Name"],
-                Position = (MVector3)config["Position"],
+                Position = new MVector3(((Vector3)config["Position"]).x, ((Vector3)config["Position"]).y, ((Vector3)config["Position"]).z),
                 OrbitAngle = (int)config["OrbitAngle"],
                 IsMoon = (bool)config["IsMoon"],
+                AtmoEndSize = (float)config["AtmoEndSize"],
                 PrimaryBody = (string)config["PrimaryBody"],
-                //HasSpawnPoint = (bool)config["HasSpawnPoint"],
                 HasClouds = (bool)config["HasClouds"],
                 TopCloudSize = (float)config["TopCloudSize"],
                 BottomCloudSize = (float)config["BottomCloudSize"],
-                TopCloudTint = (MColor32)config["TopCloudTint"],
-                BottomCloudTint = (MColor32)config["BottomCloudTint"],
+                TopCloudTint = new MColor32(((Color32)config["TopCloudTint"]).r, ((Color32)config["TopCloudTint"]).g, ((Color32)config["TopCloudTint"]).b, ((Color32)config["TopCloudTint"]).a),
+                BottomCloudTint = new MColor32(((Color32)config["BottomCloudTint"]).r, ((Color32)config["BottomCloudTint"]).g, ((Color32)config["BottomCloudTint"]).b, ((Color32)config["BottomCloudTint"]).a),
                 HasWater = (bool)config["HasWater"],
                 WaterSize = (float)config["WaterSize"],
                 HasRain = (bool)config["HasRain"],
@@ -187,10 +186,12 @@ namespace Marshmallow
                 SurfaceAcceleration = (float)config["SurfaceAcceleration"],
                 HasMapMarker = (bool)config["HasMapMarker"],
                 HasFog = (bool)config["HasFog"],
-                FogTint = (MColor32)config["FogTint"],
+                FogTint = new MColor32(((Color32)config["FogTint"]).r, ((Color32)config["FogTint"]).g, ((Color32)config["FogTint"]).b, ((Color32)config["FogTint"]).a),
                 FogDensity = (float)config["FogDensity"],
-                GroundSize = (float)config["GroundScale"],
-                IsTidallyLocked = (bool)config["IsTidallyLocked"]
+                HasGround = (bool)config["HasGround"],
+                GroundSize = (float)config["GroundSize"],
+                IsTidallyLocked = (bool)config["IsTidallyLocked"],
+                LightTint = new MColor32(((Color32)config["LightTint"]).r, ((Color32)config["LightTint"]).g, ((Color32)config["LightTint"]).b, ((Color32)config["LightTint"]).a),
             };
 
             Main.CreateBody(planetConfig);

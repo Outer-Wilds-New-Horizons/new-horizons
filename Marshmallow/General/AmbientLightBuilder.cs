@@ -14,7 +14,7 @@ namespace Marshmallow.General
 
             Light L = lightGO.AddComponent<Light>();
             L.type = LightType.Point;
-            L.range = config.GroundSize * 2;
+            L.range = config.AtmoEndSize + 10;
             L.color = config.LightTint.ToColor32();
             L.intensity = 0.8f;
             L.shadows = LightShadows.None;

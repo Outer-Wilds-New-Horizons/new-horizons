@@ -16,7 +16,7 @@ namespace Marshmallow.General
 
             SphereCollider SC = rfGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = config.GroundSize * 4;
+            SC.radius = config.AtmoEndSize * 2;
 
             ReferenceFrameVolume RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
@@ -33,7 +33,7 @@ namespace Marshmallow.General
 
             RFV.SetValue("_referenceFrame", RV);
             RFV.SetValue("_minColliderRadius", 300);
-            RFV.SetValue("_maxColliderRadius", config.GroundSize * 4);
+            RFV.SetValue("_maxColliderRadius", config.AtmoEndSize * 2);
             RFV.SetValue("_isPrimaryVolume", true);
             RFV.SetValue("_isCloseRangeVolume", false);
 

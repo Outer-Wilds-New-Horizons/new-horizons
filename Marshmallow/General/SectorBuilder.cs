@@ -19,7 +19,7 @@ namespace Marshmallow.Body
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
             SS.pointChecksOnly = true;
-            SS.radius = config.GroundSize * 2;
+            SS.radius = config.AtmoEndSize + 10;
             SS.center = Vector3.zero;
 
             /*OWTriggerVolume trigVol = */sectorGO.AddComponent<OWTriggerVolume>();
