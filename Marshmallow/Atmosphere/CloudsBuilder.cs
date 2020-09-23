@@ -18,6 +18,7 @@ namespace Marshmallow.Atmosphere
             cloudsTopGO.SetActive(false);
             cloudsTopGO.transform.parent = cloudsMainGO.transform;
             cloudsTopGO.transform.localScale = new Vector3(config.TopCloudSize / 2, config.TopCloudSize / 2, config.TopCloudSize / 2);
+            //AddDebugShape.AddSphere(cloudsTopGO, config.TopCloudSize/2, new Color32(255, 0, 255, 128));
 
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;

@@ -19,6 +19,7 @@ namespace Marshmallow.General
             GV.SetValue("_cutoffAcceleration", 0.1f);
             GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("linear").GetValue(GV));
             GV.SetValue("_alignmentRadius", 1.5f * upperSurface);
+            //Utility.AddDebugShape.AddSphere(gravityGO, 1.5f * upperSurface, new Color32(255, 0, 0, 128));
             GV.SetValue("_upperSurfaceRadius", upperSurface);
             GV.SetValue("_lowerSurfaceRadius", lowerSurface);
             GV.SetValue("_layer", 3);

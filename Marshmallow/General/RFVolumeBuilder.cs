@@ -25,6 +25,7 @@ namespace Marshmallow.General
             RV.SetValue("_maxTargetDistance", 0);
             RV.SetValue("_autopilotArrivalDistance", 1000);
             RV.SetValue("_autoAlignmentDistance", 1000);
+            //Utility.AddDebugShape.AddSphere(rfGO, 1000, new Color32(0, 255, 0, 128));
             RV.SetValue("_hideLandingModePrompt", false);
             RV.SetValue("_matchAngularVelocity", true);
             RV.SetValue("_minMatchAngularVelocityDistance", 70);
