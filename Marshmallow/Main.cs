@@ -19,7 +19,7 @@ namespace Marshmallow
     {
         public static IModHelper helper;
 
-        public static List<MarshmallowBody> bodyList = new List<MarshmallowBody>();
+        public static List<MarshmallowBody> BodyList = new List<MarshmallowBody>();
 
         private bool finishNextUpdate = false;
 
@@ -39,8 +39,8 @@ namespace Marshmallow
             {
                 foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
                 {
-                    PlanetConfig config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
-                    bodyList.Add(new MarshmallowBody(config));
+                    var config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
+                    BodyList.Add(new MarshmallowBody(config));
 
                     Logger.Log("* " + config.Name + " at position " + config.Position.ToVector3() + " relative to " + config.PrimaryBody + ". Moon? : " + config.IsMoon, Logger.LogType.Log);
                 }
@@ -50,9 +50,9 @@ namespace Marshmallow
                 Logger.Log("Error! - " + ex.Message, Logger.LogType.Error);
             }
 
-            if (bodyList.Count != 0)
+            if (BodyList.Count != 0)
             {
-                Logger.Log("Loaded [" + bodyList.Count + "] config files.", Logger.LogType.Log);
+                Logger.Log("Loaded [" + BodyList.Count + "] config files.", Logger.LogType.Log);
             }
             else
             {
@@ -62,7 +62,12 @@ namespace Marshmallow
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            foreach (var body in bodyList)
+            if (scene.name != "SolarSystem")
+            {
+                return;
+            }
+
+            foreach (var body in BodyList)
             {
                 var planetObject = GenerateBody(body.Config);
 
@@ -82,7 +87,7 @@ namespace Marshmallow
         {
             if (finishNextUpdate)
             {
-                foreach (var body in bodyList)
+                foreach (var body in BodyList)
                 {
                     OrbitlineBuilder.Make(body.Object, body.Object.GetComponent<AstroObject>());
                 }
@@ -128,13 +133,6 @@ namespace Marshmallow
             VolumesBuilder.Make(body, config);
             AmbientLightBuilder.Make(body, sector, config);
             AtmosphereBuilder.Make(body, config);
-            
-            /*
-            if (config.HasSpawnPoint)
-            {
-                SpawnpointBuilder.Make(body, new Vector3(0, config.GroundSize + 10, 0));
-            }
-            */
 
             Logger.Log("Generation of [" + config.Name + "] completed.", Logger.LogType.Log);
 
@@ -194,12 +192,14 @@ namespace Marshmallow
                 LightTint = new MColor32(((Color32)config["LightTint"]).r, ((Color32)config["LightTint"]).g, ((Color32)config["LightTint"]).b, ((Color32)config["LightTint"]).a),
             };
 
+            Main.BodyList.Add(new MarshmallowBody(planetConfig));
+
             Main.helper.Events.Unity.RunWhen(() => Locator.GetCenterOfTheUniverse() != null, () => Main.CreateBody(planetConfig));
         }
 
         public GameObject GetPlanet(string name)
         {
-            return Main.bodyList.FirstOrDefault(x => x.Config.Name == name).Object;
+            return Main.BodyList.FirstOrDefault(x => x.Config.Name == name).Object;
         }
     }
 }
