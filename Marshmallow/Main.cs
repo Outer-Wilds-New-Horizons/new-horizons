@@ -194,7 +194,7 @@ namespace Marshmallow
                 LightTint = new MColor32(((Color32)config["LightTint"]).r, ((Color32)config["LightTint"]).g, ((Color32)config["LightTint"]).b, ((Color32)config["LightTint"]).a),
             };
 
-            Main.CreateBody(planetConfig);
+            Main.helper.Events.Unity.RunWhen(() => Locator.GetCenterOfTheUniverse() != null, () => Main.CreateBody(planetConfig));
         }
 
         public GameObject GetPlanet(string name)
