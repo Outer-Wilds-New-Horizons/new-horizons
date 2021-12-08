@@ -1,0 +1,15 @@
+{
+	"name" : "Attlerock",
+	"hasLava":true,
+	"lavalSize":100,
+	"hasFog":true,
+	"fogTint":
+	{
+		"r" : 160,
+		"g" : 0,
+		"b" : 0,
+		"a" : 255
+	},
+	"fogSize": 200,
+	"fogDensity":0.9,
+}

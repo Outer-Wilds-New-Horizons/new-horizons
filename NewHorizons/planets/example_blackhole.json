@@ -1,0 +1,40 @@
+{
+	"name" : "Devil's Maw",
+	"semiMajorAxis" : 1700,
+	"inclination" : 30,
+	"primaryBody" : "BRITTLE_HOLLOW",
+	"atmoEndSize" : 500,
+	"isMoon" : true,
+	"hasGravity" : true,
+	"surfaceAcceleration" : 20,
+	"hasMapMarker" : true,
+	"hasGround": false,
+	"isTidallyLocked" : false,
+	"lightTint" : 
+	{
+		"r" : 160,
+		"g" : 0,
+		"b" : 0,
+		"a" : 255
+	},
+	"hasFog":true,
+	"fogTint":
+	{
+		"r" : 160,
+		"g" : 0,
+		"b" : 0,
+		"a" : 255
+	},
+	"fogSize": 200,
+	"fogDensity":0.9,
+	"longitudeOfAscendingNode" : 50,
+	"eccentricity" : 0,
+	"argumentOfPeriapsis": 0,
+	"groundSize" : 100,
+	"hasRings" : true,
+	"ringInnerRadius" : 0,
+	"ringOuterRadius" : 200,
+	"ringInclination" : 30,
+	"hasBlackHole" : true,
+	"ringTexture" : "planets/assets/accretion_disk.png",
+}
