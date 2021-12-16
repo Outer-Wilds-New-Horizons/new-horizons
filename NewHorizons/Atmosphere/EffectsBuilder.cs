@@ -6,7 +6,7 @@ namespace NewHorizons.Atmosphere
 {
     static class EffectsBuilder
     {
-        public static void Make(GameObject body, Sector sector, float groundSize, float waterSize, float atmoEnd, bool hasRain, bool hasSnow)
+        public static void Make(GameObject body, Sector sector, float surfaceSize, float atmoSize, bool hasRain, bool hasSnow)
         {
             GameObject effectsGO = new GameObject("Effects");
             effectsGO.SetActive(false);
@@ -26,7 +26,7 @@ namespace NewHorizons.Atmosphere
                 rainGO.transform.localPosition = Vector3.zero;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
-                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(Mathf.Max(groundSize, waterSize), 10f), new Keyframe(atmoEnd, 0f) }));
+                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
 
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
@@ -39,7 +39,7 @@ namespace NewHorizons.Atmosphere
                 snowGO.transform.localPosition = Vector3.zero;
 
                 var pvc = snowGO.GetComponent<PlanetaryVectionController>();
-                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(Mathf.Max(groundSize, waterSize), 10f), new Keyframe(atmoEnd, 0f) }));
+                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
 
                 var particleSystem = snowGO.GetComponent<ParticleSystem>();
                 var e = particleSystem.emission;

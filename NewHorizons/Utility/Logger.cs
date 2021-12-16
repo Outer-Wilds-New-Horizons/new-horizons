@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace NewHorizons.Utility
 {
-    public class Logger
+    public static class Logger
     {
         public static void LogProperties(UnityEngine.Object obj)
         {
@@ -40,7 +40,7 @@ namespace NewHorizons.Utility
 
         public static void Log(string text, LogType type)
         {
-            Main.helper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
+            Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
         }
 
         public static void Log(string text)
@@ -50,6 +50,10 @@ namespace NewHorizons.Utility
         public static void LogError(string text)
         {
             Log(text, LogType.Error);
+        }
+        public static void LogWarning(string text)
+        {
+            Log(text, LogType.Warning);
         }
         public enum LogType
         {

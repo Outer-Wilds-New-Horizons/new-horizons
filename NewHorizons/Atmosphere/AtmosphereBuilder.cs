@@ -12,32 +12,6 @@ namespace NewHorizons.Atmosphere
             atmoGO.SetActive(false);
             atmoGO.transform.parent = body.transform;
 
-            if (config.HasFog)
-            {
-                GameObject fogGO = new GameObject("FogSphere");
-                fogGO.SetActive(false);
-                fogGO.transform.parent = atmoGO.transform;
-                fogGO.transform.localScale = new Vector3(config.FogSize, config.FogSize, config.FogSize);
-
-                MeshFilter MF = fogGO.AddComponent<MeshFilter>();
-                MF.mesh = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshFilter>().mesh;
-
-                MeshRenderer MR = fogGO.AddComponent<MeshRenderer>();
-                MR.materials = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<MeshRenderer>().materials;
-                MR.allowOcclusionWhenDynamic = true;
-
-                PlanetaryFogController PFC = fogGO.AddComponent<PlanetaryFogController>();
-                PFC.fogLookupTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogLookupTexture;
-                PFC.fogRadius = config.FogSize;
-                PFC.fogDensity = config.FogDensity;
-                PFC.fogExponent = 1f;
-                PFC.fogColorRampTexture = GameObject.Find("Atmosphere_GD/FogSphere").GetComponent<PlanetaryFogController>().fogColorRampTexture;
-                PFC.fogColorRampIntensity = 1f;
-                PFC.fogTint = config.FogTint.ToColor32();
-
-                fogGO.SetActive(true);
-            }
-
             //Logger.Log("Re-add LOD atmosphere!", Logger.LogType.Todo);
 
             /*

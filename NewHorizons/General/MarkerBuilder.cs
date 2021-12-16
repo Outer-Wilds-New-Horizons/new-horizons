@@ -8,12 +8,12 @@ namespace NewHorizons.General
 {
     static class MarkerBuilder
     {
-        public static void Make(GameObject body, IPlanetConfig config)
+        public static void Make(GameObject body, string name, bool isMoon)
         {
             MapMarker MM = body.AddComponent<MapMarker>();
-            MM.SetValue("_labelID", (UITextType)Utility.AddToUITable.Add(config.Name.ToUpper()));
+            MM.SetValue("_labelID", (UITextType)Utility.AddToUITable.Add(name.ToUpper()));
 
-            if (config.IsMoon)
+            if (isMoon)
             {
                 MM.SetValue("_markerType", MM.GetType().GetNestedType("MarkerType", BindingFlags.NonPublic).GetField("Moon").GetValue(MM));
             }

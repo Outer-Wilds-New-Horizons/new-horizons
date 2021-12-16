@@ -1,0 +1,63 @@
+{
+	"name" : "Earth",
+	"Spawn" : 
+	{
+		"playerSpawnPoint" :
+		{
+			"x" : -121.3,
+			"y" : -246.4,
+			"z" : 109.6,
+		},
+		"shipSpawnPoint" :
+		{
+			"x" : -141.5,
+			"y" : -245.3,
+			"z" : 89.0,
+		},
+	},
+	"Base" :
+	{
+		"surfaceGravity" : 12,
+		"surfaceSize" : 300,
+		"hasMapMarker" : true,
+		"lightTint" : 
+		{
+			"r" : 200,
+			"g" : 240,
+			"b" : 255,
+			"a" : 255
+		},
+		"waterSize" : 296
+	},
+	"Orbit" :
+	{
+		"semiMajorAxis" : 6000,
+		"inclination" : 3,
+		"primaryBody" : "SUN",
+		"isMoon" : false,
+		"longitudeOfAscendingNode" : 0,
+		"eccentricity" : 0,
+		"argumentOfPeriapsis": 0,
+		"axialTilt" : 0,
+	},
+	"Atmosphere" :
+	{
+		"size" : 375,
+		"fogTint" : 
+		{
+			"r" : 90,
+			"g" : 128,
+			"b" : 128,
+			"a" : 255
+		},
+		"fogDensity": 0.1,
+		"fogSize": 375,
+	},
+	"HeightMap" :
+	{
+		"heightMap" : "planets/assets/earth_heightmap.png",	
+		"textureMap" : "planets/assets/earth_texturemap.png",	
+		"minHeight" : 292,
+		"maxHeight" : 307,
+	}
+}

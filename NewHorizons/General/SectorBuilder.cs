@@ -8,7 +8,7 @@ namespace NewHorizons.Body
 {
     static class MakeSector
     {
-        public static Sector Make(GameObject body, OWRigidbody rigidbody, IPlanetConfig config)
+        public static Sector Make(GameObject body, OWRigidbody rigidbody, float sphereOfInfluence)
         {
             GameObject sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
@@ -19,14 +19,14 @@ namespace NewHorizons.Body
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
             SS.pointChecksOnly = true;
-            SS.radius = config.AtmoEndSize + 10;
+            SS.radius = sphereOfInfluence + 10;
             SS.center = Vector3.zero;
 
             sectorGO.AddComponent<OWTriggerVolume>();
 
             Sector S = sectorGO.AddComponent<Sector>();
             S.SetValue("_name", Sector.Name.Unnamed);
-            S.SetValue("__attachedOWRigidbody", rigidbody);
+            S.SetValue("_attachedOWRigidbody", rigidbody);
             S.SetValue("_subsectors", new List<Sector>());
 
             sectorGO.SetActive(true);

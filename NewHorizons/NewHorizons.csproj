@@ -229,17 +229,27 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Atmosphere\FogBuilder.cs" />
+    <Compile Include="Body\HeightMapBuilder.cs" />
+    <Compile Include="Components\RotateToCustomAstroObject.cs" />
+    <Compile Include="External\AtmosphereModule.cs" />
+    <Compile Include="External\BaseModule.cs" />
+    <Compile Include="External\HeightMapModule.cs" />
+    <Compile Include="External\Module.cs" />
+    <Compile Include="External\OrbitModule.cs" />
+    <Compile Include="External\RingModule.cs" />
+    <Compile Include="External\SpawnModule.cs" />
     <Compile Include="General\BaseBuilder.cs" />
-    <Compile Include="General\BlackHoleBuilder.cs" />
+    <Compile Include="Body\BlackHoleBuilder.cs" />
     <Compile Include="General\DetectorBuilder.cs" />
     <Compile Include="General\GravityBuilder.cs" />
-    <Compile Include="General\LavaBuilder.cs" />
+    <Compile Include="Body\LavaBuilder.cs" />
     <Compile Include="General\MarkerBuilder.cs" />
     <Compile Include="General\OrbitlineBuilder.cs" />
     <Compile Include="General\RFVolumeBuilder.cs" />
-    <Compile Include="General\RingBuilder.cs" />
+    <Compile Include="Body\RingBuilder.cs" />
     <Compile Include="General\SectorBuilder.cs" />
-    <Compile Include="General\SpawnpointBuilder.cs" />
+    <Compile Include="General\SpawnPointBuilder.cs" />
     <Compile Include="Utility\AddDebugShape.cs" />
     <Compile Include="General\AmbientLightBuilder.cs" />
     <Compile Include="External\IPlanetConfig.cs" />
@@ -255,6 +265,8 @@
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\AddToUITable.cs" />
+    <Compile Include="Utility\AstroObjectLocator.cs" />
+    <Compile Include="Utility\DebugRaycaster.cs" />
     <Compile Include="Utility\ImageUtilities.cs" />
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\MakeMeshDoubleFaced.cs" />

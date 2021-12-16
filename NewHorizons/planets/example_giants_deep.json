@@ -1,8 +1,0 @@
-{
-	"name" : "Giants Deep",
-	"hasRings" : true,
-	"ringInnerRadius" : 1800,
-	"ringOuterRadius" : 2200,
-	"ringInclination" : 20,
-	"ringLongitudeOfAscendingNode" : 80,
-}

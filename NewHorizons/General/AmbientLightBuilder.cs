@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -6,7 +7,7 @@ namespace NewHorizons.General
 {
     static class AmbientLightBuilder
     {
-        public static void Make(GameObject body, Sector sector, IPlanetConfig config)
+        public static void Make(GameObject body, Sector sector, MColor32 lightTint, float scale)
         {
             GameObject lightGO = new GameObject("Lights");
             lightGO.SetActive(false);
@@ -14,8 +15,8 @@ namespace NewHorizons.General
             
             Light L = lightGO.AddComponent<Light>();
             L.type = LightType.Point;
-            L.range = config.AtmoEndSize + 10;
-            L.color = (config.LightTint != null) ? config.LightTint.ToColor32() : (Color32)Color.black;
+            L.range = scale + 10;
+            L.color = (lightTint != null) ? lightTint.ToColor32() : (Color32)Color.black;
             L.intensity = 0.8f;
             L.shadows = LightShadows.None;
 

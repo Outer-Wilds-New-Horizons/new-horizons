@@ -7,13 +7,13 @@ namespace NewHorizons.Body
 {
     static class WaterBuilder
     {
-        public static void Make(GameObject body, Sector sector, IPlanetConfig config)
+        public static void Make(GameObject body, Sector sector, OWRigidbody rb, float waterSize)
         {
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
             waterGO.layer = 15;
             waterGO.transform.parent = body.transform;
-            waterGO.transform.localScale = new Vector3(config.WaterSize, config.WaterSize, config.WaterSize);
+            waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
             waterGO.DestroyAllComponents<SphereCollider>();
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
@@ -22,13 +22,38 @@ namespace NewHorizons.Body
             TSR.maxLOD = 7;
             TSR.LODBias = 2;
             TSR.LODRadius = 2f;
-
-            TessSphereSectorToggle TSST = waterGO.AddComponent<TessSphereSectorToggle>();
-            TSST.SetValue("_sector", sector);
+            
+            //TessSphereSectorToggle TSST = waterGO.AddComponent<TessSphereSectorToggle>();
+            //TSST.SetValue("_sector", sector);
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC.SetValue("_sector", sector);
             OEC.SetValue("_ocean", TSR);
+
+            //Buoyancy
+            var buoyancyObject = new GameObject("WaterVolume");
+            buoyancyObject.transform.parent = waterGO.transform;
+            buoyancyObject.transform.localScale = Vector3.one;
+            buoyancyObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+            var sphereCollider = buoyancyObject.AddComponent<SphereCollider>();
+            sphereCollider.radius = 1;
+            sphereCollider.isTrigger = true;
+
+            var owCollider = buoyancyObject.AddComponent<OWCollider>();
+            owCollider.SetValue("_parentBody", rb);
+            owCollider.SetValue("_collider", sphereCollider);
+            
+
+            var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
+            buoyancyTriggerVolume.SetValue("_owCollider", owCollider);
+
+            var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
+            fluidVolume.SetValue("_fluidType", FluidVolume.Type.WATER);
+            fluidVolume.SetValue("_attachedBody", rb);
+            fluidVolume.SetValue("_triggerVolume", buoyancyTriggerVolume);
+            fluidVolume.SetValue("_radius", waterSize);
+            fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
 
             // Because assetbundles were a bitch...
             /*

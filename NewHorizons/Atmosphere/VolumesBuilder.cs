@@ -7,7 +7,7 @@ namespace NewHorizons.Atmosphere
 {
     static class VolumesBuilder
     {
-        public static void Make(GameObject body, IPlanetConfig config)
+        public static void Make(GameObject body, float innerRadius, float outerRadius)
         {
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -22,14 +22,14 @@ namespace NewHorizons.Atmosphere
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
             SS.pointChecksOnly = true;
-            SS.radius = config.TopCloudSize;
+            SS.radius = outerRadius;
 
             /*OWTriggerVolume trigvol = */
             rulesetGO.AddComponent<OWTriggerVolume>();
 
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
-            PR.SetValue("_altitudeFloor", config.GroundSize);
-            PR.SetValue("_altitudeCeiling", config.TopCloudSize);
+            PR.SetValue("_altitudeFloor", innerRadius);
+            PR.SetValue("_altitudeCeiling", outerRadius);
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER.SetValue("_type", EffectRuleset.BubbleType.Underwater);
