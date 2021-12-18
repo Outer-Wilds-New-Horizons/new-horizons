@@ -11,7 +11,7 @@ Authors:
 - xen (from New Horizons v0.1.0 onwards)
 - Mister_Nebula (created original titled Marshmallow)
 
-With help from :
+Marshmallow was made with help from :
 - TAImatem
 - AmazingAlek
 - Raicuparta
