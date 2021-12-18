@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External;
 using NewHorizons.Utility;
 using OWML.Utils;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -10,15 +11,19 @@ namespace NewHorizons.Atmosphere
     {
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo)
         {
-            var texturePath = atmo.Cloud ?? "assets\\default_clouds.png";
-            var capPath = atmo.CloudCap ?? "assets\\default_cap.png";
-            var rampPath = atmo.CloudRamp ?? "assets\\default_ramp.png";
+            Texture2D image, cap, ramp;
 
-            var image = Main.Instance.ModHelper.Assets.GetTexture(texturePath);
-            var cap = Main.Instance.ModHelper.Assets.GetTexture(capPath);
-            var ramp = Main.Instance.ModHelper.Assets.GetTexture(rampPath);
-
-            Logger.Log($"Using cloud textures: {texturePath}, {capPath}, {rampPath}");
+            try
+            {
+                image = Main.Instance.CurrentAssets.GetTexture(atmo.Cloud);
+                cap = Main.Instance.CurrentAssets.GetTexture(atmo.CloudCap);
+                ramp = Main.Instance.CurrentAssets.GetTexture(atmo.CloudRamp);
+            }
+            catch(Exception e)
+            {
+                Logger.LogError($"Couldn't load Cloud textures, {e.Message}, {e.StackTrace}");
+                return;
+            }
 
             GameObject cloudsMainGO = new GameObject();
             cloudsMainGO.SetActive(false);

@@ -1,5 +1,6 @@
 ﻿using NewHorizons.External;
 using NewHorizons.Utility;
+using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -7,26 +8,18 @@ namespace NewHorizons.General
 {
     static class AmbientLightBuilder
     {
-        public static void Make(GameObject body, Sector sector, MColor32 lightTint, float scale)
+        public static void Make(GameObject body, float scale)
         {
-            GameObject lightGO = new GameObject("Lights");
-            lightGO.SetActive(false);
-            lightGO.transform.parent = body.transform;
+            GameObject lightGO = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), body.transform);
+            lightGO.transform.localPosition = Vector3.zero;
+            lightGO.name = "Light";
+
+            var light = lightGO.GetComponent<Light>();
+            light.name = "AmbientLight";
+            light.color = new Color(0.5f, 1f, 1f, 0.0225f);
+            light.range = scale;
+            light.intensity = 0.5f;
             
-            Light L = lightGO.AddComponent<Light>();
-            L.type = LightType.Point;
-            L.range = scale + 10;
-            L.color = (lightTint != null) ? lightTint.ToColor32() : (Color32)Color.black;
-            L.intensity = 0.8f;
-            L.shadows = LightShadows.None;
-
-            L.cookie = GameObject.Find("/GiantsDeep_Body/AmbientLight_GD").GetComponent<Light>().cookie;
-
-            SectorLightsCullGroup SLCG = lightGO.AddComponent<SectorLightsCullGroup>();
-            SLCG.SetSector(sector);
-
-            lightGO.SetActive(true);
-
             Logger.Log("Finished building ambient light", Logger.LogType.Log);
         }
     }

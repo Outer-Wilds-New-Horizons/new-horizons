@@ -230,8 +230,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Atmosphere\FogBuilder.cs" />
+    <Compile Include="Body\Geometry\CubeSphere.cs" />
+    <Compile Include="Body\Geometry\Icosphere.cs" />
     <Compile Include="Body\HeightMapBuilder.cs" />
-    <Compile Include="Components\RotateToCustomAstroObject.cs" />
     <Compile Include="External\AtmosphereModule.cs" />
     <Compile Include="External\BaseModule.cs" />
     <Compile Include="External\HeightMapModule.cs" />

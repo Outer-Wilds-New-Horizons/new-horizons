@@ -6,7 +6,7 @@ namespace NewHorizons.Atmosphere
 {
     static class AirBuilder
     {
-        public static void Make(GameObject body, float airScale, bool isRaining)
+        public static void Make(GameObject body, float airScale, bool isRaining, bool hasOxygen)
         {
             GameObject airGO = new GameObject("Air");
             airGO.SetActive(false);
@@ -24,6 +24,11 @@ namespace NewHorizons.Atmosphere
             SFV.SetValue("_fluidType", FluidVolume.Type.AIR);
             SFV.SetValue("_allowShipAutoroll", true);
             SFV.SetValue("_disableOnStart", false);
+
+            if(hasOxygen)
+            {
+                airGO.AddComponent<OxygenVolume>();
+            }
 
             if (isRaining)
             {

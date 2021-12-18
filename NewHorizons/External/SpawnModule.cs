@@ -11,5 +11,6 @@ namespace NewHorizons.External
     {
         public MVector3 PlayerSpawnPoint { get; set; }
         public MVector3 ShipSpawnPoint { get; set; }
+        public bool StartWithSuit { get; set; }
     }
 }

@@ -10,7 +10,7 @@ namespace NewHorizons.External
     public class BaseModule : Module
     {
         public bool HasMapMarker { get; set; }
-        public MColor32 LightTint { get; set; }
+        public bool HasAmbientLight { get; set; }
         public float SurfaceGravity { get; set; }
         public float SurfaceSize { get; set; }
         public float WaterSize { get; set; }

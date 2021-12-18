@@ -29,7 +29,7 @@ namespace NewHorizons.Utility
                 var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
-                    Logger.Log($"Raycast hit [{hitInfo.transform.localPosition}] on [{hitInfo.transform.gameObject.name}]");
+                    Logger.Log($"Raycast hit [{hitInfo.transform.InverseTransformPoint(hitInfo.point)}] on [{hitInfo.transform.gameObject.name}]");
                 }
                 _rb.EnableCollisionDetection();
             }

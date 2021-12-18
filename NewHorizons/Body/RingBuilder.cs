@@ -11,12 +11,20 @@ namespace NewHorizons.General
 {
     static class RingBuilder
     {
-		public static Material RingMaterial;
-		public static Shader RingShader;
-
         public static void Make(GameObject body, RingModule ring)
         {
-            var ringGO = new GameObject("Ring");
+			Texture2D ringTexture;
+			try
+			{
+				ringTexture = Main.Instance.CurrentAssets.GetTexture(ring.Texture);
+			}
+			catch (Exception e)
+			{
+				Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
+				return;
+			}
+
+			var ringGO = new GameObject("Ring");
             ringGO.transform.parent = body.transform;
 			ringGO.transform.localPosition = Vector3.zero;
 			ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
@@ -25,19 +33,12 @@ namespace NewHorizons.General
             var ringMF = ringGO.AddComponent<MeshFilter>();
             var ringMesh = ringMF.mesh;
             var ringMR = ringGO.AddComponent<MeshRenderer>();
-			var texture = Main.Instance.ModHelper.Assets.GetTexture(ring.Texture ?? "assets/default_rings.png");
+			var texture = ringTexture;
 
-			//if (RingMaterial == null) RingMaterial = Main.bundle.LoadAsset<Material>("Assets/Ring.mat");
-			//if (RingShader == null) RingShader = Main.bundle.LoadAsset<Shader>("Assets/Ring.shader");
-			
 			var mat = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
 			mat.mainTexture = texture;
 			mat.renderQueue = 3000;
 			ringMR.material = mat;
-
-			//ringMR.material = new Material(RingMaterial);
-			//ringMR.material.shader = RingShader;
-			//ringMR.material.mainTexture = texture;
 
 			// Make mesh
 			var segments = (int)Math.Max(20, ring.OuterRadius); 

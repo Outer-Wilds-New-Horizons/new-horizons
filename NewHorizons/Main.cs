@@ -19,9 +19,10 @@ namespace NewHorizons
     public class Main : ModBehaviour
     {
         public static Main Instance { get; private set; }
-        //public static AssetBundle bundle;
 
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
+
+        public IModAssets CurrentAssets { get; private set; }
 
         public override object GetApi()
         {
@@ -35,32 +36,17 @@ namespace NewHorizons
 
             Utility.Patches.Apply();
 
-            //bundle = ModHelper.Assets.LoadBundle("assets/new-horizons");
-
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
-            foreach (var file in Directory.GetFiles(ModHelper.Manifest.ModFolderPath + @"planets\"))
+            try
             {
-                try
-                {
-                    var config = ModHelper.Storage.Load<PlanetConfig>(file.Replace(ModHelper.Manifest.ModFolderPath, ""));
-                    Logger.Log($"Loaded {config.Name}");
-                    BodyList.Add(new NewHorizonsBody(config));
-                }            
-                catch(Exception e)
-                {
-                    Logger.LogError($"Couldn't load {file}: {e.Message}, {e.StackTrace}");
-                }
+                LoadConfigs(this);
+            }
+            catch(Exception)
+            {
+                Logger.LogWarning("Couldn't find planets folder");
             }
 
-            if (BodyList.Count != 0)
-            {
-                Logger.Log("Loaded [" + BodyList.Count + "] config files.", Logger.LogType.Log);
-            }
-            else
-            {
-                Logger.Log("No config files found!", Logger.LogType.Warning);
-            }
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -77,8 +63,6 @@ namespace NewHorizons
             {
                 AstroObjectLocator.AddAstroObject(ao);
             }
-
-            //BodyList = BodyList.OrderBy(x => x.Config.Destroy).ToList();
 
             foreach (var body in BodyList)
             {
@@ -109,7 +93,7 @@ namespace NewHorizons
                     {
                         if (body.Config.Destroy)
                         {
-                            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveBody(existingPlanet));
+                            Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(existingPlanet), 2);
                         } 
                         else UpdateBody(body, existingPlanet);
                     }
@@ -130,6 +114,25 @@ namespace NewHorizons
                     {
                         Logger.LogError($"Couldn't generate body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
                     }
+                }
+            }
+        }
+
+        public void LoadConfigs(IModBehaviour mod)
+        {
+            CurrentAssets = mod.ModHelper.Assets;
+            var folder = mod.ModHelper.Manifest.ModFolderPath;
+            foreach (var file in Directory.GetFiles(folder + @"planets\"))
+            {
+                try
+                {
+                    var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
+                    Logger.Log($"Loaded {config.Name}");
+                    BodyList.Add(new NewHorizonsBody(config));
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Couldn't load {file}: {e.Message}, {e.StackTrace}");
                 }
             }
         }
@@ -157,7 +160,7 @@ namespace NewHorizons
             }
             if(body.Config.Atmosphere != null)
             {
-                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain);
+                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasOxygen);
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
@@ -171,7 +174,7 @@ namespace NewHorizons
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
-                AtmosphereBuilder.Make(go, body.Config);
+                AtmosphereBuilder.Make(go, body.Config.Atmosphere);
             }
 
             return go;
@@ -249,6 +252,10 @@ namespace NewHorizons
             {
                 GameObject.Find("WhiteholeStation_Body").SetActive(false);
                 GameObject.Find("WhiteholeStationSuperstructure_Body").SetActive(false);
+            }
+            if(ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
+            {
+                GameObject.Find("MiningRig_Body").SetActive(false);
             }
 
             // Deal with proxies
@@ -329,7 +336,7 @@ namespace NewHorizons
             // These can be shared between creating new planets and updating planets
             if (body.Config.Atmosphere != null)
             {
-                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain);
+                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasOxygen);
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
@@ -343,10 +350,8 @@ namespace NewHorizons
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
-                AtmosphereBuilder.Make(go, body.Config);
+                AtmosphereBuilder.Make(go, body.Config.Atmosphere);
             }
-
-            AmbientLightBuilder.Make(go, sector, body.Config.Base.LightTint, sphereOfInfluence);
 
             if (body.Config.Ring != null) 
                 RingBuilder.Make(go, body.Config.Ring);
@@ -360,10 +365,14 @@ namespace NewHorizons
             if (body.Config.Base.WaterSize != 0)
                 WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
 
+            if (body.Config.Base.HasAmbientLight)
+                AmbientLightBuilder.Make(go, sphereOfInfluence);
+
             Logger.Log("Generation of [" + body.Config.Name + "] completed.", Logger.LogType.Log);
 
             body.Object = go;
 
+            // Some things have to be done the second tick
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon));
 
             go.transform.parent = Locator.GetRootTransform();
@@ -390,8 +399,11 @@ namespace NewHorizons
             var body = new NewHorizonsBody(planetConfig);
 
             Main.BodyList.Add(body);
+        }
 
-            //Main.helper.Events.Unity.RunWhen(() => Locator.GetCenterOfTheUniverse() != null, () => Main.CreateBody(body));
+        public void LoadConfigs(IModBehaviour mod)
+        {
+            Main.Instance.LoadConfigs(mod);
         }
 
         public GameObject GetPlanet(string name)
