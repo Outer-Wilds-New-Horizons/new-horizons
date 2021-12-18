@@ -25,7 +25,7 @@ namespace NewHorizons.General
 
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
-            GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("inverseSquared").GetValue(GV));
+            GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("linear").GetValue(GV));
             GV.SetValue("_alignmentRadius", 0.75f * upperSurface);
             GV.SetValue("_upperSurfaceRadius", lowerSurface);
             GV.SetValue("_lowerSurfaceRadius", 0);

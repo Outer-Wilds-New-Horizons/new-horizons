@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 3655445632
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 160438a2f12bb2f4bd67ddfa0e6f2f3f
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6370d3f9de9eca57f523bce048404a46
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/SphereTextureWrapper.shader
+Dependencies: []

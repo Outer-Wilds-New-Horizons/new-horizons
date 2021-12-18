@@ -72,12 +72,14 @@ namespace NewHorizons.Body.Geometry
             Vector3[] normals = new Vector3[verticesToCopy.Length];
             Vector2[] uvs = new Vector2[verticesToCopy.Length];
 
+            Dictionary<float, int> seamVertices = new Dictionary<float, int>();
+
             for(int i = 0; i < verticesToCopy.Length; i++)
             {
                 var v = verticesToCopy[i];
 
-                float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z))) % 180f;
-                float longitude = (Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f) % 360f;
+                float latitude = Mathf.Repeat(Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)), 180f);
+                float longitude = Mathf.Repeat(Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f, 360f);
 
                 float sampleX = heightMap.width * longitude / 360f;
                 float sampleY = heightMap.height * latitude / 180f;
@@ -86,7 +88,14 @@ namespace NewHorizons.Body.Geometry
 
                 newVertices[i] = verticesToCopy[i] * height;
                 normals[i] = v.normalized;
-                uvs[i] = new Vector2(sampleX / (float)heightMap.width, sampleY / (float)heightMap.height);
+
+                var x = longitude / 360f;
+                var y = latitude / 180f;
+
+                if (x == 0) seamVertices.Add(y, i);
+
+
+                uvs[i] = new Vector2(x, y);
             }
 
             mesh.vertices = newVertices;

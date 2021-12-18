@@ -20,6 +20,9 @@ namespace NewHorizons.General
 
                 spawnGO.transform.localPosition = module.PlayerSpawnPoint;
 
+                // Move it up a bit more
+                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 1f;
+
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
             }

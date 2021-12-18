@@ -25,6 +25,9 @@ namespace NewHorizons.Body
             CreateVertices(mesh, resolution, heightMap, minHeight, maxHeight);
             CreateTriangles(mesh, resolution);
 
+            mesh.RecalculateNormals();
+            mesh.RecalculateTangents();
+
             return mesh;
         }
 
@@ -45,6 +48,10 @@ namespace NewHorizons.Body
                 for (int x = 0; x <= resolution; x++)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, y, 0, resolution, heightMap, minHeight, maxHeight);
+                    if (x == resolution / 2 && y < resolution / 2)
+                    {
+                        Logger.Log($"{uvs[v - 1]}");
+                    }
                 }
                 for (int z = 1; z <= resolution; z++)
                 {
@@ -53,6 +60,10 @@ namespace NewHorizons.Body
                 for (int x = resolution - 1; x >= 0; x--)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, y, resolution, resolution, heightMap, minHeight, maxHeight);
+                    if (x == resolution / 2 && y < resolution / 2)
+                    {
+                        Logger.Log($"{uvs[v - 1]}");
+                    }
                 }
                 for (int z = resolution - 1; z > 0; z--)
                 {
@@ -72,6 +83,10 @@ namespace NewHorizons.Body
                 for (int x = 1; x < resolution; x++)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, 0, z, resolution, heightMap, minHeight, maxHeight);
+                    if (x == resolution / 2)
+                    {
+                        Logger.Log($"{uvs[v - 1]}");
+                    }
                 }
             }
 
@@ -92,8 +107,10 @@ namespace NewHorizons.Body
             v.y = v2.y * Mathf.Sqrt(1f - x2 / 2f - z2 / 2f + x2 * z2 / 3f);
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
-            float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z))) % 180f;
-            float longitude = (Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f) % 360f;
+            float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)));
+            float longitude = 180f;
+            if(v.x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(v.y / v.x) + 90f;
+            if(v.x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f;
 
             float sampleX = heightMap.width * longitude / 360f;
             float sampleY = heightMap.height * latitude / 180f;
@@ -102,7 +119,10 @@ namespace NewHorizons.Body
 
             normals[i] = v.normalized;
             vertices[i] = normals[i] * (relativeHeight * (maxHeight - minHeight) + minHeight);
-            uvs[i] = new Vector2(sampleX / (float)heightMap.width, sampleY / (float)heightMap.height);
+
+            var uvX = sampleX / (float)heightMap.width;
+            var uvY = sampleY / (float)heightMap.height;
+            uvs[i] = new Vector2(uvX, uvY);
         }
 
         private static void CreateTriangles(Mesh mesh, int resolution)
