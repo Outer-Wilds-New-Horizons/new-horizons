@@ -36,6 +36,7 @@ namespace NewHorizons.Atmosphere
             ER.SetValue("_material", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material"));
             ER.SetValue("_cloudMaterial", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial"));
 
+            volumesGO.transform.localPosition = Vector3.zero;
             rulesetGO.SetActive(true);
             volumesGO.SetActive(true);
         }

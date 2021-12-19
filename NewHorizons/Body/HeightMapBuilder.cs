@@ -48,25 +48,7 @@ namespace NewHorizons.Body
 
             // Fix rotation in the end
             cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
-
-            /*
-            GameObject icosphere = new GameObject("Icosphere");
-            icosphere.transform.parent = go.transform;
-            icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
-
-            Mesh mesh = Icosphere.Build(5, heightMap, module.MinHeight, module.MaxHeight);
-
-            icosphere.AddComponent<MeshFilter>();
-            icosphere.GetComponent<MeshFilter>().mesh = mesh;
-
-            var cubeSphereMR = icosphere.AddComponent<MeshRenderer>();
-            cubeSphereMR.material = new Material(Shader.Find("Standard"));
-            cubeSphereMR.material.mainTexture = textureMap;
-
-            var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
-            cubeSphereMC.sharedMesh = mesh;
-            icosphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            */
+            cubeSphere.transform.localPosition = Vector3.zero;
         }
     }
 }

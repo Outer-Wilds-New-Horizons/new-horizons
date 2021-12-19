@@ -20,6 +20,7 @@ namespace NewHorizons.Atmosphere
             GDSOV.SetValue("_waterOuterRadius", surfaceSize);
             GDSOV.SetValue("_waterInnerRadius", 0f);
 
+            overrideGO.transform.localPosition = Vector3.zero;
             overrideGO.SetActive(true);
         }
     }

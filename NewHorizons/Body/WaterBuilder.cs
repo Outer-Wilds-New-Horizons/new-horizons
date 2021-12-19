@@ -79,6 +79,7 @@ namespace NewHorizons.Body
             fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
             */
 
+            waterGO.transform.localPosition = Vector3.zero;
             waterGO.SetActive(true);
         }
     }

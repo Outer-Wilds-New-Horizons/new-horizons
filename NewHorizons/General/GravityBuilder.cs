@@ -11,6 +11,7 @@ namespace NewHorizons.General
         {
             GameObject gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = body.transform;
+            gravityGO.transform.localPosition = Vector3.zero;
             gravityGO.layer = 17;
             gravityGO.SetActive(false);
 

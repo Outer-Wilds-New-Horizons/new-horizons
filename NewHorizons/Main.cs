@@ -92,14 +92,12 @@ namespace NewHorizons
             try
             {
                 existingPlanet = AstroObjectLocator.GetAstroObject(stringID);
-                if (existingPlanet == null)
-                    existingPlanet = existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", ""));
+                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", ""));
             }
             catch (Exception e)
             {
                 Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
             }
-
 
             if (existingPlanet != null)
             {

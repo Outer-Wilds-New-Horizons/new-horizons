@@ -18,7 +18,7 @@ namespace NewHorizons.Body
             var minSize = 20;
             var maxSize = 50;
             int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
-            if (count > 400) count = 400;
+            if (count > 200) count = 200;
 
             Logger.Log($"Making {count} asteroids around {bodyName}");
 

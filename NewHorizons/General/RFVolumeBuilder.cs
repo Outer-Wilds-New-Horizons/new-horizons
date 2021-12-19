@@ -11,6 +11,7 @@ namespace NewHorizons.General
         {
             GameObject rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = body.transform;
+            rfGO.transform.localPosition = Vector3.zero;
             rfGO.layer = 19;
             rfGO.SetActive(false);
 

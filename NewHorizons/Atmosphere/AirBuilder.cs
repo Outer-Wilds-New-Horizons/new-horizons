@@ -59,6 +59,7 @@ namespace NewHorizons.Atmosphere
                 airGO.AddComponent<AudioVolume>();
             }
 
+            airGO.transform.localPosition = Vector3.zero;
             airGO.SetActive(true);
         }
     }

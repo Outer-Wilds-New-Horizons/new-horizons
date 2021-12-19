@@ -50,6 +50,7 @@ namespace NewHorizons.Atmosphere
                 snowGO.SetActive(true);
             }
 
+            effectsGO.transform.localPosition = Vector3.zero;
             effectsGO.SetActive(true);
         }
     }

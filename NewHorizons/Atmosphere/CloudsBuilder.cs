@@ -112,6 +112,7 @@ namespace NewHorizons.Atmosphere
 
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            cloudsMainGO.transform.localPosition = Vector3.zero;
 
             cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);

@@ -13,6 +13,7 @@ namespace NewHorizons.Body
             GameObject sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
             sectorGO.transform.parent = body.transform;
+            sectorGO.transform.localPosition = Vector3.zero;
 
             SphereShape SS = sectorGO.AddComponent<SphereShape>();
             SS.SetCollisionMode(Shape.CollisionMode.Volume);

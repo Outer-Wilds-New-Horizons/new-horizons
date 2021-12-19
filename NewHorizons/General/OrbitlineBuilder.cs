@@ -12,6 +12,7 @@ namespace NewHorizons.General
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
+            orbitGO.transform.localPosition = Vector3.zero;
 
             var LR = orbitGO.AddComponent<LineRenderer>();
 

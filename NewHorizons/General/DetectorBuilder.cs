@@ -12,6 +12,7 @@ namespace NewHorizons.General
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
             detectorGO.transform.parent = body.transform;
+            detectorGO.transform.localPosition = Vector3.zero;
             detectorGO.layer = 20;
 
             ConstantForceDetector CFD = detectorGO.AddComponent<ConstantForceDetector>();

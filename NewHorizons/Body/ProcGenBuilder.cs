@@ -16,6 +16,7 @@ namespace NewHorizons.Body
             GameObject icosphere = new GameObject("Icosphere");
             icosphere.transform.parent = go.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
+            icosphere.transform.localPosition = Vector3.zero;
 
             Mesh mesh = Icosphere.Build(3, module.Scale, module.Scale * 1.2f);
 
