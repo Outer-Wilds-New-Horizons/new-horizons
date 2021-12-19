@@ -1,4 +1,4 @@
-![logo](logo.png)
+![new horizons thumbnail](https://user-images.githubusercontent.com/22628069/146660122-4d1a515c-b795-4781-882d-4080ef837d15.png)
 
 A planet creator for Outer Wilds.
 
@@ -8,7 +8,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
 
 Coming soon
 
-There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs.
+There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
 ## How to use New Horizons in other mods:
 
