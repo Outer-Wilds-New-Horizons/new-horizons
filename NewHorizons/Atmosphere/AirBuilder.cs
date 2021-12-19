@@ -60,7 +60,6 @@ namespace NewHorizons.Atmosphere
             }
 
             airGO.SetActive(true);
-            Logger.Log("Finished building air.", Logger.LogType.Log);
         }
     }
 }

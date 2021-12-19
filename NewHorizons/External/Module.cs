@@ -17,10 +17,8 @@ namespace NewHorizons.External
             }
             foreach (var item in dict)
             {
-                Logger.Log($"{item.Key} : {item.Value}", Logger.LogType.Log);
-
-                var field = GetType().GetField(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                field.SetValue(this, Convert.ChangeType(item.Value, field.FieldType));
+                var property = GetType().GetProperty(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                property.SetValue(this, Convert.ChangeType(item.Value, property.PropertyType));
             }
         }
     }

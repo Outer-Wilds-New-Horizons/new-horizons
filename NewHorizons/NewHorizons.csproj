@@ -230,14 +230,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Atmosphere\FogBuilder.cs" />
+    <Compile Include="Body\AsteroidBeltBuilder.cs" />
     <Compile Include="Body\Geometry\CubeSphere.cs" />
     <Compile Include="Body\Geometry\Icosphere.cs" />
+    <Compile Include="Body\Geometry\Perlin.cs" />
     <Compile Include="Body\HeightMapBuilder.cs" />
+    <Compile Include="Body\ProcGenBuilder.cs" />
+    <Compile Include="Body\SunBuilder.cs" />
+    <Compile Include="External\AsteroidBeltModule.cs" />
     <Compile Include="External\AtmosphereModule.cs" />
     <Compile Include="External\BaseModule.cs" />
     <Compile Include="External\HeightMapModule.cs" />
     <Compile Include="External\Module.cs" />
     <Compile Include="External\OrbitModule.cs" />
+    <Compile Include="External\ProcGenModule.cs" />
     <Compile Include="External\RingModule.cs" />
     <Compile Include="External\SpawnModule.cs" />
     <Compile Include="General\BaseBuilder.cs" />
@@ -245,12 +251,15 @@
     <Compile Include="General\DetectorBuilder.cs" />
     <Compile Include="General\GravityBuilder.cs" />
     <Compile Include="Body\LavaBuilder.cs" />
+    <Compile Include="General\InitialMotionBuilder.cs" />
     <Compile Include="General\MarkerBuilder.cs" />
     <Compile Include="General\OrbitlineBuilder.cs" />
+    <Compile Include="General\PlanetDestroyer.cs" />
     <Compile Include="General\RFVolumeBuilder.cs" />
     <Compile Include="Body\RingBuilder.cs" />
     <Compile Include="General\SectorBuilder.cs" />
     <Compile Include="General\SpawnPointBuilder.cs" />
+    <Compile Include="Physics\OrbitalHelper.cs" />
     <Compile Include="Utility\AddDebugShape.cs" />
     <Compile Include="General\AmbientLightBuilder.cs" />
     <Compile Include="External\IPlanetConfig.cs" />
@@ -269,6 +278,7 @@
     <Compile Include="Utility\AstroObjectLocator.cs" />
     <Compile Include="Utility\DebugRaycaster.cs" />
     <Compile Include="Utility\ImageUtilities.cs" />
+    <Compile Include="Physics\ParameterizedOrbitLine.cs" />
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\MakeMeshDoubleFaced.cs" />
     <Compile Include="Utility\NewHorizonBody.cs" />
@@ -290,14 +300,14 @@
       md "$(OwmlDir)\Mods\$(ModUniqueName)"
 	  md "$(OwmlDir)\Mods\$(ModUniqueName)\planets"
 	  md "$(OwmlDir)\Mods\$(ModUniqueName)\planets\assets"
-	  md "$(OwmlDir)\Mods\$(ModUniqueName)\assets"
+	  md "$(OwmlDir)\Mods\$(ModUniqueName)\AssetBundle"
 
       copy /y "$(TargetPath)" "$(OwmlDir)\Mods\$(ModUniqueName)"
       copy /y "$(ProjectDir)\default-config.json" "$(OwmlDir)\Mods\$(ModUniqueName)"
       copy /y "$(ProjectDir)\manifest.json" "$(OwmlDir)\Mods\$(ModUniqueName)"
 	  copy /y "$(ProjectDir)planets\" "$(OwmlDir)\Mods\$(ModUniqueName)\planets"
 	  copy /y "$(ProjectDir)planets\assets" "$(OwmlDir)\Mods\$(ModUniqueName)\planets\assets"
-	  copy /y "$(ProjectDir)assets\" "$(OwmlDir)\Mods\$(ModUniqueName)\assets"
+	  copy /y "$(ProjectDir)AssetBundle\" "$(OwmlDir)\Mods\$(ModUniqueName)\AssetBundle"
     </PostBuildEvent>
   </PropertyGroup>
 </Project>

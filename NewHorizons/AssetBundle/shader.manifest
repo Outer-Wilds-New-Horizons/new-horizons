@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3655445632
+CRC: 3840241390
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 160438a2f12bb2f4bd67ddfa0e6f2f3f
+    Hash: 1c2c90716d1ed7c9cbf5f785e41eace6
   TypeTreeHash:
     serializedVersion: 2
     Hash: 6370d3f9de9eca57f523bce048404a46
@@ -13,4 +13,5 @@ ClassTypes:
   Script: {instanceID: 0}
 Assets:
 - Assets/SphereTextureWrapper.shader
+- Assets/UnlitTransparent.shader
 Dependencies: []

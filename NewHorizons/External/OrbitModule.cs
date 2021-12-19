@@ -15,6 +15,7 @@ namespace NewHorizons.External
         public float LongitudeOfAscendingNode { get; set; }
         public float Eccentricity { get; set; }
         public float ArgumentOfPeriapsis { get; set; }
+        public float TrueAnomaly { get; set; }
         public float AxialTilt { get; set; }
         public float SiderealPeriod { get; set; }
         public bool IsTidallyLocked { get; set; }

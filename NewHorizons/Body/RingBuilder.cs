@@ -11,7 +11,9 @@ namespace NewHorizons.General
 {
     static class RingBuilder
     {
-        public static void Make(GameObject body, RingModule ring)
+		public static Shader RingShader;
+
+		public static void Make(GameObject body, RingModule ring)
         {
 			Texture2D ringTexture;
 			try
@@ -27,6 +29,7 @@ namespace NewHorizons.General
 			var ringGO = new GameObject("Ring");
             ringGO.transform.parent = body.transform;
 			ringGO.transform.localPosition = Vector3.zero;
+			ringGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
 			ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
 			ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.right), ring.Inclination);
 
@@ -35,7 +38,9 @@ namespace NewHorizons.General
             var ringMR = ringGO.AddComponent<MeshRenderer>();
 			var texture = ringTexture;
 
-			var mat = new Material(Shader.Find("Legacy Shaders/Particles/Alpha Blended Premultiply"));
+			if (RingShader == null) RingShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/UnlitTransparent.shader");
+
+			var mat = new Material(RingShader);
 			mat.mainTexture = texture;
 			mat.renderQueue = 3000;
 			ringMR.material = mat;
@@ -43,8 +48,6 @@ namespace NewHorizons.General
 			// Make mesh
 			var segments = (int)Math.Max(20, ring.OuterRadius); 
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
-
-			Logger.Log("Finished building rings", Logger.LogType.Log);
 		}
 
 		// Thank you https://github.com/boardtobits/planet-ring-mesh/blob/master/PlanetRing.cs

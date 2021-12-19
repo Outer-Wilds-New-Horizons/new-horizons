@@ -1,4 +1,6 @@
-﻿using OWML.Utils;
+﻿using NewHorizons.External;
+using NewHorizons.Utility;
+using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -6,28 +8,25 @@ namespace NewHorizons.General
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, AstroObject astroobject, bool isMoon)
+        public static void Make(GameObject body, AstroObject astroobject, bool isMoon, OrbitModule orbit)
         {
-            GameObject orbit = new GameObject("Orbit");
-            orbit.transform.parent = body.transform;
+            GameObject orbitGO = new GameObject("Orbit");
+            orbitGO.transform.parent = body.transform;
 
-            var LR = orbit.AddComponent<LineRenderer>();
+            var LR = orbitGO.AddComponent<LineRenderer>();
 
-            var thLR = GameObject.Find("OrbitLine_TH").GetComponent<LineRenderer>();
+            var thLR = GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>();
 
             LR.material = thLR.material;
             LR.useWorldSpace = false;
             LR.loop = false;
 
-            Logger.Log("AO primary body is " + astroobject.GetPrimaryBody().name, Logger.LogType.Log);
-
-            var ol = orbit.AddComponent<OrbitLine>();
+            OrbitLine ol = orbit.Eccentricity != 0 ? orbitGO.AddComponent<EllipticOrbitLine>() : orbitGO.AddComponent<OrbitLine>();
             ol.SetValue("_astroObject", astroobject);
             ol.SetValue("_fade", isMoon);
             ol.SetValue("_lineWidth", 0.5f);
+            //ol.SetOrbitalParameters(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.LongitudeOfAscendingNode, orbit.ArgumentOfPeriapsis, orbit.TrueAnomaly);
             typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(ol, new object[] { });
-
-            Logger.Log("Finished building orbit line", Logger.LogType.Log);
         }
     }
 }

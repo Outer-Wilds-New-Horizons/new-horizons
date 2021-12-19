@@ -110,11 +110,13 @@ namespace NewHorizons.Atmosphere
             fluidCLFV.SetValue("_allowShipAutoroll", true);
             fluidCLFV.SetValue("_disableOnStart", false);
 
+            // Fix the rotations once the rest is done
+            cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
             cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);
             cloudsFluidGO.SetActive(true);
             cloudsMainGO.SetActive(true);
-            Logger.Log("Finished building clouds.", Logger.LogType.Log);
         }
     }
 }

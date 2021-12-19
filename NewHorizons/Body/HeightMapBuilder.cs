@@ -12,7 +12,6 @@ namespace NewHorizons.Body
 {
     static class HeightMapBuilder
     {
-        public static AssetBundle ShaderBundle;
         public static Shader PlanetShader;
 
         public static void Make(GameObject go, HeightMapModule module)
@@ -29,7 +28,6 @@ namespace NewHorizons.Body
                 return;
             }
 
-            
             GameObject cubeSphere = new GameObject("CubeSphere");
             cubeSphere.transform.parent = go.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
@@ -39,8 +37,7 @@ namespace NewHorizons.Body
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            if(ShaderBundle == null) ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("assets/shader");
-            if(PlanetShader == null) PlanetShader = ShaderBundle.LoadAsset<Shader>("Assets/SphereTextureWrapper.shader");
+            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/SphereTextureWrapper.shader");
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);
@@ -48,7 +45,9 @@ namespace NewHorizons.Body
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
-            
+
+            // Fix rotation in the end
+            cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
             /*
             GameObject icosphere = new GameObject("Icosphere");
@@ -66,6 +65,7 @@ namespace NewHorizons.Body
 
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
+            icosphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
             */
         }
     }

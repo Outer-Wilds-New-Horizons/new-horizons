@@ -48,10 +48,6 @@ namespace NewHorizons.Body
                 for (int x = 0; x <= resolution; x++)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, y, 0, resolution, heightMap, minHeight, maxHeight);
-                    if (x == resolution / 2 && y < resolution / 2)
-                    {
-                        Logger.Log($"{uvs[v - 1]}");
-                    }
                 }
                 for (int z = 1; z <= resolution; z++)
                 {
@@ -60,10 +56,6 @@ namespace NewHorizons.Body
                 for (int x = resolution - 1; x >= 0; x--)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, y, resolution, resolution, heightMap, minHeight, maxHeight);
-                    if (x == resolution / 2 && y < resolution / 2)
-                    {
-                        Logger.Log($"{uvs[v - 1]}");
-                    }
                 }
                 for (int z = resolution - 1; z > 0; z--)
                 {
@@ -83,10 +75,6 @@ namespace NewHorizons.Body
                 for (int x = 1; x < resolution; x++)
                 {
                     SetVertex(vertices, normals, uvs, v++, x, 0, z, resolution, heightMap, minHeight, maxHeight);
-                    if (x == resolution / 2)
-                    {
-                        Logger.Log($"{uvs[v - 1]}");
-                    }
                 }
             }
 

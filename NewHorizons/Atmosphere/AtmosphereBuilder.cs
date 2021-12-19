@@ -77,7 +77,6 @@ namespace NewHorizons.Atmosphere
             }
 
             atmoGO.SetActive(true);
-            Logger.Log("Finished building atmosphere.", Logger.LogType.Log);
         }
     }
 }

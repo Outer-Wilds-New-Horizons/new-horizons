@@ -38,7 +38,6 @@ namespace NewHorizons.Atmosphere
 
             rulesetGO.SetActive(true);
             volumesGO.SetActive(true);
-            Logger.Log("Finished building volumes", Logger.LogType.Log);
         }
     }
 }

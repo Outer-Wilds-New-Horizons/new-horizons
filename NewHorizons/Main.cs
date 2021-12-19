@@ -18,9 +18,12 @@ namespace NewHorizons
 {
     public class Main : ModBehaviour
     {
+
+        public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
+        public static List<NewHorizonsBody> AdditionalBodies = new List<NewHorizonsBody>();
 
         public IModAssets CurrentAssets { get; private set; }
 
@@ -33,6 +36,7 @@ namespace NewHorizons
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
+            ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
 
             Utility.Patches.Apply();
 
@@ -51,10 +55,7 @@ namespace NewHorizons
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (scene.name != "SolarSystem")
-            {
-                return;
-            }
+            if (scene.name != "SolarSystem") return;
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
@@ -64,59 +65,72 @@ namespace NewHorizons
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
-            foreach (var body in BodyList)
-            {
-                var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
-                if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
-                if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
-                if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
-                if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
-                if (stringID.Equals("INTERLOPER")) stringID = "COMET";
+            // Should make moons come after planets
+            BodyList = BodyList.OrderBy(b => (b.Config?.Orbit?.IsMoon)).ToList();
 
-                Logger.Log($"Checking if [{stringID}] already exists");
-                AstroObject existingPlanet = null;
+            while(BodyList.Count != 0)
+            {
+                foreach (var body in BodyList)
+                {
+                    LoadBody(body);
+                }
+                BodyList = AdditionalBodies;
+                AdditionalBodies = new List<NewHorizonsBody>();
+            }
+        }
+
+        private void LoadBody(NewHorizonsBody body)
+        {
+            var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
+            if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
+            if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
+            if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
+            if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
+            if (stringID.Equals("INTERLOPER")) stringID = "COMET";
+
+            AstroObject existingPlanet = null;
+            try
+            {
+                existingPlanet = AstroObjectLocator.GetAstroObject(stringID);
+                if (existingPlanet == null)
+                    existingPlanet = existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", ""));
+            }
+            catch (Exception e)
+            {
+                Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
+            }
+
+
+            if (existingPlanet != null)
+            {
                 try
                 {
-                    existingPlanet = AstroObjectLocator.GetAstroObject(stringID);
-                    if (existingPlanet == null)
-                        existingPlanet = existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", ""));
+                    if (body.Config.Destroy)
+                    {
+                        Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(existingPlanet), 2);
+                    }
+                    else UpdateBody(body, existingPlanet);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
-                    Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
+                    Logger.LogError($"Couldn't update body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
                 }
-
-
-                if (existingPlanet != null)
+            }
+            else
+            {
+                try
                 {
-                    try
-                    {
-                        if (body.Config.Destroy)
-                        {
-                            Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(existingPlanet), 2);
-                        } 
-                        else UpdateBody(body, existingPlanet);
-                    }
-                    catch(Exception e)
-                    {
-                        Logger.LogError($"Couldn't update body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
-                    }
+                    GameObject planetObject;
+                    planetObject = GenerateBody(body);
+                    planetObject.SetActive(true);
                 }
-                else
+                catch (Exception e)
                 {
-                    try
-                    {
-                        GameObject planetObject;
-                        planetObject = GenerateBody(body);
-                        planetObject.SetActive(true);
-                    }
-                    catch(Exception e)
-                    {
-                        Logger.LogError($"Couldn't generate body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
-                    }
+                    Logger.LogError($"Couldn't generate body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
                 }
             }
         }
+
 
         public void LoadConfigs(IModBehaviour mod)
         {
@@ -146,144 +160,8 @@ namespace NewHorizons
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
-            if (body.Config.Ring != null)
-            {
-                RingBuilder.Make(go, body.Config.Ring);
-            }
-            if (body.Config.Base.LavaSize != 0)
-            {
-                LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
-            }
-            if (body.Config.Base.WaterSize != 0)
-            {
-                WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
-            }
-            if(body.Config.Atmosphere != null)
-            {
-                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasOxygen);
-
-                if (body.Config.Atmosphere.Cloud != null)
-                {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
-                }
-
-                if (body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size / 2f, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
-
-                if (body.Config.Atmosphere.FogSize != 0)
-                    FogBuilder.Make(go, sector, body.Config.Atmosphere);
-
-                AtmosphereBuilder.Make(go, body.Config.Atmosphere);
-            }
-
-            return go;
-        }
-
-        private static void RemoveBody(AstroObject ao, List<AstroObject> toDestroy = null)
-        {
-            Logger.Log($"Removing {ao.name}");
-
-            if (ao.gameObject == null || !ao.gameObject.activeInHierarchy) return;
-
-            if (toDestroy == null) toDestroy = new List<AstroObject>();
-
-            if(toDestroy.Contains(ao))
-            {
-                Logger.LogError($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
-                return;
-            }
-
-            toDestroy.Add(ao);
-
-            if (ao.GetAstroObjectName() == AstroObject.Name.BrittleHollow)
-                RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole), toDestroy);
-
-            // Check if any other objects depend on it and remove them too
-            var aoArray = AstroObjectLocator.GetAllAstroObjects();
-            foreach(AstroObject obj in aoArray)
-            {
-                if (obj?.gameObject == null || !obj.gameObject.activeInHierarchy)
-                {
-                    AstroObjectLocator.RemoveAstroObject(obj);
-                    continue;
-                }
-                if (ao.Equals(obj.GetPrimaryBody()))
-                {
-                    AstroObjectLocator.RemoveAstroObject(obj);
-                    RemoveBody(obj, toDestroy);
-                }
-            }
-
-            if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-            {
-                var focalBody = GameObject.Find("FocalBody");
-                if(focalBody != null) focalBody.SetActive(false);
-            }
-            if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
-            {
-                var msb = GameObject.Find("MapSatellite_Body");
-                if (msb != null) msb.SetActive(false);
-            }
-            if (ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-                GameObject.Find("TimeLoopRing_Body").SetActive(false);
-            if (ao.GetAstroObjectName() == AstroObject.Name.ProbeCannon)
-            {
-                GameObject.Find("NomaiProbe_Body").SetActive(false);
-                GameObject.Find("CannonMuzzle_Body").SetActive(false);
-                GameObject.Find("FakeCannonMuzzle_Body (1)").SetActive(false);
-                GameObject.Find("CannonBarrel_Body").SetActive(false);
-                GameObject.Find("FakeCannonBarrel_Body (1)").SetActive(false);
-                GameObject.Find("Debris_Body (1)").SetActive(false);
-            }
-            if(ao.GetAstroObjectName() == AstroObject.Name.SunStation)
-            {
-                GameObject.Find("SS_Debris_Body").SetActive(false);
-            }
-            if(ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
-            {
-                GameObject.Find("BrambleIsland_Body").SetActive(false);
-                GameObject.Find("GabbroIsland_Body").SetActive(false);
-                GameObject.Find("QuantumIsland_Body").SetActive(false);
-                GameObject.Find("StatueIsland_Body").SetActive(false);
-                GameObject.Find("ConstructionYardIsland_Body").SetActive(false);
-            }
-            if(ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
-            {
-                GameObject.Find("WhiteholeStation_Body").SetActive(false);
-                GameObject.Find("WhiteholeStationSuperstructure_Body").SetActive(false);
-            }
-            if(ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
-            {
-                GameObject.Find("MiningRig_Body").SetActive(false);
-            }
-
-            // Deal with proxies
-            foreach(var p in GameObject.FindObjectsOfType<ProxyOrbiter>())
-            {
-                if(p.GetValue<AstroObject>("_originalBody") == ao.gameObject)
-                {
-                    p.gameObject.SetActive(false);
-                    break;
-                }
-            }
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveProxy(ao.name.Replace("_Body", "")));
-
-            ao.transform.root.gameObject.SetActive(false);
-        }
-
-        private static void RemoveProxy(string name)
-        {
-            if (name.Equals("TowerTwin")) name = "AshTwin";
-            if (name.Equals("CaveTwin")) name = "EmberTwin";
-            var distantProxy = GameObject.Find(name + "_DistantProxy");
-            var distantProxyClone = GameObject.Find(name + "_DistantProxy(Clone)");
-
-
-            if (distantProxy != null) Destroy(distantProxy.gameObject);
-            else Logger.LogWarning($"Couldn't find distant proxy {name + "_DistantProxy"}");
-            if (distantProxyClone != null) Destroy(distantProxyClone.gameObject);
-            else Logger.LogWarning($"Couldn't find distant proxy {name + "_DistantProxy(Clone)"}");
+            // Do stuff that's shared between generating new planets and updating old ones
+            return SharedGenerateBody(body, go, sector, rb);
         }
 
         public static GameObject GenerateBody(NewHorizonsBody body)
@@ -295,23 +173,22 @@ namespace NewHorizons
 
             if(body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
 
-            AstroObject primaryBody = AstroObjectLocator.GetAstroObject(AstroObject.Name.Sun);
-            try
-            {
-                primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
-            }
-            catch(Exception)
+            AstroObject primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+            if(primaryBody == null)
             {
                 Logger.LogError($"Could not find AstroObject {body.Config.Orbit.PrimaryBody}, defaulting to SUN");
-            }
+                primaryBody = AstroObjectLocator.GetAstroObject(AstroObject.Name.Sun);
+            } 
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
             // Get initial position but set it at the end
-            var a = body.Config.Orbit.SemiMajorAxis;
-            var omega = Mathf.Deg2Rad * body.Config.Orbit.LongitudeOfAscendingNode;
-            var positionVector = primaryBody.gameObject.transform.position + new Vector3(a * Mathf.Sin(omega), 0, a * Mathf.Cos(omega));
+            //var a = body.Config.Orbit.SemiMajorAxis;
+            //var omega = Mathf.Deg2Rad * body.Config.Orbit.LongitudeOfAscendingNode;
+            //var positionVector = primaryBody.gameObject.transform.position + new Vector3(a * Mathf.Sin(omega), 0, a * Mathf.Cos(omega));
+            var positionVector = Kepler.OrbitalHelper.CartesianFromOrbitalElements(body.Config.Orbit.Eccentricity, body.Config.Orbit.SemiMajorAxis, body.Config.Orbit.Inclination,
+                body.Config.Orbit.LongitudeOfAscendingNode, body.Config.Orbit.ArgumentOfPeriapsis, body.Config.Orbit.TrueAnomaly);
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
             var ao = (AstroObject)outputTuple.Items[0];
@@ -333,7 +210,53 @@ namespace NewHorizons
             if (body.Config.HeightMap != null)
                 HeightMapBuilder.Make(go, body.Config.HeightMap);
 
-            // These can be shared between creating new planets and updating planets
+            if (body.Config.ProcGen != null)
+                ProcGenBuilder.Make(go, body.Config.ProcGen);
+
+            InitialMotionBuilder.Make(go, primaryBody, rb, positionVector, body.Config.Orbit);
+
+            // Do stuff that's shared between generating new planets and updating old ones
+            go = SharedGenerateBody(body, go, sector, rb);
+
+            body.Object = go;
+
+            // Some things have to be done the second tick
+            if(body.Config.Orbit != null && !body.Config.Base.HideOrbitLine)
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config.Orbit));
+
+            // Now that we're done move the planet into place
+            go.transform.parent = Locator.GetRootTransform();
+            go.transform.position = positionVector + primaryBody.transform.position;
+
+            // Spawning on other planets is a bit hacky so we do it last
+            if (body.Config.Spawn != null)
+            {
+                SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
+            }
+
+            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
+
+            Logger.Log("Generation of [" + body.Config.Name + "] completed.", Logger.LogType.Log);
+
+            return go;
+        }
+
+        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
+        {
+            if (body.Config.Ring != null)
+                RingBuilder.Make(go, body.Config.Ring);
+
+            if (body.Config.AsteroidBelt != null)
+                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt);
+            
+            if(body.Config.Base != null)
+            {
+                if (body.Config.Base.LavaSize != 0)
+                    LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
+                if (body.Config.Base.WaterSize != 0)
+                    WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
+            }
+
             if (body.Config.Atmosphere != null)
             {
                 AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasOxygen);
@@ -344,7 +267,7 @@ namespace NewHorizons
                     SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
                 }
 
-                if(body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
+                if (body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
                     EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size / 2f, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
 
                 if (body.Config.Atmosphere.FogSize != 0)
@@ -352,38 +275,6 @@ namespace NewHorizons
 
                 AtmosphereBuilder.Make(go, body.Config.Atmosphere);
             }
-
-            if (body.Config.Ring != null) 
-                RingBuilder.Make(go, body.Config.Ring);
-            
-            if (body.Config.Base.BlackHoleSize != 0) 
-                BlackHoleBuilder.Make(go);
-            
-            if (body.Config.Base.LavaSize != 0)
-                LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
-
-            if (body.Config.Base.WaterSize != 0)
-                WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
-
-            if (body.Config.Base.HasAmbientLight)
-                AmbientLightBuilder.Make(go, sphereOfInfluence);
-
-            Logger.Log("Generation of [" + body.Config.Name + "] completed.", Logger.LogType.Log);
-
-            body.Object = go;
-
-            // Some things have to be done the second tick
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon));
-
-            go.transform.parent = Locator.GetRootTransform();
-            go.transform.localPosition = positionVector;
-
-            if (body.Config.Spawn != null)
-            {
-                SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
-            }
-
-            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             return go;
         }

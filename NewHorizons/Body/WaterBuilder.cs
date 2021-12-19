@@ -80,8 +80,6 @@ namespace NewHorizons.Body
             */
 
             waterGO.SetActive(true);
-
-            Logger.Log("Finished building water", Logger.LogType.Log);
         }
     }
 }

@@ -22,6 +22,7 @@ namespace NewHorizons.Utility
 			if (name.Equals("MAP_SATELLITE"))
 				return GetAstroObject(AstroObject.Name.MapSatellite);
 			var aoName = AstroObject.StringIDToAstroObjectName(name);
+			if(aoName == AstroObject.Name.None) aoName = AstroObject.StringIDToAstroObjectName(name.ToUpper().Replace(" ", "_"));
 			if (aoName != AstroObject.Name.None && aoName != AstroObject.Name.CustomString)
 				return GetAstroObject(aoName);
 			if (_customAstroObjectDictionary.ContainsKey(name))
@@ -75,23 +76,21 @@ namespace NewHorizons.Utility
 			}
 
 			var name = ao.GetCustomName();
-			if (_customAstroObjectDictionary.Keys.Contains(name))
-				Logger.Log($"Custom astro object dictionary already contains {name}. Replacing it.", Logger.LogType.Warning);
-			_customAstroObjectDictionary.Add(name, ao);
+			if (_customAstroObjectDictionary.Keys.Contains(name)) 
+				_customAstroObjectDictionary[name] = ao;
+			else 
+				_customAstroObjectDictionary.Add(name, ao);
 		}
 
 		public static void DeregisterCustomAstroObject(AstroObject ao)
         {
-			if (ao.GetAstroObjectName() != AstroObject.Name.CustomString)
-			{
-				Logger.Log($"Can't deregister {ao.name} as it's AstroObject.Name isn't CustomString.");
-				return;
-			}
+			if (ao.GetAstroObjectName() != AstroObject.Name.CustomString) return;
 			_customAstroObjectDictionary.Remove(ao.GetCustomName());
         }
 
 		public static void RefreshList()
         {
+			_customAstroObjectDictionary = new Dictionary<string, AstroObject>();
 			_list = new List<AstroObject>();
         }
 

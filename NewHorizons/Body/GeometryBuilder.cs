@@ -49,7 +49,6 @@ namespace NewHorizons.Body
             geo.SetActive(true);
             
             */
-            Logger.Log("Finished building geometry", Logger.LogType.Log);
         }
     }
 }

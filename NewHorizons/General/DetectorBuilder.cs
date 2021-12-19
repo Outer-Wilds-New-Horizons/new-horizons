@@ -1,4 +1,5 @@
 ﻿using OWML.Utils;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -14,13 +15,13 @@ namespace NewHorizons.General
             detectorGO.layer = 20;
 
             ConstantForceDetector CFD = detectorGO.AddComponent<ConstantForceDetector>();
-            ForceVolume[] temp = new ForceVolume[1];
-            temp[0] = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
-            CFD.SetValue("_detectableFields", temp);
+
+            GravityVolume parentGravityVolume = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+
+            CFD.SetValue("_detectableFields", new ForceVolume[] { parentGravityVolume });
             CFD.SetValue("_inheritElement0", true);
 
             detectorGO.SetActive(true);
-            Logger.Log("Finished building detector", Logger.LogType.Log);
         }
     }
 }

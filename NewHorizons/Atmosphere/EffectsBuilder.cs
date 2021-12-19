@@ -51,8 +51,6 @@ namespace NewHorizons.Atmosphere
             }
 
             effectsGO.SetActive(true);
-
-            Logger.Log("Finished building effects", Logger.LogType.Log);
         }
     }
 }

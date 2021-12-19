@@ -21,7 +21,6 @@ namespace NewHorizons.Atmosphere
             GDSOV.SetValue("_waterInnerRadius", 0f);
 
             overrideGO.SetActive(true);
-            Logger.Log("Finished building sun override.", Logger.LogType.Log);
         }
     }
 }

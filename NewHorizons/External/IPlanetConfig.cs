@@ -11,6 +11,8 @@ namespace NewHorizons.External
         OrbitModule Orbit { get; }
         RingModule Ring { get; }
         HeightMapModule HeightMap { get; }
+        ProcGenModule ProcGen { get; }
+        AsteroidBeltModule AsteroidBelt { get; }
         SpawnModule Spawn { get; }
     }
 }

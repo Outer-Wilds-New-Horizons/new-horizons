@@ -31,7 +31,6 @@ namespace NewHorizons.Body
 
             sectorGO.SetActive(true);
 
-            Logger.Log("Finished building sector", Logger.LogType.Log);
             return S;
         }
     }

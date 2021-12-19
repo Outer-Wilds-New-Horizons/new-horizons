@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace NewHorizons.Body.Geometry
 {
@@ -59,7 +60,7 @@ namespace NewHorizons.Body.Geometry
             }
         };
 
-        public static Mesh Build(int subdivisions, Texture2D heightMap, float minHeight, float maxHeight)
+        public static Mesh Build(int subdivisions, float minHeight, float maxHeight)
         {
             Mesh mesh = new Mesh();
 
@@ -72,7 +73,7 @@ namespace NewHorizons.Body.Geometry
             Vector3[] normals = new Vector3[verticesToCopy.Length];
             Vector2[] uvs = new Vector2[verticesToCopy.Length];
 
-            Dictionary<float, int> seamVertices = new Dictionary<float, int>();
+            var randomOffset = new Vector3(Random.Range(0, 10f), Random.Range(0, 10f), Random.Range(0, 10f));
 
             for(int i = 0; i < verticesToCopy.Length; i++)
             {
@@ -80,20 +81,14 @@ namespace NewHorizons.Body.Geometry
 
                 float latitude = Mathf.Repeat(Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)), 180f);
                 float longitude = Mathf.Repeat(Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f, 360f);
-
-                float sampleX = heightMap.width * longitude / 360f;
-                float sampleY = heightMap.height * latitude / 180f;
-
-                float height = heightMap.GetPixel((int)sampleX, (int)sampleY).r * (maxHeight - minHeight) + minHeight;
+                                           
+                float height = Perlin.Noise(v + randomOffset) * (maxHeight - minHeight) + minHeight;
 
                 newVertices[i] = verticesToCopy[i] * height;
                 normals[i] = v.normalized;
 
                 var x = longitude / 360f;
                 var y = latitude / 180f;
-
-                if (x == 0) seamVertices.Add(y, i);
-
 
                 uvs[i] = new Vector2(x, y);
             }

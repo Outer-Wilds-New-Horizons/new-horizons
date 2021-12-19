@@ -26,18 +26,6 @@ namespace NewHorizons.General
             OWRB.SetValue("_maintainOriginalCenterOfMass", true);
             OWRB.SetValue("_rigidbody", RB);
 
-            InitialMotion IM = body.AddComponent<InitialMotion>();
-            IM.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
-            IM.SetValue("_orbitAngle", config.Orbit.Inclination);
-            IM.SetValue("_isGlobalAxis", false);
-            IM.SetValue("_initAngularSpeed", config.Orbit.SiderealPeriod == 0 ? 0.02f : 1.0f / config.Orbit.SiderealPeriod);
-            var orbitVector = positionVector.normalized;
-            var rotationAxis = Quaternion.AngleAxis(config.Orbit.AxialTilt + config.Orbit.Inclination, orbitVector) * Vector3.up;
-            IM.SetValue("_rotationAxis", rotationAxis);
-            IM.SetValue("_initLinearSpeed", 0f);
-
-            body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
-
             DetectorBuilder.Make(body, primaryBody);
 
             AstroObject AO = body.AddComponent<AstroObject>();
@@ -55,7 +43,6 @@ namespace NewHorizons.General
                 */
             }
 
-            Logger.Log("Finished building base", Logger.LogType.Log);
             return new MTuple(AO, OWRB);
         }
     }

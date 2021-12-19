@@ -17,5 +17,6 @@ namespace NewHorizons.External
         public float GroundSize { get; set; }
         public float BlackHoleSize { get; set; }
         public float LavaSize { get; set; }
+        public bool HideOrbitLine { get; set; }
     }
 }

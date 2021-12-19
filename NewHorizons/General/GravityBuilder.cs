@@ -40,8 +40,6 @@ namespace NewHorizons.General
             gravityGO.SetActive(true);
 
             ao.SetValue("_gravityVolume", GV);
-
-            Logger.Log("Finished building gravity", Logger.LogType.Log);
         }
     }
 }

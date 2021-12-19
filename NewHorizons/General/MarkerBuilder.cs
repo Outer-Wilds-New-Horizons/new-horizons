@@ -21,7 +21,6 @@ namespace NewHorizons.General
             {
                 MM.SetValue("_markerType", MM.GetType().GetNestedType("MarkerType", BindingFlags.NonPublic).GetField("Planet").GetValue(MM));
             }
-            Logger.Log("Finished building map marker", Logger.LogType.Log);
         }
     }
 }
