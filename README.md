@@ -6,12 +6,14 @@ Planets are created using a JSON file format structure, and placed in the `plane
 
 ## Roadmap
 - Procedurally terrain generation
-- Asteroid belts
+- Asteroid belts (done)
 - "Quantum" orbits
 - Better terrain and water LOD
 - Support satellites (using custom models in the assets folder or in-game ones)
 - Surface scatter (rocks, trees, etc, using custom models or in-game ones)
 - Stars
+- Binary orbits
+- Load planet meshes from asset bundle
 
 ## How to create your own planets using configs:
 
