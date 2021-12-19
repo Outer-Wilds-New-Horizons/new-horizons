@@ -198,7 +198,8 @@ namespace NewHorizons
                 GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence, body.Config.Base.SurfaceSize);
             else Logger.Log("No gravity?");
             
-            RFVolumeBuilder.Make(go, rb, sphereOfInfluence);
+            if(body.Config.Base.HasReferenceFrame)
+                RFVolumeBuilder.Make(go, rb, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
                 MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon);
@@ -221,7 +222,7 @@ namespace NewHorizons
             body.Object = go;
 
             // Some things have to be done the second tick
-            if(body.Config.Orbit != null && !body.Config.Base.HideOrbitLine)
+            if(body.Config.Orbit != null && body.Config.Orbit.ShowOrbitLine)
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config.Orbit));
 
             // Now that we're done move the planet into place

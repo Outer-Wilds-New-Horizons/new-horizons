@@ -33,7 +33,7 @@ namespace NewHorizons.Body
                             {"HasMapMarker", false },
                             {"SurfaceGravity", 1 },
                             {"SurfaceSize", size },
-                            {"HideOrbitLine", true }
+                            {"HasReferenceFrame", false }
                         }
                     },
                     {"Orbit", new Dictionary<string, object>()
@@ -43,7 +43,8 @@ namespace NewHorizons.Body
                             {"LongitudeOfAscendingNode", belt.LongitudeOfAscendingNode },
                             {"TrueAnomaly", 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count },
                             {"PrimaryBody", bodyName },
-                            {"SemiMajorAxis", maxSize * Random.Range(belt.InnerRadius, belt.OuterRadius) }
+                            {"SemiMajorAxis", Random.Range(belt.InnerRadius, belt.OuterRadius) },
+                            {"ShowOrbitLine", false }
                         }
                     },
                     {"ProcGen", new Dictionary<string, object>()
