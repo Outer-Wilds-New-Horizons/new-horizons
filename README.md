@@ -5,8 +5,8 @@ A planet creator for Outer Wilds.
 Planets are created using a JSON file format structure, and placed in the `planets` folder.
 
 ## Roadmap
-- Procedurally terrain generation
-- Asteroid belts (done)
+- Procedurally terrain generation (started)
+- Asteroid belts (started, needs more customization)
 - "Quantum" orbits
 - Better terrain and water LOD
 - Support satellites (using custom models in the assets folder or in-game ones)
@@ -14,6 +14,8 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Stars
 - Binary orbits
 - Load planet meshes from asset bundle
+- Comets
+- Edit existing planet orbits
 
 ## How to create your own planets using configs:
 
