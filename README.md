@@ -1,4 +1,4 @@
-![new horizons thumbnail](https://user-images.githubusercontent.com/22628069/146660122-4d1a515c-b795-4781-882d-4080ef837d15.png)
+![new horizons thumbnail](https://user-images.githubusercontent.com/22628069/146680547-bd815057-9f4e-42da-a6c4-84d3ff82ff2c.png)
 
 A planet creator for Outer Wilds.
 
