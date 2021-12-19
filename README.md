@@ -9,7 +9,8 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Asteroid belts
 - "Quantum" orbits
 - Better terrain and water LOD
-- Support satellites
+- Support satellites (using custom models in the assets folder or in-game ones)
+- Surface scatter (rocks, trees, etc, using custom models or in-game ones)
 
 ## How to create your own planets using configs:
 
