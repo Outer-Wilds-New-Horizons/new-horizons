@@ -16,6 +16,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Load planet meshes from asset bundle
 - Comets
 - Edit existing planet orbits
+- Black hole / white hole pairs
 
 ## How to create your own planets using configs:
 
