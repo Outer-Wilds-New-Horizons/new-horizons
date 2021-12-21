@@ -6,6 +6,7 @@ namespace NewHorizons.External
     {
         string Name { get; }
         bool Destroy { get; }
+        int BuildPriority { get; }
         BaseModule Base {get;}
         AtmosphereModule Atmosphere { get; }
         OrbitModule Orbit { get; }
@@ -13,6 +14,7 @@ namespace NewHorizons.External
         HeightMapModule HeightMap { get; }
         ProcGenModule ProcGen { get; }
         AsteroidBeltModule AsteroidBelt { get; }
+        StarModule Star { get; }
         SpawnModule Spawn { get; }
     }
 }

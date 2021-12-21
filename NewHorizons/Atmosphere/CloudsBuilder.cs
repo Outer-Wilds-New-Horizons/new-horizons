@@ -1,5 +1,6 @@
 ﻿using NewHorizons.External;
 using NewHorizons.Utility;
+using OWML.Common;
 using OWML.Utils;
 using System;
 using UnityEngine;
@@ -9,15 +10,20 @@ namespace NewHorizons.Atmosphere
 {
     static class CloudsBuilder
     {
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo)
+        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModAssets assets)
         {
             Texture2D image, cap, ramp;
 
             try
             {
-                image = Main.Instance.CurrentAssets.GetTexture(atmo.Cloud);
-                cap = Main.Instance.CurrentAssets.GetTexture(atmo.CloudCap);
-                ramp = Main.Instance.CurrentAssets.GetTexture(atmo.CloudRamp);
+                image = assets.GetTexture(atmo.Cloud);
+
+                if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
+                else cap = assets.GetTexture(atmo.CloudCap);
+
+                //if(atmo.CloudRamp == null) ramp = ImageUtilities.Scaled(image, 1, 128);
+                if(atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
+                else ramp = assets.GetTexture(atmo.CloudRamp);
             }
             catch(Exception e)
             {
@@ -112,7 +118,11 @@ namespace NewHorizons.Atmosphere
 
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+
             cloudsMainGO.transform.localPosition = Vector3.zero;
+            cloudsBottomGO.transform.localPosition = Vector3.zero;
+            cloudsFluidGO.transform.localPosition = Vector3.zero;
+            cloudsTopGO.transform.localPosition = Vector3.zero;
 
             cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using NewHorizons.OrbitalPhysics;
+using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
 namespace NewHorizons.Utility
@@ -13,6 +15,13 @@ namespace NewHorizons.Utility
         public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName)
         {
             return (T)dict[settingName];
+        }
+
+        public static OrbitalHelper.FalloffType GetFalloffType(this GravityVolume gv)
+        {
+            var falloffTypeString = typeof(GravityVolume).GetField("_falloffType", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gv).ToString();
+            var falloffType = falloffTypeString.Equals("linear") ? OrbitalHelper.FalloffType.linear : OrbitalHelper.FalloffType.inverseSquared;
+            return falloffType;
         }
     }
 }

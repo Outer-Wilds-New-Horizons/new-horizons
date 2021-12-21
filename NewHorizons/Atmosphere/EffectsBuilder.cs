@@ -35,19 +35,22 @@ namespace NewHorizons.Atmosphere
             
             if(hasSnow)
             {
-                var snowGO = GameObject.Instantiate(GameObject.Find("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), effectsGO.transform);
+                var snowGO = new GameObject("SnowEffects");
+                snowGO.transform.parent = effectsGO.transform;
                 snowGO.transform.localPosition = Vector3.zero;
+                for(int i = 0; i < 5; i++)
+                {
+                    var snowEmitter = GameObject.Instantiate(GameObject.Find("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
+                    snowEmitter.name = "SnowEmitter";
+                    snowEmitter.transform.localPosition = Vector3.zero;
 
-                var pvc = snowGO.GetComponent<PlanetaryVectionController>();
-                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
+                    var pvc = snowEmitter.GetComponent<PlanetaryVectionController>();
+                    pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
 
-                var particleSystem = snowGO.GetComponent<ParticleSystem>();
-                var e = particleSystem.emission;
-                e.rateOverTime = 50;
-
-                snowGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
-                snowGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
-                snowGO.SetActive(true);
+                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
+                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
+                    snowEmitter.SetActive(true);
+                }
             }
 
             effectsGO.transform.localPosition = Vector3.zero;

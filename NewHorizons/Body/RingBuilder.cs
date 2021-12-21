@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,12 @@ namespace NewHorizons.General
     {
 		public static Shader RingShader;
 
-		public static void Make(GameObject body, RingModule ring)
+		public static void Make(GameObject body, RingModule ring, IModAssets assets)
         {
 			Texture2D ringTexture;
 			try
 			{
-				ringTexture = Main.Instance.CurrentAssets.GetTexture(ring.Texture);
+				ringTexture = assets.GetTexture(ring.Texture);
 			}
 			catch (Exception e)
 			{

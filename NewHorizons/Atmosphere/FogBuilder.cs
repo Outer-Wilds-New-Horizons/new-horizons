@@ -66,6 +66,7 @@ namespace NewHorizons.Atmosphere
 
             fogGO.transform.localPosition = Vector3.zero;
             lodFogGO.transform.localPosition = Vector3.zero;
+
             fogGO.SetActive(true);
             lodFogGO.SetActive(true);
         }

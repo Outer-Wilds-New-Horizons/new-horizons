@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
@@ -19,12 +20,16 @@ namespace NewHorizons.General
             RB.interpolation = RigidbodyInterpolation.None;
             RB.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
+            KinematicRigidbody KRB = body.AddComponent<KinematicRigidbody>();
+            KRB.centerOfMass = Vector3.zero;
+
             OWRigidbody OWRB = body.AddComponent<OWRigidbody>();
             OWRB.SetValue("_kinematicSimulation", true);
             OWRB.SetValue("_autoGenerateCenterOfMass", true);
             OWRB.SetIsTargetable(true);
             OWRB.SetValue("_maintainOriginalCenterOfMass", true);
             OWRB.SetValue("_rigidbody", RB);
+            OWRB.SetValue("_kinematicRigidbody", KRB);
 
             DetectorBuilder.Make(body, primaryBody);
 
@@ -36,11 +41,9 @@ namespace NewHorizons.General
 
             if (config.Orbit.IsTidallyLocked)
             {
-                // Just manually match it fr
-                /*
-                RotateToAstroObject RTAO = body.AddComponent<RotateToAstroObject>();
-                RTAO.SetValue("_astroObjectLock", primaryBody);
-                */
+                var alignment = body.AddComponent<AlignWithTargetBody>();
+                alignment.SetTargetBody(primaryBody.GetAttachedOWRigidbody());
+                alignment.SetValue("_usePhysicsToRotate", true);
             }
 
             return new MTuple(AO, OWRB);

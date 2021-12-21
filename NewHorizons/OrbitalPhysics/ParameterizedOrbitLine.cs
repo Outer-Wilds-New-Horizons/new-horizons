@@ -1,12 +1,15 @@
-﻿using NewHorizons.Kepler;
+﻿using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.Utility;
+using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.OrbitalPhysics
 {
     public class ParameterizedOrbitLine : OrbitLine
     {
@@ -17,20 +20,20 @@ namespace NewHorizons.Utility
 
 		protected override void OnValidate()
 		{
-			if (this._numVerts < 0 || this._numVerts > 4096)
+			if (_numVerts < 0 || _numVerts > 4096)
 			{
-				this._numVerts = Mathf.Clamp(this._numVerts, 0, 4096);
+				_numVerts = Mathf.Clamp(this._numVerts, 0, 4096);
 			}
-			if (base.GetComponent<LineRenderer>().positionCount != this._numVerts)
+			if (base.GetComponent<LineRenderer>().positionCount != _numVerts)
 			{
-				this.InitializeLineRenderer();
+				InitializeLineRenderer();
 			}
 		}
 
 		protected override void Start()
 		{
 			base.Start();
-			this._verts = new Vector3[this._numVerts];
+			_verts = new Vector3[_numVerts];
 			base.enabled = false;
 		}
 
@@ -43,23 +46,17 @@ namespace NewHorizons.Utility
 			_argumentOfPeriapsis = argumentOfPeriapsis;
 			_trueAnomaly = trueAnomaly;
 
-			_initialMotion = (this._astroObject != null) ? this._astroObject.GetComponent<InitialMotion>() : null;
-			_primary = (this._astroObject != null) ? this._astroObject.GetPrimaryBody() : null;
+			_initialMotion = (_astroObject != null) ? _astroObject.GetComponent<InitialMotion>() : null;
+			_primary = (_astroObject != null) ? _astroObject.GetPrimaryBody() : null;
 
+			_falloffType = _primary.GetGravityVolume().GetFalloffType();
 			if (_initialMotion && _primary)
             {
-				var periapsisAngle = longitudeOfAscendingNode + argumentOfPeriapsis;
-				var apoapsisAngle = periapsisAngle + 90f;
+				_vSemiMajorAxis = OrbitalHelper.CartesianStateVectorsFromEccentricAnomaly(0f, _eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, 0, _falloffType).Position;
+				_vSemiMinorAxis = OrbitalHelper.CartesianStateVectorsFromEccentricAnomaly(0f, _eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, 90, _falloffType).Position;
+				_upAxisDir = Vector3.Cross(_vSemiMajorAxis, _vSemiMinorAxis);
 
-				_vSemiMinorAxis = OrbitalHelper.CartesianFromOrbitalElements(_eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, periapsisAngle);
-				_vSemiMajorAxis = OrbitalHelper.CartesianFromOrbitalElements(_eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, apoapsisAngle);
-
-				Vector3 rhs = this._astroObject.transform.position - _primary.transform.position;
-				Vector3 initVelocity = _initialMotion.GetInitVelocity();
-				Vector3 vector = Vector3.Cross(initVelocity, rhs);
-				this._upAxisDir = vector.normalized;
 				var semiMinorAxis = semiMajorAxis * Mathf.Sqrt(1 - (eccentricity * eccentricity));
-
 				_fociDistance = Mathf.Sqrt((semiMajorAxis * semiMajorAxis) - (semiMinorAxis * semiMinorAxis));
 
 				base.enabled = true;
@@ -72,18 +69,21 @@ namespace NewHorizons.Utility
 
 		protected override void Update()
 		{
-			Vector3 vector = _primary.transform.position + _vSemiMajorAxis * _fociDistance;
-			float num = CalcProjectedAngleToCenter(vector, _vSemiMajorAxis, _vSemiMinorAxis, _astroObject.transform.position);
+			Vector3 vector = _primary.transform.position + _vSemiMajorAxis.normalized * _fociDistance;
+			float nu = CalcProjectedAngleToCenter(vector, _vSemiMajorAxis, _vSemiMinorAxis, _astroObject.transform.position);
+
 			for (int i = 0; i < _numVerts; i++)
             {
-				var angle = ((float)i / (float)(_numVerts - 1)) * 360f - Mathf.Rad2Deg * num;
-				_verts[i] = OrbitalHelper.CartesianFromOrbitalElements(_eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, angle);
+				var angle = Mathf.Rad2Deg * _trueAnomaly + (Mathf.Rad2Deg * nu) - ((float)i / (float)(_numVerts - 1)) * 360f;
+				_verts[i] = OrbitalHelper.CartesianStateVectorsFromTrueAnomaly(0f, _eccentricity, _semiMajorAxis, _inclination, _longitudeOfAscendingNode, _argumentOfPeriapsis, angle, _falloffType).Position;
             }
 			_lineRenderer.SetPositions(_verts);
 
 			// From EllipticalOrbitLine
 			base.transform.position = vector;
-			base.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(-48f, Vector3.up) * _vSemiMajorAxis, -_upAxisDir);
+			base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up); 
+			//base.transform.rotation = Quaternion.AngleAxis(_trueAnomaly + _longitudeOfAscendingNode + _argumentOfPeriapsis, Vector3.up);
+
 			float num2 = DistanceToEllipticalOrbitLine(vector, _vSemiMajorAxis, _vSemiMinorAxis, _upAxisDir, Locator.GetActiveCamera().transform.position);
 			float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
 			float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
@@ -121,5 +121,6 @@ namespace NewHorizons.Utility
 		private Vector3[] _verts;
 		private InitialMotion _initialMotion;
 		private AstroObject _primary;
+		private OrbitalHelper.FalloffType _falloffType;
 	}
 }

@@ -8,6 +8,7 @@ namespace NewHorizons.External
     {
         public string Name { get; set; }
         public bool Destroy { get; set; }
+        public int BuildPriority { get; set; } = -1;
         public MVector3 SpawnPoint { get; set; }
         public BaseModule Base { get; set; }
         public AtmosphereModule Atmosphere { get; set; }
@@ -16,6 +17,7 @@ namespace NewHorizons.External
         public HeightMapModule HeightMap { get; set; }
         public ProcGenModule ProcGen { get; set; }
         public AsteroidBeltModule AsteroidBelt { get; set; }
+        public StarModule Star { get; set; }
         public SpawnModule Spawn { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)

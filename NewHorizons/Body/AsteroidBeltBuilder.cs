@@ -1,5 +1,6 @@
 ﻿using NewHorizons.External;
 using NewHorizons.Utility;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace NewHorizons.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, AsteroidBeltModule belt)
+        public static void Make(string bodyName, AsteroidBeltModule belt, IModAssets assets)
         {
             var minSize = 20;
             var maxSize = 50;
@@ -33,7 +34,8 @@ namespace NewHorizons.Body
                             {"HasMapMarker", false },
                             {"SurfaceGravity", 1 },
                             {"SurfaceSize", size },
-                            {"HasReferenceFrame", false }
+                            {"HasReferenceFrame", false },
+                            {"GravityFallOff", "inverseSquared" }
                         }
                     },
                     {"Orbit", new Dictionary<string, object>()
@@ -57,7 +59,7 @@ namespace NewHorizons.Body
 
                 Logger.Log($"{config}");
 
-                var asteroid = new NewHorizonsBody(new PlanetConfig(config));
+                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets);
                 Main.AdditionalBodies.Add(asteroid);
             }
         }

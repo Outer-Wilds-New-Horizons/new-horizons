@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
@@ -22,12 +23,40 @@ namespace NewHorizons.General
             LR.useWorldSpace = false;
             LR.loop = false;
 
-            OrbitLine ol = orbit.Eccentricity != 0 ? orbitGO.AddComponent<EllipticOrbitLine>() : orbitGO.AddComponent<OrbitLine>();
-            ol.SetValue("_astroObject", astroobject);
-            ol.SetValue("_fade", isMoon);
-            ol.SetValue("_lineWidth", 0.5f);
-            //ol.SetOrbitalParameters(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.LongitudeOfAscendingNode, orbit.ArgumentOfPeriapsis, orbit.TrueAnomaly);
-            typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(ol, new object[] { });
+            if(orbit.Eccentricity == 0)
+            {
+                OrbitLine ol = orbitGO.AddComponent<OrbitLine>();
+                ol.SetValue("_astroObject", astroobject);
+                ol.SetValue("_fade", isMoon);
+                ol.SetValue("_lineWidth", 0.5f);
+                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(ol, new object[] { });
+            }
+            else
+            {
+                OrbitLine ol = orbitGO.AddComponent<EllipticOrbitLine>();
+                ol.SetValue("_astroObject", astroobject);
+                ol.SetValue("_fade", isMoon);
+                ol.SetValue("_lineWidth", 0.5f);
+                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(ol, new object[] { });
+            }
+
+            /*
+            ParameterizedOrbitLine orbitLine = orbitGO.AddComponent<ParameterizedOrbitLine>();
+            
+            orbitLine.SetValue("_astroObject", astroobject);
+            orbitLine.SetValue("_fade", isMoon);
+            orbitLine.SetValue("_lineWidth", 0.5f);
+
+            orbitLine.SetOrbitalParameters(
+                orbit.Eccentricity,
+                orbit.SemiMajorAxis, 
+                orbit.Inclination, 
+                orbit.LongitudeOfAscendingNode, 
+                orbit.ArgumentOfPeriapsis, 
+                orbit.TrueAnomaly);
+
+            typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { });
+            */
         }
     }
 }

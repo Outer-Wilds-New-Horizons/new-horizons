@@ -1,4 +1,5 @@
-﻿using OWML.Utils;
+﻿using NewHorizons.External;
+using OWML.Utils;
 using System.Reflection;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -7,7 +8,7 @@ namespace NewHorizons.General
 {
     static class GravityBuilder
     {
-        public static void Make(GameObject body, AstroObject ao, float surfaceAccel, float upperSurface, float lowerSurface)
+        public static void Make(GameObject body, AstroObject ao, float surfaceAccel, float upperSurface, float lowerSurface, string falloffType)
         {
             GameObject gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = body.transform;
@@ -26,7 +27,7 @@ namespace NewHorizons.General
 
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
-            GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField("linear").GetValue(GV));
+            GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField(falloffType).GetValue(GV));
             GV.SetValue("_alignmentRadius", 0.75f * upperSurface);
             GV.SetValue("_upperSurfaceRadius", lowerSurface);
             GV.SetValue("_lowerSurfaceRadius", 0);

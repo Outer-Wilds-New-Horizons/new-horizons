@@ -231,12 +231,13 @@
   <ItemGroup>
     <Compile Include="Atmosphere\FogBuilder.cs" />
     <Compile Include="Body\AsteroidBeltBuilder.cs" />
+    <Compile Include="Body\CometTailBuilder.cs" />
     <Compile Include="Body\Geometry\CubeSphere.cs" />
     <Compile Include="Body\Geometry\Icosphere.cs" />
     <Compile Include="Body\Geometry\Perlin.cs" />
     <Compile Include="Body\HeightMapBuilder.cs" />
     <Compile Include="Body\ProcGenBuilder.cs" />
-    <Compile Include="Body\SunBuilder.cs" />
+    <Compile Include="Body\StarBuilder.cs" />
     <Compile Include="External\AsteroidBeltModule.cs" />
     <Compile Include="External\AtmosphereModule.cs" />
     <Compile Include="External\BaseModule.cs" />
@@ -246,6 +247,7 @@
     <Compile Include="External\ProcGenModule.cs" />
     <Compile Include="External\RingModule.cs" />
     <Compile Include="External\SpawnModule.cs" />
+    <Compile Include="External\StarModule.cs" />
     <Compile Include="General\BaseBuilder.cs" />
     <Compile Include="Body\BlackHoleBuilder.cs" />
     <Compile Include="General\DetectorBuilder.cs" />
@@ -259,7 +261,9 @@
     <Compile Include="Body\RingBuilder.cs" />
     <Compile Include="General\SectorBuilder.cs" />
     <Compile Include="General\SpawnPointBuilder.cs" />
-    <Compile Include="Physics\OrbitalHelper.cs" />
+    <Compile Include="OrbitalPhysics\CartesianStateVectors.cs" />
+    <Compile Include="OrbitalPhysics\ParameterizedInitialMotion.cs" />
+    <Compile Include="OrbitalPhysics\OrbitalHelper.cs" />
     <Compile Include="Utility\AddDebugShape.cs" />
     <Compile Include="General\AmbientLightBuilder.cs" />
     <Compile Include="External\IPlanetConfig.cs" />
@@ -278,7 +282,7 @@
     <Compile Include="Utility\AstroObjectLocator.cs" />
     <Compile Include="Utility\DebugRaycaster.cs" />
     <Compile Include="Utility\ImageUtilities.cs" />
-    <Compile Include="Physics\ParameterizedOrbitLine.cs" />
+    <Compile Include="OrbitalPhysics\ParameterizedOrbitLine.cs" />
     <Compile Include="Utility\Logger.cs" />
     <Compile Include="Utility\MakeMeshDoubleFaced.cs" />
     <Compile Include="Utility\NewHorizonBody.cs" />

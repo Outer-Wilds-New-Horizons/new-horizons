@@ -2,6 +2,7 @@
 using NewHorizons.Body;
 using NewHorizons.External;
 using NewHorizons.General;
+using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
@@ -10,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
@@ -24,8 +26,6 @@ namespace NewHorizons
 
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
         public static List<NewHorizonsBody> AdditionalBodies = new List<NewHorizonsBody>();
-
-        public IModAssets CurrentAssets { get; private set; }
 
         public override object GetApi()
         {
@@ -50,7 +50,11 @@ namespace NewHorizons
             {
                 Logger.LogWarning("Couldn't find planets folder");
             }
+        }
 
+        void Destroy()
+        {
+            SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -65,8 +69,11 @@ namespace NewHorizons
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
-            // Should make moons come after planets
-            BodyList = BodyList.OrderBy(b => (b.Config?.Orbit?.IsMoon)).ToList();
+            // Stars then planets then moons
+            BodyList = BodyList.OrderBy(b => 
+                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : (b.Config.Star != null) ? 0 :
+                (b.Config.Orbit.IsMoon ? 2 : 1)
+                )).ToList();
 
             while(BodyList.Count != 0)
             {
@@ -132,7 +139,6 @@ namespace NewHorizons
 
         public void LoadConfigs(IModBehaviour mod)
         {
-            CurrentAssets = mod.ModHelper.Assets;
             var folder = mod.ModHelper.Manifest.ModFolderPath;
             foreach (var file in Directory.GetFiles(folder + @"planets\"))
             {
@@ -140,11 +146,11 @@ namespace NewHorizons
                 {
                     var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
                     Logger.Log($"Loaded {config.Name}");
-                    BodyList.Add(new NewHorizonsBody(config));
+                    BodyList.Add(new NewHorizonsBody(config, mod.ModHelper.Assets));
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't load {file}: {e.Message}, {e.StackTrace}");
+                    Logger.LogError($"Couldn't load {file}: {e.Message}, is your Json formatted correctly?");
                 }
             }
         }
@@ -182,19 +188,41 @@ namespace NewHorizons
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
             // Get initial position but set it at the end
-            //var a = body.Config.Orbit.SemiMajorAxis;
-            //var omega = Mathf.Deg2Rad * body.Config.Orbit.LongitudeOfAscendingNode;
-            //var positionVector = primaryBody.gameObject.transform.position + new Vector3(a * Mathf.Sin(omega), 0, a * Mathf.Cos(omega));
-            var positionVector = Kepler.OrbitalHelper.CartesianFromOrbitalElements(body.Config.Orbit.Eccentricity, body.Config.Orbit.SemiMajorAxis, body.Config.Orbit.Inclination,
-                body.Config.Orbit.LongitudeOfAscendingNode, body.Config.Orbit.ArgumentOfPeriapsis, body.Config.Orbit.TrueAnomaly);
+            var falloffType = primaryBody.GetGravityVolume().GetFalloffType();
+            
+            /*
+            var positionVector = OrbitalHelper.CartesianStateVectorsFromTrueAnomaly(
+                0f,
+                body.Config.Orbit.Eccentricity,
+                body.Config.Orbit.SemiMajorAxis, 
+                body.Config.Orbit.Inclination,
+                body.Config.Orbit.LongitudeOfAscendingNode,
+                body.Config.Orbit.ArgumentOfPeriapsis, 
+                body.Config.Orbit.TrueAnomaly,
+                falloffType).Position;
+            */
+
+            var rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.TrueAnomaly + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
+
+            // For now, eccentric orbits gotta start at apoapsis and cant be inclined
+            if(body.Config.Orbit.Eccentricity != 0)
+            {
+                rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
+                body.Config.Orbit.Inclination = 0;
+            }
+
+
+            var incAxis = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
+            var incRot = Quaternion.AngleAxis(body.Config.Orbit.Inclination, incAxis);
+
+            var positionVector = rot * incRot * Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity);
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
             var ao = (AstroObject)outputTuple.Items[0];
             var rb = (OWRigidbody)outputTuple.Items[1];
 
             if (body.Config.Base.SurfaceGravity != 0)
-                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence, body.Config.Base.SurfaceSize);
-            else Logger.Log("No gravity?");
+                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence, body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
             
             if(body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, rb, sphereOfInfluence);
@@ -202,17 +230,26 @@ namespace NewHorizons
             if (body.Config.Base.HasMapMarker)
                 MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon);
 
+            if (body.Config.Base.HasAmbientLight)
+                AmbientLightBuilder.Make(go, sphereOfInfluence);
+
             var sector = MakeSector.Make(go, rb, sphereOfInfluence);
 
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
 
             if (body.Config.HeightMap != null)
-                HeightMapBuilder.Make(go, body.Config.HeightMap);
+                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Assets);
 
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
 
-            InitialMotionBuilder.Make(go, primaryBody, rb, positionVector, body.Config.Orbit);
+            if (body.Config.Base.BlackHoleSize != 0)
+                BlackHoleBuilder.Make(go, body.Config.Base, sector);
+
+            /*
+            if (body.Config.Star != null)
+                StarBuilder.Make(go, sector, body.Config.Star);
+            */
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
@@ -226,6 +263,9 @@ namespace NewHorizons
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
             go.transform.position = positionVector + primaryBody.transform.position;
+
+            // Have to do this after setting position
+            InitialMotionBuilder.Make(go, primaryBody, rb, body.Config.Orbit);
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
@@ -243,10 +283,13 @@ namespace NewHorizons
         private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             if (body.Config.Ring != null)
-                RingBuilder.Make(go, body.Config.Ring);
+                RingBuilder.Make(go, body.Config.Ring, body.Assets);
 
             if (body.Config.AsteroidBelt != null)
-                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt);
+                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt, body.Assets);
+
+            if (body.Config.Base.HasCometTail)
+                CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
             
             if(body.Config.Base != null)
             {
@@ -262,7 +305,7 @@ namespace NewHorizons
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere);
+                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Assets);
                     SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
                 }
 
@@ -281,12 +324,18 @@ namespace NewHorizons
 
     public class NewHorizonsApi
     {
+        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use Create(Dictionary<string, object> config, IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config)
         {
-            Logger.Log("Recieved API request to create planet " + (string)config["Name"] + " at position " + (Vector3)config["Position"], Logger.LogType.Log);
+            Create(config, null);
+        }
+
+        public void Create(Dictionary<string, object> config, IModBehaviour mod)
+        {
+            Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig(config);
 
-            var body = new NewHorizonsBody(planetConfig);
+            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper.Assets : Main.Instance.ModHelper.Assets);
 
             Main.BodyList.Add(body);
         }

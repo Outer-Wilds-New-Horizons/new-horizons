@@ -8,7 +8,7 @@ namespace NewHorizons.External
 {
     public class OrbitModule : Module
     {
-        public int SemiMajorAxis { get; set; }
+        public int SemiMajorAxis { get; set; } = 5000;
         public int Inclination { get; set; }
         public string PrimaryBody { get; set; }
         public bool IsMoon { get; set; }
