@@ -60,7 +60,7 @@ namespace NewHorizons.Body
                 Logger.Log($"{config}");
 
                 var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets);
-                Main.AdditionalBodies.Add(asteroid);
+                Main.NextPassBodies.Add(asteroid);
             }
         }
     }

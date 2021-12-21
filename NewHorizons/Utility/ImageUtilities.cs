@@ -17,6 +17,7 @@ namespace NewHorizons.Utility
 
             var newImage = new Texture2D(image.width, image.height);
             newImage.SetPixels(pixels);
+            newImage.Apply();
             return newImage;
         }
 

@@ -15,6 +15,8 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ReferenceFrame>("GetHUDDisplayName", typeof(Patches), nameof(Patches.GetHUDDisplayName));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerState>("CheckShipOutsideSolarSystem", typeof(Patches), nameof(Patches.CheckShipOutersideSolarSystem));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<EllipticOrbitLine>("Start", typeof(Patches), nameof(Patches.OnEllipticOrbitLineStart));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -40,6 +42,18 @@ namespace NewHorizons.Utility
 
             // For some reason other planets do this idk
             ____upAxisDir *= -1f;    
+        }
+
+        public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle)
+        {
+            ____maxPanDistance *= 4f;
+            ____maxZoomDistance *= 6f;
+            ____minPitchAngle = -90f;
+        }
+
+        public static void OnOWCameraAwake(OWCamera __instance)
+        {
+            __instance.farClipPlane *= 4f;
         }
     }
 }

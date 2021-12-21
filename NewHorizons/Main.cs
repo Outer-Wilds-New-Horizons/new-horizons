@@ -25,7 +25,9 @@ namespace NewHorizons
         public static Main Instance { get; private set; }
 
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
-        public static List<NewHorizonsBody> AdditionalBodies = new List<NewHorizonsBody>();
+        public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
+
+        public static float FurthestOrbit = 50000f;
 
         public override object GetApi()
         {
@@ -75,18 +77,35 @@ namespace NewHorizons
                 (b.Config.Orbit.IsMoon ? 2 : 1)
                 )).ToList();
 
+            var flagNoneLoadedThisPass = true;
             while(BodyList.Count != 0)
             {
                 foreach (var body in BodyList)
                 {
-                    LoadBody(body);
+                    if (LoadBody(body))
+                        flagNoneLoadedThisPass = false;
                 }
-                BodyList = AdditionalBodies;
-                AdditionalBodies = new List<NewHorizonsBody>();
+                if (flagNoneLoadedThisPass)
+                {
+                    // Try again but default to sun
+                    foreach(var body in BodyList)
+                    {
+                        if (LoadBody(body, true))
+                            flagNoneLoadedThisPass = false;
+                    }
+                    if(flagNoneLoadedThisPass)
+                    {
+                        // Give up
+                        Logger.Log($"Couldn't finish adding bodies.");
+                        return;
+                    }
+                }
+                BodyList = NextPassBodies;
+                NextPassBodies = new List<NewHorizonsBody>();
             }
         }
 
-        private void LoadBody(NewHorizonsBody body)
+        private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
             if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
@@ -119,28 +138,31 @@ namespace NewHorizons
                 catch (Exception e)
                 {
                     Logger.LogError($"Couldn't update body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
+                    return false;
                 }
             }
             else
             {
                 try
                 {
-                    GameObject planetObject;
-                    planetObject = GenerateBody(body);
+                    GameObject planetObject = GenerateBody(body);
+                    if (planetObject == null) return false;
                     planetObject.SetActive(true);
                 }
                 catch (Exception e)
                 {
                     Logger.LogError($"Couldn't generate body {body.Config?.Name}: {e.Message}, {e.StackTrace}");
+                    return false;
                 }
             }
+            return true;
         }
 
 
         public void LoadConfigs(IModBehaviour mod)
         {
             var folder = mod.ModHelper.Manifest.ModFolderPath;
-            foreach (var file in Directory.GetFiles(folder + @"planets\"))
+            foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
             {
                 try
                 {
@@ -168,21 +190,29 @@ namespace NewHorizons
             return SharedGenerateBody(body, go, sector, rb);
         }
 
-        public static GameObject GenerateBody(NewHorizonsBody body)
+        public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            AstroObject primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+            if (primaryBody == null)
+            {
+                if(defaultPrimaryToSun)
+                {
+                    Logger.Log($"Couldn't find {body.Config.Orbit.PrimaryBody}, defaulting to Sun");
+                    primaryBody = AstroObjectLocator.GetAstroObject("Sun");
+                }
+                else
+                {
+                    NextPassBodies.Add(body);
+                    return null;
+                }
+            }
+
             Logger.Log("Begin generation sequence of [" + body.Config.Name + "] ...", Logger.LogType.Log);
 
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
             if(body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
-
-            AstroObject primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
-            if(primaryBody == null)
-            {
-                Logger.LogError($"Could not find AstroObject {body.Config.Orbit.PrimaryBody}, defaulting to SUN");
-                primaryBody = AstroObjectLocator.GetAstroObject(AstroObject.Name.Sun);
-            } 
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
@@ -228,7 +258,7 @@ namespace NewHorizons
                 RFVolumeBuilder.Make(go, rb, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
-                MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon);
+                MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon, body.Config.Star != null);
 
             if (body.Config.Base.HasAmbientLight)
                 AmbientLightBuilder.Make(go, sphereOfInfluence);
@@ -246,10 +276,8 @@ namespace NewHorizons
             if (body.Config.Base.BlackHoleSize != 0)
                 BlackHoleBuilder.Make(go, body.Config.Base, sector);
 
-            /*
             if (body.Config.Star != null)
                 StarBuilder.Make(go, sector, body.Config.Star);
-            */
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
@@ -263,6 +291,11 @@ namespace NewHorizons
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
             go.transform.position = positionVector + primaryBody.transform.position;
+
+            if (go.transform.position.magnitude > FurthestOrbit)
+            {
+                FurthestOrbit = go.transform.position.magnitude + 30000f;
+            }
 
             // Have to do this after setting position
             InitialMotionBuilder.Make(go, primaryBody, rb, body.Config.Orbit);
