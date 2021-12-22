@@ -3,7 +3,7 @@ using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.General
+namespace NewHorizons.Builder.General
 {
     static class RFVolumeBuilder
     {

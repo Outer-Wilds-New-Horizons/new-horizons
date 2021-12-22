@@ -1,7 +1,9 @@
 ﻿using NewHorizons.Atmosphere;
 using NewHorizons.Body;
+using NewHorizons.Builder.Body;
+using NewHorizons.Builder.General;
+using NewHorizons.Builder.Orbital;
 using NewHorizons.External;
-using NewHorizons.General;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -34,7 +36,7 @@ namespace NewHorizons
             return new NewHorizonsApi();
         }
 
-        void Start()
+        public void Start()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
@@ -54,8 +56,9 @@ namespace NewHorizons
             }
         }
 
-        void Destroy()
+        public void Destroy()
         {
+            Logger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
         }
 
@@ -73,9 +76,11 @@ namespace NewHorizons
 
             // Stars then planets then moons
             BodyList = BodyList.OrderBy(b => 
-                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : (b.Config.Star != null) ? 0 :
+                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : 
+                (b.Config.FocalPoint != null ? 0 : 
+                (b.Config.Star != null) ? 0 :
                 (b.Config.Orbit.IsMoon ? 2 : 1)
-                )).ToList();
+                ))).ToList();
 
             var flagNoneLoadedThisPass = true;
             while(BodyList.Count != 0)
@@ -248,14 +253,14 @@ namespace NewHorizons
             var positionVector = rot * incRot * Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity);
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
-            var ao = (AstroObject)outputTuple.Items[0];
-            var rb = (OWRigidbody)outputTuple.Items[1];
+            var ao = (AstroObject)outputTuple.Item1;
+            var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
             if (body.Config.Base.SurfaceGravity != 0)
                 GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence, body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
             
             if(body.Config.Base.HasReferenceFrame)
-                RFVolumeBuilder.Make(go, rb, sphereOfInfluence);
+                RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
                 MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon, body.Config.Star != null);
@@ -263,7 +268,8 @@ namespace NewHorizons
             if (body.Config.Base.HasAmbientLight)
                 AmbientLightBuilder.Make(go, sphereOfInfluence);
 
-            var sector = MakeSector.Make(go, rb, sphereOfInfluence);
+            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence);
+            ao.SetValue("_rootSector", sector);
 
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
 
@@ -279,14 +285,13 @@ namespace NewHorizons
             if (body.Config.Star != null)
                 StarBuilder.Make(go, sector, body.Config.Star);
 
+            if (body.Config.FocalPoint != null)
+                FocalPointBuilder.Make(go, body.Config.FocalPoint);
+
             // Do stuff that's shared between generating new planets and updating old ones
-            go = SharedGenerateBody(body, go, sector, rb);
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
 
             body.Object = go;
-
-            // Some things have to be done the second tick
-            if(body.Config.Orbit != null && body.Config.Orbit.ShowOrbitLine)
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config.Orbit));
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
@@ -298,13 +303,21 @@ namespace NewHorizons
             }
 
             // Have to do this after setting position
-            InitialMotionBuilder.Make(go, primaryBody, rb, body.Config.Orbit);
+            InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
+
+            //if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
+            if (!body.Config.Orbit.IsStatic) Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => DetectorBuilder.Make(go, owRigidBody, primaryBody, ao));
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                SpawnPointBuilder.Make(go, body.Config.Spawn, rb);
+                SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
+
+            // Some things have to be done the second tick
+            if (body.Config.Orbit != null && body.Config.Orbit.ShowOrbitLine)
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config.Orbit));
+
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 

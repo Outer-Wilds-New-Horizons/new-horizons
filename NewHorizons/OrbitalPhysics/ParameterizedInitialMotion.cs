@@ -11,6 +11,7 @@ namespace NewHorizons.OrbitalPhysics
 {
     public class ParameterizedInitialMotion : InitialMotion
     {
+        /*
         private new void Awake()
         {
             _rotationAxis = base.transform.TransformDirection(_rotationAxis);
@@ -106,5 +107,6 @@ namespace NewHorizons.OrbitalPhysics
         private float _initAngularSpeed;
 
         private OWRigidbody _satelliteBody;
+        */
     }
 }

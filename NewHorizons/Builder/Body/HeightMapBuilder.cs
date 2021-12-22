@@ -1,4 +1,5 @@
-﻿using NewHorizons.Body.Geometry;
+﻿using NewHorizons.Body;
+using NewHorizons.Body.Geometry;
 using NewHorizons.External;
 using OWML.Common;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body
 {
     static class HeightMapBuilder
     {

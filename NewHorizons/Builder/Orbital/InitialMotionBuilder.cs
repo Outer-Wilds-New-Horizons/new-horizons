@@ -11,7 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 using System.Reflection;
 using NewHorizons.Utility;
 
-namespace NewHorizons.General
+namespace NewHorizons.Builder.Orbital
 {
     static class InitialMotionBuilder
     {
@@ -33,23 +33,31 @@ namespace NewHorizons.General
             */
 
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
-            initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
-            initialMotion.SetValue("_orbitAngle", orbit.Inclination);
-            initialMotion.SetValue("_isGlobalAxis", false);
-            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0.02f : 1.0f / orbit.SiderealPeriod);
-            if(orbit.Eccentricity != 0)
+            return Update(initialMotion, body, primaryBody, OWRB, orbit);
+        }
+
+        public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
+        {
+            if (!orbit.IsStatic)
             {
-                // Calculate speed at apoapsis
-                var eccSpeed = OrbitalHelper.Visviva(primaryBody.GetGravityVolume().GetFalloffType(),
-                    primaryBody.GetGravityVolume().GetStandardGravitationalParameter(),
-                    orbit.SemiMajorAxis * (1 + orbit.Eccentricity),
-                    orbit.SemiMajorAxis,
-                    orbit.Eccentricity
-                    );
-                var circularSpeed = OWPhysics.CalculateOrbitVelocity(primaryBody.GetAttachedOWRigidbody(), OWRB).magnitude;
-                initialMotion.SetValue("_orbitImpulseScalar", eccSpeed / circularSpeed);
+                initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
+                initialMotion.SetValue("_orbitAngle", orbit.Inclination);
+                initialMotion.SetValue("_isGlobalAxis", false);
+                if (orbit.Eccentricity != 0 && primaryBody.GetGravityVolume() != null)
+                {
+                    // Calculate speed at apoapsis
+                    KeplerElements kepler = KeplerElements.FromOrbitModule(orbit);
+                    Gravity gravity = new Gravity(primaryBody.GetGravityVolume());
+
+                    var eccSpeed = OrbitalHelper.GetOrbitalVelocity(kepler.Apoapsis, gravity, kepler);
+                    var circularSpeed = OWPhysics.CalculateOrbitVelocity(primaryBody.GetAttachedOWRigidbody(), OWRB).magnitude;
+
+                    initialMotion.SetValue("_orbitImpulseScalar", eccSpeed / circularSpeed);
+                }
             }
 
+            // Rotation
+            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body
 {
     static class StarBuilder
     {
@@ -74,10 +74,10 @@ namespace NewHorizons.Body
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                surface.sharedMaterial.color = new Color(colour.r * 4f / 255f, colour.g * 4f / 255f, colour.b * 4f / 255f);
+                surface.sharedMaterial.color = new Color(colour.r * 8f / 255f, colour.g * 8f / 255f, colour.b * 8f / 255f);
                 surface.sharedMaterial.SetTexture("_ColorRamp", Utility.ImageUtilities.TintImage(_colorOverTime, colour));
 
-                sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * 2f;
+                sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000)/starModule.Size;
                 foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                 {
                     lod.material.SetColor("_SkyColor", colour);

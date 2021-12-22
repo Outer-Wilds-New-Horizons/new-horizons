@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.General
+namespace NewHorizons.Builder.Body
 {
     static class BlackHoleBuilder
     {

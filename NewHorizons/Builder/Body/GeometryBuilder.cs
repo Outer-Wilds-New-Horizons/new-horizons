@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body
 {
     static class GeometryBuilder
     {

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body
 {
     public static class CometTailBuilder
     {

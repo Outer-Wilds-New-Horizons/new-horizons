@@ -1,6 +1,7 @@
 ﻿using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace NewHorizons.External
 {
@@ -18,6 +19,7 @@ namespace NewHorizons.External
         public ProcGenModule ProcGen { get; set; }
         public AsteroidBeltModule AsteroidBelt { get; set; }
         public StarModule Star { get; set; }
+        public FocalPointModule FocalPoint { get; set; }
         public SpawnModule Spawn { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
@@ -30,6 +32,31 @@ namespace NewHorizons.External
 
             foreach (var item in dict)
             {
+                var property = typeof(PlanetConfig).GetProperty(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if(property == null)
+                    property = typeof(PlanetConfig).GetProperty(item.Key.ToCamelCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (property == null)
+                    property = typeof(PlanetConfig).GetProperty(item.Key.ToTitleCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                if (property != null)
+                {
+                    if (property.PropertyType.BaseType == typeof(Module))
+                    {
+                        if (property.GetValue(this) == null)
+                        {
+                            var module = Activator.CreateInstance(property.PropertyType);
+                            property.SetValue(this, module);
+                        }
+                        ((Module)property.GetValue(this)).Build(item.Value as Dictionary<string, object>);
+                    }
+                    else
+                    {
+                        property.SetValue(this, Convert.ChangeType(item.Value, property.PropertyType));
+                    }
+                }
+                else Logger.LogError($"{item.Key} {item.Value} is not valid. Is your config formatted correctly?");
+
+                /*
                 switch(item.Key)
                 {
                     case "Base":
@@ -68,6 +95,7 @@ namespace NewHorizons.External
                         else Logger.LogError($"{item.Key} {item.Value} is not valid. Is your config formatted correctly?");
                         break;
                 }
+                */
             }
         }
     }

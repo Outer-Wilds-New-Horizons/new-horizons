@@ -14,83 +14,46 @@ namespace NewHorizons.OrbitalPhysics
         public enum FalloffType
         {
             inverseSquared,
-            linear
+            linear,
+            none
         }
 
-        public static CartesianStateVectors CartesianStateVectorsFromTrueAnomaly(float standardGraviationalParameter, float eccentricity, float semiMajorAxis, float inclination,
-            float longitudeOfAscendingNode, float argumentOfPeriapsis, float trueAnomaly, FalloffType falloffType)
+        public static float GetOrbitalVelocity(float distance, Gravity gravity, KeplerElements kepler)
         {
-            var nu = Mathf.Deg2Rad * trueAnomaly;
-            var E = Mathf.Atan2(Mathf.Sqrt(1 - eccentricity * eccentricity) * Mathf.Sin(nu), (eccentricity + Mathf.Cos(nu)));
+            if (kepler.Eccentricity == 0) return GetCircularOrbitVelocity(distance, gravity, kepler);
 
-            return CartesianStateVectorsFromOrbitalElements(standardGraviationalParameter, eccentricity, semiMajorAxis, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, E, nu, falloffType);
-        }
-
-        public static CartesianStateVectors CartesianStateVectorsFromEccentricAnomaly(float standardGraviationalParameter, float eccentricity, float semiMajorAxis, float inclination,
-            float longitudeOfAscendingNode, float argumentOfPeriapsis, float eccentricAnomaly, FalloffType falloffType)
-        {
-            var E = Mathf.Deg2Rad * eccentricAnomaly;
-            var nu = 2f * Mathf.Atan2(Mathf.Sqrt(1 + eccentricity) * Mathf.Sin(E)/2f, Mathf.Sqrt(1 - eccentricity) * Mathf.Cos(E) / 2f);
-
-            return CartesianStateVectorsFromOrbitalElements(standardGraviationalParameter, eccentricity, semiMajorAxis, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, E, nu, falloffType);
-        }
-
-        private static CartesianStateVectors CartesianStateVectorsFromOrbitalElements(float standardGraviationalParameter, float eccentricity, float semiMajorAxis, float inclination,
-            float longitudeOfAscendingNode, float argumentOfPeriapsis, float E, float nu, FalloffType falloffType)
-        {
-            //Keplerian Orbit Elements −→ Cartesian State Vectors (Memorandum #1) Rene Schwarz
-
-            if (semiMajorAxis == 0) return new CartesianStateVectors();
-
-            // POS
-            var r = semiMajorAxis * (1 - eccentricity * Mathf.Cos(E));
-
-            Vector3 position = r * new Vector3(Mathf.Cos(nu), 0, Mathf.Sin(nu));
-
-            // VEL
-            var speed = Visviva(falloffType, standardGraviationalParameter, position.magnitude, semiMajorAxis, eccentricity);
-            Vector3 velocity = speed * (new Vector3(-Mathf.Sin(E), 0, Mathf.Sqrt(1 - (eccentricity * eccentricity)) * Mathf.Cos(E))).normalized;
-
-            Quaternion periapsisRot = Quaternion.AngleAxis(Mathf.Deg2Rad * argumentOfPeriapsis, Vector3.up);
-            var inclinationAxis = Quaternion.AngleAxis(Mathf.Repeat(Mathf.Deg2Rad * longitudeOfAscendingNode, 2f * Mathf.PI), Vector3.up) * Vector3.left;
-            Quaternion inclinationRot = Quaternion.AngleAxis(inclination, inclinationAxis);
-
-            position = periapsisRot * inclinationRot * position;
-            velocity = periapsisRot * inclinationRot * velocity;
-
-            return new CartesianStateVectors(position, velocity);
-        }
-
-        public static float Visviva(FalloffType falloffType, float standardGravitationalParameter, float dist, float semiMajorAxis, float eccentricity)
-        {
-            switch(falloffType)
+            if (gravity.Exponent == 2)
             {
-                case FalloffType.inverseSquared:
-                    return Mathf.Sqrt(standardGravitationalParameter * (2f / dist - 1f / semiMajorAxis));
-                case FalloffType.linear:
-                    if (eccentricity == 0f) return Mathf.Sqrt(standardGravitationalParameter);
-
-                    var ra = semiMajorAxis * (1 + eccentricity);
-                    var rp = semiMajorAxis * (1 - eccentricity);
-
-                    var kineticEneregyAtApoapsis = standardGravitationalParameter * Mathf.Log(ra / rp) * (rp * rp) / ((rp * rp) - (ra * ra));
-                    var gravitationalEnergy = standardGravitationalParameter * Mathf.Log(dist / ra);
-                    var v = Mathf.Sqrt(2 * (kineticEneregyAtApoapsis + gravitationalEnergy));
-
-                    return v;
+                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass * (2f / distance - 1f / kepler.SemiMajorAxis));
             }
-            Logger.LogError($"Invalid falloffType {falloffType}");
+            if(gravity.Exponent == 1)
+            {
+                var mu = GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass;
+                var rp2 = kepler.Periapsis * kepler.Periapsis;
+                var ra2 = kepler.Apoapsis * kepler.Apoapsis;
+                float term1 = 0;
+                if(kepler.Eccentricity < 1)
+                    term1 = mu * Mathf.Log(kepler.Periapsis / kepler.Apoapsis) * rp2 / (rp2 - ra2);
+                var term2 = mu * Mathf.Log(kepler.Apoapsis / distance);
+                Logger.Log($"{term1}, {term2}, {kepler.Periapsis} {kepler.Apoapsis}, {kepler.SemiMajorAxis}, {kepler.SemiMinorAxis}");
+                return Mathf.Sqrt(2 * (term1 + term2));
+            }
+            Logger.LogError($"Invalid exponent {gravity.Exponent}");
             return 0f;
         }
 
-        private static Vector3 RotateToOrbitalPlane(Vector3 vector, float longitudeOfAscendingNode, float argumentOfPeriapsis, float inclination)
+        public static float GetCircularOrbitVelocity(float distance, Gravity gravity, KeplerElements kepler)
         {
-            vector = Quaternion.AngleAxis(Mathf.Deg2Rad * argumentOfPeriapsis, Vector3.up) * vector;
-
-            var inclinationAxis = Quaternion.AngleAxis(Mathf.Repeat(Mathf.Deg2Rad * longitudeOfAscendingNode, 2f * Mathf.PI), Vector3.up) * new Vector3(1, 0, 0);
-            vector = Quaternion.AngleAxis(Mathf.Repeat(Mathf.Deg2Rad * inclination, 2f * Mathf.PI), inclinationAxis) * vector;
-
-            return vector;
+            if (gravity.Exponent == 2)
+            {
+                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass / distance);
+            }
+            if(gravity.Exponent == 1)
+            {
+                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass);
+            }
+            Logger.LogError($"Invalid exponent {gravity.Exponent}");
+            return 0f;
         }
     }
 }

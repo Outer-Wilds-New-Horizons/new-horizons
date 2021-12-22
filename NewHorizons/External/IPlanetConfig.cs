@@ -15,6 +15,7 @@ namespace NewHorizons.External
         ProcGenModule ProcGen { get; }
         AsteroidBeltModule AsteroidBelt { get; }
         StarModule Star { get; }
+        FocalPointModule FocalPoint { get; }
         SpawnModule Spawn { get; }
     }
 }

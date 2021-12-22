@@ -20,5 +20,6 @@ namespace NewHorizons.External
         public float SiderealPeriod { get; set; }
         public bool IsTidallyLocked { get; set; }
         public bool ShowOrbitLine { get; set; } = true;
+        public bool IsStatic { get; set; }
     }
 }

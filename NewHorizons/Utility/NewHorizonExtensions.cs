@@ -1,6 +1,7 @@
 ﻿using NewHorizons.OrbitalPhysics;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 
 namespace NewHorizons.Utility
@@ -19,9 +20,30 @@ namespace NewHorizons.Utility
 
         public static OrbitalHelper.FalloffType GetFalloffType(this GravityVolume gv)
         {
+            if (gv == null) return OrbitalHelper.FalloffType.none;
             var falloffTypeString = typeof(GravityVolume).GetField("_falloffType", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gv).ToString();
             var falloffType = falloffTypeString.Equals("linear") ? OrbitalHelper.FalloffType.linear : OrbitalHelper.FalloffType.inverseSquared;
             return falloffType;
+        }
+
+        public static float GetFalloffExponent(this GravityVolume gv)
+        {
+            if (gv == null) return 0;
+            return (float)typeof(GravityVolume).GetField("_falloffExponent", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gv);
+        }
+
+        public static string ToCamelCase(this string str)
+        {
+            StringBuilder strBuilder = new StringBuilder(str);
+            strBuilder[0] = strBuilder[0].ToString().ToLower().ToCharArray()[0];
+            return strBuilder.ToString();
+        }
+
+        public static string ToTitleCase(this string str)
+        {
+            StringBuilder strBuilder = new StringBuilder(str);
+            strBuilder[0] = strBuilder[0].ToString().ToUpper().ToCharArray()[0];
+            return strBuilder.ToString();
         }
     }
 }

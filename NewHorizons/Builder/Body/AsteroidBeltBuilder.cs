@@ -10,7 +10,7 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {

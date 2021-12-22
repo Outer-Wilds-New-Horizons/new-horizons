@@ -12,7 +12,8 @@ using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.OrbitalPhysics
 {
     public class ParameterizedOrbitLine : OrbitLine
-    {
+	{               
+		/*
 		protected override void InitializeLineRenderer()
 		{
 			base.GetComponent<LineRenderer>().positionCount = this._numVerts;
@@ -122,5 +123,6 @@ namespace NewHorizons.OrbitalPhysics
 		private InitialMotion _initialMotion;
 		private AstroObject _primary;
 		private OrbitalHelper.FalloffType _falloffType;
+		*/
 	}
 }

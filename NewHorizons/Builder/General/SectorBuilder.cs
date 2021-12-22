@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.General
 {
     static class MakeSector
     {

@@ -2,14 +2,15 @@
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.General
+namespace NewHorizons.Builder.General
 {
     static class BaseBuilder
     {
-        public static MTuple Make(GameObject body, AstroObject primaryBody, Vector3 positionVector, IPlanetConfig config)
+        public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, Vector3 positionVector, IPlanetConfig config)
         {
             Rigidbody RB = body.AddComponent<Rigidbody>();
             RB.mass = 10000;
@@ -31,10 +32,14 @@ namespace NewHorizons.General
             OWRB.SetValue("_rigidbody", RB);
             OWRB.SetValue("_kinematicRigidbody", KRB);
 
-            DetectorBuilder.Make(body, primaryBody);
-
             AstroObject AO = body.AddComponent<AstroObject>();
-            AO.SetValue("_type", config.Orbit.IsMoon ? AstroObject.Type.Moon : AstroObject.Type.Planet);
+
+            var type = AstroObject.Type.Planet;
+            if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
+            else if (config.Base.HasCometTail) type = AstroObject.Type.Comet;
+            else if (config.Star != null) type = AstroObject.Type.Star;
+            else if (config.FocalPoint != null) type = AstroObject.Type.None;
+            AO.SetValue("_type", type);
             AO.SetValue("_name", AstroObject.Name.CustomString);
             AO.SetValue("_customName", config.Name);
             AO.SetValue("_primaryBody", primaryBody);
@@ -46,7 +51,7 @@ namespace NewHorizons.General
                 alignment.SetValue("_usePhysicsToRotate", true);
             }
 
-            return new MTuple(AO, OWRB);
+            return new Tuple<AstroObject, OWRigidbody>(AO, OWRB);
         }
     }
 }
