@@ -31,7 +31,7 @@ First create the following interface in your mod:
 ```
 public interface INewHorizons
 {
-    void Create(Dictionary<string, object> config);
+    void Create(Dictionary<string, object> config, IModBehaviour mod);
 
     void LoadConfigs(IModBehaviour mod);
 
