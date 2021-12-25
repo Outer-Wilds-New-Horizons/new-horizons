@@ -35,7 +35,6 @@ namespace NewHorizons.OrbitalPhysics
                 if(kepler.Eccentricity < 1)
                     term1 = mu * Mathf.Log(kepler.Periapsis / kepler.Apoapsis) * rp2 / (rp2 - ra2);
                 var term2 = mu * Mathf.Log(kepler.Apoapsis / distance);
-                Logger.Log($"{term1}, {term2}, {kepler.Periapsis} {kepler.Apoapsis}, {kepler.SemiMajorAxis}, {kepler.SemiMinorAxis}");
                 return Mathf.Sqrt(2 * (term1 + term2));
             }
             Logger.LogError($"Invalid exponent {gravity.Exponent}");

@@ -15,9 +15,9 @@ namespace NewHorizons.OrbitalPhysics
         public float SemiMajorAxis { get; }
         public float Inclination { get; }
         public float ArgumentOfPeriapsis { get; }
-        public float TrueAnomaly { get; }
-        public float EccentricAnomaly { get; }
-        public float MeanAnomaly { get; }
+        public float TrueAnomaly { get; private set; }
+        public float EccentricAnomaly { get; private set; }
+        public float MeanAnomaly { get; private set; }
         public float SemiMinorAxis { get; }
         public float Focus { get; }
         public float Apoapsis { get; }
@@ -48,23 +48,49 @@ namespace NewHorizons.OrbitalPhysics
 
         public static KeplerElements FromTrueAnomaly(float e, float a, float i, float longitudeOfAscendingNode, float argumentOfPeriapsis, float trueAnomaly)
         {
-            var eccentricAnomaly = EccentricAnomalyFromTrueAnomaly(trueAnomaly, e);
-            var meanAnomaly = MeanAnomalyFromEccentricAnomaly(eccentricAnomaly, e);
-            return new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, eccentricAnomaly, meanAnomaly);    
+            var newKeplerElements = new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, 0, 0, 0);
+            newKeplerElements.SetTrueAnomaly(trueAnomaly);
+            return newKeplerElements;
         }
 
         public static KeplerElements FromMeanAnomaly(float e, float a, float i, float longitudeOfAscendingNode, float argumentOfPeriapsis, float meanAnomaly)
         {
-            var trueAnomaly = TrueAnomalyFromMeanAnomaly(meanAnomaly, e);
-            var eccentricAnomaly = EccentricAnomalyFromTrueAnomaly(trueAnomaly, e);
-            return new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, eccentricAnomaly, meanAnomaly);
+            var newKeplerElements = new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, 0, 0, 0);
+            newKeplerElements.SetMeanAnomaly(meanAnomaly);
+            return newKeplerElements;
         }
 
         public static KeplerElements FromEccentricAnomaly(float e, float a, float i, float longitudeOfAscendingNode, float argumentOfPeriapsis, float eccentricAnomaly)
         {
-            var trueAnomaly = TrueAnomalyFromEccentricAnomaly(eccentricAnomaly, e);
-            var meanAnomaly = MeanAnomalyFromEccentricAnomaly(eccentricAnomaly, e);
-            return new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, trueAnomaly, eccentricAnomaly, meanAnomaly);
+            var newKeplerElements = new KeplerElements(e, a, i, longitudeOfAscendingNode, argumentOfPeriapsis, 0, 0, 0);
+            newKeplerElements.SetEccentricAnomaly(eccentricAnomaly);
+            return newKeplerElements;
+        }
+
+        public static KeplerElements Copy(KeplerElements original)
+        {
+            return KeplerElements.FromTrueAnomaly(original.Eccentricity, original.SemiMajorAxis, original.Inclination, original.LongitudeOfAscendingNode, original.ArgumentOfPeriapsis, original.TrueAnomaly);
+        }
+
+        public void SetTrueAnomaly(float trueAnomaly)
+        {
+            TrueAnomaly = trueAnomaly;
+            EccentricAnomaly = EccentricAnomalyFromTrueAnomaly(trueAnomaly, Eccentricity);
+            MeanAnomaly = MeanAnomalyFromEccentricAnomaly(EccentricAnomaly, Eccentricity);
+        }
+
+        public void SetMeanAnomaly(float meanAnomaly)
+        {
+            MeanAnomaly = meanAnomaly;
+            TrueAnomaly = TrueAnomalyFromMeanAnomaly(meanAnomaly, Eccentricity);
+            EccentricAnomaly = EccentricAnomalyFromTrueAnomaly(TrueAnomaly, Eccentricity);
+        }
+
+        public void SetEccentricAnomaly(float eccentricAnomaly)
+        {
+            EccentricAnomaly = eccentricAnomaly;
+            TrueAnomaly = TrueAnomalyFromEccentricAnomaly(eccentricAnomaly, Eccentricity);
+            MeanAnomaly = MeanAnomalyFromEccentricAnomaly(eccentricAnomaly, Eccentricity);
         }
 
         private static float MeanAnomalyFromEccentricAnomaly(float eccentricAnomaly, float eccentricity)

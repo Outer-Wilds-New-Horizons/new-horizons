@@ -56,7 +56,7 @@ namespace NewHorizons
             }
         }
 
-        public void Destroy()
+        public void OnDestroy()
         {
             Logger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
@@ -212,7 +212,7 @@ namespace NewHorizons
                 }
             }
 
-            Logger.Log("Begin generation sequence of [" + body.Config.Name + "] ...", Logger.LogType.Log);
+            Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
@@ -222,30 +222,13 @@ namespace NewHorizons
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
-            // Get initial position but set it at the end
-            var falloffType = primaryBody.GetGravityVolume().GetFalloffType();
-            
-            /*
-            var positionVector = OrbitalHelper.CartesianStateVectorsFromTrueAnomaly(
-                0f,
-                body.Config.Orbit.Eccentricity,
-                body.Config.Orbit.SemiMajorAxis, 
-                body.Config.Orbit.Inclination,
-                body.Config.Orbit.LongitudeOfAscendingNode,
-                body.Config.Orbit.ArgumentOfPeriapsis, 
-                body.Config.Orbit.TrueAnomaly,
-                falloffType).Position;
-            */
-
-            var rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.TrueAnomaly + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
-
             // For now, eccentric orbits gotta start at apoapsis and cant be inclined
-            if(body.Config.Orbit.Eccentricity != 0)
+            var rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.TrueAnomaly + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
+            if (body.Config.Orbit.Eccentricity != 0)
             {
                 rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
                 body.Config.Orbit.Inclination = 0;
             }
-
 
             var incAxis = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
             var incRot = Quaternion.AngleAxis(body.Config.Orbit.Inclination, incAxis);
@@ -305,23 +288,17 @@ namespace NewHorizons
             // Have to do this after setting position
             InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
 
-            //if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
-            if (!body.Config.Orbit.IsStatic) Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => DetectorBuilder.Make(go, owRigidBody, primaryBody, ao));
-
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
                 SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
-            // Some things have to be done the second tick
-            if (body.Config.Orbit != null && body.Config.Orbit.ShowOrbitLine)
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config.Orbit));
+            if (body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config);
 
+            if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
-
-            Logger.Log("Generation of [" + body.Config.Name + "] completed.", Logger.LogType.Log);
 
             return go;
         }

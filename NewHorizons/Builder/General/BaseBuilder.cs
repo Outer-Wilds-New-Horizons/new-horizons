@@ -12,37 +12,39 @@ namespace NewHorizons.Builder.General
     {
         public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, Vector3 positionVector, IPlanetConfig config)
         {
-            Rigidbody RB = body.AddComponent<Rigidbody>();
-            RB.mass = 10000;
-            RB.drag = 0f;
-            RB.angularDrag = 0f;
-            RB.useGravity = false;
-            RB.isKinematic = true;
-            RB.interpolation = RigidbodyInterpolation.None;
-            RB.collisionDetectionMode = CollisionDetectionMode.Discrete;
+            Rigidbody rigidBody = body.AddComponent<Rigidbody>();
+            rigidBody.mass = 10000;
+            rigidBody.drag = 0f;
+            rigidBody.angularDrag = 0f;
+            rigidBody.useGravity = false;
+            rigidBody.isKinematic = true;
+            rigidBody.interpolation = RigidbodyInterpolation.None;
+            rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
-            KinematicRigidbody KRB = body.AddComponent<KinematicRigidbody>();
-            KRB.centerOfMass = Vector3.zero;
+            KinematicRigidbody kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
+            kinematicRigidBody.centerOfMass = Vector3.zero;
 
-            OWRigidbody OWRB = body.AddComponent<OWRigidbody>();
-            OWRB.SetValue("_kinematicSimulation", true);
-            OWRB.SetValue("_autoGenerateCenterOfMass", true);
-            OWRB.SetIsTargetable(true);
-            OWRB.SetValue("_maintainOriginalCenterOfMass", true);
-            OWRB.SetValue("_rigidbody", RB);
-            OWRB.SetValue("_kinematicRigidbody", KRB);
+            OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
+            owRigidBody.SetValue("_kinematicSimulation", true);
+            owRigidBody.SetValue("_autoGenerateCenterOfMass", true);
+            owRigidBody.SetIsTargetable(true);
+            owRigidBody.SetValue("_maintainOriginalCenterOfMass", true);
+            owRigidBody.SetValue("_rigidbody", rigidBody);
+            owRigidBody.SetValue("_kinematicRigidbody", kinematicRigidBody);
 
-            AstroObject AO = body.AddComponent<AstroObject>();
+            ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
+
+            if (config.Orbit != null) astroObject.keplerElements = KeplerElements.FromOrbitModule(config.Orbit);
 
             var type = AstroObject.Type.Planet;
             if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
             else if (config.Base.HasCometTail) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
             else if (config.FocalPoint != null) type = AstroObject.Type.None;
-            AO.SetValue("_type", type);
-            AO.SetValue("_name", AstroObject.Name.CustomString);
-            AO.SetValue("_customName", config.Name);
-            AO.SetValue("_primaryBody", primaryBody);
+            astroObject.SetValue("_type", type);
+            astroObject.SetValue("_name", AstroObject.Name.CustomString);
+            astroObject.SetValue("_customName", config.Name);
+            astroObject.SetValue("_primaryBody", primaryBody);
 
             if (config.Orbit.IsTidallyLocked)
             {
@@ -51,7 +53,7 @@ namespace NewHorizons.Builder.General
                 alignment.SetValue("_usePhysicsToRotate", true);
             }
 
-            return new Tuple<AstroObject, OWRigidbody>(AO, OWRB);
+            return new Tuple<AstroObject, OWRigidbody>(astroObject, owRigidBody);
         }
     }
 }

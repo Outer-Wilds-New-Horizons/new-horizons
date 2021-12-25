@@ -267,8 +267,10 @@
     <Compile Include="OrbitalPhysics\CartesianStateVectors.cs" />
     <Compile Include="OrbitalPhysics\Gravity.cs" />
     <Compile Include="OrbitalPhysics\KeplerElements.cs" />
+    <Compile Include="OrbitalPhysics\ParameterizedAstroObject.cs" />
     <Compile Include="OrbitalPhysics\ParameterizedInitialMotion.cs" />
     <Compile Include="OrbitalPhysics\OrbitalHelper.cs" />
+    <Compile Include="OrbitalPhysics\TrackingOrbitLine.cs" />
     <Compile Include="Utility\AddDebugShape.cs" />
     <Compile Include="Builder\General\AmbientLightBuilder.cs" />
     <Compile Include="External\IPlanetConfig.cs" />

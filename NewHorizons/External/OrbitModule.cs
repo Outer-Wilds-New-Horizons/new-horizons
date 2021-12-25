@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,5 +22,6 @@ namespace NewHorizons.External
         public bool IsTidallyLocked { get; set; }
         public bool ShowOrbitLine { get; set; } = true;
         public bool IsStatic { get; set; }
+        public MColor32 Tint { get; set; }
     }
 }

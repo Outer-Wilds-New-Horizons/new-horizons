@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Orbital
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, AstroObject astroobject, bool isMoon, OrbitModule orbit)
+        public static void Make(GameObject body, AstroObject astroobject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
@@ -21,40 +21,32 @@ namespace NewHorizons.Builder.Orbital
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
 
-            if(orbit.Eccentricity == 0)
+            OrbitLine orbitLine;
+            if (config.Orbit.Eccentricity == 0)
             {
-                OrbitLine orbitLine = orbitGO.AddComponent<OrbitLine>();
-                orbitLine.SetValue("_astroObject", astroobject);
-                orbitLine.SetValue("_fade", isMoon);
-                orbitLine.SetValue("_lineWidth", 0.3f);
-                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { });
+                orbitLine = orbitGO.AddComponent<OrbitLine>();
             }
             else
             {
-                OrbitLine orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
-                orbitLine.SetValue("_astroObject", astroobject);
-                orbitLine.SetValue("_fade", isMoon);
-                orbitLine.SetValue("_lineWidth", 0.3f);
-                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { });
+                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }
 
-            /*
-            ParameterizedOrbitLine orbitLine = orbitGO.AddComponent<ParameterizedOrbitLine>();
-            
+            var color = Color.white;
+            if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
+            else if (config.Star != null) color = config.Star.Tint.ToColor32();
+            else if (config.Atmosphere != null && config.Atmosphere.CloudTint != null) color = config.Atmosphere.CloudTint.ToColor32();
+            else if (config.Base.BlackHoleSize != 0) color = new Color(1f, 0f, 1f);
+            else if (config.Base.WaterSize != 0) color = Color.blue;
+            else if (config.Base.LavaSize != 0) color = Color.red;
+            orbitLine.SetValue("_color", color);
+
             orbitLine.SetValue("_astroObject", astroobject);
             orbitLine.SetValue("_fade", isMoon);
-            orbitLine.SetValue("_lineWidth", 0.5f);
+            orbitLine.SetValue("_lineWidth", 2f);
 
-            orbitLine.SetOrbitalParameters(
-                orbit.Eccentricity,
-                orbit.SemiMajorAxis, 
-                orbit.Inclination, 
-                orbit.LongitudeOfAscendingNode, 
-                orbit.ArgumentOfPeriapsis, 
-                orbit.TrueAnomaly);
-
-            typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { });
-            */
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   
+            );
         }
     }
 }
