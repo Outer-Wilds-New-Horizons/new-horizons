@@ -16,12 +16,12 @@ namespace NewHorizons.OrbitalPhysics
 		public float TrailTime = 120f;
 
 
-		protected override void InitializeLineRenderer()
+		public override void InitializeLineRenderer()
 		{
 			_lineRenderer.positionCount = this._numVerts;
 		}
 
-		protected override void OnValidate()
+		public override void OnValidate()
 		{
 			if (_numVerts < 0 || _numVerts > 4096)
 			{
@@ -33,7 +33,7 @@ namespace NewHorizons.OrbitalPhysics
 			}
 		}
 
-		protected override void Start()
+		public override void Start()
 		{
 			base.Start();
 			_vertices = new Vector3[_numVerts];
@@ -42,7 +42,7 @@ namespace NewHorizons.OrbitalPhysics
 			_lineRenderer.enabled = false;
 		}
 
-		protected override void OnEnterMapView()
+		public override void OnEnterMapView()
 		{
 			if (_firstTimeEnabled) 
 			{
@@ -52,12 +52,12 @@ namespace NewHorizons.OrbitalPhysics
 			_lineRenderer.enabled = true;
 		}
 
-		protected override void OnExitMapView()
+		public override void OnExitMapView()
 		{
 			_lineRenderer.enabled = false;
 		}
 
-		protected override void Update()
+		public override void Update()
 		{
 			var primary = _astroObject.GetPrimaryBody();
 			Vector3 origin = primary == null ? Locator.GetRootTransform().position : primary.transform.position;

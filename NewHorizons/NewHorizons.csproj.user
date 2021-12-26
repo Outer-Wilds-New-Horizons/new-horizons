@@ -2,8 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-    <GameDir>F:\SteamLibrary\steamapps\common\Outer Wilds</GameDir>
-    <OwmlDir>C:\Users\Nicholas\AppData\Roaming\OuterWildsModManager\OWML</OwmlDir>
-    <ModUniqueName>xen.NewHorizons</ModUniqueName>
+	<OutputPath>C:\Users\Nicholas\AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons</OutputPath>
   </PropertyGroup>
 </Project>
