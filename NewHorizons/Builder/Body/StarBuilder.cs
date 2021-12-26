@@ -54,13 +54,25 @@ namespace NewHorizons.Builder.Body
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
             heatVolume.GetComponent<SphereShape>().radius = 1f;
-            heatVolume.name = "HeatVolume";
+            heatVolume.name = "HeatVolume"; 
+            
+            var deathVolume = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/ScaledVolumesRoot/DestructionFluidVolume"), sunGO.transform);
+            deathVolume.transform.localPosition = Vector3.zero;
+            deathVolume.transform.localScale = Vector3.one;
+            deathVolume.GetComponent<SphereCollider>().radius = 1f;
+            deathVolume.name = "DestructionVolume";
+
+            GameObject.Destroy(sunLight.GetComponent<FaceActiveCamera>());
+            GameObject.Destroy(sunLight.GetComponent<CSMTextureCacher>());
+            GameObject.Destroy(sunLight.GetComponent<ProxyShadowLight>());
 
             PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
             TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
             Light ambientLight = ambientLightGO.GetComponent<Light>();
             SunLightController sunLightController = sunLight.GetComponent<SunLightController>();
             GameObject.Destroy(sunLight.GetComponent<SunLightParamUpdater>());
+
+            GameObject.Destroy(sunLightController);
 
             if(starModule.Tint != null)
             {

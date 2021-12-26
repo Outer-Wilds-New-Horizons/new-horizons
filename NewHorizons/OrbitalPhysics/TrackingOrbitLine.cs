@@ -9,6 +9,13 @@ namespace NewHorizons.OrbitalPhysics
 {
     public class TrackingOrbitLine : OrbitLine
     {
+		private Vector3[] _vertices;
+		private float _timer;
+		private bool _firstTimeEnabled = true;
+		
+		public float TrailTime = 120f;
+
+
 		protected override void InitializeLineRenderer()
 		{
 			_lineRenderer.positionCount = this._numVerts;
@@ -31,9 +38,23 @@ namespace NewHorizons.OrbitalPhysics
 			base.Start();
 			_vertices = new Vector3[_numVerts];
 
-			ResetLineVertices();
+			base.enabled = true;
+			_lineRenderer.enabled = false;
+		}
 
-			base.enabled = false;
+		protected override void OnEnterMapView()
+		{
+			if (_firstTimeEnabled) 
+			{
+				ResetLineVertices();
+				_firstTimeEnabled = false;
+			}
+			_lineRenderer.enabled = true;
+		}
+
+		protected override void OnExitMapView()
+		{
+			_lineRenderer.enabled = false;
 		}
 
 		protected override void Update()
@@ -92,10 +113,5 @@ namespace NewHorizons.OrbitalPhysics
 			}
 			_lineRenderer.SetPositions(_vertices);
 		}
-
-		private Vector3[] _vertices;
-		private float _timer;
-
-		public float TrailTime = 60f;
 	}
 }

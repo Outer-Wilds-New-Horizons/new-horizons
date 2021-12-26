@@ -3,6 +3,7 @@ using NewHorizons.Body;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
+using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
@@ -64,6 +65,7 @@ namespace NewHorizons
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
+            Logger.Log($"Scene Loaded: {scene} {mode}");
             if (scene.name != "SolarSystem") return;
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
@@ -75,7 +77,7 @@ namespace NewHorizons
             }
 
             // Stars then planets then moons
-            BodyList = BodyList.OrderBy(b => 
+            var toLoad = BodyList.OrderBy(b => 
                 (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : 
                 (b.Config.FocalPoint != null ? 0 : 
                 (b.Config.Star != null) ? 0 :
@@ -83,9 +85,9 @@ namespace NewHorizons
                 ))).ToList();
 
             var flagNoneLoadedThisPass = true;
-            while(BodyList.Count != 0)
+            while(toLoad.Count != 0)
             {
-                foreach (var body in BodyList)
+                foreach (var body in toLoad)
                 {
                     if (LoadBody(body))
                         flagNoneLoadedThisPass = false;
@@ -93,7 +95,7 @@ namespace NewHorizons
                 if (flagNoneLoadedThisPass)
                 {
                     // Try again but default to sun
-                    foreach(var body in BodyList)
+                    foreach(var body in toLoad)
                     {
                         if (LoadBody(body, true))
                             flagNoneLoadedThisPass = false;
@@ -105,9 +107,12 @@ namespace NewHorizons
                         return;
                     }
                 }
-                BodyList = NextPassBodies;
+                toLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
             }
+
+            // I don't know what these do but they look really weird from a distance
+            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -192,7 +197,7 @@ namespace NewHorizons
             var rb = go.GetAttachedOWRigidbody();
 
             // Do stuff that's shared between generating new planets and updating old ones
-            return SharedGenerateBody(body, go, sector, rb);
+            return SharedGenerateBody(body, go, sector, rb, ao);
         }
 
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -222,25 +227,14 @@ namespace NewHorizons
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
-            // For now, eccentric orbits gotta start at apoapsis and cant be inclined
-            var rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.TrueAnomaly + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
-            if (body.Config.Orbit.Eccentricity != 0)
-            {
-                rot = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode + body.Config.Orbit.ArgumentOfPeriapsis + 180f, Vector3.up);
-                body.Config.Orbit.Inclination = 0;
-            }
-
-            var incAxis = Quaternion.AngleAxis(body.Config.Orbit.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
-            var incRot = Quaternion.AngleAxis(body.Config.Orbit.Inclination, incAxis);
-
-            var positionVector = rot * incRot * Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity);
+            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
             var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
             if (body.Config.Base.SurfaceGravity != 0)
-                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence, body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
             
             if(body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
@@ -272,7 +266,7 @@ namespace NewHorizons
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
 
             // Do stuff that's shared between generating new planets and updating old ones
-            go = SharedGenerateBody(body, go, sector, owRigidBody);
+            go = SharedGenerateBody(body, go, sector, owRigidBody, ao);
 
             body.Object = go;
 
@@ -303,7 +297,7 @@ namespace NewHorizons
             return go;
         }
 
-        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
+        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
         {
             if (body.Config.Ring != null)
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);
@@ -339,6 +333,18 @@ namespace NewHorizons
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
                 AtmosphereBuilder.Make(go, body.Config.Atmosphere);
+            }
+
+            if (body.Config.Props != null)
+            {
+                if (body.Config.Props.Scatter != null) PropBuilder.Scatter(go, body.Config.Props.Scatter, body.Config.Base.SurfaceSize, sector);
+                if (body.Config.Props.Rafts != null)
+                {
+                    foreach(var v in body.Config.Props.Rafts)
+                    {
+                        Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RaftBuilder.Make(go, v, sector, rb, ao));
+                    }
+                }
             }
 
             return go;

@@ -20,6 +20,7 @@ namespace NewHorizons.External
         public AsteroidBeltModule AsteroidBelt { get; set; }
         public StarModule Star { get; set; }
         public FocalPointModule FocalPoint { get; set; }
+        public PropModule Props { get; set; }
         public SpawnModule Spawn { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
@@ -55,47 +56,6 @@ namespace NewHorizons.External
                     }
                 }
                 else Logger.LogError($"{item.Key} {item.Value} is not valid. Is your config formatted correctly?");
-
-                /*
-                switch(item.Key)
-                {
-                    case "Base":
-                        Base.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "Orbit":
-                        Orbit.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "Atmosphere":
-                        Atmosphere = new AtmosphereModule();
-                        Atmosphere.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "Ring":
-                        Ring = new RingModule();
-                        Ring.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "HeightMap":
-                        HeightMap = new HeightMapModule();
-                        HeightMap.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "ProcGen":
-                        ProcGen = new ProcGenModule();
-                        ProcGen.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "AsteroidBelt":
-                        AsteroidBelt = new AsteroidBeltModule();
-                        AsteroidBelt.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    case "Spawn":
-                        Spawn = new SpawnModule();
-                        Spawn.Build(item.Value as Dictionary<string, object>);
-                        break;
-                    default:
-                        var property = typeof(PlanetConfig).GetProperty(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                        if (property != null) property.SetValue(this, Convert.ChangeType(item.Value, property.PropertyType));
-                        else Logger.LogError($"{item.Key} {item.Value} is not valid. Is your config formatted correctly?");
-                        break;
-                }
-                */
             }
         }
     }

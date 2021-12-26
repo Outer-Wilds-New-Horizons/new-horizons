@@ -239,6 +239,9 @@
     <Compile Include="Builder\Body\ProcGenBuilder.cs" />
     <Compile Include="Builder\Body\StarBuilder.cs" />
     <Compile Include="Builder\Orbital\FocalPointBuilder.cs" />
+    <Compile Include="Builder\Props\PlanetaryRaftController.cs" />
+    <Compile Include="Builder\Props\PropBuilder.cs" />
+    <Compile Include="Builder\Props\RaftBuilder.cs" />
     <Compile Include="External\AsteroidBeltModule.cs" />
     <Compile Include="External\AtmosphereModule.cs" />
     <Compile Include="External\BaseModule.cs" />
@@ -247,6 +250,7 @@
     <Compile Include="External\Module.cs" />
     <Compile Include="External\OrbitModule.cs" />
     <Compile Include="External\ProcGenModule.cs" />
+    <Compile Include="External\PropModule.cs" />
     <Compile Include="External\RingModule.cs" />
     <Compile Include="External\SpawnModule.cs" />
     <Compile Include="External\StarModule.cs" />

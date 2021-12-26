@@ -104,6 +104,17 @@ namespace NewHorizons.Builder.General
             ao.transform.root.gameObject.SetActive(false);
         }
 
+        public static void RemoveDistantProxyClones()
+        {
+            foreach(ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
+            {
+                if(proxy.transform.name.Contains("_DistantProxy(Clone"))
+                {
+                    GameObject.Destroy(proxy.gameObject);
+                }
+            }
+        }
+
         private static void RemoveProxy(string name)
         {
             if (name.Equals("TowerTwin")) name = "AshTwin";

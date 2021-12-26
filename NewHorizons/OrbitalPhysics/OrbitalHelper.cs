@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External;
 
 namespace NewHorizons.OrbitalPhysics
 {
@@ -16,6 +17,33 @@ namespace NewHorizons.OrbitalPhysics
             inverseSquared,
             linear,
             none
+        }
+
+        public static Vector3 RotateTo(Vector3 vector, KeplerElements elements)
+        {
+            // For now, eccentric orbits gotta start at apoapsis and cant be inclined
+            var rot = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode + elements.TrueAnomaly + elements.ArgumentOfPeriapsis + 180f, Vector3.up);
+            if (elements.Eccentricity != 0)
+            {
+                rot = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode + elements.ArgumentOfPeriapsis + 180f, Vector3.up);
+            }
+
+            var incAxis = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
+            var incRot = Quaternion.AngleAxis(elements.Inclination, incAxis);
+
+            return rot * incRot * vector;
+        }
+
+        public static Vector3 RotateTo(Vector3 vector, OrbitModule module)
+        {
+            return RotateTo(vector, KeplerElements.FromOrbitModule(module));
+        }
+
+        public static Vector3 VelocityDirection(Vector3 separation, KeplerElements elements)
+        {
+            var incAxis = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
+            var incRot = Quaternion.AngleAxis(elements.Inclination, incAxis);
+            return Vector3.Cross(RotateTo(Vector3.up, elements), separation);
         }
 
         public static float GetOrbitalVelocity(float distance, Gravity gravity, KeplerElements kepler)

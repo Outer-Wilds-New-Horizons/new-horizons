@@ -8,7 +8,7 @@ namespace NewHorizons.Builder.General
 {
     static class GravityBuilder
     {
-        public static void Make(GameObject body, AstroObject ao, float surfaceAccel, float upperSurface, float lowerSurface, string falloffType)
+        public static void Make(GameObject body, AstroObject ao, float surfaceAccel, float sphereOfInfluence, float surface, string falloffType)
         {
             GameObject gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = body.transform;
@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.General
 
             SphereCollider SC = gravityGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = 2 * upperSurface;
+            SC.radius = sphereOfInfluence;
 
             OWCollider OWC = gravityGO.AddComponent<OWCollider>();
             OWC.SetLODActivationMask(DynamicOccupant.Player);
@@ -28,8 +28,8 @@ namespace NewHorizons.Builder.General
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
             GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField(falloffType).GetValue(GV));
-            GV.SetValue("_alignmentRadius", 0.75f * upperSurface);
-            GV.SetValue("_upperSurfaceRadius", lowerSurface);
+            GV.SetValue("_alignmentRadius", 1.5f * surface);
+            GV.SetValue("_upperSurfaceRadius", surface);
             GV.SetValue("_lowerSurfaceRadius", 0);
             GV.SetValue("_layer", 3);
             GV.SetValue("_priority", 0);

@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Body
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
             icosphere.transform.localPosition = Vector3.zero;
 
-            Mesh mesh = Icosphere.Build(3, module.Scale, module.Scale * 1.2f);
+            Mesh mesh = Icosphere.Build(4, module.Scale, module.Scale * 1.2f);
 
             icosphere.AddComponent<MeshFilter>();
             icosphere.GetComponent<MeshFilter>().mesh = mesh;

@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
 {
     static class DetectorBuilder
     {
-        public static void Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject)
+        public static void Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit = true)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.General
             detectorGO.layer = 20;
 
             ConstantForceDetector forceDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            forceDetector.SetValue("_inheritElement0", true);
+            forceDetector.SetValue("_inheritElement0", inherit);
             OWRB.RegisterAttachedForceDetector(forceDetector);
 
             GravityVolume parentGravityVolume = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.General
             {
                 forceDetector.SetValue("_detectableFields", new ForceVolume[] { parentGravityVolume });
             }
-            else
+            else if (astroObject != null)
             {
                 // It's probably a focal point (or its just broken)
                 var binaryFocalPoint = primaryBody.gameObject.GetComponent<BinaryFocalPoint>();
@@ -109,8 +109,6 @@ namespace NewHorizons.Builder.General
             primary.transform.position = point.transform.position + r1 * separation.normalized;
             secondary.transform.position = point.transform.position - r2 * separation.normalized;
 
-            Logger.Log($"{primary.transform.position}, {secondary.transform.position}, {point.transform.position}");
-
             // Set detectable fields
             primaryCFD.SetValue("_detectableFields", new ForceVolume[] { secondaryGV });
             primaryCFD.SetValue("_inheritDetector", point.GetAttachedOWRigidbody().GetAttachedForceDetector());
@@ -121,13 +119,6 @@ namespace NewHorizons.Builder.General
             secondaryCFD.SetValue("_inheritDetector", point.GetAttachedOWRigidbody().GetAttachedForceDetector());
             secondaryCFD.SetValue("_activeInheritedDetector", point.GetAttachedOWRigidbody().GetAttachedForceDetector());
             secondaryCFD.SetValue("_inheritElement0", false);
-            
-            // Update speeds
-            var direction = Vector3.Cross(separation, Vector3.up).normalized;
-            var m1 = Gm1 / GravityVolume.GRAVITATIONAL_CONSTANT;
-            var m2 = Gm2 / GravityVolume.GRAVITATIONAL_CONSTANT;
-            var reducedMass = m1 * m2 / (m1 + m2);
-            var totalMass = m1 + m2;
 
             // They must have the same eccentricity
             var parameterizedAstroObject = primary.GetComponent<ParameterizedAstroObject>();
@@ -145,6 +136,15 @@ namespace NewHorizons.Builder.General
                 p = parameterizedAstroObject.keplerElements.ArgumentOfPeriapsis;
             }
 
+            // Update speeds
+            var direction = Vector3.Cross(separation, Vector3.up).normalized;
+            if (direction.sqrMagnitude == 0) direction = Vector3.left;
+
+            var m1 = Gm1 / GravityVolume.GRAVITATIONAL_CONSTANT;
+            var m2 = Gm2 / GravityVolume.GRAVITATIONAL_CONSTANT;
+            var reducedMass = m1 * m2 / (m1 + m2);
+            var totalMass = m1 + m2;
+
             var r = separation.magnitude;
 
             // Start them off at their periapsis
@@ -156,38 +156,58 @@ namespace NewHorizons.Builder.General
             if(parameterizedAstroObject2 != null) parameterizedAstroObject2.keplerElements = secondaryKeplerElements;
 
             // Finally we update the speeds
-            var b = r * Mathf.Sqrt(1 - ecc * ecc);
             float v = Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * totalMass * (1 - ecc * ecc) / Mathf.Pow(r, exponent - 1));
-            var v2 = v / (1f + (m2 / m2));
+            var v2 = v / (1f + (m2 / m1));
             var v1 = v - v2;
 
-            // Rotate around argument of periapsis
-            var periapsisRotation = Quaternion.AngleAxis(p, Vector3.up);
-            var ascendingAxis = Quaternion.AngleAxis(p + l, Vector3.up) * Vector3.right;
-            var longitudeRotation = Quaternion.AngleAxis(i, ascendingAxis);
-
-            //direction = periapsisRotation * longitudeRotation * direction;
+            // Rotate 
+            var rot = Quaternion.AngleAxis(l + p + 180f, Vector3.up);
+            var incAxis = Quaternion.AngleAxis(l, Vector3.up) * Vector3.left;
+            var incRot = Quaternion.AngleAxis(i, incAxis);
 
             //Do this next tick for... reasons?
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(direction * v1));
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => secondaryRB.SetVelocity(direction * -v2));
+            var focalPointMotion = point.gameObject.GetComponent<InitialMotion>();
+            var focalPointVelocity = focalPointMotion == null ? Vector3.zero : focalPointMotion.GetInitVelocity();
+
+            var d1 = Vector3.Cross(OrbitalHelper.RotateTo(Vector3.up, primaryKeplerElements), separation.normalized);
+            var d2 = Vector3.Cross(OrbitalHelper.RotateTo(Vector3.up, primaryKeplerElements), separation.normalized);
+
+            var primaryInitialMotion = primary.gameObject.GetComponent<InitialMotion>();
+            primaryInitialMotion.SetValue("_initLinearDirection", d1);
+            primaryInitialMotion.SetValue("_initLinearSpeed", v1);
+
+            var secondaryInitialMotion = secondary.gameObject.GetComponent<InitialMotion>();
+            secondaryInitialMotion.SetValue("_initLinearDirection", d2);
+            secondaryInitialMotion.SetValue("_initLinearSpeed", -v2);
+
+            Logger.Log($"Velocity: {d1}, {v1}, {d2}, {v2}");
+
+            // InitialMotion already set its speed so we overwrite that
+            if (!primaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
+            {
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(d1 * v1 + focalPointVelocity));
+            }
+            if (!secondaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
+            {
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(d2 * -v2 + focalPointVelocity));
+            }
 
             // If they have tracking orbits set the period
             var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
+
+            if (exponent == 1) period /= 3f;
 
             // Only one of these won't be null, the other one gets done next tick
             var trackingOrbitPrimary = primary.GetComponentInChildren<TrackingOrbitLine>();
             if (trackingOrbitPrimary != null)
             {
                 trackingOrbitPrimary.TrailTime = period;
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => trackingOrbitPrimary.ResetLineVertices(), 15);
             }
 
             var trackingOrbitSecondary = secondary.GetComponentInChildren<TrackingOrbitLine>();
             if (trackingOrbitSecondary != null)
             {
                 trackingOrbitSecondary.TrailTime = period;
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => trackingOrbitSecondary.ResetLineVertices(), 15);
             }
         }
     }

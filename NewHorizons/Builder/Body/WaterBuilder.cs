@@ -22,9 +22,6 @@ namespace NewHorizons.Builder.Body
             TSR.maxLOD = 7;
             TSR.LODBias = 2;
             TSR.LODRadius = 2f;
-            
-            //TessSphereSectorToggle TSST = waterGO.AddComponent<TessSphereSectorToggle>();
-            //TSST.SetValue("_sector", sector);
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC.SetValue("_sector", sector);

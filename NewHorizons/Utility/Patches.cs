@@ -44,11 +44,12 @@ namespace NewHorizons.Utility
             ____upAxisDir *= -1f;    
         }
 
-        public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle)
+        public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
         {
             ____maxPanDistance *= 4f;
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
+            ____zoomSpeed *= 4f;
         }
 
         public static void OnOWCameraAwake(OWCamera __instance)

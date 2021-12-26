@@ -16,6 +16,7 @@ namespace NewHorizons.External
         AsteroidBeltModule AsteroidBelt { get; }
         StarModule Star { get; }
         FocalPointModule FocalPoint { get; }
+        PropModule Props { get; }
         SpawnModule Spawn { get; }
     }
 }
