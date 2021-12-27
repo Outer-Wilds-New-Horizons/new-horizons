@@ -207,10 +207,69 @@ Let's you put asteroids in orbit around a planet or star. Can probably negativel
 - "randomSeed" : (integer)
 
 ### FocalPoint
-If you want to have binary planets or stars you have to do a few extra steps. Make a "body" with no gravity or surface that orbits a star. Make sure this has a FocalPoint module. Then have the two body's you want to orbit each other have that focal point body listed as their primaryBody.
+If you want to have binary planets or stars you have to do a few extra steps. First you make a focal point body. Here's an example (note the "..." means you'd be writing stuff there but it isn't important for the example. Don't literally put "..."):
 
-- "primary" : (string) The name of the larger body in the binary pair.
-- "secondary" : (string) The name of the smaller body in the binary pair.
+```
+{
+	"name" : "Alpha Centauri",
+	"Base" :
+	{
+		...
+	},
+	"Orbit" :
+	{
+		"semiMajorAxis" : 120000,
+		"primaryBody" : "Sun",
+		...
+	},
+	"FocalPoint" :
+	{
+		"Primary" : "Alpha Centauri A",
+		"Secondary" : "Alpha Centauri B",
+	}
+}
+```
+Then you would make config files for the two bodies in the binary pair.
+```
+{
+	"name" : "Alpha Centauri A",
+	"Base" :
+	{
+		...
+	},
+	"Orbit" :
+	{
+		"semiMajorAxis" : 0,
+		"primaryBody" : "Alpha Centauri",
+		...
+	},
+	"Star" :
+	{
+		...
+	}
+}
+```
+and
+```
+{
+	"name" : "Alpha Centauri B",
+	"Base" :
+	{
+		...
+	},
+	"Orbit" :
+	{
+		"semiMajorAxis" : 10000,
+		"primaryBody" : "Alpha Centauri",
+		...
+	},
+	"Star" :
+	{
+		...
+	}
+}
+```
+The positions of the binaries will be based off of their masses (as determined by the "surfaceGravity" parameter). However, one of them must have a non-zero semiMajorAxis field else the mod gets confused. This example uses stars, but it will also work for planets. If you want to have other planets orbiting the center of mass, just put the focal point body as the primary body.
 
 ### Props
 Lets you place items on the surface of the planet. Currently this is a very early release version.
