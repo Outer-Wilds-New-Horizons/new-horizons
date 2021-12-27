@@ -35,6 +35,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Comets
 - Edit existing planet orbits
 - Black hole / white hole pairs
+- Separate solar system scenes accessible via wormhole
 
 ## How to create your own planets using configs
 
