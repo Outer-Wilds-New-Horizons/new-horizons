@@ -17,6 +17,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
   - [Props](#props)
   - [Spawn](#spawn)
   - [Star](#star)
+  - [How to destroy existing planets](#how-to-destroy-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
 - [Credits](#credits)
 
@@ -98,7 +99,7 @@ The first field you should have in any config file is the `name`. This should be
 
 The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
-Most fields are either true/false, a decimal number, and integr number, or a string (word with quotation marks around it). There are also colours and positions.
+Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also colours and positions.
 
 A colour is defined like this (with integers from 0 to 255): 
 
@@ -127,17 +128,17 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "hasMapMarker" : (true/false) If the body should have a marker on the map screen.
 - "hasAmbientLight" : (true/false) If the dark side of the body should have some slight ammount of light
 - "surfaceGravity" : (decimal number) How strong the acceleration due to gravity is at the surface. For example, Timber Hearth has a value of 12.
-- "gravityFallOff" : (string) Acceptible values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
+- "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
 - "waterSize" : (decimal number) If you want the planet to have water on it, set a value for this. 
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
 - "blackHoleSize" : (decimal number) If you want there to be a black hole in the center of the planet, set a value for this. Can't be larger than 100 for now.
 - "lavaSize" : (decimal number) If you want the planet to have lava on it, set a value for this. 
 - "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
-- "hasReferenceFrame" : (true/false) If the body should be targetable from the map screen.
+- "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
 
 ### Orbit
-Some of these I don't explain since they are just orbital parameters. If you don't know what they are, ask wikipedia. Or just don't put a value.
+Some of these I don't explain since they are just orbital parameters. If you don't know what they are, ask Wikipedia. Or just don't put a value.
 
 - "semiMajorAxis" : (integer) The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
 - "inclination" : (integer) The angle (in degrees) between the planet's orbit and the plane of the solar system.
@@ -150,9 +151,9 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "axialTilt" : (decimal number)
 - "siderealPeriod" : (decimal number)
 - "isTidallyLocked" : (true/false)
-- "showOrbitLine" : (true/false) Refering to the orbit line in the map screen.
+- "showOrbitLine" : (true/false) Referring to the orbit line in the map screen.
 - "isStatic" : (true/false) Set to true to have the body not move at all. Good for when placing stars.
-- "tint" : (colour) The colo9ur of the orbit line in the map view.
+- "tint" : (colour) The colour of the orbit line in the map view.
 
 ### Atmosphere
 
@@ -172,7 +173,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 Allows you to generate more interesting terrain than the sphere given by groundSize in the Base module.
 
 - "heightMap" : (string) The file path to a texture that will be used as a heightmap. Image should be greyscale. White is for high terrain and black for low.
-- "textureMap" : (string) The file path to a texture tht will be applied to the planet.
+- "textureMap" : (string) The file path to a texture that will be applied to the planet.
 - "minHeight" : (decimal number) The height corresponding to pure black in the heightmap.
 - "maxHeight" : (decimal number) The height corresponding to pure white in the heightmap.
 
@@ -202,7 +203,7 @@ Lets you place items on the surface of the planet. Currently this is a very earl
 ]
 ```
 
-The path is in the heirarchy of the solar system. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck.
+The path is in the hierarchy of the solar system. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck.
 
 ### Ring
 - "innerRadius" : (decimal number)
@@ -221,6 +222,18 @@ Use this if you are creating a star.
 - "size" : (decimal number)
 - "tint" : (colour) 
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
+
+### How to destroy existing planets
+
+You do this (but with the appropriate name) as it's own config.
+```
+{
+	"name" : "Ember Twin",
+	"destroy" : true,
+}
+```
+
+Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. I haven't tried destroying the sun. Probably don't do that, it will break everything. Probably.
 
 ## How to use New Horizons in other mods
 
