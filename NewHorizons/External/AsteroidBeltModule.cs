@@ -12,5 +12,6 @@ namespace NewHorizons.External
         public float OuterRadius { get; set; }
         public float Inclination { get; set; }
         public float LongitudeOfAscendingNode { get; set; }
+        public int RandomSeed { get; set; }
     }
 }

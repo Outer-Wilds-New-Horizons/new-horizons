@@ -338,6 +338,7 @@ namespace NewHorizons
             if (body.Config.Props != null)
             {
                 if (body.Config.Props.Scatter != null) PropBuilder.Scatter(go, body.Config.Props.Scatter, body.Config.Base.SurfaceSize, sector);
+                /*
                 if (body.Config.Props.Rafts != null)
                 {
                     foreach(var v in body.Config.Props.Rafts)
@@ -345,6 +346,7 @@ namespace NewHorizons
                         Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RaftBuilder.Make(go, v, sector, rb, ao));
                     }
                 }
+                */
             }
 
             return go;

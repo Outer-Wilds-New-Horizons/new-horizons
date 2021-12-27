@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Logger = NewHorizons.Utility.Logger;
+using System.Reflection;
 
 namespace NewHorizons.Builder.Props
 {
@@ -24,6 +26,7 @@ namespace NewHorizons.Builder.Props
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
             prop.transform.localPosition = position;
             prop.transform.rotation = Quaternion.FromToRotation(prop.transform.TransformDirection(Vector3.up), position.normalized);
+            prop.SetActive(false);
 
             List<string> assetBundles = new List<string>();
             foreach (var streamingHandle in prop.GetComponentsInChildren<StreamingMeshHandle>())
@@ -37,8 +40,46 @@ namespace NewHorizons.Builder.Props
 
             foreach (var assetBundle in assetBundles)
             {
-                StreamingManager.LoadStreamingAssets(assetBundle);
+                sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
+
+            /*
+            foreach(var component in prop.GetComponentsInChildren<Component>())
+            {
+                try
+                {
+                    var setSectorMethod = component.GetType().GetMethod("SetSector");
+                    var sectorField = component.GetType().GetField("_sector");
+
+                    if (setSectorMethod != null)
+                    {
+                        Logger.Log($"Found a SetSector method in {prop}.{component}");
+                        setSectorMethod.Invoke(component, new object[] { sector });
+                    }
+                    else if (sectorField != null)
+                    {
+                        Logger.Log($"Found a _sector field in {component}");
+                        sectorField.SetValue(component, sector);
+                    }
+                    else
+                    {
+                        if(component is Campfire)
+                        {
+                            Logger.Log("CAMPFIRE");
+                            Campfire campfire = component as Campfire;
+                            if (campfire._sector != null)
+                                campfire._sector.OnSectorOccupantsUpdated -= campfire.OnSectorOccupantsUpdated;
+
+                            campfire._sector = sector;
+                            campfire._sector.OnSectorOccupantsUpdated += campfire.OnSectorOccupantsUpdated;
+                        }
+                    }
+                }
+                catch (Exception e) { Logger.Log($"{e.Message}, {e.StackTrace}"); }
+            }
+            */
+
+            prop.SetActive(true);
         }
 
         public static void Scatter(GameObject body, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector)
@@ -53,7 +94,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    Make(body, prefab, point * radius, sector);
+                    Make(body, prefab, point.normalized * radius, sector);
                     points.RemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }

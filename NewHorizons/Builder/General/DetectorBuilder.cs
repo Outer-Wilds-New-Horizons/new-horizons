@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
 {
     static class DetectorBuilder
     {
-        public static void Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit = true)
+        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit = true)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
@@ -68,6 +68,7 @@ namespace NewHorizons.Builder.General
             }
 
             detectorGO.SetActive(true);
+            return detectorGO;
         }
 
         private static void SetBinaryForceDetectableFields(BinaryFocalPoint point, ForceDetector primaryCFD, ForceDetector secondaryCFD, OWRigidbody primaryRB, OWRigidbody secondaryRB)

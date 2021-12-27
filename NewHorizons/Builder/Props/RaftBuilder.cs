@@ -12,17 +12,16 @@ namespace NewHorizons.Builder.Props
 {
     public static class RaftBuilder
     {
-        private static GameObject originalRaft;
-
         public static void Make(GameObject body, Vector3 position, Sector sector, OWRigidbody OWRB, AstroObject ao)
         {
-            if(originalRaft == null) originalRaft = GameObject.Instantiate(GameObject.Find("RingWorld_Body/Sector_RingInterior/Interactibles_RingInterior/Rafts/Raft_Body"));
+            var originalRaft = GameObject.Find("RingWorld_Body/Sector_RingInterior/Interactibles_RingInterior/Rafts/Raft_Body");
 
             GameObject raftObject = new GameObject($"{body.name}Raft");
+            raftObject.SetActive(false);
 
             GameObject lightSensors = GameObject.Instantiate(GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone2/Structures_Zone2/RaftHouse_Eye_Zone2/Interactables_RaftHouse_Eye_Zone2/Prefab_IP_RaftDock/RaftSocket/Raft_Body (7)/LightSensorRoot"), raftObject.transform);
             GameObject geometry = GameObject.Instantiate(GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone2/Structures_Zone2/RaftHouse_Eye_Zone2/Interactables_RaftHouse_Eye_Zone2/Prefab_IP_RaftDock/RaftSocket/Raft_Body (7)/Structure_IP_Raft"), raftObject.transform);
-            GameObject colliders = GameObject.Instantiate(GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone2/Structures_Zone2/RaftHouse_Eye_Zone2/Interactables_RaftHouse_Eye_Zone2/Prefab_IP_RaftDock/RaftSocket/Raft_Body (7)/Colliders/"), raftObject.transform);
+            GameObject collidersObject = GameObject.Instantiate(GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone2/Structures_Zone2/RaftHouse_Eye_Zone2/Interactables_RaftHouse_Eye_Zone2/Prefab_IP_RaftDock/RaftSocket/Raft_Body (7)/Colliders/"), raftObject.transform);
 
             raftObject.transform.parent = sector.transform;
             raftObject.transform.localPosition = position;
@@ -30,12 +29,50 @@ namespace NewHorizons.Builder.Props
 
             foreach (var l in lightSensors.GetComponentsInChildren<SingleLightSensor>())
             {
-                l.SetValue("_sector", sector);
-                l.OnDetectLight += () => Logger.Log("LIGHT!!!");
-                l.SetValue("_lightSourceMask", LightSourceType.FLASHLIGHT);
+                if (l._sector != null) l._sector.OnSectorOccupantsUpdated -= l.OnSectorOccupantsUpdated;
+                l._sector = sector;
+                l._sector.OnSectorOccupantsUpdated += l.OnSectorOccupantsUpdated;
+                l._lightSourceMask = LightSourceType.FLASHLIGHT;
                 l.SetDetectorActive(true);
                 l.gameObject.SetActive(true);
-                Logger.Log($"{l}");
+            }
+
+            var rigidBody = raftObject.AddComponent<Rigidbody>();
+            rigidBody.isKinematic = true;
+            rigidBody.interpolation = originalRaft.GetComponent<Rigidbody>().interpolation;
+            rigidBody.collisionDetectionMode = originalRaft.GetComponent<Rigidbody>().collisionDetectionMode;
+            rigidBody.mass = originalRaft.GetComponent<Rigidbody>().mass;
+            rigidBody.drag = originalRaft.GetComponent<Rigidbody>().drag;
+            rigidBody.angularDrag = originalRaft.GetComponent<Rigidbody>().angularDrag;
+
+            var kinematicRigidBody = raftObject.AddComponent<KinematicRigidbody>();
+            kinematicRigidBody.centerOfMass = Vector3.zero;
+
+            var owRigidBody = raftObject.AddComponent<OWRigidbody>();
+            owRigidBody.SetValue("_kinematicSimulation", true);
+            owRigidBody.SetValue("_rigidbody", rigidBody);
+            owRigidBody.SetValue("_kinematicRigidbody", kinematicRigidBody);
+            kinematicRigidBody._rigidbody = rigidBody;
+            kinematicRigidBody._owRigidbody = owRigidBody;
+
+            //var motion = raftObject.AddComponent<MatchInitialMotion>();
+            //motion.SetBodyToMatch(OWRB);
+            
+            foreach (var c in collidersObject.GetComponentsInChildren<OWCollider>())
+            {
+                c.ClearParentBody();
+                c._parentBody = owRigidBody;
+                c.ListenForParentBodySuspension();
+            }
+            var meshColliders = collidersObject.GetComponentsInChildren<MeshCollider>();
+            foreach (var c in meshColliders)
+            {
+                var child = c.gameObject;
+                var newCollider = child.AddComponent<MeshCollider>();
+                newCollider.sharedMesh = c.sharedMesh;
+                newCollider.material = c.material;
+                newCollider.sharedMaterial = c.sharedMaterial;
+                GameObject.Destroy(c);
             }
 
             foreach (var child in raftObject.GetComponentsInChildren<StreamingRenderMeshHandle>())
@@ -43,29 +80,18 @@ namespace NewHorizons.Builder.Props
                 StreamingManager.LoadStreamingAssets(child.assetBundle);
             }
 
-            var a = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            a.transform.parent = raftObject.transform;
-            a.transform.localPosition = Vector3.zero;
+            var detectorGO = DetectorBuilder.Make(raftObject, owRigidBody, ao, null, false);
+            var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => fluidDetector._activeVolumes = new EffectVolume[] { body.GetComponentInChildren<RadialFluidVolume>() }.ToList());
 
-            //raftObject.AddComponent<PlanetaryRaftController>();
 
-            /*
-            var raftRB = raftObject.AddComponent<OWRigidbody>();
-            raftObject.AddComponent<Rigidbody>();
-            raftObject.AddComponent<KinematicRigidbody>();
-            raftRB.SetVelocity(OWRB.GetVelocity());
+            var targetBodyAlignment = raftObject.AddComponent<AlignWithTargetBody>();
+            targetBodyAlignment._owRigidbody = owRigidBody;
+            targetBodyAlignment.SetTargetBody(OWRB);
+            targetBodyAlignment.SetUsePhysicsToRotate(true);
 
-            var motion = raftObject.AddComponent<MatchInitialMotion>();
-            motion.SetBodyToMatch(OWRB);
-
-            DetectorBuilder.Make(raftObject, raftRB, ao, null, false);
-
-           var targetBodyAlignment = raftObject.AddComponent<AlignWithTargetBody>();
-           targetBodyAlignment.SetTargetBody(OWRB);
-           targetBodyAlignment.SetUsePhysicsToRotate(true);
-
-            raftObject.GetComponent<CenterOfTheUniverseOffsetApplier>().Init(raftRB);
-            */
+            var controller = raftObject.AddComponent<PlanetaryRaftController>();
+            controller.SetSector(sector);
 
             raftObject.SetActive(true);
         }

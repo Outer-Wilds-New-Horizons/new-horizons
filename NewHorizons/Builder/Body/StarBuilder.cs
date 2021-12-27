@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
@@ -25,10 +26,15 @@ namespace NewHorizons.Builder.Body
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
 
-            var sunLight = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight"), sunGO.transform);
+            //var sunLight = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight"), sunGO.transform);
+            var sunLight = new GameObject();
+            sunLight.transform.parent = sunGO.transform;
             sunLight.transform.localPosition = Vector3.zero;
             sunLight.transform.localScale = Vector3.one;
             sunLight.name = "StarLight";
+            var light = sunLight.AddComponent<Light>();
+            light.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
+            
 
             var solarFlareEmitter = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter"), sunGO.transform);
             solarFlareEmitter.transform.localPosition = Vector3.zero;
@@ -62,17 +68,18 @@ namespace NewHorizons.Builder.Body
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
             deathVolume.name = "DestructionVolume";
 
-            GameObject.Destroy(sunLight.GetComponent<FaceActiveCamera>());
-            GameObject.Destroy(sunLight.GetComponent<CSMTextureCacher>());
-            GameObject.Destroy(sunLight.GetComponent<ProxyShadowLight>());
+
 
             PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
             TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
             Light ambientLight = ambientLightGO.GetComponent<Light>();
-            SunLightController sunLightController = sunLight.GetComponent<SunLightController>();
-            GameObject.Destroy(sunLight.GetComponent<SunLightParamUpdater>());
 
-            GameObject.Destroy(sunLightController);
+            //GameObject.Destroy(sunLight.GetComponent<FaceActiveCamera>());
+            //GameObject.Destroy(sunLight.GetComponent<CSMTextureCacher>());
+            //GameObject.Destroy(sunLight.GetComponent<ProxyShadowLight>());
+            //SunLightController sunLightController = sunLight.GetComponent<SunLightController>();
+            //GameObject.Destroy(sunLight.GetComponent<SunLightParamUpdater>());
+            //GameObject.Destroy(sunLightController);
 
             if(starModule.Tint != null)
             {

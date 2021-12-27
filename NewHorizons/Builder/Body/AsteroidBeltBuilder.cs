@@ -23,6 +23,8 @@ namespace NewHorizons.Builder.Body
 
             Logger.Log($"Making {count} asteroids around {bodyName}");
 
+            Random.InitState(belt.RandomSeed);
+
             for (int i = 0; i < count; i++)
             {
                 var size = Random.Range(minSize, maxSize);
