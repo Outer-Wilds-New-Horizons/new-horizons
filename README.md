@@ -99,6 +99,26 @@ The first field you should have in any config file is the `name`. This should be
 
 The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
+Each { must match up with a closing } to denote its section. If you don't know how JSONs work then check Wikipedia.
+
+Modules look like this:
+
+```
+"Star" :
+{
+	"size" : 3000,
+	"tint" : 
+	{
+		"r" : 201,
+		"g" : 87,
+		"b" : 55,
+		"a" : 255
+	},
+}
+```
+
+In this example the `Star` module has a `size` field and a `tint` field. Since the colour is a complex object it needs another set of { and } around it, and then it has its own fields inside it : `r`, `g`, `b`, and `a`. Don't forget to put commas after each field.
+
 Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also colours and positions.
 
 A colour is defined like this (with integers from 0 to 255): 
