@@ -81,6 +81,7 @@ namespace NewHorizons.Builder.Body
             //GameObject.Destroy(sunLight.GetComponent<SunLightParamUpdater>());
             //GameObject.Destroy(sunLightController);
 
+            fog.fogRadius = starModule.Size * 1.2f;
             if(starModule.Tint != null)
             {
                 var colour = starModule.Tint.ToColor32();

@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Props
 		private OWRigidbody _raftBody;
 		private Sector _sector;
 		private GameObject parentBody;
-		private GravityVolume gravityVolume;
+		//private GravityVolume gravityVolume;
 
 		public float BuoyancyModifier = 5f;
 
