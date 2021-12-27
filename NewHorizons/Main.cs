@@ -240,7 +240,7 @@ namespace NewHorizons
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
-                MarkerBuilder.Make(go, body.Config.Name, body.Config.Orbit.IsMoon, body.Config.Star != null);
+                MarkerBuilder.Make(go, body.Config.Name, body.Config);
 
             if (body.Config.Base.HasAmbientLight)
                 AmbientLightBuilder.Make(go, sphereOfInfluence);

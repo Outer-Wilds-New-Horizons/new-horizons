@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Body
             var cometTail = GameObject.Instantiate(GameObject.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes"), go.transform);
             cometTail.transform.localPosition = Vector3.zero;
             cometTail.name = "CometTail";
-            cometTail.transform.localScale = Vector3.one * 110 / module.SurfaceSize;
+            cometTail.transform.localScale = Vector3.one * module.SurfaceSize / 110;
             cometTail.transform.localRotation = Quaternion.Euler(0, 180, 90);
             /*
             var alignment = cometTail.AddComponent<AlignWithTargetBody>();

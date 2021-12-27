@@ -12,7 +12,7 @@ namespace NewHorizons.Atmosphere
             atmoGO.SetActive(false);
             atmoGO.transform.parent = body.transform;
 
-            if (atmosphereModule.hasAtmosphere)
+            if (atmosphereModule.HasAtmosphere)
             {
                 var mat = GameObject.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere/Atmosphere_LOD0").GetComponent<MeshRenderer>().material;
 

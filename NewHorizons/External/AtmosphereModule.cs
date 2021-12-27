@@ -20,6 +20,6 @@ namespace NewHorizons.External
         public bool HasRain { get; set; }
         public bool HasSnow { get; set; }
         public bool HasOxygen { get; set; }
-        public bool hasAtmosphere { get; set; }
+        public bool HasAtmosphere { get; set; }
     }
 }
