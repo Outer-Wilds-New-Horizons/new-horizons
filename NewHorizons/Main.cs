@@ -10,6 +10,9 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
+using PacificEngine.OW_CommonResources.Game.Resource;
+using PacificEngine.OW_CommonResources.Game.State;
+using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -17,6 +20,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using static PacificEngine.OW_CommonResources.Game.State.Planet;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
@@ -219,8 +223,6 @@ namespace NewHorizons
 
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
-            body.Config.Orbit.AxialTilt = 0;
-
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
@@ -233,8 +235,9 @@ namespace NewHorizons
             var ao = (AstroObject)outputTuple.Item1;
             var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
+            GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+                gv = GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
             
             if(body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
@@ -280,7 +283,7 @@ namespace NewHorizons
             }
 
             // Have to do this after setting position
-            InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
+            var initialMotion = InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
@@ -293,6 +296,8 @@ namespace NewHorizons
             if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
+
+            HeavenlyBodyBuilder.Make(go, body.Config, sphereOfInfluence, gv, initialMotion);
 
             return go;
         }

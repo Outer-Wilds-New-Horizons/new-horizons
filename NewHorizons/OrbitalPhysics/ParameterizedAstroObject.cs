@@ -24,7 +24,7 @@ namespace NewHorizons.OrbitalPhysics
 
         public float Inclination
         {
-            get { return _keplerCoordinates.inclinationAngle - 90; }
+            get { return _keplerCoordinates.inclinationAngle; }
         }
 
         public float ArgumentOfPeriapsis
@@ -44,12 +44,12 @@ namespace NewHorizons.OrbitalPhysics
 
         public void SetKeplerCoordinatesFromOrbitModule(OrbitModule orbit)
         {
-            _keplerCoordinates = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination + 90, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
+            _keplerCoordinates = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
         }
 
         public void SetKeplerCoordinatesFromTrueAnomaly(float ecc, float a, float i, float p, float l, float trueAnomaly)
         {
-            _keplerCoordinates = KeplerCoordinates.fromTrueAnomaly(ecc, a, i + 90, p, l, trueAnomaly);
+            _keplerCoordinates = KeplerCoordinates.fromTrueAnomaly(ecc, a, i, p, l, trueAnomaly);
         }
 
         public override string ToString()

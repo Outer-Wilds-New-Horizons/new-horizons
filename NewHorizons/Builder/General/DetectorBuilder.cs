@@ -159,11 +159,11 @@ namespace NewHorizons.Builder.General
             var focalPointVelocity = focalPointMotion == null ? Vector3.zero : focalPointMotion.GetInitVelocity();
 
             var primaryInitialMotion = primary.gameObject.GetComponent<InitialMotion>();
-            primaryInitialMotion.SetValue("_initLinearDirection", v1.normalized);
+            primaryInitialMotion.SetValue("_initLinearDirection", primary.gameObject.transform.InverseTransformDirection(v1.normalized));
             primaryInitialMotion.SetValue("_initLinearSpeed", v1.magnitude);
 
             var secondaryInitialMotion = secondary.gameObject.GetComponent<InitialMotion>();
-            secondaryInitialMotion.SetValue("_initLinearDirection", v2.normalized);
+            secondaryInitialMotion.SetValue("_initLinearDirection", secondary.gameObject.transform.InverseTransformDirection(v2.normalized));
             secondaryInitialMotion.SetValue("_initLinearSpeed", v2.magnitude);
 
             // InitialMotion already set its speed so we overwrite that
@@ -178,10 +178,7 @@ namespace NewHorizons.Builder.General
 
             // If they have tracking orbits set the period
             var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
-            
-            if (exponent == 1) period /= 3f;
 
-            // Only one of these won't be null, the other one gets done next tick
             var trackingOrbitPrimary = primary.GetComponentInChildren<TrackingOrbitLine>();
             if (trackingOrbitPrimary != null)
             {

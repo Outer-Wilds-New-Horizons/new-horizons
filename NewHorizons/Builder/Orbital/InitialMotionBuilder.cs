@@ -17,31 +17,21 @@ namespace NewHorizons.Builder.Orbital
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
-
-
-            /*
-            ParameterizedInitialMotion initialMotion = body.AddComponent<ParameterizedInitialMotion>();
-            initialMotion.SetPrimary(primaryBody);
-            initialMotion.SetOrbitalParameters(
-                orbit.Eccentricity,
-                orbit.SemiMajorAxis,
-                orbit.Inclination,
-                orbit.LongitudeOfAscendingNode,
-                orbit.ArgumentOfPeriapsis,
-                orbit.TrueAnomaly);
-            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0.02f : 1.0f / orbit.SiderealPeriod);
-            */
-
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
             return Update(initialMotion, body, primaryBody, OWRB, orbit);
         }
 
         public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
+            // Rotation
+            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
+
+            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
+            body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+
+            initialMotion._orbitImpulseScalar = 0f;
             if (!orbit.IsStatic)
-            {
-                initialMotion._orbitImpulseScalar = 0f;
-                
+            {                
                 if(primaryBody != null)
                 {
                     initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
@@ -49,17 +39,13 @@ namespace NewHorizons.Builder.Orbital
                     if(gv != null)
                     {
                         var velocity = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(primaryBody.GetGravityVolume()), orbit);
-                        initialMotion._initLinearDirection = velocity.normalized;
+
+                        // For some stupid reason the InitialMotion awake method transforms the perfectly fine direction vector you give it so we preemptively do the inverse so it all cancels out
+                        initialMotion._initLinearDirection = body.transform.InverseTransformDirection(velocity.normalized);
                         initialMotion._initLinearSpeed = velocity.magnitude;
                     }
                 }
             }
-
-            // Rotation
-            //initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
-            initialMotion.SetValue("_initAngularSpeed", 0);
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
-            body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 
             return initialMotion;
         }

@@ -31,7 +31,7 @@ namespace NewHorizons.OrbitalPhysics
             {
                 // The gravity doesnt have an affect on position so we put whatever
                 var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, 1f, 100f);
-                var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination + 90, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
+                var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
@@ -45,7 +45,7 @@ namespace NewHorizons.OrbitalPhysics
             if(ao.SemiMajorAxis != 0)
             {
                 var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, 1f, 100f);
-                var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination + 90, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
+                var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
@@ -59,7 +59,7 @@ namespace NewHorizons.OrbitalPhysics
             if (semiMajorAxis != 0)
             {
                 var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, 1f, 100f);
-                var kepler = KeplerCoordinates.fromTrueAnomaly(eccentricity, semiMajorAxis, inclination + 90, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
+                var kepler = KeplerCoordinates.fromTrueAnomaly(eccentricity, semiMajorAxis, inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
@@ -73,7 +73,7 @@ namespace NewHorizons.OrbitalPhysics
             if (semiMajorAxis != 0)
             {
                 var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, 1f, 100f);
-                var kepler = KeplerCoordinates.fromEccentricAnomaly(eccentricity, semiMajorAxis, inclination + 90, argumentOfPeriapsis, longitudeOfAscendingNode, eccentricAnomaly);
+                var kepler = KeplerCoordinates.fromEccentricAnomaly(eccentricity, semiMajorAxis, inclination, argumentOfPeriapsis, longitudeOfAscendingNode, eccentricAnomaly);
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
@@ -84,7 +84,7 @@ namespace NewHorizons.OrbitalPhysics
         public static Vector3 GetVelocity(Gravity gravity, OrbitModule orbit)
         {
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
-            var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination + 90, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
+            var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
             var vel = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item2;
             Logger.Log($"Velocity : {vel}");
             return vel;
@@ -93,10 +93,15 @@ namespace NewHorizons.OrbitalPhysics
         public static Vector3 GetVelocity(Gravity gravity, ParameterizedAstroObject ao)
         {
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
-            var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination + 90, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
+            var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
             var vel = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item2;
             Logger.Log($"Velocity : {vel}");
             return vel;
+        }
+
+        public static KeplerCoordinates KeplerCoordinatesFromOrbitModule(OrbitModule orbit)
+        {
+            return KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
         }
 
         public class Gravity

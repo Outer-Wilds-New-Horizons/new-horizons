@@ -21,15 +21,12 @@ namespace NewHorizons.Builder.Orbital
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
 
+            var ecc = config.Orbit.Eccentricity;
+
             OrbitLine orbitLine;
-            if (config.Orbit.Eccentricity == 0)
-            {
-                orbitLine = orbitGO.AddComponent<ParameterizedOrbitLine>();
-            }
-            else
-            {
-                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
-            }
+            if (ecc == 0) orbitLine = orbitGO.AddComponent<OrbitLine>();
+            else if (ecc > 0 && ecc < 1) orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
+            else orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
