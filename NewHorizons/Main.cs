@@ -219,6 +219,8 @@ namespace NewHorizons
 
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
+            body.Config.Orbit.AxialTilt = 0;
+
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
@@ -227,9 +229,7 @@ namespace NewHorizons
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
-            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
-
-            var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
+            var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
             var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
@@ -272,7 +272,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = positionVector + primaryBody.transform.position;
+            go.transform.position = OrbitalHelper.GetPosition(body.Config.Orbit) + primaryBody.transform.position;
 
             if (go.transform.position.magnitude > FurthestOrbit)
             {

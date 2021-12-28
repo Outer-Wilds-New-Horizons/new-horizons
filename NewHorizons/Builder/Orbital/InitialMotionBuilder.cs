@@ -40,24 +40,24 @@ namespace NewHorizons.Builder.Orbital
         {
             if (!orbit.IsStatic)
             {
-                initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
-                initialMotion.SetValue("_orbitAngle", orbit.Inclination);
-                initialMotion.SetValue("_isGlobalAxis", false);
-                if (orbit.Eccentricity != 0 && primaryBody.GetGravityVolume() != null)
+                initialMotion._orbitImpulseScalar = 0f;
+                
+                if(primaryBody != null)
                 {
-                    // Calculate speed at apoapsis
-                    KeplerElements kepler = KeplerElements.FromOrbitModule(orbit);
-                    Gravity gravity = new Gravity(primaryBody.GetGravityVolume());
-
-                    var eccSpeed = OrbitalHelper.GetOrbitalVelocity(kepler.Apoapsis, gravity, kepler);
-                    var circularSpeed = OWPhysics.CalculateOrbitVelocity(primaryBody.GetAttachedOWRigidbody(), OWRB).magnitude;
-
-                    initialMotion.SetValue("_orbitImpulseScalar", eccSpeed / circularSpeed);
+                    initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
+                    var gv = primaryBody.GetGravityVolume();
+                    if(gv != null)
+                    {
+                        var velocity = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(primaryBody.GetGravityVolume()), orbit);
+                        initialMotion._initLinearDirection = velocity.normalized;
+                        initialMotion._initLinearSpeed = velocity.magnitude;
+                    }
                 }
             }
 
             // Rotation
-            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
+            //initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
+            initialMotion.SetValue("_initAngularSpeed", 0);
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 

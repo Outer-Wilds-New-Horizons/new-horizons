@@ -2,6 +2,7 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectView>ProjectFiles</ProjectView>
-	<OutputPath>C:\Users\Nicholas\AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons</OutputPath>
+	  <OutputPath>$(AppData)\OuterWildsModManager\OWML\Mods\xen.NewHorizons</OutputPath>
+	  <OuterWildsModsDirectory>$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>
   </PropertyGroup>
 </Project>

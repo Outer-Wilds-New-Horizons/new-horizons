@@ -72,10 +72,10 @@ namespace NewHorizons.OrbitalPhysics
 					var v = _vertices[i - 1];
 					_vertices[i] = new Vector3(v.x, v.y, v.z);
 				}
-				_vertices[0] = transform.parent.position - origin;
-				_lineRenderer.SetPositions(_vertices);
 				_timer = 0;
 			}
+			_vertices[0] = transform.parent.position - origin;
+			_lineRenderer.SetPositions(_vertices);
 
 			base.transform.position = origin;
 			base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);

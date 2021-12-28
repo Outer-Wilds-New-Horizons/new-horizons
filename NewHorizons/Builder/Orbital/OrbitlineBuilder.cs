@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Orbital
             OrbitLine orbitLine;
             if (config.Orbit.Eccentricity == 0)
             {
-                orbitLine = orbitGO.AddComponent<OrbitLine>();
+                orbitLine = orbitGO.AddComponent<ParameterizedOrbitLine>();
             }
             else
             {

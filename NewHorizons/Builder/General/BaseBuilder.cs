@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.General
 {
     static class BaseBuilder
     {
-        public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, Vector3 positionVector, IPlanetConfig config)
+        public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
             Rigidbody rigidBody = body.AddComponent<Rigidbody>();
             rigidBody.mass = 10000;
@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.General
 
             ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
 
-            if (config.Orbit != null) astroObject.keplerElements = KeplerElements.FromOrbitModule(config.Orbit);
+            if (config.Orbit != null) astroObject.SetKeplerCoordinatesFromOrbitModule(config.Orbit);
 
             var type = AstroObject.Type.Planet;
             if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;

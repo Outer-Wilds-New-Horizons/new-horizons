@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.General
             var secondary = point.Secondary;
             var planets = point.Planets;
 
-            
+
             // Binaries have to use the same gravity exponent
             var primaryGV = primary.GetGravityVolume();
             var secondaryGV = secondary.GetGravityVolume();
@@ -122,25 +122,20 @@ namespace NewHorizons.Builder.General
             secondaryCFD.SetValue("_inheritElement0", false);
 
             // They must have the same eccentricity
-            var parameterizedAstroObject = primary.GetComponent<ParameterizedAstroObject>();
-            var parameterizedAstroObject2 = secondary.GetComponent<ParameterizedAstroObject>();
-
-            float ecc = 0;
-            float i = 0;
-            float l = 0;
-            float p = 0;
-            if (parameterizedAstroObject != null)
+            var primaryAO = primary.GetComponent<ParameterizedAstroObject>();
+            var secondaryAO = secondary.GetComponent<ParameterizedAstroObject>();
+            if (primaryAO == null||secondaryAO == null)
             {
-                ecc = parameterizedAstroObject.keplerElements.Eccentricity;
-                i = parameterizedAstroObject.keplerElements.Inclination;
-                l = parameterizedAstroObject.keplerElements.LongitudeOfAscendingNode;
-                p = parameterizedAstroObject.keplerElements.ArgumentOfPeriapsis;
+                Logger.LogError($"Couldn't find ParameterizedAstroObject for body {primaryRB.name} or {secondaryRB.name}");
+                return;
             }
 
-            // Update speeds
-            var direction = Vector3.Cross(separation, Vector3.up).normalized;
-            if (direction.sqrMagnitude == 0) direction = Vector3.left;
+            float ecc = primaryAO.Eccentricity;
+            float i = primaryAO.Inclination;
+            float l = primaryAO.LongitudeOfAscendingNode;
+            float p = primaryAO.ArgumentOfPeriapsis;
 
+            // Update speeds
             var m1 = Gm1 / GravityVolume.GRAVITATIONAL_CONSTANT;
             var m2 = Gm2 / GravityVolume.GRAVITATIONAL_CONSTANT;
             var reducedMass = m1 * m2 / (m1 + m2);
@@ -148,54 +143,42 @@ namespace NewHorizons.Builder.General
 
             var r = separation.magnitude;
 
-            // Start them off at their periapsis
-            var primaryKeplerElements = KeplerElements.FromTrueAnomaly(ecc, r1 / (1f - ecc), i, l, p, 0);
-            var secondaryKeplerElements = KeplerElements.FromTrueAnomaly(ecc, r2 / (1f - ecc), i, l, p, 180);
+            Logger.Log($"Primary AO: [{primaryAO}], Secondary AO: [{secondaryAO}]");
 
-            // Maybe we'll need these orbital parameters later
-            if(parameterizedAstroObject != null) parameterizedAstroObject.keplerElements = primaryKeplerElements;
-            if(parameterizedAstroObject2 != null) parameterizedAstroObject2.keplerElements = secondaryKeplerElements;
+            // Start them off at their periapsis
+            primaryAO.SetKeplerCoordinatesFromTrueAnomaly(ecc, r1 / (1f - ecc), i, l, p, 0);
+            secondaryAO.SetKeplerCoordinatesFromTrueAnomaly(ecc, r2 / (1f - ecc), i, l, p, 180);
+
+            Logger.Log($"Primary AO: [{primaryAO}], Secondary AO: [{secondaryAO}]");
 
             // Finally we update the speeds
-            float v = Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * totalMass * (1 - ecc * ecc) / Mathf.Pow(r, exponent - 1));
-            var v2 = v / (1f + (m2 / m1));
-            var v1 = v - v2;
+            var v1 = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(exponent, totalMass), primaryAO);
+            var v2 = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(exponent, totalMass), secondaryAO);
 
-            // Rotate 
-            var rot = Quaternion.AngleAxis(l + p + 180f, Vector3.up);
-            var incAxis = Quaternion.AngleAxis(l, Vector3.up) * Vector3.left;
-            var incRot = Quaternion.AngleAxis(i, incAxis);
-
-            //Do this next tick for... reasons?
             var focalPointMotion = point.gameObject.GetComponent<InitialMotion>();
             var focalPointVelocity = focalPointMotion == null ? Vector3.zero : focalPointMotion.GetInitVelocity();
 
-            var d1 = Vector3.Cross(OrbitalHelper.RotateTo(Vector3.up, primaryKeplerElements), separation.normalized);
-            var d2 = Vector3.Cross(OrbitalHelper.RotateTo(Vector3.up, primaryKeplerElements), separation.normalized);
-
             var primaryInitialMotion = primary.gameObject.GetComponent<InitialMotion>();
-            primaryInitialMotion.SetValue("_initLinearDirection", d1);
-            primaryInitialMotion.SetValue("_initLinearSpeed", v1);
+            primaryInitialMotion.SetValue("_initLinearDirection", v1.normalized);
+            primaryInitialMotion.SetValue("_initLinearSpeed", v1.magnitude);
 
             var secondaryInitialMotion = secondary.gameObject.GetComponent<InitialMotion>();
-            secondaryInitialMotion.SetValue("_initLinearDirection", d2);
-            secondaryInitialMotion.SetValue("_initLinearSpeed", -v2);
-
-            Logger.Log($"Velocity: {d1}, {v1}, {d2}, {v2}");
+            secondaryInitialMotion.SetValue("_initLinearDirection", v2.normalized);
+            secondaryInitialMotion.SetValue("_initLinearSpeed", v2.magnitude);
 
             // InitialMotion already set its speed so we overwrite that
             if (!primaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(d1 * v1 + focalPointVelocity));
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(v1 + focalPointVelocity));
             }
             if (!secondaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(d2 * -v2 + focalPointVelocity));
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(-v2 + focalPointVelocity));
             }
 
             // If they have tracking orbits set the period
             var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
-
+            
             if (exponent == 1) period /= 3f;
 
             // Only one of these won't be null, the other one gets done next tick

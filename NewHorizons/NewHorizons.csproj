@@ -30,4 +30,9 @@
   <ItemGroup>
     <Content Include="NewHorizons.csproj.user" />
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PacificEngine.OW_CommonResources">
+      <HintPath>$(OuterWildsModsDirectory)\PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
