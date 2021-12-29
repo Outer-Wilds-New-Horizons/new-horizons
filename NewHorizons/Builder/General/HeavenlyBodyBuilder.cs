@@ -15,20 +15,20 @@ namespace NewHorizons.Builder.General
 {
     public static class HeavenlyBodyBuilder
     {
-        private static Dictionary<string, HeavenlyBody> bodyName = new Dictionary<string, HeavenlyBody>();
+        private static readonly Dictionary<string, HeavenlyBody> bodyName = new Dictionary<string, HeavenlyBody>();
 
-        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion, AstroObject ao)
+        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
             var G = GravityVolume.GRAVITATIONAL_CONSTANT;
             var gravity = Gravity.of(bodyGravity == null ? 2f : bodyGravity.GetFalloffExponent(), bodyGravity == null ? 0 : bodyGravity.GetStandardGravitationalParameter() / G);
-            var parent = getBody(config.Orbit.PrimaryBody);
+            var parent = GetBody(config.Orbit.PrimaryBody);
             var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
 
-            var hb = getBody(config.Name);
+            var hb = GetBody(config.Name);
             if (hb == null)
             {
-                hb = addHeavenlyBody(config.Name);
+                hb = AddHeavenlyBody(config.Name);
             }
             var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
 
@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.General
             Planet.defaultMapping = mapping;
         }
 
-        private static HeavenlyBody addHeavenlyBody(string name)
+        private static HeavenlyBody AddHeavenlyBody(string name)
         {
             var hb = new HeavenlyBody(name);
             bodyName.Add(name, hb);
@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.General
             return hb;
         }
 
-        private static HeavenlyBody getBody(string name)
+        private static HeavenlyBody GetBody(string name)
         {
             if (bodyName.ContainsKey(name))
             {
