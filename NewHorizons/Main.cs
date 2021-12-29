@@ -160,7 +160,7 @@ namespace NewHorizons
             {
                 try
                 {
-                    GameObject planetObject = GenerateBody(body);
+                    GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
                     if (planetObject == null) return false;
                     planetObject.SetActive(true);
                 }
@@ -207,7 +207,7 @@ namespace NewHorizons
 
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
-            body.Config.Orbit.LongitudeOfAscendingNode = 0;
+            //body.Config.Orbit.LongitudeOfAscendingNode = 0;
             //body.Config.Orbit.ArgumentOfPeriapsis = 0;
 
             AstroObject primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
@@ -301,7 +301,7 @@ namespace NewHorizons
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 
-            HeavenlyBodyBuilder.Make(go, body.Config, sphereOfInfluence, gv, initialMotion, ao);
+            HeavenlyBodyBuilder.Make(go, body.Config, sphereOfInfluence, gv, initialMotion);
 
             return go;
         }
