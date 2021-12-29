@@ -4,6 +4,7 @@ packages
 bin
 obj
 zip
+*.zip
 
 *.csproj.user
 */Build/*
