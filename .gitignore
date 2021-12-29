@@ -3,5 +3,7 @@ packages
 .vs
 bin
 obj
+zip
 
 *.csproj.user
+*/Build/*
