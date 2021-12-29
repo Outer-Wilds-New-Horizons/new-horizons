@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.General
 {
     public static class HeavenlyBodyBuilder
     {
-        private static Dictionary<string, HeavenlyBody> bodyName = new Dictionary<string, HeavenlyBody>();
+        private static Dictionary<string, HeavenlyBody> bodyMap = new Dictionary<string, HeavenlyBody>();
 
         public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion, AstroObject ao)
         {
@@ -40,14 +40,14 @@ namespace NewHorizons.Builder.General
         private static HeavenlyBody addHeavenlyBody(string name)
         {
             var hb = new HeavenlyBody(name);
-            bodyName.Add(name, hb);
+            bodyMap.Add(name, hb);
 
             var astroLookup = Position.AstroLookup;
             astroLookup.Add(hb, () => AstroObjectLocator.GetAstroObject(name));
             Position.AstroLookup = astroLookup;
 
             var bodyLookup = Position.BodyLookup;
-            bodyLookup.Add(hb, () => AstroObjectLocator.GetAstroObject(name)?.GetAttachedOWRigidbody());
+            bodyLookup.Add(hb, () => getOWRigidbody(name));
             Position.BodyLookup = bodyLookup;
 
             return hb;
@@ -55,17 +55,40 @@ namespace NewHorizons.Builder.General
 
         private static HeavenlyBody getBody(string name)
         {
-            if (bodyName.ContainsKey(name))
+            if (bodyMap.ContainsKey(name))
             {
-                return bodyName[name];
+                return bodyMap[name];
             }
 
             var hb = Position.find(AstroObjectLocator.GetAstroObject(name));
             if (hb != null)
             {
-                bodyName.Add(name, hb);
+                bodyMap.Add(name, hb);
             }
             return hb;
+        }
+
+        public static void OnDestroy()
+        {
+            Planet.defaultMapping = Planet.standardMapping;
+        }
+
+        private static AstroObject getAstroObject(string name)
+        {
+            var astroBody = AstroObjectLocator.GetAstroObject(name);
+            if (astroBody == null
+                || astroBody.gameObject == null)
+            {
+                return null;
+            }
+
+            return astroBody;
+        }
+
+        private static OWRigidbody getOWRigidbody(string name)
+        {
+            var astroBody = getAstroObject(name);
+            return astroBody?.GetOWRigidbody();
         }
     }
 }

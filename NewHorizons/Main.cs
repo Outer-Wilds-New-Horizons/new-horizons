@@ -69,8 +69,9 @@ namespace NewHorizons
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.Log($"Scene Loaded: {scene} {mode}");
-            if (scene.name != "SolarSystem") return;
+            Logger.Log($"Scene Loaded: {scene.name} {mode}");
+            HeavenlyBodyBuilder.OnDestroy();
+            if (scene.name != "SolarSystem") { return; }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
