@@ -35,13 +35,13 @@ namespace NewHorizons.OrbitalPhysics
 		// Literally the stock EllipticOrbitLine but for now I don't want to use the patches from CommonResources
 		public override void Update()
 		{
-			AstroObject astroObject = (this._astroObject != null) ? this._astroObject.GetPrimaryBody() : null;
-			if (astroObject == null)
+			AstroObject primaryAO = _astroObject?.GetPrimaryBody();
+			if (primaryAO == null)
 			{
 				base.enabled = false;
 				return;
 			}
-			Vector3 vector = astroObject.transform.position + this._semiMajorAxis.normalized * this._fociDistance;
+			Vector3 vector = primaryAO.transform.position + this._semiMajorAxis.normalized * this._fociDistance;
 			float num = this.CalcProjectedAngleToCenter(vector, this._semiMajorAxis, this._semiMinorAxis, this._astroObject.transform.position);
 			for (int i = 0; i < this._numVerts; i++)
 			{

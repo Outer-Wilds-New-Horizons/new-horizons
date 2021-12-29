@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.General
 {
     public static class HeavenlyBodyBuilder
     {
-        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
+        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion, AstroObject ao)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
             var G = GravityVolume.GRAVITATIONAL_CONSTANT;
@@ -27,6 +27,10 @@ namespace NewHorizons.Builder.General
             var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
 
             Planet.mapping.Add(hb, planetoid);
+            Planet.defaultMapping.Add(hb, planetoid);
+
+            Position.AstroLookup.Add(hb, () => ao);
+            Position.BodyLookup.Add(hb, () => ao?.GetAttachedOWRigidbody());
         }
     }
 }

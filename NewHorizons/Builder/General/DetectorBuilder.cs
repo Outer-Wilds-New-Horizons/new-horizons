@@ -79,7 +79,6 @@ namespace NewHorizons.Builder.General
             var secondary = point.Secondary;
             var planets = point.Planets;
 
-
             // Binaries have to use the same gravity exponent
             var primaryGV = primary.GetGravityVolume();
             var secondaryGV = secondary.GetGravityVolume();
@@ -149,6 +148,10 @@ namespace NewHorizons.Builder.General
             primaryAO.SetKeplerCoordinatesFromTrueAnomaly(ecc, r1 / (1f - ecc), i, l, p, 0);
             secondaryAO.SetKeplerCoordinatesFromTrueAnomaly(ecc, r2 / (1f - ecc), i, l, p, 180);
 
+            // Make sure positions are right
+            primary.transform.position = point.transform.position + OrbitalHelper.GetPosition(primaryAO);
+            secondary.transform.position = point.transform.position + OrbitalHelper.GetPosition(secondaryAO);
+
             Logger.Log($"Primary AO: [{primaryAO}], Secondary AO: [{secondaryAO}]");
 
             // Finally we update the speeds
@@ -173,7 +176,7 @@ namespace NewHorizons.Builder.General
             }
             if (!secondaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => primaryRB.SetVelocity(-v2 + focalPointVelocity));
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => secondaryRB.SetVelocity(v2 + focalPointVelocity));
             }
 
             // If they have tracking orbits set the period
