@@ -24,8 +24,8 @@ namespace NewHorizons.Builder.Orbital
             var ecc = config.Orbit.Eccentricity;
 
             OrbitLine orbitLine;
-            if (ecc == 0) orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
-            else if (ecc > 0 && ecc < 1) orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+            if (ecc == 0) orbitLine = orbitGO.AddComponent<OrbitLine>();
+            else if (ecc > 0 && ecc < 1) orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
             else orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
 
             var color = Color.white;
