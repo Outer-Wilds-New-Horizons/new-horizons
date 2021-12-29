@@ -17,15 +17,15 @@ namespace NewHorizons.Builder.General
     {
         private static Dictionary<string, HeavenlyBody> bodyMap = new Dictionary<string, HeavenlyBody>();
 
-        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion, AstroObject ao)
+        public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
             var G = GravityVolume.GRAVITATIONAL_CONSTANT;
             var gravity = Gravity.of(bodyGravity == null ? 2f : bodyGravity.GetFalloffExponent(), bodyGravity == null ? 0 : bodyGravity.GetStandardGravitationalParameter() / G);
-            var parent = getBody(config.Orbit.PrimaryBody);
+            var parent = GetBody(config.Orbit.PrimaryBody);
             var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
 
-            var hb = getBody(config.Name);
+            var hb = GetBody(config.Name);
             if (hb == null)
             {
                 hb = AddHeavenlyBody(config.Name);
@@ -45,8 +45,8 @@ namespace NewHorizons.Builder.General
             var astroLookup = Position.AstroLookup;
             var bodyLookup = Position.BodyLookup;
 
-            astroLookup.Add(hb, () => AstroObjectLocator.GetAstroObject(name));
-            bodyLookup.Add(hb, () => getOWRigidbody(name));
+            astroLookup.Add(hb, () => GetAstroObject(name));
+            bodyLookup.Add(hb, () => GetOWRigidbody(name));
 
             Position.AstroLookup = astroLookup;
             Position.BodyLookup = bodyLookup;
@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.General
             Planet.defaultMapping = Planet.standardMapping;
         }
 
-        private static AstroObject getAstroObject(string name)
+        private static AstroObject GetAstroObject(string name)
         {
             var astroBody = AstroObjectLocator.GetAstroObject(name);
             if (astroBody == null
@@ -86,9 +86,9 @@ namespace NewHorizons.Builder.General
             return astroBody;
         }
 
-        private static OWRigidbody getOWRigidbody(string name)
+        private static OWRigidbody GetOWRigidbody(string name)
         {
-            var astroBody = getAstroObject(name);
+            var astroBody = GetAstroObject(name);
             return astroBody?.GetOWRigidbody();
         }
     }
