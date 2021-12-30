@@ -20,5 +20,6 @@ namespace NewHorizons.External
         public float LavaSize { get; set; }
         public bool HasCometTail { get; set; }
         public bool HasReferenceFrame { get; set; } = true;
+        public bool CenterOfSolarSystem { get; set; } = false;
     }
 }

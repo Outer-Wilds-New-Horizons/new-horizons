@@ -17,21 +17,6 @@ namespace NewHorizons.Builder.Orbital
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
-
-
-            /*
-            ParameterizedInitialMotion initialMotion = body.AddComponent<ParameterizedInitialMotion>();
-            initialMotion.SetPrimary(primaryBody);
-            initialMotion.SetOrbitalParameters(
-                orbit.Eccentricity,
-                orbit.SemiMajorAxis,
-                orbit.Inclination,
-                orbit.LongitudeOfAscendingNode,
-                orbit.ArgumentOfPeriapsis,
-                orbit.TrueAnomaly);
-            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0.02f : 1.0f / orbit.SiderealPeriod);
-            */
-
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
             return Update(initialMotion, body, primaryBody, OWRB, orbit);
         }
@@ -40,10 +25,10 @@ namespace NewHorizons.Builder.Orbital
         {
             if (!orbit.IsStatic)
             {
-                initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
+                initialMotion.SetPrimaryBody(primaryBody?.GetAttachedOWRigidbody());
                 initialMotion.SetValue("_orbitAngle", orbit.Inclination);
                 initialMotion.SetValue("_isGlobalAxis", false);
-                if (orbit.Eccentricity != 0 && primaryBody.GetGravityVolume() != null)
+                if (orbit.Eccentricity != 0 && primaryBody?.GetGravityVolume() != null)
                 {
                     // Calculate speed at apoapsis
                     KeplerElements kepler = KeplerElements.FromOrbitModule(orbit);
