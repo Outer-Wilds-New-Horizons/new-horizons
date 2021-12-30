@@ -6,5 +6,4 @@ obj
 zip
 *.zip
 
-*.csproj.user
 */Build/*
