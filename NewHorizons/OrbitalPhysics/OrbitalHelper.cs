@@ -35,7 +35,6 @@ namespace NewHorizons.OrbitalPhysics
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
-            Logger.Log($"Position : {pos}");
             return pos;
         }
 
@@ -49,7 +48,6 @@ namespace NewHorizons.OrbitalPhysics
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
-            Logger.Log($"Position : {pos}");
             return pos;
         }
 
@@ -63,7 +61,6 @@ namespace NewHorizons.OrbitalPhysics
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
-            Logger.Log($"Position : {pos}");
             return pos;
         }
 
@@ -77,7 +74,6 @@ namespace NewHorizons.OrbitalPhysics
                 pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
             }
 
-            Logger.Log($"Position : {pos}");
             return pos;
         }
 
@@ -86,7 +82,6 @@ namespace NewHorizons.OrbitalPhysics
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
             var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
             var vel = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item2;
-            Logger.Log($"Velocity : {vel}");
             return vel;
         }
 
@@ -95,7 +90,6 @@ namespace NewHorizons.OrbitalPhysics
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
             var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
             var vel = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item2;
-            Logger.Log($"Velocity : {vel}");
             return vel;
         }
 

@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
+using OWML.Utils;
 using PacificEngine.OW_CommonResources.Game.Resource;
 using PacificEngine.OW_CommonResources.Game.State;
 using PacificEngine.OW_CommonResources.Geometry.Orbits;
@@ -20,8 +21,16 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
-            var G = GravityVolume.GRAVITATIONAL_CONSTANT;
-            var gravity = Gravity.of(bodyGravity == null ? 2f : bodyGravity.GetFalloffExponent(), bodyGravity == null ? 0 : bodyGravity.GetStandardGravitationalParameter() / G);
+
+            var gravity = Gravity.of(0, 0);
+            if(bodyGravity != null)
+            {
+                var G = GravityVolume.GRAVITATIONAL_CONSTANT;
+                var exponent = bodyGravity.GetFalloffExponent();
+                var mass = bodyGravity._surfaceAcceleration * Mathf.Pow(bodyGravity._upperSurfaceRadius, exponent) / G;
+                gravity = Gravity.of(bodyGravity == null ? 2f : exponent, bodyGravity == null ? 0 : mass);
+            }
+
             var parent = GetBody(config.Orbit.PrimaryBody);
             var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
 
@@ -35,6 +44,24 @@ namespace NewHorizons.Builder.General
             var mapping = Planet.defaultMapping;
             mapping[hb] = planetoid;
             Planet.defaultMapping = mapping;
+
+            // Fix for binary focal points
+            var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
+            if (focalPoint != null)
+            {
+                var primary = Position.getBody(GetBody(focalPoint.PrimaryName));
+                var secondary = Position.getBody(GetBody(focalPoint.SecondaryName));
+
+                if(primary != null && secondary != null)
+                {
+                    var exponent = ((primary?.GetAttachedGravityVolume()?.GetValue<float>("_falloffExponent") ?? 2f) + (secondary?.GetAttachedGravityVolume()?.GetValue<float>("_falloffExponent") ?? 2f)) / 2f;
+                    var mass = ((primary?.GetAttachedGravityVolume()?.GetValue<float>("_gravitationalMass") ?? ((primary?.GetMass() ?? 0f) * 1000f)) + (secondary?.GetAttachedGravityVolume()?.GetValue<float>("_gravitationalMass") ?? ((secondary?.GetMass() ?? 0f) * 1000f))) / 4f;
+
+                    var currentValue = Planet.mapping[parent];
+                    var newValue = new Planet.Plantoid(currentValue.size, Gravity.of(exponent, mass), currentValue.state);
+                    Planet.defaultMapping[parent] = newValue;
+                }
+            }
         }
 
         private static HeavenlyBody AddHeavenlyBody(string name)

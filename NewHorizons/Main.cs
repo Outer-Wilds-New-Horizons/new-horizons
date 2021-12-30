@@ -89,32 +89,43 @@ namespace NewHorizons
                 (b.Config.Orbit.IsMoon ? 2 : 1)
                 ))).ToList();
 
-            var flagNoneLoadedThisPass = true;
+            var count = 0;
             while(toLoad.Count != 0)
             {
+                Logger.Log($"Starting body loading pass #{++count}");
+                var flagNoneLoadedThisPass = true;
                 foreach (var body in toLoad)
                 {
-                    if (LoadBody(body))
-                        flagNoneLoadedThisPass = false;
+                    if (LoadBody(body)) flagNoneLoadedThisPass = false;
                 }
                 if (flagNoneLoadedThisPass)
                 {
+                    Logger.LogWarning("No objects were loaded this pass");
                     // Try again but default to sun
                     foreach(var body in toLoad)
                     {
-                        if (LoadBody(body, true))
-                            flagNoneLoadedThisPass = false;
-                    }
-                    if(flagNoneLoadedThisPass)
-                    {
-                        // Give up
-                        Logger.Log($"Couldn't finish adding bodies.");
-                        return;
+                        if (LoadBody(body, true)) flagNoneLoadedThisPass = false;
                     }
                 }
+                if (flagNoneLoadedThisPass)
+                {
+                    // Give up
+                    Logger.Log($"Couldn't finish adding bodies.");
+                    return;
+                }
+
                 toLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
+
+                // Infinite loop failsafe
+                if (count > 10) 
+                {
+                    Logger.Log("Something went wrong");
+                    break;
+                }
             }
+
+            Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
