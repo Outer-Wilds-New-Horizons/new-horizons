@@ -57,8 +57,11 @@ namespace NewHorizons.Builder.General
                 if(primary != null && secondary != null)
                 {
                     Logger.Log($"Fixing BinaryFocalPoint HeavenlyBody gravity value for {parent.name}");
-                    var exponent = ((primary?.GetAttachedGravityVolume()?._falloffExponent ?? 2f) + (secondary?.GetAttachedGravityVolume()?._falloffExponent ?? 2f)) / 2f;
-                    var mass = ((primary?.GetAttachedGravityVolume()?._gravitationalMass ?? ((primary?.GetMass() ?? 0f) * 1000f)) + (secondary?.GetAttachedGravityVolume()?._gravitationalMass ?? ((secondary?.GetMass() ?? 0f) * 1000f))) / 4f;
+                    var primaryGravity = getGravity(primary?.GetAttachedGravityVolume());
+                    var secondaryGravity = getGravity(secondary?.GetAttachedGravityVolume());
+
+                    var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
+                    var mass = (primaryGravity.mass + secondaryGravity.mass) / 4f;
 
                     var currentValue = Planet.mapping[parent];
                     var newValue = new Planet.Plantoid(currentValue.size, Gravity.of(exponent, mass), currentValue.state);
