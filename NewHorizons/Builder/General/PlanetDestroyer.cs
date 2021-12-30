@@ -102,6 +102,8 @@ namespace NewHorizons.Builder.General
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveProxy(ao.name.Replace("_Body", "")));
 
             ao.transform.root.gameObject.SetActive(false);
+
+            HeavenlyBodyBuilder.Remove(ao);
         }
 
         public static void RemoveDistantProxyClones()

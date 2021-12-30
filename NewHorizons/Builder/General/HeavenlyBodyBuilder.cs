@@ -38,18 +38,18 @@ namespace NewHorizons.Builder.General
                 hb = AddHeavenlyBody(config.Name);
             }
 
-            if(!config.Orbit.IsStatic)
+            var mapping = Planet.defaultMapping;
+            if (!config.Orbit.IsStatic)
             {
                 var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
 
-                var mapping = Planet.defaultMapping;
                 mapping[hb] = planetoid;
                 Planet.defaultMapping = mapping;
             }
 
             // Fix for binary focal points
             var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
-            if (focalPoint != null && Planet.defaultMapping.ContainsKey(parent))
+            if (focalPoint != null && mapping.ContainsKey(parent))
             {
                 var primary = Position.getBody(GetBody(focalPoint.PrimaryName));
                 var secondary = Position.getBody(GetBody(focalPoint.SecondaryName));
@@ -63,11 +63,19 @@ namespace NewHorizons.Builder.General
                     var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
                     var mass = (primaryGravity.mass + secondaryGravity.mass) / 4f;
 
-                    var currentValue = Planet.mapping[parent];
-                    var newValue = new Planet.Plantoid(currentValue.size, Gravity.of(exponent, mass), currentValue.state);
-                    Planet.defaultMapping[parent] = newValue;
+                    mapping[parent] = new Planet.Plantoid(mapping[parent].size, Gravity.of(exponent, mass), mapping[parent].state);
+                    Planet.defaultMapping = mapping;
                 }
             }
+        }
+
+        public static void Remove(AstroObject obj)
+        {
+            var astro = Position.find(obj);
+
+            var mapping = Planet.defaultMapping;
+            mapping.Remove(astro);
+            Planet.defaultMapping = mapping;
         }
 
         private static Gravity getGravity(GravityVolume volume)
@@ -115,7 +123,7 @@ namespace NewHorizons.Builder.General
             return hb;
         }
 
-        public static void OnDestroy()
+        public static void Reset()
         {
             Planet.defaultMapping = Planet.standardMapping;
         }
