@@ -40,7 +40,6 @@ namespace NewHorizons.OrbitalPhysics
                 cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
             }
 
-            Logger.Log($"Position : {cartesian.Item1} Velocity : {cartesian.Item2}");
             return cartesian;
         }
 
@@ -60,7 +59,6 @@ namespace NewHorizons.OrbitalPhysics
                 cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
             }
 
-            Logger.Log($"Position : {cartesian.Item1} Velocity : {cartesian.Item2}");
             return cartesian;
         }
 
