@@ -24,25 +24,21 @@ namespace NewHorizons.OrbitalPhysics
             none
         }
 
-        public static Vector3 GetPosition(ParameterizedAstroObject ao)
-        {
-            Vector3 pos = Vector3.zero;
-            if(ao.SemiMajorAxis != 0)
-            {
-                var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, 1f, 100f);
-                var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
-                pos = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler).Item1;
-            }
-
-            Logger.Log($"Position : {pos}");
-            return pos;
-        }
-
         public static Tuple<Vector3, Vector3> GetCartesian(Gravity gravity, OrbitModule orbit)
         {
+            if (orbit.SemiMajorAxis == 0)
+            {
+                return Tuple.Create(Vector3.zero, Vector3.zero);
+            }
+
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
             var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
             var cartesian = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler);
+
+            if (cartesian == null)
+            {
+                cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
+            }
 
             Logger.Log($"Position : {cartesian.Item1} Velocity : {cartesian.Item2}");
             return cartesian;
@@ -50,9 +46,19 @@ namespace NewHorizons.OrbitalPhysics
 
         public static Tuple<Vector3, Vector3> GetCartesian(Gravity gravity, ParameterizedAstroObject ao)
         {
+            if (ao.SemiMajorAxis == 0)
+            {
+                return Tuple.Create(Vector3.zero, Vector3.zero);
+            }
+
             var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
             var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
             var cartesian = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler);
+
+            if (cartesian == null)
+            {
+                cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
+            }
 
             Logger.Log($"Position : {cartesian.Item1} Velocity : {cartesian.Item2}");
             return cartesian;
