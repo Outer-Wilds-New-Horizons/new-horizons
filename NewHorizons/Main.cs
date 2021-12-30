@@ -202,20 +202,29 @@ namespace NewHorizons
 
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
-            AstroObject primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
-            if (primaryBody == null)
+            AstroObject primaryBody;
+            if(body.Config.Orbit.PrimaryBody != null)
             {
-                if(defaultPrimaryToSun)
+                primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+                if (primaryBody == null)
                 {
-                    Logger.Log($"Couldn't find {body.Config.Orbit.PrimaryBody}, defaulting to Sun");
-                    primaryBody = AstroObjectLocator.GetAstroObject("Sun");
-                }
-                else
-                {
-                    NextPassBodies.Add(body);
-                    return null;
+                    if (defaultPrimaryToSun)
+                    {
+                        Logger.Log($"Couldn't find {body.Config.Orbit.PrimaryBody}, defaulting to Sun");
+                        primaryBody = AstroObjectLocator.GetAstroObject("Sun");
+                    }
+                    else
+                    {
+                        NextPassBodies.Add(body);
+                        return null;
+                    }
                 }
             }
+            else
+            {
+                primaryBody = null;
+            }
+
 
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
@@ -272,7 +281,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = positionVector + primaryBody.transform.position;
+            go.transform.position = positionVector + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
 
             if (go.transform.position.magnitude > FurthestOrbit)
             {

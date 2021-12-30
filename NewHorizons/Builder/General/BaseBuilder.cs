@@ -49,8 +49,13 @@ namespace NewHorizons.Builder.General
             if (config.Orbit.IsTidallyLocked)
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
-                alignment.SetTargetBody(primaryBody.GetAttachedOWRigidbody());
+                alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment.SetValue("_usePhysicsToRotate", true);
+            }
+
+            if(config.Base.CenterOfSolarSystem)
+            {
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = owRigidBody, 2);
             }
 
             return new Tuple<AstroObject, OWRigidbody>(astroObject, owRigidBody);
