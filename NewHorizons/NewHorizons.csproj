@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <ProjectGuid>{8A39F9E7-1A89-430C-9C3E-BDFB3B7E17DF}</ProjectGuid>
     <TargetFramework>net48</TargetFramework>
@@ -33,27 +32,7 @@
       <HintPath>$(OuterWildsModsDirectory)\PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>
-      rmdir /Q /S "$(OuterWildsModsDirectory)\$(ProjectName)"
-      md "$(OuterWildsModsDirectory)\$(ProjectName)"
-      md "$(OuterWildsModsDirectory)\$(ProjectName)\AssetBundle"
-      copy /y "$(ProjectDir)default-config.json" "$(OuterWildsModsDirectory)\$(ProjectName)"
-      copy /y "$(ProjectDir)manifest.json" "$(OuterWildsModsDirectory)\$(ProjectName)"
-      copy /y "$(ProjectDir)AssetBundle" "$(OuterWildsModsDirectory)\$(ProjectName)\AssetBundle"
-      copy /y "$(TargetPath)" "$(OuterWildsModsDirectory)\$(ProjectName)"
-
-      rmdir /Q /S "$(ProjectDir)$(ProjectName)"
-      md "$(ProjectDir)$(ProjectName)"
-      md "$(ProjectDir)$(ProjectName)\AssetBundle"
-      copy /y "$(ProjectDir)default-config.json" "$(ProjectDir)$(ProjectName)"
-      copy /y "$(ProjectDir)manifest.json" "$(ProjectDir)$(ProjectName)"
-      copy /y "$(ProjectDir)AssetBundle" "$(ProjectDir)$(ProjectName)\AssetBundle"
-      copy /y "$(TargetPath)" "$(ProjectDir)$(ProjectName)"
-      del /q "$(ProjectDir)..\$(ProjectName).zip"
-      powershell Compress-Archive "$(ProjectDir)$(ProjectName)" "$(ProjectDir)..\$(ProjectName).zip"
-      rmdir /Q /S "$(ProjectDir)$(ProjectName)"
-    </PostBuildEvent>
-  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="NewHorizons.csproj.user" />
+  </ItemGroup>
 </Project>

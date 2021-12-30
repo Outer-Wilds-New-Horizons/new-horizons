@@ -41,14 +41,20 @@ namespace NewHorizons.Builder.General
                 hb = AddHeavenlyBody(config.Name);
             }
 
-            if(!config.Orbit.IsStatic)
+            Planet.Plantoid planetoid;
+            
+            if (!config.Orbit.IsStatic)
             {
-                var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
-
-                var mapping = Planet.defaultMapping;
-                mapping[hb] = planetoid;
-                Planet.defaultMapping = mapping;
+                planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
             }
+            else
+            {
+                planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, 0f, HeavenlyBody.None, body.transform.position, Vector3.zero);
+            }
+
+            var mapping = Planet.defaultMapping;
+            mapping[hb] = planetoid;
+            Planet.defaultMapping = mapping;
 
             // Fix for binary focal points
             var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
