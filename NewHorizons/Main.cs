@@ -70,7 +70,7 @@ namespace NewHorizons
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
-            HeavenlyBodyBuilder.OnDestroy();
+            HeavenlyBodyBuilder.Reset();
             if (scene.name != "SolarSystem") { return; }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
@@ -290,7 +290,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = OrbitalHelper.GetPosition(body.Config.Orbit) + primaryBody.transform.position;
+            go.transform.position = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(1, 100), body.Config.Orbit).Item1 + primaryBody.transform.position;
 
             if (go.transform.position.magnitude > FurthestOrbit)
             {
