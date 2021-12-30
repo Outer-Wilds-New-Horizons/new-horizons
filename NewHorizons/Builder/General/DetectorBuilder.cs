@@ -149,14 +149,19 @@ namespace NewHorizons.Builder.General
             secondaryAO.SetKeplerCoordinatesFromTrueAnomaly(ecc, r2 / (1f - ecc), i, l, p, 180);
 
             // Make sure positions are right
-            primary.transform.position = point.transform.position + OrbitalHelper.GetPosition(primaryAO);
-            secondary.transform.position = point.transform.position + OrbitalHelper.GetPosition(secondaryAO);
+            var gravity = new OrbitalHelper.Gravity(exponent, totalMass);
+
+            var primaryCat = OrbitalHelper.GetCartesian(gravity, primaryAO);
+            var secondaryCat = OrbitalHelper.GetCartesian(gravity, secondaryAO);
+
+            primary.transform.position = point.transform.position + primaryCat.Item1;
+            secondary.transform.position = point.transform.position + secondaryCat.Item1;
 
             Logger.Log($"Primary AO: [{primaryAO}], Secondary AO: [{secondaryAO}]");
 
             // Finally we update the speeds
-            var v1 = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(exponent, totalMass), primaryAO);
-            var v2 = OrbitalHelper.GetVelocity(new OrbitalHelper.Gravity(exponent, totalMass), secondaryAO);
+            var v1 = primaryCat.Item2;
+            var v2 = primaryCat.Item2;
 
             var focalPointMotion = point.gameObject.GetComponent<InitialMotion>();
             var focalPointVelocity = focalPointMotion == null ? Vector3.zero : focalPointMotion.GetInitVelocity();

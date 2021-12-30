@@ -279,7 +279,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = OrbitalHelper.GetPosition(body.Config.Orbit) + primaryBody.transform.position;
+            go.transform.position = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(1, 100), body.Config.Orbit).Item1 + primaryBody.transform.position;
 
             if (go.transform.position.magnitude > FurthestOrbit)
             {

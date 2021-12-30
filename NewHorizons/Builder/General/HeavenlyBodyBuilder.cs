@@ -1,6 +1,8 @@
 ﻿using NewHorizons.External;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
+using OWML.Common;
+using PacificEngine.OW_CommonResources.Game;
 using PacificEngine.OW_CommonResources.Game.Resource;
 using PacificEngine.OW_CommonResources.Game.State;
 using PacificEngine.OW_CommonResources.Geometry.Orbits;
@@ -20,10 +22,13 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
-            var G = GravityVolume.GRAVITATIONAL_CONSTANT;
-            var gravity = Gravity.of(bodyGravity == null ? 2f : bodyGravity.GetFalloffExponent(), bodyGravity == null ? 0 : bodyGravity.GetStandardGravitationalParameter() / G);
+            var gravity = getGravity(bodyGravity);
             var parent = GetBody(config.Orbit.PrimaryBody);
             var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
+            if (parent == HeavenlyBody.None)
+            {
+                Helper.helper.Console.WriteLine($"Could not find planet ({config.Name}) reference to its parent {config.Orbit.PrimaryBody}", MessageType.Warning);
+            }
 
             var hb = GetBody(config.Name);
             if (hb == null)
@@ -35,6 +40,14 @@ namespace NewHorizons.Builder.General
             var mapping = Planet.defaultMapping;
             mapping[hb] = planetoid;
             Planet.defaultMapping = mapping;
+        }
+
+        private static Gravity getGravity(GravityVolume volume)
+        {
+            var exponent = volume._falloffType != GravityVolume.FalloffType.linear ? 2f : 1f;
+            var mass = (volume._surfaceAcceleration * Mathf.Pow(volume._upperSurfaceRadius, exponent)) / GravityVolume.GRAVITATIONAL_CONSTANT;
+
+            return Gravity.of(exponent, mass);
         }
 
         private static HeavenlyBody AddHeavenlyBody(string name)
