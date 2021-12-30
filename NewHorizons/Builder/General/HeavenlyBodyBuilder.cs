@@ -2,6 +2,7 @@
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using PacificEngine.OW_CommonResources.Game;
 using PacificEngine.OW_CommonResources.Game.Resource;
 using PacificEngine.OW_CommonResources.Game.State;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
@@ -35,15 +37,43 @@ namespace NewHorizons.Builder.General
             {
                 hb = AddHeavenlyBody(config.Name);
             }
-            var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
 
-            var mapping = Planet.defaultMapping;
-            mapping[hb] = planetoid;
-            Planet.defaultMapping = mapping;
+            if(!config.Orbit.IsStatic)
+            {
+                var planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
+
+                var mapping = Planet.defaultMapping;
+                mapping[hb] = planetoid;
+                Planet.defaultMapping = mapping;
+            }
+
+            // Fix for binary focal points
+            var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
+            if (focalPoint != null && Planet.defaultMapping.ContainsKey(parent))
+            {
+                var primary = Position.getBody(GetBody(focalPoint.PrimaryName));
+                var secondary = Position.getBody(GetBody(focalPoint.SecondaryName));
+
+                if(primary != null && secondary != null)
+                {
+                    Logger.Log($"Fixing BinaryFocalPoint HeavenlyBody gravity value for {parent.name}");
+                    var exponent = ((primary?.GetAttachedGravityVolume()?._falloffExponent ?? 2f) + (secondary?.GetAttachedGravityVolume()?._falloffExponent ?? 2f)) / 2f;
+                    var mass = ((primary?.GetAttachedGravityVolume()?._gravitationalMass ?? ((primary?.GetMass() ?? 0f) * 1000f)) + (secondary?.GetAttachedGravityVolume()?._gravitationalMass ?? ((secondary?.GetMass() ?? 0f) * 1000f))) / 4f;
+
+                    var currentValue = Planet.mapping[parent];
+                    var newValue = new Planet.Plantoid(currentValue.size, Gravity.of(exponent, mass), currentValue.state);
+                    Planet.defaultMapping[parent] = newValue;
+                }
+            }
         }
 
         private static Gravity getGravity(GravityVolume volume)
         {
+            if (volume == null)
+            {
+                return Gravity.of(2, 0);
+            }
+
             var exponent = volume._falloffType != GravityVolume.FalloffType.linear ? 2f : 1f;
             var mass = (volume._surfaceAcceleration * Mathf.Pow(volume._upperSurfaceRadius, exponent)) / GravityVolume.GRAVITATIONAL_CONSTANT;
 
