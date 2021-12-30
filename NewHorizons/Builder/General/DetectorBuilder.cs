@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.General
             forceDetector.SetValue("_inheritElement0", inherit);
             OWRB.RegisterAttachedForceDetector(forceDetector);
 
-            GravityVolume parentGravityVolume = primaryBody.GetAttachedOWRigidbody().GetAttachedGravityVolume();
+            GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
             if (parentGravityVolume != null)
             {
                 forceDetector.SetValue("_detectableFields", new ForceVolume[] { parentGravityVolume });
@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.General
             else if (astroObject != null)
             {
                 // It's probably a focal point (or its just broken)
-                var binaryFocalPoint = primaryBody.gameObject.GetComponent<BinaryFocalPoint>();
+                var binaryFocalPoint = primaryBody?.gameObject?.GetComponent<BinaryFocalPoint>();
                 if(binaryFocalPoint != null)
                 {
                     if(astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName)) {

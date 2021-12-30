@@ -12,5 +12,7 @@ namespace NewHorizons.External
         public float Size { get; set; }
         public MColor32 Tint { get; set; }
         public MColor32 SolarFlareTint { get; set; }
+        public MColor32 LightTint { get; set; }
+        public float SolarLuminosity { get; set; }
     }
 }
