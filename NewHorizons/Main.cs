@@ -10,9 +10,6 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Resource;
-using PacificEngine.OW_CommonResources.Game.State;
-using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +17,6 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static PacificEngine.OW_CommonResources.Game.State.Planet;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
@@ -240,7 +236,6 @@ namespace NewHorizons
             {
                 primaryBody = null;
             }
-
 
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 

@@ -21,8 +21,6 @@ namespace NewHorizons.Builder.Body
             int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
             if (count > 200) count = 200;
 
-            Logger.Log($"Making {count} asteroids around {bodyName}");
-
             Random.InitState(belt.RandomSeed);
 
             for (int i = 0; i < count; i++)
@@ -30,7 +28,7 @@ namespace NewHorizons.Builder.Body
                 var size = Random.Range(minSize, maxSize);
                 var config = new Dictionary<string, object>()
                 {
-                    {"Name", $"{bodyName} Asteroid {i}"},
+                    {"Name", $"{bodyName} Asteroid {i+1}"},
                     {"Base", new Dictionary<string, object>()
                         {
                             {"HasMapMarker", false },
@@ -58,8 +56,6 @@ namespace NewHorizons.Builder.Body
                         }
                     }
                 };
-
-                Logger.Log($"{config}");
 
                 var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets);
                 Main.NextPassBodies.Add(asteroid);
