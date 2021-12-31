@@ -16,6 +16,7 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ReferenceFrame>("GetHUDDisplayName", typeof(Patches), nameof(Patches.GetHUDDisplayName));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerState>("CheckShipOutsideSolarSystem", typeof(Patches), nameof(Patches.CheckShipOutersideSolarSystem));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunLightParamUpdater>("LateUpdate", typeof(Patches), nameof(Patches.OnSunLightParamUpdaterLateUpdate));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<EllipticOrbitLine>("Start", typeof(Patches), nameof(Patches.OnEllipticOrbitLineStart));
@@ -79,6 +80,17 @@ namespace NewHorizons.Utility
                 Shader.SetGlobalVector(__instance._propID_OWSunColorIntensity, new Vector4(color.r, color.g, color.b, w2));
             }
 
+            return false;
+        }
+
+        public static bool OnSunSurfaceAudioControllerUpdate(SunSurfaceAudioController __instance)
+        {
+            if (__instance._sunController != null) return true;
+
+            var surfaceRadius = __instance.transform.parent.parent.localScale.magnitude;
+            float value = Mathf.Max(0f, Vector3.Distance(Locator.GetPlayerCamera().transform.position, __instance.transform.position) - surfaceRadius);
+            float num = Mathf.InverseLerp(1600f, 100f, value);
+            __instance._audioSource.SetLocalVolume(num * num * __instance._fade);
             return false;
         }
     }

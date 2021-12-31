@@ -54,6 +54,10 @@ namespace NewHorizons.Builder.Body
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.Size * 2f;
+            var surfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
+            surfaceAudio.SetSector(sector);
+            surfaceAudio._sunController = null;
+
             sunAudio.name = "Audio_Star";
 
             var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);

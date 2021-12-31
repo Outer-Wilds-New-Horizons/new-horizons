@@ -94,6 +94,26 @@ namespace NewHorizons.Builder.General
                 var starController = ao.gameObject.GetComponent<StarController>();
                 Main.Instance.StarLightController.RemoveStar(starController);
                 GameObject.Destroy(starController);
+
+                var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
+                GameObject.Destroy(audio);
+
+                foreach(var owAudioSource in ao.GetComponentsInChildren<OWAudioSource>())
+                {
+                    owAudioSource.Stop();
+                    GameObject.Destroy(owAudioSource);
+                }
+
+                foreach (var audioSource in ao.GetComponentsInChildren<AudioSource>())
+                {
+                    audioSource.Stop();
+                    GameObject.Destroy(audioSource);
+                }
+            }
+            else if(ao.GetAstroObjectName() == AstroObject.Name.DreamWorld)
+            {
+                GameObject.Find("BackRaft_Body").SetActive(false);
+                GameObject.Find("SealRaft_Body").SetActive(false);
             }
 
             // Deal with proxies
