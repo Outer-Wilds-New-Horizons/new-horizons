@@ -32,6 +32,8 @@ namespace NewHorizons
 
         public static float FurthestOrbit = 50000f;
 
+        private static StarLightController _starLightController;
+
         public override object GetApi()
         {
             return new NewHorizonsApi();
@@ -69,6 +71,34 @@ namespace NewHorizons
 
             if (scene.name != "SolarSystem") { return; }
 
+            // Need to manage this when there are multiple stars
+            var sun = GameObject.Find("Sun_Body");
+            var starController = sun.AddComponent<StarController>();
+            starController.Light = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+            starController.AmbientLight = GameObject.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
+            starController.FaceActiveCamera = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
+            starController.CSMTextureCacher = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
+            starController.ProxyShadowLight = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
+            starController.Intensity = 0.9859f;
+            starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
+
+            var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+            foreach(var comp in starLightGO.GetComponents<Component>())
+            {
+                if(!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                {
+                    GameObject.Destroy(comp);
+                }
+            }
+            GameObject.Destroy(starLightGO.GetComponent<Light>());
+            starLightGO.name = "StarLightController";
+
+            _starLightController = starLightGO.AddComponent<StarLightController>();
+            _starLightController.AddStar(starController);
+
+            starLightGO.SetActive(true);
+
+            // TODO: Make this configurable probably
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
             AstroObjectLocator.RefreshList();
@@ -77,7 +107,7 @@ namespace NewHorizons
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
-            // Stars then planets then moons
+            // Stars then planets then moons (not necessary but probably speeds things up, maybe)
             var toLoad = BodyList.OrderBy(b =>
                 (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
                 (b.Config.FocalPoint != null ? 0 :
@@ -85,10 +115,10 @@ namespace NewHorizons
                 (b.Config.Orbit.IsMoon ? 2 : 1)
                 ))).ToList();
 
-            var count = 0;
+            var passCount = 0;
             while (toLoad.Count != 0)
             {
-                Logger.Log($"Starting body loading pass #{++count}");
+                Logger.Log($"Starting body loading pass #{++passCount}");
                 var flagNoneLoadedThisPass = true;
                 foreach (var body in toLoad)
                 {
@@ -114,7 +144,7 @@ namespace NewHorizons
                 NextPassBodies = new List<NewHorizonsBody>();
 
                 // Infinite loop failsafe
-                if (count > 10)
+                if (passCount > 10)
                 {
                     Logger.Log("Something went wrong");
                     break;
@@ -179,7 +209,6 @@ namespace NewHorizons
             }
             return true;
         }
-
 
         public void LoadConfigs(IModBehaviour mod)
         {
@@ -278,8 +307,7 @@ namespace NewHorizons
             if (body.Config.Base.BlackHoleSize != 0)
                 BlackHoleBuilder.Make(go, body.Config.Base, sector);
 
-            if (body.Config.Star != null)
-                StarBuilder.Make(go, sector, body.Config.Star);
+            if (body.Config.Star != null) _starLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
             if (body.Config.FocalPoint != null)
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
@@ -352,7 +380,7 @@ namespace NewHorizons
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
-                AtmosphereBuilder.Make(go, body.Config.Atmosphere);
+                AtmosphereBuilder.Make(go, body.Config.Atmosphere, body.Config.Base.SurfaceSize);
             }
 
             if (body.Config.Props != null)
