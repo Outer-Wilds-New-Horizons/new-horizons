@@ -51,7 +51,7 @@ namespace NewHorizons
             {
                 LoadConfigs(this);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Logger.LogWarning("Couldn't find planets folder");
             }
@@ -65,51 +65,63 @@ namespace NewHorizons
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.Log($"Scene Loaded: {scene} {mode}");
-            if (scene.name != "SolarSystem") return;
+            Logger.Log($"Scene Loaded: {scene.name} {mode}");
+
+            if (scene.name != "SolarSystem") { return; }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
             AstroObjectLocator.RefreshList();
-            foreach(AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+            foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
             // Stars then planets then moons
-            var toLoad = BodyList.OrderBy(b => 
-                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : 
-                (b.Config.FocalPoint != null ? 0 : 
+            var toLoad = BodyList.OrderBy(b =>
+                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
+                (b.Config.FocalPoint != null ? 0 :
                 (b.Config.Star != null) ? 0 :
                 (b.Config.Orbit.IsMoon ? 2 : 1)
                 ))).ToList();
 
-            var flagNoneLoadedThisPass = true;
-            while(toLoad.Count != 0)
+            var count = 0;
+            while (toLoad.Count != 0)
             {
+                Logger.Log($"Starting body loading pass #{++count}");
+                var flagNoneLoadedThisPass = true;
                 foreach (var body in toLoad)
                 {
-                    if (LoadBody(body))
-                        flagNoneLoadedThisPass = false;
+                    if (LoadBody(body)) flagNoneLoadedThisPass = false;
                 }
                 if (flagNoneLoadedThisPass)
                 {
+                    Logger.LogWarning("No objects were loaded this pass");
                     // Try again but default to sun
-                    foreach(var body in toLoad)
+                    foreach (var body in toLoad)
                     {
-                        if (LoadBody(body, true))
-                            flagNoneLoadedThisPass = false;
-                    }
-                    if(flagNoneLoadedThisPass)
-                    {
-                        // Give up
-                        Logger.Log($"Couldn't finish adding bodies.");
-                        return;
+                        if (LoadBody(body, true)) flagNoneLoadedThisPass = false;
                     }
                 }
+                if (flagNoneLoadedThisPass)
+                {
+                    // Give up
+                    Logger.Log($"Couldn't finish adding bodies.");
+                    return;
+                }
+
                 toLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
+
+                // Infinite loop failsafe
+                if (count > 10)
+                {
+                    Logger.Log("Something went wrong");
+                    break;
+                }
             }
+
+            Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
@@ -155,7 +167,7 @@ namespace NewHorizons
             {
                 try
                 {
-                    GameObject planetObject = GenerateBody(body);
+                    GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
                     if (planetObject == null) return false;
                     planetObject.SetActive(true);
                 }
@@ -187,7 +199,7 @@ namespace NewHorizons
             }
         }
 
-        public static GameObject UpdateBody(NewHorizonsBody body, AstroObject ao) 
+        public static GameObject UpdateBody(NewHorizonsBody body, AstroObject ao)
         {
             Logger.Log($"Updating existing AstroObject {ao}");
 
@@ -203,7 +215,7 @@ namespace NewHorizons
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
-            if(body.Config.Orbit.PrimaryBody != null)
+            if (body.Config.Orbit.PrimaryBody != null)
             {
                 primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
                 if (primaryBody == null)
@@ -225,27 +237,25 @@ namespace NewHorizons
                 primaryBody = null;
             }
 
-
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
-            if(body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
+            if (body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
-            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
-
-            var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
+            var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
             var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
+            GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
-            
-            if(body.Config.Base.HasReferenceFrame)
+                gv = GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+
+            if (body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
@@ -281,6 +291,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
+            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
             go.transform.position = positionVector + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
 
             if (go.transform.position.magnitude > FurthestOrbit)
@@ -289,7 +300,7 @@ namespace NewHorizons
             }
 
             // Have to do this after setting position
-            InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
+            var initialMotion = InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
@@ -316,8 +327,8 @@ namespace NewHorizons
 
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
-            
-            if(body.Config.Base != null)
+
+            if (body.Config.Base != null)
             {
                 if (body.Config.Base.LavaSize != 0)
                     LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
