@@ -181,8 +181,6 @@ namespace NewHorizons.Builder.General
             secondaryInitialMotion.SetValue("_initLinearDirection", d2);
             secondaryInitialMotion.SetValue("_initLinearSpeed", -v2);
 
-            Logger.Log($"Velocity: {d1}, {v1}, {d2}, {v2}");
-
             // InitialMotion already set its speed so we overwrite that
             if (!primaryInitialMotion.GetValue<bool>("_isInitVelocityDirty"))
             {

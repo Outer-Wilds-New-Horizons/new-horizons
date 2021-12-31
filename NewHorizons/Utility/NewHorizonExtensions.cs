@@ -87,7 +87,14 @@ namespace NewHorizons.Utility
                     continue;
                 }
 
-                targetProperty.SetValue(destination, srcProp.GetValue(source, null), null);
+                try
+                {
+                    targetProperty.SetValue(destination, srcProp.GetValue(source, null), null);
+                }  catch(Exception)
+                {
+                    Logger.LogWarning($"Couldn't copy property {targetProperty.Name} from {source} to {destination}");
+                }
+
             }
         }
     }

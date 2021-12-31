@@ -32,6 +32,8 @@ namespace NewHorizons
 
         public static float FurthestOrbit = 50000f;
 
+        public StarLightController StarLightController { get; private set; }
+
         public override object GetApi()
         {
             return new NewHorizonsApi();
@@ -51,7 +53,7 @@ namespace NewHorizons
             {
                 LoadConfigs(this);
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Logger.LogWarning("Couldn't find planets folder");
             }
@@ -65,51 +67,91 @@ namespace NewHorizons
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.Log($"Scene Loaded: {scene} {mode}");
-            if (scene.name != "SolarSystem") return;
+            Logger.Log($"Scene Loaded: {scene.name} {mode}");
 
+            if (scene.name != "SolarSystem") { return; }
+
+            // Need to manage this when there are multiple stars
+            var sun = GameObject.Find("Sun_Body");
+            var starController = sun.AddComponent<StarController>();
+            starController.Light = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+            starController.AmbientLight = GameObject.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
+            starController.FaceActiveCamera = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
+            starController.CSMTextureCacher = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
+            starController.ProxyShadowLight = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
+            starController.Intensity = 0.9859f;
+            starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
+
+            var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+            foreach(var comp in starLightGO.GetComponents<Component>())
+            {
+                if(!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                {
+                    GameObject.Destroy(comp);
+                }
+            }
+            GameObject.Destroy(starLightGO.GetComponent<Light>());
+            starLightGO.name = "StarLightController";
+
+            StarLightController = starLightGO.AddComponent<StarLightController>();
+            StarLightController.AddStar(starController);
+
+            starLightGO.SetActive(true);
+
+            // TODO: Make this configurable probably
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
             AstroObjectLocator.RefreshList();
-            foreach(AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+            foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
-            // Stars then planets then moons
-            var toLoad = BodyList.OrderBy(b => 
-                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority : 
-                (b.Config.FocalPoint != null ? 0 : 
+            // Stars then planets then moons (not necessary but probably speeds things up, maybe)
+            var toLoad = BodyList.OrderBy(b =>
+                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
+                (b.Config.FocalPoint != null ? 0 :
                 (b.Config.Star != null) ? 0 :
                 (b.Config.Orbit.IsMoon ? 2 : 1)
                 ))).ToList();
 
-            var flagNoneLoadedThisPass = true;
-            while(toLoad.Count != 0)
+            var passCount = 0;
+            while (toLoad.Count != 0)
             {
+                Logger.Log($"Starting body loading pass #{++passCount}");
+                var flagNoneLoadedThisPass = true;
                 foreach (var body in toLoad)
                 {
-                    if (LoadBody(body))
-                        flagNoneLoadedThisPass = false;
+                    if (LoadBody(body)) flagNoneLoadedThisPass = false;
                 }
                 if (flagNoneLoadedThisPass)
                 {
+                    Logger.LogWarning("No objects were loaded this pass");
                     // Try again but default to sun
-                    foreach(var body in toLoad)
+                    foreach (var body in toLoad)
                     {
-                        if (LoadBody(body, true))
-                            flagNoneLoadedThisPass = false;
-                    }
-                    if(flagNoneLoadedThisPass)
-                    {
-                        // Give up
-                        Logger.Log($"Couldn't finish adding bodies.");
-                        return;
+                        if (LoadBody(body, true)) flagNoneLoadedThisPass = false;
                     }
                 }
+                if (flagNoneLoadedThisPass)
+                {
+                    // Give up
+                    Logger.Log($"Couldn't finish adding bodies.");
+                    return;
+                }
+
                 toLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
+
+                // Infinite loop failsafe
+                if (passCount > 10)
+                {
+                    Logger.Log("Something went wrong");
+                    break;
+                }
             }
+
+            Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
@@ -155,7 +197,7 @@ namespace NewHorizons
             {
                 try
                 {
-                    GameObject planetObject = GenerateBody(body);
+                    GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
                     if (planetObject == null) return false;
                     planetObject.SetActive(true);
                 }
@@ -167,7 +209,6 @@ namespace NewHorizons
             }
             return true;
         }
-
 
         public void LoadConfigs(IModBehaviour mod)
         {
@@ -187,7 +228,7 @@ namespace NewHorizons
             }
         }
 
-        public static GameObject UpdateBody(NewHorizonsBody body, AstroObject ao) 
+        public GameObject UpdateBody(NewHorizonsBody body, AstroObject ao)
         {
             Logger.Log($"Updating existing AstroObject {ao}");
 
@@ -200,10 +241,10 @@ namespace NewHorizons
             return SharedGenerateBody(body, go, sector, rb, ao);
         }
 
-        public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
+        public GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
-            if(body.Config.Orbit.PrimaryBody != null)
+            if (body.Config.Orbit.PrimaryBody != null)
             {
                 primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
                 if (primaryBody == null)
@@ -225,27 +266,25 @@ namespace NewHorizons
                 primaryBody = null;
             }
 
-
             Logger.Log($"Begin generation sequence of [{body.Config.Name}]");
 
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
-            if(body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
+            if (body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
 
-            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
-
-            var outputTuple = BaseBuilder.Make(go, primaryBody, positionVector, body.Config);
+            var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
             var owRigidBody = (OWRigidbody)outputTuple.Item2;
 
+            GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
-            
-            if(body.Config.Base.HasReferenceFrame)
+                gv = GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+
+            if (body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
 
             if (body.Config.Base.HasMapMarker)
@@ -268,8 +307,7 @@ namespace NewHorizons
             if (body.Config.Base.BlackHoleSize != 0)
                 BlackHoleBuilder.Make(go, body.Config.Base, sector);
 
-            if (body.Config.Star != null)
-                StarBuilder.Make(go, sector, body.Config.Star);
+            if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
             if (body.Config.FocalPoint != null)
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
@@ -281,6 +319,7 @@ namespace NewHorizons
 
             // Now that we're done move the planet into place
             go.transform.parent = Locator.GetRootTransform();
+            var positionVector = OrbitalHelper.RotateTo(Vector3.left * body.Config.Orbit.SemiMajorAxis * (1 + body.Config.Orbit.Eccentricity), body.Config.Orbit);
             go.transform.position = positionVector + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
 
             if (go.transform.position.magnitude > FurthestOrbit)
@@ -289,7 +328,7 @@ namespace NewHorizons
             }
 
             // Have to do this after setting position
-            InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
+            var initialMotion = InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
@@ -306,7 +345,7 @@ namespace NewHorizons
             return go;
         }
 
-        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
+        private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
         {
             if (body.Config.Ring != null)
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);
@@ -316,8 +355,8 @@ namespace NewHorizons
 
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
-            
-            if(body.Config.Base != null)
+
+            if (body.Config.Base != null)
             {
                 if (body.Config.Base.LavaSize != 0)
                     LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
@@ -341,7 +380,7 @@ namespace NewHorizons
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
-                AtmosphereBuilder.Make(go, body.Config.Atmosphere);
+                AtmosphereBuilder.Make(go, body.Config.Atmosphere, body.Config.Base.SurfaceSize);
             }
 
             if (body.Config.Props != null)
