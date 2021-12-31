@@ -32,7 +32,7 @@ namespace NewHorizons
 
         public static float FurthestOrbit = 50000f;
 
-        private static StarLightController _starLightController;
+        public StarLightController StarLightController { get; private set; }
 
         public override object GetApi()
         {
@@ -93,8 +93,8 @@ namespace NewHorizons
             GameObject.Destroy(starLightGO.GetComponent<Light>());
             starLightGO.name = "StarLightController";
 
-            _starLightController = starLightGO.AddComponent<StarLightController>();
-            _starLightController.AddStar(starController);
+            StarLightController = starLightGO.AddComponent<StarLightController>();
+            StarLightController.AddStar(starController);
 
             starLightGO.SetActive(true);
 
@@ -228,7 +228,7 @@ namespace NewHorizons
             }
         }
 
-        public static GameObject UpdateBody(NewHorizonsBody body, AstroObject ao)
+        public GameObject UpdateBody(NewHorizonsBody body, AstroObject ao)
         {
             Logger.Log($"Updating existing AstroObject {ao}");
 
@@ -241,7 +241,7 @@ namespace NewHorizons
             return SharedGenerateBody(body, go, sector, rb, ao);
         }
 
-        public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
+        public GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
             if (body.Config.Orbit.PrimaryBody != null)
@@ -307,7 +307,7 @@ namespace NewHorizons
             if (body.Config.Base.BlackHoleSize != 0)
                 BlackHoleBuilder.Make(go, body.Config.Base, sector);
 
-            if (body.Config.Star != null) _starLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+            if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
             if (body.Config.FocalPoint != null)
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
@@ -345,7 +345,7 @@ namespace NewHorizons
             return go;
         }
 
-        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
+        private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
         {
             if (body.Config.Ring != null)
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);

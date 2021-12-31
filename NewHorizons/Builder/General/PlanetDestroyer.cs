@@ -49,17 +49,17 @@ namespace NewHorizons.Builder.General
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
             {
+                if (ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
+                    GameObject.Find("TimeLoopRing_Body").SetActive(false);
                 var focalBody = GameObject.Find("FocalBody");
                 if (focalBody != null) focalBody.SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
+            else if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
             {
                 var msb = GameObject.Find("MapSatellite_Body");
                 if (msb != null) msb.SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-                GameObject.Find("TimeLoopRing_Body").SetActive(false);
-            if (ao.GetAstroObjectName() == AstroObject.Name.ProbeCannon)
+            else if(ao.GetAstroObjectName() == AstroObject.Name.ProbeCannon)
             {
                 GameObject.Find("NomaiProbe_Body").SetActive(false);
                 GameObject.Find("CannonMuzzle_Body").SetActive(false);
@@ -68,11 +68,11 @@ namespace NewHorizons.Builder.General
                 GameObject.Find("FakeCannonBarrel_Body (1)").SetActive(false);
                 GameObject.Find("Debris_Body (1)").SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.SunStation)
+            else if(ao.GetAstroObjectName() == AstroObject.Name.SunStation)
             {
                 GameObject.Find("SS_Debris_Body").SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
+            else if(ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
             {
                 GameObject.Find("BrambleIsland_Body").SetActive(false);
                 GameObject.Find("GabbroIsland_Body").SetActive(false);
@@ -80,14 +80,20 @@ namespace NewHorizons.Builder.General
                 GameObject.Find("StatueIsland_Body").SetActive(false);
                 GameObject.Find("ConstructionYardIsland_Body").SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
+            else if(ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
             {
                 GameObject.Find("WhiteholeStation_Body").SetActive(false);
                 GameObject.Find("WhiteholeStationSuperstructure_Body").SetActive(false);
             }
-            if (ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
+            else if(ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
             {
                 GameObject.Find("MiningRig_Body").SetActive(false);
+            }
+            else if(ao.GetAstroObjectName() == AstroObject.Name.Sun)
+            {
+                var starController = ao.gameObject.GetComponent<StarController>();
+                Main.Instance.StarLightController.RemoveStar(starController);
+                GameObject.Destroy(starController);
             }
 
             // Deal with proxies

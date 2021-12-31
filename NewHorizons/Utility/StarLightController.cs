@@ -32,19 +32,38 @@ namespace NewHorizons.Utility
             _stars.Add(star);
         }
 
+        public void RemoveStar(StarController star)
+        {
+            if (_stars.Contains(star))
+            {
+                if (_activeStar.Equals(star)) _activeStar = null;
+                _stars.Remove(star);
+            }
+        }
+
         public void Update()
         {
-            // Player is always at 0,0,0 more or less
-
-            if (_activeStar == null && _stars.Count > 0)
+            if (_activeStar == null || !_activeStar.gameObject.activeInHierarchy)
             {
-                ChangeActiveStar(_stars[0]);
+                if (_stars.Contains(_activeStar)) _stars.Remove(_activeStar);
+                if (_stars.Count > 0) ChangeActiveStar(_stars[0]);
+                else gameObject.SetActive(false);
+
                 return;
             }
 
             foreach(var star in _stars)
             {
-                if (star != null && star.transform.position.sqrMagnitude < _activeStar.transform.position.sqrMagnitude)
+                if (star == null) continue;
+
+                // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
+                var origin = Vector3.zero;
+                if (PlayerState.InMapView())
+                {
+                    origin = Locator.GetActiveCamera().transform.position;
+                }
+
+                if ((star.transform.position - origin).sqrMagnitude < (_activeStar.transform.position - origin).sqrMagnitude)
                 {
                     ChangeActiveStar(star);
                     break;
@@ -71,6 +90,9 @@ namespace NewHorizons.Utility
             
             _sunLightParamUpdater.sunLight = star.Light;
             _sunLightParamUpdater._sunController = star.transform.GetComponent<SunController>();
+            _sunLightParamUpdater._propID_SunPosition = Shader.PropertyToID("_SunPosition");
+            _sunLightParamUpdater._propID_OWSunPositionRange = Shader.PropertyToID("_OWSunPositionRange");
+            _sunLightParamUpdater._propID_OWSunColorIntensity = Shader.PropertyToID("_OWSunColorIntensity");
 
             // For the param thing to work it wants this to be on the star idk
             this.transform.parent = star.transform;
