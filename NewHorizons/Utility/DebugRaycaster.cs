@@ -22,6 +22,20 @@ namespace NewHorizons.Utility
         {
             if (Keyboard.current != null && Keyboard.current[Key.P].wasReleasedThisFrame)
             {
+                /*
+                var soundSources = GameObject.FindObjectsOfType<AudioSource>();
+                foreach(var s in soundSources)
+                {
+                    if (s.isPlaying)
+                    {
+                        Logger.Log($"{s.name}, {s.gameObject.name}");
+                        Logger.LogPath(s.gameObject);
+                        s.loop = false;
+                        s.Stop();
+                    }
+                }
+                */
+
                 // Raycast
                 _rb.DisableCollisionDetection();
                 int layerMask = OWLayerMask.physicalMask;

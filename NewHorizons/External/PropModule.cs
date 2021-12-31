@@ -16,6 +16,8 @@ namespace NewHorizons.External
         {
             public string path;
             public int count;
+            public MVector3 offset;
+            public MVector3 rotation;
         }
     }
 }

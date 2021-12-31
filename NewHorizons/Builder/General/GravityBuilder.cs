@@ -8,7 +8,7 @@ namespace NewHorizons.Builder.General
 {
     static class GravityBuilder
     {
-        public static void Make(GameObject body, AstroObject ao, float surfaceAccel, float sphereOfInfluence, float surface, string falloffType)
+        public static GravityVolume Make(GameObject body, AstroObject ao, float surfaceAccel, float sphereOfInfluence, float surface, string falloffType)
         {
             GameObject gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = body.transform;
@@ -42,6 +42,8 @@ namespace NewHorizons.Builder.General
             gravityGO.SetActive(true);
 
             ao.SetValue("_gravityVolume", GV);
+
+            return GV;
         }
     }
 }

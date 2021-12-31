@@ -13,15 +13,15 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuilder
     {
-        public static void Make(GameObject body, string propToClone, Vector3 position, Sector sector)
+        public static GameObject Make(GameObject body, string propToClone, Vector3 position, Sector sector)
         {
             var prefab = GameObject.Find(propToClone);
-            Make(body, prefab, position, sector);
+            return Make(body, prefab, position, sector);
         }
 
-        public static void Make(GameObject body, GameObject prefab, Vector3 position, Sector sector)
+        public static GameObject Make(GameObject body, GameObject prefab, Vector3 position, Sector sector)
         {
-            if (prefab == null) return;
+            if (prefab == null) return null;
 
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
             prop.transform.localPosition = position;
@@ -43,7 +43,6 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
-            /*
             foreach(var component in prop.GetComponentsInChildren<Component>())
             {
                 try
@@ -61,25 +60,13 @@ namespace NewHorizons.Builder.Props
                         Logger.Log($"Found a _sector field in {component}");
                         sectorField.SetValue(component, sector);
                     }
-                    else
-                    {
-                        if(component is Campfire)
-                        {
-                            Logger.Log("CAMPFIRE");
-                            Campfire campfire = component as Campfire;
-                            if (campfire._sector != null)
-                                campfire._sector.OnSectorOccupantsUpdated -= campfire.OnSectorOccupantsUpdated;
-
-                            campfire._sector = sector;
-                            campfire._sector.OnSectorOccupantsUpdated += campfire.OnSectorOccupantsUpdated;
-                        }
-                    }
                 }
                 catch (Exception e) { Logger.Log($"{e.Message}, {e.StackTrace}"); }
             }
-            */
 
             prop.SetActive(true);
+
+            return prop;
         }
 
         public static void Scatter(GameObject body, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector)
@@ -87,14 +74,16 @@ namespace NewHorizons.Builder.Props
             var area = 4f * Mathf.PI * radius * radius;
             var points = FibonacciSphere((int)area);
 
-            foreach (var scatterer in scatterInfo)
+            foreach (var propInfo in scatterInfo)
             {
-                var prefab = GameObject.Find(scatterer.path);
-                for(int i = 0; i < scatterer.count; i++)
+                var prefab = GameObject.Find(propInfo.path);
+                for(int i = 0; i < propInfo.count; i++)
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    Make(body, prefab, point.normalized * radius, sector);
+                    var prop = Make(body, prefab, point.normalized * radius, sector);
+                    if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
+                    if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
                     points.RemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }
