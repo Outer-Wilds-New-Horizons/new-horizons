@@ -63,7 +63,7 @@ namespace NewHorizons.Utility
                     origin = Locator.GetActiveCamera().transform.position;
                 }
 
-                if ((star.transform.position - origin).sqrMagnitude < (_activeStar.transform.position - origin).sqrMagnitude)
+                if (star.Intensity * (star.transform.position - origin).sqrMagnitude < star.Intensity * (_activeStar.transform.position - origin).sqrMagnitude)
                 {
                     ChangeActiveStar(star);
                     break;
