@@ -159,6 +159,13 @@ namespace NewHorizons
 
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
+
+            var map = GameObject.FindObjectOfType<MapController>();
+            if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+            foreach(var cam in GameObject.FindObjectsOfType<OWCamera>())
+            {
+                cam.farClipPlane = FurthestOrbit * 3f;
+            }
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -392,7 +399,7 @@ namespace NewHorizons
 
             if (body.Config.Props != null)
             {
-                if (body.Config.Props.Scatter != null) PropBuilder.Scatter(go, body.Config.Props.Scatter, body.Config.Base.SurfaceSize, sector);
+                PropBuilder.Make(go, sector, body.Config);
                 /*
                 if (body.Config.Props.Rafts != null)
                 {

@@ -58,7 +58,7 @@ namespace NewHorizons.Utility
 
         public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
         {
-            ____maxPanDistance *= 4f;
+            ____maxPanDistance = Main.FurthestOrbit * 1.5f;
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
             ____zoomSpeed *= 4f;
@@ -66,7 +66,7 @@ namespace NewHorizons.Utility
 
         public static void OnOWCameraAwake(OWCamera __instance)
         {
-            __instance.farClipPlane *= 4f;
+            __instance.farClipPlane = Main.FurthestOrbit * 3f;
         }
 
         public static bool OnSunLightParamUpdaterLateUpdate(SunLightParamUpdater __instance)

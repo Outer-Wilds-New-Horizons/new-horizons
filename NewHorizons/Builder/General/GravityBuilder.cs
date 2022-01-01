@@ -11,24 +11,12 @@ namespace NewHorizons.Builder.General
     {
         public static GravityVolume Make(GameObject body, AstroObject ao, IPlanetConfig config)
         {
-            var parent = AstroObjectLocator.GetAstroObject(config.Orbit.PrimaryBody);
-            if (parent?.gameObject?.GetComponent<FocalPointModule>() != null)
-            {
-                parent = parent.GetPrimaryBody();
-            }
-            var a = config.Orbit.SemiMajorAxis;
-
-            if (parent == null) 
-            {
-                parent = GameObject.Find("Sun_Body").GetComponent<AstroObject>();
-                a = 80000;
-            }
-
             var exponent = config.Base.GravityFallOff.Equals("linear") ? 1f : 2f;
-            var m = config.Base.SurfaceGravity * Mathf.Pow(config.Base.SurfaceSize, exponent) / 0.001f;
-            var M = parent.GetGravityVolume()._gravitationalMass;
-            var sphereOfInfluence = a * Mathf.Pow(m / M, 2f / (3f + exponent));
-            Logger.Log($"{m}, {M}, {sphereOfInfluence}, {config.Name}");
+            var GM = config.Base.SurfaceGravity * Mathf.Pow(config.Base.SurfaceSize, exponent);
+
+            // Gravity limit will be when the acceleration it would cause is less than 0.1 m/s^2
+            var gravityRadius = GM / 0.1f;
+            if (exponent == 2f) gravityRadius = Mathf.Sqrt(gravityRadius);
 
             GameObject gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = body.transform;
@@ -38,7 +26,7 @@ namespace NewHorizons.Builder.General
 
             SphereCollider SC = gravityGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = sphereOfInfluence;
+            SC.radius = gravityRadius;
 
             OWCollider OWC = gravityGO.AddComponent<OWCollider>();
             OWC.SetLODActivationMask(DynamicOccupant.Player);
@@ -48,7 +36,7 @@ namespace NewHorizons.Builder.General
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
             GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField(config.Base.GravityFallOff).GetValue(GV));
-            GV.SetValue("_alignmentRadius", 1.5f * config.Base.SurfaceSize);
+            GV.SetValue("_alignmentRadius", config.Base.SurfaceGravity != 0 ? 1.5f * config.Base.SurfaceSize : 0f);
             GV.SetValue("_upperSurfaceRadius", config.Base.SurfaceSize);
             GV.SetValue("_lowerSurfaceRadius", 0);
             GV.SetValue("_layer", 3);
