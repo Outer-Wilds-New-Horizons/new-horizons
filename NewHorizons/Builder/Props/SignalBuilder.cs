@@ -17,6 +17,9 @@ namespace NewHorizons.Builder.Props
         private static Dictionary<SignalName, string> _customSignalNames;
         private static Stack<int> _availableSignalNames;
 
+        // TODO : Save and load this from/to a file
+        public static List<string> KnownSignals { get; private set; } = new List<string>();
+
         public static void Reset()
         {
             _customSignalNames = new Dictionary<SignalName, string>();

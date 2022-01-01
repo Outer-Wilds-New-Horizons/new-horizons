@@ -30,7 +30,7 @@ namespace NewHorizons
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
 
-        public static float FurthestOrbit = 50000f;
+        public static float FurthestOrbit { get; set; } = 50000f;
 
         public StarLightController StarLightController { get; private set; }
 
@@ -286,7 +286,7 @@ namespace NewHorizons
 
             GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                gv = GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+                gv = GravityBuilder.Make(go, ao, body.Config);
 
             if (body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);

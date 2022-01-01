@@ -20,6 +20,11 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("SignalNameToString", typeof(Patches), nameof(Patches.OnAudioSignalSignalNameToString));
 
+            var playerDataKnowsSignal = typeof(PlayerData).GetMethod("KnowsSignal");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsSignal, typeof(Patches), nameof(Patches.OnPlayerDataKnowsSignal));
+            var playerDataLearnSignal = typeof(PlayerData).GetMethod("LearnSignal");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataLearnSignal, typeof(Patches), nameof(Patches.OnPlayerDataLearnSignal));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<EllipticOrbitLine>("Start", typeof(Patches), nameof(Patches.OnEllipticOrbitLineStart));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
@@ -136,6 +141,28 @@ namespace NewHorizons.Utility
                         return false;
                     }
             }
+        }
+
+        public static bool OnPlayerDataKnowsSignal(SignalName __0, ref bool __result)
+        {
+            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
+            if (customSignalName != null)
+            {
+                __result = SignalBuilder.KnownSignals.Contains(customSignalName);
+                return false;
+            }
+            return true;
+        }
+
+        public static bool OnPlayerDataLearnSignal(SignalName __0)
+        {
+            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
+            if (customSignalName != null)
+            {
+                if(!SignalBuilder.KnownSignals.Contains(customSignalName)) SignalBuilder.KnownSignals.Add(customSignalName);
+                return false;
+            }
+            return true;
         }
     }
 }
