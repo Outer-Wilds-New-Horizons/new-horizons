@@ -1,4 +1,5 @@
-﻿using OWML.Common;
+﻿using NewHorizons.Builder.Props;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,7 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerState>("CheckShipOutsideSolarSystem", typeof(Patches), nameof(Patches.CheckShipOutersideSolarSystem));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunLightParamUpdater>("LateUpdate", typeof(Patches), nameof(Patches.OnSunLightParamUpdaterLateUpdate));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("SignalNameToString", typeof(Patches), nameof(Patches.OnAudioSignalSignalNameToString));
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<EllipticOrbitLine>("Start", typeof(Patches), nameof(Patches.OnEllipticOrbitLineStart));
@@ -92,6 +94,48 @@ namespace NewHorizons.Utility
             float num = Mathf.InverseLerp(1600f, 100f, value);
             __instance._audioSource.SetLocalVolume(num * num * __instance._fade);
             return false;
+        }
+
+        public static bool OnAudioSignalSignalNameToString(SignalName __0, ref string __result)
+        {
+            switch(__0)
+            {
+                case SignalName.WhiteHole_SS_Receiver:
+                    __result = "Sun Station Receiver";
+                    return false;
+                case SignalName.WhiteHole_CT_Receiver:
+                    __result = "Ember Twin Receiver";
+                    return false;
+                case SignalName.WhiteHole_CT_Experiment:
+                    __result = "White Hole Receiver";
+                    return false;
+                case SignalName.WhiteHole_TT_Receiver:
+                    __result = "Ash Twin Receiver";
+                    return false;
+                case SignalName.WhiteHole_TT_TimeLoopCore:
+                    __result = "Ash Twin Project";
+                    return false;
+                case SignalName.WhiteHole_TH_Receiver:
+                    __result = "Timber Hearth Receiver";
+                    return false;
+                case SignalName.WhiteHole_BH_NorthPoleReceiver:
+                    __result = "North Pole Receiver";
+                    return false;
+                case SignalName.WhiteHole_BH_ForgeReceiver:
+                    __result = "Black Hole Forge Receiver";
+                    return false;
+                case SignalName.WhiteHole_GD_Receiver:
+                    __result = "Giant's Deep Receiver";
+                    return false;
+                default:
+                    var customSignalName = SignalBuilder.GetCustomSignalName(__0);
+                    if (customSignalName == null) return true;
+                    else
+                    {
+                        __result = customSignalName;
+                        return false;
+                    }
+            }
         }
     }
 }

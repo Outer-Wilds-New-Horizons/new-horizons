@@ -22,6 +22,7 @@ namespace NewHorizons.External
         public FocalPointModule FocalPoint { get; set; }
         public PropModule Props { get; set; }
         public SpawnModule Spawn { get; set; }
+        public SignalModule Signal { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
         {

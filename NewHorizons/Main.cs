@@ -101,6 +101,10 @@ namespace NewHorizons
             // TODO: Make this configurable probably
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
+            // Some builders need to be reset each time
+            SignalBuilder.Reset();
+
+            // We do our own AstroObject tracking
             AstroObjectLocator.RefreshList();
             foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
@@ -311,6 +315,9 @@ namespace NewHorizons
 
             if (body.Config.FocalPoint != null)
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
+
+            if (body.Config.Signal != null)
+                SignalBuilder.Make(go, sector, body.Config.Signal);
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, owRigidBody, ao);
