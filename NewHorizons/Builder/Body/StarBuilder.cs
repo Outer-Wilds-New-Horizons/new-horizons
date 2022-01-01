@@ -35,6 +35,7 @@ namespace NewHorizons.Builder.Body
             var light = sunLight.AddComponent<Light>();
             light.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
             light.intensity *= starModule.SolarLuminosity;
+            light.range *= Mathf.Sqrt(starModule.SolarLuminosity);
 
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
             faceActiveCamera.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>());
