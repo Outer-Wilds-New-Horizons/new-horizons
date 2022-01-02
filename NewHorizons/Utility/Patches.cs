@@ -39,7 +39,9 @@ namespace NewHorizons.Utility
             var playerDataLearnFrequency = typeof(PlayerData).GetMethod("LearnFrequency");
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataLearnFrequency, typeof(Patches), nameof(Patches.OnPlayerDataLearnFrequency));
             var playerDataKnowsMultipleFrequencies = typeof(PlayerData).GetMethod("KnowsMultipleFrequencies");
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));  
+            var playerDataResetGame = typeof(PlayerData).GetMethod("ResetGame");
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataResetGame, typeof(Patches), nameof(Patches.OnPlayerDataResetGame));
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
@@ -296,6 +298,11 @@ namespace NewHorizons.Utility
                 return false;
             }
             return true;
+        }
+
+        public static void OnPlayerDataResetGame()
+        {
+            NewHorizonsData.Reset();
         }
         #endregion
     }
