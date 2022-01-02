@@ -190,8 +190,6 @@ namespace NewHorizons
             catch (Exception e)
             {
                 existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
-
-                if(existingPlanet == null) Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
             }
 
             if (existingPlanet != null)

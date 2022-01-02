@@ -71,6 +71,7 @@ namespace NewHorizons.Utility
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
             ____zoomSpeed *= 4f;
+            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 3f;
         }
 
         public static void OnOWCameraAwake(OWCamera __instance)
