@@ -30,7 +30,4 @@
   <ItemGroup>
     <Content Include="NewHorizons.csproj.user" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Components\" />
-  </ItemGroup>
 </Project>

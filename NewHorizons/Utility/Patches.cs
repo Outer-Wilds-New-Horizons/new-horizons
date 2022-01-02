@@ -1,4 +1,6 @@
 ﻿using NewHorizons.Builder.Props;
+using NewHorizons.Components;
+using NewHorizons.External;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -18,15 +20,28 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerState>("CheckShipOutsideSolarSystem", typeof(Patches), nameof(Patches.CheckShipOutersideSolarSystem));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunLightParamUpdater>("LateUpdate", typeof(Patches), nameof(Patches.OnSunLightParamUpdaterLateUpdate));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
+
+            // Lot of audio signal stuff
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("SignalNameToString", typeof(Patches), nameof(Patches.OnAudioSignalSignalNameToString));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("IndexToFrequency", typeof(Patches), nameof(Patches.OnAudioSignalIndexToFrequency));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("FrequencyToIndex", typeof(Patches), nameof(Patches.OnAudioSignalFrequencyToIndex));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("FrequencyToString", typeof(Patches), nameof(Patches.OnAudioSignalFrequencyToString));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<Signalscope>("Awake", typeof(Patches), nameof(Patches.OnSignalscopeAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<Signalscope>("SwitchFrequencyFilter", typeof(Patches), nameof(Patches.OnSignalscopeSwitchFrequencyFilter));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("UpdateSignalStrength", typeof(Patches), nameof(Patches.OnAudioSignalUpdateSignalStrength));
 
             var playerDataKnowsSignal = typeof(PlayerData).GetMethod("KnowsSignal");
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsSignal, typeof(Patches), nameof(Patches.OnPlayerDataKnowsSignal));
             var playerDataLearnSignal = typeof(PlayerData).GetMethod("LearnSignal");
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataLearnSignal, typeof(Patches), nameof(Patches.OnPlayerDataLearnSignal));
+            var playerDataKnowsFrequency = typeof(PlayerData).GetMethod("KnowsFrequency");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsFrequency, typeof(Patches), nameof(Patches.OnPlayerDataKnowsFrequency));
+            var playerDataLearnFrequency = typeof(PlayerData).GetMethod("LearnFrequency");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataLearnFrequency, typeof(Patches), nameof(Patches.OnPlayerDataLearnFrequency));
+            var playerDataKnowsMultipleFrequencies = typeof(PlayerData).GetMethod("KnowsMultipleFrequencies");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));
 
             // Postfixes
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<EllipticOrbitLine>("Start", typeof(Patches), nameof(Patches.OnEllipticOrbitLineStart));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
         }
@@ -42,18 +57,10 @@ namespace NewHorizons.Utility
             return true;
         }
 
-        public static bool CheckShipOutersideSolarSystem(PlayerState __instance, bool __result)
+        public static bool CheckShipOutersideSolarSystem(PlayerState __instance, ref bool __result)
         {
             __result = false;
             return false;
-        }
-
-        public static void OnEllipticOrbitLineStart(EllipticOrbitLine __instance, ref Vector3 ____upAxisDir, AstroObject ____astroObject)
-        {
-            if (____astroObject.GetAstroObjectName() == AstroObject.Name.Comet) return;
-
-            // For some reason other planets do this idk
-            ____upAxisDir *= -1f;    
         }
 
         public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
@@ -66,7 +73,7 @@ namespace NewHorizons.Utility
 
         public static void OnOWCameraAwake(OWCamera __instance)
         {
-            __instance.farClipPlane = Main.FurthestOrbit * 3f;
+            __instance.farClipPlane *= 4f;
         }
 
         public static bool OnSunLightParamUpdaterLateUpdate(SunLightParamUpdater __instance)
@@ -101,46 +108,162 @@ namespace NewHorizons.Utility
             return false;
         }
 
+        #region AudioSignal
+
         public static bool OnAudioSignalSignalNameToString(SignalName __0, ref string __result)
         {
-            switch(__0)
+            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
+            if (customSignalName == null) return true;
+            else
             {
-                case SignalName.WhiteHole_SS_Receiver:
-                    __result = "Sun Station Receiver";
-                    return false;
-                case SignalName.WhiteHole_CT_Receiver:
-                    __result = "Ember Twin Receiver";
-                    return false;
-                case SignalName.WhiteHole_CT_Experiment:
-                    __result = "White Hole Receiver";
-                    return false;
-                case SignalName.WhiteHole_TT_Receiver:
-                    __result = "Ash Twin Receiver";
-                    return false;
-                case SignalName.WhiteHole_TT_TimeLoopCore:
-                    __result = "Ash Twin Project";
-                    return false;
-                case SignalName.WhiteHole_TH_Receiver:
-                    __result = "Timber Hearth Receiver";
-                    return false;
-                case SignalName.WhiteHole_BH_NorthPoleReceiver:
-                    __result = "North Pole Receiver";
-                    return false;
-                case SignalName.WhiteHole_BH_ForgeReceiver:
-                    __result = "Black Hole Forge Receiver";
-                    return false;
-                case SignalName.WhiteHole_GD_Receiver:
-                    __result = "Giant's Deep Receiver";
-                    return false;
-                default:
-                    var customSignalName = SignalBuilder.GetCustomSignalName(__0);
-                    if (customSignalName == null) return true;
-                    else
-                    {
-                        __result = customSignalName;
-                        return false;
-                    }
+                __result = customSignalName;
+                return false;
             }
+        }
+
+        public static bool OnAudioSignalIndexToFrequency(int __0, ref SignalFrequency __result) {
+            switch (__0)
+            {
+                case 1:
+                    __result = SignalFrequency.Traveler;
+                    break;
+                case 2:
+                    __result = SignalFrequency.Quantum;
+                    break;
+                case 3:
+                    __result = SignalFrequency.EscapePod;
+                    break;
+                case 4:
+                    __result = SignalFrequency.WarpCore;
+                    break;
+                case 5:
+                    __result = SignalFrequency.HideAndSeek;
+                    break;
+                case 6:
+                    __result = SignalFrequency.Radio;
+                    break;
+                case 7:
+                    __result = SignalFrequency.Statue;
+                    break;
+                default:
+                    __result = SignalFrequency.Default;
+                    break;
+            }
+            return false;
+        }
+
+        public static bool OnAudioSignalFrequencyToIndex(SignalFrequency __0, ref int __result)
+        {
+            var frequency = __0;
+            if (frequency <= SignalFrequency.EscapePod)
+            {
+                if(frequency == SignalFrequency.Default)
+                {
+                    __result = 0;
+                }
+                else if (frequency == SignalFrequency.Traveler)
+                {
+                    __result = 1;
+                }
+                else if (frequency == SignalFrequency.Quantum)
+                {
+                    __result = 2;
+                }
+                else if (frequency == SignalFrequency.EscapePod)
+                {
+                    __result = 3;
+                }
+            }
+            else
+            {
+                if (frequency == SignalFrequency.WarpCore)
+                {
+                    __result = 4;
+                }
+                else if (frequency == SignalFrequency.HideAndSeek)
+                {
+                    __result = 5;
+                }
+                else if (frequency == SignalFrequency.Radio)
+                {
+                    __result = 6;
+                }
+                else if (frequency == SignalFrequency.Statue)
+                {
+                    __result = 7;
+                }
+            }
+            return false;
+        }
+
+        public static bool OnAudioSignalFrequencyToString(SignalFrequency __0, ref string __result)
+        {
+            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string customName);
+            if (customName != null) 
+            {
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = customName;
+                else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
+                return false;
+            }
+            return true;
+        }
+
+        public static bool OnAudioSignalUpdateSignalStrength(AudioSignal __instance, Signalscope __0, float __1)
+        {             
+            // I hate this
+            if(__instance is CloakedAudioSignal)
+            {
+                ((CloakedAudioSignal)__instance).UpdateSignalStrength(__0, __1);
+                return false;
+            }
+            return true;
+        }
+        #endregion
+
+        #region Signalscope
+        public static bool OnSignalscopeAwake(Signalscope __instance, ref AudioSignal[] ____strongestSignals)
+        {
+            ____strongestSignals = new AudioSignal[8];
+            return true;
+        }
+
+        public static bool OnSignalscopeSwitchFrequencyFilter(Signalscope __instance, int __0)
+        {
+            var increment = __0;
+            var count = Enum.GetValues(typeof(SignalFrequency)).Length;
+            __instance._frequencyFilterIndex += increment;
+            __instance._frequencyFilterIndex = ((__instance._frequencyFilterIndex >= count) ? 0 : __instance._frequencyFilterIndex);
+            __instance._frequencyFilterIndex = ((__instance._frequencyFilterIndex < 0) ? count - 1 : __instance._frequencyFilterIndex);
+            SignalFrequency signalFrequency = AudioSignal.IndexToFrequency(__instance._frequencyFilterIndex);
+            if (!PlayerData.KnowsFrequency(signalFrequency) && (!__instance._isUnknownFreqNearby || __instance._unknownFrequency != signalFrequency))
+            {
+                __instance.SwitchFrequencyFilter(increment);
+            }
+            return false;
+        }
+        #endregion
+
+        #region PlayerData
+        public static bool OnPlayerDataKnowsFrequency(SignalFrequency __0, ref bool __result)
+        {
+            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string freqString);
+            if (freqString != null)
+            {
+                __result = NewHorizonsData.KnowsFrequency(freqString);
+                return false;
+            }
+            return true;
+        }
+
+        public static bool OnPlayerDataLearnFrequency(SignalFrequency __0)
+        {
+            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string freqString);
+            if (freqString != null)
+            {
+                NewHorizonsData.LearnFrequency(freqString);
+                return false;
+            }
+            return true;
         }
 
         public static bool OnPlayerDataKnowsSignal(SignalName __0, ref bool __result)
@@ -148,7 +271,7 @@ namespace NewHorizons.Utility
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
             if (customSignalName != null)
             {
-                __result = SignalBuilder.KnownSignals.Contains(customSignalName);
+                __result = NewHorizonsData.KnowsSignal(customSignalName);
                 return false;
             }
             return true;
@@ -159,10 +282,21 @@ namespace NewHorizons.Utility
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
             if (customSignalName != null)
             {
-                if(!SignalBuilder.KnownSignals.Contains(customSignalName)) SignalBuilder.KnownSignals.Add(customSignalName);
+                if (!NewHorizonsData.KnowsSignal(customSignalName)) NewHorizonsData.LearnSignal(customSignalName);
                 return false;
             }
             return true;
         }
+
+        public static bool OnPlayerDataKnowsMultipleFrequencies(ref bool __result)
+        {
+            if (NewHorizonsData.KnowsMultipleFrequencies())
+            {
+                __result = true;
+                return false;
+            }
+            return true;
+        }
+        #endregion
     }
 }

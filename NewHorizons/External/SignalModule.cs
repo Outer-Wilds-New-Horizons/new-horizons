@@ -18,7 +18,10 @@ namespace NewHorizons.External
             public string Name;
             public string AudioClip;
             public float SourceRadius = 1f;
+            public float DetectionRadius = 0f;
+            public float IdentificationRadius = 10f;
             public bool OnlyAudibleToScope = true;
+            public bool InsideCloak = false;
         }
     }
 }

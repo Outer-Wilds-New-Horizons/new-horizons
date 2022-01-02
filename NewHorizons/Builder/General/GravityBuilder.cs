@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External;
 using NewHorizons.Utility;
 using OWML.Utils;
+using System;
 using System.Reflection;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -35,7 +36,13 @@ namespace NewHorizons.Builder.General
 
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
             GV.SetValue("_cutoffAcceleration", 0.1f);
-            GV.SetValue("_falloffType", GV.GetType().GetNestedType("FalloffType", BindingFlags.NonPublic).GetField(config.Base.GravityFallOff).GetValue(GV));
+
+            GravityVolume.FalloffType falloff = GravityVolume.FalloffType.linear;
+            if (config.Base.GravityFallOff.ToUpper().Equals("LINEAR")) falloff = GravityVolume.FalloffType.linear;
+            else if (config.Base.GravityFallOff.ToUpper().Equals("INVERSESQUARED")) falloff = GravityVolume.FalloffType.inverseSquared;
+            else Logger.LogError($"Couldn't set gravity type {config.Base.GravityFallOff}. Must be either \"linear\" or \"inverseSquared\". Defaulting to linear.");
+            GV._falloffType = falloff;
+
             GV.SetValue("_alignmentRadius", config.Base.SurfaceGravity != 0 ? 1.5f * config.Base.SurfaceSize : 0f);
             GV.SetValue("_upperSurfaceRadius", config.Base.SurfaceSize);
             GV.SetValue("_lowerSurfaceRadius", 0);
