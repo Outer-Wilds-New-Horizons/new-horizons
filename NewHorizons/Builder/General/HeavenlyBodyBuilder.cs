@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.General
             var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
 
             var hb = GetBody(config.Name);
-            if (hb == null) hb = AddHeavenlyBody(config.Name);
+            if (hb == null) hb = AddHeavenlyBody(config.Name, config.FocalPoint != null);
 
             Planet.Plantoid planetoid;
             
@@ -42,7 +42,6 @@ namespace NewHorizons.Builder.General
 
             var mapping = Planet.defaultMapping;
             mapping[hb] = planetoid;
-            Planet.defaultMapping = mapping;
 
             // Fix for binary focal points
             if(parent != HeavenlyBody.None)
@@ -76,12 +75,6 @@ namespace NewHorizons.Builder.General
 
                     if (primaryGravity != null && secondaryGravity != null)
                     {
-                        Logger.Log($"Fixing BinaryFocalPoint HeavenlyBody gravity value for {parent}");
-
-                        var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
-                        var mass = (primaryGravity.mass + secondaryGravity.mass) / 4f;
-
-                        mapping[parent] = new Planet.Plantoid(mapping[parent].size, Gravity.of(exponent, mass), mapping[parent].state);
 
                         // Also have to fix the children
                         var primaryHB = GetBody(focalPoint.PrimaryName);
@@ -108,6 +101,7 @@ namespace NewHorizons.Builder.General
 
                         var totalMass = m1 + m2;
 
+                        var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
                         var primaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, primaryKeplerCoordinates);
                         var secondaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, secondaryKeplerCoordinates);
 
@@ -152,8 +146,6 @@ namespace NewHorizons.Builder.General
                             parent,
                             secondaryKeplerCoordinates);
 
-                        Planet.defaultMapping = mapping;
-
                         var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r.magnitude, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
 
                         var trackingOrbitPrimary = primary.GetComponentInChildren<TrackingOrbitLine>();
@@ -167,9 +159,16 @@ namespace NewHorizons.Builder.General
                         {
                             trackingOrbitSecondary.TrailTime = period;
                         }
+
+                        Helper.helper.Console.WriteLine($"{parent}: {mapping[parent]}");
+                        Helper.helper.Console.WriteLine($"{primaryHB}: {mapping[primaryHB]}");
+                        Helper.helper.Console.WriteLine($"{secondaryHB}: {mapping[secondaryHB]}");
                     }
                 }
             }
+
+            Planet.defaultMapping = mapping;
+            Planet.mapping = mapping;
         }
 
         public static void Remove(AstroObject obj)
@@ -179,6 +178,10 @@ namespace NewHorizons.Builder.General
             var mapping = Planet.defaultMapping;
             mapping.Remove(astro);
             Planet.defaultMapping = mapping;
+
+            mapping = Planet.mapping;
+            mapping.Remove(astro);
+            Planet.mapping = mapping;
         }
 
         private static Gravity GetGravity(GravityVolume volume)
@@ -194,9 +197,9 @@ namespace NewHorizons.Builder.General
             return Gravity.of(exponent, mass);
         }
 
-        private static HeavenlyBody AddHeavenlyBody(string name)
+        private static HeavenlyBody AddHeavenlyBody(string name, bool isFocalPoint)
         {
-            var hb = new HeavenlyBody(name);
+            var hb = new HeavenlyBody(name, isFocalPoint);
             _bodyMap.Add(name, hb);
 
             var astroLookup = Position.AstroLookup;
