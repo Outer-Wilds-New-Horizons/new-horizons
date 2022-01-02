@@ -2,6 +2,8 @@
 
 A planet creator for Outer Wilds.
 
+You can view the addons creators have made [here](https://outerwildsmods.com/mods/newhorizons/addons/)!
+
 Planets are created using a JSON file format structure, and placed in the `planets` folder.
 
 <!-- TOC -->
