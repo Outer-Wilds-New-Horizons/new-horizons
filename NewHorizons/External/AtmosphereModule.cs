@@ -21,5 +21,6 @@ namespace NewHorizons.External
         public bool HasSnow { get; set; }
         public bool HasOxygen { get; set; }
         public bool HasAtmosphere { get; set; }
+        public MColor32 AtmosphereTint { get; set; }
     }
 }

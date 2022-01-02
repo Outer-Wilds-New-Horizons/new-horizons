@@ -8,24 +8,40 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
 using System.Reflection;
+using NewHorizons.Utility;
 
 namespace NewHorizons.Builder.Props
 {
     public static class PropBuilder
     {
-        public static void Make(GameObject body, string propToClone, Vector3 position, Sector sector)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config)
         {
-            var prefab = GameObject.Find(propToClone);
-            Make(body, prefab, position, sector);
+            if (config.Props.Scatter != null) PropBuilder.Scatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector);
+            if(config.Props.Details != null)
+            {
+                foreach(var detail in config.Props.Details)
+                {
+                    MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale);
+                }
+            }
         }
 
-        public static void Make(GameObject body, GameObject prefab, Vector3 position, Sector sector)
+        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale)
         {
-            if (prefab == null) return;
+            var prefab = GameObject.Find(propToClone);
+            return MakeDetail(go, sector, prefab, position, rotation, scale);
+        }
+
+        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal = false)
+        {
+            if (prefab == null) return null;
 
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
-            prop.transform.localPosition = position;
-            prop.transform.rotation = Quaternion.FromToRotation(prop.transform.TransformDirection(Vector3.up), position.normalized);
+            prop.transform.localPosition = position == null ? prefab.transform.localPosition : (Vector3)position;
+            Quaternion rot = rotation == null ? prefab.transform.localRotation : Quaternion.Euler((Vector3)rotation);
+            if (alignWithNormal) rot = Quaternion.FromToRotation(prop.transform.TransformDirection(Vector3.up), ((Vector3)position).normalized);
+            prop.transform.rotation = rot;
+            prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;
             prop.SetActive(false);
 
             List<string> assetBundles = new List<string>();
@@ -43,7 +59,6 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
-            /*
             foreach(var component in prop.GetComponentsInChildren<Component>())
             {
                 try
@@ -61,40 +76,30 @@ namespace NewHorizons.Builder.Props
                         Logger.Log($"Found a _sector field in {component}");
                         sectorField.SetValue(component, sector);
                     }
-                    else
-                    {
-                        if(component is Campfire)
-                        {
-                            Logger.Log("CAMPFIRE");
-                            Campfire campfire = component as Campfire;
-                            if (campfire._sector != null)
-                                campfire._sector.OnSectorOccupantsUpdated -= campfire.OnSectorOccupantsUpdated;
-
-                            campfire._sector = sector;
-                            campfire._sector.OnSectorOccupantsUpdated += campfire.OnSectorOccupantsUpdated;
-                        }
-                    }
                 }
                 catch (Exception e) { Logger.Log($"{e.Message}, {e.StackTrace}"); }
             }
-            */
 
             prop.SetActive(true);
+
+            return prop;
         }
 
-        public static void Scatter(GameObject body, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector)
+        private static void Scatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector)
         {
             var area = 4f * Mathf.PI * radius * radius;
             var points = FibonacciSphere((int)area);
 
-            foreach (var scatterer in scatterInfo)
+            foreach (var propInfo in scatterInfo)
             {
-                var prefab = GameObject.Find(scatterer.path);
-                for(int i = 0; i < scatterer.count; i++)
+                var prefab = GameObject.Find(propInfo.path);
+                for(int i = 0; i < propInfo.count; i++)
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    Make(body, prefab, point.normalized * radius, sector);
+                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, 0f, true);
+                    if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
+                    if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
                     points.RemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }

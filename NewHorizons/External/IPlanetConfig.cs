@@ -18,5 +18,6 @@ namespace NewHorizons.External
         FocalPointModule FocalPoint { get; }
         PropModule Props { get; }
         SpawnModule Spawn { get; }
+        SignalModule Signal { get; }
     }
 }
