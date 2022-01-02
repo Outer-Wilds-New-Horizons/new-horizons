@@ -30,7 +30,7 @@ namespace NewHorizons
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
 
-        public static float FurthestOrbit = 50000f;
+        public static float FurthestOrbit { get; set; } = 50000f;
 
         public StarLightController StarLightController { get; private set; }
 
@@ -71,6 +71,8 @@ namespace NewHorizons
 
             if (scene.name != "SolarSystem") { return; }
 
+            NewHorizonsData.Load();
+
             // Need to manage this when there are multiple stars
             var sun = GameObject.Find("Sun_Body");
             var starController = sun.AddComponent<StarController>();
@@ -101,6 +103,10 @@ namespace NewHorizons
             // TODO: Make this configurable probably
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
+            // Some builders need to be reset each time
+            SignalBuilder.Reset();
+
+            // We do our own AstroObject tracking
             AstroObjectLocator.RefreshList();
             foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
@@ -155,6 +161,15 @@ namespace NewHorizons
 
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
+
+            var map = GameObject.FindObjectOfType<MapController>();
+            if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+            /*
+            foreach(var cam in GameObject.FindObjectsOfType<OWCamera>())
+            {
+                cam.farClipPlane = FurthestOrbit * 3f;
+            }
+            */
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -166,15 +181,17 @@ namespace NewHorizons
             if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
             if (stringID.Equals("INTERLOPER")) stringID = "COMET";
 
-            AstroObject existingPlanet = null;
+            GameObject existingPlanet = null;
             try
             {
-                existingPlanet = AstroObjectLocator.GetAstroObject(stringID);
-                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", ""));
+                existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
+                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
             }
             catch (Exception e)
             {
-                Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
+                existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
+
+                if(existingPlanet == null) Logger.LogWarning($"Error when looking for {body.Config.Name}: {e.Message}, {e.StackTrace}");
             }
 
             if (existingPlanet != null)
@@ -183,7 +200,9 @@ namespace NewHorizons
                 {
                     if (body.Config.Destroy)
                     {
-                        Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(existingPlanet), 2);
+                        var ao = existingPlanet.GetComponent<AstroObject>();
+                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
+                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
@@ -228,17 +247,15 @@ namespace NewHorizons
             }
         }
 
-        public GameObject UpdateBody(NewHorizonsBody body, AstroObject ao)
+        public GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
-            Logger.Log($"Updating existing AstroObject {ao}");
-
-            var go = ao.gameObject;
+            Logger.Log($"Updating existing Object {go.name}");
 
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
             // Do stuff that's shared between generating new planets and updating old ones
-            return SharedGenerateBody(body, go, sector, rb, ao);
+            return SharedGenerateBody(body, go, sector, rb);
         }
 
         public GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -282,7 +299,7 @@ namespace NewHorizons
 
             GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                gv = GravityBuilder.Make(go, ao, body.Config.Base.SurfaceGravity, sphereOfInfluence * (body.Config.Star != null ? 10f : 1f), body.Config.Base.SurfaceSize, body.Config.Base.GravityFallOff);
+                gv = GravityBuilder.Make(go, ao, body.Config);
 
             if (body.Config.Base.HasReferenceFrame)
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
@@ -313,7 +330,7 @@ namespace NewHorizons
                 FocalPointBuilder.Make(go, body.Config.FocalPoint);
 
             // Do stuff that's shared between generating new planets and updating old ones
-            go = SharedGenerateBody(body, go, sector, owRigidBody, ao);
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
 
             body.Object = go;
 
@@ -345,7 +362,7 @@ namespace NewHorizons
             return go;
         }
 
-        private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, AstroObject ao)
+        private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             if (body.Config.Ring != null)
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);
@@ -356,13 +373,10 @@ namespace NewHorizons
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
 
-            if (body.Config.Base != null)
-            {
-                if (body.Config.Base.LavaSize != 0)
-                    LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
-                if (body.Config.Base.WaterSize != 0)
-                    WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
-            }
+            if (body.Config.Base.LavaSize != 0)
+                LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
+            if (body.Config.Base.WaterSize != 0)
+                WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
 
             if (body.Config.Atmosphere != null)
             {
@@ -384,18 +398,10 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-            {
-                if (body.Config.Props.Scatter != null) PropBuilder.Scatter(go, body.Config.Props.Scatter, body.Config.Base.SurfaceSize, sector);
-                /*
-                if (body.Config.Props.Rafts != null)
-                {
-                    foreach(var v in body.Config.Props.Rafts)
-                    {
-                        Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RaftBuilder.Make(go, v, sector, rb, ao));
-                    }
-                }
-                */
-            }
+                PropBuilder.Make(go, sector, body.Config);
+
+            if (body.Config.Signal != null)
+                SignalBuilder.Make(go, sector, body.Config.Signal);
 
             return go;
         }

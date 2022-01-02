@@ -22,20 +22,6 @@ namespace NewHorizons.Utility
         {
             if (Keyboard.current != null && Keyboard.current[Key.P].wasReleasedThisFrame)
             {
-                /*
-                var soundSources = GameObject.FindObjectsOfType<AudioSource>();
-                foreach(var s in soundSources)
-                {
-                    if (s.isPlaying)
-                    {
-                        Logger.Log($"{s.name}, {s.gameObject.name}");
-                        Logger.LogPath(s.gameObject);
-                        s.loop = false;
-                        s.Stop();
-                    }
-                }
-                */
-
                 // Raycast
                 _rb.DisableCollisionDetection();
                 int layerMask = OWLayerMask.physicalMask;
@@ -43,7 +29,8 @@ namespace NewHorizons.Utility
                 var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
-                    Logger.Log($"Raycast hit [{hitInfo.transform.InverseTransformPoint(hitInfo.point)}] on [{hitInfo.transform.gameObject.name}]");
+                    var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
+                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{hitInfo.transform.gameObject.name}]");
                 }
                 _rb.EnableCollisionDetection();
             }
