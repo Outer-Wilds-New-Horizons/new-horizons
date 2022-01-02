@@ -7,12 +7,12 @@ using UnityEngine;
 
 namespace NewHorizons.OrbitalPhysics
 {
-    public class TrackingOrbitLine : OrbitLine
-    {
+	public class TrackingOrbitLine : OrbitLine
+	{
 		private Vector3[] _vertices;
 		private float _timer;
 		private bool _firstTimeEnabled = true;
-		
+
 		public float TrailTime = 120f;
 
 
@@ -44,7 +44,7 @@ namespace NewHorizons.OrbitalPhysics
 
 		public override void OnEnterMapView()
 		{
-			if (_firstTimeEnabled) 
+			if (_firstTimeEnabled)
 			{
 				ResetLineVertices();
 				_firstTimeEnabled = false;
@@ -65,8 +65,8 @@ namespace NewHorizons.OrbitalPhysics
 			_timer += Time.deltaTime;
 			var updateTime = (TrailTime / (float)_numVerts);
 
-			if(_timer > updateTime)
-            {
+			if (_timer > updateTime)
+			{
 				for (int i = _numVerts - 1; i > 0; i--)
 				{
 					var v = _vertices[i - 1];
@@ -95,12 +95,12 @@ namespace NewHorizons.OrbitalPhysics
 			var dist1 = Vector3.Distance(point, _vertices[0]);
 			var dist2 = Vector3.Distance(point, _vertices[(int)(_numVerts / 2)]);
 			var dist3 = Vector3.Distance(point, _vertices[_numVerts - 1]);
-			
+
 			return Mathf.Min(new float[] { dist1, dist2, dist3 });
 		}
 
 		public void ResetLineVertices()
-        {
+		{
 			var primary = _astroObject.GetPrimaryBody();
 			Vector3 origin = primary == null ? Locator.GetRootTransform().position : primary.transform.position;
 
