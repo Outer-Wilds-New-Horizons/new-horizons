@@ -24,12 +24,14 @@ Planets are created using a JSON file format structure, and placed in the `plane
 <!-- /TOC -->
 
 ## Roadmap
+- Heightmaps/texturemaps (Done)
+- Remove existing planets (Done)
 - Stars (Done)
 - Binary orbits (Done)
 - Comets (Done)
 - Signalscope signals (Done)
+- Asteroid belts (Done)
 - Procedurally terrain generation (started)
-- Asteroid belts (started, needs more customization)
 - Support satellites (using custom models in the assets folder or in-game ones)
 - Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones
 - Load planet meshes from asset bundle
