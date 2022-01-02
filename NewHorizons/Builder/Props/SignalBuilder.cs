@@ -63,7 +63,7 @@ namespace NewHorizons.Builder.Props
             SignalFrequencyOverrides = new Dictionary<SignalFrequency, string>() {
                 { SignalFrequency.Statue, "NOMAI STATUE" }, 
                 { SignalFrequency.Default, "???" }, 
-                { SignalFrequency.WarpCore, "ANTI-MASS FLUCTUATIONS" } 
+                { SignalFrequency.WarpCore, "ANTI-GRAVITON FLUX" } 
             };
         }
 
