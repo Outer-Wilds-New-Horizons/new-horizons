@@ -159,10 +159,6 @@ namespace NewHorizons.Builder.General
                         {
                             trackingOrbitSecondary.TrailTime = period;
                         }
-
-                        Helper.helper.Console.WriteLine($"{parent}: {mapping[parent]}");
-                        Helper.helper.Console.WriteLine($"{primaryHB}: {mapping[primaryHB]}");
-                        Helper.helper.Console.WriteLine($"{secondaryHB}: {mapping[secondaryHB]}");
                     }
                 }
             }
@@ -174,13 +170,9 @@ namespace NewHorizons.Builder.General
         public static void Remove(AstroObject obj)
         {
             var astro = Position.find(obj);
-
             var mapping = Planet.defaultMapping;
             mapping.Remove(astro);
             Planet.defaultMapping = mapping;
-
-            mapping = Planet.mapping;
-            mapping.Remove(astro);
             Planet.mapping = mapping;
         }
 
