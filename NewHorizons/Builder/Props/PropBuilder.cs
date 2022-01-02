@@ -97,7 +97,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, 0f);
+                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, 0f, true);
                     if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
                     points.RemoveAt(randomInd);
