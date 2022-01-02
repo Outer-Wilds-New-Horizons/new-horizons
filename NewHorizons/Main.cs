@@ -189,7 +189,7 @@ namespace NewHorizons
                 existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
                 if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
             }
