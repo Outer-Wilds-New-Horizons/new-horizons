@@ -187,7 +187,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "longitudeOfAscendingNode" : (decimal number) 
 - "argumentOfPeriapsis" : (decimal number)
 - "eccentricity" : (decimal number from 0 to < 1) The closer to 1 it is, the more oval-shaped the orbit is.
-- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360.
+- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360. NOTE: This is currently broken for eccentric orbits which (for now) always start at periapsis. If you want to move the starting point, set argument of periapsis instead.
 - "axialTilt" : (decimal number)
 - "siderealPeriod" : (decimal number)
 - "isTidallyLocked" : (true/false)
