@@ -22,6 +22,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
   - [Spawn](#spawn)
   - [Star](#star)
   - [Signal](#signal)
+  - [Singularity](#singularity)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
@@ -395,6 +396,12 @@ Here's an example of what all this looks like, for more check my [Signals+](http
 	]
 }
 ```
+
+### Singularity
+This allows you to make black holes and white holes, and to pair them.
+- "size" : (decimal number)
+- "pairedSingularity" : (string) The singularity you want this one to pair to. Must be the opposite type. If you don't set this, the singularity will not transport you, and if it is a black hole it will kill you on entry.
+- "type" : (string) Put either "BlackHole" or "WhiteHole".
 
 ### How to destroy existing planets
 
