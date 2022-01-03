@@ -51,6 +51,8 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
+            cubeSphere.AddComponent<ProxyShadowCaster>();
+
             // Fix rotation in the end
             cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
             cubeSphere.transform.localPosition = Vector3.zero;

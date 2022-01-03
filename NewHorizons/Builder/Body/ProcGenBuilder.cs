@@ -30,6 +30,8 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
             icosphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
+
+            icosphere.AddComponent<ProxyShadowCaster>();
         }
     }
 }

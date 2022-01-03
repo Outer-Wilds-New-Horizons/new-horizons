@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.General
     {
         public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
+            body.AddComponent<ProxyShadowCasterSuperGroup>();
+
             Rigidbody rigidBody = body.AddComponent<Rigidbody>();
             rigidBody.mass = 10000;
             rigidBody.drag = 0f;
