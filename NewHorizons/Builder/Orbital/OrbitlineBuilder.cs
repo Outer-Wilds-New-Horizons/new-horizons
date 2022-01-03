@@ -35,9 +35,10 @@ namespace NewHorizons.Builder.Orbital
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
             else if (config.Star != null) color = config.Star.Tint.ToColor32();
             else if (config.Atmosphere != null && config.Atmosphere.CloudTint != null) color = config.Atmosphere.CloudTint.ToColor32();
-            else if (config.Base.BlackHoleSize != 0) color = new Color(1f, 0.5f, 1f);
+            else if (config.Base.BlackHoleSize != 0 || config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Base.WaterSize != 0) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Base.LavaSize != 0) color = new Color(1f, 0.5f, 0.5f);
+            else if (config.Atmosphere != null && config.Atmosphere.FogTint != null) color = config.Atmosphere.FogTint.ToColor32();
 
             var fade = isMoon;
             if (config.Base.IsSatellite)
