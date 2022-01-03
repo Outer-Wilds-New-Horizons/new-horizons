@@ -18,6 +18,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
   - [FocalPoint](#focalpoint)
   - [Props](#props)
   	- [Asset Bundles](#asset-bundles)
+  - [Ring](#ring)
   - [Spawn](#spawn)
   - [Star](#star)
   - [Signal](#signal)
