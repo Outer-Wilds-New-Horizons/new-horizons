@@ -59,6 +59,8 @@ namespace NewHorizons.Builder.Body
                     }
                 };
 
+                var asteroidConfig = new PlanetConfig(config);
+                if (belt.ProcGen != null) asteroidConfig.ProcGen = belt.ProcGen;
                 var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets, uniqueName);
                 Main.NextPassBodies.Add(asteroid);
             }
