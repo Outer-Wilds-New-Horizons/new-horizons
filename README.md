@@ -17,9 +17,14 @@ Planets are created using a JSON file format structure, and placed in the `plane
   - [AsteroidBelt](#asteroidbelt)
   - [FocalPoint](#focalpoint)
   - [Props](#props)
+  	- [Asset Bundles](#asset-bundles)
+  - [Ring](#ring)
   - [Spawn](#spawn)
   - [Star](#star)
+  - [Signal](#signal)
+  - [Singularity](#singularity)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
+  - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
 - [Credits](#credits)
 
@@ -33,14 +38,14 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Comets (Done)
 - Signalscope signals (Done)
 - Asteroid belts (Done)
+- Support satellites (Done)
+- Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones (done)
+- Load planet meshes from asset bundle (technically done)
+- Black hole / white hole pairs (done)
 - Procedurally terrain generation (started)
-- Support satellites (using custom models in the assets folder or in-game ones)
-- Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones
-- Load planet meshes from asset bundle
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
-- Black hole / white hole pairs
 - Separate solar system scenes accessible via wormhole
 - Implement all planet features:
 	- Tornados
@@ -284,9 +289,9 @@ and
 The positions of the binaries will be based off of their masses (as determined by the "surfaceGravity" parameter). However, one of them must have a non-zero semiMajorAxis field else the mod gets confused. This example uses stars, but it will also work for planets. If you want to have other planets orbiting the center of mass, just put the focal point body as the primary body.
 
 ### Props
-Lets you place items on the surface of the planet. Currently this is a very early release version.
+Lets you place items on the surface of the planet.
 
--scatter : (list) I'll just give an example.
+- "scatter" : (list) I'll just give an example. 
 
 ```
 "scatter" : [
@@ -295,6 +300,49 @@ Lets you place items on the surface of the planet. Currently this is a very earl
 ```
 
 The path is in the hierarchy of the solar system. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck.
+
+- "details" : (list of detail info objects)
+
+A detail info object can have the following parameters:
+- "path" : (string) either the location of it in the scene hierarchy or in the asset bundle provided
+- "assetBundle" : (string) the asset bundle containing the object
+- "objFilePath" : (string) the file path to a .obj 3d model
+- "mtlFilePath" : (string) the file path to the material for the .obj model
+- "position" : (x, y, z)
+- "rotation" : (x, y, z) the euler angle rotation from a 3d vector
+- "scale" : (decimal number)
+- "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
+
+You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
+
+#### Asset Bundles
+1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work).
+2. In the root directory create a folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
+```
+using UnityEditor;
+using UnityEngine;
+using System.IO;
+
+public class CreateAssetBundles
+{
+    [MenuItem("Assets/Build AssetBundles")]
+    static void BuildAllAssetBundles()
+    {
+        string assetBundleDirectory = "Assets/StreamingAssets";
+        if (!Directory.Exists(Application.streamingAssetsPath))
+        {
+            Directory.CreateDirectory(assetBundleDirectory);
+        }
+        BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
+    }
+}
+```
+3. Create your object in the Unity scene and save it as a prefab.
+4. Add all files used (models, prefabs, textures, materials, etc) to an asset bundle by selecting them and using the drop down in the bottom right. Here I am adding a rover model to my "rss" asset bundle for the Real Solar System add-on.
+![setting asset bundle](https://user-images.githubusercontent.com/22628069/147954146-e1d610c0-0336-428f-8b32-bfc01090061c.png)
+
+5. In the top left click the "Assets" drop-down and select "Build AssetBundles". This should create your asset bundle in a folder in the root directory called "StreamingAssets".
+6. Copy the asset bundle and asset bundle .manifest files from StreamingAssets into your mod's "planets" folder. If you did everything properly they should work in game. To double check everything is included, open the .manifest file in a text editor to see the files included and their paths.
 
 ### Ring
 - "innerRadius" : (decimal number)
@@ -314,6 +362,47 @@ Use this if you are creating a star.
 - "tint" : (colour) 
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
 
+### Signal
+- "signals" : (list of signal info objects)
+
+Signal info objects can then have the following values set:
+- "position" : (position) To find a good value for this, fly to the planet, look directly at where you want the signal to come from, and press "P" to have the game log the position you're looking at.
+- "frequency" : (string) There are 7 acceptible values for this:
+	- "Default" : appears in game as ???
+	- "Traveler" : appears in game as "Outer Wilds Ventures"
+	- "Quantum" : appears in game as "Quantum Fluctuations"
+	- "EscapePod" : appears in game as "Distress Signal"
+	- "Statue" : appears in game as "Nomai Statue"
+	- "WarpCore" : appears in game as "Anti-Graviton Flux" 
+	- "HideAndSeek" : appears in game as "Hide and Seek"
+	- "Radio" : appears in game as "Deep Space Radio"
+- "name" : (string) The name as it will appear in game
+- "audioClip" : (string) The audio clip from the game you want to use (can find these using Unity Explorer or by datamining)
+- "audioFilePath" : (string) The file path to a .wav you want to use as the audio clip
+- "sourceRadius" : (decimal number) The radius of the spherical volume the signal appears to come from
+- "detectionRadius" : (decimal number) How close you must be to get the "Unidentified signal detected" pop-up
+- "identiicationRadius" : (decimal number) How close you must get to identify the signal
+- "onlyAudibleToScope" : (true/false) 
+- "insideCloak" : (true/false) You have to set this to true if the signal is inside a cloaking field
+
+Here's an example of what all this looks like, for more check my [Signals+](https://github.com/xen-42/outer-wilds-signals-plus) add-on:
+```
+"Signal" : 
+{
+	"Signals" : 
+	[
+		{ "Frequency" : "Statue", "Name" : "Museum Statue", "AudioClip" : "OW NM Flashback 082818 AP loop", "SourceRadius" : 1, "Position" : {"x": -76.35, "y": 12, "z": 214.7 } },
+		{ "Frequency" : "WarpCore", "Name" : "Timber Hearth Receiver", "AudioClip" : "OW_NM_WhiteHoleAmbienceL", "SourceRadius" : 0.5, "Position" : {"x": -237.8, "y": -50.8, "z": -59.2 } }
+	]
+}
+```
+
+### Singularity
+This allows you to make black holes and white holes, and to pair them.
+- "size" : (decimal number)
+- "pairedSingularity" : (string) The singularity you want this one to pair to. Must be the opposite type. If you don't set this, the singularity will not transport you, and if it is a black hole it will kill you on entry.
+- "type" : (string) Put either "BlackHole" or "WhiteHole".
+
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
@@ -324,7 +413,13 @@ You do this (but with the appropriate name) as it's own config.
 }
 ```
 
-Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. I haven't tried destroying the sun. Probably don't do that, it will break everything. Probably.
+Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. If you want to entirely replace the solar system you can restroy everything, including the sun. You can use the prefabs from my [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) addon, in the `planets/0 - original planets` folder. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun.
+
+### How to update existing planets
+
+Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work: `Sun`, `CaveTwin` (Ember Twin), `TowerTwin` (Ash Twin), `TimberHearth`, `BrittleHollow`, `GiantsDeep`, `DarkBramble`, `Comet` (Interloper), `WhiteHole`, `WhiteHoleTarget` (Whitehole station I believe), `QuantumMoon`, `ProbeCannon`, `TimberMoon` (Attlerock), `VolcanicMoon` (Hollow's Lantern), `DreamWorld`, `MapSatellite`, `RingWorld` (the Stranger).
+
+Only some of the above modules are supported (currently) for existing planets. Things you cannot modify for existing planets include: heightmaps, procedural generation, gravity, or their orbits. You also can't make them into stars or binary focal points (but why would you want to, just delete them and replace them entirely). However this still means there are many things you can do: completely change their atmospheres, give them rings, asteroid belts, comet tails, lava, water, prop details, or signals. 
 
 ## How to use New Horizons in other mods
 
