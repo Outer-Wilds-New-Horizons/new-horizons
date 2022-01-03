@@ -59,7 +59,23 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
-            foreach(var component in prop.GetComponentsInChildren<Component>())
+            foreach (var component in prop.GetComponentsInChildren<Component>())
+            {
+                // TODO: Make this work or smthng
+                if (component is GhostIK) (component as GhostIK).enabled = false;
+                if(component is GhostEffects) (component as GhostEffects).enabled = false;
+                
+
+                var enabledField = component.GetType().GetField("enabled");
+                if(enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
+            }
+
+            prop.transform.parent = go.transform;
+            prop.transform.localPosition = position == null ? Vector3.zero : (Vector3)position;
+
+            Quaternion rot = rotation == null ? prefab.transform.rotation : Quaternion.Euler((Vector3)rotation);
+            prop.transform.rotation = rot;
+            if (alignWithNormal)
             {
                 try
                 {
