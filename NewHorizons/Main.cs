@@ -187,7 +187,7 @@ namespace NewHorizons
                 existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
                 if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
             }
@@ -319,8 +319,8 @@ namespace NewHorizons
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
 
-            if (body.Config.Base.BlackHoleSize != 0)
-                BlackHoleBuilder.Make(go, body.Config.Base, sector);
+            if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
+                SingularityBuilder.Make(go, sector, owRigidBody, body.Config);
 
             if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 

@@ -23,6 +23,7 @@ namespace NewHorizons.External
         public PropModule Props { get; set; }
         public SpawnModule Spawn { get; set; }
         public SignalModule Signal { get; set; }
+        public SingularityModule Singularity { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
         {

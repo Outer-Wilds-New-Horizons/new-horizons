@@ -16,10 +16,12 @@ namespace NewHorizons.External
         public float SurfaceSize { get; set; }
         public float WaterSize { get; set; }
         public float GroundSize { get; set; }
-        public float BlackHoleSize { get; set; }
         public float LavaSize { get; set; }
         public bool HasCometTail { get; set; }
         public bool HasReferenceFrame { get; set; } = true;
         public bool CenterOfSolarSystem { get; set; } = false;
+
+        // Old, see SingularityModule instead
+        public float BlackHoleSize { get; set; }
     }
 }
