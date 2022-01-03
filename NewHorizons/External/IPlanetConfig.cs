@@ -19,5 +19,6 @@ namespace NewHorizons.External
         PropModule Props { get; }
         SpawnModule Spawn { get; }
         SignalModule Signal { get; }
+        SingularityModule Singularity { get; }
     }
 }

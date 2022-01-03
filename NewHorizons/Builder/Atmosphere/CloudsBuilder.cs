@@ -31,6 +31,8 @@ namespace NewHorizons.Atmosphere
                 return;
             }
 
+            Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor32();
+
             GameObject cloudsMainGO = new GameObject();
             cloudsMainGO.SetActive(false);
             cloudsMainGO.transform.parent = body.transform;
@@ -56,8 +58,8 @@ namespace NewHorizons.Atmosphere
             
             foreach (var material in topMR.sharedMaterials)
             {
-                material.SetColor("_Color", atmo.CloudTint.ToColor32());
-                material.SetColor("_TintColor", atmo.CloudTint.ToColor32());
+                material.SetColor("_Color", cloudTint);
+                material.SetColor("_TintColor", cloudTint);
 
                 material.SetTexture("_MainTex", image);
                 material.SetTexture("_RampTex", ramp);
@@ -84,7 +86,7 @@ namespace NewHorizons.Atmosphere
             bottomTSR.LODRadius = 1f;
 
             // It's always more green than expected
-            var bottomCloudTint = atmo.CloudTint.ToColor32();
+            var bottomCloudTint = cloudTint;
             bottomCloudTint.g = (byte)(bottomCloudTint.g * 0.8f);
             foreach (Material material in bottomTSR.sharedMaterials)
             {

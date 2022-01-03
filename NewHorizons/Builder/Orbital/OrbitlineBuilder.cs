@@ -38,10 +38,20 @@ namespace NewHorizons.Builder.Orbital
             else if (config.Base.BlackHoleSize != 0) color = new Color(1f, 0.5f, 1f);
             else if (config.Base.WaterSize != 0) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Base.LavaSize != 0) color = new Color(1f, 0.5f, 0.5f);
+
+            var fade = isMoon;
+            if (config.Base.IsSatellite)
+            {
+                if(config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
+                fade = true;
+                orbitLine._fadeEndDist = 5000;
+                orbitLine._fadeStartDist = 3000;
+            }
+            
             orbitLine.SetValue("_color", color);
 
             orbitLine.SetValue("_astroObject", astroobject);
-            orbitLine.SetValue("_fade", isMoon);
+            orbitLine.SetValue("_fade", fade);
             orbitLine.SetValue("_lineWidth", 2f);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>

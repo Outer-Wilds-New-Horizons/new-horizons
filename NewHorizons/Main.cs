@@ -30,6 +30,8 @@ namespace NewHorizons
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
 
+        public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
+
         public static float FurthestOrbit { get; set; } = 50000f;
 
         public StarLightController StarLightController { get; private set; }
@@ -187,7 +189,7 @@ namespace NewHorizons
                 existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
                 if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
             }
@@ -236,7 +238,7 @@ namespace NewHorizons
                 {
                     var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
                     Logger.Log($"Loaded {config.Name}");
-                    BodyList.Add(new NewHorizonsBody(config, mod.ModHelper.Assets));
+                    BodyList.Add(new NewHorizonsBody(config, mod.ModHelper.Assets, mod.ModHelper.Manifest.UniqueName));
                 }
                 catch (Exception e)
                 {
@@ -289,7 +291,7 @@ namespace NewHorizons
             if (body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
-            float sphereOfInfluence = Mathf.Max(atmoSize, body.Config.Base.SurfaceSize * 2f);
+            float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
@@ -319,8 +321,8 @@ namespace NewHorizons
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
 
-            if (body.Config.Base.BlackHoleSize != 0)
-                BlackHoleBuilder.Make(go, body.Config.Base, sector);
+            if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
+                SingularityBuilder.Make(go, sector, owRigidBody, body.Config);
 
             if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
@@ -366,7 +368,7 @@ namespace NewHorizons
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);
 
             if (body.Config.AsteroidBelt != null)
-                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt, body.Assets);
+                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt, body.Assets, body.ModUniqueName);
 
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
@@ -396,10 +398,10 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuilder.Make(go, sector, body.Config);
+                PropBuilder.Make(go, sector, body.Config, body.Assets, body.ModUniqueName);
 
             if (body.Config.Signal != null)
-                SignalBuilder.Make(go, sector, body.Config.Signal);
+                SignalBuilder.Make(go, sector, body.Config.Signal, body.Assets);
 
             return go;
         }
@@ -418,7 +420,7 @@ namespace NewHorizons
             Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig(config);
 
-            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper.Assets : Main.Instance.ModHelper.Assets);
+            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper.Assets : Main.Instance.ModHelper.Assets, mod.ModHelper.Manifest.UniqueName);
 
             Main.BodyList.Add(body);
         }

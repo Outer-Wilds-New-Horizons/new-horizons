@@ -43,11 +43,11 @@ namespace NewHorizons.Builder.Body
 
 			var mat = new Material(RingShader);
 			mat.mainTexture = texture;
-			mat.renderQueue = 3000;
+			mat.renderQueue = 2895;
 			ringMR.material = mat;
 
 			// Make mesh
-			var segments = (int)Math.Max(20, ring.OuterRadius); 
+			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000); 
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
 		}
 

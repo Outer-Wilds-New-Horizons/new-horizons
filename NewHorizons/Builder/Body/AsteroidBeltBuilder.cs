@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, AsteroidBeltModule belt, IModAssets assets)
+        public static void Make(string bodyName, AsteroidBeltModule belt, IModAssets assets, string uniqueName)
         {
             var minSize = 20;
             var maxSize = 50;
@@ -59,7 +59,7 @@ namespace NewHorizons.Builder.Body
                     }
                 };
 
-                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets);
+                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets, uniqueName);
                 Main.NextPassBodies.Add(asteroid);
             }
         }

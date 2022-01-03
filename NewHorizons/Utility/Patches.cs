@@ -43,6 +43,10 @@ namespace NewHorizons.Utility
             var playerDataResetGame = typeof(PlayerData).GetMethod("ResetGame");
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataResetGame, typeof(Patches), nameof(Patches.OnPlayerDataResetGame));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<BlackHoleVolume>("Start", typeof(Patches), nameof(Patches.OnBlackHoleVolumeStart));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<WhiteHoleVolume>("Awake", typeof(Patches), nameof(Patches.OnWhiteHoleVolumeAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
@@ -306,5 +310,30 @@ namespace NewHorizons.Utility
             NewHorizonsData.Reset();
         }
         #endregion
+
+        public static bool OnBlackHoleVolumeStart(BlackHoleVolume __instance)
+        {
+            return __instance._whiteHole == null;
+        }
+
+        public static bool OnWhiteHoleVolumeAwake(WhiteHoleVolume __instance)
+        {
+            __instance._growQueue = new List<OWRigidbody>(8);
+            __instance._growQueueLocationData = new List<RelativeLocationData>(8);
+            __instance._ejectedBodyList = new List<OWRigidbody>(64);
+            try
+            {
+                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody(false);
+                __instance._whiteHoleProxyShadowSuperGroup = __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
+                __instance._fluidVolume = __instance.gameObject.GetRequiredComponent<WhiteHoleFluidVolume>();
+            }
+            catch (Exception) { }
+            return false;
+        }
+
+        public static bool OnProbeLauncherUpdateOrbitalLaunchValues(ProbeLauncher __instance)
+        {
+            return (Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null);
+        }
     }
 }
