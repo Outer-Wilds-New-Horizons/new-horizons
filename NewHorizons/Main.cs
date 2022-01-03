@@ -99,7 +99,7 @@ namespace NewHorizons
 
             StarLightController = starLightGO.AddComponent<StarLightController>();
             StarLightController.AddStar(starController);
-
+                                                                                                                   
             starLightGO.SetActive(true);
 
             // TODO: Make this configurable probably
@@ -321,9 +321,6 @@ namespace NewHorizons
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
 
-            if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
-                SingularityBuilder.Make(go, sector, owRigidBody, body.Config);
-
             if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
             if (body.Config.FocalPoint != null)
@@ -402,6 +399,9 @@ namespace NewHorizons
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Assets);
+
+            if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
+                SingularityBuilder.Make(go, sector, rb, body.Config);
 
             return go;
         }

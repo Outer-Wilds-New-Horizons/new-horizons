@@ -124,22 +124,6 @@ namespace NewHorizons.Builder.Props
             prop.transform.rotation = rot;
             if (alignWithNormal)
             {
-                // TODO: Make this work or smthng
-                if (component is GhostIK) (component as GhostIK).enabled = false;
-                if(component is GhostEffects) (component as GhostEffects).enabled = false;
-                
-
-                var enabledField = component.GetType().GetField("enabled");
-                if(enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
-            }
-
-            prop.transform.parent = go.transform;
-            prop.transform.localPosition = position == null ? prefab.transform.localPosition : (Vector3)position;
-
-            Quaternion rot = rotation == null ? prefab.transform.rotation : Quaternion.Euler((Vector3)rotation);
-            prop.transform.rotation = rot;
-            if (alignWithNormal)
-            {
                 var up = prop.transform.localPosition.normalized;
                 var front = Vector3.Cross(up, Vector3.left);
                 if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
