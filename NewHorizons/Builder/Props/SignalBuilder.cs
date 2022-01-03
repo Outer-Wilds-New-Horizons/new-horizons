@@ -1,6 +1,7 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.Utility;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,20 +84,19 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomSignalName(SignalName signalName)
         {
-            string name = null;
-            _customSignalNames.TryGetValue(signalName, out name);
+            _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule module)
+        public static void Make(GameObject body, Sector sector, SignalModule module, IModAssets assets)
         {
             foreach(var info in module.Signals)
             {
-                Make(body, sector, info);
+                Make(body, sector, info, assets);
             }
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info)
+        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModAssets assets)
         {
             var signalGO = new GameObject($"Signal_{info.Name}");
             signalGO.SetActive(false);
@@ -107,15 +107,32 @@ namespace NewHorizons.Builder.Props
             var source = signalGO.AddComponent<AudioSource>();
             var owAudioSource = signalGO.AddComponent<OWAudioSource>();
 
-            AudioSignal audioSignal = null;
+            AudioSignal audioSignal;
             if (info.InsideCloak) audioSignal = signalGO.AddComponent<CloakedAudioSignal>();
             else audioSignal = signalGO.AddComponent<AudioSignal>();
 
             var frequency = StringToFrequency(info.Frequency);
             var name = StringToSignalName(info.Name);
 
-            AudioClip clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.AudioClip);
-            if (clip == null) return;
+            AudioClip clip = null;
+            if(info.AudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.AudioClip);
+            else if (info.AudioFilePath != null)
+            {
+                try
+                {
+                    clip = assets.GetAudio(info.AudioFilePath);
+                }
+                catch(Exception e)
+                {
+                    Logger.LogError($"Couldn't load audio file {info.AudioFilePath} : {e.Message}");
+                }
+            }
+
+            if (clip == null)
+            {
+                Logger.LogError($"Couldn't find AudioClip {info.AudioClip} or AudioFile {info.AudioFilePath}");
+                return;
+            }
 
             audioSignal.SetSector(sector);
             audioSignal._frequency = frequency;

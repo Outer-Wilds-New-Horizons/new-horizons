@@ -13,22 +13,26 @@ namespace NewHorizons.Builder.General
             MapMarker mapMarker = body.AddComponent<MapMarker>();
             mapMarker.SetValue("_labelID", (UITextType)Utility.AddToUITable.Add(name.ToUpper()));
 
-            var markerType = "Planet";
+            var markerType = MapMarker.MarkerType.Planet;
 
             if (config.Orbit.IsMoon)
             {
-                markerType = "Moon";
+                markerType = MapMarker.MarkerType.Moon;
             }
             else if (config.Star != null)
             {
-                markerType = "Sun";
+                markerType = MapMarker.MarkerType.Sun;
             }
             else if (config.FocalPoint != null)
             {
-                markerType = "HourglassTwins";
+                markerType = MapMarker.MarkerType.HourglassTwins;
+            }
+            else if(config.Base.IsSatellite)
+            {
+                markerType = MapMarker.MarkerType.Probe;
             }
 
-            mapMarker.SetValue("_markerType", mapMarker.GetType().GetNestedType("MarkerType", BindingFlags.NonPublic).GetField(markerType).GetValue(mapMarker));
+            mapMarker._markerType = markerType;
         }
     }
 }

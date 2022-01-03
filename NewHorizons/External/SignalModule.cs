@@ -16,7 +16,8 @@ namespace NewHorizons.External
             public MVector3 Position;
             public string Frequency;
             public string Name;
-            public string AudioClip;
+            public string AudioClip = null;
+            public string AudioFilePath = null;
             public float SourceRadius = 1f;
             public float DetectionRadius = 0f;
             public float IdentificationRadius = 10f;
