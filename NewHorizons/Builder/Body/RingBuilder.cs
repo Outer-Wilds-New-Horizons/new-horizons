@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.Body
 			ringMR.material = mat;
 
 			// Make mesh
-			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 20000); 
+			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000); 
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
 		}
 

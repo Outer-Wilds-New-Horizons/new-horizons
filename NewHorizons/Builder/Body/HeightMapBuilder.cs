@@ -33,6 +33,7 @@ namespace NewHorizons.Builder.Body
             }
 
             GameObject cubeSphere = new GameObject("CubeSphere");
+            cubeSphere.SetActive(false);
             cubeSphere.transform.parent = go.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
@@ -53,6 +54,8 @@ namespace NewHorizons.Builder.Body
             // Fix rotation in the end
             cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
             cubeSphere.transform.localPosition = Vector3.zero;
+
+            cubeSphere.SetActive(true);
         }
     }
 }

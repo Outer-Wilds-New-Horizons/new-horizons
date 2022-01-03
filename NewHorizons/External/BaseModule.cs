@@ -20,6 +20,7 @@ namespace NewHorizons.External
         public bool HasCometTail { get; set; }
         public bool HasReferenceFrame { get; set; } = true;
         public bool CenterOfSolarSystem { get; set; } = false;
+        public bool IsSatellite { get; set; }
 
         // Old, see SingularityModule instead
         public float BlackHoleSize { get; set; }
