@@ -33,14 +33,14 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Comets (Done)
 - Signalscope signals (Done)
 - Asteroid belts (Done)
+- Support satellites (Done)
+- Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones (done)
+- Load planet meshes from asset bundle (technically done)
+- Black hole / white hole pairs (done)
 - Procedurally terrain generation (started)
-- Support satellites (using custom models in the assets folder or in-game ones)
-- Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones
-- Load planet meshes from asset bundle
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
-- Black hole / white hole pairs
 - Separate solar system scenes accessible via wormhole
 - Implement all planet features:
 	- Tornados
