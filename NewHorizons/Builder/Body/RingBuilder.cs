@@ -13,6 +13,7 @@ namespace NewHorizons.Builder.Body
     static class RingBuilder
     {
 		public static Shader RingShader;
+		public static Shader UnlitShader;
 
 		public static void Make(GameObject body, RingModule ring, IModAssets assets)
         {
@@ -39,15 +40,16 @@ namespace NewHorizons.Builder.Body
             var ringMR = ringGO.AddComponent<MeshRenderer>();
 			var texture = ringTexture;
 
-			if (RingShader == null) RingShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/UnlitTransparent.shader");
+			if (RingShader == null) RingShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
+			if (UnlitShader == null) UnlitShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
 
-			var mat = new Material(RingShader);
+			var mat = new Material(ring.Unlit ? UnlitShader : RingShader);
 			mat.mainTexture = texture;
-			mat.renderQueue = 3000;
+			mat.renderQueue = 2895;
 			ringMR.material = mat;
 
 			// Make mesh
-			var segments = (int)Math.Max(20, ring.OuterRadius); 
+			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000); 
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
 		}
 

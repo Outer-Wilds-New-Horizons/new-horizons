@@ -8,6 +8,7 @@ namespace NewHorizons.External
     public class PlanetConfig : IPlanetConfig
     {
         public string Name { get; set; }
+        public string StarSystem { get; set; } = "SolarSystem";
         public bool Destroy { get; set; }
         public int BuildPriority { get; set; } = -1;
         public MVector3 SpawnPoint { get; set; }
@@ -23,6 +24,7 @@ namespace NewHorizons.External
         public PropModule Props { get; set; }
         public SpawnModule Spawn { get; set; }
         public SignalModule Signal { get; set; }
+        public SingularityModule Singularity { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
         {

@@ -1,4 +1,5 @@
-﻿using NewHorizons.Builder.Props;
+﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
 using OWML.Common;
@@ -42,6 +43,12 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));  
             var playerDataResetGame = typeof(PlayerData).GetMethod("ResetGame");
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataResetGame, typeof(Patches), nameof(Patches.OnPlayerDataResetGame));
+
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<BlackHoleVolume>("Start", typeof(Patches), nameof(Patches.OnBlackHoleVolumeStart));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<WhiteHoleVolume>("Awake", typeof(Patches), nameof(Patches.OnWhiteHoleVolumeAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
+
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
@@ -306,5 +313,61 @@ namespace NewHorizons.Utility
             NewHorizonsData.Reset();
         }
         #endregion
+
+        public static bool OnBlackHoleVolumeStart(BlackHoleVolume __instance)
+        {
+            return __instance._whiteHole == null;
+        }
+
+        public static bool OnWhiteHoleVolumeAwake(WhiteHoleVolume __instance)
+        {
+            __instance._growQueue = new List<OWRigidbody>(8);
+            __instance._growQueueLocationData = new List<RelativeLocationData>(8);
+            __instance._ejectedBodyList = new List<OWRigidbody>(64);
+            try
+            {
+                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody(false);
+                __instance._whiteHoleProxyShadowSuperGroup = __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
+                __instance._fluidVolume = __instance.gameObject.GetRequiredComponent<WhiteHoleFluidVolume>();
+            }
+            catch (Exception) { }
+            return false;
+        }
+
+        public static bool OnProbeLauncherUpdateOrbitalLaunchValues(ProbeLauncher __instance)
+        {
+            return (Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null);
+        }
+
+        public static bool OnShipLogControllerUpdate(ShipLogController __instance)
+        {
+            if (__instance._exiting
+                || OWInput.GetInputMode() != InputMode.ShipComputer
+                || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
+                || ShipLogBuilder.StarChartMode == null)
+                return true;
+
+            __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
+            __instance._currentMode.UpdateMode();
+            if (__instance._currentMode.AllowModeSwap() && OWInput.IsNewlyPressed(InputLibrary.swapShipLogMode, InputMode.All))
+            {
+                ShipLogMode currentMode = __instance._currentMode;
+                string focusedEntryID = currentMode.GetFocusedEntryID();
+                bool flag = currentMode.Equals(__instance._mapMode);
+                __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
+
+                if (currentMode.Equals(__instance._mapMode))
+                    __instance._currentMode = ShipLogBuilder.StarChartMode;
+                else if (currentMode.Equals(ShipLogBuilder.StarChartMode))
+                    __instance._currentMode = __instance._detectiveMode;
+                else
+                    __instance._currentMode = __instance._mapMode;
+
+                currentMode.ExitMode();
+                __instance._currentMode.EnterMode(focusedEntryID, null);
+                __instance._oneShotSource.PlayOneShot(flag ? global::AudioType.ShipLogEnterDetectiveMode : global::AudioType.ShipLogEnterMapMode, 1f);
+            }
+            return false;
+        }
     }
 }

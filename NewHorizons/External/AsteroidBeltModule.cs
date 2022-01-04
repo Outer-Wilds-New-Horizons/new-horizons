@@ -13,5 +13,6 @@ namespace NewHorizons.External
         public float Inclination { get; set; }
         public float LongitudeOfAscendingNode { get; set; }
         public int RandomSeed { get; set; }
+        public ProcGenModule ProcGen { get; set; }
     }
 }

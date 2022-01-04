@@ -97,8 +97,8 @@ namespace NewHorizons.Body
 
             float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)));
             float longitude = 180f;
-            if(v.x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(v.y / v.x) + 90f;
-            if(v.x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f;
+            if(v.x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(v.y / v.x);
+            if(v.x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(v.y / v.x) + Mathf.PI);
 
             float sampleX = heightMap.width * longitude / 360f;
             float sampleY = heightMap.height * latitude / 180f;

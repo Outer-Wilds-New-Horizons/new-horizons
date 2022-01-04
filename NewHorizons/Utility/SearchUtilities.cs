@@ -10,7 +10,7 @@ namespace NewHorizons.Utility
 {
     public static class SearchUtilities
     {
-        public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : MonoBehaviour
+        public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
         {
             T[] firstList = GameObject.FindObjectsOfType<T>();
             List<T> finalList = new List<T>();
@@ -24,6 +24,22 @@ namespace NewHorizons.Utility
             }
 
             return finalList;
+        }
+
+        public static T FindObjectOfTypeAndName<T>(string name) where T : Object
+        {
+            T[] firstList = GameObject.FindObjectsOfType<T>();
+            List<T> finalList = new List<T>();
+
+            for (var i = 0; i < firstList.Length; i++)
+            {
+                if (firstList[i].name == name)
+                {
+                    return firstList[i];
+                }
+            }
+
+            return null;
         }
 
         public static List<T> FindResourcesOfTypeAndName<T>(string name) where T : Object

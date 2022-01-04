@@ -14,8 +14,10 @@ namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, AsteroidBeltModule belt, IModAssets assets)
+        public static void Make(string bodyName, IPlanetConfig parentConfig, IModAssets assets, string uniqueName)
         {
+            var belt = parentConfig.AsteroidBelt;
+
             var minSize = 20;
             var maxSize = 50;
             int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
@@ -28,7 +30,8 @@ namespace NewHorizons.Builder.Body
                 var size = Random.Range(minSize, maxSize);
                 var config = new Dictionary<string, object>()
                 {
-                    {"Name", $"{bodyName} Asteroid {i+1}"},
+                    {"Name", $"{bodyName} Asteroid {i}"},
+                    {"StarSystem", parentConfig.StarSystem },
                     {"Base", new Dictionary<string, object>()
                         {
                             {"HasMapMarker", false },
@@ -57,7 +60,9 @@ namespace NewHorizons.Builder.Body
                     }
                 };
 
-                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets);
+                var asteroidConfig = new PlanetConfig(config);
+                if (belt.ProcGen != null) asteroidConfig.ProcGen = belt.ProcGen;
+                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets, uniqueName);
                 Main.NextPassBodies.Add(asteroid);
             }
         }

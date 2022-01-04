@@ -33,6 +33,7 @@ namespace NewHorizons.Builder.Body
             }
 
             GameObject cubeSphere = new GameObject("CubeSphere");
+            cubeSphere.SetActive(false);
             cubeSphere.transform.parent = go.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
@@ -41,7 +42,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/SphereTextureWrapper.shader");
+            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);
@@ -50,9 +51,13 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
+            if(go.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
+
             // Fix rotation in the end
             cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
             cubeSphere.transform.localPosition = Vector3.zero;
+
+            cubeSphere.SetActive(true);
         }
     }
 }
