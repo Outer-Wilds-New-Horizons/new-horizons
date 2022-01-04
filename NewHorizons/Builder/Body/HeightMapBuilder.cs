@@ -42,7 +42,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/SphereTextureWrapper.shader");
+            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);

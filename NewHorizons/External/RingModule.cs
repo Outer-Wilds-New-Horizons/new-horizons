@@ -13,5 +13,6 @@ namespace NewHorizons.External
         public float Inclination { get; set; }
         public float LongitudeOfAscendingNode { get; set; }
         public string Texture { get; set; }
+        public bool Unlit { get; set; } = true;
     }
 }
