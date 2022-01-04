@@ -17,6 +17,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
@@ -29,12 +30,11 @@ namespace NewHorizons
 
         public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
-
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
-
         public static float FurthestOrbit { get; set; } = 50000f;
-
         public StarLightController StarLightController { get; private set; }
+
+        private static string _currentStarSystem = "SolarSystem";
 
         public override object GetApi()
         {
@@ -59,6 +59,9 @@ namespace NewHorizons
             {
                 Logger.LogWarning("Couldn't find planets folder");
             }
+
+            //UnityEngine.Random.InitState();
+            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
         }
 
         public void OnDestroy()
@@ -71,9 +74,13 @@ namespace NewHorizons
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
 
-            if (scene.name != "SolarSystem") { return; }
+            if (scene.name.Equals("TitleScreen")) DisplayBodyOnTitleScreen();
+
+            if (scene.name != "SolarSystem") return;
 
             NewHorizonsData.Load();
+
+            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
 
             // Need to manage this when there are multiple stars
             var sun = GameObject.Find("Sun_Body");
@@ -115,8 +122,10 @@ namespace NewHorizons
                 AstroObjectLocator.AddAstroObject(ao);
             }
 
-            // Stars then planets then moons (not necessary but probably speeds things up, maybe)
-            var toLoad = BodyList.OrderBy(b =>
+            // Order by stars then planets then moons (not necessary but probably speeds things up, maybe) ALSO only include current star system
+            var toLoad = BodyList
+                .Where(b => b.Config.StarSystem.Equals(_currentStarSystem))
+                .OrderBy(b =>
                 (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
                 (b.Config.FocalPoint != null ? 0 :
                 (b.Config.Star != null) ? 0 :
@@ -172,6 +181,69 @@ namespace NewHorizons
                 cam.farClipPlane = FurthestOrbit * 3f;
             }
             */
+        }
+
+        public void DisplayBodyOnTitleScreen()
+        {
+            //Try loading one planet why not
+            GameObject titleScreenGO = new GameObject("TitleScreenPlanet");
+            var eligible = BodyList.Where(b => b.Config.Ring != null && (b.Config.HeightMap != null || (b.Config.Atmosphere?.Cloud != null))).ToArray();
+            var body = eligible[UnityEngine.Random.Range(0, eligible.Count())];
+
+            Logger.Log($"Displaying {body.Config.Name} on the title screen");
+
+            var flag = false;
+            HeightMapModule heightMap = new HeightMapModule();
+            var minSize = 20;
+            var maxSize = 35;
+            if (body.Config.HeightMap != null)
+            {
+                var size = Mathf.Clamp(body.Config.HeightMap.MaxHeight / 10, minSize, maxSize); 
+                heightMap.TextureMap = body.Config.HeightMap.TextureMap;
+                heightMap.HeightMap = body.Config.HeightMap.HeightMap;
+                heightMap.MaxHeight = size;
+                heightMap.MinHeight = body.Config.HeightMap.MinHeight * size / body.Config.HeightMap.MaxHeight;
+                flag = true;
+            }
+            if (body.Config.Atmosphere != null && body.Config.Atmosphere.Cloud != null)
+            {
+                // Hacky but whatever I just want a sphere
+                var size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
+                heightMap.MaxHeight = heightMap.MinHeight = size+1;
+                heightMap.TextureMap = body.Config.Atmosphere.Cloud;
+                flag = true;
+            }
+
+            if (flag)
+            {
+                HeightMapBuilder.Make(titleScreenGO, heightMap, body.Assets);
+                if (body.Config.Ring != null)
+                {
+                    RingModule newRing = new RingModule();
+                    newRing.InnerRadius = maxSize * 1.2f;
+                    newRing.OuterRadius = maxSize * 2f;
+                    newRing.Texture = body.Config.Ring.Texture;
+                    RingBuilder.Make(titleScreenGO, newRing, body.Assets);
+                    titleScreenGO.transform.localScale = Vector3.one * 0.8f;
+                }
+                GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
+                GameObject.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
+                titleScreenGO.transform.parent = GameObject.Find("Scene/Background/PlanetPivot/").transform;
+                titleScreenGO.transform.localPosition = Vector3.zero;
+
+                var lightGO = new GameObject("Light");
+                lightGO.transform.parent = titleScreenGO.transform.parent.parent;
+                lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
+                var light = lightGO.AddComponent<Light>();
+                light.color = new Color(1f, 1f, 1f, 1f);
+                light.range = 100;
+                light.intensity = 0.8f;
+            }
+
+            var img = GameObject.Instantiate(GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye").GetComponent<Image>());
+            var texture = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/logo.png");
+            img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f));
+            img.transform.parent = GameObject.Find("TitleMenu").transform;
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -365,7 +437,7 @@ namespace NewHorizons
                 RingBuilder.Make(go, body.Config.Ring, body.Assets);
 
             if (body.Config.AsteroidBelt != null)
-                AsteroidBeltBuilder.Make(body.Config.Name, body.Config.AsteroidBelt, body.Assets, body.ModUniqueName);
+                AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Assets, body.ModUniqueName);
 
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
@@ -404,6 +476,12 @@ namespace NewHorizons
                 SingularityBuilder.Make(go, sector, rb, body.Config);
 
             return go;
+        }
+
+        public void ChangeCurrentStarSystem(string newStarSystem)
+        {
+            _currentStarSystem = newStarSystem;
+            LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
     }
 

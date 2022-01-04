@@ -5,6 +5,7 @@ namespace NewHorizons.External
     public interface IPlanetConfig
     {
         string Name { get; }
+        string StarSystem { get; } 
         bool Destroy { get; }
         int BuildPriority { get; }
         BaseModule Base {get;}

@@ -17,7 +17,6 @@ namespace NewHorizons.Components
 
         public override void VanishProbe(OWRigidbody probeBody, RelativeLocationData entryLocation)
 		{
-			Logger.Log($"Uh oh you shot your probe into a black hole");
 			SurveyorProbe requiredComponent = probeBody.GetRequiredComponent<SurveyorProbe>();
 			if (requiredComponent.IsLaunched())
 			{
