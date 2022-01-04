@@ -20,8 +20,6 @@ namespace NewHorizons.Atmosphere
 
                 if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
                 else cap = assets.GetTexture(atmo.CloudCap);
-
-                //if(atmo.CloudRamp == null) ramp = ImageUtilities.Scaled(image, 1, 128);
                 if(atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = assets.GetTexture(atmo.CloudRamp);
             }

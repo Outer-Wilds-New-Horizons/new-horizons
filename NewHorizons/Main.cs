@@ -196,9 +196,10 @@ namespace NewHorizons
             HeightMapModule heightMap = new HeightMapModule();
             var minSize = 20;
             var maxSize = 35;
+            float size = minSize;
             if (body.Config.HeightMap != null)
             {
-                var size = Mathf.Clamp(body.Config.HeightMap.MaxHeight / 10, minSize, maxSize); 
+                size = Mathf.Clamp(body.Config.HeightMap.MaxHeight / 10, minSize, maxSize); 
                 heightMap.TextureMap = body.Config.HeightMap.TextureMap;
                 heightMap.HeightMap = body.Config.HeightMap.HeightMap;
                 heightMap.MaxHeight = size;
@@ -208,7 +209,7 @@ namespace NewHorizons
             if (body.Config.Atmosphere != null && body.Config.Atmosphere.Cloud != null)
             {
                 // Hacky but whatever I just want a sphere
-                var size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
+                size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
                 heightMap.MaxHeight = heightMap.MinHeight = size+1;
                 heightMap.TextureMap = body.Config.Atmosphere.Cloud;
                 flag = true;
@@ -220,8 +221,8 @@ namespace NewHorizons
                 if (body.Config.Ring != null)
                 {
                     RingModule newRing = new RingModule();
-                    newRing.InnerRadius = maxSize * 1.2f;
-                    newRing.OuterRadius = maxSize * 2f;
+                    newRing.InnerRadius = size * 1.2f;
+                    newRing.OuterRadius = size * 2f;
                     newRing.Texture = body.Config.Ring.Texture;
                     RingBuilder.Make(titleScreenGO, newRing, body.Assets);
                     titleScreenGO.transform.localScale = Vector3.one * 0.8f;
@@ -239,11 +240,6 @@ namespace NewHorizons
                 light.range = 100;
                 light.intensity = 0.8f;
             }
-
-            var img = GameObject.Instantiate(GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye").GetComponent<Image>());
-            var texture = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/logo.png");
-            img.sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f));
-            img.transform.parent = GameObject.Find("TitleMenu").transform;
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
