@@ -7,7 +7,7 @@ A planet creator for Outer Wilds.
 
 You can view the addons creators have made [here](https://outerwildsmods.com/mods/newhorizons/addons/)!
 
-Planets are created using a JSON file format structure, and placed in the `planets` folder.
+Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
 NOTE: Any mod that requires PacificEngine's CommonResources is not compatible with New Horizons currently. Both mods mess with planets and orbits and end up clashing. We're currently working on a solution.
 
