@@ -23,10 +23,16 @@ namespace NewHorizons.Builder.Orbital
 
             var ecc = config.Orbit.Eccentricity;
 
+            var parentGravity = astroobject.GetPrimaryBody()?.GetGravityVolume();
+
             OrbitLine orbitLine;
-            if (ecc == 0) orbitLine = orbitGO.AddComponent<OrbitLine>();
-            else if (ecc > 0 && ecc < 1) orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
-            else orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+            if (ecc == 0)
+                orbitLine = orbitGO.AddComponent<OrbitLine>();
+            // Doesn't work for linear eccentric falloff
+            else if (ecc > 0 && ecc < 1 && (parentGravity != null && parentGravity._falloffType == GravityVolume.FalloffType.inverseSquared)) 
+                orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
+            else 
+                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();

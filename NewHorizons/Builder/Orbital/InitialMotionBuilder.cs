@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Orbital
             // Rotation
             initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
 
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
+            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination + 90f, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 
             initialMotion._orbitImpulseScalar = 0f;

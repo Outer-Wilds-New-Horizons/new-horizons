@@ -33,6 +33,7 @@
   <ItemGroup>
     <Reference Include="PacificEngine.OW_CommonResources">
       <HintPath>$(OuterWildsModsDirectory)\PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
+	  <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>

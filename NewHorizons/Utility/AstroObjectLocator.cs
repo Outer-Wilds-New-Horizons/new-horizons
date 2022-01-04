@@ -19,7 +19,7 @@ namespace NewHorizons.Utility
 
 		public static AstroObject GetAstroObject(string name)
         {
-			if (name.Equals("MAP_SATELLITE"))
+			if (name.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
 				return GetAstroObject(AstroObject.Name.MapSatellite);
 			var aoName = AstroObject.StringIDToAstroObjectName(name);
 			if(aoName == AstroObject.Name.None) aoName = AstroObject.StringIDToAstroObjectName(name.ToUpper().Replace(" ", "_"));
