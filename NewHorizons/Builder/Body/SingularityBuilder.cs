@@ -24,24 +24,29 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject body, Sector sector, OWRigidbody OWRB, IPlanetConfig config)
         {
-
-            var size = config.Base.BlackHoleSize;
-            string pairedSingularity = null;
-            var polarity = Polarity.BlackHole;
-
-            if (config.Singularity != null)
+            // Backwards compatibility
+            if(config.Singularity == null)
             {
-                size = config.Singularity.Size;
-                pairedSingularity = config.Singularity.PairedSingularity;
-                if(config.Singularity.Type != null && config.Singularity.Type.ToUpper().Equals("WHITEHOLE"))
+                if(config.Base.BlackHoleSize != 0)
                 {
-                    polarity = Polarity.WhiteHole;
+                    MakeBlackHole(body, sector, Vector3.zero, config.Base.BlackHoleSize, true, null);
                 }
+                return;
             }
-            bool isWormHole = config.Singularity.TargetStarSystem != null;
+
+            var size = config.Singularity.Size;
+            var pairedSingularity = config.Singularity.PairedSingularity;
+
+            var polarity = Polarity.BlackHole;
+            if (config.Singularity.Type != null && config.Singularity.Type.ToUpper().Equals("WHITEHOLE"))
+            {
+                polarity = Polarity.WhiteHole;
+            }
+
+            bool isWormHole = config.Singularity?.TargetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
-            Vector3 localPosition = config.Singularity.Position == null ? Vector3.zero : (Vector3)config.Singularity.Position;
+            Vector3 localPosition = config.Singularity?.Position == null ? Vector3.zero : (Vector3)config.Singularity.Position;
 
             GameObject newSingularity = null;
             switch (polarity)

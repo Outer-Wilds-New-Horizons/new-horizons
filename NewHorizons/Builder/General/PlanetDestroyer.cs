@@ -12,6 +12,36 @@ namespace NewHorizons.Builder.General
 {
     static class PlanetDestroyer
     {
+        private static readonly string[] _solarSystemBodies = new string[]
+        {
+            "Ash Twin",
+            "Attlerock",
+            "Brittle Hollow",
+            "Dark Bramble",
+            "DreamWorld",
+            "Ember Twin",
+            "Giant's Deep",
+            "Hollow's Lantern",
+            "Interloper",
+            "Map Satellite",
+            "Orbital Probe Cannon",
+            "Quantum Moon",
+            "RingWorld",
+            "Sun",
+            "Sun Station",
+            "Timber Hearth",
+            "White Hole"
+        };
+
+        public static void RemoveSolarSystem()
+        {
+            foreach(var name in _solarSystemBodies)
+            {
+                var ao = AstroObjectLocator.GetAstroObject(name);
+                if (ao != null) RemoveBody(ao);
+            }    
+        }
+
         public static void RemoveBody(AstroObject ao, List<AstroObject> toDestroy = null)
         {
             Logger.Log($"Removing {ao.name}");

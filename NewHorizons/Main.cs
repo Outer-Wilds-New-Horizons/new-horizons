@@ -85,8 +85,6 @@ namespace NewHorizons
 
             _isChangingStarSystem = false;
 
-            HeavenlyBodyBuilder.Reset();
-
             if (scene.name.Equals("TitleScreen")) DisplayBodyOnTitleScreen();
 
             if (scene.name != "SolarSystem")
@@ -95,6 +93,8 @@ namespace NewHorizons
                 _currentStarSystem = "SolarSystem";
                 return;
             }
+
+            HeavenlyBodyBuilder.Reset();
 
             NewHorizonsData.Load();
 
@@ -192,14 +192,10 @@ namespace NewHorizons
             // I don't know what these do but they look really weird from a distance
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
 
+            if(!_currentStarSystem.Equals("SolarSystem")) Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveSolarSystem());
+
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
-            /*
-            foreach(var cam in GameObject.FindObjectsOfType<OWCamera>())
-            {
-                cam.farClipPlane = FurthestOrbit * 3f;
-            }
-            */
         }
 
         public void DisplayBodyOnTitleScreen()
@@ -349,6 +345,7 @@ namespace NewHorizons
                 {
                     var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
                     Logger.Log($"Loaded {config.Name}");
+                    if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
                     BodyList.Add(new NewHorizonsBody(config, mod.ModHelper.Assets, mod.ModHelper.Manifest.UniqueName));
                 }
                 catch (Exception e)
@@ -460,7 +457,7 @@ namespace NewHorizons
                 SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
-            if (body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config);
+            if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic) OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config);
 
             if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 

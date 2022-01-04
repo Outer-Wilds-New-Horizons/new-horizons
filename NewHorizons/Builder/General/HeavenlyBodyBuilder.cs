@@ -110,8 +110,6 @@ namespace NewHorizons.Builder.General
                         primary.transform.position = point.transform.position + primaryCartesianState.Item1;
                         secondary.transform.position = point.transform.position + secondaryCartesianState.Item1;
 
-                        Logger.Log($"Positions: {primary.transform.position}, {secondary.transform.position}");
-
                         var primaryOriginal = mapping[primaryHB];
                         var secondaryOriginal = mapping[secondaryHB];
 
@@ -159,10 +157,6 @@ namespace NewHorizons.Builder.General
                         {
                             trackingOrbitSecondary.TrailTime = period;
                         }
-
-                        Logger.Log($"{parent}: {mapping[parent]}");
-                        Logger.Log($"{primaryHB}: {mapping[primaryHB]}");
-                        Logger.Log($"{secondaryHB}: {mapping[secondaryHB]}");
                     }
                 }
             }
