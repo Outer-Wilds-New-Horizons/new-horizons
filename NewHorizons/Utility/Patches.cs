@@ -339,28 +339,15 @@ namespace NewHorizons.Utility
             return (Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null);
         }
 
-        // Replacing the entire method
         public static bool OnShipLogControllerUpdate(ShipLogController __instance)
         {
-            if (__instance._exiting)
-            {
-                if (__instance._canvasAnimator.IsComplete())
-                {
-                    __instance.enabled = false;
-                    __instance._shipLogCanvas.gameObject.SetActive(false);
-                }
-                return false;
-            }
-            if (OWInput.GetInputMode() != InputMode.ShipComputer)
-            {
-                return false;
-            }
+            if (__instance._exiting
+                || OWInput.GetInputMode() != InputMode.ShipComputer
+                || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
+                || ShipLogBuilder.StarChartMode == null)
+                return true;
+
             __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
-            if (__instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All))
-            {
-                __instance.ExitShipComputer();
-                return false;
-            }
             __instance._currentMode.UpdateMode();
             if (__instance._currentMode.AllowModeSwap() && OWInput.IsNewlyPressed(InputLibrary.swapShipLogMode, InputMode.All))
             {
@@ -380,7 +367,6 @@ namespace NewHorizons.Utility
                 __instance._currentMode.EnterMode(focusedEntryID, null);
                 __instance._oneShotSource.PlayOneShot(flag ? global::AudioType.ShipLogEnterDetectiveMode : global::AudioType.ShipLogEnterMapMode, 1f);
             }
-
             return false;
         }
     }

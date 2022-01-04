@@ -13,6 +13,7 @@ namespace NewHorizons.Builder.General
 
         public static void Init()
         {
+            /*
             var shipLogRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
             var starChartLog = GameObject.Instantiate(shipLogRoot.transform.Find("DetectiveMode"), shipLogRoot.transform);
             starChartLog.transform.name = "StarChartMode";
@@ -33,6 +34,7 @@ namespace NewHorizons.Builder.General
             StarChartMode._cardDict = new Dictionary<string, ShipLogEntryCard>();
             StarChartMode._cardList = new List<ShipLogEntryCard>();
             StarChartMode._centerPromptList = detectiveMode.GetComponent<ShipLogDetectiveMode>()._centerPromptList;
+            */
         }
     }
 }
