@@ -9,6 +9,8 @@ You can view the addons creators have made [here](https://outerwildsmods.com/mod
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder.
 
+NOTE: Any mod that requires PacificEngine's CommonResources is not compatible with New Horizons currently. Both mods mess with planets and orbits and end up clashing. We're currently working on a solution.
+
 <!-- TOC -->
 
 - [Roadmap](#roadmap)
