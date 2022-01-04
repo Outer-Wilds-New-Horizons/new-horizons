@@ -209,29 +209,28 @@ namespace NewHorizons
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
-            var selectionCount = Mathf.Max(eligibleCount, UnityEngine.Random.Range(1, 3));
+            var selectionCount = Mathf.Min(eligibleCount, 3);
             var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            var body = eligible[UnityEngine.Random.Range(0, eligibleCount)];
-
-            Logger.Log($"Displaying {body.Config.Name} on the title screen");
+            Logger.Log($"Displaying {selectionCount} bodies on the title screen");
 
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
-            if (selectionCount > 2)
+            Logger.LogPath(body1);
+            if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
-                body1.transform.localPosition = new Vector3(0, -10, 0);
+                body1.transform.localPosition = new Vector3(0, -20, 0);
                 body2 = LoadTitleScreenBody(eligible[indices[1]]);
                 body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.3f;
                 body2.transform.localPosition = new Vector3(7, 40, 0);
             }
-            if (selectionCount > 3)
+            if (selectionCount > 2)
             {
                 body3 = LoadTitleScreenBody(eligible[indices[2]]);
                 body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.3f;
-                body3.transform.localPosition = new Vector3(-5, 15, 0);
+                body3.transform.localPosition = new Vector3(-5, 10, 0);
             }
 
             GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
@@ -251,8 +250,8 @@ namespace NewHorizons
             Logger.Log($"Displaying {body.Config.Name} on the title screen");
             GameObject titleScreenGO = new GameObject(body.Config.Name + "_TitleScreen");
             HeightMapModule heightMap = new HeightMapModule();
-            var minSize = 20;
-            var maxSize = 35;
+            var minSize = 15;
+            var maxSize = 30;
             float size = minSize;
             if (body.Config.HeightMap != null)
             {

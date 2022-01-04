@@ -20,10 +20,10 @@ namespace NewHorizons.Builder.General
 
                 spawnGO.transform.localPosition = module.PlayerSpawnPoint;
 
-                // Move it up a bit more
-                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 1f;
-
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
+                spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - body.transform.position).normalized);
+                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 2f;
+
                 GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
             }
             if(module.ShipSpawnPoint != null)
