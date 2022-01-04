@@ -213,25 +213,29 @@ namespace NewHorizons
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
-            Logger.LogPath(body1);
+            body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.4f;
+            body1.transform.localPosition = new Vector3(7.4277f, 124.7193f, 41.7567f);
+            body1.transform.localRotation = Quaternion.Euler(53.5006f, 207.0599f, 0f);
+
             if (selectionCount > 1)
             {
-                body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
-                body1.transform.localPosition = new Vector3(0, -20, 0);
                 body2 = LoadTitleScreenBody(eligible[indices[1]]);
-                body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.3f;
-                body2.transform.localPosition = new Vector3(7, 40, 0);
+                body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.4f;
+                body2.transform.localPosition = new Vector3(-33.3091f, 110.2332f, -30.9288f);
+                body2.transform.localRotation = Quaternion.Euler(346.7481f, 143.6107f, 5.3171f);
             }
             if (selectionCount > 2)
             {
                 body3 = LoadTitleScreenBody(eligible[indices[2]]);
-                body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.3f;
-                body3.transform.localPosition = new Vector3(-5, 10, 0);
+                body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.4f;
+                body3.transform.localPosition = new Vector3(-7.8373f, 136.6149f, -7.1662f);
+                body3.transform.localRotation = Quaternion.Euler(350.0425f, 254.7936f, 353.324f);
             }
 
-            GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
-            GameObject.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
+            //GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
+            //GameObject.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
 
+            /*
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = GameObject.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
@@ -239,6 +243,7 @@ namespace NewHorizons
             light.color = new Color(1f, 1f, 1f, 1f);
             light.range = 100;
             light.intensity = 0.8f;
+            */
         }
 
         private GameObject LoadTitleScreenBody(NewHorizonsBody body)
@@ -275,7 +280,8 @@ namespace NewHorizons
                 RingBuilder.Make(titleScreenGO, newRing, body.Assets);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
-            titleScreenGO.transform.parent = GameObject.Find("Scene/Background/PlanetPivot/").transform;
+            var rt = titleScreenGO.AddComponent<RotateTransform>();
+            titleScreenGO.transform.parent = GameObject.Find("Scene/Background").transform;
             titleScreenGO.transform.localPosition = Vector3.zero;
 
             return titleScreenGO;
