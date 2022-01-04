@@ -23,8 +23,6 @@ namespace NewHorizons.Builder.Body
             int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
             if (count > 200) count = 200;
 
-            Logger.Log($"Making {count} asteroids around {bodyName}");
-
             Random.InitState(belt.RandomSeed);
 
             for (int i = 0; i < count; i++)

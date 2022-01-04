@@ -453,6 +453,9 @@ Authors:
 - xen (from New Horizons v0.1.0 onwards)
 - Mister_Nebula (created original titled Marshmallow)
 
+New Horizons contributors:
+- salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support)
+
 Marshmallow was made with help from:
 - TAImatem
 - AmazingAlek

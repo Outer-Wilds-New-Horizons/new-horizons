@@ -3,4 +3,7 @@ packages
 .vs
 bin
 obj
-Build
+zip
+*.zip
+
+*/Build/*

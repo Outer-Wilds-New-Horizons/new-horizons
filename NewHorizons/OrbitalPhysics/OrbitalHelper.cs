@@ -7,7 +7,12 @@ using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
+using CRGravity = PacificEngine.OW_CommonResources.Geometry.Orbits.Gravity;
+using KeplerCoordinates = PacificEngine.OW_CommonResources.Geometry.Orbits.KeplerCoordinates;
 
+/*
+ * Wrapper class for OW_CommonResources.Geometry.Orbits functions
+ */
 namespace NewHorizons.OrbitalPhysics
 {
     public static class OrbitalHelper
@@ -19,68 +24,65 @@ namespace NewHorizons.OrbitalPhysics
             none
         }
 
-        public static Vector3 RotateTo(Vector3 vector, KeplerElements elements)
+        public static Tuple<Vector3, Vector3> GetCartesian(Gravity gravity, OrbitModule orbit)
         {
-            // For now, eccentric orbits gotta start at apoapsis and cant be inclined
-            var rot = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode + elements.TrueAnomaly + elements.ArgumentOfPeriapsis + 180f, Vector3.up);
-            if (elements.Eccentricity != 0)
+            if (orbit.SemiMajorAxis == 0)
             {
-                rot = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode + elements.ArgumentOfPeriapsis + 180f, Vector3.up);
+                return Tuple.Create(Vector3.zero, Vector3.zero);
             }
 
-            var incAxis = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
-            var incRot = Quaternion.AngleAxis(elements.Inclination, incAxis);
+            var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
+            var kepler = KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
+            var cartesian = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler);
 
-            return rot * incRot * vector;
+            if (cartesian == null)
+            {
+                cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
+            }
+
+            return cartesian;
         }
 
-        public static Vector3 RotateTo(Vector3 vector, OrbitModule module)
+        public static Tuple<Vector3, Vector3> GetCartesian(Gravity gravity, ParameterizedAstroObject ao)
         {
-            return RotateTo(vector, KeplerElements.FromOrbitModule(module));
+            if (ao.SemiMajorAxis == 0)
+            {
+                return Tuple.Create(Vector3.zero, Vector3.zero);
+            }
+
+            var crGravity = new CRGravity(GravityVolume.GRAVITATIONAL_CONSTANT, gravity.Exponent, gravity.Mass);
+            var kepler = KeplerCoordinates.fromTrueAnomaly(ao.Eccentricity, ao.SemiMajorAxis, ao.Inclination, ao.ArgumentOfPeriapsis, ao.LongitudeOfAscendingNode, ao.TrueAnomaly);
+            var cartesian = PacificEngine.OW_CommonResources.Geometry.Orbits.OrbitHelper.toCartesian(crGravity, 0f, kepler);
+
+            if (cartesian == null)
+            {
+                cartesian = Tuple.Create(Vector3.zero, Vector3.zero);
+            }
+
+            return cartesian;
         }
 
-        public static Vector3 VelocityDirection(Vector3 separation, KeplerElements elements)
+        public static KeplerCoordinates KeplerCoordinatesFromOrbitModule(OrbitModule orbit)
         {
-            var incAxis = Quaternion.AngleAxis(elements.LongitudeOfAscendingNode, Vector3.up) * Vector3.left;
-            var incRot = Quaternion.AngleAxis(elements.Inclination, incAxis);
-            return Vector3.Cross(RotateTo(Vector3.up, elements), separation);
+            return KeplerCoordinates.fromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
         }
 
-        public static float GetOrbitalVelocity(float distance, Gravity gravity, KeplerElements kepler)
+        public class Gravity
         {
-            if (kepler.Eccentricity == 0) return GetCircularOrbitVelocity(distance, gravity, kepler);
+            public float Exponent { get; }
+            public float Mass { get; }
 
-            if (gravity.Exponent == 2)
+            public Gravity(float exponent, float mass)
             {
-                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass * (2f / distance - 1f / kepler.SemiMajorAxis));
+                Exponent = exponent;
+                Mass = mass;
             }
-            if(gravity.Exponent == 1)
-            {
-                var mu = GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass;
-                var rp2 = kepler.Periapsis * kepler.Periapsis;
-                var ra2 = kepler.Apoapsis * kepler.Apoapsis;
-                float term1 = 0;
-                if(kepler.Eccentricity < 1)
-                    term1 = mu * Mathf.Log(kepler.Periapsis / kepler.Apoapsis) * rp2 / (rp2 - ra2);
-                var term2 = mu * Mathf.Log(kepler.Apoapsis / distance);
-                return Mathf.Sqrt(2 * (term1 + term2));
-            }
-            Logger.LogError($"Invalid exponent {gravity.Exponent}");
-            return 0f;
-        }
 
-        public static float GetCircularOrbitVelocity(float distance, Gravity gravity, KeplerElements kepler)
-        {
-            if (gravity.Exponent == 2)
+            public Gravity(GravityVolume gv)
             {
-                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass / distance);
+                Exponent = gv.GetFalloffExponent();
+                Mass = gv.GetStandardGravitationalParameter() / GravityVolume.GRAVITATIONAL_CONSTANT;
             }
-            if(gravity.Exponent == 1)
-            {
-                return Mathf.Sqrt(GravityVolume.GRAVITATIONAL_CONSTANT * gravity.Mass);
-            }
-            Logger.LogError($"Invalid exponent {gravity.Exponent}");
-            return 0f;
         }
     }
 }

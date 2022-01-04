@@ -14,6 +14,7 @@ namespace NewHorizons.External
         public float SurfaceGravity { get; set; }
         public string GravityFallOff { get; set; } = "linear";
         public float SurfaceSize { get; set; }
+        public float SphereOfInfluence { get; set; }
         public float WaterSize { get; set; }
         public float GroundSize { get; set; }
         public float LavaSize { get; set; }

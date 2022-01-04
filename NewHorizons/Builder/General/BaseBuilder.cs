@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.General
 
             ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
 
-            if (config.Orbit != null) astroObject.keplerElements = KeplerElements.FromOrbitModule(config.Orbit);
+            if (config.Orbit != null) astroObject.SetKeplerCoordinatesFromOrbitModule(config.Orbit);
 
             var type = AstroObject.Type.Planet;
             if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;

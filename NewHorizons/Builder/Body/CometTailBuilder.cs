@@ -17,7 +17,7 @@ namespace NewHorizons.Builder.Body
             cometTail.transform.localPosition = Vector3.zero;
             cometTail.name = "CometTail";
             cometTail.transform.localScale = Vector3.one * module.SurfaceSize / 110;
-            cometTail.transform.localRotation = Quaternion.Euler(0, 180, 90);
+            cometTail.transform.localRotation = Quaternion.Euler(0, 90, 90);
             /*
             var alignment = cometTail.AddComponent<AlignWithTargetBody>();
             alignment.SetTargetBody(primary.GetAttachedOWRigidbody());

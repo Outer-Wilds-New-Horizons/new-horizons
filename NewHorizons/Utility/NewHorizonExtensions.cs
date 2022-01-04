@@ -30,7 +30,10 @@ namespace NewHorizons.Utility
         public static float GetFalloffExponent(this GravityVolume gv)
         {
             if (gv == null) return 0;
-            return (float)typeof(GravityVolume).GetField("_falloffExponent", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gv);
+            if (gv._falloffType == GravityVolume.FalloffType.linear) return 1;
+            if (gv._falloffType == GravityVolume.FalloffType.inverseSquared) return 2;
+
+            return 0;
         }
 
         public static string ToCamelCase(this string str)

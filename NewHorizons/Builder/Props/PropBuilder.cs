@@ -94,8 +94,8 @@ namespace NewHorizons.Builder.Props
             prop.transform.parent = go.transform;
             prop.transform.localPosition = position == null ? Vector3.zero : (Vector3)position;
 
-            Quaternion rot = rotation == null ? prefab.transform.rotation : Quaternion.Euler((Vector3)rotation);
-            prop.transform.rotation = rot;
+            Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
+            prop.transform.localRotation = rot;
             if (alignWithNormal)
             {
                 var up = prop.transform.localPosition.normalized;
@@ -116,7 +116,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModAssets assets, string uniqueModName)
         {
             var area = 4f * Mathf.PI * radius * radius;
-            var points = FibonacciSphere((int)area);
+            var points = RandomUtility.FibonacciSphere((int)area);
 
             foreach (var propInfo in scatterInfo)
             {
@@ -134,27 +134,6 @@ namespace NewHorizons.Builder.Props
                     if (points.Count == 0) return;
                 }
             }
-        }
-
-        private static List<Vector3> FibonacciSphere(int samples)
-        {
-            List<Vector3> points = new List<Vector3>();
-
-            var phi = Mathf.PI * (3f - Mathf.Sqrt(5f));
-
-            for(int i = 0; i < samples; i++)
-            {
-                var y = 1 - (i / (float)(samples - 1)) * 2f;
-                var radius = Mathf.Sqrt(1 - y * y);
-
-                var theta = phi * i;
-
-                var x = Mathf.Cos(theta) * radius;
-                var z = Mathf.Sin(theta) * radius;
-
-                points.Add(new Vector3(x, y, z));
-            }
-            return points;
         }
 
         private static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModAssets assets)

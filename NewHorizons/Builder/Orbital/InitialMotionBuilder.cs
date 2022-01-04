@@ -23,28 +23,29 @@ namespace NewHorizons.Builder.Orbital
 
         public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
-            if (!orbit.IsStatic)
-            {
-                initialMotion.SetPrimaryBody(primaryBody?.GetAttachedOWRigidbody());
-                initialMotion.SetValue("_orbitAngle", orbit.Inclination);
-                initialMotion.SetValue("_isGlobalAxis", false);
-                if (orbit.Eccentricity != 0 && primaryBody?.GetGravityVolume() != null)
-                {
-                    // Calculate speed at apoapsis
-                    KeplerElements kepler = KeplerElements.FromOrbitModule(orbit);
-                    Gravity gravity = new Gravity(primaryBody.GetGravityVolume());
-
-                    var eccSpeed = OrbitalHelper.GetOrbitalVelocity(kepler.Apoapsis, gravity, kepler);
-                    var circularSpeed = OWPhysics.CalculateOrbitVelocity(primaryBody.GetAttachedOWRigidbody(), OWRB).magnitude;
-
-                    initialMotion.SetValue("_orbitImpulseScalar", eccSpeed / circularSpeed);
-                }
-            }
-
             // Rotation
             initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 1.0f / orbit.SiderealPeriod);
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination, Vector3.right) * Vector3.up;
+
+            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + orbit.Inclination + 90f, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+
+            initialMotion._orbitImpulseScalar = 0f;
+            if (!orbit.IsStatic)
+            {                
+                if(primaryBody != null)
+                {
+                    initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
+                    var gv = primaryBody.GetGravityVolume();
+                    if(gv != null)
+                    {
+                        var velocity = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(primaryBody.GetGravityVolume()), orbit).Item2;
+
+                        // For some stupid reason the InitialMotion awake method transforms the perfectly fine direction vector you give it so we preemptively do the inverse so it all cancels out
+                        initialMotion._initLinearDirection = body.transform.InverseTransformDirection(velocity.normalized);
+                        initialMotion._initLinearSpeed = velocity.magnitude;
+                    }
+                }
+            }
 
             return initialMotion;
         }
