@@ -45,13 +45,14 @@ NOTE: Any mod that requires PacificEngine's CommonResources is not compatible wi
 - Asteroid belts (Done)
 - Support satellites (Done)
 - Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones (done)
-- Load planet meshes from asset bundle (technically done)
+- Load planet meshes from asset bundle (done)
 - Black hole / white hole pairs (done)
+- Separate solar system scenes accessible via wormhole (done)
 - Procedurally terrain generation (started)
+- Allow copying specific meshes from the stock game for details/scattering with collisions
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
-- Separate solar system scenes accessible via wormhole
 - Implement all planet features:
 	- Tornados
 	- Sand funnels (water? lava? star?)
@@ -59,6 +60,10 @@ NOTE: Any mod that requires PacificEngine's CommonResources is not compatible wi
 	- Let any star go supernova
 	- Geysers
 	- Meteors
+	- Ghost matter
+- Implement custom Nomai scrolls
+- Implement custom dialogue
+- Implement constant gravity volumes
 
 ## How to create your own planets using configs
 
