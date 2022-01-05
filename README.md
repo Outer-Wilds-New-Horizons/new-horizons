@@ -9,8 +9,6 @@ You can view the addons creators have made [here](https://outerwildsmods.com/mod
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
-NOTE: Any mod that requires PacificEngine's CommonResources is not compatible with New Horizons currently. Both mods mess with planets and orbits and end up clashing. We're currently working on a solution.
-
 <!-- TOC -->
 
 - [Roadmap](#roadmap)
@@ -73,6 +71,7 @@ Your config file will look something like this:
 ```
 {
 	"name" : "Wetrock",
+	"starSystem" : "SolarSystem",
 	"Base" : 
 	{
 		"groundSize" : 100,
@@ -123,6 +122,8 @@ Your config file will look something like this:
 ```
 
 The first field you should have in any config file is the `name`. This should be unique in the solar system. If it isn't, the mod will instead try to modify the planet that already has that name.
+
+After `name` is `starSystem`. You can use this to place the planet in a different system accessible using a black-hole (see the [Singularity](#singularity) module). To ensure compatibility with other mods this name should be unique. After setting a value for this, the changes in the config will only affect that body in that star system. By default it is "SolarSystem", which is the scene from the stock game.
 
 The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
@@ -412,6 +413,7 @@ This allows you to make black holes and white holes, and to pair them.
 - "size" : (decimal number)
 - "pairedSingularity" : (string) The singularity you want this one to pair to. Must be the opposite type. If you don't set this, the singularity will not transport you, and if it is a black hole it will kill you on entry.
 - "type" : (string) Put either "BlackHole" or "WhiteHole".
+- "targetStarSystem" : (string) You can have a black hole bring you to a different star system scene using this. 
 
 ### How to destroy existing planets
 
