@@ -216,16 +216,19 @@ namespace NewHorizons
             if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
-                body1.transform.localPosition = new Vector3(0, -20, 0);
+                body1.transform.localPosition = new Vector3(0, -15, 0);
+                body1.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
                 body2 = LoadTitleScreenBody(eligible[indices[1]]);
                 body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.3f;
-                body2.transform.localPosition = new Vector3(7, 40, 0);
+                body2.transform.localPosition = new Vector3(7, 30, 0);
+                body2.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
             }
             if (selectionCount > 2)
             {
                 body3 = LoadTitleScreenBody(eligible[indices[2]]);
                 body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.3f;
                 body3.transform.localPosition = new Vector3(-5, 10, 0);
+                body3.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
             }
 
             GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
@@ -282,7 +285,6 @@ namespace NewHorizons
                 newRing.Texture = body.Config.Ring.Texture;
                 var ring = RingBuilder.Make(titleScreenGO, newRing, body.Assets);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
-                pivot.GetComponent<RotateTransform>()._degreesPerSecond = 0f;
             }
 
             titleScreenGO.transform.parent = pivot.transform;

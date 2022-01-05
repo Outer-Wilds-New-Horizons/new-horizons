@@ -47,6 +47,7 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<BlackHoleVolume>("Start", typeof(Patches), nameof(Patches.OnBlackHoleVolumeStart));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<WhiteHoleVolume>("Awake", typeof(Patches), nameof(Patches.OnWhiteHoleVolumeAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SurveyorProbe>("IsLaunched", typeof(Patches), nameof(Patches.OnSurveyorProbeIsLaunched));
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
 
@@ -366,6 +367,19 @@ namespace NewHorizons.Utility
                 currentMode.ExitMode();
                 __instance._currentMode.EnterMode(focusedEntryID, null);
                 __instance._oneShotSource.PlayOneShot(flag ? global::AudioType.ShipLogEnterDetectiveMode : global::AudioType.ShipLogEnterMapMode, 1f);
+            }
+            return false;
+        }
+
+        public static bool OnSurveyorProbeIsLaunched(SurveyorProbe __instance, ref bool __result)
+        {
+            try
+            {
+                __result = __instance.gameObject.activeSelf;
+            }
+            catch(Exception)
+            {
+                __result = true;
             }
             return false;
         }

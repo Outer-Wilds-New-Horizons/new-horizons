@@ -1,0 +1,860 @@
+﻿{
+  "title": "Planet",
+  "type": "object",
+  "required": [
+    "name",
+    "Base",
+    "Orbit"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of your planet",
+      "default": "New planet"
+    },
+    "starSystem": {
+      "type": "string",
+      "description": "Unique star system containing your planet",
+      "default": "SolarSystem"
+    },
+    "destroy": {
+      "type": "boolean",
+      "description": "True if you want to delete this planet",
+      "default": false
+    },
+    "Base": {
+      "type": "object",
+      "properties": {
+        "hasMapMarker": {
+          "type": "boolean",
+          "default": false
+        },
+        "hasAmbientLight": {
+          "type": "boolean",
+          "default": false
+        },
+        "surfaceGravity": {
+          "type": "number",
+          "default": 12,
+          "description": "The acceleration due to gravity felt as the surfaceSize. Timber Hearth has 12 for reference"
+        },
+        "gravityFallOff": {
+          "type": "string",
+          "enum": [
+            "linear",
+            "inverseSquared"
+          ],
+          "default": "linear"
+        },
+        "surfaceSize": {
+          "type": "number",
+          "default": 100,
+          "description": "A scale height used for a number of things."
+        },
+        "sphereOfInfluence": {
+          "type": "number",
+          "default": 0,
+          "description": "An override for the radius of the planet's gravitational sphere of influence. Optional"
+        },
+        "waterSize": {
+          "type": "number",
+          "default": 0,
+          "description": "Sea level for the planet. Optional"
+        },
+        "groundSize": {
+          "type": "number",
+          "default": 0,
+          "description": "Radius of the a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as 0."
+        },
+        "lavaSize": {
+          "type": "number",
+          "default": 0,
+          "description": "Radius of a sphere of lava. Optional."
+        },
+        "hasCometTail": {
+          "type": "boolean",
+          "default": false
+        },
+        "hasReferenceFrame": {
+          "type": "boolean",
+          "default": true,
+          "description": "Allows the object to be targetable from the map."
+        },
+        "centerOfSolarSystem": {
+          "type": "boolean",
+          "default": false,
+          "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever have this set to true."
+        },
+        "isSatellite": {
+          "type": "boolean",
+          "default": false,
+          "description": "Is this body an artificial satellite of a planet/moon/star?"
+        }
+      }
+    },
+    "atmosphere": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0,
+          "description": "Scale height of the atmosphere"
+        },
+        "cloudTint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "cloud": {
+          "type": "string",
+          "description": "Relative filepath to the cloud texture, if the planet has clouds. Optional."
+        },
+        "cloudCap": {
+          "type": "string",
+          "description": "Relative filepath to the cloud cap texture, if the planet has clouds. Optional."
+        },
+        "cloudRamp": {
+          "type": "string",
+          "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. Optional."
+        },
+        "fogTint": {
+          "type": "object",
+          "description": "Colour of fog on the planet.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "fogDensity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "fogSize": {
+          "type": "number",
+          "description": "Radius of fog sphere, independant of the atmosphere",
+          "minimum": 0
+        },
+        "hasRain": {
+          "type": "boolean",
+          "default": false
+        },
+        "hasSnow": {
+          "type": "boolean",
+          "default": false
+        },
+        "hasOxygen": {
+          "type": "boolean",
+          "default": false
+        },
+        "atmosphereTint": {
+          "type": "object",
+          "description": "Colour of atmospheric shader on the planet.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        }
+      }
+    },
+    "Orbit": {
+      "type": "object",
+      "properties": {
+        "semiMajorAxis": {
+          "type": "integer",
+          "default": 5000,
+          "minimum": 0,
+          "description": "The average distance between the planet and its primary body."
+        },
+        "inclination": {
+          "type": "integer",
+          "default": 0,
+          "description": "The angle (in degrees) between the body's orbit and the plane of the star system"
+        },
+        "primaryBody": {
+          "type": "string",
+          "default": "Sun",
+          "description": "The name of the body this one will orbit around"
+        },
+        "isMoon": {
+          "type": "boolean",
+          "description": "Is this the moon of a planet?"
+        },
+        "longitudeOfAscendingNode": {
+          "type": "number",
+          "default": 0
+        },
+        "eccentricity": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 0.99
+        },
+        "argumentOfPeriapsis": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 360
+        },
+        "trueAnomaly": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 360
+        },
+        "axialTilt": {
+          "type": "number",
+          "default": 0
+        },
+        "siderealPeriod": {
+          "type": "number",
+          "default": 0
+        },
+        "isTidallyLocked": {
+          "type": "boolean",
+          "default": false
+        },
+        "showOrbitLine": {
+          "type": "boolean",
+          "default": false
+        },
+        "isStatic": {
+          "type": "boolean",
+          "default": false,
+          "description": "Is the body meant to stay in one place without moving?"
+        },
+        "tint": {
+          "type": "object",
+          "description": "Colour of the orbitline in the map view.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        }
+      }
+    },
+    "Ring": {
+      "type": "object",
+      "properties": {
+        "innerRadius": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "outerRadius": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "inclination": {
+          "type": "number",
+          "default": 0
+        },
+        "longitudeOfAscendingNode": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 360
+        },
+        "texture": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the rings."
+        }
+      }
+    },
+    "HeightMap": {
+      "type": "object",
+      "properties": {
+        "heightMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain height"
+        },
+        "textureMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain."
+        },
+        "minHeight": {
+          "type": "number",
+          "minimum": 0
+        },
+        "maxHeight": {
+          "type": "number",
+          "minimum": 0
+        }
+      }
+    },
+    "ProcGen": {
+      "type": "object",
+      "properties": {
+        "scale": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average surface size"
+        },
+        "colour": {
+          "type": "object",
+          "description": "Colour of the terrain.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        }
+      }
+    },
+    "AsteroidBelt": {
+      "type": "object",
+      "properties": {
+        "innerRadius": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "outerRadius": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "inclination": {
+          "type": "number",
+          "default": 0
+        },
+        "longitudeOfAscendingNode": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0,
+          "maximum": 360
+        },
+        "randomSeed": {
+          "type": "integer",
+          "default": 0,
+          "description": "Number used to randomize asteroid positions"
+        },
+        "procGen": {
+          "type": "object"
+        }
+      }
+    },
+    "Star": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 2000,
+          "minimum": 0
+        },
+        "tint": {
+          "type": "object",
+          "description": "Colour of the star.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "solarFlareTint": {
+          "type": "object",
+          "description": "Colour of the solar flares.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "lightTint": {
+          "type": "object",
+          "description": "Colour of the light given off.",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "solarLuminosity": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Relative strenght of the light compared to the sun",
+          "default": 1
+        }
+      }
+    },
+    "FocalPoint": {
+      "type": "object",
+      "description": "Use this to create the focal point that two objects can orbit in a binary system",
+      "properties": {
+        "primary": {
+          "type": "string",
+          "description": "The larger of the two bodies in the binary pair."
+        },
+        "secondary": {
+          "type": "string",
+          "description": "The smaller of the two bodies in the binary pair."
+        }
+      }
+    },
+    "Props": {
+      "type": "object",
+      "properties": {
+        "scatter": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "path": {
+                "type": "string",
+                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+              },
+              "assetBundle": {
+                "type": "string",
+                "description": "Relative filepath to an assetbundle"
+              },
+              "offset": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                },
+                "rotation": {
+                  "type": "object",
+                  "description": "Euler angle degrees",
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "default": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "default": 0
+                    },
+                    "z": {
+                      "type": "number",
+                      "default": 0
+                    }
+                  }
+                },
+                "scale": {
+                  "type": "number",
+                  "default": 1
+                }
+              }
+            }
+          }
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "path": {
+                "type": "string",
+                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+              },
+              "assetBundle": {
+                "type": "string",
+                "description": "Relative filepath to an assetbundle"
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                },
+                "rotation": {
+                  "type": "object",
+                  "description": "Euler angle degrees",
+                  "properties": {
+                    "x": {
+                      "type": "number",
+                      "default": 0
+                    },
+                    "y": {
+                      "type": "number",
+                      "default": 0
+                    },
+                    "z": {
+                      "type": "number",
+                      "default": 0
+                    }
+                  }
+                },
+                "scale": {
+                  "type": "number",
+                  "default": 1
+                },
+                "alignToNormal": {
+                  "type": "boolean",
+                  "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
+                  "default": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "Spawn": {
+      "type": "object",
+      "properties": {
+        "playerSpawnPoint": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            },
+            "z": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        "shipSpawnPoint": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            },
+            "z": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        },
+        "starWithSuit": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Signal": {
+      "type": "object",
+      "properties": {
+        "signals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              },
+              "frequency": {
+                "type": "string",
+                "enum": [
+                  "Default",
+                  "Traveler",
+                  "Quantum",
+                  "EscapePod",
+                  "Statue",
+                  "WarpCore",
+                  "HideAndSeek",
+                  "Radio"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "audioClip": {
+                "type": "string",
+                "description": "Name of an existing AudioClip in the game"
+              },
+              "audioFilePath": {
+                "type": "string",
+                "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip"
+              },
+              "sourceRadius": {
+                "type": "number",
+                "default": 1,
+                "description": "Radius of the sphere giving off the signal"
+              },
+              "detectionRadius": {
+                "type": "number",
+                "minimum": 0,
+                "description": "How close the player must get to the signal to detect it"
+              },
+              "identificationRadius": {
+                "type": "number",
+                "minimum": 0,
+                "description": "How close the player must get to the signal to identify it"
+              },
+              "onlyAudibleToScope": {
+                "type": "boolean",
+                "default": true,
+                "description": "False if the player can hear the signal without equiping the signalscope"
+              },
+              "insideCloak": {
+                "type": "boolean",
+                "default": false,
+                "description": "Only set to true if you are putting this signal inside a cloaking field"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Singularity": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "pairedSingularity": {
+          "type": "string",
+          "description": "The name of the whitehole/blackhole that is paired to this one. If you don't set a value, entering will kill the player"
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "If you want a black hole to load a new star system scene, put it's name here. Optional."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "BlackHole",
+            "WhiteHole"
+          ]
+        },
+        "position": {
+          "type": "object",
+          "properties": {
+            "x": {
+              "type": "number",
+              "default": 0
+            },
+            "y": {
+              "type": "number",
+              "default": 0
+            },
+            "z": {
+              "type": "number",
+              "default": 0
+            }
+          }
+        }
+      }
+    }
+  }
+}
