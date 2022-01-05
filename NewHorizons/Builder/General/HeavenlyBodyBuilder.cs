@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
-            var gravity = GetGravity(bodyGravity);
+            var gravity = GetGravity(bodyGravity, config.Orbit.IsStatic);
             var parent = config.Orbit.PrimaryBody != null ? GetBody(config.Orbit.PrimaryBody) : HeavenlyBody.None;
 
             if (config.Orbit.PrimaryBody != null && parent == HeavenlyBody.None)
@@ -59,18 +59,18 @@ namespace NewHorizons.Builder.General
                     if(config.Name.Equals(focalPoint.PrimaryName))
                     {
                         primary = body;
-                        primaryGravity = GetGravity(bodyGravity);
+                        primaryGravity = GetGravity(bodyGravity, false);
                         secondary = Position.getBody(GetBody(focalPoint.SecondaryName))?.gameObject;
                         var secondaryGV = Position.getBody(GetBody(focalPoint.SecondaryName))?.GetAttachedGravityVolume();
-                        if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV);
+                        if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV, false);
                     }
                     else if (config.Name.Equals(focalPoint.SecondaryName))
                     {
                         secondary = body;
-                        secondaryGravity = GetGravity(bodyGravity);
+                        secondaryGravity = GetGravity(bodyGravity, false);
                         primary = Position.getBody(GetBody(focalPoint.PrimaryName))?.gameObject;
                         var primaryGV = Position.getBody(GetBody(focalPoint.PrimaryName))?.GetAttachedGravityVolume();
-                        if (primaryGV != null) primaryGravity = GetGravity(primaryGV);
+                        if (primaryGV != null) primaryGravity = GetGravity(primaryGV, false);
                     }
 
                     if (primaryGravity != null && secondaryGravity != null)
@@ -174,17 +174,17 @@ namespace NewHorizons.Builder.General
             Planet.mapping = mapping;
         }
 
-        private static Gravity GetGravity(GravityVolume volume)
+        private static Gravity GetGravity(GravityVolume volume, bool isStatic)
         {
             if (volume == null)
             {
-                return Gravity.of(2, 0);
+                return Gravity.of(2, 0, isStatic);
             }
 
             var exponent = volume._falloffType != GravityVolume.FalloffType.linear ? 2f : 1f;
             var mass = (volume._surfaceAcceleration * Mathf.Pow(volume._upperSurfaceRadius, exponent)) / GravityVolume.GRAVITATIONAL_CONSTANT;
 
-            return Gravity.of(exponent, mass);
+            return Gravity.of(exponent, mass, isStatic);
         }
 
         private static HeavenlyBody AddHeavenlyBody(string name, bool isFocalPoint)
