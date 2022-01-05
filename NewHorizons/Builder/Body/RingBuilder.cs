@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.Body
 		public static Shader RingShader;
 		public static Shader UnlitShader;
 
-		public static void Make(GameObject body, RingModule ring, IModAssets assets)
+		public static GameObject Make(GameObject body, RingModule ring, IModAssets assets)
         {
 			Texture2D ringTexture;
 			try
@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Body
 			catch (Exception e)
 			{
 				Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
-				return;
+				return null;
 			}
 
 			var ringGO = new GameObject("Ring");
@@ -51,6 +51,8 @@ namespace NewHorizons.Builder.Body
 			// Make mesh
 			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000); 
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
+
+			return ringGO;
 		}
 
 		// Thank you https://github.com/boardtobits/planet-ring-mesh/blob/master/PlanetRing.cs
