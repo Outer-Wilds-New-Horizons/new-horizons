@@ -46,6 +46,13 @@ namespace NewHorizons.Builder.Props
                     else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }
             }
+            if(config.Props.Geysers != null)
+            {
+                foreach(var geyserInfo in config.Props.Geysers)
+                {
+                    GeyserBuilder.Make(go, sector, geyserInfo);
+                }
+            }
         }
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
@@ -96,15 +103,7 @@ namespace NewHorizons.Builder.Props
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
             prop.transform.localRotation = rot;
-            if (alignWithNormal)
-            {
-                var up = prop.transform.localPosition.normalized;
-                var front = Vector3.Cross(up, Vector3.left);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
-
-                prop.transform.LookAt(prop.transform.position + front, up);
-            }
+            if (alignWithNormal) prop.transform.AlignRadially();
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;
 

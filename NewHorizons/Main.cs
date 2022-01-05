@@ -213,6 +213,7 @@ namespace NewHorizons
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
+            body1.transform.localRotation = Quaternion.Euler(15, 0, 0);
             if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
@@ -220,12 +221,14 @@ namespace NewHorizons
                 body2 = LoadTitleScreenBody(eligible[indices[1]]);
                 body2.transform.localScale = Vector3.one * (body2.transform.localScale.x) * 0.3f;
                 body2.transform.localPosition = new Vector3(7, 40, 0);
+                body2.transform.localRotation = Quaternion.Euler(15, 0, 0);
             }
             if (selectionCount > 2)
             {
                 body3 = LoadTitleScreenBody(eligible[indices[2]]);
                 body3.transform.localScale = Vector3.one * (body3.transform.localScale.x) * 0.3f;
                 body3.transform.localPosition = new Vector3(-5, 10, 0);
+                body3.transform.localRotation = Quaternion.Euler(15, 0, 0);
             }
 
             GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);

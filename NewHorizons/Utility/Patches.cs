@@ -50,6 +50,8 @@ namespace NewHorizons.Utility
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SurveyorProbe>("IsLaunched", typeof(Patches), nameof(Patches.OnSurveyorProbeIsLaunched));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
@@ -368,6 +370,16 @@ namespace NewHorizons.Utility
                 __instance._oneShotSource.PlayOneShot(flag ? global::AudioType.ShipLogEnterDetectiveMode : global::AudioType.ShipLogEnterMapMode, 1f);
             }
             return false;
+        }
+
+        public static bool OnSurveyorProbeIsLaunched(SurveyorProbe __instance, ref bool __result)
+        {
+            if(__instance.gameObject == null)
+            {
+                __result = false;
+                return false;
+            }
+            return true;
         }
     }
 }
