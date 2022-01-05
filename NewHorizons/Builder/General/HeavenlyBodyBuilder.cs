@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, IPlanetConfig config, float SOI, GravityVolume bodyGravity, InitialMotion initialMotion)
         {
             var size = new Position.Size(config.Base.SurfaceSize, SOI);
-            var gravity = GetGravity(bodyGravity);
+            var gravity = GetGravity(bodyGravity, config.Orbit.IsStatic);
             var parent = config.Orbit.PrimaryBody != null ? GetBody(config.Orbit.PrimaryBody) : HeavenlyBody.None;
 
             if (config.Orbit.PrimaryBody != null && parent == HeavenlyBody.None)
@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.General
             if (hb == null) hb = AddHeavenlyBody(config.Name, config.FocalPoint != null);
 
             Planet.Plantoid planetoid;
-            
+
             if (!config.Orbit.IsStatic) planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
             else planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, 0f, HeavenlyBody.None, body.transform.position, Vector3.zero);
 
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.General
             mapping[hb] = planetoid;
 
             // Fix for binary focal points
-            if(parent != HeavenlyBody.None)
+            if (parent != HeavenlyBody.None)
             {
                 var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
                 if (focalPoint != null && mapping.ContainsKey(parent))
@@ -56,21 +56,21 @@ namespace NewHorizons.Builder.General
                     Gravity secondaryGravity = null;
 
                     // One of them is null if it's the one being loaded
-                    if(config.Name.Equals(focalPoint.PrimaryName))
+                    if (config.Name.Equals(focalPoint.PrimaryName))
                     {
                         primary = body;
-                        primaryGravity = GetGravity(bodyGravity);
+                        primaryGravity = GetGravity(bodyGravity, false);
                         secondary = Position.getBody(GetBody(focalPoint.SecondaryName))?.gameObject;
                         var secondaryGV = Position.getBody(GetBody(focalPoint.SecondaryName))?.GetAttachedGravityVolume();
-                        if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV);
+                        if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV, false);
                     }
                     else if (config.Name.Equals(focalPoint.SecondaryName))
                     {
                         secondary = body;
-                        secondaryGravity = GetGravity(bodyGravity);
+                        secondaryGravity = GetGravity(bodyGravity, false);
                         primary = Position.getBody(GetBody(focalPoint.PrimaryName))?.gameObject;
                         var primaryGV = Position.getBody(GetBody(focalPoint.PrimaryName))?.GetAttachedGravityVolume();
-                        if (primaryGV != null) primaryGravity = GetGravity(primaryGV);
+                        if (primaryGV != null) primaryGravity = GetGravity(primaryGV, false);
                     }
 
                     if (primaryGravity != null && secondaryGravity != null)
@@ -121,7 +121,7 @@ namespace NewHorizons.Builder.General
                         }
                         catch (Exception) { };
 
-                        var secondaryRotation = 0f; 
+                        var secondaryRotation = 0f;
                         try
                         {
                             secondaryRotation = secondaryOriginal.state.relative.angularVelocity.magnitude;
@@ -174,17 +174,17 @@ namespace NewHorizons.Builder.General
             Planet.mapping = mapping;
         }
 
-        private static Gravity GetGravity(GravityVolume volume)
+        private static Gravity GetGravity(GravityVolume volume, bool isStatic)
         {
             if (volume == null)
             {
-                return Gravity.of(2, 0);
+                return Gravity.of(2, 0, isStatic);
             }
 
             var exponent = volume._falloffType != GravityVolume.FalloffType.linear ? 2f : 1f;
             var mass = (volume._surfaceAcceleration * Mathf.Pow(volume._upperSurfaceRadius, exponent)) / GravityVolume.GRAVITATIONAL_CONSTANT;
 
-            return Gravity.of(exponent, mass);
+            return Gravity.of(exponent, mass, isStatic);
         }
 
         private static HeavenlyBody AddHeavenlyBody(string name, bool isFocalPoint)
