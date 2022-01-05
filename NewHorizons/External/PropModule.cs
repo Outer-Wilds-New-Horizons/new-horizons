@@ -34,5 +34,10 @@ namespace NewHorizons.External
             public float scale { get; set; } = 1f;
             public bool alignToNormal;
         }
+
+        public class GeyserInfo
+        {
+            public MVector3 position;
+        }
     }
 }
