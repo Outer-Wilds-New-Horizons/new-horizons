@@ -121,6 +121,7 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     clip = assets.GetAudio(info.AudioFilePath);
+                    
                 }
                 catch(Exception e)
                 {
@@ -145,7 +146,8 @@ namespace NewHorizons.Builder.Props
             audioSignal._sourceRadius = info.SourceRadius;
             audioSignal._onlyAudibleToScope = info.OnlyAudibleToScope;
             audioSignal._identificationDistance = info.IdentificationRadius;
-            
+            audioSignal._canBePickedUpByScope = true;
+
             source.clip = clip;
             source.loop = true;
             source.minDistance = 0;
