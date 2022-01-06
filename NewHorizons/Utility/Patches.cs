@@ -69,7 +69,9 @@ namespace NewHorizons.Utility
 
         public static bool CheckShipOutersideSolarSystem(PlayerState __instance, ref bool __result)
         {
-            __result = false;
+            Transform sunTransform = Locator.GetSunTransform();
+            OWRigidbody shipBody = Locator.GetShipBody();
+            __result = sunTransform != null && shipBody != null && (sunTransform.position - shipBody.transform.position).sqrMagnitude > Main.FurthestOrbit * Main.FurthestOrbit * 4f;
             return false;
         }
 
