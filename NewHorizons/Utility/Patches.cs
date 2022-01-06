@@ -345,7 +345,7 @@ namespace NewHorizons.Utility
             if (__instance._exiting
                 || OWInput.GetInputMode() != InputMode.ShipComputer
                 || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
-                || ShipLogBuilder.StarChartMode == null)
+                || ShipLogBuilder.ShipLogStarChartMode == null)
                 return true;
 
             __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
@@ -358,8 +358,8 @@ namespace NewHorizons.Utility
                 __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
 
                 if (currentMode.Equals(__instance._mapMode))
-                    __instance._currentMode = ShipLogBuilder.StarChartMode;
-                else if (currentMode.Equals(ShipLogBuilder.StarChartMode))
+                    __instance._currentMode = ShipLogBuilder.ShipLogStarChartMode;
+                else if (currentMode.Equals(ShipLogBuilder.ShipLogStarChartMode))
                     __instance._currentMode = __instance._detectiveMode;
                 else
                     __instance._currentMode = __instance._mapMode;
