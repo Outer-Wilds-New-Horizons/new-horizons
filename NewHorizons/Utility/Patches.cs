@@ -392,7 +392,10 @@ namespace NewHorizons.Utility
             {
                 var targetSystem = ShipLogBuilder.ShipLogStarChartMode.GetTargetStarSystem();
                 if (targetSystem != null)
+                {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
+                    return false;
+                }
             }
             return true;
         }

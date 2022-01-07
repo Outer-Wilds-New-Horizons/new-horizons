@@ -37,9 +37,9 @@ namespace NewHorizons
 
         private string _currentStarSystem = "SolarSystem";
         private bool _isChangingStarSystem = false;
-        private bool _warpIn = false;
+        private bool _isWarping = false;
 
-        private SingularityController shipSingularity;
+        private ShipWarpController _shipWarpController;
 
         public override object GetApi()
         {
@@ -195,13 +195,10 @@ namespace NewHorizons
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
-            GameObject singularityGO = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity"), GameObject.Find("Ship_Body").transform);
-            singularityGO.transform.localPosition = new Vector3(0f, 0f, 5f);
-            singularityGO.transform.localScale = Vector3.one * 10f;
-            shipSingularity = singularityGO.GetComponent<SingularityController>();
+            _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
 
-            if(_warpIn) Instance.ModHelper.Events.Unity.FireInNUpdates(() => WarpInShip(), 3);
-            _warpIn = false;
+            if(_isWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 3);
+            _isWarping = false;
         }
 
         #region TitleScreen
@@ -546,12 +543,12 @@ namespace NewHorizons
         #endregion Body generation
 
         #region Change star system
-        public void ChangeCurrentStarSystem(string newStarSystem, bool warpIn = false)
+        public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
-            shipSingularity.Create();
+            _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
-            _warpIn = warpIn;
+            _isWarping = warp;
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
             LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
@@ -560,13 +557,6 @@ namespace NewHorizons
         {
             // We reset the solar system on death (unless we just killed the player)
             if (!_isChangingStarSystem) _currentStarSystem = "SolarSystem";
-        }
-
-        private void WarpInShip()
-        {
-            var ship = GameObject.Find("Ship_Body");
-            Teleportation.teleportPlayerToShip();
-            ship.GetComponent<ShipCockpitController>().OnPressInteract();
         }
         #endregion Change star system
     }

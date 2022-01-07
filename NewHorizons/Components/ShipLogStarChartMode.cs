@@ -247,7 +247,7 @@ namespace NewHorizons.Components
 
         public string GetTargetStarSystem()
         {
-            return _target.name;
+            return _target?.name;
         }
     }
 }
