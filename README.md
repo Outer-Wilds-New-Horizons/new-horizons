@@ -327,7 +327,7 @@ A detail info object can have the following parameters:
 You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
 
 #### Asset Bundles
-1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work).
+1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
 2. In the root directory create a folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
 ```
