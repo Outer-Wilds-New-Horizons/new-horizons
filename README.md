@@ -59,6 +59,8 @@ Planets are created using a JSON file format structure, and placed in the `plane
 	- Geysers
 	- Meteors
 	- Ghost matter
+	- Pocket dimensions
+	- Timed position/velocity changes
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
