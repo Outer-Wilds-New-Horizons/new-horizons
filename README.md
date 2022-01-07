@@ -3,9 +3,9 @@
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
 
-A planet creator for Outer Wilds.
+A custom world creation tool for Outer Wilds.
 
-You can view the addons creators have made [here](https://outerwildsmods.com/mods/newhorizons/addons/)!
+You can view the addons creators have made (or create one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
