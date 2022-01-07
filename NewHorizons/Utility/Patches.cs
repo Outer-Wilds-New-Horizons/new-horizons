@@ -51,6 +51,8 @@ namespace NewHorizons.Utility
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipCockpitController>("Update", typeof(Patches), nameof(Patches.OnShipCockpitControllerUpdate));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
@@ -382,6 +384,17 @@ namespace NewHorizons.Utility
                 __result = true;
             }
             return false;
+        }
+
+        public static bool OnShipCockpitControllerUpdate(ShipCockpitController __instance)
+        {
+            if(__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
+            {
+                var targetSystem = ShipLogBuilder.ShipLogStarChartMode.GetTargetStarSystem();
+                if (targetSystem != null)
+                    Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
+            }
+            return true;
         }
     }
 }
