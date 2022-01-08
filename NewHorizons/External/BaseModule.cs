@@ -16,6 +16,7 @@ namespace NewHorizons.External
         public float SurfaceSize { get; set; }
         public float SphereOfInfluence { get; set; }
         public float WaterSize { get; set; }
+        public MColor32 WaterTint { get; set; }
         public float GroundSize { get; set; }
         public float LavaSize { get; set; }
         public bool HasCometTail { get; set; }

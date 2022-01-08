@@ -191,9 +191,9 @@ namespace NewHorizons
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            //Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
+            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
 
-            if(!_currentStarSystem.Equals("SolarSystem")) Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveSolarSystem());
+            if(!_currentStarSystem.Equals("SolarSystem")) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveSolarSystem(), 2);
 
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
@@ -508,8 +508,9 @@ namespace NewHorizons
 
             if (body.Config.Base.LavaSize != 0)
                 LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
+
             if (body.Config.Base.WaterSize != 0)
-                WaterBuilder.Make(go, sector, rb, body.Config.Base.WaterSize);
+                WaterBuilder.Make(go, sector, rb, body.Config);
 
             if (body.Config.Atmosphere != null)
             {
@@ -547,12 +548,15 @@ namespace NewHorizons
         #region Change star system
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
-            _shipWarpController.WarpOut();
+            Logger.Log($"Warping to {newStarSystem}");
+            if(warp) _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             _isWarping = warp;
-            // If the player isn't in the ship we kill them so they don't move as much
-            if(!warp) Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
+
+            // We kill them so they don't move as much
+            Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
+
             LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 

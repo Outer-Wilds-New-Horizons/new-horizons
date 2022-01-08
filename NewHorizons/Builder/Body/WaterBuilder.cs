@@ -7,8 +7,10 @@ namespace NewHorizons.Builder.Body
 {
     static class WaterBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, float waterSize)
+        public static void Make(GameObject body, Sector sector, OWRigidbody rb, IPlanetConfig config)
         {
+            var waterSize = config.Base.WaterSize;
+
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
             waterGO.layer = 15;
@@ -26,6 +28,10 @@ namespace NewHorizons.Builder.Body
             for(int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
+                if (config.Base.WaterTint != null)
+                {
+                    tempArray[i].color = config.Base.WaterTint.ToColor32();
+                }
             }
             // TODO: Make water module
             //tempArray[1].color = Color.red;

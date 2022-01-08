@@ -359,7 +359,6 @@ namespace NewHorizons.Utility
             {
                 ShipLogMode currentMode = __instance._currentMode;
                 string focusedEntryID = currentMode.GetFocusedEntryID();
-                Logger.Log($"[{focusedEntryID}]");
                 if (!focusedEntryID.Equals("")) return true;
                 bool flag = currentMode.Equals(__instance._mapMode);
                 __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);

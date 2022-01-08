@@ -10,9 +10,16 @@ namespace NewHorizons.Components
     {
         public string TargetSolarSystem { get; set; }
 
+        public override void Awake()
+        {
+            base.Awake();
+            _deathType = DeathType.Meditation;
+        }
+
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)
         {
-            Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem);
+            //Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
+            Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, false);
         }
     }
 }

@@ -139,6 +139,8 @@ namespace NewHorizons.Builder.General
                     audioSource.Stop();
                     GameObject.Destroy(audioSource);
                 }
+
+                GameObject.Find("SunProxy(Clone)/Sun_Proxy_Body").SetActive(false);
             }
             else if(ao.GetAstroObjectName() == AstroObject.Name.DreamWorld)
             {

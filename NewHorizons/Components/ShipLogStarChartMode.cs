@@ -204,7 +204,6 @@ namespace NewHorizons.Components
 
             if (oldIndex != _cardIndex)
             {
-                Logger.Log($"Moving to {_cardIndex}");
                 _oneShotSource.PlayOneShot(global::AudioType.ShipLogMoveBetweenPlanets, 1f);
                 _startPanTime = Time.unscaledTime;
                 _startPanPos = _panRootPos;

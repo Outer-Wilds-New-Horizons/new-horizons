@@ -47,11 +47,12 @@ namespace NewHorizons.Builder.General
 
                 if(Main.IsWarping)
                 {
+                    Logger.Log("Overriding player spawn to be inside ship");
                     GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
                     playerSpawnGO.transform.parent = ship.transform;
                     playerSpawnGO.layer = 8;
 
-                    playerSpawnGO.transform.localPosition = Vector3.zero;
+                    playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
                     playerSpawnGO.transform.localRotation = Quaternion.Euler(0,0,0);
