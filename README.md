@@ -223,6 +223,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "useBasicCloudShader" : (true/false) By default we use the same shader as Giant's deep. Set this to true if you just want your cloud texture to be applied as is.
 - "fogTint" : (colour) Puts tinted fog around the planet.
 - "fogSize" : (decimal number)
+- "fogDensity" : (decimal number) How dense the fog is, from 0 to 100.
 - "hasRain" : (true/false)
 - "hasSnow" : (true/false)
 - "hasOxygen" : (true/false)
