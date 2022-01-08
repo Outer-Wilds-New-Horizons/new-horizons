@@ -9,6 +9,8 @@ You can view the addons creators have made (or create one yourself) [here](https
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
+Check the ship's log for how to use your warp drive to travel between star systems!
+
 <!-- TOC -->
 
 - [Roadmap](#roadmap)
