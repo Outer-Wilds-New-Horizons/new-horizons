@@ -69,6 +69,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 	- Ghost matter
 	- Pocket dimensions
 	- Timed position/velocity changes
+	- Zero-g volumes
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
