@@ -13,6 +13,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 <!-- TOC -->
 
+- [Incompatible mods](#incompatible-mods)
 - [Roadmap](#roadmap)
 - [How to create your own planets using configs](#how-to-create-your-own-planets-using-configs)
   - [Base](#base)
@@ -34,6 +35,10 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - [Credits](#credits)
 
 <!-- /TOC -->
+
+## Incompatible mods
+Autoresume (breaks the ship's warp drive).
+Multiplayer mods like QSB and OWO.
 
 ## Roadmap
 - Heightmaps/texturemaps (Done)
