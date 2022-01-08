@@ -21,6 +21,8 @@ namespace NewHorizons.Builder.Props
 
         public static Dictionary<SignalFrequency, string> SignalFrequencyOverrides;
 
+        private static int _nextCustomSignalName;
+
         public static void Reset()
         {
             _customSignalNames = new Dictionary<SignalName, string>();
@@ -66,18 +68,17 @@ namespace NewHorizons.Builder.Props
                 { SignalFrequency.Default, "???" }, 
                 { SignalFrequency.WarpCore, "ANTI-GRAVITON FLUX" } 
             };
+            _nextCustomSignalName = 200;
         }
 
         public static SignalName AddSignalName(string str)
         {
-            if (_availableSignalNames.Count == 0)
-            {
-                Logger.LogWarning($"There are no more available SignalName spots. Cannot use name [{str}].");
-                return SignalName.Default;
-            }
-
             Logger.Log($"Registering new signal name [{str}]");
-            var newName = _availableSignalNames.Pop();
+            SignalName newName;
+
+            if (_availableSignalNames.Count == 0) newName = (SignalName)_nextCustomSignalName++;
+            else newName = _availableSignalNames.Pop();
+
             _customSignalNames.Add(newName, str.ToUpper());
             return newName;
         }
@@ -88,15 +89,15 @@ namespace NewHorizons.Builder.Props
             return name;
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule module, IModAssets assets)
+        public static void Make(GameObject body, Sector sector, SignalModule module, IModHelper mod)
         {
             foreach(var info in module.Signals)
             {
-                Make(body, sector, info, assets);
+                Make(body, sector, info, mod);
             }
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModAssets assets)
+        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModHelper mod)
         {
             var signalGO = new GameObject($"Signal_{info.Name}");
             signalGO.SetActive(false);
@@ -120,8 +121,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    clip = assets.GetAudio(info.AudioFilePath);
-                    
+                    clip = mod.Assets.GetAudio(info.AudioFilePath);
                 }
                 catch(Exception e)
                 {

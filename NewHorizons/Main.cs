@@ -11,6 +11,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
+using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,14 +29,20 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
-        public static List<NewHorizonsBody> BodyList = new List<NewHorizonsBody>();
+        public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         public static float FurthestOrbit { get; set; } = 50000f;
         public StarLightController StarLightController { get; private set; }
 
         private string _currentStarSystem = "SolarSystem";
+        public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
+
         private bool _isChangingStarSystem = false;
+        private bool _isWarping = false;
+        public static bool IsWarping { get { return Instance._isWarping; } }
+
+        private ShipWarpController _shipWarpController;
 
         public override object GetApi()
         {
@@ -48,6 +55,7 @@ namespace NewHorizons
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
+            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
 
             Utility.Patches.Apply();
 
@@ -71,12 +79,6 @@ namespace NewHorizons
             Logger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
-        }
-
-        void OnDeath(DeathType _)
-        {
-            // We reset the solar system on death (unless we just killed the player)
-            if (!_isChangingStarSystem) _currentStarSystem = "SolarSystem";
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -142,8 +144,7 @@ namespace NewHorizons
             }
 
             // Order by stars then planets then moons (not necessary but probably speeds things up, maybe) ALSO only include current star system
-            var toLoad = BodyList
-                .Where(b => b.Config.StarSystem.Equals(_currentStarSystem))
+            var toLoad = BodyDict[_currentStarSystem]
                 .OrderBy(b =>
                 (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
                 (b.Config.FocalPoint != null ? 0 :
@@ -190,18 +191,24 @@ namespace NewHorizons
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
+            //Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
 
             if(!_currentStarSystem.Equals("SolarSystem")) Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveSolarSystem());
 
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+
+            _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+            if (_isWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
+            _isWarping = false;
         }
+
+        #region TitleScreen
 
         public void DisplayBodyOnTitleScreen()
         {
             //Try loading one planet why not
-            var eligible = BodyList.Where(b => b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null).ToArray();
+            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -267,7 +274,7 @@ namespace NewHorizons
                 heightMap.TextureMap = body.Config.Atmosphere.Cloud;
             }
 
-            HeightMapBuilder.Make(titleScreenGO, heightMap, body.Assets);
+            HeightMapBuilder.Make(titleScreenGO, heightMap, body.Mod.Assets);
 
             GameObject pivot = GameObject.Instantiate(GameObject.Find("Scene/Background/PlanetPivot"), GameObject.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
@@ -283,7 +290,7 @@ namespace NewHorizons
                 newRing.InnerRadius = size * 1.2f;
                 newRing.OuterRadius = size * 2f;
                 newRing.Texture = body.Config.Ring.Texture;
-                var ring = RingBuilder.Make(titleScreenGO, newRing, body.Assets);
+                var ring = RingBuilder.Make(titleScreenGO, newRing, body.Mod.Assets);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 
@@ -291,6 +298,29 @@ namespace NewHorizons
             titleScreenGO.transform.localPosition = Vector3.zero;
 
             return titleScreenGO;
+        }
+
+        #endregion TitleScreen
+
+        #region Load
+        public void LoadConfigs(IModBehaviour mod)
+        {
+            var folder = mod.ModHelper.Manifest.ModFolderPath;
+            foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
+                    Logger.Log($"Loaded {config.Name}");
+                    if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
+                    if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+                    BodyDict[config.StarSystem].Add(new NewHorizonsBody(config, mod.ModHelper));
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Couldn't load {file}: {e.Message}, is your Json formatted correctly?");
+                }
+            }
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -348,25 +378,6 @@ namespace NewHorizons
             return true;
         }
 
-        public void LoadConfigs(IModBehaviour mod)
-        {
-            var folder = mod.ModHelper.Manifest.ModFolderPath;
-            foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
-            {
-                try
-                {
-                    var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
-                    Logger.Log($"Loaded {config.Name}");
-                    if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
-                    BodyList.Add(new NewHorizonsBody(config, mod.ModHelper.Assets, mod.ModHelper.Manifest.UniqueName));
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load {file}: {e.Message}, is your Json formatted correctly?");
-                }
-            }
-        }
-
         public GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
             Logger.Log($"Updating existing Object {go.name}");
@@ -377,6 +388,10 @@ namespace NewHorizons
             // Do stuff that's shared between generating new planets and updating old ones
             return SharedGenerateBody(body, go, sector, rb);
         }
+
+        #endregion Load
+
+        #region Body generation
 
         public GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
@@ -436,7 +451,7 @@ namespace NewHorizons
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
 
             if (body.Config.HeightMap != null)
-                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Assets);
+                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod.Assets);
 
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
@@ -483,10 +498,10 @@ namespace NewHorizons
         private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             if (body.Config.Ring != null)
-                RingBuilder.Make(go, body.Config.Ring, body.Assets);
+                RingBuilder.Make(go, body.Config.Ring, body.Mod.Assets);
 
             if (body.Config.AsteroidBelt != null)
-                AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Assets, body.ModUniqueName);
+                AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Mod);
 
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
@@ -502,7 +517,7 @@ namespace NewHorizons
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Assets);
+                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod.Assets);
                     SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
                 }
 
@@ -516,10 +531,10 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuilder.Make(go, sector, body.Config, body.Assets, body.ModUniqueName);
+                PropBuilder.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
-                SignalBuilder.Make(go, sector, body.Config.Signal, body.Assets);
+                SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
 
             if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
                 SingularityBuilder.Make(go, sector, rb, body.Config);
@@ -527,15 +542,29 @@ namespace NewHorizons
             return go;
         }
 
-        public void ChangeCurrentStarSystem(string newStarSystem)
+        #endregion Body generation
+
+        #region Change star system
+        public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
+            _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
-            Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
+            _isWarping = warp;
+            // If the player isn't in the ship we kill them so they don't move as much
+            if(!warp) Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
             LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
+
+        void OnDeath(DeathType _)
+        {
+            // We reset the solar system on death (unless we just killed the player)
+            if (!_isChangingStarSystem) _currentStarSystem = "SolarSystem";
+        }
+        #endregion Change star system
     }
 
+    #region API
     public class NewHorizonsApi
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use Create(Dictionary<string, object> config, IModBehaviour mod) instead")]
@@ -549,9 +578,10 @@ namespace NewHorizons
             Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig(config);
 
-            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper.Assets : Main.Instance.ModHelper.Assets, mod.ModHelper.Manifest.UniqueName);
+            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper : Main.Instance.ModHelper);
 
-            Main.BodyList.Add(body);
+            if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
+            Main.BodyDict[body.Config.StarSystem].Add(body);
         }
 
         public void LoadConfigs(IModBehaviour mod)
@@ -561,7 +591,8 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyList.FirstOrDefault(x => x.Config.Name == name).Object;
+            return Main.BodyDict.Values.SelectMany(x => x).ToList().FirstOrDefault(x => x.Config.Name == name).Object;
         }
     }
+    #endregion API
 }

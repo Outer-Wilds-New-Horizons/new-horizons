@@ -211,7 +211,7 @@ namespace NewHorizons.Builder.Body
             whiteHoleVolume._fluidVolume = whiteHoleFluidVolume;
             whiteHoleVolume._whiteHoleBody = OWRB;
             whiteHoleVolume._whiteHoleProxyShadowSuperGroup = body.GetComponent<ProxyShadowCasterSuperGroup>();
-
+            
             whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = size;
 
             whiteHoleVolume.enabled = true;

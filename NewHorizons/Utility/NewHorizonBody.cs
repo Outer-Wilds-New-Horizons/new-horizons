@@ -6,16 +6,14 @@ namespace NewHorizons.Utility
 {
     public class NewHorizonsBody
     {
-        public NewHorizonsBody(IPlanetConfig config, IModAssets assets, string modUniqueName)
+        public NewHorizonsBody(IPlanetConfig config, IModHelper mod)
         {
             Config = config;
-            Assets = assets;
-            ModUniqueName = modUniqueName;
+            Mod = mod;
         }
 
         public IPlanetConfig Config;
-        public IModAssets Assets;
-        public string ModUniqueName;
+        public IModHelper Mod;
 
         public GameObject Object;
     }

@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, IPlanetConfig parentConfig, IModAssets assets, string uniqueName)
+        public static void Make(string bodyName, IPlanetConfig parentConfig, IModHelper mod)
         {
             var belt = parentConfig.AsteroidBelt;
 
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
 
                 var asteroidConfig = new PlanetConfig(config);
                 if (belt.ProcGen != null) asteroidConfig.ProcGen = belt.ProcGen;
-                var asteroid = new NewHorizonsBody(new PlanetConfig(config), assets, uniqueName);
+                var asteroid = new NewHorizonsBody(new PlanetConfig(config), mod);
                 Main.NextPassBodies.Add(asteroid);
             }
         }

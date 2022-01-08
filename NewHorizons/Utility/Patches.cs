@@ -51,9 +51,12 @@ namespace NewHorizons.Utility
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipCockpitController>("Update", typeof(Patches), nameof(Patches.OnShipCockpitControllerUpdate));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -347,7 +350,7 @@ namespace NewHorizons.Utility
             if (__instance._exiting
                 || OWInput.GetInputMode() != InputMode.ShipComputer
                 || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
-                || ShipLogBuilder.StarChartMode == null)
+                || ShipLogBuilder.ShipLogStarChartMode == null)
                 return true;
 
             __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
@@ -356,12 +359,14 @@ namespace NewHorizons.Utility
             {
                 ShipLogMode currentMode = __instance._currentMode;
                 string focusedEntryID = currentMode.GetFocusedEntryID();
+                Logger.Log($"[{focusedEntryID}]");
+                if (!focusedEntryID.Equals("")) return true;
                 bool flag = currentMode.Equals(__instance._mapMode);
                 __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
 
                 if (currentMode.Equals(__instance._mapMode))
-                    __instance._currentMode = ShipLogBuilder.StarChartMode;
-                else if (currentMode.Equals(ShipLogBuilder.StarChartMode))
+                    __instance._currentMode = ShipLogBuilder.ShipLogStarChartMode;
+                else if (currentMode.Equals(ShipLogBuilder.ShipLogStarChartMode))
                     __instance._currentMode = __instance._detectiveMode;
                 else
                     __instance._currentMode = __instance._mapMode;
@@ -384,6 +389,28 @@ namespace NewHorizons.Utility
                 __result = true;
             }
             return false;
+        }
+
+        public static bool OnShipCockpitControllerUpdate(ShipCockpitController __instance)
+        {
+            if(__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
+            {
+                var targetSystem = ShipLogBuilder.ShipLogStarChartMode.GetTargetStarSystem();
+                if (targetSystem != null)
+                {
+                    Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static void OnShipLogMapModeEnterMode(ShipLogMapMode __instance)
+        {
+            var newPrompt = "Interstellar Mode";
+            __instance._detectiveModePrompt.SetText(newPrompt);
+            var text = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/ScreenPromptListScaleRoot/ScreenPromptList_UpperRight/ScreenPrompt/Text").GetComponent<UnityEngine.UI.Text>();
+            text.text = newPrompt;
         }
     }
 }
