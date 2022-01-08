@@ -9,8 +9,11 @@ You can view the addons creators have made (or create one yourself) [here](https
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
+Check the ship's log for how to use your warp drive to travel between star systems!
+
 <!-- TOC -->
 
+- [Incompatible mods](#incompatible-mods)
 - [Roadmap](#roadmap)
 - [How to create your own planets using configs](#how-to-create-your-own-planets-using-configs)
   - [Base](#base)
@@ -33,6 +36,10 @@ Planets are created using a JSON file format structure, and placed in the `plane
 
 <!-- /TOC -->
 
+## Incompatible mods
+- Autoresume (breaks the ship's warp drive).
+- Multiplayer mods like QSB and OWO.
+
 ## Roadmap
 - Heightmaps/texturemaps (Done)
 - Remove existing planets (Done)
@@ -46,6 +53,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
 - Load planet meshes from asset bundle (done)
 - Black hole / white hole pairs (done)
 - Separate solar system scenes accessible via wormhole (done)
+- Warp drive with target set in ship's log (done)
 - Procedurally terrain generation (started)
 - Allow copying specific meshes from the stock game for details/scattering with collisions
 - "Quantum" planet parameters
@@ -61,6 +69,7 @@ Planets are created using a JSON file format structure, and placed in the `plane
 	- Ghost matter
 	- Pocket dimensions
 	- Timed position/velocity changes
+	- Zero-g volumes
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
@@ -212,8 +221,10 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "cloud" : (string) The file path to a texture file that will be given to the clouds.
 - "cloudCap" : (string) The file path to a texture that will be put on the north pole over the clouds.
 - "cloudRamp" : (string) I don't really know what this does. You don't have to put anything.
+- "useBasicCloudShader" : (true/false) By default we use the same shader as Giant's deep. Set this to true if you just want your cloud texture to be applied as is.
 - "fogTint" : (colour) Puts tinted fog around the planet.
 - "fogSize" : (decimal number)
+- "fogDensity" : (decimal number) How dense the fog is, from 0 to 100.
 - "hasRain" : (true/false)
 - "hasSnow" : (true/false)
 - "hasOxygen" : (true/false)
@@ -364,7 +375,8 @@ public class CreateAssetBundles
 - "outerRadius" : (decimal number)
 - "inclination" : (decimal number) 
 - "longitudeOfAscendingNode" : (decimal number)
-- "texture" : (string) The file path to the image used for the rings. Normally I use a texture that is one pixel wide for this.
+- "texture" : (string) The file path to the image used for the rings. You can either give it a full image of the rings or a 1 pixel wide strip.
+- "rotationSpeed" : (decimal number)
 
 ### Spawn
 - "playerSpawnPoint" : (position) If you want the player to spawn on the new body, set a value for this. Press "P" in game to have the game log the position you're looking at to find a good value for this.
