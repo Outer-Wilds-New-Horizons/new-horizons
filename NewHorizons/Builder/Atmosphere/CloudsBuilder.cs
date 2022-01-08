@@ -10,6 +10,7 @@ namespace NewHorizons.Atmosphere
 {
     static class CloudsBuilder
     {
+        private static Shader _sphereShader = null;
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModAssets assets)
         {
             Texture2D image, cap, ramp;
@@ -20,10 +21,10 @@ namespace NewHorizons.Atmosphere
 
                 if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
                 else cap = assets.GetTexture(atmo.CloudCap);
-                if(atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
+                if (atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = assets.GetTexture(atmo.CloudRamp);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogError($"Couldn't load Cloud textures, {e.Message}, {e.StackTrace}");
                 return;
@@ -45,15 +46,22 @@ namespace NewHorizons.Atmosphere
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
-            var tempArray = new Material[2];
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
-            for (int i = 0; i < 2; i++)
+            if (!atmo.UseBasicCloudShader)
             {
-                tempArray[i] = GameObject.Instantiate(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
+                var tempArray = new Material[2];
+                for (int i = 0; i < 2; i++)
+                {
+                    tempArray[i] = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
+                }
+                topMR.sharedMaterials = tempArray;
             }
-            topMR.sharedMaterials = tempArray;
+            else
+            {
+                if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+                topMR.material = new Material(_sphereShader);
+            }
 
-            
             foreach (var material in topMR.sharedMaterials)
             {
                 material.SetColor("_Color", cloudTint);
@@ -63,7 +71,7 @@ namespace NewHorizons.Atmosphere
                 material.SetTexture("_RampTex", ramp);
                 material.SetTexture("_CapTex", cap);
             }
-            
+
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             topRT.SetValue("_localAxis", Vector3.up);
@@ -78,19 +86,22 @@ namespace NewHorizons.Atmosphere
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
             bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            bottomTSR.sharedMaterials = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            var bottomTSRMaterials = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            var bottomTSRTempArray = new Material[bottomTSRMaterials.Length];
+            
+            // It's a bit too green
+            var bottomColor = atmo.CloudTint.ToColor32();
+            bottomColor.g = (byte)(bottomColor.g * 0.5f);
+            for (int i = 0; i < bottomTSRMaterials.Length; i++) 
+            {
+                bottomTSRTempArray[i] = new Material(bottomTSRMaterials[i]);
+                bottomTSRTempArray[i].SetColor("_Color", bottomColor);
+                bottomTSRTempArray[i].SetColor("_TintColor", bottomColor);
+            }
+            bottomTSR.sharedMaterials = bottomTSRTempArray;
             bottomTSR.maxLOD = 6;
             bottomTSR.LODBias = 0;
             bottomTSR.LODRadius = 1f;
-
-            // It's always more green than expected
-            var bottomCloudTint = cloudTint;
-            bottomCloudTint.g = (byte)(bottomCloudTint.g * 0.8f);
-            foreach (Material material in bottomTSR.sharedMaterials)
-            {
-                material.SetColor("_Color", bottomCloudTint);
-                material.SetColor("_TintColor", bottomCloudTint);
-            }
 
             TessSphereSectorToggle bottomTSST = cloudsBottomGO.AddComponent<TessSphereSectorToggle>();
             bottomTSST.SetValue("_sector", sector);
@@ -118,6 +129,8 @@ namespace NewHorizons.Atmosphere
 
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            // For the base shader it has to be rotated idk
+            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.localRotation = Quaternion.Euler(90, 0, 0);
 
             cloudsMainGO.transform.localPosition = Vector3.zero;
             cloudsBottomGO.transform.localPosition = Vector3.zero;

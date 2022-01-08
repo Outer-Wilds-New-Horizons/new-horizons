@@ -41,22 +41,47 @@ namespace NewHorizons.Components
             _centerPromptList = centerPromptList;
             _upperRightPromptList = upperRightPromptList;
 
-            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Detective Mode", 0, ScreenPrompt.DisplayState.Normal, false);
+            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Rumor Mode", 0, ScreenPrompt.DisplayState.Normal, false);
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Target", 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
+            GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
 
             var x = 0;
             foreach (var starSystem in Main.BodyDict.Keys)
             {
-                var card = CreateCard(starSystem, root.transform, new Vector2(x++ * 256, 0));
-                _starSystemCards.Add(card);
+                // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
+                var flag = false;
+                if (starSystem.Equals("SolarSystem")) flag = true;
+                else
+                {
+                    foreach(var body in Main.BodyDict[starSystem])
+                    {
+                        if(body.Config?.Spawn?.ShipSpawnPoint != null)
+                        {
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(flag)
+                {
+                    var card = CreateCard(starSystem, root.transform, new Vector2(x++ * 200, 0));
+                    _starSystemCards.Add(card);
+                }
             }
         }
 
         public void OnDestroy()
         {
             GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
+            GlobalMessenger<OWRigidbody>.RemoveListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
+        }
+
+        private void OnEnterFlightConsole(OWRigidbody _)
+        {
+            if (_target == null) GlobalMessenger.FireEvent("UntargetReferenceFrame");
         }
 
         public GameObject CreateCard(string uniqueName, Transform parent, Vector2 position)
@@ -72,7 +97,7 @@ namespace NewHorizons.Components
             newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>().text = UniqueNameToString(uniqueName);
             newCard.SetActive(true);
             newCard.transform.name = uniqueName;
-            newCard.transform.localPosition = new Vector3(position.x, position.y, 0);
+            newCard.transform.localPosition = new Vector3(position.x, position.y, 40);
             newCard.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
             var shipLogEntryCard = newCard.GetComponent<ShipLogEntryCard>();
@@ -87,7 +112,7 @@ namespace NewHorizons.Components
                 }
                 else
                 {
-                    IModAssets assets = Main.BodyDict[uniqueName][0].Assets;
+                    IModAssets assets = Main.BodyDict[uniqueName][0].Mod.Assets;
                     var path = $"planets/{uniqueName}.png";
                     Logger.Log($"Trying to load {path}");
                     texture = assets.GetTexture(path);
@@ -136,7 +161,7 @@ namespace NewHorizons.Components
 
         public override string GetFocusedEntryID()
         {
-            return "0";
+            return "";
         }
 
         public override void OnEnterComputer()

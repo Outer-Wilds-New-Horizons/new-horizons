@@ -56,6 +56,7 @@ namespace NewHorizons.Utility
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -356,6 +357,8 @@ namespace NewHorizons.Utility
             {
                 ShipLogMode currentMode = __instance._currentMode;
                 string focusedEntryID = currentMode.GetFocusedEntryID();
+                Logger.Log($"[{focusedEntryID}]");
+                if (!focusedEntryID.Equals("")) return true;
                 bool flag = currentMode.Equals(__instance._mapMode);
                 __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
 
@@ -398,6 +401,14 @@ namespace NewHorizons.Utility
                 }
             }
             return true;
+        }
+
+        public static void OnShipLogMapModeEnterMode(ShipLogMapMode __instance)
+        {
+            var newPrompt = "Interstellar Mode";
+            __instance._detectiveModePrompt.SetText(newPrompt);
+            var text = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/ScreenPromptListScaleRoot/ScreenPromptList_UpperRight/ScreenPrompt/Text").GetComponent<UnityEngine.UI.Text>();
+            text.text = newPrompt;
         }
     }
 }

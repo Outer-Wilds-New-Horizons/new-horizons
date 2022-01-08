@@ -1,4 +1,6 @@
-﻿using System;
+﻿using NewHorizons.Builder.General;
+using PacificEngine.OW_CommonResources.Game.Player;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,28 +11,150 @@ namespace NewHorizons.Components
 {
     public class ShipWarpController : MonoBehaviour
     {
-        private SingularityController _singularityController;
+        private SingularityController _blackhole;
+        private SingularityController _whitehole;
         private OWAudioSource _oneShotSource;
+
+        private bool _isWarpingIn;
+        private bool _waitingToBeSeated;
+        private bool _eyesOpen = false;
+
+        private float _impactDeathSpeed;
+
+        private const float size = 14f;
 
         public void Start()
         {
-            GameObject singularityGO = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity"), GameObject.Find("Ship_Body").transform);
-            singularityGO.transform.localPosition = new Vector3(0f, 0f, 5f);
-            singularityGO.transform.localScale = Vector3.one * 10f;
-            _singularityController = singularityGO.GetComponent<SingularityController>();
+            MakeBlackHole();
+            MakeWhiteHole();
 
-            _oneShotSource = singularityGO.AddComponent<OWAudioSource>();
+            _oneShotSource = base.gameObject.AddComponent<OWAudioSource>();
+
+            GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
+        }
+
+        private void MakeBlackHole()
+        {
+            var blackHoleShader = GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity").GetComponent<MeshRenderer>().material.shader;
+
+            var blackHoleRender = new GameObject("BlackHoleRender");
+            blackHoleRender.transform.parent = base.transform;
+            blackHoleRender.transform.localPosition = new Vector3(0, 1, 0);
+            blackHoleRender.transform.localScale = Vector3.one * size;
+
+            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
+            meshFilter.mesh = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
+            if (blackHoleShader == null) blackHoleShader = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
+            meshRenderer.material = new Material(blackHoleShader);
+            meshRenderer.material.SetFloat("_Radius", size * 0.4f);
+            meshRenderer.material.SetFloat("_MaxDistortRadius", size * 0.95f);
+            meshRenderer.material.SetFloat("_MassScale", 1);
+            meshRenderer.material.SetFloat("_DistortFadeDist", size * 0.55f);
+
+            _blackhole = blackHoleRender.AddComponent<SingularityController>();
+            blackHoleRender.SetActive(true);
+        }
+
+        private void MakeWhiteHole()
+        {
+            var whiteHoleShader = GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity").GetComponent<MeshRenderer>().material.shader;
+
+            var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
+            whiteHoleRenderer.transform.parent = base.transform;
+            whiteHoleRenderer.transform.localPosition = new Vector3(0, 1, 0);
+            whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
+
+            var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
+            meshFilter.mesh = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
+            if (whiteHoleShader == null) whiteHoleShader = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshRenderer>().sharedMaterial.shader;
+            meshRenderer.material = new Material(whiteHoleShader);
+            meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
+            meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);
+            meshRenderer.sharedMaterial.SetFloat("_MaxDistortRadius", size * 2.8f);
+            meshRenderer.sharedMaterial.SetColor("_Color", new Color(1.88f, 1.88f, 1.88f, 1f));
+
+            _whitehole = whiteHoleRenderer.AddComponent<SingularityController>();
+            whiteHoleRenderer.SetActive(true);
+        }
+
+        public void OnDestroy()
+        {
+            GlobalMessenger.RemoveListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
         public void WarpIn()
         {
-            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
+            // Trying really hard to stop the player from dying while warping in
+            _impactDeathSpeed = Locator.GetDeathManager()._impactDeathSpeed;
+            Locator.GetDeathManager()._impactDeathSpeed = Mathf.Infinity;
+            Locator.GetDeathManager()._invincible = true;
+
+            _isWarpingIn = true;
+            _whitehole.Create();
         }
 
         public void WarpOut()
         {
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
-            _singularityController.Create();
+            _blackhole.Create();
+        }
+
+        public void Update()
+        {
+            if(_isWarpingIn && LateInitializerManager.isDoneInitializing)
+            {
+                _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
+                Locator.GetDeathManager()._invincible = true;
+                if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) Teleportation.teleportPlayerToShip();
+                _whitehole.Create();
+                _isWarpingIn = false;
+                _waitingToBeSeated = true;
+                if (!Locator.GetPlayerController()._isWearingSuit)
+                {
+                    SpawnPointBuilder.SuitUp();
+                }
+            }
+            // Idk whats making this work but now it works and idc
+            if(_waitingToBeSeated 
+                && PlayerState.IsInsideShip() 
+                && PlayerState.IsWearingSuit() 
+                && base.GetComponentInChildren<ShipCockpitController>()?._playerAttachPoint?.GetAttachedOWRigidbody() != null
+                && !Locator.GetPlayerController()._isMovementLocked
+                && !Locator.GetPlayerController()._isTurningLocked 
+                && _eyesOpen)
+            {
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => FinishWarp(), 4);
+                _waitingToBeSeated = false;
+            }
+            if (_waitingToBeSeated)
+            {
+                if (Player.getResources()._currentHealth < 100f)
+                {
+                    // Means the player was killed meaning they weren't teleported in
+                    Player.getResources()._currentHealth = 100f;
+                    Teleportation.teleportPlayerToShip();
+                }
+            }
+        }
+
+        private void OnFinishOpenEyes()
+        {
+            _eyesOpen = true;
+        }
+
+        public void FinishWarp()
+        {
+            Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
+            _waitingToBeSeated = false;
+            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => _whitehole.Collapse(), 30);
+
+            Locator.GetDeathManager()._impactDeathSpeed = _impactDeathSpeed;
+            Player.getResources()._currentHealth = 100f;
+            Locator.GetDeathManager()._invincible = false;
         }
     }
 }

@@ -51,27 +51,20 @@ namespace NewHorizons.Builder.Body
 			if (RingShader1Pixel == null) RingShader1Pixel = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
 			if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
 
-			bool doubleSided = false;
 			var mat = new Material(ring.Unlit ? UnlitRingShader : RingShader);
 			if(texture.width == 1)
             {
 				mat = new Material(ring.Unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
 				mat.SetFloat("_InnerRadius", 0);
-				doubleSided = true;
             }
 			ringMR.receiveShadows = !ring.Unlit;
 
 			mat.mainTexture = texture;
-			mat.renderQueue = 2895;
+			mat.renderQueue = 3000;
 			ringMR.material = mat;
 
 			// Make mesh
 			var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000);
-
-			//BuildQuadMesh(ringMesh, ring.OuterRadius * 2);
-			//BuildCircleMesh(ringMesh, segments, ring.OuterRadius);
-			//ringGO.AddComponent<MakeMeshDoubleFaced>();
-
 			BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
 
 			if(ring.RotationSpeed != 0)

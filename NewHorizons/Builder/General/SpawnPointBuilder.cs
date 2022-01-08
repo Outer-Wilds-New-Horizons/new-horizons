@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject body, SpawnModule module, OWRigidbody rb)
         {
             SpawnPoint playerSpawn = null;
-            if(module.PlayerSpawnPoint != null)
+            if(!Main.IsWarping && module.PlayerSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("PlayerSpawnPoint");
                 spawnGO.transform.parent = body.transform;
@@ -44,8 +44,22 @@ namespace NewHorizons.Builder.General
                 ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 5f;
                 
                 ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(rb);
+
+                if(Main.IsWarping)
+                {
+                    GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
+                    playerSpawnGO.transform.parent = ship.transform;
+                    playerSpawnGO.layer = 8;
+
+                    playerSpawnGO.transform.localPosition = Vector3.zero;
+
+                    playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
+                    playerSpawnGO.transform.localRotation = Quaternion.Euler(0,0,0);
+
+                    GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
+                }
             }
-            if(module.StartWithSuit && !suitUpQueued)
+            if(!Main.IsWarping && module.StartWithSuit && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SuitUp(), 4);
@@ -55,9 +69,10 @@ namespace NewHorizons.Builder.General
             return playerSpawn;
         }
 
-        private static void SuitUp()
+        public static void SuitUp()
         {
             suitUpQueued = false;
+            if (Locator.GetPlayerController()._isWearingSuit) return;
             try
             {
                 var spv = GameObject.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear").GetComponent<SuitPickupVolume>();
