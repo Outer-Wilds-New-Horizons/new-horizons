@@ -16,12 +16,24 @@ namespace NewHorizons.Builder.Body
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
             waterGO.DestroyAllComponents<SphereCollider>();
 
+            var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
+
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
-            TSR.tessellationMeshGroup = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            TSR.sharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
-            TSR.maxLOD = 7;
-            TSR.LODBias = 2;
-            TSR.LODRadius = 2f;
+            TSR.tessellationMeshGroup = GDTSR.tessellationMeshGroup;
+
+            var GDSharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
+            var tempArray = new Material[GDSharedMaterials.Length];
+            for(int i = 0; i < GDSharedMaterials.Length; i++)
+            {
+                tempArray[i] = new Material(GDSharedMaterials[i]);
+            }
+            // TODO: Make water module
+            //tempArray[1].color = Color.red;
+
+            TSR.sharedMaterials = tempArray;
+            TSR.maxLOD = GDTSR.maxLOD;
+            TSR.LODBias = GDTSR.LODBias;
+            TSR.LODRadius = GDTSR.LODRadius;
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC.SetValue("_sector", sector);
@@ -53,16 +65,15 @@ namespace NewHorizons.Builder.Body
             fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
 
             // Because assetbundles were a bitch...
-            /*
             GameObject fog1 = new GameObject();
-            fog1.transform.parent = waterBase.transform;
+            fog1.transform.parent = waterGO.transform;
             fog1.transform.localScale = new Vector3(1, 1, 1);
             fog1.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog1.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog1.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
 
             GameObject fog2 = new GameObject();
-            fog2.transform.parent = waterBase.transform;
+            fog2.transform.parent = waterGO.transform;
             fog2.transform.localScale = new Vector3(1.001f, 1.001f, 1.001f);
             fog2.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog2.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
@@ -74,7 +85,6 @@ namespace NewHorizons.Builder.Body
             fog3.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog3.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
-            */
 
             waterGO.transform.localPosition = Vector3.zero;
             waterGO.SetActive(true);
