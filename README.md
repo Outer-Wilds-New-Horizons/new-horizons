@@ -37,8 +37,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- /TOC -->
 
 ## Incompatible mods
-Autoresume (breaks the ship's warp drive).
-Multiplayer mods like QSB and OWO.
+- Autoresume (breaks the ship's warp drive).
+- Multiplayer mods like QSB and OWO.
 
 ## Roadmap
 - Heightmaps/texturemaps (Done)
