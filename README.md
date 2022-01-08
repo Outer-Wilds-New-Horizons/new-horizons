@@ -3,9 +3,9 @@
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
 
-A planet creator for Outer Wilds.
+A custom world creation tool for Outer Wilds.
 
-You can view the addons creators have made [here](https://outerwildsmods.com/mods/newhorizons/addons/)!
+You can view the addons creators have made (or create one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
 Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
 
@@ -59,6 +59,8 @@ Planets are created using a JSON file format structure, and placed in the `plane
 	- Geysers
 	- Meteors
 	- Ghost matter
+	- Pocket dimensions
+	- Timed position/velocity changes
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
@@ -327,8 +329,9 @@ A detail info object can have the following parameters:
 You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
 
 #### Asset Bundles
-1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work).
+1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
 2. In the root directory create a folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
+
 ```
 using UnityEditor;
 using UnityEngine;
@@ -348,6 +351,7 @@ public class CreateAssetBundles
     }
 }
 ```
+
 3. Create your object in the Unity scene and save it as a prefab.
 4. Add all files used (models, prefabs, textures, materials, etc) to an asset bundle by selecting them and using the drop down in the bottom right. Here I am adding a rover model to my "rss" asset bundle for the Real Solar System add-on.
 ![setting asset bundle](https://user-images.githubusercontent.com/22628069/147954146-e1d610c0-0336-428f-8b32-bfc01090061c.png)

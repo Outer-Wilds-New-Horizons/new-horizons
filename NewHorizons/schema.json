@@ -92,7 +92,7 @@
         }
       }
     },
-    "atmosphere": {
+    "Atmosphere": {
       "type": "object",
       "properties": {
         "size": {
