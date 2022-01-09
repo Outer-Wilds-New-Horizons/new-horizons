@@ -90,13 +90,6 @@ Your config file will look something like this:
 		"surfaceSize" : 101,
 		"surfaceGravity" : 12,
 		"hasMapMarker" : true,
-		"lightTint" : 
-		{
-			"r" : 255,
-			"g" : 255,
-			"b" : 255,
-			"a" : 255
-		}
 	},
 	"Orbit" : 
 	{
