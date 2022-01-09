@@ -306,6 +306,15 @@ namespace NewHorizons
         public void LoadConfigs(IModBehaviour mod)
         {
             var folder = mod.ModHelper.Manifest.ModFolderPath;
+
+            // the mod folder will be searched in when loading assemblies
+            // this lets custom scripts work
+            AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+                var name = new AssemblyName(args.Name).Name + ".dll";
+                var path = Path.Combine(folder, name);
+                return File.Exists(path) ? Assembly.LoadFile(path) : null;
+            };
+
             foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
             {
                 try
