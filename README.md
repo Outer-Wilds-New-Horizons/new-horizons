@@ -82,6 +82,7 @@ Your config file will look something like this:
 ```
 {
 	"name" : "Wetrock",
+	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json",
 	"starSystem" : "SolarSystem",
 	"Base" : 
 	{
