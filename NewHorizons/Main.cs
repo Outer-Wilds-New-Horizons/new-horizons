@@ -199,7 +199,7 @@ namespace NewHorizons
 
             _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
             Logger.Log($"Is the player warping in? {IsWarping}");
-            //if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
+            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
             IsWarping = false;
         }
 
