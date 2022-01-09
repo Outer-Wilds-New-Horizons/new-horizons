@@ -2,9 +2,7 @@
   "title": "Planet",
   "type": "object",
   "required": [
-    "name",
-    "Base",
-    "Orbit"
+    "name"
   ],
   "properties": {
     "name": {
@@ -60,6 +58,35 @@
           "type": "number",
           "default": 0,
           "description": "Sea level for the planet. Optional"
+        },
+        "waterTint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
         },
         "groundSize": {
           "type": "number",
@@ -140,6 +167,11 @@
         "cloudRamp": {
           "type": "string",
           "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. Optional."
+        },
+        "useBasicCloudShader": {
+          "type": "boolean",
+          "default": false,
+          "description" :  "Use Giant's deep shader or just apply the cloud texture as is."
         },
         "fogTint": {
           "type": "object",
@@ -349,6 +381,10 @@
         "texture": {
           "type": "string",
           "description": "Relative filepath to the texture used for the rings."
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "default": 0
         }
       }
     },

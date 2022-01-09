@@ -3,7 +3,7 @@
   "author": "xen",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "owmlVersion": "2.1.0",
   "dependencies": [ "PacificEngine.OW_CommonResources" ]
 }
