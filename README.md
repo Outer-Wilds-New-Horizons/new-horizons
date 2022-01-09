@@ -190,11 +190,13 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
 - "waterSize" : (decimal number) If you want the planet to have water on it, set a value for this. 
+- "waterTint" : (colour) 
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
 - "blackHoleSize" : (decimal number) If you want there to be a black hole in the center of the planet, set a value for this. Can't be larger than 100 for now.
 - "lavaSize" : (decimal number) If you want the planet to have lava on it, set a value for this. 
 - "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
 - "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
+- "centerOfSolarSystem" : (true/false) If the body is the new center of the solar system be sure to set this to true.
 
 ### Orbit
 Some of these I don't explain since they are just orbital parameters. If you don't know what they are, ask Wikipedia. Or just don't put a value.
@@ -388,6 +390,7 @@ Use this if you are creating a star.
 - "size" : (decimal number)
 - "tint" : (colour) 
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
+- "solarLuminosity" : (decimal number) Relative luminosity of this star compared to the sun.
 
 ### Signal
 - "signals" : (list of signal info objects)
