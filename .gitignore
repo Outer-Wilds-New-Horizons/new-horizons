@@ -1,6 +1,7 @@
 
 packages
 .vs
+.idea
 bin
 obj
 zip
