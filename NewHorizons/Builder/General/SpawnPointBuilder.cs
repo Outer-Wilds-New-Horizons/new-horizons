@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject body, SpawnModule module, OWRigidbody rb)
         {
             SpawnPoint playerSpawn = null;
-            if(!Main.IsWarping && module.PlayerSpawnPoint != null)
+            if(!Main.Instance.IsWarping && module.PlayerSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("PlayerSpawnPoint");
                 spawnGO.transform.parent = body.transform;
@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.General
                 
                 ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(rb);
 
-                if(Main.IsWarping)
+                if(Main.Instance.IsWarping)
                 {
                     Logger.Log("Overriding player spawn to be inside ship");
                     GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.General
                     GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
                 }
             }
-            if(!Main.IsWarping && module.StartWithSuit && !suitUpQueued)
+            if(!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SuitUp(), 4);

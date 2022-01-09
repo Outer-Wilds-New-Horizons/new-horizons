@@ -39,8 +39,7 @@ namespace NewHorizons
         public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
 
         private bool _isChangingStarSystem = false;
-        private bool _isWarping = false;
-        public static bool IsWarping { get { return Instance._isWarping; } }
+        public bool IsWarping { get; private set; } = false;
 
         private ShipWarpController _shipWarpController;
 
@@ -199,8 +198,9 @@ namespace NewHorizons
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
             _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
-            if (_isWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
-            _isWarping = false;
+            Logger.Log($"Is the player warping in? {IsWarping}");
+            //if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
+            IsWarping = false;
         }
 
         #region TitleScreen
@@ -548,11 +548,13 @@ namespace NewHorizons
         #region Change star system
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
+            if (_isChangingStarSystem) return;
+
             Logger.Log($"Warping to {newStarSystem}");
             if(warp) _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
-            _isWarping = warp;
+            IsWarping = warp;
 
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);

@@ -94,7 +94,11 @@ namespace NewHorizons.Components
             }
 
             var newCard = GameObject.Instantiate(_cardTemplate, parent);
-            newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>().text = UniqueNameToString(uniqueName);
+            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>();
+            var name = UniqueNameToString(uniqueName);
+            textComponent.text = name;
+            if (name.Length > 17) textComponent.fontSize = 10;
+
             newCard.SetActive(true);
             newCard.transform.name = uniqueName;
             newCard.transform.localPosition = new Vector3(position.x, position.y, 40);

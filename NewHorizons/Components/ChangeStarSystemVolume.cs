@@ -16,10 +16,15 @@ namespace NewHorizons.Components
             _deathType = DeathType.Meditation;
         }
 
+        public override void VanishShip(OWRigidbody shipBody, RelativeLocationData entryLocation)
+        {
+            if(PlayerState.IsInsideShip()) Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, true);
+        }
+
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)
         {
-            //Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
-            Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, false);
+            Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
+            //Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, false);
         }
     }
 }

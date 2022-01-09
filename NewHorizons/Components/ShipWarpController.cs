@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components
 {
@@ -28,9 +29,16 @@ namespace NewHorizons.Components
             MakeBlackHole();
             MakeWhiteHole();
 
+            _isWarpingIn = false;
+
             _oneShotSource = base.gameObject.AddComponent<OWAudioSource>();
 
             GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
+        }
+
+        public void OnDestroy()
+        {
+            GlobalMessenger.RemoveListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
         private void MakeBlackHole()
@@ -81,13 +89,9 @@ namespace NewHorizons.Components
             whiteHoleRenderer.SetActive(true);
         }
 
-        public void OnDestroy()
-        {
-            GlobalMessenger.RemoveListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
-        }
-
         public void WarpIn()
         {
+            Logger.Log("Starting warp-in");
             // Trying really hard to stop the player from dying while warping in
             _impactDeathSpeed = Locator.GetDeathManager()._impactDeathSpeed;
             Locator.GetDeathManager()._impactDeathSpeed = Mathf.Infinity;
@@ -99,6 +103,7 @@ namespace NewHorizons.Components
 
         public void WarpOut()
         {
+            Logger.Log("Starting warp-out");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
             _blackhole.Create();
         }
@@ -107,37 +112,28 @@ namespace NewHorizons.Components
         {
             if(_isWarpingIn && LateInitializerManager.isDoneInitializing)
             {
-                _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
-                Locator.GetDeathManager()._invincible = true;
-                if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) Teleportation.teleportPlayerToShip();
-                _whitehole.Create();
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => StartWarpInEffect(), 1);
                 _isWarpingIn = false;
-                _waitingToBeSeated = true;
-                if (!Locator.GetPlayerController()._isWearingSuit)
-                {
-                    SpawnPointBuilder.SuitUp();
-                }
             }
-            // Idk whats making this work but now it works and idc
-            if(_waitingToBeSeated 
-                && PlayerState.IsInsideShip() 
-                && PlayerState.IsWearingSuit() 
-                && base.GetComponentInChildren<ShipCockpitController>()?._playerAttachPoint?.GetAttachedOWRigidbody() != null
-                && !Locator.GetPlayerController()._isMovementLocked
-                && !Locator.GetPlayerController()._isTurningLocked 
-                && _eyesOpen)
-            {
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => FinishWarp(), 4);
-                _waitingToBeSeated = false;
-            }
+
             if (_waitingToBeSeated)
             {
                 if (Player.getResources()._currentHealth < 100f)
                 {
+                    Logger.Log("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
                     Player.getResources()._currentHealth = 100f;
-                    Teleportation.teleportPlayerToShip();
+                    if(!PlayerState.AtFlightConsole()) Teleportation.teleportPlayerToShip();
                 }
+
+                Logger.Log($"{PlayerState.IsInsideShip()}, {PlayerState.IsWearingSuit()}, {base.GetComponentInChildren<ShipCockpitController>()?._playerAttachPoint?.GetAttachedOWRigidbody() != null}, {!Locator.GetPlayerController()._isMovementLocked}, {!Locator.GetPlayerController()._isTurningLocked }, {_eyesOpen}");
+            }
+
+            // Idk whats making this work but now it works and idc
+            if (_waitingToBeSeated && PlayerState.IsInsideShip() && _eyesOpen)
+            {
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => FinishWarpIn(), 1);
+                _waitingToBeSeated = false;
             }
         }
 
@@ -146,8 +142,23 @@ namespace NewHorizons.Components
             _eyesOpen = true;
         }
 
-        public void FinishWarp()
+        private void StartWarpInEffect()
         {
+            Logger.Log("Starting warp-in effect");
+            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
+            Locator.GetDeathManager()._invincible = true;
+            if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) Teleportation.teleportPlayerToShip();
+            _whitehole.Create();
+            _waitingToBeSeated = true;
+            if (!Locator.GetPlayerController()._isWearingSuit)
+            {
+                SpawnPointBuilder.SuitUp();
+            }
+        }
+
+        public void FinishWarpIn()
+        {
+            Logger.Log("Finishing warp");
             Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
             _waitingToBeSeated = false;
             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => _whitehole.Collapse(), 30);
