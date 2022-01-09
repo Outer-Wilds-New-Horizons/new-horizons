@@ -307,13 +307,16 @@ namespace NewHorizons
         {
             var folder = mod.ModHelper.Manifest.ModFolderPath;
 
-            // the mod folder will be searched in when loading assemblies
-            // this lets custom scripts work
+            var dllFiles = Directory.GetFiles(folder + @"planets\", "*.dll", SearchOption.AllDirectories);
             AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
                 var name = new AssemblyName(args.Name).Name + ".dll";
-                var path = Path.Combine(folder, name);
-                return File.Exists(path) ? Assembly.LoadFile(path) : null;
+                var file = dllFiles.FirstOrDefault(x => Path.GetFileName(x) == name);
+                return file != null ? Assembly.LoadFile(file) : null;
             };
+            foreach (var file in dllFiles)
+            {
+                Assembly.LoadFile(file);
+            }
 
             foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
             {
