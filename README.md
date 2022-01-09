@@ -195,6 +195,7 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "lavaSize" : (decimal number) If you want the planet to have lava on it, set a value for this. 
 - "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
 - "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
+- "centerOfSolarSystem" : (true/false) If the body is the new center of the solar system be sure to set this to true.
 
 ### Orbit
 Some of these I don't explain since they are just orbital parameters. If you don't know what they are, ask Wikipedia. Or just don't put a value.
