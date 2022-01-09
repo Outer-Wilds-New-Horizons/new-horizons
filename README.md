@@ -190,6 +190,7 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
 - "waterSize" : (decimal number) If you want the planet to have water on it, set a value for this. 
+- "waterTint" : (colour) 
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
 - "blackHoleSize" : (decimal number) If you want there to be a black hole in the center of the planet, set a value for this. Can't be larger than 100 for now.
 - "lavaSize" : (decimal number) If you want the planet to have lava on it, set a value for this. 
