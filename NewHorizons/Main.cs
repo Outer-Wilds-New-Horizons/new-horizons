@@ -511,7 +511,7 @@ namespace NewHorizons
             if (body.Config.Base.LavaSize != 0)
             {
                 var lava = new LavaModule();
-                lava.Radius = body.Config.Base.LavaSize;
+                lava.Size = body.Config.Base.LavaSize;
                 LavaBuilder.Make(go, sector, rb, lava);
             }
 
@@ -522,7 +522,7 @@ namespace NewHorizons
             if (body.Config.Base.WaterSize != 0)
             {
                 var water = new WaterModule();
-                water.Radius = body.Config.Base.WaterSize;
+                water.Size = body.Config.Base.WaterSize;
                 water.Tint = body.Config.Base.WaterTint;
                 WaterBuilder.Make(go, sector, rb, water);
             }

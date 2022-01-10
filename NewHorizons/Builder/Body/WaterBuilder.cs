@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.Body
     {
         public static void Make(GameObject body, Sector sector, OWRigidbody rb, WaterModule module)
         {
-            var waterSize = module.Radius;
+            var waterSize = module.Size;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
@@ -59,7 +59,6 @@ namespace NewHorizons.Builder.Body
             var owCollider = buoyancyObject.AddComponent<OWCollider>();
             owCollider.SetValue("_parentBody", rb);
             owCollider.SetValue("_collider", sphereCollider);
-            
 
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume.SetValue("_owCollider", owCollider);
@@ -92,6 +91,17 @@ namespace NewHorizons.Builder.Body
             fog3.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog3.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
+
+            if (module.Curve != null)
+            {
+                var levelController = waterGO.AddComponent<SandLevelController>();
+                var curve = new AnimationCurve();
+                foreach (var pair in module.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, module.Size * pair.Value));
+                }
+                levelController._scaleCurve = curve;
+            }
 
             waterGO.transform.localPosition = Vector3.zero;
             waterGO.SetActive(true);

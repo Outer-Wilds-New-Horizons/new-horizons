@@ -860,7 +860,7 @@
     "Water": {
       "type": "object",
       "properties": {
-        "radius": {
+        "size": {
           "type": "number",
           "default": 0
         },
@@ -914,7 +914,7 @@
     "Lava": {
       "type": "object",
       "properties": {
-        "radius": {
+        "size": {
           "type": "number",
           "default": 0
         },
@@ -939,9 +939,38 @@
     "Sand": {
       "type": "object",
       "properties": {
-        "radius": {
+        "size": {
           "type": "number",
           "default": 0
+        },
+        "tint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
         },
         "curve": {
           "type": "array",

@@ -9,6 +9,7 @@ using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.VariableSize;
+using NewHorizons.Components;
 
 namespace NewHorizons.Builder.Body
 {
@@ -74,6 +75,41 @@ namespace NewHorizons.Builder.Body
 				rot._degreesPerSecond = ring.RotationSpeed;
 				rot._localAxis = Vector3.down;
             }
+
+			// Collider can't be concave so nvm
+			/*
+			var collider = new GameObject("Collider");
+			collider.SetActive(false);
+			collider.transform.parent = ringGO.transform;
+			collider.transform.localPosition = Vector3.zero;
+			collider.transform.localScale = Vector3.one;
+			collider.layer = 17;
+
+			var mf = collider.AddComponent<MeshFilter>();
+			mf.mesh = ringMesh;
+
+			var mc = collider.AddComponent<MeshCollider>();
+			mc.isTrigger = true;
+
+			var owCollider = collider.AddComponent<OWCollider>();
+			var trigger = collider.AddComponent<OWTriggerVolume>();
+			var sfv = collider.AddComponent<SimpleFluidVolume>();
+			sfv._fluidType = FluidVolume.Type.SAND;
+			sfv._density = 2f;
+
+			collider.SetActive(true);
+			*/
+
+			if (ring.Curve != null)
+			{
+				var levelController = ringGO.AddComponent<RingSizeController>();
+				var curve = new AnimationCurve();
+				foreach (var pair in ring.Curve)
+				{
+					curve.AddKey(new Keyframe(pair.Time, pair.Value));
+				}
+				levelController.scaleCurve = curve;
+			}
 
 			return ringGO;
 		}

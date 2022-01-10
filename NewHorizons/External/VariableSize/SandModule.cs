@@ -9,7 +9,7 @@ namespace NewHorizons.External.VariableSize
 {
     public class SandModule : VariableSizeModule
     {
-        public float Radius { get; set; }
+        public float Size { get; set; }
         public MColor32 Tint { get; set; }
     }
 }

@@ -147,6 +147,17 @@ namespace NewHorizons.Builder.Body
             starController.Intensity = starModule.SolarLuminosity;
             starController.SunColor = lightColour;
 
+            if (starModule.Curve != null)
+            {
+                var levelController = starGO.AddComponent<SandLevelController>();
+                var curve = new AnimationCurve();
+                foreach (var pair in starModule.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, starModule.Size * pair.Value));
+                }
+                levelController._scaleCurve = curve;
+            }
+
             return starController;
         }
     }

@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Body
             moltenCore.SetActive(false);
             moltenCore.transform.parent = body.transform;
             moltenCore.transform.localPosition = Vector3.zero;
-            moltenCore.transform.localScale = Vector3.one * module.Radius;
+            moltenCore.transform.localScale = Vector3.one * module.Size;
 
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
@@ -38,9 +38,20 @@ namespace NewHorizons.Builder.Body
             
             var destructionVolume = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
-            
-            moltenCore.SetActive(true);
             destructionVolume.SetActive(true);
+
+            if (module.Curve != null)
+            {
+                var levelController = moltenCore.AddComponent<SandLevelController>();
+                var curve = new AnimationCurve();
+                foreach (var pair in module.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, module.Size * pair.Value));
+                }
+                levelController._scaleCurve = curve;
+            }
+
+            moltenCore.SetActive(true);
         }
     }
 }
