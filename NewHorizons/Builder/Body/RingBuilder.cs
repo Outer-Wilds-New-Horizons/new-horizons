@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {

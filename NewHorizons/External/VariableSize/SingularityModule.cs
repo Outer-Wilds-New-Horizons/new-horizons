@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.External
+namespace NewHorizons.External.VariableSize
 {
-    public class SingularityModule : Module
+    public class SingularityModule : VariableSizeModule
     {
         public float Size;
         public string PairedSingularity;

@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.External.VariableSize;
 using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -7,9 +8,9 @@ namespace NewHorizons.Builder.Body
 {
     static class WaterBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, IPlanetConfig config)
+        public static void Make(GameObject body, Sector sector, OWRigidbody rb, WaterModule module)
         {
-            var waterSize = config.Base.WaterSize;
+            var waterSize = module.Radius;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
@@ -28,9 +29,9 @@ namespace NewHorizons.Builder.Body
             for(int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
-                if (config.Base.WaterTint != null)
+                if (module.Tint != null)
                 {
-                    tempArray[i].color = config.Base.WaterTint.ToColor32();
+                    tempArray[i].color = module.Tint.ToColor32();
                 }
             }
             // TODO: Make water module

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.External
+namespace NewHorizons.External.VariableSize
 {
-    public class RingModule : Module
+    public class RingModule : VariableSizeModule
     {
         public float InnerRadius { get; set; }
         public float OuterRadius { get; set; }

@@ -54,49 +54,10 @@
           "default": 0,
           "description": "An override for the radius of the planet's gravitational sphere of influence. Optional"
         },
-        "waterSize": {
-          "type": "number",
-          "default": 0,
-          "description": "Sea level for the planet. Optional"
-        },
-        "waterTint": {
-          "type": "object",
-          "properties": {
-            "R": {
-              "type": "integer",
-              "default": 0,
-              "minimum": 0,
-              "maximum": 255
-            },
-            "G": {
-              "type": "integer",
-              "default": 0,
-              "minimum": 0,
-              "maximum": 255
-            },
-            "B": {
-              "type": "integer",
-              "default": 0,
-              "minimum": 0,
-              "maximum": 255
-            },
-            "A": {
-              "type": "integer",
-              "default": 0,
-              "minimum": 0,
-              "maximum": 255
-            }
-          }
-        },
         "groundSize": {
           "type": "number",
           "default": 0,
           "description": "Radius of the a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as 0."
-        },
-        "lavaSize": {
-          "type": "number",
-          "default": 0,
-          "description": "Radius of a sphere of lava. Optional."
         },
         "hasCometTail": {
           "type": "boolean",
@@ -171,7 +132,7 @@
         "useBasicCloudShader": {
           "type": "boolean",
           "default": false,
-          "description" :  "Use Giant's deep shader or just apply the cloud texture as is."
+          "description": "Use Giant's deep shader or just apply the cloud texture as is."
         },
         "fogTint": {
           "type": "object",
@@ -585,6 +546,10 @@
           "minimum": 0,
           "description": "Relative strenght of the light compared to the sun",
           "default": 1
+        },
+        "hasAtmosphere": {
+          "type": "boolean",
+          "default": true
         }
       }
     },
@@ -887,6 +852,110 @@
             "z": {
               "type": "number",
               "default": 0
+            }
+          }
+        }
+      }
+    },
+    "Water": {
+      "type": "object",
+      "properties": {
+        "radius": {
+          "type": "number",
+          "default": 0
+        },
+        "tint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "Lava": {
+      "type": "object",
+      "properties": {
+        "radius": {
+          "type": "number",
+          "default": 0
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "Sand": {
+      "type": "object",
+      "properties": {
+        "radius": {
+          "type": "number",
+          "default": 0
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
             }
           }
         }

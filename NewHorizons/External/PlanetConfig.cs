@@ -1,4 +1,5 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.External.VariableSize;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -24,6 +25,9 @@ namespace NewHorizons.External
         public SpawnModule Spawn { get; set; }
         public SignalModule Signal { get; set; }
         public SingularityModule Singularity { get; set; }
+        public LavaModule Lava { get; set; }
+        public WaterModule Water { get; set; }
+        public SandModule Sand { get; set; }
 
         public PlanetConfig(Dictionary<string, object> dict)
         {

@@ -6,6 +6,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.External.VariableSize;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -506,11 +507,31 @@ namespace NewHorizons
             if (body.Config.Base.HasCometTail)
                 CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
 
+            // Backwards compatability
             if (body.Config.Base.LavaSize != 0)
-                LavaBuilder.Make(go, sector, rb, body.Config.Base.LavaSize);
+            {
+                var lava = new LavaModule();
+                lava.Radius = body.Config.Base.LavaSize;
+                LavaBuilder.Make(go, sector, rb, lava);
+            }
 
+            if (body.Config.Lava != null)
+                LavaBuilder.Make(go, sector, rb, body.Config.Lava);
+
+            // Backwards compatability
             if (body.Config.Base.WaterSize != 0)
-                WaterBuilder.Make(go, sector, rb, body.Config);
+            {
+                var water = new WaterModule();
+                water.Radius = body.Config.Base.WaterSize;
+                water.Tint = body.Config.Base.WaterTint;
+                WaterBuilder.Make(go, sector, rb, water);
+            }
+
+            if (body.Config.Water != null)
+                WaterBuilder.Make(go, sector, rb, body.Config.Water);
+
+            if (body.Config.Sand != null)
+                SandBuilder.Make(go, sector, rb, body.Config.Sand);
 
             if (body.Config.Atmosphere != null)
             {

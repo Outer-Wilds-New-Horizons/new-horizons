@@ -1,4 +1,5 @@
-﻿using OWML.Utils;
+﻿using NewHorizons.External.VariableSize;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,13 +12,13 @@ namespace NewHorizons.Builder.Body
 {
     static class LavaBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, float lavaSize) 
+        public static void Make(GameObject body, Sector sector, OWRigidbody rb, LavaModule module) 
         {
             var moltenCore = new GameObject("MoltenCore");
             moltenCore.SetActive(false);
             moltenCore.transform.parent = body.transform;
             moltenCore.transform.localPosition = Vector3.zero;
-            moltenCore.transform.localScale = Vector3.one * lavaSize;
+            moltenCore.transform.localScale = Vector3.one * module.Radius;
 
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;

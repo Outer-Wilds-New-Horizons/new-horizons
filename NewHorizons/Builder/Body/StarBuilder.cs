@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -26,7 +27,6 @@ namespace NewHorizons.Builder.Body
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
 
-            //var sunLight = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight"), sunGO.transform);
             var sunLight = new GameObject();
             sunLight.transform.parent = starGO.transform;
             sunLight.transform.localPosition = Vector3.zero;
@@ -61,12 +61,26 @@ namespace NewHorizons.Builder.Body
 
             sunAudio.name = "Audio_Star";
 
-            /*
-            var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
-            sunAtmosphere.transform.localPosition = Vector3.zero;
-            sunAtmosphere.transform.localScale = Vector3.one;
-            sunAtmosphere.name = "Atmosphere_Star";
-            */
+            if(starModule.HasAtmosphere)
+            {
+                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
+                sunAtmosphere.transform.localPosition = Vector3.zero;
+                sunAtmosphere.transform.localScale = Vector3.one;
+                sunAtmosphere.name = "Atmosphere_Star";
+                PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
+                if (starModule.Tint != null)
+                {
+                    fog.fogTint = starModule.Tint.ToColor32();
+                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000) / starModule.Size;
+                    foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
+                    {
+                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor32());
+                        lod.material.SetFloat("_InnerRadius", starModule.Size);
+                        lod.material.SetFloat("_OuterRadius", starModule.Size + 1000);
+                    }
+                }
+                fog.fogRadius = starModule.Size * 1.2f;
+            }
 
             var ambientLightGO = GameObject.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
             ambientLightGO.transform.localPosition = Vector3.zero;
@@ -84,7 +98,6 @@ namespace NewHorizons.Builder.Body
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
             deathVolume.name = "DestructionVolume";
 
-            //PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
             TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
@@ -103,12 +116,11 @@ namespace NewHorizons.Builder.Body
             light.color = lightColour;
             ambientLight.color = lightColour;
 
-            //fog.fogRadius = starModule.Size * 1.2f;
             if(starModule.Tint != null)
             {
                 var colour = starModule.Tint.ToColor32();
                 //sunLightController.sunColor = colour;
-                //fog.fogTint = colour;
+
 
                 var sun = GameObject.Find("Sun_Body");
                 var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
@@ -118,16 +130,6 @@ namespace NewHorizons.Builder.Body
                 var mod = 8f * starModule.SolarLuminosity / 255f;
                 surface.sharedMaterial.color = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
                 surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.TintImage(_colorOverTime, colour));
-
-                /*
-                sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000)/starModule.Size;
-                foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
-                {
-                    lod.material.SetColor("_SkyColor", colour);
-                    lod.material.SetFloat("_InnerRadius", starModule.Size);
-                    lod.material.SetFloat("_OuterRadius", starModule.Size + 1000);
-                }
-                */
             }
 
             if(starModule.SolarFlareTint != null)

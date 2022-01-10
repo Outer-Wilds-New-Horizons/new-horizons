@@ -15,10 +15,7 @@ namespace NewHorizons.External
         public string GravityFallOff { get; set; } = "linear";
         public float SurfaceSize { get; set; }
         public float SphereOfInfluence { get; set; }
-        public float WaterSize { get; set; }
-        public MColor32 WaterTint { get; set; }
         public float GroundSize { get; set; }
-        public float LavaSize { get; set; }
         public bool HasCometTail { get; set; }
         public bool HasReferenceFrame { get; set; } = true;
         public bool CenterOfSolarSystem { get; set; } = false;
@@ -26,5 +23,8 @@ namespace NewHorizons.External
 
         // Old, see SingularityModule instead
         public float BlackHoleSize { get; set; }
+        public float LavaSize { get; set; }
+        public float WaterSize { get; set; }
+        public MColor32 WaterTint { get; set; }
     }
 }
