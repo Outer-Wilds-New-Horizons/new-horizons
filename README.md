@@ -32,6 +32,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
+- [Helpful resources](#helpful-resources)
+- [Contact](#contact)
 - [Credits](#credits)
 
 <!-- /TOC -->
@@ -467,6 +469,16 @@ INewHorizons NewHorizonsAPI = ModHelper.Interaction.GetModApi<INewHorizons>("xen
 ```
 
 You can then use the API's `LoadConfigs()` method to load from a "planets" folder, or use the `Create()` and `GetPlanet` methods to create planets and do whatever with them. Just make sure you create planets in the `Start()` method or at least before the SolarSystem scene loads, or they will not be created.
+
+## Helpful resources
+
+The texturemap/heightmap feature was inspired by the KSP mod Kopernicus. A lot of the same techniques that apply to planet creation there apply to New Horizons. You can check out a planetary texturing guide repository [here](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/).
+
+[Photopea](https://www.photopea.com/) is a free browser-based photo editor which has useful features like rectangular-to-polar coordinate transformation, useful for fixing abnormalities at the poles of your planets. 
+
+## Contact
+
+Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you have any questions or just want to chat about modding! Theres a New Horizons category there dedicated to discussion of this mod.
 
 ## Credits
 Authors:
