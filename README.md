@@ -67,7 +67,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement all planet features:
 	- Tornados + floating islands
 	- Sand funnels (water? lava? star?)
-	- Variable surface height (sand/water/lava/star)
+	- Variable surface height (sand/water/lava/star) (done)
 	- Let any star go supernova
 	- Geysers
 	- Meteors
