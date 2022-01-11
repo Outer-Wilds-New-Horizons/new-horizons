@@ -157,10 +157,9 @@ Modules look like this:
 
 In this example the `Star` module has a `size` field and a `tint` field. Since the colour is a complex object it needs another set of { and } around it, and then it has its own fields inside it : `r`, `g`, `b`, and `a`. Don't forget to put commas after each field.
 
-Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also colours and positions.
+Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also the following types of values:
 
-A colour is defined like this (with integers from 0 to 255): 
-
+#### Colour:
 ```
 {
     "r" : 200,
@@ -170,7 +169,7 @@ A colour is defined like this (with integers from 0 to 255):
 }
 ```   
 
-A position is defined like this:
+#### Position:
 ```
 {
     "x" : 182.4,
@@ -179,7 +178,7 @@ A position is defined like this:
 }
 ```
 
-A scale curve is defined like this:
+#### Scale curve
 ```
 [
 	{"time":0, "value":1},
