@@ -186,6 +186,11 @@
           "type": "boolean",
           "default": false
         },
+        "hasAtmosphere": {
+          "type": "boolean",
+          "default": false,
+          "description" : "Whether we use an atmospheric shader on the planet."
+        },
         "atmosphereTint": {
           "type": "object",
           "description": "Colour of atmospheric shader on the planet.",
