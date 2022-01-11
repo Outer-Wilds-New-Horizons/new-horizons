@@ -29,6 +29,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Star](#star)
   - [Signal](#signal)
   - [Singularity](#singularity)
+  - [Water](#water)
+  - [Lava](#lava)
+  - [Sand](#sand)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
@@ -64,7 +67,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement all planet features:
 	- Tornados + floating islands
 	- Sand funnels (water? lava? star?)
-	- Variable surface height (sand/water/lava/star)
+	- Variable surface height (sand/water/lava/star) (done)
 	- Let any star go supernova
 	- Geysers
 	- Meteors
@@ -176,6 +179,16 @@ A position is defined like this:
 }
 ```
 
+A scale curve is defined like this:
+```
+[
+	{"time":0, "value":1},
+	{"time":5, "value":0},
+	{"time":12, "value":1}
+]
+```
+Specifically it is a list of `time` and `value` pairs. The time is given in minutes and the value goes from 0 to 1. What the example means if that when the loop starts the object will be at its max size, after 5 minutes it will shrink to nothing, then 7 minutes later (so 12 minutes total in the loop) it will have grown back to full size. You can put as many values in the list as you want. 
+
 Now I'll go through the different modules and what they can do. Most fields are optional and will have some default value that will work fine if you don't include them.
 
 ### Base
@@ -185,11 +198,7 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "surfaceGravity" : (decimal number) How strong the acceleration due to gravity is at the surface. For example, Timber Hearth has a value of 12.
 - "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
-- "waterSize" : (decimal number) If you want the planet to have water on it, set a value for this. 
-- "waterTint" : (colour) 
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
-- "blackHoleSize" : (decimal number) If you want there to be a black hole in the center of the planet, set a value for this. Can't be larger than 100 for now.
-- "lavaSize" : (decimal number) If you want the planet to have lava on it, set a value for this. 
 - "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
 - "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
 - "centerOfSolarSystem" : (true/false) If the body is the new center of the solar system be sure to set this to true.
@@ -375,6 +384,7 @@ public class CreateAssetBundles
 - "longitudeOfAscendingNode" : (decimal number)
 - "texture" : (string) The file path to the image used for the rings. You can either give it a full image of the rings or a 1 pixel wide strip.
 - "rotationSpeed" : (decimal number)
+- "curve" : (scale curve) Allows for changing the ring's size over time.
 
 ### Spawn
 - "playerSpawnPoint" : (position) If you want the player to spawn on the new body, set a value for this. Press "P" in game to have the game log the position you're looking at to find a good value for this.
@@ -429,6 +439,20 @@ This allows you to make black holes and white holes, and to pair them.
 - "pairedSingularity" : (string) The singularity you want this one to pair to. Must be the opposite type. If you don't set this, the singularity will not transport you, and if it is a black hole it will kill you on entry.
 - "type" : (string) Put either "BlackHole" or "WhiteHole".
 - "targetStarSystem" : (string) You can have a black hole bring you to a different star system scene using this. 
+
+### Water
+- "size" : (decimal number) heighest radius of the water volume
+- "tint" : (colour)
+- "curve" : (scale curve)
+
+### Lava
+- "size" : (decimal number) height radius of the lava volume
+- "curve" : (scale curve)
+
+### Sand
+- "size" : (decimal number) heighest radius of the sand volume
+- "tint" : (colour)
+- "curve" : (scale curve)
 
 ### How to destroy existing planets
 
