@@ -178,7 +178,7 @@ Most fields are either true/false, a decimal number, and integer number, or a st
 }
 ```
 
-#### Scale curve
+#### Scale curve:
 ```
 [
 	{"time":0, "value":1},
