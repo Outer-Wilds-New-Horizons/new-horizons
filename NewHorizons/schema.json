@@ -346,6 +346,22 @@
         "rotationSpeed": {
           "type": "number",
           "default": 0
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
         }
       }
     },
