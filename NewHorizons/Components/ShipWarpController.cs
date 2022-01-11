@@ -125,8 +125,6 @@ namespace NewHorizons.Components
                     Player.getResources()._currentHealth = 100f;
                     if(!PlayerState.AtFlightConsole()) Teleportation.teleportPlayerToShip();
                 }
-
-                Logger.Log($"{PlayerState.IsInsideShip()}, {PlayerState.IsWearingSuit()}, {base.GetComponentInChildren<ShipCockpitController>()?._playerAttachPoint?.GetAttachedOWRigidbody() != null}, {!Locator.GetPlayerController()._isMovementLocked}, {!Locator.GetPlayerController()._isTurningLocked }, {_eyesOpen}");
             }
 
             // Idk whats making this work but now it works and idc
