@@ -11,7 +11,8 @@ namespace NewHorizons.External
     {
         public ScatterInfo[] Scatter;
         public DetailInfo[] Details;
-        public MVector3[] Rafts;
+        public RaftInfo[] Rafts;
+        public GeyserInfo[] Geysers;
 
         public class ScatterInfo
         {
@@ -33,6 +34,11 @@ namespace NewHorizons.External
             public MVector3 rotation;
             public float scale { get; set; } = 1f;
             public bool alignToNormal;
+        }
+
+        public class RaftInfo
+        {
+            public MVector3 position;
         }
 
         public class GeyserInfo

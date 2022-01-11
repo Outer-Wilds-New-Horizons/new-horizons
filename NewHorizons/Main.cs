@@ -221,6 +221,7 @@ namespace NewHorizons
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
+            body1.transform.localRotation = Quaternion.Euler(15, 0, 0);
             if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;

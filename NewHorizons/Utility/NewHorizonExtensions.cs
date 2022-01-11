@@ -51,6 +51,16 @@ namespace NewHorizons.Utility
             return strBuilder.ToString();
         }
 
+        public static void AlignRadially(this Transform transform)
+        {
+            var up = transform.localPosition.normalized;
+            var front = Vector3.Cross(up, Vector3.left);
+            if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
+            if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
+
+            transform.LookAt(transform.position + front, up);
+        }
+
         public static void CopyPropertiesFrom(this object destination, object source)
         {
             // If any this null throw an exception
