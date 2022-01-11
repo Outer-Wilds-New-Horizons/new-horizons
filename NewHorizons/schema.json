@@ -228,7 +228,7 @@
           "description": "The average distance between the planet and its primary body."
         },
         "inclination": {
-          "type": "integer",
+          "type": "number",
           "default": 0,
           "description": "The angle (in degrees) between the body's orbit and the plane of the star system"
         },
@@ -943,6 +943,70 @@
           "type": "number",
           "default": 0
         },
+        "tint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "Funnel": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "The body that the funnel is pouring onto"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Sand",
+            "Water",
+            "Lava",
+            "Star"
+          ],
+          "default": "Sand"
+        }
         "tint": {
           "type": "object",
           "properties": {

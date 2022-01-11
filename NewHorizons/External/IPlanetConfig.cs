@@ -25,5 +25,6 @@ namespace NewHorizons.External
         LavaModule Lava { get; }
         SandModule Sand { get; }
         WaterModule Water { get; }
+        FunnelModule Funnel { get; }
     }
 }
