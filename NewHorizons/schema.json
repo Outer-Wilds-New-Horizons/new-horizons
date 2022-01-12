@@ -571,6 +571,22 @@
         "hasAtmosphere": {
           "type": "boolean",
           "default": true
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
         }
       }
     },
