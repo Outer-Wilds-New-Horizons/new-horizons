@@ -157,10 +157,9 @@ Modules look like this:
 
 In this example the `Star` module has a `size` field and a `tint` field. Since the colour is a complex object it needs another set of { and } around it, and then it has its own fields inside it : `r`, `g`, `b`, and `a`. Don't forget to put commas after each field.
 
-Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also colours and positions.
+Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also the following types of values:
 
-A colour is defined like this (with integers from 0 to 255): 
-
+#### Colour:
 ```
 {
     "r" : 200,
@@ -170,7 +169,7 @@ A colour is defined like this (with integers from 0 to 255):
 }
 ```   
 
-A position is defined like this:
+#### Position:
 ```
 {
     "x" : 182.4,
@@ -179,7 +178,7 @@ A position is defined like this:
 }
 ```
 
-A scale curve is defined like this:
+#### Scale curve:
 ```
 [
 	{"time":0, "value":1},
@@ -397,6 +396,7 @@ Use this if you are creating a star.
 - "tint" : (colour) 
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
 - "solarLuminosity" : (decimal number) Relative luminosity of this star compared to the sun.
+- "curve" : (scale curve)
 
 ### Signal
 - "signals" : (list of signal info objects)
@@ -441,7 +441,7 @@ This allows you to make black holes and white holes, and to pair them.
 - "targetStarSystem" : (string) You can have a black hole bring you to a different star system scene using this. 
 
 ### Water
-- "size" : (decimal number) heighest radius of the water volume
+- "size" : (decimal number) highest radius of the water volume
 - "tint" : (colour)
 - "curve" : (scale curve)
 
@@ -450,7 +450,7 @@ This allows you to make black holes and white holes, and to pair them.
 - "curve" : (scale curve)
 
 ### Sand
-- "size" : (decimal number) heighest radius of the sand volume
+- "size" : (decimal number) highest radius of the sand volume
 - "tint" : (colour)
 - "curve" : (scale curve)
 
