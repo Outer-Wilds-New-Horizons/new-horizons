@@ -80,18 +80,26 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
+            foreach(var component in prop.GetComponents<SectoredMonoBehaviour>())
+            {
+                component.SetSector(sector);
+            }
+            foreach (var component in prop.GetComponentsInChildren<SectoredMonoBehaviour>())
+            {
+                component.SetSector(sector);
+            }
+
             foreach (var component in prop.GetComponentsInChildren<Component>())
             {
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if(component is GhostEffects) (component as GhostEffects).enabled = false;
-                
 
                 var enabledField = component.GetType().GetField("enabled");
                 if(enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
             }
 
-            prop.transform.parent = go.transform;
+            //prop.transform.parent = go.transform;
             prop.transform.localPosition = position == null ? Vector3.zero : (Vector3)position;
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);

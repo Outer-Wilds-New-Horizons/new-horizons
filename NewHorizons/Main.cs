@@ -446,7 +446,7 @@ namespace NewHorizons
             if (body.Config.Base.HasAmbientLight)
                 AmbientLightBuilder.Make(go, sphereOfInfluence);
 
-            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence);
+            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao.SetValue("_rootSector", sector);
 
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
