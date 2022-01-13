@@ -183,6 +183,7 @@ namespace NewHorizons.Builder.Body
             meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
             meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);
             meshRenderer.sharedMaterial.SetFloat("_MaxDistortRadius", size * 2.8f);
+            meshRenderer.sharedMaterial.SetFloat("_MassScale", -1);
             meshRenderer.sharedMaterial.SetColor("_Color", new Color(1.88f, 1.88f, 1.88f, 1f));
 
             var ambientLight = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/AmbientLight_WH"));
