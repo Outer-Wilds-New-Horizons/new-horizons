@@ -3,7 +3,8 @@
   "author": "xen",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "owmlVersion": "2.1.0",
-  "dependencies": [ "PacificEngine.OW_CommonResources" ]
+  "dependencies": [ "PacificEngine.OW_CommonResources" ],
+  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.OuterWildsMMO", "Vesper.AutoResume" ]
 }
