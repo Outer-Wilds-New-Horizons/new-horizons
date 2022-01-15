@@ -202,6 +202,19 @@ namespace NewHorizons
             Logger.Log($"Is the player warping in? {IsWarping}");
             if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
             IsWarping = false;
+
+            // Fix some camera stuff
+            /*
+            foreach(var owc in GameObject.FindObjectsOfType<OWCamera>())
+            {
+                var far = Main.FurthestOrbit * 10f;
+                if (owc.farClipPlane < far)
+                {
+                    owc.farClipPlane = far;
+                    owc.mainCamera.farClipPlane = far;
+                }
+            }
+            */
         }
 
         #region TitleScreen
@@ -515,7 +528,7 @@ namespace NewHorizons
                 LavaBuilder.Make(go, sector, rb, lava);
             }
 
-            if (body.Config.Lava != null)
+            if (body.Config.Lava != null)                                                                                     
                 LavaBuilder.Make(go, sector, rb, body.Config.Lava);
 
             // Backwards compatability

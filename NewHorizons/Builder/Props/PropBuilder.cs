@@ -100,6 +100,7 @@ namespace NewHorizons.Builder.Props
                 component.SetSector(sector);
             }
 
+            
             foreach (var component in prop.GetComponentsInChildren<Component>())
             {
                 // TODO: Make this work or smthng
@@ -109,6 +110,7 @@ namespace NewHorizons.Builder.Props
                 var enabledField = component.GetType().GetField("enabled");
                 if(enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
             }
+            
 
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
 

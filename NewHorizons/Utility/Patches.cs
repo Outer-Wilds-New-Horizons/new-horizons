@@ -80,16 +80,21 @@ namespace NewHorizons.Utility
 
         public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
         {
+            Logger.Log($"Other far? {Main.FurthestOrbit}");
             ____maxPanDistance = Main.FurthestOrbit * 1.5f;
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
             ____zoomSpeed *= 4f;
-            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 3f;
+            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
         }
 
         public static void OnOWCameraAwake(OWCamera __instance)
         {
-            __instance.farClipPlane *= 4f;
+            /*
+            var far = Main.FurthestOrbit * 10f;
+            __instance.farClipPlane = far;
+            __instance.mainCamera.farClipPlane = far;
+            */
         }
 
         public static bool OnSunLightParamUpdaterLateUpdate(SunLightParamUpdater __instance)
