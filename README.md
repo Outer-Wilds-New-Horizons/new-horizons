@@ -5,9 +5,7 @@
 
 A custom world creation tool for Outer Wilds.
 
-You can view the addons creators have made (or create one yourself) [here](https://outerwildsmods.com/custom-worlds)!
-
-Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
+You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
 Check the ship's log for how to use your warp drive to travel between star systems!
 
@@ -83,7 +81,15 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
-Your config file will look something like this:
+Planets are created using a JSON file format structure, and placed in a folder called `planets` (or in any sub-directory of it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within the `xen.NewHorizons` directory).
+
+To locate this directory, click the "..." symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "show in explorer" in the pop-up.
+
+![Where to click](https://user-images.githubusercontent.com/22628069/149637969-827fccfe-b746-4515-a040-9369a9f37268.png)
+
+![Create a planets folder in the mod directory](https://user-images.githubusercontent.com/22628069/149638007-26b872ab-f02e-455f-a7fd-99d0d2a96de8.png)
+
+Now that you have created your planets folder, this is where you will put your planet config files. A config file will look something like this:
 ```
 {
 	"name" : "Wetrock",
@@ -134,6 +140,8 @@ Your config file will look something like this:
 The first field you should have in any config file is the `name`. This should be unique in the solar system. If it isn't, the mod will instead try to modify the planet that already has that name.
 
 After `name` is `starSystem`. You can use this to place the planet in a different system accessible using a black-hole (see the [Singularity](#singularity) module). To ensure compatibility with other mods this name should be unique. After setting a value for this, the changes in the config will only affect that body in that star system. By default it is "SolarSystem", which is the scene from the stock game.
+
+Including the "$schema" line is optional, but will allow your text editor to highlight errors and auto-suggest words in your config. I recommend using VSCode as a text editor, but anything that supports Json files will work. Something as basic as notepad will work but will not highlight any of your errors.
 
 The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
