@@ -41,6 +41,7 @@ namespace NewHorizons
 
         private bool _isChangingStarSystem = false;
         public bool IsWarping { get; private set; } = false;
+        public bool WearingSuit { get; private set; } = false;
 
         private ShipWarpController _shipWarpController;
 
@@ -200,7 +201,7 @@ namespace NewHorizons
 
             _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
             Logger.Log($"Is the player warping in? {IsWarping}");
-            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
+            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
             IsWarping = false;
 
             // Fix some camera stuff
@@ -589,6 +590,7 @@ namespace NewHorizons
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             IsWarping = warp;
+            WearingSuit = PlayerState.IsWearingSuit();
 
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
