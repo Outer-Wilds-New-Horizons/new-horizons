@@ -172,11 +172,12 @@ namespace NewHorizons.Components
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
             var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
-            Player.getResources()._oxygenDetector.AddVolume(o2Volume);
+            //Player.getResources()._oxygenDetector.AddVolume(o2Volume);
             Player.getResources()._cameraFluidDetector.AddVolume(atmoVolume);
-            Player.getResources()._fluidDetector.AddVolume(atmoVolume);
+            //Player.getResources()._fluidDetector.AddVolume(atmoVolume);
 
             GlobalMessenger.FireEvent("EnterShip");
+            PlayerState.OnEnterShip();
         }
     }
 }
