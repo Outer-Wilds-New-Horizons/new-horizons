@@ -70,6 +70,12 @@ namespace NewHorizons.Builder.Body
             fluidVolume.SetValue("_radius", waterSize);
             fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
 
+            var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
+            fogGO.name = "OceanFog";
+            fogGO.transform.localPosition = Vector3.zero;
+            fogGO.transform.localScale = Vector3.one;
+
+            /*
             // Because assetbundles were a bitch...
             GameObject fog1 = new GameObject();
             fog1.transform.parent = waterGO.transform;
@@ -91,6 +97,7 @@ namespace NewHorizons.Builder.Body
             fog3.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             fog3.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
+            */
 
             if (module.Curve != null)
             {
