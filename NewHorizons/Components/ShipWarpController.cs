@@ -167,14 +167,14 @@ namespace NewHorizons.Components
             Player.getResources()._currentHealth = 100f;
             Locator.GetDeathManager()._invincible = false;
 
-            // For some reason warping in with a suit means you suffocate while in the ship
+            // For some reason warping into the ship makes you suffocate while in the ship
             if(_wearingSuit) Player.getResources().OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
             var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
-            //Player.getResources()._oxygenDetector.AddVolume(o2Volume);
             Player.getResources()._cameraFluidDetector.AddVolume(atmoVolume);
-            //Player.getResources()._fluidDetector.AddVolume(atmoVolume);
+            Player.getResources()._cameraFluidDetector.OnVolumeAdded(atmoVolume);
+            Player.getResources()._cameraFluidDetector.OnVolumeActivated(atmoVolume);
 
             GlobalMessenger.FireEvent("EnterShip");
             PlayerState.OnEnterShip();
