@@ -237,7 +237,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "hasAtmosphere" : (true/false) If the planet should have an atmosphere shader like some of the other planets. Purely cosmetic. Will not get rid of any clouds or fog you've put.
 
 ### HeightMap
-Allows you to generate more interesting terrain than the sphere given by groundSize in the Base module.
+Allows you to generate more interesting terrain than the sphere given by groundSize in the Base module. Textures should be at least 2048 x 1024 resolution.
 
 - "heightMap" : (string) The file path to a texture that will be used as a heightmap. Image should be greyscale. White is for high terrain and black for low.
 - "textureMap" : (string) The file path to a texture that will be applied to the planet.
