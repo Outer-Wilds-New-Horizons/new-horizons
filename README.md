@@ -329,6 +329,13 @@ The positions of the binaries will be based off of their masses (as determined b
 ### Props
 Lets you place items on the surface of the planet.
 
+For these there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
+- Use "Object Explorer" to search
+- Do not use the search functionality on Scene Explorer, it is really really slow. Use the "Object Search" tab instead.
+- Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
+
+The different things you can specify in the props section are:
+
 - "scatter" : (list) I'll just give an example. 
 
 ```
@@ -336,8 +343,6 @@ Lets you place items on the surface of the planet.
     {"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var", "count" : 12}
 ]
 ```
-
-The path is in the hierarchy of the solar system. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck.
 
 - "details" : (list of detail info objects)
 
@@ -514,11 +519,12 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 
 ## Credits
 Authors:
-- xen (from New Horizons v0.1.0 onwards)
-- Mister_Nebula (created original titled Marshmallow)
+- xen (New Horizons v0.1.0 onwards)
+- Mister_Nebula (Marshmallow v0.1 to v1.1.0)
 
-New Horizons contributors:
+New Horizons was made with help from:
 - salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
+- Raicuparta (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
 
 Marshmallow was made with help from:
 - TAImatem
