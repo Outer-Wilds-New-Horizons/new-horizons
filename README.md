@@ -5,9 +5,7 @@
 
 A custom world creation tool for Outer Wilds.
 
-You can view the addons creators have made (or create one yourself) [here](https://outerwildsmods.com/custom-worlds)!
-
-Planets are created using a JSON file format structure, and placed in the `planets` folder (or in any sub-directory of it).
+You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
 Check the ship's log for how to use your warp drive to travel between star systems!
 
@@ -83,7 +81,15 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
-Your config file will look something like this:
+Planets are created using a JSON file format structure, and placed in a folder called `planets` (or in any sub-directory of it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within the `xen.NewHorizons` directory).
+
+To locate this directory, click the "..." symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "show in explorer" in the pop-up.
+
+![Where to click](https://user-images.githubusercontent.com/22628069/149637969-827fccfe-b746-4515-a040-9369a9f37268.png)
+
+![Create a planets folder in the mod directory](https://user-images.githubusercontent.com/22628069/149638007-26b872ab-f02e-455f-a7fd-99d0d2a96de8.png)
+
+Now that you have created your planets folder, this is where you will put your planet config files. A config file will look something like this:
 ```
 {
 	"name" : "Wetrock",
@@ -134,6 +140,8 @@ Your config file will look something like this:
 The first field you should have in any config file is the `name`. This should be unique in the solar system. If it isn't, the mod will instead try to modify the planet that already has that name.
 
 After `name` is `starSystem`. You can use this to place the planet in a different system accessible using a black-hole (see the [Singularity](#singularity) module). To ensure compatibility with other mods this name should be unique. After setting a value for this, the changes in the config will only affect that body in that star system. By default it is "SolarSystem", which is the scene from the stock game.
+
+Including the "$schema" line is optional, but will allow your text editor to highlight errors and auto-suggest words in your config. I recommend using VSCode as a text editor, but anything that supports Json files will work. Something as basic as notepad will work but will not highlight any of your errors.
 
 The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
@@ -237,7 +245,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "hasAtmosphere" : (true/false) If the planet should have an atmosphere shader like some of the other planets. Purely cosmetic. Will not get rid of any clouds or fog you've put.
 
 ### HeightMap
-Allows you to generate more interesting terrain than the sphere given by groundSize in the Base module.
+Allows you to generate more interesting terrain than the sphere given by groundSize in the Base module. Textures should be at least 2048 x 1024 resolution.
 
 - "heightMap" : (string) The file path to a texture that will be used as a heightmap. Image should be greyscale. White is for high terrain and black for low.
 - "textureMap" : (string) The file path to a texture that will be applied to the planet.
@@ -321,6 +329,13 @@ The positions of the binaries will be based off of their masses (as determined b
 ### Props
 Lets you place items on the surface of the planet.
 
+For these there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
+- Use "Object Explorer" to search
+- Do not use the search functionality on Scene Explorer, it is really really slow. Use the "Object Search" tab instead.
+- Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
+
+The different things you can specify in the props section are:
+
 - "scatter" : (list) I'll just give an example. 
 
 ```
@@ -328,8 +343,6 @@ Lets you place items on the surface of the planet.
     {"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var", "count" : 12}
 ]
 ```
-
-The path is in the hierarchy of the solar system. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck.
 
 - "details" : (list of detail info objects)
 
@@ -506,11 +519,12 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 
 ## Credits
 Authors:
-- xen (from New Horizons v0.1.0 onwards)
-- Mister_Nebula (created original titled Marshmallow)
+- xen (New Horizons v0.1.0 onwards)
+- Mister_Nebula (Marshmallow v0.1 to v1.1.0)
 
-New Horizons contributors:
+New Horizons was made with help from:
 - salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
+- Raicuparta (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
 
 Marshmallow was made with help from:
 - TAImatem
