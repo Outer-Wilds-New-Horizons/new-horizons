@@ -58,7 +58,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
 - Procedurally terrain generation (started)
-- Allow copying specific meshes from the stock game for details/scattering with collisions
+- Allow copying specific meshes from the stock game for details/scattering with collisions (would require a way to generate multiple convex mesh colliders out of a concave mesh)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
