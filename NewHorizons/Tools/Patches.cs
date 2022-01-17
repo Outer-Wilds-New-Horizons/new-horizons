@@ -9,8 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Tools
 {
     public class Patches
     {
@@ -55,7 +56,6 @@ namespace NewHorizons.Utility
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
         }
 
@@ -84,12 +84,7 @@ namespace NewHorizons.Utility
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
             ____zoomSpeed *= 4f;
-            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 3f;
-        }
-
-        public static void OnOWCameraAwake(OWCamera __instance)
-        {
-            __instance.farClipPlane *= 4f;
+            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
         }
 
         public static bool OnSunLightParamUpdaterLateUpdate(SunLightParamUpdater __instance)

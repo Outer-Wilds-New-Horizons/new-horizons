@@ -49,6 +49,14 @@ namespace NewHorizons.Builder.General
             astroObject.SetValue("_customName", config.Name);
             astroObject.SetValue("_primaryBody", primaryBody);
 
+            // Expand gravitational sphere of influence of the primary to encompass this body if needed
+            if(primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
+            {
+                var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
+                if (primarySphereOfInfluence.radius < config.Orbit.SemiMajorAxis)
+                    primarySphereOfInfluence.radius = config.Orbit.SemiMajorAxis * 1.5f;
+            }
+
             if (config.Orbit.IsTidallyLocked)
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();

@@ -41,6 +41,7 @@ namespace NewHorizons
 
         private bool _isChangingStarSystem = false;
         public bool IsWarping { get; private set; } = false;
+        public bool WearingSuit { get; private set; } = false;
 
         private ShipWarpController _shipWarpController;
 
@@ -57,7 +58,8 @@ namespace NewHorizons
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
 
-            Utility.Patches.Apply();
+            Tools.Patches.Apply();
+            Tools.OWCameraFix.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
@@ -95,6 +97,10 @@ namespace NewHorizons
                 _currentStarSystem = "SolarSystem";
                 return;
             }
+
+            FurthestOrbit = 30000;
+
+            Tools.OWCameraFix.Apply();
 
             HeavenlyBodyBuilder.Reset();
 
@@ -200,7 +206,7 @@ namespace NewHorizons
 
             _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
             Logger.Log($"Is the player warping in? {IsWarping}");
-            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(), 1);
+            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
             IsWarping = false;
         }
 
@@ -447,7 +453,7 @@ namespace NewHorizons
             if (body.Config.Base.HasAmbientLight)
                 AmbientLightBuilder.Make(go, sphereOfInfluence);
 
-            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence);
+            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao.SetValue("_rootSector", sector);
 
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
@@ -519,7 +525,7 @@ namespace NewHorizons
                 LavaBuilder.Make(go, sector, rb, lava);
             }
 
-            if (body.Config.Lava != null)
+            if (body.Config.Lava != null)                                                                                     
                 LavaBuilder.Make(go, sector, rb, body.Config.Lava);
 
             // Backwards compatability
@@ -580,6 +586,7 @@ namespace NewHorizons
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             IsWarping = warp;
+            WearingSuit = PlayerState.IsWearingSuit();
 
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);

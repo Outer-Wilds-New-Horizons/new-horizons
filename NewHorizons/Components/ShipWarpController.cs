@@ -17,6 +17,7 @@ namespace NewHorizons.Components
         private OWAudioSource _oneShotSource;
 
         private bool _isWarpingIn;
+        private bool _wearingSuit;
         private bool _waitingToBeSeated;
         private bool _eyesOpen = false;
 
@@ -89,7 +90,7 @@ namespace NewHorizons.Components
             whiteHoleRenderer.SetActive(true);
         }
 
-        public void WarpIn()
+        public void WarpIn(bool wearingSuit)
         {
             Logger.Log("Starting warp-in");
             // Trying really hard to stop the player from dying while warping in
@@ -98,6 +99,7 @@ namespace NewHorizons.Components
             Locator.GetDeathManager()._invincible = true;
 
             _isWarpingIn = true;
+            _wearingSuit = wearingSuit;
             _whitehole.Create();
         }
 
@@ -148,7 +150,7 @@ namespace NewHorizons.Components
             if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) Teleportation.teleportPlayerToShip();
             _whitehole.Create();
             _waitingToBeSeated = true;
-            if (!Locator.GetPlayerController()._isWearingSuit)
+            if (_wearingSuit && !Locator.GetPlayerController()._isWearingSuit)
             {
                 SpawnPointBuilder.SuitUp();
             }
@@ -164,6 +166,18 @@ namespace NewHorizons.Components
             Locator.GetDeathManager()._impactDeathSpeed = _impactDeathSpeed;
             Player.getResources()._currentHealth = 100f;
             Locator.GetDeathManager()._invincible = false;
+
+            // For some reason warping into the ship makes you suffocate while in the ship
+            if(_wearingSuit) Player.getResources().OnSuitUp();
+            var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
+            var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
+
+            Player.getResources()._cameraFluidDetector.AddVolume(atmoVolume);
+            Player.getResources()._cameraFluidDetector.OnVolumeAdded(atmoVolume);
+            Player.getResources()._cameraFluidDetector.OnVolumeActivated(atmoVolume);
+
+            GlobalMessenger.FireEvent("EnterShip");
+            PlayerState.OnEnterShip();
         }
     }
 }

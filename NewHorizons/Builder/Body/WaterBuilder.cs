@@ -70,27 +70,10 @@ namespace NewHorizons.Builder.Body
             fluidVolume.SetValue("_radius", waterSize);
             fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
 
-            // Because assetbundles were a bitch...
-            GameObject fog1 = new GameObject();
-            fog1.transform.parent = waterGO.transform;
-            fog1.transform.localScale = new Vector3(1, 1, 1);
-            fog1.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
-            fog1.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
-            fog1.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
-
-            GameObject fog2 = new GameObject();
-            fog2.transform.parent = waterGO.transform;
-            fog2.transform.localScale = new Vector3(1.001f, 1.001f, 1.001f);
-            fog2.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
-            fog2.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
-            fog2.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
-
-            GameObject fog3 = new GameObject();
-            fog3.transform.parent = fog2.transform;
-            fog3.transform.localScale = new Vector3(1.001f, 1.001f, 1.001f);
-            fog3.AddComponent<MeshFilter>().mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
-            fog3.AddComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
-            fog3.GetComponent<MeshRenderer>().material.color = new Color32(0, 75, 50, 5);
+            var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
+            fogGO.name = "OceanFog";
+            fogGO.transform.localPosition = Vector3.zero;
+            fogGO.transform.localScale = Vector3.one;
 
             if (module.Curve != null)
             {

@@ -186,6 +186,11 @@
           "type": "boolean",
           "default": false
         },
+        "hasAtmosphere": {
+          "type": "boolean",
+          "default": false,
+          "description" : "Whether we use an atmospheric shader on the planet."
+        },
         "atmosphereTint": {
           "type": "object",
           "description": "Colour of atmospheric shader on the planet.",
@@ -346,6 +351,22 @@
         "rotationSpeed": {
           "type": "number",
           "default": 0
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
         }
       }
     },
@@ -550,6 +571,22 @@
         "hasAtmosphere": {
           "type": "boolean",
           "default": true
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
+                "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "integer",
+                "default": 0
+              }
+            }
+          }
         }
       }
     },
