@@ -58,7 +58,8 @@ namespace NewHorizons
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
 
-            Utility.Patches.Apply();
+            Tools.Patches.Apply();
+            Tools.OWCameraFix.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
@@ -96,6 +97,10 @@ namespace NewHorizons
                 _currentStarSystem = "SolarSystem";
                 return;
             }
+
+            FurthestOrbit = 30000;
+
+            Tools.OWCameraFix.Apply();
 
             HeavenlyBodyBuilder.Reset();
 
@@ -203,19 +208,6 @@ namespace NewHorizons
             Logger.Log($"Is the player warping in? {IsWarping}");
             if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
             IsWarping = false;
-
-            // Fix some camera stuff
-            /*
-            foreach(var owc in GameObject.FindObjectsOfType<OWCamera>())
-            {
-                var far = Main.FurthestOrbit * 10f;
-                if (owc.farClipPlane < far)
-                {
-                    owc.farClipPlane = far;
-                    owc.mainCamera.farClipPlane = far;
-                }
-            }
-            */
         }
 
         #region TitleScreen

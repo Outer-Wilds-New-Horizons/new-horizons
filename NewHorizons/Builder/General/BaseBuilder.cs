@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.General
             astroObject.SetValue("_primaryBody", primaryBody);
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
-            if(primaryBody != null && !config.Orbit.IsStatic)
+            if(primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
             {
                 var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
                 if (primarySphereOfInfluence.radius < config.Orbit.SemiMajorAxis)

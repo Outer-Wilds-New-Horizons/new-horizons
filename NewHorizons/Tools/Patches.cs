@@ -9,8 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Tools
 {
     public class Patches
     {
@@ -55,7 +56,6 @@ namespace NewHorizons.Utility
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(Patches), nameof(Patches.OnOWCameraAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
         }
 
@@ -80,21 +80,11 @@ namespace NewHorizons.Utility
 
         public static void OnMapControllerAwake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
         {
-            Logger.Log($"Other far? {Main.FurthestOrbit}");
             ____maxPanDistance = Main.FurthestOrbit * 1.5f;
             ____maxZoomDistance *= 6f;
             ____minPitchAngle = -90f;
             ____zoomSpeed *= 4f;
             __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
-        }
-
-        public static void OnOWCameraAwake(OWCamera __instance)
-        {
-            /*
-            var far = Main.FurthestOrbit * 10f;
-            __instance.farClipPlane = far;
-            __instance.mainCamera.farClipPlane = far;
-            */
         }
 
         public static bool OnSunLightParamUpdaterLateUpdate(SunLightParamUpdater __instance)
