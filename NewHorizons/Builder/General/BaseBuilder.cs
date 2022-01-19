@@ -33,6 +33,9 @@ namespace NewHorizons.Builder.General
             owRigidBody.SetValue("_maintainOriginalCenterOfMass", true);
             owRigidBody.SetValue("_rigidbody", rigidBody);
             owRigidBody.SetValue("_kinematicRigidbody", kinematicRigidBody);
+            owRigidBody._origParent = GameObject.Find("SolarSystemRoot").transform;
+            owRigidBody.EnableKinematicSimulation();
+            owRigidBody.MakeKinematic();
 
             ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
 

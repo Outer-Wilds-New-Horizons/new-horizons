@@ -497,7 +497,7 @@ namespace NewHorizons
             if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 
             if (body.Config.Funnel != null)
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), body.Config.Funnel);
+                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), initialMotion, body.Config.Funnel);
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 

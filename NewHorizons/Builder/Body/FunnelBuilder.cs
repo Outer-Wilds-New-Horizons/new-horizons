@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -19,7 +20,7 @@ namespace NewHorizons.Builder.Body
             STAR
         }
 
-        public static void Make(GameObject go, ConstantForceDetector detector, FunnelModule module)
+        public static void Make(GameObject go, ConstantForceDetector detector, InitialMotion initialMotion, FunnelModule module)
         {
             var funnelType = FunnelType.SAND;
             if (module.Type.ToUpper().Equals("WATER")) funnelType = FunnelType.WATER;
@@ -28,11 +29,16 @@ namespace NewHorizons.Builder.Body
 
             var funnelGO = new GameObject($"{go.name.Replace("_Body", "")}Funnel_Body");
             funnelGO.SetActive(false);
-            
+
             var owrb = funnelGO.AddComponent<OWRigidbody>();
             var alignment = funnelGO.AddComponent<AlignWithTargetBody>();
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => alignment.SetTargetBody(AstroObjectLocator.GetAstroObject(module.Target)?.GetAttachedOWRigidbody()));
-            funnelGO.AddComponent<InitialMotion>();
+            
+            var im = funnelGO.AddComponent<InitialMotion>();
+            var velocity = initialMotion.GetInitVelocity();
+            im._initLinearDirection = initialMotion._initLinearDirection;
+            im._initLinearSpeed = initialMotion._initLinearSpeed;
+
             funnelGO.AddComponent<SandFunnelController>();
             funnelGO.AddComponent<CenterOfTheUniverseOffsetApplier>();
             funnelGO.AddComponent<KinematicRigidbody>();
@@ -40,12 +46,13 @@ namespace NewHorizons.Builder.Body
             var detectorGO = new GameObject("Detector_Funnel");
             detectorGO.transform.parent = funnelGO.transform;
             var funnelDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            funnelDetector._inheritDetector = detector; 
+            funnelDetector._inheritDetector = detector;
+            funnelDetector._detectableFields = new ForceVolume[0];
 
             detectorGO.AddComponent<ForceApplier>();
 
             var scaleRoot = new GameObject("ScaleRoot");
-            scaleRoot.transform.parent = go.transform;
+            scaleRoot.transform.parent = funnelGO.transform;
 
             var proxyGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
@@ -55,7 +62,7 @@ namespace NewHorizons.Builder.Body
 
             var volumesGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"), scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
-            var sfv = volumesGO.GetComponent<SimpleFluidVolume>();
+            var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
             switch(funnelType)
             {
                 case FunnelType.SAND:
@@ -71,7 +78,9 @@ namespace NewHorizons.Builder.Body
                     sfv._fluidType = FluidVolume.Type.PLASMA;
                     break;
             }
-            
+
+            funnelGO.transform.position = go.transform.position;
+            funnelGO.SetActive(true);
         }
     }
 }
