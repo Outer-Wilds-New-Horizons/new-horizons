@@ -112,8 +112,9 @@ namespace NewHorizons.Builder.Props
                 {
                     if(component is MeshFilter && component.gameObject.GetComponent<MeshCollider>() == null)
                     {
-                        var mc = component.gameObject.AddComponent<MeshCollider>();
-                        mc.sharedMesh = (component as MeshFilter).mesh;
+                        var mesh = (component as MeshFilter).mesh;
+                        if (mesh.isReadable) component.gameObject.AddComponent<MeshCollider>();
+                        else Logger.LogError($"Couldn't change mesh for {component.gameObject.name} because it is not readable");
                     }
                 }
             }
