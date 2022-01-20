@@ -63,7 +63,7 @@ namespace NewHorizons.Builder.Body
 
             if(starModule.HasAtmosphere)
             {
-                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
+                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), body.transform);
                 sunAtmosphere.transform.localPosition = Vector3.zero;
                 sunAtmosphere.transform.localScale = Vector3.one;
                 sunAtmosphere.name = "Atmosphere_Star";
@@ -76,9 +76,10 @@ namespace NewHorizons.Builder.Body
                     {
                         lod.material.SetColor("_SkyColor", starModule.Tint.ToColor32());
                         lod.material.SetFloat("_InnerRadius", starModule.Size);
-                        lod.material.SetFloat("_OuterRadius", starModule.Size + 1000);
+                        lod.material.SetFloat("_OuterRadius", starModule.Size * 3f / 2f);
                     }
                 }
+                fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.Size * 1.2f;
             }
 
@@ -119,8 +120,6 @@ namespace NewHorizons.Builder.Body
             if(starModule.Tint != null)
             {
                 var colour = starModule.Tint.ToColor32();
-                //sunLightController.sunColor = colour;
-
 
                 var sun = GameObject.Find("Sun_Body");
                 var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
