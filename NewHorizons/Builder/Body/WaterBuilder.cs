@@ -2,6 +2,7 @@
 using NewHorizons.External.VariableSize;
 using OWML.Utils;
 using UnityEngine;
+using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
@@ -22,7 +23,13 @@ namespace NewHorizons.Builder.Body
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
-            TSR.tessellationMeshGroup = GDTSR.tessellationMeshGroup;
+            TSR.tessellationMeshGroup = new Tessellation.MeshGroup();
+            for (int i = 0; i < 16; i++)
+            {
+                var mesh = new Mesh();
+                mesh.CopyPropertiesFrom(GDTSR.tessellationMeshGroup.variants[i]);
+                TSR.tessellationMeshGroup.variants[i] = mesh;
+            }
 
             var GDSharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
             var tempArray = new Material[GDSharedMaterials.Length];
@@ -34,13 +41,11 @@ namespace NewHorizons.Builder.Body
                     tempArray[i].color = module.Tint.ToColor32();
                 }
             }
-            // TODO: Make water module
-            //tempArray[1].color = Color.red;
 
             TSR.sharedMaterials = tempArray;
-            TSR.maxLOD = GDTSR.maxLOD;
-            TSR.LODBias = GDTSR.LODBias;
-            TSR.LODRadius = GDTSR.LODRadius;
+            TSR.maxLOD = 0;
+            TSR.LODBias = 0;
+            TSR.LODRadius = 0;
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC.SetValue("_sector", sector);
