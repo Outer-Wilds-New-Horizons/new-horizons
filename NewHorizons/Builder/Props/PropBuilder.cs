@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Props
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool snapToSurface = false)
+        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool snapToSurface, bool generateColliders)
         {
             if (prefab == null) return null;
 
@@ -80,35 +80,42 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
-            foreach(var component in prop.GetComponents<SectoredMonoBehaviour>())
+            foreach(var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {
-                component.SetSector(sector);
-                if(component is AnglerfishController)
+                // Enable all children or something
+                var enabledField = component.GetType().GetField("enabled");
+                if (enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
+
+                // TODO: Make this work or smthng
+                if (component is GhostIK) (component as GhostIK).enabled = false;
+                if (component is GhostEffects) (component as GhostEffects).enabled = false;
+
+                if(component is SectoredMonoBehaviour)
+                {
+                    (component as SectoredMonoBehaviour).SetSector(sector);
+                }
+
+                if (component is AnglerfishController)
                 {
                     try
                     {
                         (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(go.GetAttachedOWRigidbody(), go.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Logger.LogError($"Couldn't update AnglerFish chase speed: {e.Message}");
                     }
                 }
-            }
-            foreach (var component in prop.GetComponentsInChildren<SectoredMonoBehaviour>())
-            {
-                component.SetSector(sector);
-            }
 
-            
-            foreach (var component in prop.GetComponentsInChildren<Component>())
-            {
-                // TODO: Make this work or smthng
-                if (component is GhostIK) (component as GhostIK).enabled = false;
-                if(component is GhostEffects) (component as GhostEffects).enabled = false;
-
-                var enabledField = component.GetType().GetField("enabled");
-                if(enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
+                // Mesh colliders
+                if (generateColliders)
+                {
+                    if(component is MeshFilter && component.gameObject.GetComponent<MeshCollider>() == null)
+                    {
+                        var mc = component.gameObject.AddComponent<MeshCollider>();
+                        mc.sharedMesh = (component as MeshFilter).mesh;
+                    }
+                }
             }
             
 

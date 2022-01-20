@@ -660,6 +660,11 @@
                 "scale": {
                   "type": "number",
                   "default": 1
+                },
+                "generateColliders": {
+                  "type": "bool",
+                  "default": false,
+                  "description":  "For each mesh filter found here should we make a mesh collider?"
                 }
               }
             }
@@ -723,6 +728,11 @@
                   "type": "boolean",
                   "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
                   "default": false
+                },
+                "generateColliders": {
+                  "type": "bool",
+                  "default": false,
+                  "description": "For each mesh filter found here should we make a mesh collider?"
                 }
               }
             }
