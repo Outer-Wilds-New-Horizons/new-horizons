@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
                     if(detail.assetBundle != null)
                     {
                         var prefab = LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
-                        MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+                        MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
                     }
                     else if(detail.objFilePath != null)
                     {
@@ -36,29 +36,29 @@ namespace NewHorizons.Builder.Props
                         {
                             var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
                             prefab.SetActive(false);
-                            MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+                            MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
                         }
                         catch(Exception e)
                         {
                             Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
                         }
                     } 
-                    else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+                    else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
                 }
             }
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
+        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)
         {
             var prefab = GameObject.Find(propToClone);
 
             //TODO: this is super costly
             if (prefab == null) prefab = SearchUtilities.FindObjectOfTypeAndName<GameObject>(propToClone.Split(new char[] { '\\', '/' }).Last());
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
-            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
+            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal, generateColliders);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool snapToSurface, bool generateColliders)
+        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)
         {
             if (prefab == null) return null;
 
@@ -118,7 +118,6 @@ namespace NewHorizons.Builder.Props
                 }
             }
             
-
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
@@ -154,7 +153,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, propInfo.scale, true, true);
+                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, propInfo.scale, true, propInfo.generateColliders);
                     if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
                     points.RemoveAt(randomInd);
