@@ -126,7 +126,7 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(1f, 8f * starModule.SolarLuminosity / 255f);
+                var mod = Mathf.Max(1f, 8f * starModule.SolarLuminosity) / 255f;
                 surface.sharedMaterial.color = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
                 surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.TintImage(_colorOverTime, colour));
             }
