@@ -70,11 +70,11 @@ namespace NewHorizons.Builder.Body
                 PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.Tint != null)
                 {
-                    fog.fogTint = starModule.Tint.ToColor32();
+                    fog.fogTint = starModule.Tint.ToColor();
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000) / starModule.Size;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor32());
+                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
                         lod.material.SetFloat("_InnerRadius", starModule.Size);
                         lod.material.SetFloat("_OuterRadius", starModule.Size * 3f / 2f);
                     }
@@ -103,7 +103,7 @@ namespace NewHorizons.Builder.Body
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
             Color lightColour = light.color;
-            if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor32();
+            if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor();
             if (lightColour == null && starModule.Tint != null)
             {
                 // Lighten it a bit
@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Body
 
             if(starModule.Tint != null)
             {
-                var colour = starModule.Tint.ToColor32();
+                var colour = starModule.Tint.ToColor();
 
                 var sun = GameObject.Find("Sun_Body");
                 var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
@@ -132,7 +132,7 @@ namespace NewHorizons.Builder.Body
             }
 
             if(starModule.SolarFlareTint != null)
-                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor32();
+                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor();
 
             starGO.transform.localPosition = Vector3.zero;
             starGO.transform.localScale = starModule.Size * Vector3.one;

@@ -77,33 +77,43 @@ namespace NewHorizons.Builder.Body
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var waterMaterial = GameObject.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().material;
-                    proxyGO.GetComponentInChildren<MeshRenderer>().material = waterMaterial;
-                    geoGO.GetComponentInChildren<MeshRenderer>().material = waterMaterial;
+                    var waterMaterials = GameObject.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
+                    proxyGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
+                    geoGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
+
+                    //TODO: Material inside
+
+                    //TODO: do the effect in water effect
 
                     break;
                 case FunnelType.LAVA:
-                    sfv._fluidType = FluidVolume.Type.PLASMA;
-
-                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
-
-                    var lavaMaterial = GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material;
-                    proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
-                    geoGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
-
-                    AddDestructionVolumes(fluidVolume);
-
-                    break;
                 case FunnelType.STAR:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var starMaterial = GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material;
-                    proxyGO.GetComponentInChildren<MeshRenderer>().material = starMaterial;
-                    geoGO.GetComponentInChildren<MeshRenderer>().material = starMaterial;
+                    var lavaMaterial = new Material(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material);
+                    lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
+                    lavaMaterial.mainTextureScale = new Vector2(1f, 3f);
 
-                    AddDestructionVolumes(fluidVolume);
+                    if(module.Tint != null)
+                    {
+                        lavaMaterial.SetColor("_EmissionColor", module.Tint.ToColor());
+                    }
+
+                    proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
+                    geoGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
+
+                    if (funnelType == FunnelType.LAVA)
+                    {
+                        lavaMaterial.SetFloat("_HeightScale", 0);
+                        AddDestructionVolumes(fluidVolume, DeathType.Lava);
+                    }
+                    else if (funnelType == FunnelType.STAR)
+                    {
+                        lavaMaterial.SetFloat("_HeightScale", 1000);
+                        AddDestructionVolumes(fluidVolume, DeathType.Energy);
+                    }
 
                     break;
             }
@@ -150,7 +160,7 @@ namespace NewHorizons.Builder.Body
             alignment.SetUsePhysicsToRotate(true);
         }
 
-        private static void AddDestructionVolumes(GameObject go)
+        private static void AddDestructionVolumes(GameObject go, DeathType deathType)
         {
             // Gotta put destruction volumes on the children reeeeeeeeee
             foreach (Transform child in go.transform)
@@ -165,7 +175,7 @@ namespace NewHorizons.Builder.Body
                 child.gameObject.AddComponent<OWCapsuleCollider>();
 
                 var destructionVolume = child.gameObject.AddComponent<DestructionVolume>();
-                destructionVolume._deathType = DeathType.Lava;
+                destructionVolume._deathType = deathType;
             }
         }
     }

@@ -11,6 +11,6 @@ namespace NewHorizons.External.VariableSize
     {
         public string Target { get; set; }
         public string Type { get; set; } = "Sand";
-        public MColor32 Tint { get; set; }
+        public MColor Tint { get; set; }
     }
 }

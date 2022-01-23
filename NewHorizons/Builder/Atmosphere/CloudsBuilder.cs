@@ -30,7 +30,7 @@ namespace NewHorizons.Atmosphere
                 return;
             }
 
-            Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor32();
+            Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor();
 
             GameObject cloudsMainGO = new GameObject();
             cloudsMainGO.SetActive(false);
@@ -90,7 +90,7 @@ namespace NewHorizons.Atmosphere
             var bottomTSRTempArray = new Material[bottomTSRMaterials.Length];
             
             // It's a bit too green
-            var bottomColor = atmo.CloudTint.ToColor32();
+            var bottomColor = atmo.CloudTint.ToColor();
             bottomColor.g = (byte)(bottomColor.g * 0.5f);
             for (int i = 0; i < bottomTSRMaterials.Length; i++) 
             {

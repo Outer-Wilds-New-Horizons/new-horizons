@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.Body
                 tempArray[i] = new Material(GDSharedMaterials[i]);
                 if (module.Tint != null)
                 {
-                    tempArray[i].color = module.Tint.ToColor32();
+                    tempArray[i].color = module.Tint.ToColor();
                 }
             }
 
