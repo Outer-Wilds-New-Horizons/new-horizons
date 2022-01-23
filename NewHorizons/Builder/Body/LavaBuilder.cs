@@ -14,6 +14,17 @@ namespace NewHorizons.Builder.Body
     {
         public static void Make(GameObject body, Sector sector, OWRigidbody rb, LavaModule module) 
         {
+            var heightScale = module.Size;
+            if(module.Curve != null)
+            {
+                var modifier = 1f;
+                foreach(var pair in module.Curve)
+                {
+                    if (pair.Value < modifier) modifier = pair.Value;
+                }
+                heightScale = Mathf.Max(0.1f, heightScale * modifier);
+            }
+
             var moltenCore = new GameObject("MoltenCore");
             moltenCore.SetActive(false);
             moltenCore.transform.parent = body.transform;
@@ -23,7 +34,7 @@ namespace NewHorizons.Builder.Body
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
-            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", module.Size);
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", heightScale);
             if(module.Tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
 
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
@@ -35,7 +46,7 @@ namespace NewHorizons.Builder.Body
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
             proxyLavaSphere.transform.localScale = Vector3.one;
             proxyLavaSphere.name = "LavaSphere_Proxy";
-            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", module.Size);
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", heightScale);
             if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
 
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
