@@ -433,6 +433,8 @@ namespace NewHorizons
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
+            var overrideSOI = body.Config.Base.SphereOfInfluence;
+            if (overrideSOI != 0) sphereOfInfluence = overrideSOI;
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
@@ -495,7 +497,7 @@ namespace NewHorizons
             if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 
             if (body.Config.Funnel != null)
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), initialMotion, body.Config.Funnel);
+                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), owRigidBody, body.Config.Funnel);
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 
