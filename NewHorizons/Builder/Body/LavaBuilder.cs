@@ -22,6 +22,10 @@ namespace NewHorizons.Builder.Body
 
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
+            lavaSphere.transform.name = "LavaSphere";
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", module.Size);
+            if(module.Tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
+
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
 
@@ -31,7 +35,9 @@ namespace NewHorizons.Builder.Body
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
             proxyLavaSphere.transform.localScale = Vector3.one;
             proxyLavaSphere.name = "LavaSphere_Proxy";
-           
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", module.Size);
+            if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
+
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
             sectorProxy.SetValue("_renderers", new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() });
             sectorProxy.SetSector(sector);
