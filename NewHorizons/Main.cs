@@ -100,8 +100,6 @@ namespace NewHorizons
 
             FurthestOrbit = 30000;
 
-            Tools.OWCameraFix.Apply();
-
             HeavenlyBodyBuilder.Reset();
 
             NewHorizonsData.Load();

@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.General
             astroObject.SetValue("_primaryBody", primaryBody);
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
-            if(primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
+            if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
             {
                 var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
                 if (primarySphereOfInfluence.radius < config.Orbit.SemiMajorAxis)
@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.General
                 alignment.SetValue("_usePhysicsToRotate", true);
             }
 
-            if(config.Base.CenterOfSolarSystem)
+            if (config.Base.CenterOfSolarSystem)
             {
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = owRigidBody, 2);
             }

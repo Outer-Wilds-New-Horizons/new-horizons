@@ -22,6 +22,7 @@ namespace NewHorizons.External
             public MVector3 offset;
             public MVector3 rotation;
             public float scale { get; set; } = 1f;
+            public bool generateColliders = false;
         }
 
         public class DetailInfo
@@ -34,6 +35,7 @@ namespace NewHorizons.External
             public MVector3 rotation;
             public float scale { get; set; } = 1f;
             public bool alignToNormal;
+            public bool generateColliders = false;
         }
 
         public class RaftInfo

@@ -58,7 +58,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
 - Procedurally terrain generation (started)
-- Allow copying specific meshes from the stock game for details/scattering with collisions
+- Allow copying specific meshes from the stock game for details/scattering with collisions (would require a way to generate multiple convex mesh colliders out of a concave mesh)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
@@ -360,7 +360,7 @@ You have three options: Load from the scene hierarchy by setting "path", load fr
 
 #### Asset Bundles
 1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
-2. In the root directory create a folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
+2. In the "Assets" folder in Unity, create a new folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
 ```
 using UnityEditor;
