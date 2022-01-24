@@ -23,7 +23,7 @@ namespace NewHorizons.Atmosphere
                     meshRenderer.material.SetFloat("_InnerRadius", atmosphereModule.Cloud != null ? atmosphereModule.Size : surfaceSize);
                     meshRenderer.material.SetFloat("_OuterRadius", atmosphereModule.Size * 1.2f);
                     if(atmosphereModule.AtmosphereTint != null)
-                        meshRenderer.material.SetColor("_SkyColor", atmosphereModule.AtmosphereTint.ToColor());
+                        meshRenderer.material.SetColor("_SkyColor", atmosphereModule.AtmosphereTint.ToColor32());
                 }
 
                 atmo.SetActive(true);

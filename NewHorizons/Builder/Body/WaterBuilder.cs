@@ -18,7 +18,6 @@ namespace NewHorizons.Builder.Body
             waterGO.layer = 15;
             waterGO.transform.parent = body.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
-            waterGO.DestroyAllComponents<SphereCollider>();
 
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
@@ -38,7 +37,7 @@ namespace NewHorizons.Builder.Body
                 tempArray[i] = new Material(GDSharedMaterials[i]);
                 if (module.Tint != null)
                 {
-                    tempArray[i].color = module.Tint.ToColor();
+                    tempArray[i].color = module.Tint.ToColor32();
                 }
             }
 

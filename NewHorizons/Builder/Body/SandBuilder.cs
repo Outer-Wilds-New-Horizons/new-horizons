@@ -29,8 +29,8 @@ namespace NewHorizons.Builder.Body
                 new Material(sandMaterials[1])
                 };
                 GameObject.Destroy(oldMR);
-                sandMR.sharedMaterials[0].color = module.Tint.ToColor();
-                sandMR.sharedMaterials[1].color = module.Tint.ToColor();
+                sandMR.sharedMaterials[0].color = module.Tint.ToColor32();
+                sandMR.sharedMaterials[1].color = module.Tint.ToColor32();
             }
 
             var collider = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/Collider"), sandGO.transform);

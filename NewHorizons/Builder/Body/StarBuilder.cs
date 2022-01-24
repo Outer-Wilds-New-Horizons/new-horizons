@@ -70,11 +70,11 @@ namespace NewHorizons.Builder.Body
                 PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.Tint != null)
                 {
-                    fog.fogTint = starModule.Tint.ToColor();
+                    fog.fogTint = starModule.Tint.ToColor32();
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000) / starModule.Size;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
+                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor32());
                         lod.material.SetFloat("_InnerRadius", starModule.Size);
                         lod.material.SetFloat("_OuterRadius", starModule.Size * 3f / 2f);
                     }
@@ -107,9 +107,9 @@ namespace NewHorizons.Builder.Body
             if (lightColour == null && starModule.Tint != null)
             {
                 // Lighten it a bit
-                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f / 255f);
-                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f / 255f);
-                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f / 255f);
+                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f);
+                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f);
+                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f);
                 lightColour = new Color(r, g, b);
             }
             if (lightColour != null) light.color = (Color)lightColour;
@@ -126,9 +126,13 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(1f, 8f * starModule.SolarLuminosity) / 255f;
-                surface.sharedMaterial.color = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
-                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.TintImage(_colorOverTime, colour));
+                var mod = Mathf.Max(0.5f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
+                var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
+                surface.sharedMaterial.color = adjustedColour;
+
+                Color.RGBToHSV(adjustedColour, out float H, out float S, out float V);
+                var darkenedColor = Color.HSVToRGB(H, S, V * 0.125f);
+                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
             if(starModule.SolarFlareTint != null)

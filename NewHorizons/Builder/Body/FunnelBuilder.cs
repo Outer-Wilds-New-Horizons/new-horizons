@@ -111,7 +111,8 @@ namespace NewHorizons.Builder.Body
                     }
                     else if (funnelType == FunnelType.STAR)
                     {
-                        lavaMaterial.SetFloat("_HeightScale", 1000);
+                        lavaMaterial.renderQueue = 2999;
+                        lavaMaterial.SetFloat("_HeightScale", 100000);
                         AddDestructionVolumes(fluidVolume, DeathType.Energy);
                     }
 
