@@ -26,7 +26,7 @@ namespace NewHorizons.Atmosphere
                 rainGO.transform.localPosition = Vector3.zero;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
-                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
+                pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize / 2f, 0f) }));
 
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
@@ -45,7 +45,7 @@ namespace NewHorizons.Atmosphere
                     snowEmitter.transform.localPosition = Vector3.zero;
 
                     var pvc = snowEmitter.GetComponent<PlanetaryVectionController>();
-                    pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize, 0f) }));
+                    pvc.SetValue("_densityByHeight", new AnimationCurve(new Keyframe[] { new Keyframe(surfaceSize, 10f), new Keyframe(atmoSize / 2f, 0f) }));
 
                     snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
                     snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
