@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Props
         {
             if (config.Props.Scatter != null)
             {
-                PropBuilder.MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, assets, uniqueModName);
+                PropBuilder.MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, assets, uniqueModName, config);
             }
             if(config.Props.Details != null)
             {
@@ -130,7 +130,15 @@ namespace NewHorizons.Builder.Props
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
             prop.transform.localRotation = rot;
-            if (alignWithNormal) prop.transform.AlignRadially();
+            if (alignWithNormal)
+            {
+                var up = prop.transform.localPosition.normalized;
+                var front = Vector3.Cross(up, Vector3.left);
+                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
+                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
+
+                prop.transform.LookAt(prop.transform.position + front, up);
+            }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;
 
@@ -139,10 +147,22 @@ namespace NewHorizons.Builder.Props
             return prop;
         }
 
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModAssets assets, string uniqueModName)
+        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModAssets assets, string uniqueModName, IPlanetConfig config)
         {
+            var heightMap = config.HeightMap;
+
             var area = 4f * Mathf.PI * radius * radius;
-            var points = RandomUtility.FibonacciSphere((int)area);
+            var points = RandomUtility.FibonacciSphere((int)(area * 10));
+
+            Texture2D heightMapTexture = null;
+            if (heightMap != null)
+            {
+                try
+                {
+                    heightMapTexture = assets.GetTexture(heightMap.HeightMap);
+                }
+                catch (Exception) { }
+            }
 
             foreach (var propInfo in scatterInfo)
             {
@@ -153,7 +173,28 @@ namespace NewHorizons.Builder.Props
                 {
                     var randomInd = (int)Random.Range(0, points.Count);
                     var point = points[randomInd];
-                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, propInfo.scale, true, propInfo.generateColliders);
+
+                    var height = radius;
+                    if(heightMapTexture != null)
+                    {
+                        var sphericals = CoordinateUtilities.CartesianToSpherical(point);
+                        float longitude = sphericals.x;
+                        float latitude = sphericals.y;
+
+                        float sampleX = heightMapTexture.width * longitude / 360f;
+                        float sampleY = heightMapTexture.height * latitude / 180f;
+
+                        float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
+                        height = (relativeHeight * (heightMap.MaxHeight - heightMap.MinHeight) + heightMap.MinHeight);
+
+                        // Because heightmaps are dumb gotta rotate it 90 degrees around the x axis bc UHHHHHHHHHHHHH
+                        point = Quaternion.Euler(90, 0, 0) * point;
+
+                        // Keep things mostly above water
+                        if (config.Water != null && height - 1f < config.Water.Size) continue;
+                    }
+
+                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true, propInfo.generateColliders);
                     if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
                     points.RemoveAt(randomInd);

@@ -213,7 +213,7 @@ namespace NewHorizons
         public void DisplayBodyOnTitleScreen()
         {
             //Try loading one planet why not
-            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null).ToArray();
+            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -562,6 +562,7 @@ namespace NewHorizons
                 AtmosphereBuilder.Make(go, body.Config.Atmosphere, body.Config.Base.SurfaceSize);
             }
 
+            // Do this next tick so we can raycast the planet to place things on the surface
             if (body.Config.Props != null)
                 PropBuilder.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
 
