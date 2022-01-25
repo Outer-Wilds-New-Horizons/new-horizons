@@ -15,6 +15,7 @@ namespace NewHorizons.External
         public string CloudCap { get; set; }
         public string CloudRamp { get; set; }
         public bool UseBasicCloudShader { get; set; }
+        public bool ShadowsOnClouds { get; set; } = true;
         public MColor FogTint { get; set; }
         public float FogDensity { get; set; }
         public float FogSize { get; set; }

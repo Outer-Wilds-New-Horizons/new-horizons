@@ -52,7 +52,9 @@ namespace NewHorizons.Atmosphere
                 var tempArray = new Material[2];
                 for (int i = 0; i < 2; i++)
                 {
-                    tempArray[i] = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
+                    var mat = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
+                    if (!atmo.ShadowsOnClouds) mat.renderQueue = 2550;
+                    tempArray[i] = mat;
                 }
                 topMR.sharedMaterials = tempArray;
             }
@@ -60,6 +62,7 @@ namespace NewHorizons.Atmosphere
             {
                 if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
                 topMR.material = new Material(_sphereShader);
+                if (!atmo.ShadowsOnClouds) topMR.material.renderQueue = 2550;
             }
 
             foreach (var material in topMR.sharedMaterials)
