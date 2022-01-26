@@ -8,6 +8,7 @@ namespace NewHorizons.External
         string Name { get; }
         string StarSystem { get; }
         bool Destroy { get; }
+        string[] ChildrenToDestroy { get; }
         int BuildPriority { get; }
         BaseModule Base { get; }
         AtmosphereModule Atmosphere { get; }

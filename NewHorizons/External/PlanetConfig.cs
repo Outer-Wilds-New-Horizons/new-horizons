@@ -11,6 +11,7 @@ namespace NewHorizons.External
         public string Name { get; set; }
         public string StarSystem { get; set; } = "SolarSystem";
         public bool Destroy { get; set; }
+        public string[] ChildrenToDestroy { get; set; }
         public int BuildPriority { get; set; } = -1;
         public BaseModule Base { get; set; }
         public AtmosphereModule Atmosphere { get; set; }

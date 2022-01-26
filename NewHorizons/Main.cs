@@ -391,6 +391,14 @@ namespace NewHorizons
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
+            if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
+            {
+                foreach (var child in body.Config.ChildrenToDestroy)
+                {
+                    GameObject.Find(go.name + "/" + child).SetActive(false);
+                }
+            }
+
             // Do stuff that's shared between generating new planets and updating old ones
             return SharedGenerateBody(body, go, sector, rb);
         }
@@ -564,7 +572,7 @@ namespace NewHorizons
 
             // Do this next tick so we can raycast the planet to place things on the surface
             if (body.Config.Props != null)
-                PropBuilder.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
