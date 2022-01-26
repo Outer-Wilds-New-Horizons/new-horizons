@@ -24,6 +24,7 @@ namespace NewHorizons.Components
         {
             base.FixedUpdate();
             fog.fogRadius = initialSize * CurrentScale * StarBuilder.OuterRadiusRatio;
+            fog.lodFadeDistance = initialSize * CurrentScale * (StarBuilder.OuterRadiusRatio - 1f);
             foreach (var lod in atmosphereRenderers)
             {
                 lod.material.SetFloat("_InnerRadius", initialSize * CurrentScale);

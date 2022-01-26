@@ -84,7 +84,8 @@ namespace NewHorizons.Builder.Body
                 }
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.Size * OuterRadiusRatio;
-                if(starModule.Curve != null)
+                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                if (starModule.Curve != null)
                 {
                     var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
                     controller.scaleCurve = starModule.ToAnimationCurve();

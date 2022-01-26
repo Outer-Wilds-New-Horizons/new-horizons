@@ -126,7 +126,7 @@ namespace NewHorizons.Builder.Body
 
             funnelGO.transform.localPosition = Vector3.zero;
 
-            var funnelSizeController = funnelGO.AddComponent<FunnelSizeController>();
+            var funnelSizeController = funnelGO.AddComponent<FunnelController>();
 
             if(module.Curve != null)
             {
@@ -137,12 +137,13 @@ namespace NewHorizons.Builder.Body
                 }
                 funnelSizeController.scaleCurve = curve;
             }
+            funnelSizeController.anchor = go.transform;
 
             // Finish up next tick
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, alignment, funnelSizeController, module));
         }
 
-        private static void PostMake(GameObject funnelGO, AlignWithTargetBody alignment, FunnelSizeController funnelSizeController, FunnelModule module)
+        private static void PostMake(GameObject funnelGO, AlignWithTargetBody alignment, FunnelController funnelSizeController, FunnelModule module)
         {
             var target = AstroObjectLocator.GetAstroObject(module.Target)?.GetAttachedOWRigidbody();
             if(target == null)
