@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Body
             var owrb = funnelGO.AddComponent<OWRigidbody>();
             var alignment = funnelGO.AddComponent<AlignWithTargetBody>();
 
-            funnelGO.AddComponent<InitialMotion>();
+            //funnelGO.AddComponent<InitialMotion>();
 
             var matchMotion = funnelGO.AddComponent<MatchInitialMotion>();
             matchMotion.SetBodyToMatch(rigidbody);
