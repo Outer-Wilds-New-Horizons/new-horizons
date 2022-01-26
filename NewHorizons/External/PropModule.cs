@@ -13,6 +13,7 @@ namespace NewHorizons.External
         public DetailInfo[] Details;
         public RaftInfo[] Rafts;
         public GeyserInfo[] Geysers;
+        public TornadoInfo[] Tornados;
 
         public class ScatterInfo
         {
@@ -46,6 +47,14 @@ namespace NewHorizons.External
         public class GeyserInfo
         {
             public MVector3 position;
+        }
+
+        public class TornadoInfo
+        {
+            public float elevation;
+            public MVector3 position;
+            public MVector3 scale;
+            public MColor tint;
         }
     }
 }
