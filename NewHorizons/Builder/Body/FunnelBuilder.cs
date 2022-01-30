@@ -35,8 +35,6 @@ namespace NewHorizons.Builder.Body
             var owrb = funnelGO.AddComponent<OWRigidbody>();
             var alignment = funnelGO.AddComponent<AlignWithTargetBody>();
 
-            //funnelGO.AddComponent<InitialMotion>();
-
             var matchMotion = funnelGO.AddComponent<MatchInitialMotion>();
             matchMotion.SetBodyToMatch(rigidbody);
 
@@ -78,6 +76,16 @@ namespace NewHorizons.Builder.Body
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
                     var waterMaterials = GameObject.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
+                    var materials = new Material[waterMaterials.Length];
+                    for(int i = 0; i < waterMaterials.Length; i++)
+                    {
+                        materials[i] = new Material(waterMaterials[i]);
+                        if (module.Tint != null)
+                        {
+                            materials[i].SetColor("_FogColor", module.Tint.ToColor());
+                        }
+                    }
+                    
                     proxyGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
                     geoGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
 
@@ -145,10 +153,12 @@ namespace NewHorizons.Builder.Body
 
         private static void PostMake(GameObject funnelGO, AlignWithTargetBody alignment, FunnelController funnelSizeController, FunnelModule module)
         {
-            var target = AstroObjectLocator.GetAstroObject(module.Target)?.GetAttachedOWRigidbody();
+            var targetAO = AstroObjectLocator.GetAstroObject(module.Target);
+            var target = targetAO?.GetAttachedOWRigidbody();
             if(target == null)
             {
-                Logger.LogWarning($"Couldn't find the target for the funnel {funnelGO.name}");
+                if (targetAO != null) Logger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
+                else Logger.LogError($"Couldn't find the target ({module.Target}) for the funnel {funnelGO.name}");
                 return;
             }
 
