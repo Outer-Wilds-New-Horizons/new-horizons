@@ -86,8 +86,8 @@ namespace NewHorizons.Builder.Body
                         }
                     }
                     
-                    proxyGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
-                    geoGO.GetComponentInChildren<MeshRenderer>().materials = waterMaterials;
+                    proxyGO.GetComponentInChildren<MeshRenderer>().materials = materials;
+                    geoGO.GetComponentInChildren<MeshRenderer>().materials = materials;
 
                     //TODO: Material inside
 
