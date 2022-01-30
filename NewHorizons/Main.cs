@@ -331,18 +331,11 @@ namespace NewHorizons
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
-            var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
-            if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
-            if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
-            if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
-            if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
-            if (stringID.Equals("INTERLOPER")) stringID = "COMET";
-
+            // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
             try
             {
-                existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
-                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
+                existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name).gameObject;
             }
             catch (Exception)
             {
@@ -356,8 +349,8 @@ namespace NewHorizons
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
-                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
+                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 5);
+                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 5);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
@@ -395,7 +388,7 @@ namespace NewHorizons
             {
                 foreach (var child in body.Config.ChildrenToDestroy)
                 {
-                    GameObject.Find(go.name + "/" + child).SetActive(false);
+                    Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child).SetActive(false), 2);
                 }
             }
 
@@ -504,9 +497,6 @@ namespace NewHorizons
 
             if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao);
 
-            if (body.Config.Funnel != null)
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), owRigidBody, body.Config.Funnel);
-
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             HeavenlyBodyBuilder.Make(go, body.Config, sphereOfInfluence, gv, initialMotion);
@@ -570,7 +560,6 @@ namespace NewHorizons
                 AtmosphereBuilder.Make(go, body.Config.Atmosphere, body.Config.Base.SurfaceSize);
             }
 
-            // Do this next tick so we can raycast the planet to place things on the surface
             if (body.Config.Props != null)
                 PropBuildManager.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
 
@@ -579,6 +568,9 @@ namespace NewHorizons
 
             if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
                 SingularityBuilder.Make(go, sector, rb, body.Config);
+
+            if (body.Config.Funnel != null)
+                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
 
             return go;
         }
