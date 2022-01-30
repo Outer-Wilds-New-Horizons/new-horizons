@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
-                    TornadoBuilder.Make(go, sector, tornadoInfo);
+                    TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
         }

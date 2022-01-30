@@ -1,4 +1,5 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.Components;
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +14,7 @@ namespace NewHorizons.Builder.Props
     {
         public static string tornadoParentName = "Tornados";
 
-        public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info)
+        public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
             // If we are given elevation choose a random position
             Vector3 position;
@@ -67,22 +68,13 @@ namespace NewHorizons.Builder.Props
             tornadoController._wanderDegreesX = 360f;
             tornadoController._wanderDegreesZ = 360f;
 
-            /*
-            tornadoController._formationDuration = 1f;
-            tornadoController._collapseDuration = 1f;
-            sector.OnOccupantEnterSector += ((sectorDetector) =>
-                {
-                    tornadoController.StartFormation();
-                });
-            sector.OnOccupantExitSector += ((sectorDetector) =>
-                {
-                    if (!sector.ContainsOccupant(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship))
-                    {
-                        tornadoController.StartCollapse();
-                    }
-                });
-            */
+            if(!hasClouds)
+            {
+                var fix = tornado.AddComponent<TornadoFix>();
+                fix.SetSector(sector);
+            }
 
+            tornadoController._startActive = false;
             tornado.SetActive(true);
         }
     }
