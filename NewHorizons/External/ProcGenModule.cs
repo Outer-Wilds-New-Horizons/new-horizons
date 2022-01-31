@@ -10,6 +10,6 @@ namespace NewHorizons.External
     public class ProcGenModule : Module
     {
         public float Scale { get; set; }
-        public MColor32 Color { get; set; }
+        public MColor Color { get; set; }
     }
 }

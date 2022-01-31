@@ -21,6 +21,22 @@ namespace NewHorizons.Utility
             return newImage;
         }
 
+        public static Texture2D LerpGreyscaleImage(Texture2D image, Color lightTint, Color darkTint)
+        {
+            var pixels = image.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i].r = Mathf.Lerp(darkTint.r, lightTint.r, pixels[i].r);
+                pixels[i].g = Mathf.Lerp(darkTint.g, lightTint.g, pixels[i].g);
+                pixels[i].b = Mathf.Lerp(darkTint.b, lightTint.b, pixels[i].b);
+            }
+
+            var newImage = new Texture2D(image.width, image.height);
+            newImage.SetPixels(pixels);
+            newImage.Apply();
+            return newImage;
+        }
+
         public static Texture2D LoadImage(string filepath)
         {
             Texture2D tex = new Texture2D(2, 2);

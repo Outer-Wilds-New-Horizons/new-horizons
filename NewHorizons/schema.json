@@ -134,6 +134,11 @@
           "default": false,
           "description": "Use Giant's deep shader or just apply the cloud texture as is."
         },
+        "shadowsOnClouds": {
+          "type": "boolean",
+          "default": true,
+          "description": "If the top layer should have shadows"
+        },
         "fogTint": {
           "type": "object",
           "description": "Colour of fog on the planet.",
@@ -189,7 +194,7 @@
         "hasAtmosphere": {
           "type": "boolean",
           "default": false,
-          "description" : "Whether we use an atmospheric shader on the planet."
+          "description": "Whether we use an atmospheric shader on the planet."
         },
         "atmosphereTint": {
           "type": "object",
@@ -362,7 +367,7 @@
                 "default": 0
               },
               "value": {
-                "type": "integer",
+                "type": "number",
                 "default": 0
               }
             }
@@ -582,7 +587,7 @@
                 "default": 0
               },
               "value": {
-                "type": "integer",
+                "type": "number",
                 "default": 0
               }
             }
@@ -950,7 +955,7 @@
                 "default": 0
               },
               "value": {
-                "type": "integer",
+                "type": "number",
                 "default": 0
               }
             }
@@ -975,7 +980,7 @@
                 "default": 0
               },
               "value": {
-                "type": "integer",
+                "type": "number",
                 "default": 0
               }
             }
@@ -1029,7 +1034,71 @@
                 "default": 0
               },
               "value": {
+                "type": "number",
+                "default": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "Funnel": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "The body that the funnel is pouring onto"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Sand",
+            "Water",
+            "Lava",
+            "Star"
+          ],
+          "default": "Sand"
+        }
+        "tint": {
+          "type": "object",
+          "properties": {
+            "R": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "G": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "B": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            },
+            "A": {
+              "type": "integer",
+              "default": 0,
+              "minimum": 0,
+              "maximum": 255
+            }
+          }
+        },
+        "curve": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "time": {
                 "type": "integer",
+                "default": 0
+              },
+              "value": {
+                "type": "number",
                 "default": 0
               }
             }

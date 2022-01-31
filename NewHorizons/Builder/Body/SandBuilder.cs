@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Body
 
             sandGO.transform.parent = go.transform;
             sandGO.transform.localPosition = Vector3.zero;
-            sandGO.transform.localScale = Vector3.one * module.Size;
+            sandGO.transform.localScale = Vector3.one * module.Size * 2f;
 
             sandGO.SetActive(true);
         }

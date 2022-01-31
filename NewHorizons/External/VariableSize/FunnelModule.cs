@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.External.VariableSize
 {
-    public class LavaModule : VariableSizeModule
+    public class FunnelModule : VariableSizeModule
     {
-        public float Size { get; set; }
+        public string Target { get; set; }
+        public string Type { get; set; } = "Sand";
         public MColor Tint { get; set; }
     }
 }

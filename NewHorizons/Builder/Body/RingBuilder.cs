@@ -10,6 +10,7 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -102,7 +103,7 @@ namespace NewHorizons.Builder.Body
 
 			if (ring.Curve != null)
 			{
-				var levelController = ringGO.AddComponent<RingSizeController>();
+				var levelController = ringGO.AddComponent<SizeController>();
 				var curve = new AnimationCurve();
 				foreach (var pair in ring.Curve)
 				{

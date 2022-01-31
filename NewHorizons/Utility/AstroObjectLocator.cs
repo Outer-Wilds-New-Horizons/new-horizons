@@ -17,17 +17,27 @@ namespace NewHorizons.Utility
 
 		private static List<AstroObject> _list = new List<AstroObject>();
 
-		public static AstroObject GetAstroObject(string name)
+		public static AstroObject GetAstroObject(string name, bool flag = false)
         {
-			if (name.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
+			if (_customAstroObjectDictionary.ContainsKey(name)) return _customAstroObjectDictionary[name];
+
+			var stringID = name.ToUpper().Replace(" ", "_").Replace("'", "");
+			if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
+			if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
+			if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
+			if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
+			if (stringID.Equals("INTERLOPER")) stringID = "COMET";
+
+			if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
 				return GetAstroObject(AstroObject.Name.MapSatellite);
-			var aoName = AstroObject.StringIDToAstroObjectName(name);
-			if(aoName == AstroObject.Name.None) aoName = AstroObject.StringIDToAstroObjectName(name.ToUpper().Replace(" ", "_"));
-			if (aoName != AstroObject.Name.None && aoName != AstroObject.Name.CustomString)
-				return GetAstroObject(aoName);
-			if (_customAstroObjectDictionary.ContainsKey(name))
-				return _customAstroObjectDictionary[name];
-			else return null;
+			
+			var aoName = AstroObject.StringIDToAstroObjectName(stringID);
+			if (aoName != AstroObject.Name.None && aoName != AstroObject.Name.CustomString) return GetAstroObject(aoName);
+
+			// Try again
+			if (!flag) return GetAstroObject(name.Replace(" ", ""), true);
+
+			return null;
 		}
 
 		public static AstroObject GetAstroObject(AstroObject.Name astroObjectName, string customName = null)

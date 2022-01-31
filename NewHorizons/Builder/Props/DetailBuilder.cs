@@ -1,4 +1,4 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,44 +7,36 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
-using System.Reflection;
-using NewHorizons.Utility;
+using NewHorizons.External;
 using OWML.Common;
 
 namespace NewHorizons.Builder.Props
 {
-    public static class PropBuilder
+    public static class DetailBuilder
     {
         public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName)
         {
-            if (config.Props.Scatter != null)
+            foreach (var detail in config.Props.Details)
             {
-                PropBuilder.MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, assets, uniqueModName);
-            }
-            if(config.Props.Details != null)
-            {
-                foreach(var detail in config.Props.Details)
+                if (detail.assetBundle != null)
                 {
-                    if(detail.assetBundle != null)
+                    var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
+                    MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+                }
+                else if (detail.objFilePath != null)
+                {
+                    try
                     {
-                        var prefab = LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
+                        var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
+                        prefab.SetActive(false);
                         MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
                     }
-                    else if(detail.objFilePath != null)
+                    catch (Exception e)
                     {
-                        try
-                        {
-                            var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
-                            prefab.SetActive(false);
-                            MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
-                        }
-                        catch(Exception e)
-                        {
-                            Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
-                        }
-                    } 
-                    else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+                        Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
+                    }
                 }
+                else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
             }
         }
 
@@ -80,7 +72,7 @@ namespace NewHorizons.Builder.Props
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
             }
 
-            foreach(var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
+            foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {
                 // Enable all children or something
                 var enabledField = component.GetType().GetField("enabled");
@@ -90,7 +82,7 @@ namespace NewHorizons.Builder.Props
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                if(component is SectoredMonoBehaviour)
+                if (component is SectoredMonoBehaviour)
                 {
                     (component as SectoredMonoBehaviour).SetSector(sector);
                 }
@@ -110,7 +102,7 @@ namespace NewHorizons.Builder.Props
                 // Mesh colliders
                 if (generateColliders)
                 {
-                    if(component is MeshFilter && component.gameObject.GetComponent<MeshCollider>() == null)
+                    if (component is MeshFilter && component.gameObject.GetComponent<MeshCollider>() == null)
                     {
                         var mesh = (component as MeshFilter).mesh;
                         if (mesh.isReadable) component.gameObject.AddComponent<MeshCollider>();
@@ -118,7 +110,7 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            
+
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
@@ -138,64 +130,6 @@ namespace NewHorizons.Builder.Props
             prop.SetActive(true);
 
             return prop;
-        }
-
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModAssets assets, string uniqueModName)
-        {
-            var area = 4f * Mathf.PI * radius * radius;
-            var points = RandomUtility.FibonacciSphere((int)area);
-
-            foreach (var propInfo in scatterInfo)
-            {
-                GameObject prefab;
-                if (propInfo.assetBundle != null) prefab = LoadPrefab(propInfo.assetBundle, propInfo.path, uniqueModName, assets);
-                else prefab = GameObject.Find(propInfo.path);
-                for(int i = 0; i < propInfo.count; i++)
-                {
-                    var randomInd = (int)Random.Range(0, points.Count);
-                    var point = points[randomInd];
-                    var prop = MakeDetail(go, sector, prefab, (MVector3)(point.normalized * radius), null, propInfo.scale, true, propInfo.generateColliders);
-                    if(propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
-                    if(propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation); 
-                    points.RemoveAt(randomInd);
-                    if (points.Count == 0) return;
-                }
-            }
-        }
-
-        private static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModAssets assets)
-        {
-            string key = uniqueModName + "." + assetBundle;
-            AssetBundle bundle;
-            GameObject prefab;
-
-            try
-            {
-                if (Main.AssetBundles.ContainsKey(key)) bundle = Main.AssetBundles[key];
-                else
-                {
-                    bundle = assets.LoadBundle(assetBundle);
-                    Main.AssetBundles[key] = bundle;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Couldn't load AssetBundle {assetBundle} : {e.Message}");
-                return null;
-            }
-
-            try
-            {
-                prefab = bundle.LoadAsset<GameObject>(path);
-                prefab.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                Logger.Log($"Couldn't load asset {path} from AssetBundle {assetBundle} : {e.Message}");
-                return null;
-            }
-
-            return prefab;
         }
     }
 }

@@ -213,7 +213,7 @@ namespace NewHorizons
         public void DisplayBodyOnTitleScreen()
         {
             //Try loading one planet why not
-            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null).ToArray();
+            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -225,6 +225,7 @@ namespace NewHorizons
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
+            body1.transform.localRotation = Quaternion.Euler(15, 0, 0);
             if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
@@ -330,18 +331,11 @@ namespace NewHorizons
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
-            var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
-            if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
-            if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
-            if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
-            if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
-            if (stringID.Equals("INTERLOPER")) stringID = "COMET";
-
+            // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
             try
             {
-                existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
-                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
+                existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name).gameObject;
             }
             catch (Exception)
             {
@@ -355,8 +349,8 @@ namespace NewHorizons
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
-                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
+                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 5);
+                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 5);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
@@ -389,6 +383,14 @@ namespace NewHorizons
 
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
+
+            if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
+            {
+                foreach (var child in body.Config.ChildrenToDestroy)
+                {
+                    Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child).SetActive(false), 2);
+                }
+            }
 
             // Do stuff that's shared between generating new planets and updating old ones
             return SharedGenerateBody(body, go, sector, rb);
@@ -432,6 +434,8 @@ namespace NewHorizons
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
+            var overrideSOI = body.Config.Base.SphereOfInfluence;
+            if (overrideSOI != 0) sphereOfInfluence = overrideSOI;
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
@@ -557,13 +561,16 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuilder.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
 
             if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
                 SingularityBuilder.Make(go, sector, rb, body.Config);
+
+            if (body.Config.Funnel != null)
+                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
 
             return go;
         }
