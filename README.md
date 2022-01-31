@@ -1,4 +1,5 @@
 ![new horizons thumbnail](https://user-images.githubusercontent.com/22628069/146680547-bd815057-9f4e-42da-a6c4-84d3ff82ff2c.png)
+
 ![Current version](https://img.shields.io/github/manifest-json/v/xen-42/outer-wilds-new-horizons?color=gree&filename=NewHorizons%2Fmanifest.json)
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
@@ -57,8 +58,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Black hole / white hole pairs (done)
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
-- Procedurally terrain generation (started)
-- Allow copying specific meshes from the stock game for details/scattering with collisions (would require a way to generate multiple convex mesh colliders out of a concave mesh)
+- Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits

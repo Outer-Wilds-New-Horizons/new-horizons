@@ -16,7 +16,12 @@ namespace NewHorizons.External
 
         public static void Load()
         {
-            _activeProfileName = StandaloneProfileManager.SharedInstance.currentProfile.profileName;
+            _activeProfileName = StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
+            if (_activeProfileName == null)
+            {
+                Logger.LogError($"Couldn't find active profile, are you on Gamepass?");
+                _activeProfileName = "XboxGamepassDefaultProfile";
+            }
             try
             {
                 _saveFile = Main.Instance.ModHelper.Storage.Load<NewHorizonsSaveFile>(_fileName);
