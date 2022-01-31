@@ -4,6 +4,8 @@ using OWML.Utils;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -74,22 +76,22 @@ namespace NewHorizons.Builder.Body
             fluidVolume.SetValue("_radius", waterSize);
             fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
 
-            /*
             var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
-            */
 
             if (module.Curve != null)
             {
-                var levelController = waterGO.AddComponent<SandLevelController>();
+                var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
                 foreach (var pair in module.Curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, module.Size * pair.Value));
+                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
                 }
-                levelController._scaleCurve = curve;
+                sizeController.scaleCurve = curve;
+                sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
+                sizeController.size = module.Size;
             }
 
             // TODO: make LOD work 

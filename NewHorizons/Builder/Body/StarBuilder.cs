@@ -10,6 +10,7 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {

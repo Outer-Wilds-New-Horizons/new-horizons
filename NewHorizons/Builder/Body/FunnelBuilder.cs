@@ -84,15 +84,37 @@ namespace NewHorizons.Builder.Body
                         {
                             materials[i].SetColor("_FogColor", module.Tint.ToColor());
                         }
-                        materials[i].renderQueue = 2990;
                     }
-                    
-                    proxyGO.GetComponentInChildren<MeshRenderer>().materials = materials;
-                    geoGO.GetComponentInChildren<MeshRenderer>().materials = materials;
 
-                    //TODO: Material inside
+                    // Proxy
+                    var proxyExterior = proxyGO.transform.Find("SandColumn_Exterior (1)");
+                    proxyExterior.name = "WaterColumn_Exterior";
+                    var proxyExteriorMR = proxyExterior.GetComponent<MeshRenderer>();
+                    proxyExteriorMR.material = materials[0];
+                    proxyExteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
-                    //TODO: do the effect in water effect
+                    /*
+                    var proxyInterior = GameObject.Instantiate(proxyExterior, proxyGO.transform);
+                    proxyInterior.name = "WaterColumn_Interior";
+                    var proxyInteriorMR = proxyInterior.GetComponent<MeshRenderer>();
+                    proxyInteriorMR.material = materials[1];
+                    proxyInteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    */
+
+                    // Geometry
+                    var geoExterior = geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Exterior");
+                    geoExterior.name = "WaterColumn_Exterior";
+                    var geoExteriorMR = geoExterior.GetComponent<MeshRenderer>();
+                    geoExteriorMR.material = materials[0];
+                    geoExteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+
+                    /*
+                    var geoInterior = GameObject.Instantiate(geoExterior, geoGO.transform);
+                    geoInterior.name = "WaterColumn_Interior";
+                    var geoInteriorMR = geoInterior.GetComponent<MeshRenderer>();
+                    geoInteriorMR.material = materials[1];
+                    geoInteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                    */
 
                     break;
                 case FunnelType.LAVA:
