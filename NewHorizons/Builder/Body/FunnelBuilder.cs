@@ -84,6 +84,7 @@ namespace NewHorizons.Builder.Body
                         {
                             materials[i].SetColor("_FogColor", module.Tint.ToColor());
                         }
+                        materials[i].renderQueue = 2990;
                     }
                     
                     proxyGO.GetComponentInChildren<MeshRenderer>().materials = materials;

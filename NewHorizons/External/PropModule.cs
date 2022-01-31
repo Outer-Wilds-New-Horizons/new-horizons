@@ -53,7 +53,8 @@ namespace NewHorizons.External
         {
             public float elevation;
             public MVector3 position;
-            public MVector3 scale;
+            public float height;
+            public float width;
             public MColor tint;
         }
     }

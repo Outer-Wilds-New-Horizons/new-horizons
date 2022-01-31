@@ -48,12 +48,12 @@ namespace NewHorizons.Components
 
         public void OnOccupantEnterSector(SectorDetector _)
         {
-            if(!tornadoController._tornadoRoot.activeInHierarchy && !tornadoController._tornadoForming) tornadoController.StartFormation();
+            if(!tornadoController._tornadoRoot.activeInHierarchy) tornadoController.StartFormation();
         }
 
         public void OnOccupantExitSector(SectorDetector _)
         {
-            if (!_sector.ContainsOccupant(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship) && tornadoController._tornadoRoot.activeInHierarchy)
+            if (!_sector.ContainsOccupant(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship))
             {
                 tornadoController.StartCollapse();
             }
