@@ -14,6 +14,7 @@ namespace NewHorizons.External
         public RaftInfo[] Rafts;
         public GeyserInfo[] Geysers;
         public TornadoInfo[] Tornados;
+        public DialogueInfo[] Dialogue;
 
         public class ScatterInfo
         {
@@ -56,6 +57,13 @@ namespace NewHorizons.External
             public float height;
             public float width;
             public MColor tint;
+        }
+
+        public class DialogueInfo
+        {
+            public MVector3 position;
+            public float radius;
+            public string xmlFile;
         }
     }
 }

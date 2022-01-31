@@ -32,11 +32,22 @@ namespace NewHorizons.Builder.Props
                     GeyserBuilder.Make(go, sector, geyserInfo);
                 }
             }
+            if(config.Props.Rafts != null)
+            {
+                // TODO
+            }
             if(config.Props.Tornados != null)
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
                     TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                }
+            }
+            if(config.Props.Dialogue != null)
+            {
+                foreach(var dialogueInfo in config.Props.Dialogue)
+                {
+                    DialogueBuilder.Make(go, sector, dialogueInfo);
                 }
             }
         }
