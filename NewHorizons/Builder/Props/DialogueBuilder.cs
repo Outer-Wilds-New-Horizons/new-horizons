@@ -42,7 +42,7 @@ namespace NewHorizons.Builder.Props
             conversationZone.SetActive(true);
         }
 
-        private static void addTranslations(string xml)
+        private static void AddTranslation(string xml)
         {
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
