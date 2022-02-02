@@ -28,13 +28,11 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 
-            // XML STUFF GOES HERE
-
             var xml = System.IO.File.ReadAllText(Main.Instance.ModHelper.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
 
             dialogueTree.SetTextXml(text);
-            addTranslations(xml);
+            AddTranslation(xml);
 
 
             conversationZone.transform.parent = sector.transform;

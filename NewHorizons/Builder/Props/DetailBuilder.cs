@@ -14,30 +14,27 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName, PropModule.DetailInfo detail)
         {
-            foreach (var detail in config.Props.Details)
+            if (detail.assetBundle != null)
             {
-                if (detail.assetBundle != null)
+                var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
+                MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+            }
+            else if (detail.objFilePath != null)
+            {
+                try
                 {
-                    var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
+                    var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
+                    prefab.SetActive(false);
                     MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
                 }
-                else if (detail.objFilePath != null)
+                catch (Exception e)
                 {
-                    try
-                    {
-                        var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
-                        prefab.SetActive(false);
-                        MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
-                    }
+                    Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
                 }
-                else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
             }
+            else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
         }
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)

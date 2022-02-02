@@ -23,7 +23,10 @@ namespace NewHorizons.Builder.Props
             }
             if(config.Props.Details != null)
             {
-                DetailBuilder.Make(go, sector, config, assets, uniqueModName);    
+                foreach (var detail in config.Props.Details)
+                {
+                    DetailBuilder.Make(go, sector, config, assets, uniqueModName, detail);
+                }
             }
             if(config.Props.Geysers != null)
             {
