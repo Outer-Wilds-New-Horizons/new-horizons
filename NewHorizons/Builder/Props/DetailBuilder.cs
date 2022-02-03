@@ -67,6 +67,7 @@ namespace NewHorizons.Builder.Props
             foreach (var assetBundle in assetBundles)
             {
                 sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
+                StreamingManager.LoadStreamingAssets(assetBundle);
             }
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
@@ -78,6 +79,9 @@ namespace NewHorizons.Builder.Props
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
+
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Animator).enabled = true);
+                if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if (component is SectoredMonoBehaviour)
                 {
