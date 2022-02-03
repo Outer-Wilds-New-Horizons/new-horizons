@@ -76,6 +76,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
+- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 
 ## How to create your own planets using configs
 
@@ -352,7 +353,7 @@ A detail info object can have the following parameters:
 - "objFilePath" : (string) the file path to a .obj 3d model
 - "mtlFilePath" : (string) the file path to the material for the .obj model
 - "position" : (x, y, z)
-- "rotation" : (x, y, z) the euler angle rotation from a 3d vector
+- "rotation" : (x, y, z) the euler angle rotation from a 3d vector (in degrees)
 - "scale" : (decimal number)
 - "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
 
@@ -525,6 +526,7 @@ Authors:
 New Horizons was made with help from:
 - salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
 - Raicuparta (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
+- Nageld (Set up xml reading for custom dialogue in v0.8.0)
 
 Marshmallow was made with help from:
 - TAImatem
