@@ -64,6 +64,9 @@ namespace NewHorizons.Builder.Props
 
                         // Keep things mostly above water
                         if (config.Water != null && height - 1f < config.Water.Size) continue;
+
+                        // Move it slightly into the ground
+                        height -= 0.2f;
                     }
 
                     var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true, propInfo.generateColliders);
