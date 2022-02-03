@@ -353,7 +353,7 @@ A detail info object can have the following parameters:
 - "objFilePath" : (string) the file path to a .obj 3d model
 - "mtlFilePath" : (string) the file path to the material for the .obj model
 - "position" : (x, y, z)
-- "rotation" : (x, y, z) the euler angle rotation from a 3d vector
+- "rotation" : (x, y, z) the euler angle rotation from a 3d vector (in degrees)
 - "scale" : (decimal number)
 - "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
 
