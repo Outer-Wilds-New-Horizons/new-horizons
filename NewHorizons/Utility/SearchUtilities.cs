@@ -100,9 +100,10 @@ namespace NewHorizons.Utility
         public static GameObject Find(string path)
         {
             var go = GameObject.Find(path);
-            if(go == null)
+
+            var names = path.Split(new char[] { '\\', '/' });
+            if (go == null)
             {
-                var names = path.Split(new char[] { '\\', '/' });
 
                 // Get the root object and hope its the right one
                 var root = GameObject.Find(names[0]);
@@ -141,6 +142,13 @@ namespace NewHorizons.Utility
                 }
 
                 go = t.gameObject;
+            }
+
+            if(go == null)
+            {
+                var name = names.Last();
+                Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
+                go = FindObjectOfTypeAndName<GameObject>(name);
             }
 
             return go;
