@@ -22,7 +22,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [AsteroidBelt](#asteroidbelt)
   - [FocalPoint](#focalpoint)
   - [Props](#props)
-  	- [Details/Scatterer](#details/scatterer)	
+  	- [Details/Scatterer](#detailsscatterer)	
   		- [Asset Bundles](#asset-bundles)
   	- [Dialogue](#dialogue)
   		- [XML](#xml)
