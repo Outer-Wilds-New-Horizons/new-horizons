@@ -591,7 +591,7 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuildManager.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, body.Config, body.Mod, body.Mod.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);

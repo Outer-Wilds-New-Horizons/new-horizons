@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,10 @@ namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info)
+        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
-            var dialogue = MakeConversationZone(go, sector, info);
-            if (info.remoteVolumePosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+            var dialogue = MakeConversationZone(go, sector, info, mod);
+            if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
         }
 
         public static void MakeRemoteDialogueTrigger(GameObject go, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
@@ -44,11 +45,11 @@ namespace NewHorizons.Builder.Props
             boxCollider.size = Vector3.one * info.radius / 2f;
 
             conversationTrigger.transform.parent = sector?.transform ?? go.transform;
-            conversationTrigger.transform.localPosition = info.remoteVolumePosition;
+            conversationTrigger.transform.localPosition = info.remoteTriggerPosition;
             conversationTrigger.SetActive(true);
         }
 
-        public static CharacterDialogueTree MakeConversationZone(GameObject go, Sector sector, PropModule.DialogueInfo info)
+        public static CharacterDialogueTree MakeConversationZone(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
@@ -64,7 +65,7 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 
-            var xml = System.IO.File.ReadAllText(Main.Instance.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xml = System.IO.File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
 
             dialogueTree.SetTextXml(text);

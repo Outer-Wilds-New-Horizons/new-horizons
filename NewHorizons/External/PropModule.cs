@@ -62,9 +62,9 @@ namespace NewHorizons.External
         public class DialogueInfo
         {
             public MVector3 position;
-            public float radius;
+            public float radius = 1f;
             public string xmlFile;
-            public MVector3 remoteVolumePosition;
+            public MVector3 remoteTriggerPosition;
             public string persistentCondition;
         }
     }

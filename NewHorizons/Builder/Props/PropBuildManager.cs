@@ -15,17 +15,17 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModHelper mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {
-                ScatterBuilder.Make(go, sector, config, assets, uniqueModName);
+                ScatterBuilder.Make(go, sector, config, mod.Assets, uniqueModName);
             }
             if(config.Props.Details != null)
             {
                 foreach (var detail in config.Props.Details)
                 {
-                    DetailBuilder.Make(go, sector, config, assets, uniqueModName, detail);
+                    DetailBuilder.Make(go, sector, config, mod.Assets, uniqueModName, detail);
                 }
             }
             if(config.Props.Geysers != null)
@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var dialogueInfo in config.Props.Dialogue)
                 {
-                    DialogueBuilder.Make(go, sector, dialogueInfo);
+                    DialogueBuilder.Make(go, sector, dialogueInfo, mod);
                 }
             }
         }
