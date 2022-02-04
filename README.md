@@ -22,7 +22,10 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [AsteroidBelt](#asteroidbelt)
   - [FocalPoint](#focalpoint)
   - [Props](#props)
-  	- [Asset Bundles](#asset-bundles)
+  	- [Details/Scatterer](#details/scatterer)	
+  		- [Asset Bundles](#asset-bundles)
+  	- [Dialogue](#dialogue)
+  		- [XML](#xml)
   - [Ring](#ring)
   - [Spawn](#spawn)
   - [Star](#star)
@@ -237,6 +240,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "cloudCap" : (string) The file path to a texture that will be put on the north pole over the clouds.
 - "cloudRamp" : (string) I don't really know what this does. You don't have to put anything.
 - "useBasicCloudShader" : (true/false) By default we use the same shader as Giant's deep. Set this to true if you just want your cloud texture to be applied as is.
+- "shadowsOnClouds" : (true/false) By default clouds have shadows on them. Set to false if you want the clouds to have flat colouring (useful for brown dwarfs)
 - "fogTint" : (colour) Puts tinted fog around the planet.
 - "fogSize" : (decimal number)
 - "fogDensity" : (decimal number) How dense the fog is, from 0 to 100.
@@ -328,9 +332,10 @@ and
 The positions of the binaries will be based off of their masses (as determined by the "surfaceGravity" parameter). However, one of them must have a non-zero semiMajorAxis field else the mod gets confused. This example uses stars, but it will also work for planets. If you want to have other planets orbiting the center of mass, just put the focal point body as the primary body.
 
 ### Props
-Lets you place items on the surface of the planet.
+Lets you place features on the surface of the planet.
 
-For these there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
+#### Details/Scatterer
+For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 - Use "Object Explorer" to search
 - Do not use the search functionality on Scene Explorer, it is really really slow. Use the "Object Search" tab instead.
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
@@ -389,6 +394,93 @@ public class CreateAssetBundles
 
 5. In the top left click the "Assets" drop-down and select "Build AssetBundles". This should create your asset bundle in a folder in the root directory called "StreamingAssets".
 6. Copy the asset bundle and asset bundle .manifest files from StreamingAssets into your mod's "planets" folder. If you did everything properly they should work in game. To double check everything is included, open the .manifest file in a text editor to see the files included and their paths.
+
+#### Dialogue
+An array of object, each one has the following properties:
+- "position": (position) 
+- "radius" : (decimal number) the spherical volume the player must look at to talk to this character
+- "xmlFile" : (string) The filepath to the XML file which defines this dialogue
+- "remoteVolumePosition" : (position) This is optional. If you want a certain volume to trigger the player to engage with the dialogue from a distance, set this position.
+- "persistentCondition" : (string) The condition required for the remote dialogue trigger to happen.
+
+#### XML
+Here's an example dialogue XML:
+
+```
+<DialogueTree>
+	<NameField>EXAMPLE NPC</NameField>
+
+	<DialogueNode>
+		<Name>Start</Name>
+		<EntryCondition>DEFAULT</EntryCondition>
+		<Dialogue>
+			<Page>Start</Page>
+      		<Page>Start Part 2</Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 1</Text>
+				<DialogueTarget>1</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto 2</Text>
+				<DialogueTarget>2</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+	
+	<DialogueNode>
+		<Name>1</Name>
+		<Dialogue>
+			<Page>This is 1</Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 2</Text>
+				<DialogueTarget>2</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+
+
+	<DialogueNode>
+		<Name>2</Name>
+		<Dialogue>
+			<Page>This is 2</Page>
+		</Dialogue>
+
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 1</Text>
+				<DialogueTarget>1</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+
+	</DialogueNode>
+	
+	<DialogueNode>
+		<Name>End</Name>
+		<Dialogue>
+			<Page>This is the end</Page>
+		</Dialogue>
+	</DialogueNode>
+
+</DialogueTree>
+```	  
 
 ### Ring
 - "innerRadius" : (decimal number)
@@ -467,6 +559,12 @@ This allows you to make black holes and white holes, and to pair them.
 - "size" : (decimal number) highest radius of the sand volume
 - "tint" : (colour)
 - "curve" : (scale curve)
+
+### Funnel
+- "target" : (string) The name of the body that the funnel will flow onto.
+- "type" : (string) Can be sand, water, lava, or star.
+- "tint" : (colour)
+- "curve": (scale curve)
 
 ### How to destroy existing planets
 
