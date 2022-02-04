@@ -135,13 +135,14 @@ namespace NewHorizons.Utility
                     if (child == null)
                     {
                         Logger.LogWarning($"Couldn't find object in path ({names[i]})");
-                        return null;
+                        t = null;
+                        break;
                     }
 
                     t = child;
                 }
 
-                go = t.gameObject;
+                go = t?.gameObject;
             }
 
             if(go == null)
