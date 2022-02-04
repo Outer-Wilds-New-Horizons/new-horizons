@@ -618,12 +618,12 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 ## Credits
 Authors:
 - xen (New Horizons v0.1.0 onwards)
-- Mister_Nebula (Marshmallow v0.1 to v1.1.0)
+- [Mister_Nebula](https://github.com/misternebula) (Marshmallow v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
-- Raicuparta (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
-- Nageld (Set up xml reading for custom dialogue in v0.8.0)
+- [jtsalomo](https://github.com/jtsalomo) (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
+- [Raicuparta](https://github.com/Raicuparta) (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
+- [Nageld](https://github.com/Nageld) (Set up xml reading for custom dialogue in v0.8.0)
 
 Marshmallow was made with help from:
 - TAImatem
