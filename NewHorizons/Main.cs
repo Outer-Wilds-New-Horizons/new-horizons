@@ -104,7 +104,18 @@ namespace NewHorizons
 
             NewHorizonsData.Load();
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+            // Make the warp controller if there are multiple star systems
+            if (BodyDict.Keys.Count > 1)
+            {
+                _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+
+                if (!PlayerData._currentGameSave.GetPersistentCondition("KnowsAboutWarpDrive"))
+                {
+                    LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
+                }
+            }
+
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
 
             // Need to manage this when there are multiple stars
@@ -202,9 +213,8 @@ namespace NewHorizons
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
-            _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
             Logger.Log($"Is the player warping in? {IsWarping}");
-            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
+            if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
             IsWarping = false;
         }
 
@@ -314,19 +324,34 @@ namespace NewHorizons
             var folder = mod.ModHelper.Manifest.ModFolderPath;
             foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
             {
-                try
+                var relativeDirectory = file.Replace(folder, "");
+                var body = LoadConfig(mod, relativeDirectory);
+
+                if(body != null)
                 {
-                    var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
-                    Logger.Log($"Loaded {config.Name}");
-                    if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
-                    if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
-                    BodyDict[config.StarSystem].Add(new NewHorizonsBody(config, mod.ModHelper));
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load {file}: {e.Message}, is your Json formatted correctly?");
+                    BodyDict[body.Config.StarSystem].Add(body);
                 }
             }
+        }
+
+        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativeDirectory)
+        {
+            NewHorizonsBody body = null;
+            try
+            {
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                Logger.Log($"Loaded {config.Name}");
+                if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
+                if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+
+                body = new NewHorizonsBody(config, mod.ModHelper);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message}, is your Json formatted correctly?");
+            }
+
+            return body;
         }
 
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -583,7 +608,7 @@ namespace NewHorizons
             if (_isChangingStarSystem) return;
 
             Logger.Log($"Warping to {newStarSystem}");
-            if(warp) _shipWarpController.WarpOut();
+            if(warp && _shipWarpController) _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             IsWarping = warp;
