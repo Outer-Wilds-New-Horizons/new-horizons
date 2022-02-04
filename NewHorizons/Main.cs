@@ -43,6 +43,8 @@ namespace NewHorizons
         public bool IsWarping { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
+        public static bool HasWarpDrive { get; private set; } = false;
+
         private ShipWarpController _shipWarpController;
 
         public override object GetApi()
@@ -59,6 +61,7 @@ namespace NewHorizons
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
 
             Tools.Patches.Apply();
+            Tools.WarpDrivePatches.Apply();
             Tools.OWCameraFix.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
@@ -107,6 +110,8 @@ namespace NewHorizons
             // Make the warp controller if there are multiple star systems
             if (BodyDict.Keys.Count > 1)
             {
+                HasWarpDrive = true;
+
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
 
