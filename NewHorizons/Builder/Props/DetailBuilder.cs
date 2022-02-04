@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Props
         {
             var prefab = GameObject.Find(propToClone);
 
-            //TODO: this is super costly
+            //TODO: this is super costly I think
             if (prefab == null) prefab = SearchUtilities.FindObjectOfTypeAndName<GameObject>(propToClone.Split(new char[] { '\\', '/' }).Last());
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal, generateColliders);

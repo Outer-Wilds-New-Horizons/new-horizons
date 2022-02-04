@@ -32,7 +32,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var geyserInfo in config.Props.Geysers)
                 {
-                    GeyserBuilder.Make(go, sector, geyserInfo);
+                    //GeyserBuilder.Make(go, sector, geyserInfo);
                 }
             }
             if(config.Props.Rafts != null)
@@ -43,7 +43,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
-                    TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                    //TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
             if(config.Props.Dialogue != null)
