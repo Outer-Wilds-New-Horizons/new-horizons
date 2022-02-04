@@ -401,7 +401,6 @@ An array of object, each one has the following properties:
 - "radius" : (decimal number) the spherical volume the player must look at to talk to this character
 - "xmlFile" : (string) The filepath to the XML file which defines this dialogue
 - "remoteTriggerPosition" : (position) This is optional. If you want a certain volume to trigger the player to engage with the dialogue from a distance, set this position.
-- "persistentCondition" : (string) The condition required for the remote dialogue trigger to happen.
 
 #### XML
 Here's an example dialogue XML:
