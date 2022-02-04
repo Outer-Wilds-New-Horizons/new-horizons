@@ -64,6 +64,8 @@ namespace NewHorizons.External
             public MVector3 position;
             public float radius;
             public string xmlFile;
+            public MVector3 remoteVolumePosition;
+            public string persistentCondition;
         }
     }
 }

@@ -14,6 +14,42 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info)
         {
+            var dialogue = MakeConversationZone(go, sector, info);
+            if (info.remoteVolumePosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+        }
+
+        public static void MakeRemoteDialogueTrigger(GameObject go, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        {
+            GameObject conversationTrigger = new GameObject("ConversationTrigger");
+            conversationTrigger.SetActive(false);
+
+            var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
+            var boxCollider = conversationTrigger.AddComponent<BoxCollider>();
+            conversationTrigger.AddComponent<OWCollider>();
+
+            remoteDialogueTrigger._listDialogues = new RemoteDialogueTrigger.RemoteDialogueCondition[]
+            {
+                new RemoteDialogueTrigger.RemoteDialogueCondition()
+                {
+                    priority = 1,
+                    dialogue = dialogue,
+                    prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
+                    prereqConditions = new string[]{ },
+                    onTriggerEnterConditions = new string[]{ }
+                }  
+            };
+            remoteDialogueTrigger._activatedDialogues = new bool[1];
+            remoteDialogueTrigger._deactivateTriggerPostConversation = true;
+
+            boxCollider.size = Vector3.one * info.radius / 2f;
+
+            conversationTrigger.transform.parent = sector?.transform ?? go.transform;
+            conversationTrigger.transform.localPosition = info.remoteVolumePosition;
+            conversationTrigger.SetActive(true);
+        }
+
+        public static CharacterDialogueTree MakeConversationZone(GameObject go, Sector sector, PropModule.DialogueInfo info)
+        {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
 
@@ -34,10 +70,11 @@ namespace NewHorizons.Builder.Props
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
-
-            conversationZone.transform.parent = sector.transform;
+            conversationZone.transform.parent = sector?.transform ?? go.transform;
             conversationZone.transform.localPosition = info.position;
             conversationZone.SetActive(true);
+
+            return dialogueTree;
         }
 
         private static void AddTranslation(string xml)
