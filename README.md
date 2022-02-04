@@ -218,13 +218,13 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "inclination" : (integer) The angle (in degrees) between the planet's orbit and the plane of the solar system.
 - "primaryBody" : (string) The name of what your planet should orbit. 
 - "isMoon" : (true/false) Self explanatory. 
-- "longitudeOfAscendingNode" : (decimal number) 
-- "argumentOfPeriapsis" : (decimal number)
+- "longitudeOfAscendingNode" : (decimal number) An angle (in degrees) defining the point where the orbit of the body rises above the orbital plane if it has nonzero inclination.
+- "argumentOfPeriapsis" : (decimal number) An angle (in degrees) defining the location of the periapsis (closest distance to it's primary body) if it has nonzero eccentricity.
 - "eccentricity" : (decimal number from 0 to < 1) The closer to 1 it is, the more oval-shaped the orbit is.
-- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360. NOTE: This is currently broken for eccentric orbits which (for now) always start at periapsis. If you want to move the starting point, set argument of periapsis instead.
-- "axialTilt" : (decimal number)
+- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360.
+- "axialTilt" : (decimal number) The angle between the normal to the orbital plane and its axis of rotation.
 - "siderealPeriod" : (decimal number) Rotation period in minutes
-- "isTidallyLocked" : (true/false)
+- "isTidallyLocked" : (true/false) Should the body always have one side facing its primary?
 - "showOrbitLine" : (true/false) Referring to the orbit line in the map screen.
 - "isStatic" : (true/false) Set to true to have the body not move at all. Good for when placing stars.
 - "tint" : (colour) The colour of the orbit line in the map view.
