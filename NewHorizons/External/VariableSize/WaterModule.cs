@@ -10,6 +10,6 @@ namespace NewHorizons.External.VariableSize
     public class WaterModule : VariableSizeModule
     {
         public float Size { get; set; }
-        public MColor32 Tint { get; set; }
+        public MColor Tint { get; set; }
     }
 }

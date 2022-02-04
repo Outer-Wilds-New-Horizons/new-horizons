@@ -11,7 +11,10 @@ namespace NewHorizons.External
     {
         public ScatterInfo[] Scatter;
         public DetailInfo[] Details;
-        public MVector3[] Rafts;
+        public RaftInfo[] Rafts;
+        public GeyserInfo[] Geysers;
+        public TornadoInfo[] Tornados;
+        public DialogueInfo[] Dialogue;
 
         public class ScatterInfo
         {
@@ -37,9 +40,32 @@ namespace NewHorizons.External
             public bool generateColliders = false;
         }
 
+        public class RaftInfo
+        {
+            public MVector3 position;
+        }
+
         public class GeyserInfo
         {
             public MVector3 position;
+        }
+
+        public class TornadoInfo
+        {
+            public float elevation;
+            public MVector3 position;
+            public float height;
+            public float width;
+            public MColor tint;
+        }
+
+        public class DialogueInfo
+        {
+            public MVector3 position;
+            public float radius = 1f;
+            public string xmlFile;
+            public MVector3 remoteTriggerPosition;
+            public string persistentCondition;
         }
     }
 }

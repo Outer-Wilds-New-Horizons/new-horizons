@@ -1,0 +1,41 @@
+<DialogueTree>
+	<NameField>New Horizons</NameField>
+
+	<DialogueNode>
+		<Name></Name>
+		<EntryCondition>DEFAULT</EntryCondition>
+		<Dialogue>
+			<Page>Your ship is now equiped with a warp drive!  </Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>...</Text>
+				<DialogueTarget>1</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+	
+	<DialogueNode>
+		<Name>1</Name>
+		<Dialogue>
+			<Page>You can use the new "Interstellar Mode" page in the ship log to lock-on your autopilot to another star system.</Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>...</Text>
+				<DialogueTarget>2</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+
+	<DialogueNode>
+		<Name>2</Name>
+		<Dialogue>
+			<Page>Then just buckle up and engage the autopilot to warp there!</Page>
+		</Dialogue>
+		<SetPersistentCondition>KnowsAboutWarpDrive</SetPersistentCondition>
+	</DialogueNode>
+
+</DialogueTree>

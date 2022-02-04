@@ -43,6 +43,8 @@ namespace NewHorizons
         public bool IsWarping { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
+        public static bool HasWarpDrive { get; private set; } = false;
+
         private ShipWarpController _shipWarpController;
 
         public override object GetApi()
@@ -59,6 +61,7 @@ namespace NewHorizons
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
 
             Tools.Patches.Apply();
+            Tools.WarpDrivePatches.Apply();
             Tools.OWCameraFix.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
@@ -104,7 +107,20 @@ namespace NewHorizons
 
             NewHorizonsData.Load();
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+            // Make the warp controller if there are multiple star systems
+            if (BodyDict.Keys.Count > 1)
+            {
+                HasWarpDrive = true;
+
+                _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+
+                if (!PlayerData._currentGameSave.GetPersistentCondition("KnowsAboutWarpDrive"))
+                {
+                    LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
+                }
+            }
+
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
 
             // Need to manage this when there are multiple stars
@@ -202,9 +218,8 @@ namespace NewHorizons
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
-            _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
             Logger.Log($"Is the player warping in? {IsWarping}");
-            if (IsWarping) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
+            if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
             IsWarping = false;
         }
 
@@ -213,7 +228,7 @@ namespace NewHorizons
         public void DisplayBodyOnTitleScreen()
         {
             //Try loading one planet why not
-            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null).ToArray();
+            var eligible = BodyDict.Values.SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -225,6 +240,7 @@ namespace NewHorizons
             GameObject body1, body2, body3;
 
             body1 = LoadTitleScreenBody(eligible[indices[0]]);
+            body1.transform.localRotation = Quaternion.Euler(15, 0, 0);
             if (selectionCount > 1)
             {
                 body1.transform.localScale = Vector3.one * (body1.transform.localScale.x) * 0.3f;
@@ -313,35 +329,43 @@ namespace NewHorizons
             var folder = mod.ModHelper.Manifest.ModFolderPath;
             foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
             {
-                try
+                var relativeDirectory = file.Replace(folder, "");
+                var body = LoadConfig(mod, relativeDirectory);
+
+                if(body != null)
                 {
-                    var config = mod.ModHelper.Storage.Load<PlanetConfig>(file.Replace(folder, ""));
-                    Logger.Log($"Loaded {config.Name}");
-                    if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
-                    if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
-                    BodyDict[config.StarSystem].Add(new NewHorizonsBody(config, mod.ModHelper));
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load {file}: {e.Message}, is your Json formatted correctly?");
+                    BodyDict[body.Config.StarSystem].Add(body);
                 }
             }
         }
 
+        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativeDirectory)
+        {
+            NewHorizonsBody body = null;
+            try
+            {
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                Logger.Log($"Loaded {config.Name}");
+                if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
+                if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+
+                body = new NewHorizonsBody(config, mod.ModHelper);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message}, is your Json formatted correctly?");
+            }
+
+            return body;
+        }
+
         private bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
-            var stringID = body.Config.Name.ToUpper().Replace(" ", "_").Replace("'", "");
-            if (stringID.Equals("ATTLEROCK")) stringID = "TIMBER_MOON";
-            if (stringID.Equals("HOLLOWS_LANTERN")) stringID = "VOLCANIC_MOON";
-            if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
-            if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
-            if (stringID.Equals("INTERLOPER")) stringID = "COMET";
-
+            // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
             try
             {
-                existingPlanet = AstroObjectLocator.GetAstroObject(stringID).gameObject;
-                if (existingPlanet == null) existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name.Replace(" ", "")).gameObject;
+                existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name).gameObject;
             }
             catch (Exception)
             {
@@ -355,8 +379,8 @@ namespace NewHorizons
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
-                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
+                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 5);
+                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 5);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
@@ -389,6 +413,14 @@ namespace NewHorizons
 
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
+
+            if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
+            {
+                foreach (var child in body.Config.ChildrenToDestroy)
+                {
+                    Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child).SetActive(false), 2);
+                }
+            }
 
             // Do stuff that's shared between generating new planets and updating old ones
             return SharedGenerateBody(body, go, sector, rb);
@@ -432,6 +464,8 @@ namespace NewHorizons
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
+            var overrideSOI = body.Config.Base.SphereOfInfluence;
+            if (overrideSOI != 0) sphereOfInfluence = overrideSOI;
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
             var ao = (AstroObject)outputTuple.Item1;
@@ -557,13 +591,16 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuilder.Make(go, sector, body.Config, body.Mod.Assets, body.Mod.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, body.Config, body.Mod, body.Mod.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
 
             if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
                 SingularityBuilder.Make(go, sector, rb, body.Config);
+
+            if (body.Config.Funnel != null)
+                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
 
             return go;
         }
@@ -576,7 +613,7 @@ namespace NewHorizons
             if (_isChangingStarSystem) return;
 
             Logger.Log($"Warping to {newStarSystem}");
-            if(warp) _shipWarpController.WarpOut();
+            if(warp && _shipWarpController) _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             IsWarping = warp;

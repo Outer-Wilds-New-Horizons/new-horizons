@@ -25,8 +25,8 @@ namespace NewHorizons.Builder.Body
                 sandMR.CopyPropertiesFrom(oldMR);
                 sandMR.sharedMaterials = new Material[]
                 {
-                new Material(sandMaterials[0]),
-                new Material(sandMaterials[1])
+                    new Material(sandMaterials[0]),
+                    new Material(sandMaterials[1])
                 };
                 GameObject.Destroy(oldMR);
                 sandMR.sharedMaterials[0].color = module.Tint.ToColor32();
@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Body
 
             sandGO.transform.parent = go.transform;
             sandGO.transform.localPosition = Vector3.zero;
-            sandGO.transform.localScale = Vector3.one * module.Size;
+            sandGO.transform.localScale = Vector3.one * module.Size * 2f;
 
             sandGO.SetActive(true);
         }

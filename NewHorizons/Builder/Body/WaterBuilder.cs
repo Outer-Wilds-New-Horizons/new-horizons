@@ -4,6 +4,8 @@ using OWML.Utils;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -18,7 +20,6 @@ namespace NewHorizons.Builder.Body
             waterGO.layer = 15;
             waterGO.transform.parent = body.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
-            waterGO.DestroyAllComponents<SphereCollider>();
 
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
@@ -82,14 +83,22 @@ namespace NewHorizons.Builder.Body
 
             if (module.Curve != null)
             {
-                var levelController = waterGO.AddComponent<SandLevelController>();
+                var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
                 foreach (var pair in module.Curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, module.Size * pair.Value));
+                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
                 }
-                levelController._scaleCurve = curve;
+                sizeController.scaleCurve = curve;
+                sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
+                sizeController.size = module.Size;
             }
+
+            // TODO: make LOD work 
+            //waterGO.AddComponent<TessellatedSphereLOD>();
+            //waterGO.AddComponent<OceanLODController>();
+
+            // TODO: fix ruleset making the sand bubble pop up
 
             waterGO.transform.localPosition = Vector3.zero;
             waterGO.SetActive(true);

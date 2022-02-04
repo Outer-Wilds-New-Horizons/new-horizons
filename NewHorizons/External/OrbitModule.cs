@@ -22,6 +22,6 @@ namespace NewHorizons.External
         public bool IsTidallyLocked { get; set; }
         public bool ShowOrbitLine { get; set; } = true;
         public bool IsStatic { get; set; }
-        public MColor32 Tint { get; set; }
+        public MColor Tint { get; set; }
     }
 }

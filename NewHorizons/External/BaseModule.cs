@@ -25,6 +25,6 @@ namespace NewHorizons.External
         public float BlackHoleSize { get; set; }
         public float LavaSize { get; set; }
         public float WaterSize { get; set; }
-        public MColor32 WaterTint { get; set; }
+        public MColor WaterTint { get; set; }
     }
 }

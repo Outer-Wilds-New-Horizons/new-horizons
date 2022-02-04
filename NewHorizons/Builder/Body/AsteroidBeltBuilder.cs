@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Body
                     {"ProcGen", new Dictionary<string, object>()
                         {
                             {"Scale", size },
-                            {"Color", new MColor32(126, 94, 73, 255) }
+                            {"Color", new MColor(126, 94, 73, 255) }
                         }
                     }
                 };

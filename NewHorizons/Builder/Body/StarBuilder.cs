@@ -9,11 +9,15 @@ using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.VariableSize;
+using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
     static class StarBuilder
     {
+        public const float OuterRadiusRatio = 1.5f;
+
         private static Texture2D _colorOverTime;
         public static StarController Make(GameObject body, Sector sector, StarModule starModule)
         {
@@ -70,17 +74,24 @@ namespace NewHorizons.Builder.Body
                 PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.Tint != null)
                 {
-                    fog.fogTint = starModule.Tint.ToColor32();
-                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size + 1000) / starModule.Size;
+                    fog.fogTint = starModule.Tint.ToColor();
+                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size * OuterRadiusRatio);
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor32());
+                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
                         lod.material.SetFloat("_InnerRadius", starModule.Size);
-                        lod.material.SetFloat("_OuterRadius", starModule.Size * 3f / 2f);
+                        lod.material.SetFloat("_OuterRadius", starModule.Size * OuterRadiusRatio);
                     }
                 }
                 fog.transform.localScale = Vector3.one;
-                fog.fogRadius = starModule.Size * 1.2f;
+                fog.fogRadius = starModule.Size * OuterRadiusRatio;
+                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                if (starModule.Curve != null)
+                {
+                    var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
+                    controller.scaleCurve = starModule.ToAnimationCurve();
+                    controller.initialSize = starModule.Size;
+                }
             }
 
             var ambientLightGO = GameObject.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -103,13 +114,13 @@ namespace NewHorizons.Builder.Body
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
             Color lightColour = light.color;
-            if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor32();
+            if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor();
             if (lightColour == null && starModule.Tint != null)
             {
                 // Lighten it a bit
-                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f / 255f);
-                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f / 255f);
-                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f / 255f);
+                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f);
+                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f);
+                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f);
                 lightColour = new Color(r, g, b);
             }
             if (lightColour != null) light.color = (Color)lightColour;
@@ -119,20 +130,24 @@ namespace NewHorizons.Builder.Body
 
             if(starModule.Tint != null)
             {
-                var colour = starModule.Tint.ToColor32();
+                var colour = starModule.Tint.ToColor();
 
                 var sun = GameObject.Find("Sun_Body");
                 var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(1f, 8f * starModule.SolarLuminosity) / 255f;
-                surface.sharedMaterial.color = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
-                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.TintImage(_colorOverTime, colour));
+                var mod = Mathf.Max(0.5f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
+                var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
+                surface.sharedMaterial.color = adjustedColour;
+
+                Color.RGBToHSV(adjustedColour, out float H, out float S, out float V);
+                var darkenedColor = Color.HSVToRGB(H, S, V * 0.05f);
+                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
             if(starModule.SolarFlareTint != null)
-                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor32();
+                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor();
 
             starGO.transform.localPosition = Vector3.zero;
             starGO.transform.localScale = starModule.Size * Vector3.one;

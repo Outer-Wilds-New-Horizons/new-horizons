@@ -8,6 +8,7 @@ namespace NewHorizons.External
         string Name { get; }
         string StarSystem { get; }
         bool Destroy { get; }
+        string[] ChildrenToDestroy { get; }
         int BuildPriority { get; }
         BaseModule Base { get; }
         AtmosphereModule Atmosphere { get; }
@@ -25,5 +26,6 @@ namespace NewHorizons.External
         LavaModule Lava { get; }
         SandModule Sand { get; }
         WaterModule Water { get; }
+        FunnelModule Funnel { get; }
     }
 }

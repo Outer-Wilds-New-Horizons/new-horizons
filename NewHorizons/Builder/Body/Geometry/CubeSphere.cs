@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -95,10 +96,9 @@ namespace NewHorizons.Body
             v.y = v2.y * Mathf.Sqrt(1f - x2 / 2f - z2 / 2f + x2 * z2 / 3f);
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
-            float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)));
-            float longitude = 180f;
-            if(v.x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(v.y / v.x);
-            if(v.x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(v.y / v.x) + Mathf.PI);
+            var sphericals = CoordinateUtilities.CartesianToSpherical(v);
+            float longitude = sphericals.x;
+            float latitude = sphericals.y;
 
             float sampleX = heightMap.width * longitude / 360f;
             float sampleY = heightMap.height * latitude / 180f;
