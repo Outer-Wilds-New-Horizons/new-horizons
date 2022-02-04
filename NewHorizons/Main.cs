@@ -12,12 +12,13 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Epic.OnlineServices;
+using PacificEngine.OW_CommonResources.Game.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -48,6 +49,35 @@ namespace NewHorizons
         public override object GetApi()
         {
             return new NewHorizonsApi();
+        }
+
+        private void OnGUI()
+        {
+            GUILayout.BeginArea(new Rect(0, 0, 100, 100));
+            bool learnPress = GUILayout.Button("Learn Thing");
+            if (learnPress)
+            {
+                Locator.GetShipLogManager().RevealFact("COOL_ROCK_R1", false, true);
+                Locator.GetShipLogManager().RevealFact("COOL_ROCK_R2", false, true);
+                Locator.GetShipLogManager().RevealFact("UNCOOL_ROCK_R1", false, true);
+                Locator.GetShipLogManager().RevealFact("UNCOOL_ROCK_R2", false, true);
+                Locator.GetShipLogManager().RevealFact("UNCOOL_ROCK_R3", false, true);
+                
+            }
+
+            bool iRemem = GUILayout.Button("I Remem");
+            if (iRemem)
+            {
+                Data.knowAllFacts = true;
+                Data.knowAllRumors = true;
+            }
+            bool forgorPress = GUILayout.Button("I Forgor");
+            if (forgorPress)
+            {
+                Data.knowAllFacts = false;
+                Data.knowAllRumors = false;
+            }
+            GUILayout.EndArea();
         }
 
         public void Start()
