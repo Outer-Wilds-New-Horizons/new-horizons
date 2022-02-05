@@ -38,6 +38,8 @@ namespace NewHorizons.Builder.Props
 
             foreach (var propInfo in scatterInfo)
             {
+                Random.InitState(propInfo.seed);
+
                 GameObject prefab;
                 if (propInfo.assetBundle != null) prefab = PropBuildManager.LoadPrefab(propInfo.assetBundle, propInfo.path, uniqueModName, assets);
                 else prefab = GameObject.Find(propInfo.path);

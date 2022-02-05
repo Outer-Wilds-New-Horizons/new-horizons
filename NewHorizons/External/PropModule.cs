@@ -18,6 +18,7 @@ namespace NewHorizons.External
 
         public class ScatterInfo
         {
+            public int seed = 0;
             public int count;
             public string path;
             public string assetBundle;
