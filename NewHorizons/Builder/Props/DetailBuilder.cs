@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
             {
                 // Enable all children or something
                 var enabledField = component.GetType().GetField("enabled");
-                if (enabledField != null && enabledField.FieldType == typeof(bool)) enabledField.SetValue(component, true);
+                if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
 
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
@@ -79,6 +79,14 @@ namespace NewHorizons.Builder.Props
 
                 if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Animator).enabled = true);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
+
+                if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
+
+                if(component is DarkMatterVolume)
+                {
+                    var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
+                    if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
+                }
 
                 if (component is SectoredMonoBehaviour)
                 {
