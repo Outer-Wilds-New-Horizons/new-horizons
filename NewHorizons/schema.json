@@ -1107,7 +1107,7 @@
             "Star"
           ],
           "default": "Sand"
-        }
+        },
         "tint": {
           "type": "object",
           "properties": {
