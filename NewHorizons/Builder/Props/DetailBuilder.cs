@@ -39,10 +39,7 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)
         {
-            var prefab = GameObject.Find(propToClone);
-
-            //TODO: this is super costly
-            if (prefab == null) prefab = SearchUtilities.FindObjectOfTypeAndName<GameObject>(propToClone.Split(new char[] { '\\', '/' }).Last());
+            var prefab = SearchUtilities.Find(propToClone);
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal, generateColliders);
         }
@@ -66,7 +63,8 @@ namespace NewHorizons.Builder.Props
 
             foreach (var assetBundle in assetBundles)
             {
-                sector.OnOccupantEnterSector += ((SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle));
+                sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle);
+                StreamingManager.LoadStreamingAssets(assetBundle);
             }
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
@@ -78,6 +76,9 @@ namespace NewHorizons.Builder.Props
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
+
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Animator).enabled = true);
+                if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if (component is SectoredMonoBehaviour)
                 {

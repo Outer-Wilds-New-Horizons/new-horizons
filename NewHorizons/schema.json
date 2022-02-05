@@ -742,6 +742,55 @@
               }
             }
           }
+        },
+        "dialogue": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              },
+              "radius": {
+                "type": "number",
+                "default": 0
+              },
+              "xmlFile": {
+                "type": "string"
+              },
+              "remoteTriggerPosition": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

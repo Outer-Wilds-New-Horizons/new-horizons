@@ -25,8 +25,8 @@ namespace NewHorizons.Builder.Body
                 sandMR.CopyPropertiesFrom(oldMR);
                 sandMR.sharedMaterials = new Material[]
                 {
-                new Material(sandMaterials[0]),
-                new Material(sandMaterials[1])
+                    new Material(sandMaterials[0]),
+                    new Material(sandMaterials[1])
                 };
                 GameObject.Destroy(oldMR);
                 sandMR.sharedMaterials[0].color = module.Tint.ToColor32();

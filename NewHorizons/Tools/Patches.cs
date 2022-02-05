@@ -58,7 +58,6 @@ namespace NewHorizons.Tools
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SurveyorProbe>("IsLaunched", typeof(Patches), nameof(Patches.OnSurveyorProbeIsLaunched));
 
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(Patches), nameof(Patches.OnShipLogControllerUpdate));
             
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Awake", typeof(Patches), nameof(Patches.OnShipLogManagerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("IsFactRevealed", typeof(Patches), nameof(Patches.OnShipLogManagerIsFactRevealed));
@@ -364,38 +363,6 @@ namespace NewHorizons.Tools
         public static bool OnProbeLauncherUpdateOrbitalLaunchValues(ProbeLauncher __instance)
         {
             return (Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null);
-        }
-
-        public static bool OnShipLogControllerUpdate(ShipLogController __instance)
-        {
-            if (__instance._exiting
-                || OWInput.GetInputMode() != InputMode.ShipComputer
-                || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
-                || ShipLogBuilder.ShipLogStarChartMode == null)
-                return true;
-
-            __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
-            __instance._currentMode.UpdateMode();
-            if (__instance._currentMode.AllowModeSwap() && OWInput.IsNewlyPressed(InputLibrary.swapShipLogMode, InputMode.All))
-            {
-                ShipLogMode currentMode = __instance._currentMode;
-                string focusedEntryID = currentMode.GetFocusedEntryID();
-                if (!focusedEntryID.Equals("")) return true;
-                bool flag = currentMode.Equals(__instance._mapMode);
-                __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
-
-                if (currentMode.Equals(__instance._mapMode))
-                    __instance._currentMode = ShipLogBuilder.ShipLogStarChartMode;
-                else if (currentMode.Equals(ShipLogBuilder.ShipLogStarChartMode))
-                    __instance._currentMode = __instance._detectiveMode;
-                else
-                    __instance._currentMode = __instance._mapMode;
-
-                currentMode.ExitMode();
-                __instance._currentMode.EnterMode(focusedEntryID, null);
-                __instance._oneShotSource.PlayOneShot(flag ? global::AudioType.ShipLogEnterDetectiveMode : global::AudioType.ShipLogEnterMapMode, 1f);
-            }
-            return false;
         }
 
         public static bool OnSurveyorProbeIsLaunched(SurveyorProbe __instance, ref bool __result)

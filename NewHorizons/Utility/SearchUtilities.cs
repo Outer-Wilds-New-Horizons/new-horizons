@@ -73,6 +73,88 @@ namespace NewHorizons.Utility
             return null;
         }
 
+        public static string GetPath(Transform current)
+        {
+            if (current.parent == null) return "/" + current.name;
+            return GetPath(current.parent) + "/" + current.name;
+        }
+
+        /*
+        public static GameObject Find(string path)
+        {
+            var go = GameObject.Find(path);
+            if (go != null) return go;
+
+            var names = path.Split(new char[] { '\\', '/' });
+
+            foreach (var possibleMatch in FindObjectsOfTypeAndName<GameObject>(names.Last()))
+            {
+                Logger.LogPath(possibleMatch);
+                if (GetPath(possibleMatch.transform) == path) return possibleMatch;
+            }
+
+            return null;
+        }
+        */
+
+        public static GameObject Find(string path)
+        {
+            var go = GameObject.Find(path);
+
+            var names = path.Split(new char[] { '\\', '/' });
+            if (go == null)
+            {
+
+                // Get the root object and hope its the right one
+                var root = GameObject.Find(names[0]);
+                if (root == null) root = FindObjectOfTypeAndName<GameObject>(names[0]);
+
+                var t = root?.transform;
+                if (t == null)
+                {
+                    Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
+                    return null;
+                }
+
+                for (int i = 1; i < names.Length; i++)
+                {
+                    var child = t.transform.Find(names[i]);
+
+                    if(child == null)
+                    {
+                        foreach(Transform c in t.GetComponentsInChildren<Transform>(true))
+                        {
+                            if(t.name.Equals(names[i]))
+                            {
+                                child = c;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (child == null)
+                    {
+                        Logger.LogWarning($"Couldn't find object in path ({names[i]})");
+                        t = null;
+                        break;
+                    }
+
+                    t = child;
+                }
+
+                go = t?.gameObject;
+            }
+
+            if(go == null)
+            {
+                var name = names.Last();
+                Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
+                go = FindObjectOfTypeAndName<GameObject>(name);
+            }
+
+            return go;
+        }
+
         public static List<GameObject> GetAllChildren(GameObject parent)
         {
             List<GameObject> children = new List<GameObject>();

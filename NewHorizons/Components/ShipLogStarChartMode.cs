@@ -42,7 +42,7 @@ namespace NewHorizons.Components
             _upperRightPromptList = upperRightPromptList;
 
             _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Rumor Mode", 0, ScreenPrompt.DisplayState.Normal, false);
-            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Target", 0, ScreenPrompt.DisplayState.Normal, false);
+            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Lock Autopilot to Star System", 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
             GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
@@ -50,6 +50,9 @@ namespace NewHorizons.Components
             var x = 0;
             foreach (var starSystem in Main.BodyDict.Keys)
             {
+                // Get rid of the warp option for the current system
+                if (starSystem == Main.Instance.CurrentStarSystem) continue;
+
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;

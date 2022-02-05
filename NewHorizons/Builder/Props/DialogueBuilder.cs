@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,43 @@ namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info)
+        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        {
+            var dialogue = MakeConversationZone(go, sector, info, mod);
+            if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+        }
+
+        public static void MakeRemoteDialogueTrigger(GameObject go, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        {
+            GameObject conversationTrigger = new GameObject("ConversationTrigger");
+            conversationTrigger.SetActive(false);
+
+            var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
+            var boxCollider = conversationTrigger.AddComponent<BoxCollider>();
+            conversationTrigger.AddComponent<OWCollider>();
+
+            remoteDialogueTrigger._listDialogues = new RemoteDialogueTrigger.RemoteDialogueCondition[]
+            {
+                new RemoteDialogueTrigger.RemoteDialogueCondition()
+                {
+                    priority = 1,
+                    dialogue = dialogue,
+                    prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
+                    prereqConditions = new string[]{ },
+                    onTriggerEnterConditions = new string[]{ }
+                }  
+            };
+            remoteDialogueTrigger._activatedDialogues = new bool[1];
+            remoteDialogueTrigger._deactivateTriggerPostConversation = true;
+
+            boxCollider.size = Vector3.one * info.radius / 2f;
+
+            conversationTrigger.transform.parent = sector?.transform ?? go.transform;
+            conversationTrigger.transform.localPosition = info.remoteTriggerPosition;
+            conversationTrigger.SetActive(true);
+        }
+
+        public static CharacterDialogueTree MakeConversationZone(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
@@ -28,16 +65,17 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 
-            var xml = System.IO.File.ReadAllText(Main.Instance.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xml = System.IO.File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
 
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
-
-            conversationZone.transform.parent = sector.transform;
+            conversationZone.transform.parent = sector?.transform ?? go.transform;
             conversationZone.transform.localPosition = info.position;
             conversationZone.SetActive(true);
+
+            return dialogueTree;
         }
 
         private static void AddTranslation(string xml)

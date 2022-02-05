@@ -15,24 +15,24 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModHelper mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {
-                ScatterBuilder.Make(go, sector, config, assets, uniqueModName);
+                ScatterBuilder.Make(go, sector, config, mod.Assets, uniqueModName);
             }
             if(config.Props.Details != null)
             {
                 foreach (var detail in config.Props.Details)
                 {
-                    DetailBuilder.Make(go, sector, config, assets, uniqueModName, detail);
+                    DetailBuilder.Make(go, sector, config, mod.Assets, uniqueModName, detail);
                 }
             }
             if(config.Props.Geysers != null)
             {
                 foreach(var geyserInfo in config.Props.Geysers)
                 {
-                    GeyserBuilder.Make(go, sector, geyserInfo);
+                    //GeyserBuilder.Make(go, sector, geyserInfo);
                 }
             }
             if(config.Props.Rafts != null)
@@ -43,14 +43,14 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
-                    TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                    //TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
             if(config.Props.Dialogue != null)
             {
                 foreach(var dialogueInfo in config.Props.Dialogue)
                 {
-                    DialogueBuilder.Make(go, sector, dialogueInfo);
+                    DialogueBuilder.Make(go, sector, dialogueInfo, mod);
                 }
             }
         }

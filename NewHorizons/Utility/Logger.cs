@@ -29,13 +29,7 @@ namespace NewHorizons.Utility
         public static void LogPath(GameObject go)
         {
             if (go == null) Log("Can't print path: GameObject is null");
-            else Log($"{GetPath(go.transform)}");
-        }
-
-        private static string GetPath(Transform current)
-        {
-            if (current.parent == null) return "/" + current.name;
-            return GetPath(current.parent) + "/" + current.name;
+            else Log($"{SearchUtilities.GetPath(go.transform)}");
         }
 
         public static void Log(string text, LogType type)

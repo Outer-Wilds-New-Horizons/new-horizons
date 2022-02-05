@@ -22,7 +22,10 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [AsteroidBelt](#asteroidbelt)
   - [FocalPoint](#focalpoint)
   - [Props](#props)
-  	- [Asset Bundles](#asset-bundles)
+  	- [Details/Scatterer](#detailsscatterer)	
+  		- [Asset Bundles](#asset-bundles)
+  	- [Dialogue](#dialogue)
+  		- [XML](#xml)
   - [Ring](#ring)
   - [Spawn](#spawn)
   - [Star](#star)
@@ -76,6 +79,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement custom Nomai scrolls
 - Implement custom dialogue
 - Implement constant gravity volumes
+- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 
 ## How to create your own planets using configs
 
@@ -217,13 +221,13 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "inclination" : (integer) The angle (in degrees) between the planet's orbit and the plane of the solar system.
 - "primaryBody" : (string) The name of what your planet should orbit. 
 - "isMoon" : (true/false) Self explanatory. 
-- "longitudeOfAscendingNode" : (decimal number) 
-- "argumentOfPeriapsis" : (decimal number)
+- "longitudeOfAscendingNode" : (decimal number) An angle (in degrees) defining the point where the orbit of the body rises above the orbital plane if it has nonzero inclination.
+- "argumentOfPeriapsis" : (decimal number) An angle (in degrees) defining the location of the periapsis (closest distance to it's primary body) if it has nonzero eccentricity.
 - "eccentricity" : (decimal number from 0 to < 1) The closer to 1 it is, the more oval-shaped the orbit is.
-- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360. NOTE: This is currently broken for eccentric orbits which (for now) always start at periapsis. If you want to move the starting point, set argument of periapsis instead.
-- "axialTilt" : (decimal number)
-- "siderealPeriod" : (decimal number)
-- "isTidallyLocked" : (true/false)
+- "trueAnomaly" : (decimal number) Where the planet should start off in its orbit in terms of the central angle. From 0 to 360.
+- "axialTilt" : (decimal number) The angle between the normal to the orbital plane and its axis of rotation.
+- "siderealPeriod" : (decimal number) Rotation period in minutes
+- "isTidallyLocked" : (true/false) Should the body always have one side facing its primary?
 - "showOrbitLine" : (true/false) Referring to the orbit line in the map screen.
 - "isStatic" : (true/false) Set to true to have the body not move at all. Good for when placing stars.
 - "tint" : (colour) The colour of the orbit line in the map view.
@@ -236,6 +240,7 @@ Some of these I don't explain since they are just orbital parameters. If you don
 - "cloudCap" : (string) The file path to a texture that will be put on the north pole over the clouds.
 - "cloudRamp" : (string) I don't really know what this does. You don't have to put anything.
 - "useBasicCloudShader" : (true/false) By default we use the same shader as Giant's deep. Set this to true if you just want your cloud texture to be applied as is.
+- "shadowsOnClouds" : (true/false) By default clouds have shadows on them. Set to false if you want the clouds to have flat colouring (useful for brown dwarfs)
 - "fogTint" : (colour) Puts tinted fog around the planet.
 - "fogSize" : (decimal number)
 - "fogDensity" : (decimal number) How dense the fog is, from 0 to 100.
@@ -327,9 +332,10 @@ and
 The positions of the binaries will be based off of their masses (as determined by the "surfaceGravity" parameter). However, one of them must have a non-zero semiMajorAxis field else the mod gets confused. This example uses stars, but it will also work for planets. If you want to have other planets orbiting the center of mass, just put the focal point body as the primary body.
 
 ### Props
-Lets you place items on the surface of the planet.
+Lets you place features on the surface of the planet.
 
-For these there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
+#### Details/Scatterer
+For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 - Use "Object Explorer" to search
 - Do not use the search functionality on Scene Explorer, it is really really slow. Use the "Object Search" tab instead.
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
@@ -352,7 +358,7 @@ A detail info object can have the following parameters:
 - "objFilePath" : (string) the file path to a .obj 3d model
 - "mtlFilePath" : (string) the file path to the material for the .obj model
 - "position" : (x, y, z)
-- "rotation" : (x, y, z) the euler angle rotation from a 3d vector
+- "rotation" : (x, y, z) the euler angle rotation from a 3d vector (in degrees)
 - "scale" : (decimal number)
 - "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
 
@@ -388,6 +394,92 @@ public class CreateAssetBundles
 
 5. In the top left click the "Assets" drop-down and select "Build AssetBundles". This should create your asset bundle in a folder in the root directory called "StreamingAssets".
 6. Copy the asset bundle and asset bundle .manifest files from StreamingAssets into your mod's "planets" folder. If you did everything properly they should work in game. To double check everything is included, open the .manifest file in a text editor to see the files included and their paths.
+
+#### Dialogue
+An array of object, each one has the following properties:
+- "position": (position) 
+- "radius" : (decimal number) the spherical volume the player must look at to talk to this character
+- "xmlFile" : (string) The filepath to the XML file which defines this dialogue
+- "remoteTriggerPosition" : (position) This is optional. If you want a certain volume to trigger the player to engage with the dialogue from a distance, set this position.
+
+#### XML
+Here's an example dialogue XML:
+
+```
+<DialogueTree>
+	<NameField>EXAMPLE NPC</NameField>
+
+	<DialogueNode>
+		<Name>Start</Name>
+		<EntryCondition>DEFAULT</EntryCondition>
+		<Dialogue>
+			<Page>Start</Page>
+      		<Page>Start Part 2</Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 1</Text>
+				<DialogueTarget>1</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto 2</Text>
+				<DialogueTarget>2</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+	
+	<DialogueNode>
+		<Name>1</Name>
+		<Dialogue>
+			<Page>This is 1</Page>
+		</Dialogue>
+		
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 2</Text>
+				<DialogueTarget>2</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+	</DialogueNode>
+
+
+	<DialogueNode>
+		<Name>2</Name>
+		<Dialogue>
+			<Page>This is 2</Page>
+		</Dialogue>
+
+		<DialogueOptionsList>
+			<DialogueOption>
+				<Text>Goto 1</Text>
+				<DialogueTarget>1</DialogueTarget>
+			</DialogueOption>
+			<DialogueOption>
+				<Text>Goto End</Text>
+				<DialogueTarget>End</DialogueTarget>
+			</DialogueOption>
+		</DialogueOptionsList>
+
+	</DialogueNode>
+	
+	<DialogueNode>
+		<Name>End</Name>
+		<Dialogue>
+			<Page>This is the end</Page>
+		</Dialogue>
+	</DialogueNode>
+
+</DialogueTree>
+```	  
 
 ### Ring
 - "innerRadius" : (decimal number)
@@ -467,6 +559,12 @@ This allows you to make black holes and white holes, and to pair them.
 - "tint" : (colour)
 - "curve" : (scale curve)
 
+### Funnel
+- "target" : (string) The name of the body that the funnel will flow onto.
+- "type" : (string) Can be sand, water, lava, or star.
+- "tint" : (colour)
+- "curve": (scale curve)
+
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
@@ -525,6 +623,7 @@ Authors:
 New Horizons was made with help from:
 - salomj (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
 - Raicuparta (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
+- Nageld (Set up xml reading for custom dialogue in v0.8.0)
 
 Marshmallow was made with help from:
 - TAImatem
