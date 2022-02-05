@@ -61,13 +61,14 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Black hole / white hole pairs (done)
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
+- Implement custom dialogue (done)
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
 - Implement all planet features:
 	- Tornados + floating islands
-	- Sand funnels (water? lava? star?)
+	- Funnels (sand/water/lava/star) (done)
 	- Variable surface height (sand/water/lava/star) (done)
 	- Let any star go supernova
 	- Geysers
@@ -77,7 +78,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 	- Timed position/velocity changes
 	- Zero-g volumes
 - Implement custom Nomai scrolls
-- Implement custom dialogue
+- Implement custom translatable writing
 - Implement constant gravity volumes
 - Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 
