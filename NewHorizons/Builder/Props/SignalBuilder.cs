@@ -121,7 +121,8 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    clip = mod.Assets.GetAudio(info.AudioFilePath);
+                    clip = AudioUtility.LoadAudio(mod.Manifest.ModFolderPath + "/" + info.AudioFilePath);
+                    //clip = mod.Assets.GetAudio(info.AudioFilePath);
                 }
                 catch(Exception e)
                 {
