@@ -115,10 +115,7 @@ namespace NewHorizons
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
 
-                if (!PlayerData._currentGameSave.GetPersistentCondition("KnowsAboutWarpDrive"))
-                {
-                    LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
-                }
+                LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
             }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
