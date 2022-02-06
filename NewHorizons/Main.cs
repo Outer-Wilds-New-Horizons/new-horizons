@@ -580,7 +580,7 @@ namespace NewHorizons
                 }
 
                 if (body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size / 2f, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
+                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
 
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
