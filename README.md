@@ -62,26 +62,25 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
 - Implement custom dialogue (done)
+- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier ([done](https://github.com/xen-42/outer-wilds-unity-template))
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
 - Implement all planet features:
-	- Tornados + floating islands
-	- Funnels (sand/water/lava/star) (done)
+ 	- Funnels (sand/water/lava/star) (done)
 	- Variable surface height (sand/water/lava/star) (done)
+	- Zero-g volumes (done, with Unity template)
+	- Ghost matter (done, by copying props via game hierarchy)
+	- Tornados + floating islands
 	- Let any star go supernova
 	- Geysers
 	- Meteors
-	- Ghost matter
 	- Pocket dimensions
 	- Timed position/velocity changes
-	- Zero-g volumes
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
-- Implement constant gravity volumes (technically done)
 - Destroy planets that fall into a star
-- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier (done)
 
 ## How to create your own planets using configs
 
