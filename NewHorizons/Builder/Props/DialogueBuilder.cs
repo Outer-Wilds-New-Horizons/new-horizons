@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Props
         public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
 
-            if (PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
+            if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
             var dialogue = MakeConversationZone(go, sector, info, mod);
             if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
