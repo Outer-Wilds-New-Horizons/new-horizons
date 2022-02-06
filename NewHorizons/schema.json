@@ -680,9 +680,6 @@
           "items": {
             "type": "object",
             "properties": {
-              "count": {
-                "type": "integer"
-              },
               "path": {
                 "type": "string",
                 "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
