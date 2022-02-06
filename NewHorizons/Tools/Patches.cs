@@ -75,10 +75,12 @@ namespace NewHorizons.Tools
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
-            
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>("Awake", typeof(Patches), nameof(Patches.OnShipLogManagerAwakeComplete));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>("Awake", typeof(Patches), nameof(Patches.OnShipLogManagerAwakeComplete));
+            
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogAstroObject>("UpdateState", typeof(Patches), nameof(Patches.OnShipLogAstroObjectUpdateState));
+
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(Patches), nameof(Patches.OnShipLogMapModeEnterMode));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("Initialize", typeof(Patches), nameof(Patches.OnShipLogMapModeInitialize));
         }
 
@@ -529,6 +531,22 @@ namespace NewHorizons.Tools
             {
                 __result = ShipLogBuilder.MapModeBuilder.GetAstroBodyShipLogName(__instance.GetID());
                 return false;
+            }
+        }
+
+        public static void OnShipLogAstroObjectUpdateState(ShipLogAstroObject __instance)
+        {
+            Transform detailsParent = __instance.transform.Find("Details");
+            if (detailsParent != null)
+            {
+                foreach (GameObject child in SearchUtilities.GetAllChildren(detailsParent.gameObject))
+                {
+                    Component detail;
+                    if (child.TryGetComponent(typeof(ShipLogDetail), out detail))
+                    {
+                        (detail as ShipLogDetail)?.UpdateState(__instance._state == ShipLogEntry.State.Explored);
+                    }
+                }
             }
         }
 

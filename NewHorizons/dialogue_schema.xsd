@@ -29,6 +29,8 @@
                                         <xs:element name="DialogueOption" maxOccurs="unbounded">
                                             <xs:complexType>
                                                 <xs:sequence>
+                                                    <xs:element name="RequiredPersistentCondition" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="CancelledPersistentCondition" type="xs:string" minOccurs="0"/>
                                                     <xs:element name="Text" type="xs:string"/>
                                                     <xs:element name="DialogueTarget" type="xs:string"/>
                                                 </xs:sequence>

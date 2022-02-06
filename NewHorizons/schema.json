@@ -1319,8 +1319,63 @@
             },
             "remove": {
               "type": "boolean",
-              "description": "Completely remove this planet from map mode",
+              "description": "Completely remove this planet (and it's children) from map mode",
               "default": false
+            },
+            "details": {
+              "type": "array",
+              "description": "Place non-selectable object in map mode (like sand funnels)",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "revealedSprite": {
+                    "type": "string",
+                    "description": "The sprite to show when the parent AstroBody is revealed"
+                  },
+                  "outlineSprite": {
+                    "type": "string",
+                    "description": "The sprite to show when the parent AstroBody is rumored/unexplored"
+                  },
+                  "rotation": {
+                    "type": "number",
+                    "description": "The angle in degrees to rotate the detail",
+                    "default": 0
+                  },
+                  "invisibleWhenHidden": {
+                    "type": "boolean",
+                    "description": "Whether to completely hide this detail when the parent AstroBody is unexplored",
+                    "default": false
+                  },
+                  "position": {
+                    "type": "object",
+                    "description": "The position (relative to the parent) to place the detail",
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "default": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "default": 0
+                      }
+                    }
+                  },
+                  "scale": {
+                    "type": "object",
+                    "description": "The amount to scale the x and y axis of the detail by",
+                    "properties": {
+                      "x": {
+                        "type": "number",
+                        "default": 0
+                      },
+                      "y": {
+                        "type": "number",
+                        "default": 0
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         },
