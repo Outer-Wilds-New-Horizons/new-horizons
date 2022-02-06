@@ -584,6 +584,14 @@ Similar to above, make a config where "Name" is the name of the planet. The name
 
 Only some of the above modules are supported (currently) for existing planets. Things you cannot modify for existing planets include: heightmaps, procedural generation, gravity, or their orbits. You also can't make them into stars or binary focal points (but why would you want to, just delete them and replace them entirely). However this still means there are many things you can do: completely change their atmospheres, give them rings, asteroid belts, comet tails, lava, water, prop details, or signals. 
 
+You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
+```
+"name" : "Ember Twin",
+"childrenToDestroy" : ["SandSphere_Rising"],
+```
+
+In `childrenToDestroy` you list the relative paths for the children of the planet's gameObject that you want to delete.
+
 ## How to use New Horizons in other mods
 
 First create the following interface in your mod:
