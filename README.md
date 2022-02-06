@@ -104,7 +104,6 @@ Now that you have created your planets folder, this is where you will put your p
 	"Base" : 
 	{
 		"groundSize" : 100,
-		"waterSize" : 101,
 		"surfaceSize" : 101,
 		"surfaceGravity" : 12,
 		"hasMapMarker" : true,
