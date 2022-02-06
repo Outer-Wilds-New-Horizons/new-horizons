@@ -79,7 +79,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 	- Zero-g volumes
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
-- Implement constant gravity volumes
+- Implement constant gravity volumes (technically done)
 - Destroy planets that fall into a star
 - Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 
