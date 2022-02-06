@@ -81,7 +81,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement custom translatable writing
 - Implement constant gravity volumes (technically done)
 - Destroy planets that fall into a star
-- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
+- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier (done)
 
 ## How to create your own planets using configs
 
@@ -366,6 +366,13 @@ A detail info object can have the following parameters:
 You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
 
 #### Asset Bundles
+
+Here is a template project: [Outer Wilds Unity Template](https://github.com/xen-42/outer-wilds-unity-template)
+
+The template project contains ripped versions of all the game scripts, meaning you can put things like DirectionalForceVolumes in your Unity project to have artificial gravity volumes loaded right into the game.
+
+If for whatever reason you want to set up a Unity project manually instead of using the template, follow these instructions:
+
 1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
 2. In the "Assets" folder in Unity, create a new folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
