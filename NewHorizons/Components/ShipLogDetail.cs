@@ -2,6 +2,7 @@
 using OWML.Common;
 using UnityEngine;
 using UnityEngine.UI;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components
 {
@@ -20,17 +21,26 @@ namespace NewHorizons.Components
             outlineImage.enabled = false;
         }
 
-        public void UpdateState(bool parentRevealed)
+        public void UpdateState(ShipLogEntry.State parentState)
         {
-            if (parentRevealed)
+            switch (parentState)
             {
-                revealedImage.enabled = true;
-                outlineImage.enabled = false;
-            }
-            else
-            {
-                revealedImage.enabled = false;
-                outlineImage.enabled = !detailInfo.invisibleWhenHidden;
+                case ShipLogEntry.State.Explored:
+                    outlineImage.enabled = false;
+                    revealedImage.enabled = true;
+                    break;
+                case ShipLogEntry.State.Rumored:
+                    revealedImage.enabled = false;
+                    outlineImage.enabled = true;
+                    break;
+                case ShipLogEntry.State.Hidden:
+                    revealedImage.enabled = false;
+                    outlineImage.enabled = !detailInfo.invisibleWhenHidden;
+                    break;
+                case ShipLogEntry.State.None:
+                    revealedImage.enabled = false;
+                    outlineImage.enabled = false;
+                    break;
             }
         }
     }

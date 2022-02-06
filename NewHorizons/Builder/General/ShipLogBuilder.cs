@@ -168,10 +168,12 @@ namespace NewHorizons.Builder.General
                 const float unviewedIconOffset = 15;
                 ShipLogAstroObject astroObject = nodeGO.AddComponent<ShipLogAstroObject>();
                 astroObject._id = GetAstroObjectId(node.mainBody);
+                
                 string imagePath = node.mainBody.Config.ShipLog?.mapMode?.revealedSprite ?? "DEFAULT";
                 string outlinePath = node.mainBody.Config.ShipLog?.mapMode?.outlineSprite ?? imagePath;
                 astroObject._imageObj = CreateImage(nodeGO, node.mainBody.Mod.Assets, imagePath, node.mainBody.Config.Name + " Revealed", layer);
                 astroObject._outlineObj = CreateImage(nodeGO, node.mainBody.Mod.Assets, outlinePath, node.mainBody.Config.Name + " Outline", layer);
+                
                 astroObject._unviewedObj = Object.Instantiate(referenceUnviewedSprite, nodeGO.transform, false);
                 if (node.mainBody.Config.FocalPoint != null)
                 {
@@ -181,6 +183,7 @@ namespace NewHorizons.Builder.General
                     astroObject.transform.localScale = node.lastSibling.astroObject.transform.localScale;
                 }
                 astroObject._invisibleWhenHidden = node.mainBody.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false;
+                
                 Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;
                 astroObject._unviewedObj.transform.localPosition = new Vector3(imageRect.width / 2 + unviewedIconOffset, imageRect.height / 2 + unviewedIconOffset, 0);
                 node.astroObject = astroObject;
@@ -190,16 +193,28 @@ namespace NewHorizons.Builder.General
             {
                 Vector2 fromPosition = node.astroObject.transform.localPosition;
                 Vector2 toPosition = node.lastSibling.astroObject.transform.localPosition;
-                GameObject newLink = new GameObject(node.mainBody.Config.Name + " To " + node.lastSibling.mainBody.Config.Name + " Link_ShipLog");
+                
+                GameObject newLink = new GameObject("Line_ShipLog");
                 newLink.layer = node.astroObject.gameObject.layer;
                 newLink.SetActive(false);
+                
                 RectTransform transform = newLink.AddComponent<RectTransform>();
                 transform.SetParent(node.astroObject.transform.parent);
                 Vector2 center = toPosition + (fromPosition - toPosition) / 2;
                 transform.localPosition = new Vector3(center.x, center.y, -1);
                 transform.localRotation = Quaternion.identity;
                 transform.localScale = node.level % 2 == 0 ? new Vector3(node.astroObject.transform.localScale.x / 5f, Mathf.Abs(fromPosition.y - toPosition.y) / 100f, 1) : new Vector3(Mathf.Abs(fromPosition.x - toPosition.x) / 100f, node.astroObject.transform.localScale.y / 5f , 1);
-                newLink.AddComponent<Image>();
+                Image linkImage = newLink.AddComponent<Image>();
+                linkImage.color = new Color(0.28f, 0.28f, 0.5f, 0.28f);
+
+                ShipLogModule.ShipLogDetailInfo linkDetailInfo = new ShipLogModule.ShipLogDetailInfo()
+                {
+                    invisibleWhenHidden = node.mainBody.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false
+                };
+
+                ShipLogDetail linkDetail = newLink.AddComponent<ShipLogDetail>();
+                linkDetail.Init(linkDetailInfo, linkImage, linkImage);
+                
                 transform.SetParent(node.astroObject.transform);
                 transform.SetAsFirstSibling();
                 newLink.SetActive(true);

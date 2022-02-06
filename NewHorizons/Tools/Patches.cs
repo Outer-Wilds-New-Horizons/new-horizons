@@ -544,9 +544,16 @@ namespace NewHorizons.Tools
                     Component detail;
                     if (child.TryGetComponent(typeof(ShipLogDetail), out detail))
                     {
-                        (detail as ShipLogDetail)?.UpdateState(__instance._state == ShipLogEntry.State.Explored);
+                        (detail as ShipLogDetail)?.UpdateState(__instance._state);
                     }
                 }
+            }
+
+            Transform lineObject = __instance.transform.Find("Line_ShipLog");
+            if (lineObject != null)
+            {
+                ShipLogDetail lineDetail = lineObject.gameObject.GetComponent<ShipLogDetail>();
+                lineDetail.UpdateState(__instance._state);
             }
         }
 
