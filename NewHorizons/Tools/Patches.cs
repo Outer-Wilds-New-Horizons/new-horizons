@@ -60,14 +60,12 @@ namespace NewHorizons.Tools
 
             
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Awake", typeof(Patches), nameof(Patches.OnShipLogManagerAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Start", typeof(Patches), nameof(Patches.OnShipLogManagerStart));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("IsFactRevealed", typeof(Patches), nameof(Patches.OnShipLogManagerIsFactRevealed));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("CheckForCompletionAchievement", typeof(Patches), nameof(Patches.OnShipLogManagerCheckForCompletionAchievement));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("RevealFact", typeof(Patches), nameof(Patches.OnShipLogManagerRevealFact));
-            
+
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<UIStyleManager>("GetCuriosityColor", typeof(Patches), nameof(Patches.OnUIStyleManagerGetCuriosityColor));
-            
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogMapMode>("Initialize", typeof(Patches), nameof(Patches.OnShipLogMapModeInitialize));
-            
+
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogSandFunnel>("Awake", typeof(Patches), nameof(Patches.DisableShipLogSandFunnel));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogSandFunnel>("UpdateState", typeof(Patches), nameof(Patches.DisableShipLogSandFunnel));
             
@@ -81,7 +79,7 @@ namespace NewHorizons.Tools
             
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>("Awake", typeof(Patches), nameof(Patches.OnShipLogManagerAwakeComplete));
 
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("Initialize", typeof(Patches), nameof(Patches.OnShipLogMapModeInitializeComplete));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("Initialize", typeof(Patches), nameof(Patches.OnShipLogMapModeInitialize));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -333,7 +331,7 @@ namespace NewHorizons.Tools
             }
             return true;
         }
-
+        
         public static void OnPlayerDataResetGame()
         {
             NewHorizonsData.Reset();
@@ -408,25 +406,25 @@ namespace NewHorizons.Tools
             {
                 if (body.Config.ShipLog?.curiosities != null)
                 {
-                    ShipLogBuilder.AddCuriosityColors(body.Config.ShipLog.curiosities);
+                    ShipLogBuilder.RumorModeBuilder.AddCuriosityColors(body.Config.ShipLog.curiosities);
                 }
             }
             foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
                 if (body.Config.ShipLog?.xmlFile != null)
                 {
-                    ShipLogBuilder.AddAstroBodyToShipLog(__instance, body);
+                    ShipLogBuilder.RumorModeBuilder.AddBodyToShipLog(__instance, body);
                 }
             }
         }
 
         public static void OnShipLogManagerAwakeComplete(ShipLogManager __instance)
         {
-            ShipLogBuilder.GenerateEntryData(__instance);
+            ShipLogBuilder.RumorModeBuilder.GenerateEntryData(__instance);
             for (var i = 0; i < __instance._entryList.Count; i++)
             {
                 ShipLogEntry logEntry = __instance._entryList[i];
-                ShipLogBuilder.UpdateEntryCuriosity(ref logEntry);
+                ShipLogBuilder.RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
             }
             Logger.Log("Ship Log Generation Complete For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
         }
@@ -456,14 +454,24 @@ namespace NewHorizons.Tools
             return Main.Instance.CurrentStarSystem == "SolarSystem";
         }
 
-        public static bool OnShipLogManagerRevealFact(string __0)
+        public static bool OnShipLogManagerStart(ShipLogManager __instance)
         {
-            if (Main.Instance.CurrentStarSystem != "SolarSystem" && __0 == "TH_VILLAGE_X1")
+            if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
+                return true;
+            }
+            else
+            {
+                foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+                {
+                    foreach (string fact in body.Config.ShipLog?.initialReveal ?? Array.Empty<string>())
+                    {
+                        __instance.RevealFact(fact, false, false);
+                    }
+                }
+                ShipLogBuilder.EntryLocationBuilder.InitializeLocations();
                 return false;
             }
-
-            return true;
         }
 
         public static bool OnUIStyleManagerGetCuriosityColor(UIStyleManager __instance, CuriosityName __0, bool __1, ref Color __result)
@@ -474,7 +482,7 @@ namespace NewHorizons.Tools
             }
             else
             {
-                __result = ShipLogBuilder.GetCuriosityColor(__0, __1, __instance._neutralColor, __instance._neutralHighlight);
+                __result = ShipLogBuilder.RumorModeBuilder.GetCuriosityColor(__0, __1, __instance._neutralColor, __instance._neutralHighlight);
                 return false;
             }
         }
@@ -486,16 +494,11 @@ namespace NewHorizons.Tools
 
         public static void OnShipLogMapModeInitialize(ShipLogMapMode __instance)
         {
-            
-        }
-
-        public static void OnShipLogMapModeInitializeComplete(ShipLogMapMode __instance)
-        {
             if (Main.Instance.CurrentStarSystem != "SolarSystem")
             {
                 GameObject panRoot = GameObject.Find(ShipLogBuilder.PAN_ROOT_PATH);
                 GameObject sunObject = GameObject.Find(ShipLogBuilder.PAN_ROOT_PATH + "/Sun");
-                ShipLogAstroObject[][] navMatrix = ShipLogBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot,  sunObject.layer);
+                ShipLogAstroObject[][] navMatrix = ShipLogBuilder.MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot,  sunObject.layer);
                 if (navMatrix.Length <= 1)
                 {
                     Logger.LogWarning("No planets suitable for map mode found! Defaulting to vanilla menu (expect weirdness!).");
@@ -509,7 +512,7 @@ namespace NewHorizons.Tools
                     {
                         DeleteDetail(gameObject.name);
                     }
-
+                    // Just Lie About Having A Sand Funnel
                     __instance._sandFunnel = __instance.gameObject.AddComponent<ShipLogSandFunnel>();
                 }
             }
@@ -524,7 +527,7 @@ namespace NewHorizons.Tools
             }
             else
             {
-                __result = ShipLogBuilder.GetAstroBodyShipLogName(__instance.GetID());
+                __result = ShipLogBuilder.MapModeBuilder.GetAstroBodyShipLogName(__instance.GetID());
                 return false;
             }
         }

@@ -669,7 +669,7 @@
                 "generateColliders": {
                   "type": "bool",
                   "default": false,
-                  "description":  "For each mesh filter found here should we make a mesh collider?"
+                  "description": "For each mesh filter found here should we make a mesh collider?"
                 }
               }
             }
@@ -791,6 +791,94 @@
               }
             }
           }
+        },
+        "reveal": {
+          "type": "array",
+          "description": "A set of volumes that reveal ship log fact",
+          "items": {
+            "type": "object",
+            "properties": {
+              "revealOn": {
+                "type": "string",
+                "description": "'enter', 'observe', or 'snapshot' what needs to be done to the volume to unlock the facts"
+              },
+              "reveals": {
+                "type": "array",
+                "description": "A list of facts to reveal",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "position": {
+                "type": "object",
+                "description": "The position to place the volume at",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              },
+              "radius": {
+                "type": "number",
+                "description": "The radius of the volume",
+                "default": 1.0
+              },
+              "maxDistance": {
+                "type": "number",
+                "description": "The max distance the user can be away from the volume to reveal the fact (snapshot and observe only)"
+              },
+              "maxAngle": {
+                "type": "number",
+                "description": "The max view angle the player can see the volume with to unlock the fact",
+                "default": 180.0
+              }
+            }
+          }
+        },
+        "entryLocation": {
+          "type": "array",
+          "description": "A set of locations for ship log entries",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the entry this location is for"
+              },
+              "cloaked": {
+                "type": "bool",
+                "description": "Whether this entry location is in a cloaking field",
+                "default": false
+              },
+              "position": {
+                "type": "object",
+                "description": "The position of this entry location",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "z": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -885,6 +973,10 @@
               "audioFilePath": {
                 "type": "string",
                 "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip"
+              },
+              "reveals": {
+                "type": "string",
+                "description": "A ship log fact to reveal when the signal is identified"
               },
               "sourceRadius": {
                 "type": "number",
@@ -1149,6 +1241,158 @@
               "value": {
                 "type": "number",
                 "default": 0
+              }
+            }
+          }
+        }
+      }
+    },
+    "ShipLog": {
+      "type": "object",
+      "properties": {
+        "xmlFile": {
+          "type": "string",
+          "description": "The xml file to load ship log entries from"
+        },
+        "spriteFolder": {
+          "type": "string",
+          "description": "A path to the folder where entry sprites are stored"
+        },
+        "initialReveal": {
+          "type": "array",
+          "description": "A list of fact IDs to reveal when the game starts",
+          "items": {
+            "type": "string"
+          }
+        },
+        "positions": {
+          "type": "array",
+          "description": "A set of positions to use instead of automatic layout in rumor mode",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The name of the entry to apply the position"
+              },
+              "position": {
+                "type": "object",
+                "properties": {
+                  "x": {
+                    "type": "number",
+                    "default": 0
+                  },
+                  "y": {
+                    "type": "number",
+                    "default": 0
+                  }
+                }
+              }
+            }
+          }
+        },
+        "MapMode": {
+          "type": "object",
+          "properties": {
+            "revealedSprite": {
+              "type": "string",
+              "description": "The path to the sprite to show when the planet is revealed in map mode"
+            },
+            "outlineSprite": {
+              "type": "string",
+              "description": "The path to the sprite to show when the planet is unexplored in map mode"
+            },
+            "scale": {
+              "type": "number",
+              "description": "Scale to apply to the planet in map mode",
+              "default": 1
+            },
+            "invisibleWhenHidden": {
+              "type": "bool",
+              "description": "Hide the planet completely if unexplored instead of showing an outline",
+              "default": false
+            },
+            "offset": {
+              "type": "number",
+              "description": "Extra distance to apply to this object in map mode",
+              "default": 0
+            },
+            "remove": {
+              "type": "boolean",
+              "description": "Completely remove this planet from map mode",
+              "default": false
+            }
+          }
+        },
+        "Curiosities": {
+          "type": "array",
+          "description": "A set of colors to apply to curiosities",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the curiosity to apply the color to"
+              },
+              "color": {
+                "type": "object",
+                "description": "The color to apply to entries with this curiosity",
+                "properties": {
+                  "R": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "G": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "B": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "A": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
+              },
+              "highlightColor": {
+                "type": "object",
+                "description": "The color to apply to highlighted entries with this curiosity",
+                "properties": {
+                  "R": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "G": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "B": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  },
+                  "A": {
+                    "type": "integer",
+                    "default": 0,
+                    "minimum": 0,
+                    "maximum": 255
+                  }
+                }
               }
             }
           }

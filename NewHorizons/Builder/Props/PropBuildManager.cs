@@ -8,6 +8,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
 using System.Reflection;
+using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using OWML.Common;
 
@@ -51,6 +52,20 @@ namespace NewHorizons.Builder.Props
                 foreach(var dialogueInfo in config.Props.Dialogue)
                 {
                     DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                }
+            }
+            if (config.Props.Reveal != null)
+            {
+                foreach (var revealInfo in config.Props.Reveal)
+                {
+                    ShipLogBuilder.RevealBuilder.Make(go, sector, revealInfo, mod);
+                }
+            }
+            if (config.Props.EntryLocation != null)
+            {
+                foreach (var entryLocationInfo in config.Props.EntryLocation)
+                {
+                    ShipLogBuilder.EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
         }
