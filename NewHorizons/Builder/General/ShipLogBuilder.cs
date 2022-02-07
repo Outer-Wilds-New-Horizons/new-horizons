@@ -72,7 +72,7 @@ namespace NewHorizons.Builder.General
                     MakeAllNodes(ref rootObject, transformParent, layer);
                 }
 
-                const int maxAmount = 20;
+                int maxAmount = Main.BodyDict[Main.Instance.CurrentStarSystem].Count;
                 ShipLogAstroObject[][] navMatrix = new ShipLogAstroObject[maxAmount][];
                 for (int i = 0; i < maxAmount; i++)
                 {
