@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.General;
+using NewHorizons.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +36,7 @@ namespace NewHorizons.Tools
 
             if (__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
-                var targetSystem = ShipLogBuilder.ShipLogStarChartMode.GetTargetStarSystem();
+                var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
                 if (targetSystem != null)
                 {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
@@ -52,7 +53,7 @@ namespace NewHorizons.Tools
             if (__instance._exiting
                 || OWInput.GetInputMode() != InputMode.ShipComputer
                 || __instance._currentMode.AllowCancelInput() && OWInput.IsNewlyPressed(InputLibrary.cancel, InputMode.All)
-                || ShipLogBuilder.ShipLogStarChartMode == null)
+                || StarChartHandler.ShipLogStarChartMode == null)
                 return true;
 
             __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
@@ -66,8 +67,8 @@ namespace NewHorizons.Tools
                 __instance._currentMode = (flag ? __instance._detectiveMode : __instance._mapMode);
 
                 if (currentMode.Equals(__instance._mapMode))
-                    __instance._currentMode = ShipLogBuilder.ShipLogStarChartMode;
-                else if (currentMode.Equals(ShipLogBuilder.ShipLogStarChartMode))
+                    __instance._currentMode = StarChartHandler.ShipLogStarChartMode;
+                else if (currentMode.Equals(StarChartHandler.ShipLogStarChartMode))
                     __instance._currentMode = __instance._detectiveMode;
                 else
                     __instance._currentMode = __instance._mapMode;

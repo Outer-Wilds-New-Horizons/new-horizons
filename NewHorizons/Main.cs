@@ -23,6 +23,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Handlers;
 
 namespace NewHorizons
 {
@@ -114,7 +115,7 @@ namespace NewHorizons
                 HasWarpDrive = true;
 
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => StarChartHandler.Init());
 
                 LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
             }

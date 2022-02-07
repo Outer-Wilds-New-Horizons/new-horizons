@@ -16,6 +16,7 @@ using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Tools
 {
@@ -382,7 +383,7 @@ namespace NewHorizons.Tools
         {
             if(__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
-                var targetSystem = ShipLogBuilder.ShipLogStarChartMode.GetTargetStarSystem();
+                var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
                 if (targetSystem != null)
                 {
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
