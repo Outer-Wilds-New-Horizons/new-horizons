@@ -20,6 +20,7 @@ namespace NewHorizons.External
         StarModule Star { get; }
         FocalPointModule FocalPoint { get; }
         PropModule Props { get; }
+        ShipLogModule ShipLog { get; }
         SpawnModule Spawn { get; }
         SignalModule Signal { get; }
         SingularityModule Singularity { get; }
