@@ -11,6 +11,7 @@ using System.Reflection;
 using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using OWML.Common;
+using NewHorizons.Builder.ShipLog;
 
 namespace NewHorizons.Builder.Props
 {
@@ -58,14 +59,14 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var revealInfo in config.Props.Reveal)
                 {
-                    ShipLogBuilder.RevealBuilder.Make(go, sector, revealInfo, mod);
+                    RevealBuilder.Make(go, sector, revealInfo, mod);
                 }
             }
             if (config.Props.EntryLocation != null)
             {
                 foreach (var entryLocationInfo in config.Props.EntryLocation)
                 {
-                    ShipLogBuilder.EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
+                    EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
         }

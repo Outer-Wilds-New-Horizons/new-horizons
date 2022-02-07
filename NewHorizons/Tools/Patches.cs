@@ -17,6 +17,8 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Handlers;
+using NewHorizons.Builder.ShipLog;
+using NewHorizons.Builder.Handlers;
 
 namespace NewHorizons.Tools
 {
@@ -409,25 +411,25 @@ namespace NewHorizons.Tools
             {
                 if (body.Config.ShipLog?.curiosities != null)
                 {
-                    ShipLogBuilder.RumorModeBuilder.AddCuriosityColors(body.Config.ShipLog.curiosities);
+                    RumorModeBuilder.AddCuriosityColors(body.Config.ShipLog.curiosities);
                 }
             }
             foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
                 if (body.Config.ShipLog?.xmlFile != null)
                 {
-                    ShipLogBuilder.RumorModeBuilder.AddBodyToShipLog(__instance, body);
+                    RumorModeBuilder.AddBodyToShipLog(__instance, body);
                 }
             }
         }
 
         public static void OnShipLogManagerAwakeComplete(ShipLogManager __instance)
         {
-            ShipLogBuilder.RumorModeBuilder.GenerateEntryData(__instance);
+            RumorModeBuilder.GenerateEntryData(__instance);
             for (var i = 0; i < __instance._entryList.Count; i++)
             {
                 ShipLogEntry logEntry = __instance._entryList[i];
-                ShipLogBuilder.RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
+                RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
             }
             Logger.Log("Ship Log Generation Complete For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
         }
@@ -472,7 +474,7 @@ namespace NewHorizons.Tools
                         __instance.RevealFact(fact, false, false);
                     }
                 }
-                ShipLogBuilder.EntryLocationBuilder.InitializeLocations();
+                EntryLocationBuilder.InitializeLocations();
                 return false;
             }
         }
@@ -485,23 +487,23 @@ namespace NewHorizons.Tools
             }
             else
             {
-                __result = ShipLogBuilder.RumorModeBuilder.GetCuriosityColor(__0, __1, __instance._neutralColor, __instance._neutralHighlight);
+                __result = RumorModeBuilder.GetCuriosityColor(__0, __1, __instance._neutralColor, __instance._neutralHighlight);
                 return false;
             }
         }
 
         private static void DeleteDetail(string name)
         {
-            Object.Destroy(GameObject.Find(ShipLogBuilder.PAN_ROOT_PATH + "/" + name));
+            Object.Destroy(GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + name));
         }
 
         public static void OnShipLogMapModeInitialize(ShipLogMapMode __instance)
         {
             if (Main.Instance.CurrentStarSystem != "SolarSystem")
             {
-                GameObject panRoot = GameObject.Find(ShipLogBuilder.PAN_ROOT_PATH);
-                GameObject sunObject = GameObject.Find(ShipLogBuilder.PAN_ROOT_PATH + "/Sun");
-                ShipLogAstroObject[][] navMatrix = ShipLogBuilder.MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot,  sunObject.layer);
+                GameObject panRoot = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH);
+                GameObject sunObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
+                ShipLogAstroObject[][] navMatrix = MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot,  sunObject.layer);
                 if (navMatrix.Length <= 1)
                 {
                     Logger.LogWarning("No planets suitable for map mode found! Defaulting to vanilla menu (expect weirdness!).");
@@ -530,7 +532,7 @@ namespace NewHorizons.Tools
             }
             else
             {
-                __result = ShipLogBuilder.MapModeBuilder.GetAstroBodyShipLogName(__instance.GetID());
+                __result = MapModeBuilder.GetAstroBodyShipLogName(__instance.GetID());
                 return false;
             }
         }
