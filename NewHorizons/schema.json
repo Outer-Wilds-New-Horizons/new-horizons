@@ -736,6 +736,10 @@
                   "default": false,
                   "description": "For each mesh filter found here should we make a mesh collider?"
                 }
+              },
+              "scale": {
+                "type": "number",
+                "default": 1
               }
             }
           }
