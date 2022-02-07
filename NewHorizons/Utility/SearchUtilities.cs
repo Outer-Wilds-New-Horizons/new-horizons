@@ -154,5 +154,15 @@ namespace NewHorizons.Utility
 
             return go;
         }
+
+        public static List<GameObject> GetAllChildren(GameObject parent)
+        {
+            List<GameObject> children = new List<GameObject>();
+            foreach (Transform child in parent.transform)
+            {
+                children.Add(child.gameObject);
+            }
+            return children;
+        }
     }
 }

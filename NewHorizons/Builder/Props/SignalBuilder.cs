@@ -145,6 +145,7 @@ namespace NewHorizons.Builder.Props
             }
             audioSignal._name = name;
             audioSignal._sourceRadius = info.SourceRadius;
+            audioSignal._revealFactID = info.Reveals;
             audioSignal._onlyAudibleToScope = info.OnlyAudibleToScope;
             audioSignal._identificationDistance = info.IdentificationRadius;
             audioSignal._canBePickedUpByScope = true;

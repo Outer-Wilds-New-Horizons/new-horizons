@@ -15,6 +15,8 @@ namespace NewHorizons.External
         public GeyserInfo[] Geysers;
         public TornadoInfo[] Tornados;
         public DialogueInfo[] Dialogue;
+        public RevealInfo[] Reveal;
+        public EntryLocationInfo[] EntryLocation;
 
         public class ScatterInfo
         {
@@ -67,6 +69,23 @@ namespace NewHorizons.External
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;
+        }
+
+        public class RevealInfo
+        {
+            public string revealOn;
+            public string[] reveals;
+            public MVector3 position;
+            public float radius = 1f;
+            public float maxDistance = -1f; // Snapshot & Observe Only
+            public float maxAngle = 180f; // Observe Only
+        }
+
+        public class EntryLocationInfo
+        {
+            public string id;
+            public bool cloaked;
+            public MVector3 position;
         }
     }
 }
