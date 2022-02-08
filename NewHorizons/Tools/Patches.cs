@@ -58,7 +58,6 @@ namespace NewHorizons.Tools
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<WhiteHoleVolume>("Awake", typeof(Patches), nameof(Patches.OnWhiteHoleVolumeAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SurveyorProbe>("IsLaunched", typeof(Patches), nameof(Patches.OnSurveyorProbeIsLaunched));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipCockpitController>("Update", typeof(Patches), nameof(Patches.OnShipCockpitControllerUpdate));
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
@@ -357,20 +356,6 @@ namespace NewHorizons.Tools
                 __result = true;
             }
             return false;
-        }
-
-        public static bool OnShipCockpitControllerUpdate(ShipCockpitController __instance)
-        {
-            if(__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
-            {
-                var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
-                if (targetSystem != null)
-                {
-                    Main.Instance.ChangeCurrentStarSystem(targetSystem, true);
-                    return false;
-                }
-            }
-            return true;
         }
 
         public static void OnMapControllerOnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
