@@ -91,19 +91,19 @@ namespace NewHorizons.Tools
 
         public static bool OnShipLogManagerStart(ShipLogManager __instance)
         {
+            foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            {
+                foreach (string fact in body.Config.ShipLog?.initialReveal ?? Array.Empty<string>())
+                {
+                    __instance.RevealFact(fact, false, false);
+                }
+            }
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
                 return true;
             }
             else
             {
-                foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
-                {
-                    foreach (string fact in body.Config.ShipLog?.initialReveal ?? Array.Empty<string>())
-                    {
-                        __instance.RevealFact(fact, false, false);
-                    }
-                }
                 EntryLocationBuilder.InitializeLocations();
                 return false;
             }
@@ -111,7 +111,7 @@ namespace NewHorizons.Tools
 
         public static bool OnUIStyleManagerGetCuriosityColor(UIStyleManager __instance, CuriosityName __0, bool __1, ref Color __result)
         {
-            if (Main.Instance.CurrentStarSystem == "SolarSystem")
+            if ((int)__0 < 7)
             {
                 return true;
             }
