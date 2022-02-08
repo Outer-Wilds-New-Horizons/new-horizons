@@ -66,6 +66,23 @@ namespace NewHorizons.Builder.ShipLog
                     {
                         _entryIdToRawName.Add(id.Value, curiosityName.Value);
                     }
+                    foreach (XElement childEntryElement in entryElement.Elements("Entry"))
+                    {
+                        XElement childCuriosityName = childEntryElement.Element("Curiosity");
+                        XElement childId = childEntryElement.Element("ID");
+                        if (childId != null && _entryIdToRawName.ContainsKey(childId.Value))
+                        {
+                            if (childCuriosityName == null && curiosityName != null)
+                            {
+                                _entryIdToRawName.Add(childId.Value, curiosityName.Value);
+                            }
+                            else if (childCuriosityName != null)
+                            {
+                                _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
+                            }
+                        }
+                        AddTranslation(childEntryElement);
+                    }
                     AddTranslation(entryElement);
                 }
                 TextAsset newAsset = new TextAsset(astroBodyFile.ToString());

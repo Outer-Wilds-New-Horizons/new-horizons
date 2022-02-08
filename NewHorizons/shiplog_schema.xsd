@@ -17,6 +17,7 @@
                                         <xs:element name="ID" type="xs:string"/>
                                         <xs:element name="SourceID" type="xs:string" minOccurs="0"/>
                                         <xs:element name="RumorName" type="xs:string"/>
+                                        <xs:element name="RumorNamePriority" type="xs:int" minOccurs="0"/>
                                         <xs:element name="Text" type="xs:string"/>
                                     </xs:sequence>
                                 </xs:complexType>
@@ -27,6 +28,34 @@
                                         <xs:element name="ID" type="xs:string"/>
                                         <xs:element name="Text" type="xs:string"/>
                                     </xs:all>
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:element name="Entry" minOccurs="0" maxOccurs="unbounded">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="ID" type="xs:string"/>
+                                        <xs:element name="Name" type="xs:string"/>
+                                        <xs:element name="Curiosity" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+                                        <xs:element name="RumorFact" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="ID" type="xs:string"/>
+                                                    <xs:element name="SourceID" type="xs:string" minOccurs="0"/>
+                                                    <xs:element name="RumorName" type="xs:string"/>
+                                                    <xs:element name="RumorNamePriority" type="xs:int" minOccurs="0"/>
+                                                    <xs:element name="Text" type="xs:string"/>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                        <xs:element name="ExploreFact" minOccurs="0" maxOccurs="unbounded">
+                                            <xs:complexType>
+                                                <xs:all>
+                                                    <xs:element name="ID" type="xs:string"/>
+                                                    <xs:element name="Text" type="xs:string"/>
+                                                </xs:all>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
                                 </xs:complexType>
                             </xs:element>
                         </xs:sequence>
