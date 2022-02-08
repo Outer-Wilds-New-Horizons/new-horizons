@@ -7,6 +7,7 @@ using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.VariableSize;
+using NewHorizons.Handlers;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -113,12 +114,9 @@ namespace NewHorizons
                 HasWarpDrive = true;
 
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => ShipLogBuilder.Init());
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => StarChartHandler.Init());
 
-                if (!PlayerData._currentGameSave.GetPersistentCondition("KnowsAboutWarpDrive"))
-                {
-                    LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
-                }
+                LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
             }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
@@ -582,7 +580,7 @@ namespace NewHorizons
                 }
 
                 if (body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size / 2f, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
+                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
 
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);

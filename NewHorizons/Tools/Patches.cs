@@ -52,6 +52,7 @@ namespace NewHorizons.Tools
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -67,9 +68,12 @@ namespace NewHorizons.Tools
 
         public static bool CheckShipOutersideSolarSystem(PlayerState __instance, ref bool __result)
         {
+            if (PlayerState._inBrambleDimension) return false;
+
             Transform sunTransform = Locator.GetSunTransform();
             OWRigidbody shipBody = Locator.GetShipBody();
-            __result = sunTransform != null && shipBody != null && (sunTransform.position - shipBody.transform.position).sqrMagnitude > Main.FurthestOrbit * Main.FurthestOrbit * 4f;
+            var maxDist2 = Mathf.Max(900000000f, Main.FurthestOrbit * Main.FurthestOrbit * 2f);
+            __result = sunTransform != null && shipBody != null && (sunTransform.position - shipBody.transform.position).sqrMagnitude > maxDist2;
             return false;
         }
 
@@ -346,6 +350,11 @@ namespace NewHorizons.Tools
                 __result = true;
             }
             return false;
+        }
+
+        public static void OnMapControllerOnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
+        {
+            __instance._isLockedOntoMapSatellite = true;
         }
     }
 }
