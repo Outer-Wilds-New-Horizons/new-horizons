@@ -40,6 +40,8 @@ namespace NewHorizons.Builder.Body
                 if (module.Tint != null)
                 {
                     tempArray[i].color = module.Tint.ToColor32();
+                    tempArray[i].color = module.Tint.ToColor();
+                    tempArray[i].SetColor("_FogColor", module.Tint.ToColor());
                 }
             }
 
@@ -80,6 +82,13 @@ namespace NewHorizons.Builder.Body
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
+            if (module.Tint != null)
+            {
+                var adjustedColour = module.Tint.ToColor() / 4f;
+                adjustedColour.a = 1f;
+
+                fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
+            }
 
             if (module.Curve != null)
             {

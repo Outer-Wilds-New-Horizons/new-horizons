@@ -52,6 +52,7 @@ namespace NewHorizons.Tools
 
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
         }
 
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
@@ -346,6 +347,11 @@ namespace NewHorizons.Tools
                 __result = true;
             }
             return false;
+        }
+
+        public static void OnMapControllerOnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
+        {
+            __instance._isLockedOntoMapSatellite = true;
         }
     }
 }
