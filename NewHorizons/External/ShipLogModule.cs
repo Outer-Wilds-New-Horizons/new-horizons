@@ -22,6 +22,16 @@ namespace NewHorizons.External
             public ShipLogDetailInfo[] details;
         }
 
+        public class ShipLogDetailInfo
+        {
+            public string revealedSprite;
+            public string outlineSprite;
+            public float rotation = 0f;
+            public bool invisibleWhenHidden;
+            public MVector2 position;
+            public MVector2 scale;
+        }
+
         public class CuriosityColorInfo
         {
             public string id;
@@ -33,16 +43,6 @@ namespace NewHorizons.External
         {
             public string id;
             public MVector2 position;
-        }
-
-        public class ShipLogDetailInfo
-        {
-            public string revealedSprite;
-            public string outlineSprite;
-            public float rotation = 0f;
-            public bool invisibleWhenHidden;
-            public MVector2 position;
-            public MVector2 scale;
         }
     }
 }

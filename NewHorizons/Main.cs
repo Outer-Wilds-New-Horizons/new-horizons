@@ -65,6 +65,7 @@ namespace NewHorizons
             Tools.Patches.Apply();
             Tools.WarpDrivePatches.Apply();
             Tools.OWCameraFix.Apply();
+            Tools.ShipLogPatches.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
