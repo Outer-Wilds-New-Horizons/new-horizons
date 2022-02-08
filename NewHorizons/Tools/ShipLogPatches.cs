@@ -20,7 +20,7 @@ namespace NewHorizons.Tools
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Start", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerStart));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("IsFactRevealed", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerIsFactRevealed));
+            //Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("IsFactRevealed", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerIsFactRevealed));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("CheckForCompletionAchievement", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerCheckForCompletionAchievement));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<UIStyleManager>("GetCuriosityColor", typeof(ShipLogPatches), nameof(ShipLogPatches.OnUIStyleManagerGetCuriosityColor));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogSandFunnel>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.DisableShipLogSandFunnel));
@@ -73,7 +73,6 @@ namespace NewHorizons.Tools
         {
             Logger.Log(__0);
 
-            // Just replace the entire function, no need to Debug Break or wtv
             if (__instance._factDict != null && __instance._factDict.ContainsKey(__0))
             {
                 __result = __instance._factDict[__0].IsRevealed();
