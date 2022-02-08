@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.ShipLog
         public static void AddBodyToShipLog(ShipLogManager manager, NewHorizonsBody body)
         {
             string systemName = body.Config.StarSystem;
-            XElement astroBodyFile = XElement.Load(Main.Instance.ModHelper.Manifest.ModFolderPath + body.Config.ShipLog.xmlFile);
+            XElement astroBodyFile = XElement.Load(body.Mod.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
             XElement astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {
