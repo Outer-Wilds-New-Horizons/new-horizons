@@ -1,4 +1,5 @@
-﻿using NewHorizons.External;
+﻿using System;
+using NewHorizons.External;
 using OWML.Common;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,17 +9,19 @@ namespace NewHorizons.Components
 {
     public class ShipLogDetail : MonoBehaviour
     {
-        private Image revealedImage;
-        private Image outlineImage;
-        private ShipLogModule.ShipLogDetailInfo detailInfo;
+        private Image _revealedImage;
+        private Image _outlineImage;
+        private Material _greyScaleMaterial;
+        private ShipLogModule.ShipLogDetailInfo _detailInfo;
         
-        public void Init(ShipLogModule.ShipLogDetailInfo info, Image revealed, Image outline)
+        public void Init(ShipLogModule.ShipLogDetailInfo info, Image revealed, Image outline, Material greyScale)
         {
-            detailInfo = info;
-            revealedImage = revealed;
-            outlineImage = outline;
-            revealedImage.enabled = false;
-            outlineImage.enabled = false;
+            _detailInfo = info;
+            _revealedImage = revealed;
+            _outlineImage = outline;
+            _greyScaleMaterial = greyScale;
+            _revealedImage.enabled = false;
+            _outlineImage.enabled = false;
         }
 
         public void UpdateState(ShipLogEntry.State parentState)
@@ -26,22 +29,32 @@ namespace NewHorizons.Components
             switch (parentState)
             {
                 case ShipLogEntry.State.Explored:
-                    outlineImage.enabled = false;
-                    revealedImage.enabled = true;
+                    _outlineImage.enabled = false;
+                    _revealedImage.enabled = true;
+                    SetGreyScale(false);
                     break;
                 case ShipLogEntry.State.Rumored:
-                    revealedImage.enabled = false;
-                    outlineImage.enabled = true;
+                    _outlineImage.enabled = false;
+                    _revealedImage.enabled = true;
+                    SetGreyScale(true);
                     break;
                 case ShipLogEntry.State.Hidden:
-                    revealedImage.enabled = false;
-                    outlineImage.enabled = !detailInfo.invisibleWhenHidden;
+                    _revealedImage.enabled = false;
+                    _outlineImage.enabled = !_detailInfo.invisibleWhenHidden;
                     break;
                 case ShipLogEntry.State.None:
-                    revealedImage.enabled = false;
-                    outlineImage.enabled = false;
+                    _revealedImage.enabled = false;
+                    _outlineImage.enabled = false;
+                    break;
+                default:
+                    Logger.LogError("Invalid ShipLogEntryState for " + _revealedImage.transform.parent.parent.gameObject.name);
                     break;
             }
+        }
+
+        private void SetGreyScale(bool greyScale)
+        {
+            _revealedImage.material = (greyScale ? _greyScaleMaterial : null);
         }
     }
 }

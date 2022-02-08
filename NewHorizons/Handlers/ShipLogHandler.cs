@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Handlers
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
-            if (_astroIdToBody.ContainsValue(body))
+            if (BodyHasEntries(body))
             {
                 return CollectionUtilities.KeyByValue(_astroIdToBody, body);
             }
@@ -41,6 +41,11 @@ namespace NewHorizons.Builder.Handlers
             {
                 return body.Config.Name;
             }
+        }
+
+        public static bool BodyHasEntries(NewHorizonsBody body)
+        {
+            return _astroIdToBody.ContainsValue(body);
         }
     }
 }

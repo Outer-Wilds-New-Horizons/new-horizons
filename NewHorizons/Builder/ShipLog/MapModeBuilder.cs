@@ -47,9 +47,10 @@ namespace NewHorizons.Builder.ShipLog
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, int layer)
         {
             MapModeObject rootObject = ConstructPrimaryNode(systemName);
+            Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             if (rootObject.mainBody != null)
             {
-                MakeAllNodes(ref rootObject, transformParent, layer);
+                MakeAllNodes(ref rootObject, transformParent, greyScaleMaterial, layer);
             }
 
             int maxAmount = Main.BodyDict[Main.Instance.CurrentStarSystem].Count;
@@ -80,13 +81,13 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeAllNodes(ref MapModeObject parentNode, GameObject parent, int layer)
+        private static void MakeAllNodes(ref MapModeObject parentNode, GameObject parent, Material greyScaleMaterial, int layer)
         {
-            MakeNode(ref parentNode, parent, layer);
+            MakeNode(ref parentNode, parent, greyScaleMaterial, layer);
             for (var i = 0; i < parentNode.children.Count; i++)
             {
                 MapModeObject child = parentNode.children[i];
-                MakeAllNodes(ref child, parent, layer);
+                MakeAllNodes(ref child, parent, greyScaleMaterial, layer);
                 parentNode.children[i] = child;
             }
         }
@@ -117,7 +118,7 @@ namespace NewHorizons.Builder.ShipLog
             return newImageGO;
         }
 
-        private static void CreateShipLogAstroObject(GameObject nodeGO, ref MapModeObject node, GameObject referenceUnviewedSprite, int layer)
+        private static void CreateShipLogAstroObject(GameObject nodeGO, ref MapModeObject node, GameObject referenceUnviewedSprite, Material greyScaleMaterial, int layer)
         {
             const float unviewedIconOffset = 15;
             ShipLogAstroObject astroObject = nodeGO.AddComponent<ShipLogAstroObject>();
@@ -126,6 +127,14 @@ namespace NewHorizons.Builder.ShipLog
             string imagePath = node.mainBody.Config.ShipLog?.mapMode?.revealedSprite ?? "DEFAULT";
             string outlinePath = node.mainBody.Config.ShipLog?.mapMode?.outlineSprite ?? imagePath;
             astroObject._imageObj = CreateImage(nodeGO, node.mainBody.Mod.Assets, imagePath, node.mainBody.Config.Name + " Revealed", layer);
+            if (ShipLogHandler.BodyHasEntries(node.mainBody))
+            {
+                Image revealedImage = astroObject._imageObj.GetComponent<Image>();
+                astroObject._greyscaleMaterial = greyScaleMaterial;
+                revealedImage.material = greyScaleMaterial;
+                revealedImage.color = Color.white;
+                astroObject._image = revealedImage;
+            }
             astroObject._outlineObj = CreateImage(nodeGO, node.mainBody.Mod.Assets, outlinePath, node.mainBody.Config.Name + " Outline", layer);
 
             astroObject._unviewedObj = Object.Instantiate(referenceUnviewedSprite, nodeGO.transform, false);
@@ -143,7 +152,7 @@ namespace NewHorizons.Builder.ShipLog
             node.astroObject = astroObject;
         }
 
-        private static void ConnectNodeToLastSibling(MapModeObject node)
+        private static void ConnectNodeToLastSibling(MapModeObject node, Material greyScaleMaterial)
         {
             Vector2 fromPosition = node.astroObject.transform.localPosition;
             Vector2 toPosition = node.lastSibling.astroObject.transform.localPosition;
@@ -167,14 +176,14 @@ namespace NewHorizons.Builder.ShipLog
             };
 
             ShipLogDetail linkDetail = newLink.AddComponent<ShipLogDetail>();
-            linkDetail.Init(linkDetailInfo, linkImage, linkImage);
+            linkDetail.Init(linkDetailInfo, linkImage, linkImage, greyScaleMaterial);
 
             transform.SetParent(node.astroObject.transform);
             transform.SetAsFirstSibling();
             newLink.SetActive(true);
         }
 
-        private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, IModAssets assets)
+        private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, IModAssets assets, Material greyScaleMaterial)
         {
             GameObject detailGameObject = new GameObject("Detail");
             detailGameObject.transform.SetParent(parent);
@@ -192,11 +201,11 @@ namespace NewHorizons.Builder.ShipLog
             Image outlineImage = CreateImage(detailGameObject, assets, outlinePath, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
 
             ShipLogDetail detail = detailGameObject.AddComponent<ShipLogDetail>();
-            detail.Init(info, revealedImage, outlineImage);
+            detail.Init(info, revealedImage, outlineImage, greyScaleMaterial);
             detailGameObject.SetActive(true);
         }
 
-        private static void MakeDetails(MapModeObject node)
+        private static void MakeDetails(MapModeObject node, Material greyScaleMaterial)
         {
             if (node.mainBody.Config.ShipLog?.mapMode?.details?.Length > 0)
             {
@@ -211,13 +220,13 @@ namespace NewHorizons.Builder.ShipLog
 
                 foreach (ShipLogModule.ShipLogDetailInfo detailInfo in node.mainBody.Config.ShipLog.mapMode.details)
                 {
-                    MakeDetail(detailInfo, detailsTransform, node.mainBody.Mod.Assets);
+                    MakeDetail(detailInfo, detailsTransform, node.mainBody.Mod.Assets, greyScaleMaterial);
                 }
                 detailsParent.SetActive(true);
             }
         }
 
-        private static void MakeNode(ref MapModeObject node, GameObject parent, int layer)
+        private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
             const float padding = 250f;
 
@@ -246,9 +255,9 @@ namespace NewHorizons.Builder.ShipLog
             transform.localPosition = new Vector3(position.x, position.y, 0);
             transform.localRotation = Quaternion.identity;
             transform.localScale = Vector3.one * scale;
-            CreateShipLogAstroObject(newNodeGO, ref node, GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot/TimberHearth/UnviewedIcon"), layer);
-            if (node.lastSibling != null) ConnectNodeToLastSibling(node);
-            MakeDetails(node);
+            CreateShipLogAstroObject(newNodeGO, ref node, GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon"), greyScaleMaterial, layer);
+            if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
+            MakeDetails(node, greyScaleMaterial);
             transform.SetAsFirstSibling();
         }
 
