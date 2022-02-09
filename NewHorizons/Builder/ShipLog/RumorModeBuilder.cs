@@ -116,7 +116,8 @@ namespace NewHorizons.Builder.ShipLog
                     {
                         id = entry._id,
                         cardPosition = entryPosition,
-                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body)
+                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body),
+                        altSprite =  body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id + "_ALT", body)
                     };
                     entry.SetSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.sprite);
                     manager._entryDataDict.Add(entry._id, newData);
@@ -150,20 +151,32 @@ namespace NewHorizons.Builder.ShipLog
                         table[rumorName.Value] = rumorName.Value;
                     }
 
-                    XElement rumorText = rumorFact.Element("Text");
-                    if (rumorText != null)
-                    {
-                        table[name + rumorText.Value] = rumorText.Value;
-                    }
+                    AddTextTranslation(rumorFact, name, table);
+                    AddAltTextTranslation(rumorFact, name, table);
                 }
                 foreach (XElement exploreFact in entry.Elements("ExploreFact"))
                 {
-                    XElement exploreText = exploreFact.Element("Text");
-                    if (exploreText != null)
-                    {
-                        table[name + exploreText.Value] = exploreText.Value;
-                    }
+                    AddTextTranslation(exploreFact, name, table);
+                    AddAltTextTranslation(exploreFact, name, table);
                 }
+            }
+        }
+
+        private static void AddTextTranslation(XElement fact, string name, Dictionary<string, string> table)
+        {
+            XElement textElement = fact.Element("Text");
+            if (textElement != null)
+            {
+                table[name + textElement.Value] = textElement.Value;
+            }
+        }
+
+        private static void AddAltTextTranslation(XElement fact, string name, Dictionary<string, string> table)
+        {
+            XElement altTextElement = fact.Element("AltText");
+            if (altTextElement != null)
+            {
+                AddTextTranslation(altTextElement, name, table);
             }
         }
 
