@@ -33,6 +33,7 @@ namespace NewHorizons.Tools
 
         public static void OnShipLogManagerAwake(ShipLogManager __instance)
         {
+            ShipLogHandler.Init();
             Logger.Log("Beginning Ship Log Generation For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
             if (Main.Instance.CurrentStarSystem != "SolarSystem")
             {
@@ -129,7 +130,7 @@ namespace NewHorizons.Tools
                 GameObject panRoot = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH);
                 GameObject sunObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
                 ShipLogAstroObject[][] navMatrix = MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot, sunObject.layer);
-                if (navMatrix.Length <= 1)
+                if (navMatrix == null || navMatrix.Length <= 1)
                 {
                     Logger.LogWarning("No planets suitable for map mode found! Defaulting to vanilla menu (expect weirdness!).");
                 }

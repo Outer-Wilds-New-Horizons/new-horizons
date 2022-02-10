@@ -1,4 +1,5 @@
-﻿using NewHorizons.Components;
+﻿using System;
+using NewHorizons.Components;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -145,38 +146,33 @@ namespace NewHorizons.Builder.ShipLog
                 table[name] = name;
                 foreach (XElement rumorFact in entry.Elements("RumorFact"))
                 {
-                    XElement rumorName = rumorFact.Element("RumorName");
-                    if (rumorName != null)
-                    {
-                        table[rumorName.Value] = rumorName.Value;
-                    }
-
-                    AddTextTranslation(rumorFact, name, table);
-                    AddAltTextTranslation(rumorFact, name, table);
+                    AddTranslationForElement(rumorFact, "RumorName", string.Empty, table);
+                    AddTranslationForElement(rumorFact, "Text", name, table);
+                    AddTranslationForAltText(rumorFact, name, table);
                 }
                 foreach (XElement exploreFact in entry.Elements("ExploreFact"))
                 {
-                    AddTextTranslation(exploreFact, name, table);
-                    AddAltTextTranslation(exploreFact, name, table);
+                    AddTranslationForElement(exploreFact, "Text", name, table);
+                    AddTranslationForAltText(exploreFact, name, table);
                 }
             }
         }
 
-        private static void AddTextTranslation(XElement fact, string name, Dictionary<string, string> table)
+        private static void AddTranslationForElement(XElement parent, string elementName, string keyName, Dictionary<string, string> table)
         {
-            XElement textElement = fact.Element("Text");
-            if (textElement != null)
+            XElement element = parent.Element(elementName);
+            if (element != null)
             {
-                table[name + textElement.Value] = textElement.Value;
+                table[keyName + element.Value] = element.Value;
             }
         }
 
-        private static void AddAltTextTranslation(XElement fact, string name, Dictionary<string, string> table)
+        private static void AddTranslationForAltText(XElement fact, string keyName, Dictionary<string, string> table)
         {
-            XElement altTextElement = fact.Element("AltText");
-            if (altTextElement != null)
+            XElement altText = fact.Element("AltText");
+            if (altText != null)
             {
-                AddTextTranslation(altTextElement, name, table);
+                AddTranslationForElement(altText, "Text", keyName, table);
             }
         }
 
