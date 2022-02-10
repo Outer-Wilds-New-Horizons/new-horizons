@@ -16,13 +16,13 @@ namespace NewHorizons.Builder.ShipLog
     public static class MapModeBuilder
     {
         #region General
-        public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, int layer)
+        public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
             Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(b => (b.Config.ShipLog?.mapMode?.remove ?? false) == false).ToList();
-            bool flagManualPositionUsed = false;
+            bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
-            foreach (NewHorizonsBody body in bodies)
+            foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
             {
                 if (body.Config.ShipLog?.mapMode?.manualPosition == null)
                 {
@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             else if (flagManualPositionUsed)
             {
-                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, layer);
+                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
             }
             return null;
         }
@@ -178,29 +178,77 @@ namespace NewHorizons.Builder.ShipLog
         #endregion
 
         #region Manual Map Mode
-        private static ShipLogAstroObject[][] ConstructMapModeManual(List<NewHorizonsBody> bodies, GameObject transformParent, Material greyScaleMaterial, int layer)
+        private static ShipLogAstroObject[][] ConstructMapModeManual(List<NewHorizonsBody> bodies, GameObject transformParent, Material greyScaleMaterial, ShipLogAstroObject[][] currentNav, int layer)
         {
-            int maxAmount = bodies.Count;
+            int maxAmount = bodies.Count + 20;
             ShipLogAstroObject[][] navMatrix = new ShipLogAstroObject[maxAmount][];
             for (int i = 0; i < maxAmount; i++)
             {
                 navMatrix[i] = new ShipLogAstroObject[maxAmount];
             }
 
-            foreach (NewHorizonsBody body in bodies)
+            Dictionary<string, int[]> astroIdToNavIndex = new Dictionary<string, int[]>();
+
+            if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
-                if (ShipLogHandler.IsVanillaBody(body)) continue;
+                
+                for (int y = 0; y < currentNav.Length; y++)
+                {
+                    for (int x = 0; x < currentNav[y].Length; x++)
+                    {
+                        navMatrix[y][x] = currentNav[y][x];
+                        astroIdToNavIndex.Add(currentNav[y][x].GetID(), new [] {y, x});
+                    }
+                }
+            }
+
+            foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
+            {
                 GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                 ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
                 MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                 Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
                 navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = newAstroObject;
             }
-            
-            navMatrix = navMatrix.Where(a => a.Count(c => c != null) > 0).Prepend(new ShipLogAstroObject[1]).ToArray();
+
+            if (Main.Instance.CurrentStarSystem == "SolarSystem")
+            {
+                foreach (NewHorizonsBody body in Main.BodyDict["SolarSystem"].Where(ShipLogHandler.IsVanillaBody))
+                {
+                    GameObject gameObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + body.Config.Name.Replace(" ", ""));
+                    if (body.Config.Destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
+                    {
+                        ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();
+                        if (astroObject != null)
+                        {
+                            int[] navIndex = astroIdToNavIndex[astroObject.GetID()];
+                            navMatrix[navIndex[0]][navIndex[1]] = null;
+                        }
+                        Object.Destroy(gameObject);
+                    }
+                    else
+                    {
+                        if (body.Config.ShipLog?.mapMode?.manualPosition != null)
+                        {
+                            gameObject.transform.localPosition = (Vector2)body.Config.ShipLog.mapMode.manualPosition;
+                        }
+                        if (body.Config.ShipLog?.mapMode?.manualNavigationPosition != null)
+                        {
+                            Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
+                            navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = gameObject.GetComponent<ShipLogAstroObject>();
+                        }
+                        if (body.Config.ShipLog?.mapMode?.scale != null)
+                        {
+                            gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale; 
+                        }
+                    }
+                }
+            }
+
+            navMatrix = navMatrix.Where(a => a.Count(c => c != null && c.gameObject != null) > 0).Prepend(new ShipLogAstroObject[1]).ToArray();
             for (var index = 0; index < navMatrix.Length; index++)
             {
-                navMatrix[index] = navMatrix[index].Where(a => a != null).ToArray();
+                navMatrix[index] = navMatrix[index].Where(a => a != null && a.gameObject != null).ToArray();
             }
 
             return navMatrix;

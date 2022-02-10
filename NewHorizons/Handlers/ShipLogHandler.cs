@@ -18,10 +18,18 @@ namespace NewHorizons.Builder.Handlers
 
         private static Dictionary<string, NewHorizonsBody> _astroIdToBody = new Dictionary<string, NewHorizonsBody>();
         private static string[] vanillaBodies;
+        private static string[] vanillaIDs;
 
         public static void Init()
         {
-            vanillaBodies = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH)).ConvertAll(g => g.name).ToArray();
+            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
+            vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
+            vanillaIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+        }
+
+        public static bool IsVanillaAstroID(string astroId)
+        {
+            return vanillaIDs.Contains(astroId);
         }
 
         public static bool IsVanillaBody(NewHorizonsBody body)
