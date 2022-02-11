@@ -1266,7 +1266,7 @@
             "type": "string"
           }
         },
-        "positions": {
+        "entryPositions": {
           "type": "array",
           "description": "A set of positions to use instead of automatic layout in rumor mode",
           "items": {
@@ -1302,6 +1302,34 @@
             "outlineSprite": {
               "type": "string",
               "description": "The path to the sprite to show when the planet is unexplored in map mode"
+            },
+            "manualPosition": {
+              "type": "object",
+              "description": "Manually place this planet at the specified position",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "default": 0
+                },
+                "y": {
+                  "type": "number",
+                  "default": 0
+                }
+              }
+            },
+            "manualNavigationPosition": {
+              "type": "object",
+              "description": "Specify where this planet is in terms of navigation",
+              "properties": {
+                "x": {
+                  "type": "integer",
+                  "default": 0
+                },
+                "y": {
+                  "type": "integer",
+                  "default": 0
+                }
+              }
             },
             "scale": {
               "type": "number",

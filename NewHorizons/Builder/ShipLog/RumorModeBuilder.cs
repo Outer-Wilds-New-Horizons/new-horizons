@@ -1,4 +1,5 @@
-﻿using NewHorizons.Components;
+﻿using System;
+using NewHorizons.Components;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -66,6 +67,23 @@ namespace NewHorizons.Builder.ShipLog
                     {
                         _entryIdToRawName.Add(id.Value, curiosityName.Value);
                     }
+                    foreach (XElement childEntryElement in entryElement.Elements("Entry"))
+                    {
+                        XElement childCuriosityName = childEntryElement.Element("Curiosity");
+                        XElement childId = childEntryElement.Element("ID");
+                        if (childId != null && _entryIdToRawName.ContainsKey(childId.Value))
+                        {
+                            if (childCuriosityName == null && curiosityName != null)
+                            {
+                                _entryIdToRawName.Add(childId.Value, curiosityName.Value);
+                            }
+                            else if (childCuriosityName != null)
+                            {
+                                _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
+                            }
+                        }
+                        AddTranslation(childEntryElement);
+                    }
                     AddTranslation(entryElement);
                 }
                 TextAsset newAsset = new TextAsset(astroBodyFile.ToString());
@@ -99,7 +117,8 @@ namespace NewHorizons.Builder.ShipLog
                     {
                         id = entry._id,
                         cardPosition = entryPosition,
-                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body)
+                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body),
+                        altSprite =  body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id + "_ALT", body)
                     };
                     entry.SetSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.sprite);
                     manager._entryDataDict.Add(entry._id, newData);
@@ -127,26 +146,33 @@ namespace NewHorizons.Builder.ShipLog
                 table[name] = name;
                 foreach (XElement rumorFact in entry.Elements("RumorFact"))
                 {
-                    XElement rumorName = rumorFact.Element("RumorName");
-                    if (rumorName != null)
-                    {
-                        table[rumorName.Value] = rumorName.Value;
-                    }
-
-                    XElement rumorText = rumorFact.Element("Text");
-                    if (rumorText != null)
-                    {
-                        table[name + rumorText.Value] = rumorText.Value;
-                    }
+                    AddTranslationForElement(rumorFact, "RumorName", string.Empty, table);
+                    AddTranslationForElement(rumorFact, "Text", name, table);
+                    AddTranslationForAltText(rumorFact, name, table);
                 }
                 foreach (XElement exploreFact in entry.Elements("ExploreFact"))
                 {
-                    XElement exploreText = exploreFact.Element("Text");
-                    if (exploreText != null)
-                    {
-                        table[name + exploreText.Value] = exploreText.Value;
-                    }
+                    AddTranslationForElement(exploreFact, "Text", name, table);
+                    AddTranslationForAltText(exploreFact, name, table);
                 }
+            }
+        }
+
+        private static void AddTranslationForElement(XElement parent, string elementName, string keyName, Dictionary<string, string> table)
+        {
+            XElement element = parent.Element(elementName);
+            if (element != null)
+            {
+                table[keyName + element.Value] = element.Value;
+            }
+        }
+
+        private static void AddTranslationForAltText(XElement fact, string keyName, Dictionary<string, string> table)
+        {
+            XElement altText = fact.Element("AltText");
+            if (altText != null)
+            {
+                AddTranslationForElement(altText, "Text", keyName, table);
             }
         }
 
@@ -177,8 +203,8 @@ namespace NewHorizons.Builder.ShipLog
 
         private static Vector2? GetManualEntryPosition(string entryId, ShipLogModule config)
         {
-            if (config.positions == null) return null;
-            foreach (ShipLogModule.EntryPositionInfo position in config.positions)
+            if (config.entryPositions == null) return null;
+            foreach (ShipLogModule.EntryPositionInfo position in config.entryPositions)
             {
                 if (position.id == entryId)
                 {

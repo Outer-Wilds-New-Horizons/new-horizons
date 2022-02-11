@@ -9,7 +9,7 @@ namespace NewHorizons.External
         public string[] initialReveal;
         public MapModeInfo mapMode;
         public CuriosityColorInfo[] curiosities;
-        public EntryPositionInfo[] positions;
+        public EntryPositionInfo[] entryPositions;
 
         public class MapModeInfo
         {
@@ -18,6 +18,8 @@ namespace NewHorizons.External
             public float scale = 1f;
             public bool invisibleWhenHidden;
             public float offset = 0f;
+            public MVector2 manualPosition;
+            public MVector2 manualNavigationPosition;
             public bool remove = false;
             public ShipLogDetailInfo[] details;
         }

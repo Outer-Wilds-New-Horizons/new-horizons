@@ -17,6 +17,25 @@ namespace NewHorizons.Builder.Handlers
         public static readonly string PAN_ROOT_PATH = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot";
 
         private static Dictionary<string, NewHorizonsBody> _astroIdToBody = new Dictionary<string, NewHorizonsBody>();
+        private static string[] vanillaBodies;
+        private static string[] vanillaIDs;
+
+        public static void Init()
+        {
+            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
+            vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
+            vanillaIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+        }
+
+        public static bool IsVanillaAstroID(string astroId)
+        {
+            return vanillaIDs.Contains(astroId);
+        }
+
+        public static bool IsVanillaBody(NewHorizonsBody body)
+        {
+            return vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
+        }
 
         public static NewHorizonsBody GetConfigFromID(string id)
         {
@@ -33,7 +52,7 @@ namespace NewHorizons.Builder.Handlers
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
-            if (_astroIdToBody.ContainsValue(body))
+            if (BodyHasEntries(body))
             {
                 return CollectionUtilities.KeyByValue(_astroIdToBody, body);
             }
@@ -41,6 +60,11 @@ namespace NewHorizons.Builder.Handlers
             {
                 return body.Config.Name;
             }
+        }
+
+        public static bool BodyHasEntries(NewHorizonsBody body)
+        {
+            return _astroIdToBody.ContainsValue(body);
         }
     }
 }
