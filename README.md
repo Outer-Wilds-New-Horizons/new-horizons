@@ -84,6 +84,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## How to create your own planets using configs
 
+**Note that I'm more than happy to help you debug your planet config files, but please don't just use notepad to edit them. Use something like Visual Studio Code that will check your .json file for errors. It will save both of us time.**
+
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
 Planets are created using a JSON file format structure, and placed in a folder called `planets` (or in any sub-directory of it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within the `xen.NewHorizons` directory).
