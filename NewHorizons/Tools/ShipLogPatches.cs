@@ -156,7 +156,10 @@ namespace NewHorizons.Tools
                     {
                         Object.Destroy(GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + gameObject.name));
                     }
-                    __instance._sandFunnel = __instance.gameObject.AddComponent<ShipLogSandFunnel>();
+                    if (GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel") == null)
+                    {
+                        __instance._sandFunnel = __instance.gameObject.AddComponent<ShipLogSandFunnel>();
+                    }
                 }
             }
 

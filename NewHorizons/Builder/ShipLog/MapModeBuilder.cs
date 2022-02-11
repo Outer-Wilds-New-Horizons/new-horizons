@@ -223,6 +223,10 @@ namespace NewHorizons.Builder.ShipLog
                         {
                             int[] navIndex = astroIdToNavIndex[astroObject.GetID()];
                             navMatrix[navIndex[0]][navIndex[1]] = null;
+                            if (astroObject.GetID() == "CAVE_TWIN" || astroObject.GetID() == "TOWER_TWIN")
+                            {
+                                Object.Destroy(GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel"));
+                            }
                         }
                         Object.Destroy(gameObject);
                     }
