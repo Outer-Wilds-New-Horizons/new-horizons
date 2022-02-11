@@ -97,7 +97,7 @@ To locate this directory, click the "..." symbol next to "New Horizons" in the O
 ![Create a planets folder in the mod directory](https://user-images.githubusercontent.com/22628069/149638007-26b872ab-f02e-455f-a7fd-99d0d2a96de8.png)
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will look something like this:
-```
+```json
 {
 	"name" : "Wetrock",
 	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json",
@@ -155,7 +155,7 @@ Each { must match up with a closing } to denote its section. If you don't know h
 
 Modules look like this:
 
-```
+```json
 "Star" :
 {
 	"size" : 3000,
@@ -174,26 +174,26 @@ In this example the `Star` module has a `size` field and a `tint` field. Since t
 Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also the following types of values:
 
 #### Colour:
-```
+```json
 {
-    "r" : 200,
-    "g" : 255,
-    "b" : 255,
-    "a" : 255
+	"r" : 200,
+	"g" : 255,
+	"b" : 255,
+	"a" : 255
 }
 ```   
 
 #### Position:
-```
+```json
 {
-    "x" : 182.4,
-    "y" : 227.4,
-    "z" : 62.7,
+	"x" : 182.4,
+	"y" : 227.4,
+	"z" : 62.7,
 }
 ```
 
 #### Scale curve:
-```
+```json
 [
 	{"time":0, "value":1},
 	{"time":5, "value":0},
@@ -271,7 +271,7 @@ Let's you put asteroids in orbit around a planet or star. Can probably negativel
 ### FocalPoint
 If you want to have binary planets or stars you have to do a few extra steps. First you make a focal point body. Here's an example (note the "..." means you'd be writing stuff there but it isn't important for the example. Don't literally put "..."):
 
-```
+```json
 {
 	"name" : "Alpha Centauri",
 	"Base" :
@@ -292,7 +292,7 @@ If you want to have binary planets or stars you have to do a few extra steps. Fi
 }
 ```
 Then you would make config files for the two bodies in the binary pair.
-```
+```json
 {
 	"name" : "Alpha Centauri A",
 	"Base" :
@@ -312,7 +312,7 @@ Then you would make config files for the two bodies in the binary pair.
 }
 ```
 and
-```
+```json
 {
 	"name" : "Alpha Centauri B",
 	"Base" :
@@ -346,7 +346,7 @@ The different things you can specify in the props section are:
 
 - "scatter" : (list) I'll just give an example. 
 
-```
+```json
 "scatter" : [
     {"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var", "count" : 12}
 ]
@@ -377,7 +377,7 @@ If for whatever reason you want to set up a Unity project manually instead of us
 1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
 2. In the "Assets" folder in Unity, create a new folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
-```
+```cs
 using UnityEditor;
 using UnityEngine;
 using System.IO;
@@ -414,7 +414,7 @@ An array of object, each one has the following properties:
 #### XML
 Here's an example dialogue XML:
 
-```
+```xml
 <DialogueTree>
 	<NameField>EXAMPLE NPC</NameField>
 
@@ -536,7 +536,7 @@ Signal info objects can then have the following values set:
 - "insideCloak" : (true/false) You have to set this to true if the signal is inside a cloaking field
 
 Here's an example of what all this looks like, for more check my [Signals+](https://github.com/xen-42/outer-wilds-signals-plus) add-on:
-```
+```json
 "Signal" : 
 {
 	"Signals" : 
@@ -577,7 +577,7 @@ This allows you to make black holes and white holes, and to pair them.
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
-```
+```json
 {
 	"name" : "Ember Twin",
 	"destroy" : true,
@@ -593,7 +593,7 @@ Similar to above, make a config where "Name" is the name of the planet. The name
 Only some of the above modules are supported (currently) for existing planets. Things you cannot modify for existing planets include: heightmaps, procedural generation, gravity, or their orbits. You also can't make them into stars or binary focal points (but why would you want to, just delete them and replace them entirely). However this still means there are many things you can do: completely change their atmospheres, give them rings, asteroid belts, comet tails, lava, water, prop details, or signals. 
 
 You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
-```
+```json
 "name" : "Ember Twin",
 "childrenToDestroy" : ["SandSphere_Rising"],
 ```
@@ -604,7 +604,7 @@ In `childrenToDestroy` you list the relative paths for the children of the plane
 
 First create the following interface in your mod:
 
-```
+```cs
 public interface INewHorizons
 {
     void Create(Dictionary<string, object> config, IModBehaviour mod);
@@ -616,7 +616,7 @@ public interface INewHorizons
 ```
 
 In your main `ModBehaviour` class you can get the NewHorizons API like so:
-```
+```cs
 INewHorizons NewHorizonsAPI = ModHelper.Interaction.GetModApi<INewHorizons>("xen.NewHorizons")
 ```
 
