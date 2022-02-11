@@ -4,6 +4,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.VariableSize;
@@ -429,55 +430,7 @@ namespace NewHorizons
             // Since orbits are always there just check if they set a semi major axis
             if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
             {
-                var mapping = Planet.defaultMapping;
-                var heavenlyBody = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(AstroObjectLocator.GetAstroObject(body.Config.Name));
-
-                Logger.Log($"Updating position of {body.Config.Name} -> {heavenlyBody}");
-
-                if (heavenlyBody != PacificEngine.OW_CommonResources.Game.Resource.HeavenlyBody.None)
-                {
-                    var original = mapping[heavenlyBody];
-
-                    var targetScale = original.state.orbit.scale;
-                    var coords = OrbitalHelper.KeplerCoordinatesFromOrbitModule(body.Config.Orbit);
-                    var orientation = original.state.orbit.orientation;
-
-                    var parent = original.state.parent;
-                    if (body.Config.Orbit.PrimaryBody != null)
-                    { 
-                        var parentAO = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
-                        var newParent = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(parentAO);
-                        if (newParent != HeavenlyBody.None)
-                        {
-                            parent = newParent;
-                            // Have to change the gravity stuff
-                            go.GetComponentInChildren<ConstantForceDetector>()._detectableFields = new ForceVolume[] { parentAO.GetGravityVolume() };
-                            go.GetComponent<AstroObject>()._primaryBody = parentAO;
-                            Logger.Log($"WHO???? {body.Config.Name}, {parentAO.name}");
-                            //Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => UpdatePosition(go, body, parentAO));
-                        }
-                        else Logger.LogError($"Couldn't find new parent {body.Config.Orbit.PrimaryBody}");
-                    }
-
-                    Logger.Log($"{body.Config.Name} has parent {parent}");
-                    var planetoid = new Planet.Plantoid(
-                        original.size,
-                        original.gravity, 
-                        go.transform.rotation, 
-                        InitialMotionBuilder.SiderealPeriodToAngularSpeed(body.Config.Orbit.SiderealPeriod), 
-                        parent, 
-                        coords
-                    );
-
-                    mapping[heavenlyBody] = planetoid;
-
-                    Planet.defaultMapping = mapping;
-                    Planet.mapping = mapping;
-                }
-                else
-                {
-                    Logger.LogError($"Couldn't find heavenlyBody for {body.Config.Name}");
-                }
+                OrbitUpdater.Update(body, go);
             }
 
             return go;
