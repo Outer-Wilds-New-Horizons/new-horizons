@@ -89,9 +89,17 @@ namespace NewHorizons.Tools
             return false;
         }
 
-        public static bool OnShipLogManagerCheckForCompletionAchievement()
+        public static bool OnShipLogManagerCheckForCompletionAchievement(ShipLogManager __instance)
         {
-            return Main.Instance.CurrentStarSystem == "SolarSystem";
+            foreach (KeyValuePair<string, ShipLogFact> keyValuePair in __instance._factDict)
+            {
+                if (ShipLogHandler.IsVanillaAstroID(__instance.GetEntry(keyValuePair.Value.GetEntryID()).GetAstroObjectID()) && !keyValuePair.Value.IsRumor() && !keyValuePair.Value.IsRevealed() && !keyValuePair.Key.Equals("TH_VILLAGE_X3") && !keyValuePair.Key.Equals("GD_GABBRO_ISLAND_X1") && __instance.GetEntry(keyValuePair.Value.GetEntryID()).GetCuriosityName() != CuriosityName.InvisiblePlanet)
+                {
+                    return false;
+                }
+            }
+            Achievements.Earn(Achievements.Type.STUDIOUS);
+            return false;
         }
 
         public static bool OnShipLogManagerStart(ShipLogManager __instance)
