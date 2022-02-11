@@ -115,33 +115,34 @@ namespace NewHorizons.Utility
                     if (t == null)
                     {
                         Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
-                        return null;
                     }
-
-                    for (int i = 1; i < names.Length; i++)
+                    else
                     {
-                        var child = t.transform.Find(names[i]);
-
-                        if (child == null)
+                        for (int i = 1; i < names.Length; i++)
                         {
-                            foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
+                            var child = t.transform.Find(names[i]);
+
+                            if (child == null)
                             {
-                                if (t.name.Equals(names[i]))
+                                foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
                                 {
-                                    child = c;
-                                    break;
+                                    if (t.name.Equals(names[i]))
+                                    {
+                                        child = c;
+                                        break;
+                                    }
                                 }
                             }
-                        }
 
-                        if (child == null)
-                        {
-                            Logger.LogWarning($"Couldn't find object in path ({names[i]})");
-                            t = null;
-                            break;
-                        }
+                            if (child == null)
+                            {
+                                Logger.LogWarning($"Couldn't find object in path ({names[i]})");
+                                t = null;
+                                break;
+                            }
 
-                        t = child;
+                            t = child;
+                        }
                     }
 
                     go = t?.gameObject;
