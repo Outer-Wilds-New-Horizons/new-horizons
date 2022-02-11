@@ -9,7 +9,7 @@ namespace NewHorizons.External
         public string[] initialReveal;
         public MapModeInfo mapMode;
         public CuriosityColorInfo[] curiosities;
-        public EntryPositionInfo[] positions;
+        public EntryPositionInfo[] entryPositions;
 
         public class MapModeInfo
         {

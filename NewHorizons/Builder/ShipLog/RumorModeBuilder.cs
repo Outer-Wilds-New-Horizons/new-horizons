@@ -203,8 +203,8 @@ namespace NewHorizons.Builder.ShipLog
 
         private static Vector2? GetManualEntryPosition(string entryId, ShipLogModule config)
         {
-            if (config.positions == null) return null;
-            foreach (ShipLogModule.EntryPositionInfo position in config.positions)
+            if (config.entryPositions == null) return null;
+            foreach (ShipLogModule.EntryPositionInfo position in config.entryPositions)
             {
                 if (position.id == entryId)
                 {
