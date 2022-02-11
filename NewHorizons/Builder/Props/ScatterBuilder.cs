@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
                         height -= 0.2f;
                     }
 
-                    var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true, propInfo.generateColliders);
+                    var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true);
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if (propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation);
                     points.RemoveAt(randomInd);
