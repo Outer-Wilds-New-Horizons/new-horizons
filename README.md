@@ -363,6 +363,7 @@ A detail info object can have the following parameters:
 - "rotation" : (x, y, z) the euler angle rotation from a 3d vector (in degrees)
 - "scale" : (decimal number)
 - "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
+- "removeChildren" : (list of strings) relative paths of children to get rid of
 
 You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
 
