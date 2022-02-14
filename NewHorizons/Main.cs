@@ -497,7 +497,7 @@ namespace NewHorizons
             var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao.SetValue("_rootSector", sector);
 
-            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
+            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, body.Config);
 
             if (body.Config.HeightMap != null)
                 HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod.Assets);
