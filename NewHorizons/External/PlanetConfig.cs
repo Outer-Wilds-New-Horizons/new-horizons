@@ -33,7 +33,7 @@ namespace NewHorizons.External
 
         public PlanetConfig(Dictionary<string, object> dict)
         {
-            // Always have to have a base module and orbit module
+            // Always have to have a base module
             Base = new BaseModule();
             Orbit = new OrbitModule();
 

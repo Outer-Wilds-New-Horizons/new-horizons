@@ -7,7 +7,7 @@ namespace NewHorizons.Atmosphere
 {
     static class VolumesBuilder
     {
-        public static void Make(GameObject body, float innerRadius, float outerRadius)
+        public static void Make(GameObject body, float innerRadius, float outerRadius, IPlanetConfig config)
         {
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -24,17 +24,18 @@ namespace NewHorizons.Atmosphere
             SS.pointChecksOnly = true;
             SS.radius = outerRadius;
 
-            /*OWTriggerVolume trigvol = */
             rulesetGO.AddComponent<OWTriggerVolume>();
 
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
-            PR.SetValue("_altitudeFloor", innerRadius);
-            PR.SetValue("_altitudeCeiling", outerRadius);
+            PR._altitudeFloor = innerRadius;
+            PR._altitudeCeiling = outerRadius;
+            PR._useMinimap = !config.Base.IsSatellite;
+            PR._useAltimeter = !config.Base.IsSatellite;
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
-            ER.SetValue("_type", EffectRuleset.BubbleType.Underwater);
-            ER.SetValue("_material", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material"));
-            ER.SetValue("_cloudMaterial", GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial"));
+            ER._type = EffectRuleset.BubbleType.Underwater;
+            ER._material = GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material");
+            ER._cloudMaterial = GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial");
 
             volumesGO.transform.localPosition = Vector3.zero;
             rulesetGO.SetActive(true);

@@ -22,22 +22,22 @@ namespace NewHorizons.Builder.General
             ReferenceFrameVolume RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
             ReferenceFrame RV = new ReferenceFrame(rigidbody);
-            RV.SetValue("_minSuitTargetDistance", sphereOfInfluence);
-            RV.SetValue("_maxTargetDistance", 0);
-            RV.SetValue("_autopilotArrivalDistance", sphereOfInfluence * 2f);
-            RV.SetValue("_autoAlignmentDistance", sphereOfInfluence * 1.5f);
+            RV._minSuitTargetDistance = sphereOfInfluence;
+            RV._maxTargetDistance = 0;
+            RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
+            RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
+            
+            RV._hideLandingModePrompt = false;
+            RV._matchAngularVelocity = true;
+            RV._minMatchAngularVelocityDistance = 70;
+            RV._maxMatchAngularVelocityDistance = 400;
+            RV._bracketsRadius = sphereOfInfluence;
 
-            RV.SetValue("_hideLandingModePrompt", false);
-            RV.SetValue("_matchAngularVelocity", true);
-            RV.SetValue("_minMatchAngularVelocityDistance", 70);
-            RV.SetValue("_maxMatchAngularVelocityDistance", 400);
-            RV.SetValue("_bracketsRadius", sphereOfInfluence);
-
-            RFV.SetValue("_referenceFrame", RV);
-            RFV.SetValue("_minColliderRadius", sphereOfInfluence);
-            RFV.SetValue("_maxColliderRadius", sphereOfInfluence * 2f);
-            RFV.SetValue("_isPrimaryVolume", true);
-            RFV.SetValue("_isCloseRangeVolume", false);
+            RFV._referenceFrame = RV;
+            RFV._minColliderRadius = sphereOfInfluence;
+            RFV._maxColliderRadius = sphereOfInfluence * 2f;
+            RFV._isPrimaryVolume = true;
+            RFV._isCloseRangeVolume = false;
 
             rfGO.SetActive(true);
         }

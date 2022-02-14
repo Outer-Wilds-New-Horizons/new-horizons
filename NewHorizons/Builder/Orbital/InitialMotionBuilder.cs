@@ -21,10 +21,15 @@ namespace NewHorizons.Builder.Orbital
             return Update(initialMotion, body, primaryBody, OWRB, orbit);
         }
 
+        public static float SiderealPeriodToAngularSpeed(float siderealPeriod)
+        {
+            return siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (siderealPeriod * 60f);
+        }
+
         public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
             // Rotation
-            initialMotion.SetValue("_initAngularSpeed", orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f));
+            initialMotion.SetValue("_initAngularSpeed", SiderealPeriodToAngularSpeed(orbit.SiderealPeriod));
 
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);

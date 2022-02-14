@@ -4,6 +4,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.VariableSize;
@@ -14,6 +15,8 @@ using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
 using PacificEngine.OW_CommonResources.Game.Player;
+using PacificEngine.OW_CommonResources.Game.Resource;
+using PacificEngine.OW_CommonResources.Game.State;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -421,7 +424,16 @@ namespace NewHorizons
             }
 
             // Do stuff that's shared between generating new planets and updating old ones
-            return SharedGenerateBody(body, go, sector, rb);
+            go = SharedGenerateBody(body, go, sector, rb);
+
+            // Update a position using CommonResources
+            // Since orbits are always there just check if they set a semi major axis
+            if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
+            {
+                OrbitUpdater.Update(body, go);
+            }
+
+            return go;
         }
 
         #endregion Load
@@ -485,7 +497,7 @@ namespace NewHorizons
             var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao.SetValue("_rootSector", sector);
 
-            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence);
+            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, body.Config);
 
             if (body.Config.HeightMap != null)
                 HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod.Assets);
@@ -504,13 +516,7 @@ namespace NewHorizons
             body.Object = go;
 
             // Now that we're done move the planet into place
-            go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(1, 100), body.Config.Orbit).Item1 + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
-
-            if (go.transform.position.magnitude > FurthestOrbit)
-            {
-                FurthestOrbit = go.transform.position.magnitude + 30000f;
-            }
+            UpdatePosition(go, body, primaryBody);
 
             // Have to do this after setting position
             var initialMotion = InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
@@ -601,6 +607,17 @@ namespace NewHorizons
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
 
             return go;
+        }
+
+        private void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody)
+        {
+            go.transform.parent = Locator.GetRootTransform();
+            go.transform.position = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(1, 100), body.Config.Orbit).Item1 + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
+
+            if (go.transform.position.magnitude > FurthestOrbit)
+            {
+                FurthestOrbit = go.transform.position.magnitude + 30000f;
+            }
         }
 
         #endregion Body generation

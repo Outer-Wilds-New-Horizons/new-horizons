@@ -16,10 +16,12 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName, PropModule.DetailInfo detail)
         {
+            GameObject detailGO = null;
+
             if (detail.assetBundle != null)
             {
                 var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
-                MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+                detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
             else if (detail.objFilePath != null)
             {
@@ -27,24 +29,33 @@ namespace NewHorizons.Builder.Props
                 {
                     var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
                     prefab.SetActive(false);
-                    MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+                    detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }
                 catch (Exception e)
                 {
                     Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
                 }
             }
-            else MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal, detail.generateColliders);
+            else detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+
+            if(detailGO != null && detail.removeChildren != null)
+            {
+                foreach(var childPath in detail.removeChildren)
+                {
+                    var childObj = SearchUtilities.Find(SearchUtilities.GetPath(detailGO.transform) + "/" + childPath);
+                    childObj.gameObject.SetActive(false);
+                }
+            }
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)
+        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             var prefab = SearchUtilities.Find(propToClone);
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
-            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal, generateColliders);
+            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool generateColliders)
+        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             if (prefab == null) return null;
 
@@ -77,7 +88,11 @@ namespace NewHorizons.Builder.Props
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Animator).enabled = true);
+                // If it's not a moving anglerfish make sure the anim controller is off
+                if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as AnglerfishAnimController).enabled = false);
+
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => (component as Animator).enabled = true, 5);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
@@ -102,17 +117,6 @@ namespace NewHorizons.Builder.Props
                     catch (Exception e)
                     {
                         Logger.LogError($"Couldn't update AnglerFish chase speed: {e.Message}");
-                    }
-                }
-
-                // Mesh colliders
-                if (generateColliders)
-                {
-                    if (component is MeshFilter && component.gameObject.GetComponent<MeshCollider>() == null)
-                    {
-                        var mesh = (component as MeshFilter).mesh;
-                        if (mesh.isReadable) component.gameObject.AddComponent<MeshCollider>();
-                        else Logger.LogError($"Couldn't change mesh for {component.gameObject.name} because it is not readable");
                     }
                 }
             }

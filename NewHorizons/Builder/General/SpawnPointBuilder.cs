@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.General
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - body.transform.position).normalized);
-                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 2f;
+                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
 
                 GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
             }
@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.General
                 ship.transform.position = spawnPoint.transform.position;
                 ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - body.transform.position).normalized);
                 // Move it up a bit more
-                ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 5f;
+                ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
                 
                 ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(rb);
 
