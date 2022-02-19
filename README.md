@@ -34,6 +34,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Water](#water)
   - [Lava](#lava)
   - [Sand](#sand)
+  - [Ship Log](#ship-log]
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
@@ -574,6 +575,9 @@ This allows you to make black holes and white holes, and to pair them.
 - "type" : (string) Can be sand, water, lava, or star.
 - "tint" : (colour)
 - "curve": (scale curve)
+
+### Ship Log
+You can make custom ship logs for your planets. There's a guide [here](https://gist.github.com/Bwc9876/1817f8726e7f1900e57e3b05dd047d86#intro).
 
 ### How to destroy existing planets
 
