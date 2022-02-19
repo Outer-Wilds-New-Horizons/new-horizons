@@ -24,6 +24,8 @@ namespace NewHorizons.Builder.ShipLog
             bool flagAutoPositionUsed = false;
             foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
             {
+                if (body.Config.ShipLog == null) continue;
+
                 if (body.Config.ShipLog?.mapMode?.manualPosition == null)
                 {
                     flagAutoPositionUsed = true;
@@ -204,6 +206,8 @@ namespace NewHorizons.Builder.ShipLog
 
             foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
             {
+                if (body.Config.ShipLog == null) continue;
+
                 GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                 ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
                 MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
@@ -225,10 +229,14 @@ namespace NewHorizons.Builder.ShipLog
                             navMatrix[navIndex[0]][navIndex[1]] = null;
                             if (astroObject.GetID() == "CAVE_TWIN" || astroObject.GetID() == "TOWER_TWIN")
                             {
-                                Object.Destroy(GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel"));
+                                GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                             }
                         }
-                        Object.Destroy(gameObject);
+                        else if(body.Config.Name == "SandFunnel")
+                        {
+                            GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                        }
+                        gameObject.SetActive(false);
                     }
                     else
                     {
