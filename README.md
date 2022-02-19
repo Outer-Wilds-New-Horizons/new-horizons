@@ -34,7 +34,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Water](#water)
   - [Lava](#lava)
   - [Sand](#sand)
-  - [Ship Log](#ship-log]
+  - [Ship Log](#ship-log)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
