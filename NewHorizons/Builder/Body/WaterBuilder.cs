@@ -81,11 +81,11 @@ namespace NewHorizons.Builder.Body
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
-            if(module.Tint != null)
+
+            if (module.Tint != null)
             {
                 var adjustedColour = module.Tint.ToColor() / 4f;
-                adjustedColour.a = 1f;
-
+                adjustedColour.a = adjustedColour.a * 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 

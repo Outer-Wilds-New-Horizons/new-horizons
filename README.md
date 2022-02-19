@@ -1,4 +1,4 @@
-![new horizons thumbnail](https://user-images.githubusercontent.com/22628069/146680547-bd815057-9f4e-42da-a6c4-84d3ff82ff2c.png)
+![new horizons thumbnail 2](https://user-images.githubusercontent.com/22628069/154112130-b777f618-245f-44c9-9408-e11141fc5fde.png)
 
 ![Current version](https://img.shields.io/github/manifest-json/v/xen-42/outer-wilds-new-horizons?color=gree&filename=NewHorizons%2Fmanifest.json)
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
@@ -62,28 +62,29 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole (done)
 - Warp drive with target set in ship's log (done)
 - Implement custom dialogue (done)
+- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier ([done](https://github.com/xen-42/outer-wilds-unity-template))
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
 - Implement all planet features:
-	- Tornados + floating islands
-	- Funnels (sand/water/lava/star) (done)
+ 	- Funnels (sand/water/lava/star) (done)
 	- Variable surface height (sand/water/lava/star) (done)
+	- Zero-g volumes (done, with Unity template)
+	- Ghost matter (done, by copying props via game hierarchy)
+	- Tornados + floating islands
 	- Let any star go supernova
 	- Geysers
 	- Meteors
-	- Ghost matter
 	- Pocket dimensions
 	- Timed position/velocity changes
-	- Zero-g volumes
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
-- Implement constant gravity volumes
 - Destroy planets that fall into a star
-- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 
 ## How to create your own planets using configs
+
+**Note that I'm more than happy to help you debug your planet config files, but please don't just use notepad to edit them. Use something like Visual Studio Code that will check your .json file for errors. It will save both of us time.**
 
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
@@ -96,7 +97,7 @@ To locate this directory, click the "..." symbol next to "New Horizons" in the O
 ![Create a planets folder in the mod directory](https://user-images.githubusercontent.com/22628069/149638007-26b872ab-f02e-455f-a7fd-99d0d2a96de8.png)
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will look something like this:
-```
+```json
 {
 	"name" : "Wetrock",
 	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json",
@@ -104,7 +105,6 @@ Now that you have created your planets folder, this is where you will put your p
 	"Base" : 
 	{
 		"groundSize" : 100,
-		"waterSize" : 101,
 		"surfaceSize" : 101,
 		"surfaceGravity" : 12,
 		"hasMapMarker" : true,
@@ -155,7 +155,7 @@ Each { must match up with a closing } to denote its section. If you don't know h
 
 Modules look like this:
 
-```
+```json
 "Star" :
 {
 	"size" : 3000,
@@ -174,26 +174,26 @@ In this example the `Star` module has a `size` field and a `tint` field. Since t
 Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around it). There are also the following types of values:
 
 #### Colour:
-```
+```json
 {
-    "r" : 200,
-    "g" : 255,
-    "b" : 255,
-    "a" : 255
+	"r" : 200,
+	"g" : 255,
+	"b" : 255,
+	"a" : 255
 }
 ```   
 
 #### Position:
-```
+```json
 {
-    "x" : 182.4,
-    "y" : 227.4,
-    "z" : 62.7,
+	"x" : 182.4,
+	"y" : 227.4,
+	"z" : 62.7,
 }
 ```
 
 #### Scale curve:
-```
+```json
 [
 	{"time":0, "value":1},
 	{"time":5, "value":0},
@@ -271,7 +271,7 @@ Let's you put asteroids in orbit around a planet or star. Can probably negativel
 ### FocalPoint
 If you want to have binary planets or stars you have to do a few extra steps. First you make a focal point body. Here's an example (note the "..." means you'd be writing stuff there but it isn't important for the example. Don't literally put "..."):
 
-```
+```json
 {
 	"name" : "Alpha Centauri",
 	"Base" :
@@ -292,7 +292,7 @@ If you want to have binary planets or stars you have to do a few extra steps. Fi
 }
 ```
 Then you would make config files for the two bodies in the binary pair.
-```
+```json
 {
 	"name" : "Alpha Centauri A",
 	"Base" :
@@ -312,7 +312,7 @@ Then you would make config files for the two bodies in the binary pair.
 }
 ```
 and
-```
+```json
 {
 	"name" : "Alpha Centauri B",
 	"Base" :
@@ -346,7 +346,7 @@ The different things you can specify in the props section are:
 
 - "scatter" : (list) I'll just give an example. 
 
-```
+```json
 "scatter" : [
     {"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var", "count" : 12}
 ]
@@ -363,14 +363,22 @@ A detail info object can have the following parameters:
 - "rotation" : (x, y, z) the euler angle rotation from a 3d vector (in degrees)
 - "scale" : (decimal number)
 - "alignToNormal" : (true/false) If it should align with the normal vector of the surface its own (overwrites rotation)
+- "removeChildren" : (list of strings) relative paths of children to get rid of
 
 You have three options: Load from the scene hierarchy by setting "path", load from an asset bundle by setting "path" and "assetBundle", or load an obj file by setting "objFilePath" and "mtlFilePath". Asset bundles give much better results than .obj's.
 
 #### Asset Bundles
+
+Here is a template project: [Outer Wilds Unity Template](https://github.com/xen-42/outer-wilds-unity-template)
+
+The template project contains ripped versions of all the game scripts, meaning you can put things like DirectionalForceVolumes in your Unity project to have artificial gravity volumes loaded right into the game.
+
+If for whatever reason you want to set up a Unity project manually instead of using the template, follow these instructions:
+
 1. Start up a Unity 2017 project (I use Unity 2017.4.40f1 (64-bit), so if you use something else I can't guarantee it will work). The DLC updated Outer Wilds to 2019.4.27 so that probably works but I personally haven't tried it.
 2. In the "Assets" folder in Unity, create a new folder called "Editor". In it create a file called "CreateAssetBundle.cs" with the following code in it:
 
-```
+```cs
 using UnityEditor;
 using UnityEngine;
 using System.IO;
@@ -407,7 +415,7 @@ An array of object, each one has the following properties:
 #### XML
 Here's an example dialogue XML:
 
-```
+```xml
 <DialogueTree>
 	<NameField>EXAMPLE NPC</NameField>
 
@@ -529,7 +537,7 @@ Signal info objects can then have the following values set:
 - "insideCloak" : (true/false) You have to set this to true if the signal is inside a cloaking field
 
 Here's an example of what all this looks like, for more check my [Signals+](https://github.com/xen-42/outer-wilds-signals-plus) add-on:
-```
+```json
 "Signal" : 
 {
 	"Signals" : 
@@ -570,7 +578,7 @@ This allows you to make black holes and white holes, and to pair them.
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
-```
+```json
 {
 	"name" : "Ember Twin",
 	"destroy" : true,
@@ -585,11 +593,19 @@ Similar to above, make a config where "Name" is the name of the planet. The name
 
 Only some of the above modules are supported (currently) for existing planets. Things you cannot modify for existing planets include: heightmaps, procedural generation, gravity, or their orbits. You also can't make them into stars or binary focal points (but why would you want to, just delete them and replace them entirely). However this still means there are many things you can do: completely change their atmospheres, give them rings, asteroid belts, comet tails, lava, water, prop details, or signals. 
 
+You can also delete parts of an existing planet. Here's part of an example config which would delete the rising sand from Ember Twin:
+```json
+"name" : "Ember Twin",
+"childrenToDestroy" : ["SandSphere_Rising"],
+```
+
+In `childrenToDestroy` you list the relative paths for the children of the planet's gameObject that you want to delete.
+
 ## How to use New Horizons in other mods
 
 First create the following interface in your mod:
 
-```
+```cs
 public interface INewHorizons
 {
     void Create(Dictionary<string, object> config, IModBehaviour mod);
@@ -601,7 +617,7 @@ public interface INewHorizons
 ```
 
 In your main `ModBehaviour` class you can get the NewHorizons API like so:
-```
+```cs
 INewHorizons NewHorizonsAPI = ModHelper.Interaction.GetModApi<INewHorizons>("xen.NewHorizons")
 ```
 
