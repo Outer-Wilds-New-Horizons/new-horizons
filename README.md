@@ -646,7 +646,7 @@ New Horizons was made with help from:
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
 - [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
 - [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
-- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.8.2
+- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.9.0
 
 Marshmallow was made with help from:
 - TAImatem
