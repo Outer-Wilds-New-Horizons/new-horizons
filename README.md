@@ -512,6 +512,7 @@ Use this if you are creating a star.
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
 - "solarLuminosity" : (decimal number) Relative luminosity of this star compared to the sun.
 - "curve" : (scale curve)
+- "hasAtmosphere" : (true/false) Stars have their own atmosphere by default, if you're gonna use one from the [Atmosphere](#atmosphere) module then set this to false (or if you just don't want one at all)
 
 ### Signal
 - "signals" : (list of signal info objects)
