@@ -58,7 +58,6 @@ namespace NewHorizons.Builder.ShipLog
             }
             else
             {
-                astroBodyId.SetValue(systemName + "/" + astroBodyId.Value);
                 foreach (XElement entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
                 {
                     XElement curiosityName = entryElement.Element("Curiosity");
