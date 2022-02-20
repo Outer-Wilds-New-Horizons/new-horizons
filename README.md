@@ -585,7 +585,7 @@ You do this (but with the appropriate name) as it's own config.
 }
 ```
 
-Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. If you want to entirely replace the solar system you can restroy everything, including the sun. You can use the prefabs from my [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) addon, in the `planets/0 - original planets` folder. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun.
+Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. If you want to entirely replace the solar system you can restroy everything, including the sun. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun. If you're making a brand new star system, you don't have to worry about deleting any existing planets; they won't be there.
 
 ### How to update existing planets
 
