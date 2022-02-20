@@ -186,17 +186,17 @@ namespace NewHorizons.Builder.ShipLog
 
         private static Sprite GetEntrySprite(string entryId, NewHorizonsBody body)
         {
-            IModAssets assets = body.Mod.Assets;
-            string path = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
-            if (File.Exists(Main.Instance.ModHelper.Manifest.ModFolderPath + path))
+            string relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
+            try
             {
-                Texture2D newTexture = assets.GetTexture(path);
+                Texture2D newTexture = body.Mod.Assets.GetTexture(relativePath);
                 Rect rect = new Rect(0, 0, newTexture.width, newTexture.height);
                 Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
                 return Sprite.Create(newTexture, rect, pivot);
             }
-            else
+            catch(Exception)
             {
+                Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
                 return null;
             }
         }
