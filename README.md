@@ -637,7 +637,7 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 ## Credits
 Authors:
 - xen (New Horizons v0.1.0 onwards)
-- [Mister_Nebula](https://github.com/misternebula) (Marshmallow v0.1 to v1.1.0)
+- [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
 - [jtsalomo](https://github.com/jtsalomo) (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
