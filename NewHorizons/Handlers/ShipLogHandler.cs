@@ -16,12 +16,22 @@ namespace NewHorizons.Builder.Handlers
     {
         public static readonly string PAN_ROOT_PATH = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot";
 
-        private static Dictionary<string, List<NewHorizonsBody>> _astroIdToBodies = new Dictionary<string, List<NewHorizonsBody>>();
+        // NewHorizonsBody -> EntryIDs
+        private static Dictionary<NewHorizonsBody, List<string>> _nhBodyToEntryIDs;
+        //EntryID -> NewHorizonsBody
+        private static Dictionary<string, NewHorizonsBody> _entryIDsToNHBody;
+        // NewHorizonsBody -> AstroID
+        private static Dictionary<NewHorizonsBody, string> _nhBodyToAstroIDs;
+
         private static string[] vanillaBodies;
         private static string[] vanillaIDs;
 
         public static void Init()
         {
+            _nhBodyToEntryIDs = new Dictionary<NewHorizonsBody, List<string>>();
+            _entryIDsToNHBody = new Dictionary<string, NewHorizonsBody>();
+            _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
+
             List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
             vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
             vanillaIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
@@ -41,42 +51,48 @@ namespace NewHorizons.Builder.Handlers
             return vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
         }
 
-        public static NewHorizonsBody GetConfigFromID(string id)
+        public static string GetNameFromAstroID(string astroID)
         {
-            return _astroIdToBodies.ContainsKey(id) ? _astroIdToBodies[id][0] : null;
+            return CollectionUtilities.KeyByValue(_nhBodyToAstroIDs, astroID)?.Config.Name;
         }
 
-        public static void AddConfig(string id, NewHorizonsBody body)
+        public static NewHorizonsBody GetConfigFromEntryID(string entryID)
         {
-            if (!_astroIdToBodies.ContainsKey(id))
-            {
-                _astroIdToBodies.Add(id, new List<NewHorizonsBody>() { body });
-            }
+            if (_entryIDsToNHBody.ContainsKey(entryID)) return _entryIDsToNHBody[entryID];
             else
             {
-                if(!_astroIdToBodies[id].Contains(body))
-                    _astroIdToBodies[id].Append(body);
+                Logger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
+                return null;
+            }
+        }
+
+        public static void AddConfig(string astroID, List<string> entryIDs, NewHorizonsBody body)
+        {
+            // Nice to be able to just get the AstroID from the body
+            if (!_nhBodyToEntryIDs.ContainsKey(body)) _nhBodyToEntryIDs.Add(body, entryIDs);
+            else Logger.LogWarning($"Possible duplicate shiplog entry {body.Config.Name}");
+
+            // AstroID
+            if (!_nhBodyToAstroIDs.ContainsKey(body)) _nhBodyToAstroIDs.Add(body, astroID);
+            else Logger.LogWarning($"Possible duplicate shiplog entry {astroID} for {body.Config.Name}");
+
+            // EntryID to Body
+            foreach (var entryID in entryIDs)
+            {
+                if (!_entryIDsToNHBody.ContainsKey(entryID)) _entryIDsToNHBody.Add(entryID, body);
+                else Logger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.Name}");
             }
         }
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
-            foreach(var id in _astroIdToBodies.Keys)
-            {
-                if (_astroIdToBodies[id].Contains(body)) return id;                    
-            }
-
-            return body.Config.Name;
+            if (_nhBodyToAstroIDs.ContainsKey(body)) return _nhBodyToAstroIDs[body];
+            else return body.Config.Name;
         }
 
         public static bool BodyHasEntries(NewHorizonsBody body)
         {
-            foreach(var id in _astroIdToBodies.Keys)
-            {
-                if (_astroIdToBodies[id].Contains(body)) return true;
-            }
-
-            return false;
+            return _nhBodyToAstroIDs.ContainsKey(body) && _nhBodyToAstroIDs[body].Length > 0;
         }
     }
 }

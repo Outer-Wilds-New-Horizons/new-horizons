@@ -41,25 +41,23 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if (flagAutoPositionUsed && flagManualPositionUsed)
+            if(flagManualPositionUsed)
             {
-                Logger.LogError("Can't mix manual and automatic layout of ship log map mode, skipping generation");
-                return null;
+                if (flagAutoPositionUsed && flagManualPositionUsed)
+                    Logger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
+                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
             }
             else if (flagAutoPositionUsed)
             {
                 return ConstructMapModeAuto(bodies, transformParent, greyScaleMaterial, layer);
             }
-            else if (flagManualPositionUsed)
-            {
-                return ConstructMapModeManual(bodies, transformParent, greyScaleMaterial, currentNav, layer);
-            }
+
             return null;
         }
 
         public static string GetAstroBodyShipLogName(string id)
         {
-            return ShipLogHandler.GetConfigFromID(id)?.Config?.Name ?? id;
+            return ShipLogHandler.GetNameFromAstroID(id) ?? id;
         }
 
         private static GameObject CreateImage(GameObject nodeGO, IModAssets assets, string imagePath, string name, int layer)

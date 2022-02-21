@@ -58,12 +58,14 @@ namespace NewHorizons.Builder.ShipLog
             }
             else
             {
+                var entryIDs = new List<string>();
                 foreach (XElement entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
                 {
                     XElement curiosityName = entryElement.Element("Curiosity");
                     XElement id = entryElement.Element("ID");
                     if (curiosityName != null && id != null && _entryIdToRawName.ContainsKey(id.Value) == false)
                     {
+                        entryIDs.Add(id.Value);
                         _entryIdToRawName.Add(id.Value, curiosityName.Value);
                     }
                     foreach (XElement childEntryElement in entryElement.Elements("Entry"))
@@ -80,6 +82,7 @@ namespace NewHorizons.Builder.ShipLog
                             {
                                 _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
                             }
+                            entryIDs.Add(childId.Value);
                         }
                         AddTranslation(childEntryElement);
                     }
@@ -88,7 +91,7 @@ namespace NewHorizons.Builder.ShipLog
                 TextAsset newAsset = new TextAsset(astroBodyFile.ToString());
                 List<TextAsset> newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
                 manager._shipLogXmlAssets = newBodies.ToArray();
-                ShipLogHandler.AddConfig(astroBodyId.Value, body);
+                ShipLogHandler.AddConfig(astroBodyId.Value, entryIDs, body);
             }
         }
 
@@ -101,7 +104,7 @@ namespace NewHorizons.Builder.ShipLog
             {
                 if (manager._entryDataDict.ContainsKey(entry._id) == false)
                 {
-                    NewHorizonsBody body = ShipLogHandler.GetConfigFromID(entry._astroObjectID);
+                    NewHorizonsBody body = ShipLogHandler.GetConfigFromEntryID(entry._id);
                     Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config.ShipLog);
                     Vector2 entryPosition;
                     if (manualEntryPosition == null)

@@ -14,21 +14,13 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Player;
-using PacificEngine.OW_CommonResources.Game.Resource;
-using PacificEngine.OW_CommonResources.Game.State;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using Epic.OnlineServices;
-using PacificEngine.OW_CommonResources.Game.Player;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Handlers;
 
 namespace NewHorizons
 {
