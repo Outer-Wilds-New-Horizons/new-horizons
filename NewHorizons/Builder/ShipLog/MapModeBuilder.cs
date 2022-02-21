@@ -201,25 +201,38 @@ namespace NewHorizons.Builder.ShipLog
                         navMatrix[y][x] = currentNav[y][x];
                         astroIdToNavIndex.Add(currentNav[y][x].GetID(), new [] {y, x});
                     }
-                }
+                }                        
             }
 
-            foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
+            foreach(NewHorizonsBody body in bodies)
             {
-                if (body.Config.ShipLog == null) continue;
+                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
 
-                GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
-                ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
-                MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
-                Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
-                navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = newAstroObject;
-            }
-
-            if (Main.Instance.CurrentStarSystem == "SolarSystem")
-            {
-                foreach (NewHorizonsBody body in Main.BodyDict["SolarSystem"].Where(ShipLogHandler.IsVanillaBody))
+                // Sometimes they got other names idk
+                var name = body.Config.Name.Replace(" ", "");
+                var existingBody = AstroObjectLocator.GetAstroObject(body.Config.Name);
+                if (existingBody != null)
                 {
-                    GameObject gameObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + body.Config.Name.Replace(" ", ""));
+                    var astroName = existingBody.GetAstroObjectName();
+                    if (astroName == AstroObject.Name.RingWorld) name = "InvisiblePlanet";
+                    else if (astroName != AstroObject.Name.CustomString) name = astroName.ToString();
+                }
+                // Should probably also just fix the IsVanilla method
+                var isVanilla = ShipLogHandler.IsVanillaBody(body);
+
+                Logger.Log($"The name: {name} is vanilla? {isVanilla}");
+
+                if (!isVanilla)
+                {
+                    GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
+                    ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
+                    MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
+                    Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
+                    navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
+                }
+                else if (Main.Instance.CurrentStarSystem == "SolarSystem")
+                {
+                    GameObject gameObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
                     if (body.Config.Destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
                     {
                         ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();
@@ -232,7 +245,7 @@ namespace NewHorizons.Builder.ShipLog
                                 GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                             }
                         }
-                        else if(body.Config.Name == "SandFunnel")
+                        else if (name == "SandFunnel")
                         {
                             GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                         }
@@ -247,11 +260,11 @@ namespace NewHorizons.Builder.ShipLog
                         if (body.Config.ShipLog?.mapMode?.manualNavigationPosition != null)
                         {
                             Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
-                            navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = gameObject.GetComponent<ShipLogAstroObject>();
+                            navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = gameObject.GetComponent<ShipLogAstroObject>();
                         }
                         if (body.Config.ShipLog?.mapMode?.scale != null)
                         {
-                            gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale; 
+                            gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale;
                         }
                     }
                 }

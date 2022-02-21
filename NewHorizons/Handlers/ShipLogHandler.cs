@@ -34,6 +34,10 @@ namespace NewHorizons.Builder.Handlers
 
         public static bool IsVanillaBody(NewHorizonsBody body)
         {
+            var existingBody = AstroObjectLocator.GetAstroObject(body.Config.Name);
+            if (existingBody != null && existingBody.GetAstroObjectName() != AstroObject.Name.CustomString)
+                return true;
+
             return vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
         }
 

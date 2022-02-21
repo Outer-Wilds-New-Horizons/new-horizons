@@ -180,7 +180,15 @@ namespace NewHorizons.Builder.ShipLog
         {
             if (_entryIdToRawName.ContainsKey(entry._id))
             {
-                entry._curiosity = _rawNameToCuriosityName[_entryIdToRawName[entry._id]];
+                var raw = _entryIdToRawName[entry._id];
+                if (_rawNameToCuriosityName.ContainsKey(raw))
+                {
+                    entry._curiosity = _rawNameToCuriosityName[raw];
+                }
+                else
+                {
+                    Logger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
+                }
             }
         }
 
