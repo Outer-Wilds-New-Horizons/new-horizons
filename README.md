@@ -212,7 +212,7 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
-- "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
+- "hasCometTail" : (true/false) If you want the body to have a tail like the Interloper.
 - "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
 - "centerOfSolarSystem" : (true/false) If the body is the new center of the solar system be sure to set this to true.
 
