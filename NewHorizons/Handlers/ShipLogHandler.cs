@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Handlers
     {
         public static readonly string PAN_ROOT_PATH = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot";
 
-        private static Dictionary<string, NewHorizonsBody> _astroIdToBody = new Dictionary<string, NewHorizonsBody>();
+        private static Dictionary<string, List<NewHorizonsBody>> _astroIdToBodies = new Dictionary<string, List<NewHorizonsBody>>();
         private static string[] vanillaBodies;
         private static string[] vanillaIDs;
 
@@ -39,32 +39,40 @@ namespace NewHorizons.Builder.Handlers
 
         public static NewHorizonsBody GetConfigFromID(string id)
         {
-            return _astroIdToBody.ContainsKey(id) ? _astroIdToBody[id] : null;
+            return _astroIdToBodies.ContainsKey(id) ? _astroIdToBodies[id][0] : null;
         }
 
         public static void AddConfig(string id, NewHorizonsBody body)
         {
-            if (!_astroIdToBody.ContainsKey(id))
+            if (!_astroIdToBodies.ContainsKey(id))
             {
-                _astroIdToBody.Add(id, body);
+                _astroIdToBodies.Add(id, new List<NewHorizonsBody>() { body });
+            }
+            else
+            {
+                if(!_astroIdToBodies[id].Contains(body))
+                    _astroIdToBodies[id].Append(body);
             }
         }
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
-            if (BodyHasEntries(body))
+            foreach(var id in _astroIdToBodies.Keys)
             {
-                return CollectionUtilities.KeyByValue(_astroIdToBody, body);
+                if (_astroIdToBodies[id].Contains(body)) return id;                    
             }
-            else
-            {
-                return body.Config.Name;
-            }
+
+            return body.Config.Name;
         }
 
         public static bool BodyHasEntries(NewHorizonsBody body)
         {
-            return _astroIdToBody.ContainsValue(body);
+            foreach(var id in _astroIdToBodies.Keys)
+            {
+                if (_astroIdToBodies[id].Contains(body)) return true;
+            }
+
+            return false;
         }
     }
 }

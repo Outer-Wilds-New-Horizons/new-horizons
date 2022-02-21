@@ -116,10 +116,11 @@ namespace NewHorizons.Builder.ShipLog
                     {
                         id = entry._id,
                         cardPosition = entryPosition,
-                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body),
-                        altSprite =  body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id + "_ALT", body)
+                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body, true),
+                        altSprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id + "_ALT", body, false)
                     };
                     entry.SetSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.sprite);
+                    entry.SetAltSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.altSprite);
                     manager._entryDataDict.Add(entry._id, newData);
                     int index = manager._entryList.IndexOf(entry);
                     if (index < manager._entryList.Count - 2 && manager._entryList[index + 1]._astroObjectID != entry._astroObjectID)
@@ -183,7 +184,7 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static Sprite GetEntrySprite(string entryId, NewHorizonsBody body)
+        private static Sprite GetEntrySprite(string entryId, NewHorizonsBody body, bool logError)
         {
             string relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
             try
@@ -195,7 +196,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             catch(Exception)
             {
-                Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
+                if(logError) Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
                 return null;
             }
         }
