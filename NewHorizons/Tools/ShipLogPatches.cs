@@ -33,6 +33,7 @@ namespace NewHorizons.Tools
 
         public static void OnShipLogManagerAwake(ShipLogManager __instance)
         {
+            RumorModeBuilder.Init();
             ShipLogHandler.Init();
             Logger.Log("Beginning Ship Log Generation For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
             if (Main.Instance.CurrentStarSystem != "SolarSystem")

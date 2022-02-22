@@ -16,10 +16,18 @@ namespace NewHorizons.Builder.ShipLog
 {
     public static class RumorModeBuilder
     {
-        private static readonly Dictionary<CuriosityName, Color> _curiosityColors = new Dictionary<CuriosityName, Color>();
-        private static readonly Dictionary<CuriosityName, Color> _curiosityHighlightColors = new Dictionary<CuriosityName, Color>();
-        private static readonly Dictionary<string, CuriosityName> _rawNameToCuriosityName = new Dictionary<string, CuriosityName>();
-        private static readonly Dictionary<string, string> _entryIdToRawName = new Dictionary<string, string>();
+        private static Dictionary<CuriosityName, Color> _curiosityColors;
+        private static Dictionary<CuriosityName, Color> _curiosityHighlightColors;
+        private static Dictionary<string, CuriosityName> _rawNameToCuriosityName;
+        private static Dictionary<string, string> _entryIdToRawName;
+
+        public static void Init()
+        {
+            _curiosityColors = new Dictionary<CuriosityName, Color>();
+            _curiosityHighlightColors = new Dictionary<CuriosityName, Color>();
+            _rawNameToCuriosityName = new Dictionary<string, CuriosityName>();
+            _entryIdToRawName = new Dictionary<string, string>();
+        }
 
         public static void AddCuriosityColors(ShipLogModule.CuriosityColorInfo[] newColors)
         {
