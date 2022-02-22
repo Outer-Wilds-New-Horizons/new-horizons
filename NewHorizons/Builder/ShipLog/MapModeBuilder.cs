@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.ShipLog
             return ShipLogHandler.GetNameFromAstroID(id) ?? id;
         }
 
-        private static GameObject CreateImage(GameObject nodeGO, IModAssets assets, string imagePath, string name, int layer)
+        private static GameObject CreateImage(GameObject nodeGO, IModAssets assets, Texture2D texture, string name, int layer)
         {
             GameObject newImageGO = new GameObject(name);
             newImageGO.layer = layer;
@@ -72,17 +72,11 @@ namespace NewHorizons.Builder.ShipLog
             transform.localScale = Vector3.one;
 
             Image newImage = newImageGO.AddComponent<Image>();
-            if (imagePath == "DEFAULT")
-            {
-                newImage.sprite = Locator.GetShipLogManager()._shipLogLibrary.defaultEntrySprite;
-            }
-            else
-            {
-                Texture2D newTexture = assets.GetTexture(imagePath);
-                Rect rect = new Rect(0, 0, newTexture.width, newTexture.height);
-                Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
-                newImage.sprite = Sprite.Create(newTexture, rect, pivot);
-            }
+
+            Rect rect = new Rect(0, 0, texture.width, texture.height);
+            Vector2 pivot = new Vector2(texture.width / 2, texture.height / 2);
+            newImage.sprite = Sprite.Create(texture, rect, pivot);
+
             return newImageGO;
         }
 
@@ -110,9 +104,20 @@ namespace NewHorizons.Builder.ShipLog
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
 
-            string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite ?? "DEFAULT";
-            string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite ?? imagePath;
-            astroObject._imageObj = CreateImage(gameObject, body.Mod.Assets, imagePath, body.Config.Name + " Revealed", layer);
+            Texture2D image;
+            Texture2D outline;
+            
+            string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite;
+            string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
+
+            if (imagePath != null) image = body.Mod.Assets.GetTexture(imagePath);
+            else image = Locator.GetShipLogManager()._shipLogLibrary.defaultEntrySprite.texture;
+
+            if (outlinePath != null) outline = body.Mod.Assets.GetTexture(outlinePath);
+            else outline = ImageUtilities.MakeOutline(image, Color.white, 12);
+
+            astroObject._imageObj = CreateImage(gameObject, body.Mod.Assets, image, body.Config.Name + " Revealed", layer);
+            astroObject._outlineObj = CreateImage(gameObject, body.Mod.Assets, outline, body.Config.Name + " Outline", layer);
             if (ShipLogHandler.BodyHasEntries(body))
             {
                 Image revealedImage = astroObject._imageObj.GetComponent<Image>();
@@ -121,7 +126,6 @@ namespace NewHorizons.Builder.ShipLog
                 revealedImage.color = Color.white;
                 astroObject._image = revealedImage;
             }
-            astroObject._outlineObj = CreateImage(gameObject, body.Mod.Assets, outlinePath, body.Config.Name + " Outline", layer);
 
             astroObject._unviewedObj = Object.Instantiate(unviewedReference, gameObject.transform, false);
             astroObject._invisibleWhenHidden = body.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false;
@@ -144,11 +148,20 @@ namespace NewHorizons.Builder.ShipLog
             detailTransform.localRotation = Quaternion.Euler(0f, 0f, info.rotation);
             detailTransform.localScale = (Vector2)(info.scale ?? new MVector2(0, 0));
 
-            string revealedPath = info.revealedSprite ?? "DEFAULT";
-            string outlinePath = info.outlineSprite ?? revealedPath;
+            Texture2D image;
+            Texture2D outline;
 
-            Image revealedImage = CreateImage(detailGameObject, assets, revealedPath, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
-            Image outlineImage = CreateImage(detailGameObject, assets, outlinePath, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
+            string imagePath = info.revealedSprite;
+            string outlinePath = info.outlineSprite;
+
+            if (imagePath != null) image = assets.GetTexture(imagePath);
+            else image = Locator.GetShipLogManager()._shipLogLibrary.defaultEntrySprite.texture;
+
+            if (outlinePath != null) outline = assets.GetTexture(outlinePath);
+            else outline = ImageUtilities.MakeOutline(image, Color.white, 12);
+
+            Image revealedImage = CreateImage(detailGameObject, assets, image, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
+            Image outlineImage = CreateImage(detailGameObject, assets, outline, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
 
             ShipLogDetail detail = detailGameObject.AddComponent<ShipLogDetail>();
             detail.Init(info, revealedImage, outlineImage, greyScaleMaterial);
@@ -217,8 +230,6 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 // Should probably also just fix the IsVanilla method
                 var isVanilla = ShipLogHandler.IsVanillaBody(body);
-
-                Logger.Log($"The name: {name} is vanilla? {isVanilla}");
 
                 if (!isVanilla)
                 {
