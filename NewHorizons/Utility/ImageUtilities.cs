@@ -1,10 +1,55 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using UnityEngine;
 
 namespace NewHorizons.Utility
 {
     static class ImageUtilities
     {
+        public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
+        {
+            var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
+            var outlinePixels = new Color[texture.width * texture.height];
+            var pixels = texture.GetPixels();
+
+            for (int x = 0; x < texture.width; x++)
+            {
+                for (int y = 0; y < texture.height; y++)
+                {
+                    var fillColor = new Color(0, 0, 0, 0);
+
+                    if(pixels[x + y * texture.width].a == 1 && CloseToTransparent(pixels, texture.width, texture.height, x, y, thickness))
+                    {
+                        fillColor = color;
+                    }
+                    outlinePixels[x + y * texture.width] = fillColor;
+                }
+            }
+
+            outline.SetPixels(outlinePixels);
+            outline.Apply();
+
+            return outline;
+        }
+
+        private static bool CloseToTransparent(Color[] pixels, int width, int height, int x, int y, int thickness)
+        {
+            // Check nearby
+            var minX = Math.Max(0, x - thickness/2);
+            var minY = Math.Max(0, y - thickness/2);
+            var maxX = Math.Min(width, x + thickness/2);
+            var maxY = Math.Min(height, y + thickness/2);
+
+            for (int i = minX; i < maxX; i++)
+            {
+                for (int j = minY; j < maxY; j++)
+                {
+                    if (pixels[i + j * width].a < 1) return true;
+                }
+            }
+            return false;
+        }
+
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
             var pixels = image.GetPixels();
@@ -74,49 +119,22 @@ namespace NewHorizons.Utility
             return tex;
         }
 
-        // Thank you PETERSVP
-        public static Texture2D Scaled(Texture2D src, int width, int height, FilterMode mode = FilterMode.Trilinear)
+        public static Color GetAverageColor(Texture2D src)
         {
-            Rect texR = new Rect(0, 0, width, height);
-            _gpu_scale(src, width, height, mode);
+            var pixels = src.GetPixels32();
+            var r = 0f;
+            var g = 0f;
+            var b = 0f;
+            var length = pixels.Length;
+            for(int i = 0; i < pixels.Length; i++)
+            {
+                var color = pixels[i];
+                r += (float)color.r / length;
+                g += (float)color.g / length;
+                b += (float)color.b / length;
+            }
 
-            //Get rendered data back to a new texture
-            Texture2D result = new Texture2D(width, height, TextureFormat.ARGB32, true);
-            result.Resize(width, height);
-            result.ReadPixels(texR, 0, 0, true);
-            return result;
-        }
-
-        public static void Scale(Texture2D tex, int width, int height, FilterMode mode = FilterMode.Trilinear)
-        {
-            Rect texR = new Rect(0, 0, width, height);
-            _gpu_scale(tex, width, height, mode);
-
-            // Update new texture
-            tex.Resize(width, height);
-            tex.ReadPixels(texR, 0, 0, true);
-            tex.Apply(true);    //Remove this if you hate us applying textures for you :)
-        }
-
-        // Internal unility that renders the source texture into the RTT - the scaling method itself.
-        static void _gpu_scale(Texture2D src, int width, int height, FilterMode fmode)
-        {
-            //We need the source texture in VRAM because we render with it
-            src.filterMode = fmode;
-            src.Apply(true);
-
-            //Using RTT for best quality and performance. Thanks, Unity 5
-            RenderTexture rtt = new RenderTexture(width, height, 32);
-
-            //Set the RTT in order to render to it
-            Graphics.SetRenderTarget(rtt);
-
-            //Setup 2D matrix in range 0..1, so nobody needs to care about sized
-            GL.LoadPixelMatrix(0, 1, 1, 0);
-
-            //Then clear & draw the texture to fill the entire RTT.
-            GL.Clear(true, true, new Color(0, 0, 0, 0));
-            Graphics.DrawTexture(new Rect(0, 0, 1, 1), src);
+            return new Color(r / 255, g / 255, b / 255);
         }
     }
 }
