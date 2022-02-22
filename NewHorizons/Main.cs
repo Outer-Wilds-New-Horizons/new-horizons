@@ -4,6 +4,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
@@ -75,7 +76,7 @@ namespace NewHorizons
                 Logger.LogWarning("Couldn't find planets folder");
             }
 
-            UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
+            //UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
         }
 
