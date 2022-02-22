@@ -408,8 +408,8 @@ namespace NewHorizons.Builder.ShipLog
                 string newSecondaryName = "";
                 if (body.Config.FocalPoint != null)
                 {
-                    newNode.mainBody = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Primary);
-                    newSecondaryName = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Secondary).Config.Name;
+                    newNode.mainBody = searchList.Find(b => b.Config.Name == body.Config.FocalPoint.Primary);
+                    newSecondaryName = searchList.Find(b => b.Config.Name == body.Config.FocalPoint.Secondary).Config.Name;
                 }
 
                 newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
@@ -473,8 +473,15 @@ namespace NewHorizons.Builder.ShipLog
                 Vector3 lastPosition = lastAstroObject.transform.localPosition;
                 position = lastPosition;
                 float extraDistance = (node.mainBody.Config.ShipLog?.mapMode?.offset ?? 0f) * 100;
-                if (node.x == 1) position.x += (int)padding;
-                if (node.y == 1) position.y += (int)padding;
+
+                if(node.parent != null)
+                {
+                    var branchDistance = node.parent.children.IndexOf(node);
+                    var goingUp = node.parent.level % 2 != 0;
+
+                    if(goingUp && branchDistance == 0) position.y += (int)padding;
+                    if(!goingUp && branchDistance == 0) position.x += (int)padding;
+                }
 
                 if (node.level % 2 == 0)
                 {
