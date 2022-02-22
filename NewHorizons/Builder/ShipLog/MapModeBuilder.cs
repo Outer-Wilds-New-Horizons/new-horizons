@@ -16,6 +16,7 @@ namespace NewHorizons.Builder.ShipLog
     public static class MapModeBuilder
     {
         #region General
+
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
             Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
@@ -41,7 +42,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if(flagManualPositionUsed)
+            if (flagManualPositionUsed)
             {
                 if (flagAutoPositionUsed && flagManualPositionUsed)
                     Logger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
@@ -83,6 +84,7 @@ namespace NewHorizons.Builder.ShipLog
                 Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
                 newImage.sprite = Sprite.Create(newTexture, rect, pivot);
             }
+
             return newImageGO;
         }
 
@@ -104,9 +106,9 @@ namespace NewHorizons.Builder.ShipLog
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
             const float unviewedIconOffset = 15;
-            
+
             GameObject unviewedReference = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
-            
+
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
 
@@ -121,6 +123,7 @@ namespace NewHorizons.Builder.ShipLog
                 revealedImage.color = Color.white;
                 astroObject._image = revealedImage;
             }
+
             astroObject._outlineObj = CreateImage(gameObject, body.Mod.Assets, outlinePath, body.Config.Name + " Outline", layer);
 
             astroObject._unviewedObj = Object.Instantiate(unviewedReference, gameObject.transform, false);
@@ -130,9 +133,11 @@ namespace NewHorizons.Builder.ShipLog
             astroObject._unviewedObj.transform.localPosition = new Vector3(imageRect.width / 2 + unviewedIconOffset, imageRect.height / 2 + unviewedIconOffset, 0);
             return astroObject;
         }
+
         #endregion
-        
+
         # region Details
+
         private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, IModAssets assets, Material greyScaleMaterial)
         {
             GameObject detailGameObject = new GameObject("Detail");
@@ -140,9 +145,9 @@ namespace NewHorizons.Builder.ShipLog
             detailGameObject.SetActive(false);
 
             RectTransform detailTransform = detailGameObject.AddComponent<RectTransform>();
-            detailTransform.localPosition = (Vector2)(info.position ?? new MVector2(0, 0));
+            detailTransform.localPosition = (Vector2) (info.position ?? new MVector2(0, 0));
             detailTransform.localRotation = Quaternion.Euler(0f, 0f, info.rotation);
-            detailTransform.localScale = (Vector2)(info.scale ?? new MVector2(0, 0));
+            detailTransform.localScale = (Vector2) (info.scale ?? new MVector2(0, 0));
 
             string revealedPath = info.revealedSprite ?? "DEFAULT";
             string outlinePath = info.outlineSprite ?? revealedPath;
@@ -172,12 +177,15 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     MakeDetail(detailInfo, detailsTransform, body.Mod.Assets, greyScaleMaterial);
                 }
+
                 detailsParent.SetActive(true);
             }
         }
+
         #endregion
 
         #region Manual Map Mode
+
         private static ShipLogAstroObject[][] ConstructMapModeManual(List<NewHorizonsBody> bodies, GameObject transformParent, Material greyScaleMaterial, ShipLogAstroObject[][] currentNav, int layer)
         {
             int maxAmount = bodies.Count + 20;
@@ -191,18 +199,17 @@ namespace NewHorizons.Builder.ShipLog
 
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
-                
                 for (int y = 0; y < currentNav.Length; y++)
                 {
                     for (int x = 0; x < currentNav[y].Length; x++)
                     {
                         navMatrix[y][x] = currentNav[y][x];
-                        astroIdToNavIndex.Add(currentNav[y][x].GetID(), new [] {y, x});
+                        astroIdToNavIndex.Add(currentNav[y][x].GetID(), new[] {y, x});
                     }
-                }                        
+                }
             }
 
-            foreach(NewHorizonsBody body in bodies)
+            foreach (NewHorizonsBody body in bodies)
             {
                 if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
 
@@ -215,6 +222,7 @@ namespace NewHorizons.Builder.ShipLog
                     if (astroName == AstroObject.Name.RingWorld) name = "InvisiblePlanet";
                     else if (astroName != AstroObject.Name.CustomString) name = astroName.ToString();
                 }
+
                 // Should probably also just fix the IsVanilla method
                 var isVanilla = ShipLogHandler.IsVanillaBody(body);
 
@@ -226,7 +234,7 @@ namespace NewHorizons.Builder.ShipLog
                     ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
                     MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                     Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
-                    navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
+                    navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = newAstroObject;
                 }
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
@@ -247,19 +255,22 @@ namespace NewHorizons.Builder.ShipLog
                         {
                             GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                         }
+
                         gameObject.SetActive(false);
                     }
                     else
                     {
                         if (body.Config.ShipLog?.mapMode?.manualPosition != null)
                         {
-                            gameObject.transform.localPosition = (Vector2)body.Config.ShipLog.mapMode.manualPosition;
+                            gameObject.transform.localPosition = (Vector2) body.Config.ShipLog.mapMode.manualPosition;
                         }
+
                         if (body.Config.ShipLog?.mapMode?.manualNavigationPosition != null)
                         {
                             Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
-                            navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = gameObject.GetComponent<ShipLogAstroObject>();
+                            navMatrix[(int) navigationPosition.y][(int) navigationPosition.x] = gameObject.GetComponent<ShipLogAstroObject>();
                         }
+
                         if (body.Config.ShipLog?.mapMode?.scale != null)
                         {
                             gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale;
@@ -276,9 +287,11 @@ namespace NewHorizons.Builder.ShipLog
 
             return navMatrix;
         }
+
         #endregion
-        
+
         #region Automatic Map Mode
+
         private class MapModeObject
         {
             public int x;
@@ -291,18 +304,20 @@ namespace NewHorizons.Builder.ShipLog
             public List<MapModeObject> children;
             public MapModeObject parent;
             public MapModeObject lastSibling;
+
             public void Increment_width()
             {
                 branch_width++;
                 parent?.Increment_width();
             }
+
             public void Increment_height()
             {
                 branch_height++;
                 parent?.Increment_height();
             }
         }
-        
+
         private static ShipLogAstroObject[][] ConstructMapModeAuto(List<NewHorizonsBody> bodies, GameObject transformParent, Material greyScaleMaterial, int layer)
         {
             MapModeObject rootObject = ConstructPrimaryNode(bodies);
@@ -324,6 +339,7 @@ namespace NewHorizons.Builder.ShipLog
             {
                 navMatrix[index] = navMatrix[index].Where(a => a != null).ToArray();
             }
+
             return navMatrix;
         }
 
@@ -333,6 +349,7 @@ namespace NewHorizons.Builder.ShipLog
             {
                 navMatrix[root.y][root.x] = root.astroObject;
             }
+
             foreach (MapModeObject child in root.children)
             {
                 CreateNavigationMatrix(child, ref navMatrix);
@@ -349,7 +366,7 @@ namespace NewHorizons.Builder.ShipLog
                 parentNode.children[i] = child;
             }
         }
-        
+
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.CenterOfSolarSystem))
@@ -365,53 +382,60 @@ namespace NewHorizons.Builder.ShipLog
                 newNode.children = ConstructChildrenNodes(newNode, bodies);
                 return newNode;
             }
+
             Logger.LogError("Couldn't find center of system!");
             return new MapModeObject();
         }
 
-        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList)
+        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "")
         {
             List<MapModeObject> children = new List<MapModeObject>();
             int newX = parent.x;
             int newY = parent.y;
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name || b.Config.Name == secondaryName))
             {
-                if (body.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name)
+                bool even = newLevel % 2 == 0;
+                newX = even ? newX : newX + 1;
+                newY = even ? newY + 1 : newY;
+                MapModeObject newNode = new MapModeObject()
                 {
-                    bool even = newLevel % 2 == 0;
-                    newX = even ? newX : newX + 1;
-                    newY = even ? newY + 1 : newY;
-                    MapModeObject newNode = new MapModeObject()
-                    {
-                        mainBody = body,
-                        level = newLevel,
-                        x = newX,
-                        y = newY,
-                        parent = parent,
-                        lastSibling = lastSibling
-                    };
-                    newNode.children = ConstructChildrenNodes(newNode, searchList);
-                    if (even)
-                    {
-                        newY += newNode.branch_height;
-                        parent.Increment_height();
-                        newY += 1;
-                    }
-                    else
-                    {
-                        newX += newNode.branch_width;
-                        parent.Increment_width();
-                        newX += 1;
-                    }
-                    lastSibling = newNode;
-                    children.Add(newNode);
+                    mainBody = body,
+                    level = newLevel,
+                    x = newX,
+                    y = newY,
+                    parent = parent,
+                    lastSibling = lastSibling
+                };
+                string newSecondaryName = "";
+                if (body.Config.FocalPoint != null)
+                {
+                    newNode.mainBody = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Primary);
+                    newSecondaryName = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Secondary).Config.Name;
                 }
+
+                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
+                if (even)
+                {
+                    newY += newNode.branch_height;
+                    parent.Increment_height();
+                    newY += 1;
+                }
+                else
+                {
+                    newX += newNode.branch_width;
+                    parent.Increment_width();
+                    newX += 1;
+                }
+
+                lastSibling = newNode;
+                children.Add(newNode);
             }
+
             return children;
         }
-        
+
         private static void ConnectNodeToLastSibling(MapModeObject node, Material greyScaleMaterial)
         {
             Vector2 fromPosition = node.astroObject.transform.localPosition;
@@ -462,19 +486,14 @@ namespace NewHorizons.Builder.ShipLog
                     position.x += padding * (node.x - node.lastSibling.x) + extraDistance;
                 }
             }
+
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
-            if (node.mainBody.Config.FocalPoint != null)
-            {
-                astroObject._imageObj.GetComponent<Image>().enabled = false;
-                astroObject._outlineObj.GetComponent<Image>().enabled = false;
-                astroObject._unviewedObj.GetComponent<Image>().enabled = false;
-                astroObject.transform.localScale = node.lastSibling.astroObject.transform.localScale;
-            }
             node.astroObject = astroObject;
             if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
+
         #endregion
     }
 }
