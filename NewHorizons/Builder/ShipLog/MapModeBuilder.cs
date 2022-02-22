@@ -383,46 +383,51 @@ namespace NewHorizons.Builder.ShipLog
             return new MapModeObject();
         }
 
-        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList)
+        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "")
         {
             List<MapModeObject> children = new List<MapModeObject>();
             int newX = parent.x;
             int newY = parent.y;
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
-
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name))
+            
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name || b.Config.Name == secondaryName))
             {
-                if (body.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name)
+                bool even = newLevel % 2 == 0;
+                newX = even ? newX : newX + 1;
+                newY = even ? newY + 1 : newY;
+                MapModeObject newNode = new MapModeObject()
                 {
-                    bool even = newLevel % 2 == 0;
-                    newX = even ? newX : newX + 1;
-                    newY = even ? newY + 1 : newY;
-                    MapModeObject newNode = new MapModeObject()
-                    {
-                        mainBody = body,
-                        level = newLevel,
-                        x = newX,
-                        y = newY,
-                        parent = parent,
-                        lastSibling = lastSibling
-                    };
-                    newNode.children = ConstructChildrenNodes(newNode, searchList);
-                    if (even)
-                    {
-                        newY += newNode.branch_height;
-                        parent.Increment_height();
-                        newY += 1;
-                    }
-                    else
-                    {
-                        newX += newNode.branch_width;
-                        parent.Increment_width();
-                        newX += 1;
-                    }
-                    lastSibling = newNode;
-                    children.Add(newNode);
+                    mainBody = body,
+                    level = newLevel,
+                    x = newX,
+                    y = newY,
+                    parent = parent,
+                    lastSibling = lastSibling
+                };
+                string newSecondaryName = "";
+                if (body.Config.FocalPoint != null)
+                {
+                    newNode.mainBody = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Primary);
+                    newSecondaryName = Main.BodyDict[Main.Instance.CurrentStarSystem].Find(b => b.Config.Name == body.Config.FocalPoint.Secondary).Config.Name;
                 }
+
+                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
+                if (even)
+                {
+                    newY += newNode.branch_height;
+                    parent.Increment_height();
+                    newY += 1;
+                }
+                else
+                {
+                    newX += newNode.branch_width;
+                    parent.Increment_width();
+                    newX += 1;
+                }
+
+                lastSibling = newNode;
+                children.Add(newNode);
             }
             return children;
         }
