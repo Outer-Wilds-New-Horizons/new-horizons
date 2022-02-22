@@ -417,13 +417,11 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     newY += newNode.branch_height;
                     parent.Increment_height();
-                    newY += 1;
                 }
                 else
                 {
                     newX += newNode.branch_width;
                     parent.Increment_width();
-                    newX += 1;
                 }
 
                 lastSibling = newNode;
@@ -465,7 +463,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
-            const float padding = 50f;
+            const float padding = 100f;
             Vector2 position = Vector2.zero;
             if (node.lastSibling != null)
             {
@@ -473,15 +471,6 @@ namespace NewHorizons.Builder.ShipLog
                 Vector3 lastPosition = lastAstroObject.transform.localPosition;
                 position = lastPosition;
                 float extraDistance = (node.mainBody.Config.ShipLog?.mapMode?.offset ?? 0f) * 100;
-
-                if(node.parent != null)
-                {
-                    var branchDistance = node.parent.children.IndexOf(node);
-                    var goingUp = node.parent.level % 2 != 0;
-
-                    if(goingUp && branchDistance == 0) position.y += (int)padding;
-                    if(!goingUp && branchDistance == 0) position.x += (int)padding;
-                }
 
                 if (node.level % 2 == 0)
                 {
@@ -525,31 +514,41 @@ namespace NewHorizons.Builder.ShipLog
 
         private static Color GetDominantPlanetColor(NewHorizonsBody body)
         {
-            var starColor = body.Config?.Star?.Tint;
-            if (starColor != null) return starColor.ToColor();
-            
-            var atmoColor = body.Config.Atmosphere?.AtmosphereTint;
-            if (body.Config.Atmosphere?.Cloud != null) return atmoColor.ToColor();
-
-            if (body.Config?.HeightMap?.TextureMap != null)
+            try
             {
-                try
+                if (body.Config?.Singularity?.Type == "BlackHole") return Color.black;
+                if (body.Config?.Singularity?.Type == "WhiteHole") return Color.white;
+
+                var starColor = body.Config?.Star?.Tint;
+                if (starColor != null) return starColor.ToColor();
+
+                var atmoColor = body.Config.Atmosphere?.AtmosphereTint;
+                if (body.Config.Atmosphere?.Cloud != null && atmoColor != null) return atmoColor.ToColor();
+
+                if (body.Config?.HeightMap?.TextureMap != null)
                 {
-                    var texture = body.Mod.Assets.GetTexture(body.Config.HeightMap.TextureMap);
-                    var landColor = ImageUtilities.GetAverageColor(texture);
-                    if (landColor != null) return landColor;
+                    try
+                    {
+                        var texture = body.Mod.Assets.GetTexture(body.Config.HeightMap.TextureMap);
+                        var landColor = ImageUtilities.GetAverageColor(texture);
+                        if (landColor != null) return landColor;
+                    }
+                    catch (Exception) { }
                 }
-                catch (Exception) { }
+
+                var waterColor = body.Config.Water?.Tint;
+                if (waterColor != null) return waterColor.ToColor();
+
+                var lavaColor = body.Config.Lava?.Tint;
+                if (lavaColor != null) return lavaColor.ToColor();
+
+                var sandColor = body.Config.Sand?.Tint;
+                if (sandColor != null) return sandColor.ToColor();
             }
-
-            var waterColor = body.Config.Water?.Tint;
-            if (waterColor != null) return waterColor.ToColor();
-
-            var lavaColor = body.Config.Lava?.Tint;
-            if (lavaColor != null) return lavaColor.ToColor();
-
-            var sandColor = body.Config.Sand?.Tint;
-            if (sandColor != null) return sandColor.ToColor();
+            catch(Exception)
+            {
+                Logger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.Name} but I'm too lazy to fix it.");
+            }
 
             return Color.white;
         }
