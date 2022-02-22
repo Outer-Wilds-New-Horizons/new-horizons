@@ -118,5 +118,23 @@ namespace NewHorizons.Utility
             tex.Apply();
             return tex;
         }
+
+        public static Color GetAverageColor(Texture2D src)
+        {
+            var pixels = src.GetPixels32();
+            var r = 0f;
+            var g = 0f;
+            var b = 0f;
+            var length = pixels.Length;
+            for(int i = 0; i < pixels.Length; i++)
+            {
+                var color = pixels[i];
+                r += (float)color.r / length;
+                g += (float)color.g / length;
+                b += (float)color.b / length;
+            }
+
+            return new Color(r / 255, g / 255, b / 255);
+        }
     }
 }

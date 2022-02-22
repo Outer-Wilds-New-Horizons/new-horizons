@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Handlers;
+using System;
 
 namespace NewHorizons.Builder.ShipLog
 {
@@ -19,7 +20,9 @@ namespace NewHorizons.Builder.ShipLog
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
             Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
-            List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(b => (b.Config.ShipLog?.mapMode?.remove ?? false) == false).ToList();
+            List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
+                b => (b.Config.ShipLog?.mapMode?.remove ?? false) == false
+            ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
             foreach (NewHorizonsBody body in bodies.Where(b => ShipLogHandler.IsVanillaBody(b) == false))
@@ -111,10 +114,10 @@ namespace NewHorizons.Builder.ShipLog
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
             if (imagePath != null) image = body.Mod.Assets.GetTexture(imagePath);
-            else image = Locator.GetShipLogManager()._shipLogLibrary.defaultEntrySprite.texture;
+            else image = AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = body.Mod.Assets.GetTexture(outlinePath);
-            else outline = ImageUtilities.MakeOutline(image, Color.white, 12);
+            else outline = ImageUtilities.MakeOutline(image, Color.white, 10);
 
             astroObject._imageObj = CreateImage(gameObject, body.Mod.Assets, image, body.Config.Name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, body.Mod.Assets, outline, body.Config.Name + " Outline", layer);
@@ -127,7 +130,7 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._image = revealedImage;
             }
 
-            astroObject._unviewedObj = Object.Instantiate(unviewedReference, gameObject.transform, false);
+            astroObject._unviewedObj = GameObject.Instantiate(unviewedReference, gameObject.transform, false);
             astroObject._invisibleWhenHidden = body.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false;
 
             Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;
@@ -137,7 +140,7 @@ namespace NewHorizons.Builder.ShipLog
         #endregion
         
         # region Details
-        private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, IModAssets assets, Material greyScaleMaterial)
+        private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, NewHorizonsBody body, Material greyScaleMaterial)
         {
             GameObject detailGameObject = new GameObject("Detail");
             detailGameObject.transform.SetParent(parent);
@@ -154,14 +157,14 @@ namespace NewHorizons.Builder.ShipLog
             string imagePath = info.revealedSprite;
             string outlinePath = info.outlineSprite;
 
-            if (imagePath != null) image = assets.GetTexture(imagePath);
-            else image = Locator.GetShipLogManager()._shipLogLibrary.defaultEntrySprite.texture;
+            if (imagePath != null) image = body.Mod.Assets.GetTexture(imagePath);
+            else image = AutoGenerateMapModePicture(body);
 
-            if (outlinePath != null) outline = assets.GetTexture(outlinePath);
-            else outline = ImageUtilities.MakeOutline(image, Color.white, 12);
+            if (outlinePath != null) outline = body.Mod.Assets.GetTexture(outlinePath);
+            else outline = ImageUtilities.MakeOutline(image, Color.white, 10);
 
-            Image revealedImage = CreateImage(detailGameObject, assets, image, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
-            Image outlineImage = CreateImage(detailGameObject, assets, outline, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
+            Image revealedImage = CreateImage(detailGameObject, body.Mod.Assets, image, "Detail Revealed", parent.gameObject.layer).GetComponent<Image>();
+            Image outlineImage = CreateImage(detailGameObject, body.Mod.Assets, outline, "Detail Outline", parent.gameObject.layer).GetComponent<Image>();
 
             ShipLogDetail detail = detailGameObject.AddComponent<ShipLogDetail>();
             detail.Init(info, revealedImage, outlineImage, greyScaleMaterial);
@@ -183,7 +186,7 @@ namespace NewHorizons.Builder.ShipLog
 
                 foreach (ShipLogModule.ShipLogDetailInfo detailInfo in body.Config.ShipLog.mapMode.details)
                 {
-                    MakeDetail(detailInfo, detailsTransform, body.Mod.Assets, greyScaleMaterial);
+                    MakeDetail(detailInfo, detailsTransform, body, greyScaleMaterial);
                 }
                 detailsParent.SetActive(true);
             }
@@ -325,7 +328,7 @@ namespace NewHorizons.Builder.ShipLog
             int maxAmount = bodies.Count;
             ShipLogAstroObject[][] navMatrix = new ShipLogAstroObject[maxAmount][];
             for (int i = 0; i < maxAmount; i++)
-            {
+            {                                                                          
                 navMatrix[i] = new ShipLogAstroObject[maxAmount];
             }
 
@@ -387,6 +390,7 @@ namespace NewHorizons.Builder.ShipLog
             int newY = parent.y;
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
+
             foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name))
             {
                 if (body.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name)
@@ -439,7 +443,7 @@ namespace NewHorizons.Builder.ShipLog
             transform.localRotation = Quaternion.identity;
             transform.localScale = node.level % 2 == 0 ? new Vector3(node.astroObject.transform.localScale.x / 5f, Mathf.Abs(fromPosition.y - toPosition.y) / 100f, 1) : new Vector3(Mathf.Abs(fromPosition.x - toPosition.x) / 100f, node.astroObject.transform.localScale.y / 5f, 1);
             Image linkImage = newLink.AddComponent<Image>();
-            linkImage.color = new Color(0.28f, 0.28f, 0.5f, 0.28f);
+            linkImage.color = new Color(0.28f, 0.28f, 0.5f, 0.12f);
 
             ShipLogModule.ShipLogDetailInfo linkDetailInfo = new ShipLogModule.ShipLogDetailInfo()
             {
@@ -456,7 +460,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeNode(ref MapModeObject node, GameObject parent, Material greyScaleMaterial, int layer)
         {
-            const float padding = 250f;
+            const float padding = 50f;
             Vector2 position = Vector2.zero;
             if (node.lastSibling != null)
             {
@@ -464,6 +468,9 @@ namespace NewHorizons.Builder.ShipLog
                 Vector3 lastPosition = lastAstroObject.transform.localPosition;
                 position = lastPosition;
                 float extraDistance = (node.mainBody.Config.ShipLog?.mapMode?.offset ?? 0f) * 100;
+                if (node.x == 1) position.x += (int)padding;
+                if (node.y == 1) position.y += (int)padding;
+
                 if (node.level % 2 == 0)
                 {
                     position.y += padding * (node.y - node.lastSibling.y) + extraDistance;
@@ -487,5 +494,52 @@ namespace NewHorizons.Builder.ShipLog
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion
+    
+        private static Texture2D AutoGenerateMapModePicture(NewHorizonsBody body)
+        {
+            Texture2D texture;
+
+            if(body.Config.Star != null) texture = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/DefaultMapModeStar.png");
+            else if(body.Config.Atmosphere != null) texture = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/DefaultMapModNoAtmo.png");
+            else texture = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/DefaultMapModePlanet.png");
+
+            var color = GetDominantPlanetColor(body);
+            var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);
+
+            texture = ImageUtilities.LerpGreyscaleImage(texture, color, darkColor);
+
+            return texture;
+        }
+
+        private static Color GetDominantPlanetColor(NewHorizonsBody body)
+        {
+            var starColor = body.Config?.Star?.Tint;
+            if (starColor != null) return starColor.ToColor();
+            
+            var atmoColor = body.Config.Atmosphere?.AtmosphereTint;
+            if (body.Config.Atmosphere?.Cloud != null) return atmoColor.ToColor();
+
+            if (body.Config?.HeightMap?.TextureMap != null)
+            {
+                try
+                {
+                    var texture = body.Mod.Assets.GetTexture(body.Config.HeightMap.TextureMap);
+                    var landColor = ImageUtilities.GetAverageColor(texture);
+                    if (landColor != null) return landColor;
+                }
+                catch (Exception) { }
+            }
+
+            var waterColor = body.Config.Water?.Tint;
+            if (waterColor != null) return waterColor.ToColor();
+
+            var lavaColor = body.Config.Lava?.Tint;
+            if (lavaColor != null) return lavaColor.ToColor();
+
+            var sandColor = body.Config.Sand?.Tint;
+            if (sandColor != null) return sandColor.ToColor();
+
+            return Color.white;
+        }
     }
 }
