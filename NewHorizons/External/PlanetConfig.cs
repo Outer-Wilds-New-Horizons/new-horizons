@@ -37,6 +37,7 @@ namespace NewHorizons.External
             // Always have to have a base module
             Base = new BaseModule();
             Orbit = new OrbitModule();
+            ShipLog = new ShipLogModule();
 
             if (dict == null) return;
 

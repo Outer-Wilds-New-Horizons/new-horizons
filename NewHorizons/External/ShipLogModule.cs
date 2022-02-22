@@ -7,7 +7,7 @@ namespace NewHorizons.External
         public string xmlFile;
         public string spriteFolder;
         public string[] initialReveal;
-        public MapModeInfo mapMode;
+        public MapModeInfo mapMode = new MapModeInfo();
         public CuriosityColorInfo[] curiosities;
         public EntryPositionInfo[] entryPositions;
 
