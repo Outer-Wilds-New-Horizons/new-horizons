@@ -13,6 +13,7 @@ namespace NewHorizons.Utility
     public class DebugRaycaster : MonoBehaviour
     {
         private OWRigidbody _rb;
+		
         private void Awake()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();

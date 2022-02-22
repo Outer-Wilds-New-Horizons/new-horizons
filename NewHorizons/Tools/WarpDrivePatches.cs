@@ -14,9 +14,7 @@ namespace NewHorizons.Tools
         public static void Apply()
         {
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipCockpitController>("Update", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipCockpitControllerUpdate));
-
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipLogMapModeEnterMode));
-
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipLogControllerUpdate));
         }
 

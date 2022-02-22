@@ -23,6 +23,7 @@ namespace NewHorizons.External
         public StarModule Star { get; set; }
         public FocalPointModule FocalPoint { get; set; }
         public PropModule Props { get; set; }
+        public ShipLogModule ShipLog { get; set; }
         public SpawnModule Spawn { get; set; }
         public SignalModule Signal { get; set; }
         public SingularityModule Singularity { get; set; }
@@ -36,6 +37,7 @@ namespace NewHorizons.External
             // Always have to have a base module
             Base = new BaseModule();
             Orbit = new OrbitModule();
+            ShipLog = new ShipLogModule();
 
             if (dict == null) return;
 

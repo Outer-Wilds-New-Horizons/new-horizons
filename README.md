@@ -34,6 +34,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Water](#water)
   - [Lava](#lava)
   - [Sand](#sand)
+  - [Ship Log](#ship-log)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
@@ -576,6 +577,9 @@ This allows you to make black holes and white holes, and to pair them.
 - "tint" : (colour)
 - "curve": (scale curve)
 
+### Ship Log
+You can make custom ship logs for your planets. There's a guide [here](https://gist.github.com/Bwc9876/1817f8726e7f1900e57e3b05dd047d86#intro).
+
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
@@ -640,9 +644,10 @@ Authors:
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [jtsalomo](https://github.com/jtsalomo) (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
-- [Raicuparta](https://github.com/Raicuparta) (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
-- [Nageld](https://github.com/Nageld) (Set up xml reading for custom dialogue in v0.8.0)
+- [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
+- [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
+- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
+- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.9.0
 
 Marshmallow was made with help from:
 - TAImatem

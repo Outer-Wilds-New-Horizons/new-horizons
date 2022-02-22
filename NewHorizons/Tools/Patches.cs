@@ -5,11 +5,20 @@ using NewHorizons.External;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
+using Harmony;
+using NewHorizons.Utility;
+using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using Object = UnityEngine.Object;
+using NewHorizons.Handlers;
+using NewHorizons.Builder.ShipLog;
+using NewHorizons.Builder.Handlers;
 
 namespace NewHorizons.Tools
 {
@@ -41,7 +50,7 @@ namespace NewHorizons.Tools
             var playerDataLearnFrequency = typeof(PlayerData).GetMethod("LearnFrequency");
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataLearnFrequency, typeof(Patches), nameof(Patches.OnPlayerDataLearnFrequency));
             var playerDataKnowsMultipleFrequencies = typeof(PlayerData).GetMethod("KnowsMultipleFrequencies");
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));  
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataKnowsMultipleFrequencies, typeof(Patches), nameof(Patches.OnPlayerDataKnowsMultipleFrequencies));
             var playerDataResetGame = typeof(PlayerData).GetMethod("ResetGame");
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataResetGame, typeof(Patches), nameof(Patches.OnPlayerDataResetGame));
 
@@ -307,7 +316,7 @@ namespace NewHorizons.Tools
             }
             return true;
         }
-
+        
         public static void OnPlayerDataResetGame()
         {
             NewHorizonsData.Reset();
