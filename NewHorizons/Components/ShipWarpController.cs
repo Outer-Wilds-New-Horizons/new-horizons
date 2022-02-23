@@ -125,7 +125,7 @@ namespace NewHorizons.Components
                     Logger.Log("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
                     Player.getResources()._currentHealth = 100f;
-                    if(!PlayerState.AtFlightConsole()) Teleportation.teleportPlayerToShip();
+                    if (!PlayerState.AtFlightConsole()) TeleportToShip();
                 }
             }
 
@@ -147,13 +147,19 @@ namespace NewHorizons.Components
             Logger.Log("Starting warp-in effect");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
-            if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) Teleportation.teleportPlayerToShip();
+            if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
             _whitehole.Create();
             _waitingToBeSeated = true;
             if (_wearingSuit && !Locator.GetPlayerController()._isWearingSuit)
             {
                 SpawnPointBuilder.SuitUp();
             }
+        }
+
+        private void TeleportToShip()
+        {
+            var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
+            playerSpawner.DebugWarp(playerSpawner.GetSpawnPoint(SpawnLocation.Ship));
         }
 
         public void FinishWarpIn()

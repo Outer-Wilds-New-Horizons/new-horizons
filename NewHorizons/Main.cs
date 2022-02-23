@@ -34,12 +34,14 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
+        public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         public static float FurthestOrbit { get; set; } = 50000f;
         public StarLightController StarLightController { get; private set; }
 
+        private string _defaultStarSystem = "SolarSystem";
         private string _currentStarSystem = "SolarSystem";
         public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
 
@@ -63,6 +65,7 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this.ModHelper);
 
             Tools.Patches.Apply();
             Tools.WarpDrivePatches.Apply();
@@ -79,7 +82,6 @@ namespace NewHorizons
                 Logger.LogWarning("Couldn't find planets folder");
             }
 
-            UnityEngine.Random.InitState((int)DateTime.Now.Ticks);
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
         }
 
@@ -101,7 +103,7 @@ namespace NewHorizons
             if (scene.name != "SolarSystem")
             {
                 // Reset back to original solar system after going to main menu.
-                _currentStarSystem = "SolarSystem";
+                _currentStarSystem = _defaultStarSystem;
                 return;
             }
 
@@ -111,11 +113,31 @@ namespace NewHorizons
 
             NewHorizonsData.Load();
 
-            // Make the warp controller if there are multiple star systems
-            if (BodyDict.Keys.Count > 1)
+            // By default we dont have it
+            HasWarpDrive = false;
+
+            // Lets us warp home if we want
+            if (_currentStarSystem != "SolarSystem")
             {
                 HasWarpDrive = true;
+            }
+            else
+            {
+                // Make the warp controller if there are multiple star systems
+                foreach (NewHorizonsSystem system in SystemDict.Values)
+                {
+                    Logger.Log($"System {system}, {system.Config.canEnterViaWarpDrive}");
+                    if (system.Config.canEnterViaWarpDrive && system.Spawn?.ShipSpawnPoint != null)
+                    {
+                        HasWarpDrive = true;
+                        break;
+                    }
+                }
+            }
 
+            if (HasWarpDrive == true)
+            {
+                Logger.Log("Setting up warp drive");
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => StarChartHandler.Init());
 
@@ -221,6 +243,7 @@ namespace NewHorizons
 
             Logger.Log($"Is the player warping in? {IsWarping}");
             if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
+            else Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint), 1);
             IsWarping = false;
         }
 
@@ -335,6 +358,10 @@ namespace NewHorizons
 
                 if(body != null)
                 {
+                    // Wanna track the spawn point of each system
+                    if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+
+                    // Add the new planet to the planet dictionary
                     BodyDict[body.Config.StarSystem].Add(body);
                 }
             }
@@ -348,7 +375,24 @@ namespace NewHorizons
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
                 Logger.Log($"Loaded {config.Name}");
                 if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
-                if (!BodyDict.ContainsKey(config.StarSystem)) BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+                if (!BodyDict.ContainsKey(config.StarSystem))
+                {
+                    // See if theres a star system config
+                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"{config.StarSystem}.json");
+                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
+                    else Logger.Log($"Loaded system config for {config.StarSystem}");
+
+                    // Since we only load stuff the first time we can do this now
+                    if (starSystemConfig.startHere)
+                    {
+                        _defaultStarSystem = config.StarSystem;
+                        _currentStarSystem = config.StarSystem;
+                    }
+
+                    SystemDict.Add(config.StarSystem, new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod.ModHelper));
+
+                    BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+                }
 
                 body = new NewHorizonsBody(config, mod.ModHelper);
             }
@@ -524,6 +568,7 @@ namespace NewHorizons
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
+                Logger.Log("Doing spawn point thing");
                 SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
