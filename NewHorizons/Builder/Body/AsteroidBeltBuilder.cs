@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, IPlanetConfig parentConfig, IModHelper mod)
+        public static void Make(string bodyName, IPlanetConfig parentConfig, IModBehaviour mod)
         {
             var belt = parentConfig.AsteroidBelt;
 

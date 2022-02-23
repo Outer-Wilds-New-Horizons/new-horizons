@@ -1,6 +1,7 @@
 ﻿using NewHorizons.Body;
 using NewHorizons.Body.Geometry;
 using NewHorizons.External;
+using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -16,15 +17,15 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject go, HeightMapModule module, IModAssets assets)
+        public static void Make(GameObject go, HeightMapModule module, IModBehaviour mod)
         {
             Texture2D heightMap, textureMap;
             try
             {
                 if (module.HeightMap == null) heightMap = Texture2D.whiteTexture;
-                else heightMap = assets.GetTexture(module.HeightMap);
+                else heightMap = ImageUtilities.GetTexture(mod, module.HeightMap);
                 if (module.TextureMap == null) textureMap = Texture2D.whiteTexture;
-                else textureMap = assets.GetTexture(module.TextureMap);
+                else textureMap = ImageUtilities.GetTexture(mod, module.TextureMap);
             }
             catch(Exception e)
             {

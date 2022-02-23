@@ -11,18 +11,18 @@ namespace NewHorizons.Atmosphere
     static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModAssets assets)
+        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             Texture2D image, cap, ramp;
 
             try
             {
-                image = assets.GetTexture(atmo.Cloud);
+                image = ImageUtilities.GetTexture(mod, atmo.Cloud);
 
                 if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = assets.GetTexture(atmo.CloudCap);
+                else cap = ImageUtilities.GetTexture(mod, atmo.CloudCap);
                 if (atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
-                else ramp = assets.GetTexture(atmo.CloudRamp);
+                else ramp = ImageUtilities.GetTexture(mod, atmo.CloudRamp);
             }
             catch (Exception e)
             {

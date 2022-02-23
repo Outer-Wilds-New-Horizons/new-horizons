@@ -10,7 +10,7 @@ namespace NewHorizons.Utility
 {
     public class NewHorizonsSystem
     {
-        public NewHorizonsSystem(string name, StarSystemConfig config, IModHelper mod)
+        public NewHorizonsSystem(string name, StarSystemConfig config, IModBehaviour mod)
         {
             Name = name;
             Config = config;
@@ -21,6 +21,6 @@ namespace NewHorizons.Utility
         public SpawnModule Spawn = null;
         public SpawnPoint SpawnPoint = null;
         public StarSystemConfig Config;
-        public IModHelper Mod;
+        public IModBehaviour Mod;
     }
 }

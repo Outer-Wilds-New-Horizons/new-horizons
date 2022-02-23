@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
         private static Texture2D _colorOverTime;
         public static StarController Make(GameObject body, Sector sector, StarModule starModule)
         {
-            if (_colorOverTime == null) _colorOverTime = Main.Instance.ModHelper.Assets.GetTexture("AssetBundle/StarColorOverTime.png");
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
             starGO.transform.parent = body.transform;

@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
 		public static Shader UnlitRingShader;
 		public static Shader UnlitRingShader1Pixel;
 
-		public static GameObject Make(GameObject body, RingModule ring, IModAssets assets)
+		public static GameObject Make(GameObject body, RingModule ring, IModBehaviour mod)
         {
 			// Properly lit shader doesnt work yet
 			ring.Unlit = true;
@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Body
 			Texture2D ringTexture;
 			try
 			{
-				ringTexture = assets.GetTexture(ring.Texture);
+				ringTexture = ImageUtilities.GetTexture(mod, ring.Texture);
 			}
 			catch (Exception e)
 			{

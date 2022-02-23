@@ -13,11 +13,11 @@ namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
         {
             if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
-            var dialogue = MakeConversationZone(go, sector, info, mod);
+            var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
             if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
         }
 

@@ -65,7 +65,7 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this.ModHelper);
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
 
             Tools.Patches.Apply();
             Tools.WarpDrivePatches.Apply();
@@ -319,7 +319,7 @@ namespace NewHorizons
                 heightMap.TextureMap = body.Config.Atmosphere.Cloud;
             }
 
-            HeightMapBuilder.Make(titleScreenGO, heightMap, body.Mod.Assets);
+            HeightMapBuilder.Make(titleScreenGO, heightMap, body.Mod);
 
             GameObject pivot = GameObject.Instantiate(GameObject.Find("Scene/Background/PlanetPivot"), GameObject.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
@@ -335,7 +335,7 @@ namespace NewHorizons
                 newRing.InnerRadius = size * 1.2f;
                 newRing.OuterRadius = size * 2f;
                 newRing.Texture = body.Config.Ring.Texture;
-                var ring = RingBuilder.Make(titleScreenGO, newRing, body.Mod.Assets);
+                var ring = RingBuilder.Make(titleScreenGO, newRing, body.Mod);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 
@@ -389,12 +389,12 @@ namespace NewHorizons
                         _currentStarSystem = config.StarSystem;
                     }
 
-                    SystemDict.Add(config.StarSystem, new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod.ModHelper));
+                    SystemDict.Add(config.StarSystem, new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod));
 
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
 
-                body = new NewHorizonsBody(config, mod.ModHelper);
+                body = new NewHorizonsBody(config, mod);
             }
             catch (Exception e)
             {
@@ -544,7 +544,7 @@ namespace NewHorizons
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, body.Config);
 
             if (body.Config.HeightMap != null)
-                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod.Assets);
+                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod);
 
             if (body.Config.ProcGen != null)
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
@@ -586,7 +586,7 @@ namespace NewHorizons
         private GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             if (body.Config.Ring != null)
-                RingBuilder.Make(go, body.Config.Ring, body.Mod.Assets);
+                RingBuilder.Make(go, body.Config.Ring, body.Mod);
 
             if (body.Config.AsteroidBelt != null)
                 AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Mod);
@@ -626,7 +626,7 @@ namespace NewHorizons
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod.Assets);
+                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                     SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
                 }
 
@@ -640,7 +640,7 @@ namespace NewHorizons
             }
 
             if (body.Config.Props != null)
-                PropBuildManager.Make(go, sector, body.Config, body.Mod, body.Mod.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
@@ -707,7 +707,7 @@ namespace NewHorizons
             Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig(config);
 
-            var body = new NewHorizonsBody(planetConfig, mod != null ? mod.ModHelper : Main.Instance.ModHelper);
+            var body = new NewHorizonsBody(planetConfig, mod != null ? mod : Main.Instance);
 
             if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
             Main.BodyDict[body.Config.StarSystem].Add(body);

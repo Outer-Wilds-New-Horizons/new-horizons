@@ -114,15 +114,13 @@ namespace NewHorizons.Components
             {
                 if (uniqueName.Equals("SolarSystem"))
                 {
-                    IModAssets assets = Main.Instance.ModHelper.Assets;
-                    texture = assets.GetTexture("AssetBundle/hearthian system.png");
+                    texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/hearthian system.png");
                 }
                 else
                 {
-                    IModAssets assets = Main.BodyDict[uniqueName][0].Mod.Assets;
                     var path = $"planets/{uniqueName}.png";
                     Logger.Log($"Trying to load {path}");
-                    texture = assets.GetTexture(path);
+                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueName].Mod, path);
                 }
             }
             catch (Exception) { }
