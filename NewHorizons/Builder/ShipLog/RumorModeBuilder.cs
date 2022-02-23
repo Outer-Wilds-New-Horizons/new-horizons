@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.ShipLog
         public static void AddBodyToShipLog(ShipLogManager manager, NewHorizonsBody body)
         {
             string systemName = body.Config.StarSystem;
-            XElement astroBodyFile = XElement.Load(body.Mod.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
+            XElement astroBodyFile = XElement.Load(body.Mod.ModHelper.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
             XElement astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {
@@ -208,7 +208,7 @@ namespace NewHorizons.Builder.ShipLog
             string relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
             try
             {
-                Texture2D newTexture = body.Mod.Assets.GetTexture(relativePath);
+                Texture2D newTexture = ImageUtilities.GetTexture(body.Mod, relativePath);
                 Rect rect = new Rect(0, 0, newTexture.width, newTexture.height);
                 Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
                 return Sprite.Create(newTexture, rect, pivot);

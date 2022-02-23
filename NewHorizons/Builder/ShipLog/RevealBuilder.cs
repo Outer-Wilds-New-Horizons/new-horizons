@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.ShipLog
 {
     public static class RevealBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.RevealInfo info, IModHelper mod)
+        public static void Make(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             GameObject newRevealGO = MakeGameObject(go, sector, info, mod);
             switch (info.revealOn.ToLower())
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.ShipLog
             return newShape;
         }
 
-        private static GameObject MakeGameObject(GameObject go, Sector sector, PropModule.RevealInfo info, IModHelper mod)
+        private static GameObject MakeGameObject(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
             revealTriggerVolume.SetActive(false);
@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.ShipLog
             return revealTriggerVolume;
         }
 
-        private static void MakeTrigger(GameObject go, Sector sector, PropModule.RevealInfo info, IModHelper mod)
+        private static void MakeTrigger(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             SphereShape newShape = MakeShape(go, info, Shape.CollisionMode.Volume);
             OWTriggerVolume newVolume = go.AddComponent<OWTriggerVolume>();
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.ShipLog
             volume._factIDs = info.reveals;
         }
 
-        private static void MakeObservable(GameObject go, Sector sector, PropModule.RevealInfo info, IModHelper mod)
+        private static void MakeObservable(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             go.layer = LayerMask.NameToLayer("Interactible");
             SphereCollider newSphere = go.AddComponent<SphereCollider>();
@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.ShipLog
             newObserveTrigger._disableColliderOnRevealFact = true;
         }
 
-        private static void MakeSnapshot(GameObject go, Sector sector, PropModule.RevealInfo info, IModHelper mod)
+        private static void MakeSnapshot(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             SphereShape newShape = MakeShape(go, info, Shape.CollisionMode.Manual);
             ShapeVisibilityTracker newTracker = go.AddComponent<ShapeVisibilityTracker>();
