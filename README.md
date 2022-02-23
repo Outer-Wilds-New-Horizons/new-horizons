@@ -1,5 +1,8 @@
 ![new horizons thumbnail 2](https://user-images.githubusercontent.com/22628069/154112130-b777f618-245f-44c9-9408-e11141fc5fde.png)
 
+
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxen_42%26type%3Dpatrons&style=flat)](https://patreon.com/xen_42)
+
 ![Current version](https://img.shields.io/github/manifest-json/v/xen-42/outer-wilds-new-horizons?color=gree&filename=NewHorizons%2Fmanifest.json)
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
@@ -564,6 +567,7 @@ This allows you to make black holes and white holes, and to pair them.
 
 ### Lava
 - "size" : (decimal number) height radius of the lava volume
+- "tint" : (colour)
 - "curve" : (scale curve)
 
 ### Sand
