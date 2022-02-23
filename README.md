@@ -1,5 +1,8 @@
 ![new horizons thumbnail 2](https://user-images.githubusercontent.com/22628069/154112130-b777f618-245f-44c9-9408-e11141fc5fde.png)
 
+
+[![Support me on Patreon](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dxen_42%26type%3Dpatrons&style=flat)](https://patreon.com/xen_42)
+
 ![Current version](https://img.shields.io/github/manifest-json/v/xen-42/outer-wilds-new-horizons?color=gree&filename=NewHorizons%2Fmanifest.json)
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
@@ -34,6 +37,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Water](#water)
   - [Lava](#lava)
   - [Sand](#sand)
+  - [Ship Log](#ship-log)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
@@ -212,7 +216,7 @@ Now I'll go through the different modules and what they can do. Most fields are 
 - "gravityFallOff" : (string) Acceptable values are "linear" or "inverseSquared". Defaults to "linear". Most planets use linear but the sun and some moons use inverseSquared.
 - "surfaceSize" : (decimal number) A scale height used for a number of things. Should be the approximate radius of the body.
 - "groundSize" : (decimal number) If you want the planet to have a perfectly spherical surface, set a value for this. 
-- "hasCometTrail" : (true/false) If you want the body to have a trail like the Interloper.
+- "hasCometTail" : (true/false) If you want the body to have a tail like the Interloper.
 - "hasReferenceFrame" : (true/false) If the body should be target-able from the map screen.
 - "centerOfSolarSystem" : (true/false) If the body is the new center of the solar system be sure to set this to true.
 
@@ -512,6 +516,7 @@ Use this if you are creating a star.
 - "solarFlareTint" : (colour) The flares are tinted weirdly so this won't make the actual colour of the star. You'll want to use trial and error to find something that matches.
 - "solarLuminosity" : (decimal number) Relative luminosity of this star compared to the sun.
 - "curve" : (scale curve)
+- "hasAtmosphere" : (true/false) Stars have their own atmosphere by default, if you're gonna use one from the [Atmosphere](#atmosphere) module then set this to false (or if you just don't want one at all)
 
 ### Signal
 - "signals" : (list of signal info objects)
@@ -575,6 +580,9 @@ This allows you to make black holes and white holes, and to pair them.
 - "tint" : (colour)
 - "curve": (scale curve)
 
+### Ship Log
+You can make custom ship logs for your planets. There's a guide [here](https://gist.github.com/Bwc9876/1817f8726e7f1900e57e3b05dd047d86#intro).
+
 ### How to destroy existing planets
 
 You do this (but with the appropriate name) as it's own config.
@@ -585,7 +593,7 @@ You do this (but with the appropriate name) as it's own config.
 }
 ```
 
-Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. If you want to entirely replace the solar system you can restroy everything, including the sun. You can use the prefabs from my [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) addon, in the `planets/0 - original planets` folder. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun.
+Remember that if you destroy Timber Hearth you better put a [Spawn](#spawn) module on another planet. If you want to entirely replace the solar system you can restroy everything, including the sun. Also, deleting a planet destroys anything orbiting it, so if you want to replace the solar system you can just destroy the sun. If you're making a brand new star system, you don't have to worry about deleting any existing planets; they won't be there.
 
 ### How to update existing planets
 
@@ -636,12 +644,13 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 ## Credits
 Authors:
 - xen (New Horizons v0.1.0 onwards)
-- [Mister_Nebula](https://github.com/misternebula) (Marshmallow v0.1 to v1.1.0)
+- [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [jtsalomo](https://github.com/jtsalomo) (Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0)
-- [Raicuparta](https://github.com/Raicuparta) (Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website)
-- [Nageld](https://github.com/Nageld) (Set up xml reading for custom dialogue in v0.8.0)
+- [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
+- [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
+- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
+- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.9.0
 
 Marshmallow was made with help from:
 - TAImatem

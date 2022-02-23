@@ -4,6 +4,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
@@ -14,17 +15,12 @@ using NewHorizons.Utility;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Player;
-using PacificEngine.OW_CommonResources.Game.Resource;
-using PacificEngine.OW_CommonResources.Game.State;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
@@ -70,6 +66,7 @@ namespace NewHorizons
             Tools.Patches.Apply();
             Tools.WarpDrivePatches.Apply();
             Tools.OWCameraFix.Apply();
+            Tools.ShipLogPatches.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 

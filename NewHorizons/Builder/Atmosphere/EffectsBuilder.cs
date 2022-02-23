@@ -26,12 +26,12 @@ namespace NewHorizons.Atmosphere
                 rainGO.transform.localPosition = Vector3.zero;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
-                pvc._densityByHeight = new AnimationCurve(new Keyframe[]
-                {
+                pvc._densityByHeight = new AnimationCurve(new Keyframe[] 
+                { 
                     new Keyframe(surfaceSize - 0.5f, 0),
-                    new Keyframe(surfaceSize, 10f),
-                    new Keyframe(atmoSize, 0f)
-                 });
+                    new Keyframe(surfaceSize, 10f), 
+                    new Keyframe(atmoSize, 0f) 
+                });
 
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
                 rainGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });

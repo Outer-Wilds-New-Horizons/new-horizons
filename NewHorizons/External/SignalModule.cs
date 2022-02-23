@@ -18,6 +18,7 @@ namespace NewHorizons.External
             public string Name;
             public string AudioClip = null;
             public string AudioFilePath = null;
+            public string Reveals = "";
             public float SourceRadius = 1f;
             public float DetectionRadius = 0f;
             public float IdentificationRadius = 10f;
