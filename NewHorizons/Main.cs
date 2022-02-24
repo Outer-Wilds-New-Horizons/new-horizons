@@ -92,7 +92,6 @@ namespace NewHorizons
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
-            Logger.LogWarning(MountedAddons.ToString());
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
