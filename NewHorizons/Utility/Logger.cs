@@ -7,6 +7,14 @@ namespace NewHorizons.Utility
 {
     public static class Logger
     {
+
+        private static LogType _logLevel = LogType.Error;
+
+        public static void UpdateLogLevel(LogType newLevel)
+        {
+            _logLevel = newLevel;
+        }
+
         public static void LogProperties(UnityEngine.Object obj)
         {
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
@@ -34,6 +42,7 @@ namespace NewHorizons.Utility
 
         public static void Log(string text, LogType type)
         {
+            if ((int) type < (int) _logLevel) return;
             Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
         }
 
@@ -51,10 +60,10 @@ namespace NewHorizons.Utility
         }
         public enum LogType
         {
+            Todo,
             Log,
-            Error,
             Warning,
-            Todo
+            Error,
         }
         private static MessageType LogTypeToMessageType(LogType t) 
         {

@@ -18,9 +18,11 @@ using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using OWML.Common.Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
@@ -32,10 +34,14 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
+        public static bool Debug;
+        private static IModButton _reloadButton;
+
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
+        public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
         public static float FurthestOrbit { get; set; } = 50000f;
         public StarLightController StarLightController { get; private set; }
@@ -45,6 +51,7 @@ namespace NewHorizons
         public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
 
         private bool _isChangingStarSystem = false;
+        private bool _firstLoad = true;
         public bool IsWarping { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
@@ -55,6 +62,30 @@ namespace NewHorizons
         public override object GetApi()
         {
             return new NewHorizonsApi();
+        }
+
+        public override void Configure(IModConfig config)
+        {
+            Debug = config.GetSettingsValue<bool>("Debug");
+            UpdateReloadButton();
+            string logLevel = config.GetSettingsValue<string>("LogLevel");
+            Logger.LogType logType;
+            switch (logLevel)
+            {
+                case "Info":
+                    logType = Logger.LogType.Log;
+                    break;
+                case "Warning":
+                    logType = Logger.LogType.Warning;
+                    break;
+                case "Critical":
+                    logType = Logger.LogType.Error;
+                    break;
+                default:
+                    logType = Logger.LogType.Error;
+                    break;
+            }
+            Logger.UpdateLogLevel(logType);
         }
 
         public void Start()
@@ -83,7 +114,49 @@ namespace NewHorizons
             }
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
+            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
+            Instance.ModHelper.Menus.PauseMenu.OnInit += InitializePauseMenu;
         }
+        
+        #region Reloading
+        private void InitializePauseMenu()
+        {
+            _reloadButton = ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("RELOAD CONFIGS");
+            _reloadButton.OnClick += ReloadConfigs;
+            UpdateReloadButton();
+        }
+
+        private void UpdateReloadButton()
+        {
+            if (_reloadButton != null)
+            {
+                if (Debug) _reloadButton.Show();
+                else _reloadButton.Hide();
+            }
+        }
+
+        private void ReloadConfigs()
+        {
+            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
+            
+            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
+
+            try
+            {
+                foreach (IModBehaviour mountedAddon in MountedAddons)
+                {
+                    LoadConfigs(mountedAddon);
+                }
+            }
+            catch (Exception)
+            {
+                Logger.LogWarning("Error While Reloading");
+            }
+            
+            ChangeCurrentStarSystem(_currentStarSystem);
+        }
+        #endregion
 
         public void OnDestroy()
         {
@@ -350,6 +423,10 @@ namespace NewHorizons
         #region Load
         public void LoadConfigs(IModBehaviour mod)
         {
+            if (_firstLoad)
+            {
+                MountedAddons.Add(mod);
+            }
             var folder = mod.ModHelper.Manifest.ModFolderPath;
             if(Directory.Exists(folder + "planets"))
             {
