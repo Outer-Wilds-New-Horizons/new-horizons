@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components
@@ -24,6 +25,18 @@ namespace NewHorizons.Components
         private float _impactDeathSpeed;
 
         private const float size = 14f;
+
+        private readonly string _blackHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
+        private readonly string _whiteHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
+
+        private GameObject _blackHolePrefab;
+        private GameObject _whiteHolePrefab;
+
+        public void Init()
+        {
+            _blackHolePrefab = GameObject.Find(_blackHolePath);
+            _whiteHolePrefab = GameObject.Find(_whiteHolePath);
+        }
 
         public void Start()
         {
@@ -44,7 +57,8 @@ namespace NewHorizons.Components
 
         private void MakeBlackHole()
         {
-            var blackHoleShader = GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity").GetComponent<MeshRenderer>().material.shader;
+            var blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().material.shader;
+            if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var blackHoleRender = new GameObject("BlackHoleRender");
             blackHoleRender.transform.parent = base.transform;
@@ -52,10 +66,9 @@ namespace NewHorizons.Components
             blackHoleRender.transform.localScale = Vector3.one * size;
 
             var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
-            meshFilter.mesh = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
+            meshFilter.mesh = _blackHolePrefab.GetComponent<MeshFilter>().mesh;
 
             var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
-            if (blackHoleShader == null) blackHoleShader = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(blackHoleShader);
             meshRenderer.material.SetFloat("_Radius", size * 0.4f);
             meshRenderer.material.SetFloat("_MaxDistortRadius", size * 0.95f);
@@ -68,7 +81,8 @@ namespace NewHorizons.Components
 
         private void MakeWhiteHole()
         {
-            var whiteHoleShader = GameObject.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity").GetComponent<MeshRenderer>().material.shader;
+            var whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().material.shader;
+            if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
             whiteHoleRenderer.transform.parent = base.transform;
@@ -76,10 +90,9 @@ namespace NewHorizons.Components
             whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
 
             var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
-            meshFilter.mesh = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshFilter>().mesh;
+            meshFilter.mesh = _whiteHolePrefab.GetComponent<MeshFilter>().mesh;
 
             var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
-            if (whiteHoleShader == null) whiteHoleShader = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(whiteHoleShader);
             meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
             meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);

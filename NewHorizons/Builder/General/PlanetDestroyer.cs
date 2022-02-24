@@ -35,11 +35,18 @@ namespace NewHorizons.Builder.General
 
         public static void RemoveSolarSystem()
         {
+            // Stop the sun from killing the player
+            var sunVolumes = GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN");
+            sunVolumes.SetActive(false);
+
             foreach(var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) RemoveBody(ao);
-            }    
+                if (ao != null) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveBody(ao));
+            }
+
+            // Bring the sun back because why not
+            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 2);
         }
 
         public static void RemoveBody(AstroObject ao, List<AstroObject> toDestroy = null)
@@ -109,6 +116,11 @@ namespace NewHorizons.Builder.General
                 GameObject.Find("QuantumIsland_Body").SetActive(false);
                 GameObject.Find("StatueIsland_Body").SetActive(false);
                 GameObject.Find("ConstructionYardIsland_Body").SetActive(false);
+                GameObject.Find("GabbroShip_Body").SetActive(false);
+                foreach(var jelly in GameObject.FindObjectsOfType<JellyfishController>())
+                {
+                    jelly.gameObject.SetActive(false);
+                }
             }
             else if(ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
             {
@@ -118,6 +130,15 @@ namespace NewHorizons.Builder.General
             else if(ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
             {
                 GameObject.Find("MiningRig_Body").SetActive(false);
+
+                foreach(var obj in GameObject.FindObjectsOfType<DayNightTracker>())
+                {
+                    GameObject.Destroy(obj);
+                }
+                foreach (var obj in GameObject.FindObjectsOfType<VillageMusicVolume>())
+                {
+                    GameObject.Destroy(obj);
+                }
             }
             else if(ao.GetAstroObjectName() == AstroObject.Name.Sun)
             {
@@ -140,7 +161,11 @@ namespace NewHorizons.Builder.General
                     GameObject.Destroy(audioSource);
                 }
 
-                GameObject.Find("SunProxy(Clone)/Sun_Proxy_Body").SetActive(false);
+                foreach(var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
+                {
+                    Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
+                    GameObject.Destroy(sunProxy.gameObject);
+                }
             }
             else if(ao.GetAstroObjectName() == AstroObject.Name.DreamWorld)
             {
@@ -157,22 +182,25 @@ namespace NewHorizons.Builder.General
                     break;
                 }
             }
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveProxy(ao.name.Replace("_Body", "")));
+            RemoveProxy(ao.name.Replace("_Body", ""));
 
             ao.transform.root.gameObject.SetActive(false);
+
+            foreach (ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
+            {
+                if (proxy?._realObjectTransform?.gameObject == ao.gameObject)
+                {
+                    GameObject.Destroy(proxy.gameObject);
+                }
+            }
 
             HeavenlyBodyBuilder.Remove(ao);
         }
 
         public static void RemoveDistantProxyClones()
         {
-            foreach(ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
-            {
-                if(proxy.transform.name.Contains("_DistantProxy(Clone"))
-                {
-                    GameObject.Destroy(proxy.gameObject);
-                }
-            }
+            GameObject.Destroy(GameObject.FindObjectOfType<DistantProxyManager>().gameObject);
+
         }
 
         private static void RemoveProxy(string name)

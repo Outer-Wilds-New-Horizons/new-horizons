@@ -17,6 +17,7 @@ using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
+using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -139,7 +140,8 @@ namespace NewHorizons
             {
                 Logger.Log("Setting up warp drive");
                 _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => StarChartHandler.Init());
+                _shipWarpController.Init();
+                StarChartHandler.Init();
 
                 LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
             }
@@ -234,16 +236,17 @@ namespace NewHorizons
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PlanetDestroyer.RemoveDistantProxyClones());
+            Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveDistantProxyClones(), 1);
 
-            if(!_currentStarSystem.Equals("SolarSystem")) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveSolarSystem(), 2);
+            if(!_currentStarSystem.Equals("SolarSystem")) PlanetDestroyer.RemoveSolarSystem();
 
             var map = GameObject.FindObjectOfType<MapController>();
             if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
             Logger.Log($"Is the player warping in? {IsWarping}");
-            if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 1);
-            else Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint), 1);
+            if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 5);
+            else Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint), 5);
+
             IsWarping = false;
         }
 
@@ -408,7 +411,7 @@ namespace NewHorizons
                 if (!BodyDict.ContainsKey(config.StarSystem))
                 {
                     // See if theres a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"{config.StarSystem}.json");
+                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
                     else Logger.Log($"Loaded system config for {config.StarSystem}");
 
@@ -454,8 +457,8 @@ namespace NewHorizons
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 5);
-                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 5);
+                        if (ao != null) Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 1);
+                        else Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 1);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
@@ -718,7 +721,11 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             // We reset the solar system on death (unless we just killed the player)
-            if (!_isChangingStarSystem) _currentStarSystem = _defaultStarSystem;
+            if (!_isChangingStarSystem)
+            {
+                _currentStarSystem = _defaultStarSystem;
+                IsWarping = false;
+            }
         }
         #endregion Change star system
     }

@@ -20,8 +20,6 @@ namespace NewHorizons.External.Configs
                 if (property == null) property = GetType().GetProperty(item.Key.ToCamelCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
                 if (property == null) property = GetType().GetProperty(item.Key.ToTitleCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
 
-                Logger.Log($"Couldn't find [{item.Key}] in [{string.Concat(GetType().GetProperties().Select(x => x.Name))}] for [{GetType()}]");
-
                 if (property != null)
                 {
                     if (property.PropertyType.BaseType == typeof(Module))

@@ -56,19 +56,9 @@ namespace NewHorizons.Components
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
-                else
-                {
-                    foreach(var body in Main.BodyDict[starSystem])
-                    {
-                        if(body.Config?.Spawn?.ShipSpawnPoint != null)
-                        {
-                            flag = true;
-                            break;
-                        }
-                    }
-                }
+                else if (Main.SystemDict[starSystem].Spawn?.ShipSpawnPoint != null) flag = true;
 
-                if(flag)
+                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
                 {
                     var card = CreateCard(starSystem, root.transform, new Vector2(x++ * 200, 0));
                     _starSystemCards.Add(card);

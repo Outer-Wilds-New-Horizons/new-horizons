@@ -37,7 +37,7 @@ namespace NewHorizons.Utility
             Logger.Log($"Removing star from list: {star?.gameObject?.name}");
             if (_stars.Contains(star))
             {
-                if (_activeStar.Equals(star))
+                if (_activeStar != null && _activeStar.Equals(star))
                 {
                     _stars.Remove(star);
                     if(_stars.Count > 0) ChangeActiveStar(_stars[0]);
