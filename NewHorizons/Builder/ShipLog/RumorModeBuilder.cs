@@ -11,6 +11,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Handlers;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.ShipLog
 {
@@ -149,41 +150,40 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void AddTranslation(XElement entry)
         {
-            Dictionary<string, string> table = TextTranslation.Get().m_table.theShipLogTable;
             XElement nameElement = entry.Element("Name");
             if (nameElement != null)
             {
                 string name = nameElement.Value;
-                table[name] = name;
+                TranslationHandler.AddShipLog(name);
                 foreach (XElement rumorFact in entry.Elements("RumorFact"))
                 {
-                    AddTranslationForElement(rumorFact, "RumorName", string.Empty, table);
-                    AddTranslationForElement(rumorFact, "Text", name, table);
-                    AddTranslationForAltText(rumorFact, name, table);
+                    AddTranslationForElement(rumorFact, "RumorName", string.Empty);
+                    AddTranslationForElement(rumorFact, "Text", name);
+                    AddTranslationForAltText(rumorFact, name);
                 }
                 foreach (XElement exploreFact in entry.Elements("ExploreFact"))
                 {
-                    AddTranslationForElement(exploreFact, "Text", name, table);
-                    AddTranslationForAltText(exploreFact, name, table);
+                    AddTranslationForElement(exploreFact, "Text", name);
+                    AddTranslationForAltText(exploreFact, name);
                 }
             }
         }
 
-        private static void AddTranslationForElement(XElement parent, string elementName, string keyName, Dictionary<string, string> table)
+        private static void AddTranslationForElement(XElement parent, string elementName, string keyName)
         {
             XElement element = parent.Element(elementName);
             if (element != null)
             {
-                table[keyName + element.Value] = element.Value;
+                TranslationHandler.AddShipLog(element.Value, keyName);
             }
         }
 
-        private static void AddTranslationForAltText(XElement fact, string keyName, Dictionary<string, string> table)
+        private static void AddTranslationForAltText(XElement fact, string keyName)
         {
             XElement altText = fact.Element("AltText");
             if (altText != null)
             {
-                AddTranslationForElement(altText, "Text", keyName, table);
+                AddTranslationForElement(altText, "Text", keyName);
             }
         }
 
