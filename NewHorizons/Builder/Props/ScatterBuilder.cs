@@ -9,6 +9,7 @@ using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
 using OWML.Common;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.Props
 {

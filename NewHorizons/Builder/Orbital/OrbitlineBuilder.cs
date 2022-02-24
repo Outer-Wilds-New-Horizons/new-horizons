@@ -3,6 +3,7 @@ using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Orbital

@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.External.Configs;
 using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;

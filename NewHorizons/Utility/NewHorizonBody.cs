@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External;
 using OWML.Common;
 using UnityEngine;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Utility
 {

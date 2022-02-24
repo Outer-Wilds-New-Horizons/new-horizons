@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General

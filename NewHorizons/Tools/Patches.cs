@@ -59,6 +59,8 @@ namespace NewHorizons.Tools
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SurveyorProbe>("IsLaunched", typeof(Patches), nameof(Patches.OnSurveyorProbeIsLaunched));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerSpawner>("SpawnPlayer", typeof(Patches), nameof(Patches.OnPlayerSpawnerSpawnPlayerPreFix));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
@@ -364,6 +366,13 @@ namespace NewHorizons.Tools
         public static void OnMapControllerOnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
         {
             __instance._isLockedOntoMapSatellite = true;
+        }
+
+
+        public static void OnPlayerSpawnerSpawnPlayerPreFix(PlayerSpawner __instance)
+        {
+            Logger.Log("Player spawning");
+            __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
         }
     }
 }

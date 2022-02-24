@@ -5,33 +5,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.External
+namespace NewHorizons.External.Configs
 {
-    public class StarSystemConfig
+    public class Config
     {
-        public bool canEnterViaWarpDrive = true;
-        public bool startHere = false;
-        public string factRequiredForWarp;
-        public NomaiCoordinates coords;
-
-        public class NomaiCoordinates
-        {
-            public int[] x;
-            public int[] y;
-            public int[] z;
-        }
-
-        public StarSystemConfig(Dictionary<string, object> dict)
+        public Config(Dictionary<string, object> dict)
         {
             if (dict == null) return;
 
             foreach (var item in dict)
             {
-                var property = typeof(PlanetConfig).GetProperty(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (property == null)
-                    property = typeof(PlanetConfig).GetProperty(item.Key.ToCamelCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
-                if (property == null)
-                    property = typeof(PlanetConfig).GetProperty(item.Key.ToTitleCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                var property = GetType().GetProperty(item.Key, System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                if (property == null) property = GetType().GetProperty(item.Key.ToCamelCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+                if (property == null) property = GetType().GetProperty(item.Key.ToTitleCase(), System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+                Logger.Log($"Couldn't find [{item.Key}] in [{string.Concat(GetType().GetProperties().Select(x => x.Name))}] for [{GetType()}]");
 
                 if (property != null)
                 {

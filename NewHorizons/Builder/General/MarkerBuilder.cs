@@ -2,6 +2,7 @@
 using OWML.Utils;
 using System.Reflection;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General

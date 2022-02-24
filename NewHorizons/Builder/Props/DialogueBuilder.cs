@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External;
+using NewHorizons.Handlers;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -86,10 +87,8 @@ namespace NewHorizons.Builder.Props
             xmlDocument.LoadXml(xml);
             XmlNode xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
             XmlNodeList xmlNodeList = xmlNode.SelectNodes("DialogueNode");
-            string NameField = xmlNode.SelectSingleNode("NameField").InnerText;
-            var translationTable = TextTranslation.Get().m_table.theTable;
-            translationTable[NameField] = NameField;
-
+            string characterName = xmlNode.SelectSingleNode("NameField").InnerText;
+            TranslationHandler.AddDialogue(characterName);
 
             foreach (object obj in xmlNodeList)
             {
@@ -99,18 +98,17 @@ namespace NewHorizons.Builder.Props
                 XmlNodeList xmlText = xmlNode2.SelectNodes("Dialogue/Page");
                 foreach (object Page in xmlText)
                 {
-
                     XmlNode pageData = (XmlNode)Page;
-                    translationTable[name + pageData.InnerText] = pageData.InnerText;
-
+                    var text = pageData.InnerText;
+                    TranslationHandler.AddDialogue(text, name);
                 }
 
                 xmlText = xmlNode2.SelectNodes("DialogueOptionsList/DialogueOption/Text");
-
                 foreach (object Page in xmlText)
                 {
                     XmlNode pageData = (XmlNode)Page;
-                    translationTable[NameField + name + pageData.InnerText] = pageData.InnerText;
+                    var text = pageData.InnerText;
+                    TranslationHandler.AddDialogue(text, characterName, name);
                 }
             }
         }

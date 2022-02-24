@@ -1,7 +1,7 @@
 ﻿using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
 
-namespace NewHorizons.External
+namespace NewHorizons.External.Configs
 {
     public interface IPlanetConfig
     {

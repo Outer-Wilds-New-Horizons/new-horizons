@@ -13,6 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General

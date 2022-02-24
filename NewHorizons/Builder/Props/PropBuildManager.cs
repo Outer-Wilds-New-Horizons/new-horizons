@@ -12,6 +12,7 @@ using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using OWML.Common;
 using NewHorizons.Builder.ShipLog;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.Props
 {

@@ -8,10 +8,12 @@ using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -34,6 +36,7 @@ namespace NewHorizons
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
+
         public static float FurthestOrbit { get; set; } = 50000f;
         public StarLightController StarLightController { get; private set; }
 
@@ -348,19 +351,49 @@ namespace NewHorizons
         public void LoadConfigs(IModBehaviour mod)
         {
             var folder = mod.ModHelper.Manifest.ModFolderPath;
-            foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+            if(Directory.Exists(folder + "planets"))
             {
-                var relativeDirectory = file.Replace(folder, "");
-                var body = LoadConfig(mod, relativeDirectory);
-
-                if(body != null)
+                foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
                 {
-                    // Wanna track the spawn point of each system
-                    if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+                    var relativeDirectory = file.Replace(folder, "");
+                    var body = LoadConfig(mod, relativeDirectory);
 
-                    // Add the new planet to the planet dictionary
-                    BodyDict[body.Config.StarSystem].Add(body);
+                    if (body != null)
+                    {
+                        // Wanna track the spawn point of each system
+                        if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+
+                        // Add the new planet to the planet dictionary
+                        BodyDict[body.Config.StarSystem].Add(body);
+                    }
                 }
+            }
+            if(Directory.Exists(folder + @"translations\"))
+            {
+                var foundFile = false;
+                foreach(TextTranslation.Language language in Enum.GetValues(typeof(TextTranslation.Language)))
+                {
+                    if (language == TextTranslation.Language.UNKNOWN || language == TextTranslation.Language.TOTAL) continue;
+
+                    var relativeFile = $"translations/{language.ToString().ToLower()}.json";
+
+                    if (File.Exists($"{folder}{relativeFile}"))
+                    {
+                        Logger.Log($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
+
+                        var config = new TranslationConfig($"{folder}{relativeFile}");
+                        if (config == null)
+                        {
+                            Logger.Log($"Found {folder}{relativeFile} but couldn't load it");
+                            continue;
+                        }
+
+                        foundFile = true;
+
+                        TranslationHandler.RegisterTranslation(language, config);
+                    }
+                }
+                if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
             }
         }
 
@@ -566,7 +599,7 @@ namespace NewHorizons
             if (body.Config.Spawn != null)
             {
                 Logger.Log("Doing spawn point thing");
-                SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+                SystemDict[body.Config.StarSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
             if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic) OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config);
@@ -685,7 +718,7 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             // We reset the solar system on death (unless we just killed the player)
-            if (!_isChangingStarSystem) _currentStarSystem = "SolarSystem";
+            if (!_isChangingStarSystem) _currentStarSystem = _defaultStarSystem;
         }
         #endregion Change star system
     }
@@ -704,7 +737,7 @@ namespace NewHorizons
             Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
             var planetConfig = new PlanetConfig(config);
 
-            var body = new NewHorizonsBody(planetConfig, mod != null ? mod : Main.Instance);
+            var body = new NewHorizonsBody(planetConfig, mod ?? Main.Instance);
 
             if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
             Main.BodyDict[body.Config.StarSystem].Add(body);
