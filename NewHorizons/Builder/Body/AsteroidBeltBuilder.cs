@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 
@@ -14,7 +15,7 @@ namespace NewHorizons.Builder.Body
 {
     static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, IPlanetConfig parentConfig, IModHelper mod)
+        public static void Make(string bodyName, IPlanetConfig parentConfig, IModBehaviour mod)
         {
             var belt = parentConfig.AsteroidBelt;
 

@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using UnityEngine;
+using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
@@ -69,6 +70,7 @@ namespace NewHorizons.Builder.General
 
             if (config.Base.CenterOfSolarSystem)
             {
+                Logger.Log($"Setting center of universe to {config.Name}");
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = owRigidBody, 2);
             }
 

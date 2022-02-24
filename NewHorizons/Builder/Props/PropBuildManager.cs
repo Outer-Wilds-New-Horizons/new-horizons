@@ -12,22 +12,23 @@ using NewHorizons.Builder.General;
 using NewHorizons.Utility;
 using OWML.Common;
 using NewHorizons.Builder.ShipLog;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModHelper mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {
-                ScatterBuilder.Make(go, sector, config, mod.Assets, uniqueModName);
+                ScatterBuilder.Make(go, sector, config, mod, uniqueModName);
             }
             if(config.Props.Details != null)
             {
                 foreach (var detail in config.Props.Details)
                 {
-                    DetailBuilder.Make(go, sector, config, mod.Assets, uniqueModName, detail);
+                    DetailBuilder.Make(go, sector, config, mod, uniqueModName, detail);
                 }
             }
             if(config.Props.Geysers != null)
@@ -71,7 +72,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModAssets assets)
+        public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModBehaviour mod)
         {
             string key = uniqueModName + "." + assetBundle;
             AssetBundle bundle;
@@ -82,7 +83,7 @@ namespace NewHorizons.Builder.Props
                 if (Main.AssetBundles.ContainsKey(key)) bundle = Main.AssetBundles[key];
                 else
                 {
-                    bundle = assets.LoadBundle(assetBundle);
+                    bundle = mod.ModHelper.Assets.LoadBundle(assetBundle);
                     Main.AssetBundles[key] = bundle;
                 }
             }

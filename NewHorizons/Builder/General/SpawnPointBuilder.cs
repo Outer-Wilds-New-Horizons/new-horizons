@@ -2,6 +2,7 @@
 using OWML.Utils;
 using System;
 using UnityEngine;
+using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
@@ -23,8 +24,6 @@ namespace NewHorizons.Builder.General
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - body.transform.position).normalized);
                 spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
-
-                GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
             }
             if(module.ShipSpawnPoint != null)
             {
@@ -56,8 +55,6 @@ namespace NewHorizons.Builder.General
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
                     playerSpawnGO.transform.localRotation = Quaternion.Euler(0,0,0);
-
-                    GameObject.FindObjectOfType<PlayerSpawner>().SetInitialSpawnPoint(playerSpawn);
                 }
             }
             if(!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
@@ -67,6 +64,7 @@ namespace NewHorizons.Builder.General
             }
 
             Logger.Log("Made spawnpoint on [" + body.name + "]");
+
             return playerSpawn;
         }
 

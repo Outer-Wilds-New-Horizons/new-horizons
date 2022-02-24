@@ -1,3 +1,4 @@
+﻿using OWML.Common;
 ﻿using System;
 using System.IO;
 using UnityEngine;
@@ -118,6 +119,16 @@ namespace NewHorizons.Utility
             tex.Apply();
             return tex;
         }
+
+        public static Texture2D GetTexture(IModBehaviour mod, string filename)
+        {
+            // Copied from OWML but without the print statement lol
+            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            var data = File.ReadAllBytes(path);
+            var texture = new Texture2D(2, 2);
+            texture.LoadImage(data);
+            return texture;
+		}
 
         public static Color GetAverageColor(Texture2D src)
         {

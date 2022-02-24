@@ -9,25 +9,26 @@ using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
 using OWML.Common;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName, PropModule.DetailInfo detail)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
 
             if (detail.assetBundle != null)
             {
-                var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, assets);
+                var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, mod);
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
             else if (detail.objFilePath != null)
             {
                 try
                 {
-                    var prefab = assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
+                    var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
                     prefab.SetActive(false);
                     detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }

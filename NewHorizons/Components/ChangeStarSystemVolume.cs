@@ -24,7 +24,6 @@ namespace NewHorizons.Components
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)
         {
             Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, PlayerState.AtFlightConsole());
-            //Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, false);
         }
     }
 }

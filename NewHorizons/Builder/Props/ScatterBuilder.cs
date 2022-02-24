@@ -9,17 +9,18 @@ using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
 using OWML.Common;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModAssets assets, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
-            MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, assets, uniqueModName, config);
+            MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, mod, uniqueModName, config);
         }
 
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModAssets assets, string uniqueModName, IPlanetConfig config)
+        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, string uniqueModName, IPlanetConfig config)
         {
             var heightMap = config.HeightMap;
 
@@ -31,7 +32,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    heightMapTexture = assets.GetTexture(heightMap.HeightMap);
+                    heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.HeightMap);
                 }
                 catch (Exception) { }
             }
@@ -41,7 +42,7 @@ namespace NewHorizons.Builder.Props
                 Random.InitState(propInfo.seed);
 
                 GameObject prefab;
-                if (propInfo.assetBundle != null) prefab = PropBuildManager.LoadPrefab(propInfo.assetBundle, propInfo.path, uniqueModName, assets);
+                if (propInfo.assetBundle != null) prefab = PropBuildManager.LoadPrefab(propInfo.assetBundle, propInfo.path, uniqueModName, mod);
                 else prefab = GameObject.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {

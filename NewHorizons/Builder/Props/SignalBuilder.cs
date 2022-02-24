@@ -89,7 +89,7 @@ namespace NewHorizons.Builder.Props
             return name;
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule module, IModHelper mod)
+        public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)
         {
             foreach(var info in module.Signals)
             {
@@ -97,7 +97,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModHelper mod)
+        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = new GameObject($"Signal_{info.Name}");
             signalGO.SetActive(false);
@@ -121,7 +121,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    clip = AudioUtility.LoadAudio(mod.Manifest.ModFolderPath + "/" + info.AudioFilePath);
+                    clip = AudioUtility.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
                     //clip = mod.Assets.GetAudio(info.AudioFilePath);
                 }
                 catch(Exception e)
