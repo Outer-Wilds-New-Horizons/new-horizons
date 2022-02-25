@@ -567,6 +567,7 @@ This allows you to make black holes and white holes, and to pair them.
 
 ### Lava
 - "size" : (decimal number) height radius of the lava volume
+- "tint" : (colour)
 - "curve" : (scale curve)
 
 ### Sand
