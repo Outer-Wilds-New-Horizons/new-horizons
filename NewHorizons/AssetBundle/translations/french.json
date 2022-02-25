@@ -9,8 +9,8 @@
 	"UIDictionary": 
 	{
 		"INTERSTELLAR_MODE" : "Mode Interstellaire",
-		"Statue" : "Statue Nomaï",
-		"WarpCore" : "Flux Anti-Gravitonique",
-		"???" : "???"
+		"FREQ_STATUE" : "Statue Nomaï",
+		"FREQ_WARP_CORE" : "Flux Anti-Gravitonique",
+		"FREQ_UNKNOWN" : "???"
 	}	
 }

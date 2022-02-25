@@ -53,6 +53,7 @@ namespace NewHorizons.Handlers
             // Try to default to English
             if(dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
             {
+
                 if (englishTable.TryGetValue(text, out var englishText))
                 {
                     return englishText;
@@ -109,10 +110,8 @@ namespace NewHorizons.Handlers
         public static void AddDialogue(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
-            var language = TextTranslation.Get().m_language;
 
-            string text = rawText;
-            if (_dialogueTranslationDictionary.TryGetValue(language, out var dict) && dict.TryGetValue(rawText, out var translatedText)) text = translatedText;
+            var text = GetTranslation(rawText, TextType.DIALOGUE);
 
             TextTranslation.Get().m_table.Insert(key, text);
         }
@@ -120,10 +119,8 @@ namespace NewHorizons.Handlers
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
-            var language = TextTranslation.Get().m_language;
 
-            string text = rawText;
-            if (_shipLogTranslationDictionary.TryGetValue(language, out var dict) && dict.TryGetValue(rawText, out var translatedText)) text = translatedText;
+            string text = GetTranslation(rawText, TextType.SHIPLOG);
 
             TextTranslation.Get().m_table.InsertShipLog(key, text);
         }
@@ -131,11 +128,8 @@ namespace NewHorizons.Handlers
         public static int AddUI(string rawText)
         {
             var uiTable = TextTranslation.Get().m_table.theUITable;
-            var language = TextTranslation.Get().m_language;
 
-            string text = rawText;
-            if (_shipLogTranslationDictionary.TryGetValue(language, out var dict) && dict.TryGetValue(rawText, out var translatedText)) text = translatedText;
-            text = text.ToUpper();
+            var text = GetTranslation(rawText, TextType.UI).ToUpper();
 
             var key = uiTable.Keys.Max() + 1;
             try

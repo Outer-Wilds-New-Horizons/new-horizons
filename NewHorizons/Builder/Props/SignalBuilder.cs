@@ -68,9 +68,9 @@ namespace NewHorizons.Builder.Props
                 SignalName.WhiteHole_GD_Receiver,
             });
             _customFrequencyNames = new Dictionary<SignalFrequency, string>() {
-                { SignalFrequency.Statue, "Nomai Statue" }, 
-                { SignalFrequency.Default, "???" }, 
-                { SignalFrequency.WarpCore, "Anti-Graviton Flux" } 
+                { SignalFrequency.Statue, "FREQ_STATUE" }, 
+                { SignalFrequency.Default, "FREQ_UNKNOWN" }, 
+                { SignalFrequency.WarpCore, "FREQ_WARP_CORE" } 
             };
             _nextCustomSignalName = 200;
             _nextCustomFrequencyName = 256;
