@@ -125,14 +125,54 @@ namespace NewHorizons.Tools
             if (customSignalName == null) return true;
             else
             {
-                __result = customSignalName;
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI).ToUpper();
                 return false;
             }
+        }
+
+        public static bool OnAudioSignalFrequencyToIndex(SignalFrequency __0, ref int __result)
+        {
+            switch(__0)
+            {
+                case (SignalFrequency.Default):
+                    __result = 0;
+                    break;
+                case (SignalFrequency.Traveler):
+                    __result = 1;
+                    break;
+                case (SignalFrequency.Quantum):
+                    __result = 2;
+                    break;
+                case (SignalFrequency.EscapePod):
+                    __result = 3;
+                    break;
+                case (SignalFrequency.WarpCore):
+                    __result = 4;
+                    break;
+                case (SignalFrequency.HideAndSeek):
+                    __result = 5;
+                    break;
+                case (SignalFrequency.Radio):
+                    __result = 6;
+                    break;
+                case (SignalFrequency.Statue):
+                    __result = 7;
+                    break;
+                default:
+                    // Frequencies are in powers of 2
+                    __result = (int)(Mathf.Log((float)__0) / Mathf.Log(2f));
+                    break;
+            }
+
+            return false;
         }
 
         public static bool OnAudioSignalIndexToFrequency(int __0, ref SignalFrequency __result) {
             switch (__0)
             {
+                case 0:
+                    __result = SignalFrequency.Default;
+                    break;
                 case 1:
                     __result = SignalFrequency.Traveler;
                     break;
@@ -155,60 +195,16 @@ namespace NewHorizons.Tools
                     __result = SignalFrequency.Statue;
                     break;
                 default:
-                    __result = SignalFrequency.Default;
+                    __result = (SignalFrequency)(Math.Pow(2, __0));
                     break;
-            }
-            return false;
-        }
-
-        public static bool OnAudioSignalFrequencyToIndex(SignalFrequency __0, ref int __result)
-        {
-            var frequency = __0;
-            if (frequency <= SignalFrequency.EscapePod)
-            {
-                if(frequency == SignalFrequency.Default)
-                {
-                    __result = 0;
-                }
-                else if (frequency == SignalFrequency.Traveler)
-                {
-                    __result = 1;
-                }
-                else if (frequency == SignalFrequency.Quantum)
-                {
-                    __result = 2;
-                }
-                else if (frequency == SignalFrequency.EscapePod)
-                {
-                    __result = 3;
-                }
-            }
-            else
-            {
-                if (frequency == SignalFrequency.WarpCore)
-                {
-                    __result = 4;
-                }
-                else if (frequency == SignalFrequency.HideAndSeek)
-                {
-                    __result = 5;
-                }
-                else if (frequency == SignalFrequency.Radio)
-                {
-                    __result = 6;
-                }
-                else if (frequency == SignalFrequency.Statue)
-                {
-                    __result = 7;
-                }
             }
             return false;
         }
 
         public static bool OnAudioSignalFrequencyToString(SignalFrequency __0, ref string __result)
         {
-            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string customName);
-            if (customName != null) 
+            var customName = SignalBuilder.GetCustomFrequencyName(__0);
+            if (customName != null && customName != "") 
             {
                 if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
@@ -239,25 +235,28 @@ namespace NewHorizons.Tools
         public static bool OnSignalscopeSwitchFrequencyFilter(Signalscope __instance, int __0)
         {
             var increment = __0;
-            var count = Enum.GetValues(typeof(SignalFrequency)).Length;
+            var count = SignalBuilder.NumberOfFrequencies;
             __instance._frequencyFilterIndex += increment;
             __instance._frequencyFilterIndex = ((__instance._frequencyFilterIndex >= count) ? 0 : __instance._frequencyFilterIndex);
             __instance._frequencyFilterIndex = ((__instance._frequencyFilterIndex < 0) ? count - 1 : __instance._frequencyFilterIndex);
             SignalFrequency signalFrequency = AudioSignal.IndexToFrequency(__instance._frequencyFilterIndex);
+
             if (!PlayerData.KnowsFrequency(signalFrequency) && (!__instance._isUnknownFreqNearby || __instance._unknownFrequency != signalFrequency))
             {
                 __instance.SwitchFrequencyFilter(increment);
             }
             return false;
         }
-        #endregion
+
+        #endregion                                                                                    f
 
         #region PlayerData
         public static bool OnPlayerDataKnowsFrequency(SignalFrequency __0, ref bool __result)
         {
-            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string freqString);
-            if (freqString != null)
-            {
+            var freqString = SignalBuilder.GetCustomFrequencyName(__0);
+
+            if (freqString != null && freqString != "")
+            { 
                 __result = NewHorizonsData.KnowsFrequency(freqString);
                 return false;
             }
@@ -266,8 +265,8 @@ namespace NewHorizons.Tools
 
         public static bool OnPlayerDataLearnFrequency(SignalFrequency __0)
         {
-            SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string freqString);
-            if (freqString != null)
+            var freqString = SignalBuilder.GetCustomFrequencyName(__0);
+            if (freqString != null && freqString != "")
             {
                 NewHorizonsData.LearnFrequency(freqString);
                 return false;

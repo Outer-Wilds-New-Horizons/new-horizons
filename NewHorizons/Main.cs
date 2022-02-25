@@ -254,7 +254,7 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
 
             // Some builders need to be reset each time
-            SignalBuilder.Reset();
+            SignalBuilder.Init();
 
             // We do our own AstroObject tracking
             AstroObjectLocator.RefreshList();
@@ -531,7 +531,8 @@ namespace NewHorizons
             }
             catch (Exception)
             {
-                existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
+                if (body?.Config?.Name == null) Logger.LogError($"How is there no name for {body}");
+                else existingPlanet = GameObject.Find(body.Config.Name.Replace(" ", "") + "_Body");
             }
 
             if (existingPlanet != null)
