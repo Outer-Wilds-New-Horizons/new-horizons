@@ -317,6 +317,11 @@
         "tint": {
           "$ref": "#/$defs/color",
           "description": "Colour of the orbit-line in the map view."
+        },
+        "trackingOrbitLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "Should we just draw a line behind its orbit."
         }
       }
     },

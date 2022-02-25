@@ -23,5 +23,6 @@ namespace NewHorizons.External
         public bool ShowOrbitLine { get; set; } = true;
         public bool IsStatic { get; set; }
         public MColor Tint { get; set; }
+        public bool TrackingOrbitLine { get; set; } = false;
     }
 }
