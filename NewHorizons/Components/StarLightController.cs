@@ -28,6 +28,8 @@ namespace NewHorizons.Utility
 
         public void AddStar(StarController star)
         {
+            if (star == null) return;
+
             Logger.Log($"Adding new star to list: {star.gameObject.name}");
             _stars.Add(star);
         }
