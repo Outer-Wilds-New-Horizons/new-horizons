@@ -536,10 +536,10 @@ Signal info objects can then have the following values set:
 	- "Radio" : appears in game as "Deep Space Radio"
 - "name" : (string) The name as it will appear in game
 - "audioClip" : (string) The audio clip from the game you want to use (can find these using Unity Explorer or by datamining)
-- "audioFilePath" : (string) The file path to a .wav you want to use as the audio clip
+- "audioFilePath" : (string) The file path to a .wav you want to use as the audio clip (you only need either this or `audioClip`)
 - "sourceRadius" : (decimal number) The radius of the spherical volume the signal appears to come from
 - "detectionRadius" : (decimal number) How close you must be to get the "Unidentified signal detected" pop-up
-- "identiicationRadius" : (decimal number) How close you must get to identify the signal
+- "identificationRadius" : (decimal number) How close you must get to identify the signal
 - "onlyAudibleToScope" : (true/false) 
 - "insideCloak" : (true/false) You have to set this to true if the signal is inside a cloaking field
 
