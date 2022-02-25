@@ -75,6 +75,11 @@ namespace NewHorizons.Atmosphere
                 material.SetTexture("_CapTex", cap);
             }
 
+            if(!atmo.ShadowsOnClouds)
+            {
+                cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
+            }
+
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             topRT.SetValue("_localAxis", Vector3.up);
