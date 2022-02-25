@@ -140,6 +140,7 @@ namespace NewHorizons
         {
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
+            AssetBundles.Clear();
             
             Logger.Log("Begin reload of config files...", Logger.LogType.Log);
 
