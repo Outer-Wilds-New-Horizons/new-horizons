@@ -32,7 +32,8 @@ namespace NewHorizons.Utility
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
                     var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
-                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{hitInfo.transform.gameObject.name}] at [{GetPath(hitInfo.transform.gameObject)}]");
+                    var o = hitInfo.transform.gameObject;
+                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{o.name}] at [{SearchUtilities.GetPath(o)}]");
                 }
                 _rb.EnableCollisionDetection();
             }
