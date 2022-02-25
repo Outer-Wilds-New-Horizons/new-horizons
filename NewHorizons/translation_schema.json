@@ -13,7 +13,7 @@
     "ShipLogDictionary": {
       "$ref": "#/$defs/table"
     },
-    "UITable": {
+    "UIDictionary": {
       "$ref": "#/$defs/table"
     },
     "DialogueDictionary": {

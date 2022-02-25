@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -64,9 +65,9 @@ namespace NewHorizons.Builder.Props
                 SignalName.WhiteHole_GD_Receiver,
             });
             SignalFrequencyOverrides = new Dictionary<SignalFrequency, string>() {
-                { SignalFrequency.Statue, "NOMAI STATUE" }, 
+                { SignalFrequency.Statue, "Nomai Statue" }, 
                 { SignalFrequency.Default, "???" }, 
-                { SignalFrequency.WarpCore, "ANTI-GRAVITON FLUX" } 
+                { SignalFrequency.WarpCore, "Anti-Graviton Flux" } 
             };
             _nextCustomSignalName = 200;
         }
@@ -79,14 +80,14 @@ namespace NewHorizons.Builder.Props
             if (_availableSignalNames.Count == 0) newName = (SignalName)_nextCustomSignalName++;
             else newName = _availableSignalNames.Pop();
 
-            _customSignalNames.Add(newName, str.ToUpper());
+            _customSignalNames.Add(newName, str);
             return newName;
         }
 
         public static string GetCustomSignalName(SignalName signalName)
         {
             _customSignalNames.TryGetValue(signalName, out string name);
-            return name;
+            return TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI).ToUpper();
         }
 
         public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)

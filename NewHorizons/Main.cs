@@ -102,6 +102,7 @@ namespace NewHorizons
             Tools.WarpDrivePatches.Apply();
             Tools.OWCameraFix.Apply();
             Tools.ShipLogPatches.Apply();
+            Tools.TranslationPatches.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
@@ -122,7 +123,7 @@ namespace NewHorizons
         #region Reloading
         private void InitializePauseMenu()
         {
-            _reloadButton = ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("RELOAD CONFIGS");
+            _reloadButton = ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
             _reloadButton.OnClick += ReloadConfigs;
             UpdateReloadButton();
         }
@@ -216,8 +217,9 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 StarChartHandler.Init();
 
-                LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));    
+                LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));
             }
+            LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
 
@@ -450,31 +452,36 @@ namespace NewHorizons
             }
             if(Directory.Exists(folder + @"translations\"))
             {
-                var foundFile = false;
-                foreach(TextTranslation.Language language in Enum.GetValues(typeof(TextTranslation.Language)))
-                {
-                    if (language == TextTranslation.Language.UNKNOWN || language == TextTranslation.Language.TOTAL) continue;
-
-                    var relativeFile = $"translations/{language.ToString().ToLower()}.json";
-
-                    if (File.Exists($"{folder}{relativeFile}"))
-                    {
-                        Logger.Log($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
-
-                        var config = new TranslationConfig($"{folder}{relativeFile}");
-                        if (config == null)
-                        {
-                            Logger.Log($"Found {folder}{relativeFile} but couldn't load it");
-                            continue;
-                        }
-
-                        foundFile = true;
-
-                        TranslationHandler.RegisterTranslation(language, config);
-                    }
-                }
-                if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
+                LoadTranslations(folder, mod);
             }
+        }
+
+        private void LoadTranslations(string folder, IModBehaviour mod)
+        {
+            var foundFile = false;
+            foreach (TextTranslation.Language language in Enum.GetValues(typeof(TextTranslation.Language)))
+            {
+                if (language == TextTranslation.Language.UNKNOWN || language == TextTranslation.Language.TOTAL) continue;
+
+                var relativeFile = $"translations/{language.ToString().ToLower()}.json";
+
+                if (File.Exists($"{folder}{relativeFile}"))
+                {
+                    Logger.Log($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
+
+                    var config = new TranslationConfig($"{folder}{relativeFile}");
+                    if (config == null)
+                    {
+                        Logger.Log($"Found {folder}{relativeFile} but couldn't load it");
+                        continue;
+                    }
+
+                    foundFile = true;
+
+                    TranslationHandler.RegisterTranslation(language, config);
+                }
+            }
+            if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
         }
 
         public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativeDirectory)

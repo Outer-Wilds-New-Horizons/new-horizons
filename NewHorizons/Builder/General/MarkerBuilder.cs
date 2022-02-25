@@ -4,6 +4,7 @@ using System.Reflection;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.General
 {
@@ -12,7 +13,7 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, string name, IPlanetConfig config)
         {
             MapMarker mapMarker = body.AddComponent<MapMarker>();
-            mapMarker.SetValue("_labelID", (UITextType)Utility.AddToUITable.Add(name.ToUpper()));
+            mapMarker.SetValue("_labelID", (UITextType)TranslationHandler.AddUI(config.Name));
 
             var markerType = MapMarker.MarkerType.Planet;
 

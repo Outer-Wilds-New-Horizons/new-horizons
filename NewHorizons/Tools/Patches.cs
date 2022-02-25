@@ -27,7 +27,6 @@ namespace NewHorizons.Tools
         public static void Apply()
         {
             // Prefixes
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ReferenceFrame>("GetHUDDisplayName", typeof(Patches), nameof(Patches.GetHUDDisplayName));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerState>("CheckShipOutsideSolarSystem", typeof(Patches), nameof(Patches.CheckShipOutersideSolarSystem));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunLightParamUpdater>("LateUpdate", typeof(Patches), nameof(Patches.OnSunLightParamUpdaterLateUpdate));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
@@ -64,17 +63,6 @@ namespace NewHorizons.Tools
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
-        }
-
-        public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
-        {
-            var ao = __instance.GetAstroObject();
-            if (ao != null && ao.GetAstroObjectName() == AstroObject.Name.CustomString)
-            {
-                __result = ao.GetCustomName();
-                return false;
-            }
-            return true;
         }
 
         public static bool CheckShipOutersideSolarSystem(PlayerState __instance, ref bool __result)
@@ -222,7 +210,7 @@ namespace NewHorizons.Tools
             SignalBuilder.SignalFrequencyOverrides.TryGetValue(__0, out string customName);
             if (customName != null) 
             {
-                if (NewHorizonsData.KnowsFrequency(customName)) __result = customName;
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }
