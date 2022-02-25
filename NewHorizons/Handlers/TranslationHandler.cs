@@ -49,6 +49,17 @@ namespace NewHorizons.Handlers
                     return translatedText;
                 }
             }
+
+            // Try to default to English
+            if(dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
+            {
+                if (englishTable.TryGetValue(text, out var englishText))
+                {
+                    return englishText;
+                }
+            }
+
+            // Default to the key
             return text;
         }
 

@@ -2,14 +2,15 @@
 	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
 	"DialogueDictionary": 
 	{
-		"Your ship is now equiped with a warp drive!" : "Votre fusée est maintenant équipé d'un moteur de distorsion!",
-		"You can use the new \"Interstellar Mode\" page in the ship log to lock-on your autopilot to another star system." : "Vous pouvez utiliser la nouvelle page \"Mode Interstellaire\" dans le journal de bord pour diriger votre pilote automatique vers un autre système solaire",
-		"Then just buckle up and engage the autopilot to warp there!" : "Ensuite, bouclez votre ceinture et engagez le pilote automatique pour y aller!"
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1" : "Votre fusée est maintenant équipé d'un moteur de distorsion!",
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "Vous pouvez utiliser la nouvelle page \"Mode Interstellaire\" dans le journal de bord pour diriger votre pilote automatique vers un autre système solaire",
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "Ensuite, bouclez votre ceinture et engagez le pilote automatique pour y aller!"
 	},
 	"UIDictionary": 
 	{
-		"Interstellar Mode" : "Mode Interstellaire",
-		"Nomai Statue" : "Statue Nomaï",
-		"Anti-Graviton Flux" : "Flux Anti-Gravitonique"
+		"INTERSTELLAR_MODE" : "Mode Interstellaire",
+		"Statue" : "Statue Nomaï",
+		"WarpCore" : "Flux Anti-Gravitonique",
+		"???" : "???"
 	}	
 }

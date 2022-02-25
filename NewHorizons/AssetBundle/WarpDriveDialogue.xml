@@ -5,9 +5,9 @@
 		<Name></Name>
 		<EntryCondition>DEFAULT</EntryCondition>
 		<Dialogue>
-			<Page>Your ship is now equiped with a warp drive!  </Page>
-			<Page>You can use the new "Interstellar Mode" page in the ship log to lock-on your autopilot to another star system.</Page>
-			<Page>Then just buckle up and engage the autopilot to warp there!</Page>
+			<Page>NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1</Page>
+			<Page>NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2</Page>
+			<Page>NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3</Page>
 		</Dialogue>
 		<SetPersistentCondition>KnowsAboutWarpDrive</SetPersistentCondition>
 	</DialogueNode>
