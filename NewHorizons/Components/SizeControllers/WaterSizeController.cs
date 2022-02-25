@@ -11,10 +11,8 @@ namespace NewHorizons.Components.SizeControllers
     {
         public Material oceanFogMaterial;
 
-        //private const float oceanFogR1Ratio = 500f / 550f;
         private const float oceanFogR1Ratio = 1f;
-        //private const float oceanFogR2Ratio = 210f / 550f;
-        private const float oceanFogR2Ratio = 0f;
+        private const float oceanFogR2Ratio = 0.5f;
 
         protected new void FixedUpdate()
         {
