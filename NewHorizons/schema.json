@@ -492,441 +492,457 @@
               }
             }
           }
-        }
-      },
-      "details": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
-            },
-            "assetBundle": {
-              "type": "string",
-              "description": "Relative filepath to an asset-bundle"
-            },
-            "position": {
-              "$ref": "#/$defs/vector3"
-            },
-            "rotation": {
-              "$ref": "#/$defs/vector3",
-              "description": "Euler angle degrees"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+              },
+              "assetBundle": {
+                "type": "string",
+                "description": "Relative filepath to an asset-bundle"
+              },
+              "position": {
+                "$ref": "#/$defs/vector3"
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "Euler angle degrees"
+              },
+              "scale": {
+                "type": "number",
+                "default": 1
+              },
+              "alignToNormal": {
+                "type": "boolean",
+                "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
+                "default": false
+              },
+              "generateColliders": {
+                "type": "bool",
+                "default": false,
+                "description": "For each mesh filter found here should we make a mesh collider?"
+              }
             },
             "scale": {
               "type": "number",
               "default": 1
-            },
-            "alignToNormal": {
-              "type": "boolean",
-              "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
-              "default": false
-            },
-            "generateColliders": {
-              "type": "bool",
-              "default": false,
-              "description": "For each mesh filter found here should we make a mesh collider?"
-            }
-          },
-          "scale": {
-            "type": "number",
-            "default": 1
-          }
-        }
-      }
-    },
-    "dialogue": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "position": {
-            "$ref": "#/$defs/vector3"
-          },
-          "radius": {
-            "type": "number",
-            "default": 0
-          },
-          "xmlFile": {
-            "type": "string"
-          },
-          "remoteTriggerPosition": {
-            "$ref": "#/$defs/vector3"
-          }
-        }
-      }
-    },
-    "reveal": {
-      "type": "array",
-      "description": "A set of volumes that reveal ship log fact",
-      "items": {
-        "type": "object",
-        "properties": {
-          "revealOn": {
-            "type": "string",
-            "enum": ["enter", "observe", "snapshot"],
-            "description": "'enter', 'observe', or 'snapshot' what needs to be done to the volume to unlock the facts"
-          },
-          "reveals": {
-            "type": "array",
-            "description": "A list of facts to reveal",
-            "items": {
-              "type": "string"
-            }
-          },
-          "position": {
-            "$ref": "#/$defs/vector3",
-            "description": "The position to place the volume at"
-          },
-          "radius": {
-            "type": "number",
-            "description": "The radius of the volume",
-            "default": 1.0
-          },
-          "maxDistance": {
-            "type": "number",
-            "description": "The max distance the user can be away from the volume to reveal the fact (snapshot and observe only)"
-          },
-          "maxAngle": {
-            "$ref": "#/$defs/angle",
-            "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact",
-            "default": 180.0
-          }
-        }
-      }
-    },
-    "entryLocation": {
-      "type": "array",
-      "description": "A set of locations for ship log entries",
-      "items": {
-        "type": "object",
-        "properties": {
-          "id": {
-            "type": "string",
-            "description": "The ID of the entry this location is for"
-          },
-          "cloaked": {
-            "type": "bool",
-            "description": "Whether this entry location is in a cloaking field",
-            "default": false
-          },
-          "position": {
-            "$ref": "#/$defs/vector3",
-            "description": "The position of this entry location"
-          }
-        }
-      }
-    }
-  },
-  "Spawn": {
-    "type": "object",
-    "properties": {
-      "playerSpawnPoint": {
-        "$ref": "#/$defs/vector3"
-      },
-      "shipSpawnPoint": {
-        "$ref": "#/$defs/vector3"
-      },
-      "starWithSuit": {
-        "type": "boolean",
-        "default": false
-      }
-    }
-  },
-  "Signal": {
-    "type": "object",
-    "properties": {
-      "signals": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "position": {
-              "$ref": "#/$defs/vector3"
-            },
-            "frequency": {
-              "type": "string",
-              "enum": [
-                "Default",
-                "Traveler",
-                "Quantum",
-                "EscapePod",
-                "Statue",
-                "WarpCore",
-                "HideAndSeek",
-                "Radio"
-              ]
-            },
-            "name": {
-              "type": "string"
-            },
-            "audioClip": {
-              "type": "string",
-              "description": "Name of an existing AudioClip in the game"
-            },
-            "audioFilePath": {
-              "type": "string",
-              "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip"
-            },
-            "reveals": {
-              "type": "string",
-              "description": "A ship log fact to reveal when the signal is identified"
-            },
-            "sourceRadius": {
-              "type": "number",
-              "default": 1,
-              "description": "Radius of the sphere giving off the signal"
-            },
-            "detectionRadius": {
-              "type": "number",
-              "minimum": 0,
-              "description": "How close the player must get to the signal to detect it"
-            },
-            "identificationRadius": {
-              "type": "number",
-              "minimum": 0,
-              "description": "How close the player must get to the signal to identify it"
-            },
-            "onlyAudibleToScope": {
-              "type": "boolean",
-              "default": true,
-              "description": "False if the player can hear the signal without equipping the signal-scope"
-            },
-            "insideCloak": {
-              "type": "boolean",
-              "default": false,
-              "description": "Only set to true if you are putting this signal inside a cloaking field"
             }
           }
-        }
-      }
-    }
-  },
-  "Singularity": {
-    "type": "object",
-    "properties": {
-      "size": {
-        "type": "number",
-        "default": 0,
-        "minimum": 0
-      },
-      "pairedSingularity": {
-        "type": "string",
-        "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill the player"
-      },
-      "targetStarSystem": {
-        "type": "string",
-        "description": "If you want a black hole to load a new star system scene, put it's name here. Optional."
-      },
-      "type": {
-        "type": "string",
-        "enum": [
-          "BlackHole",
-          "WhiteHole"
-        ]
-      },
-      "position": {
-        "$ref": "#/$defs/vector3"
-      }
-    }
-  },
-  "Water": {
-    "type": "object",
-    "properties": {
-      "size": {
-        "type": "number",
-        "default": 0
-      },
-      "tint": {
-        "$ref": "#/$defs/color"
-      },
-      "curve": {
-        "$ref": "#/$defs/curve"
-      }
-    }
-  },
-  "Lava": {
-    "type": "object",
-    "properties": {
-      "size": {
-        "type": "number",
-        "default": 0
-      },
-      "tint": {
-        "$ref": "#/$defs/color"
-      },
-      "curve": {
-        "$ref": "#/$defs/curve"
-      }
-    }
-  },
-  "Sand": {
-    "type": "object",
-    "properties": {
-      "size": {
-        "type": "number",
-        "default": 0
-      },
-      "tint": {
-        "$ref": "#/$defs/color"
-      },
-      "curve": {
-        "$ref": "#/$defs/curve"
-      }
-    }
-  },
-  "Funnel": {
-    "type": "object",
-    "properties": {
-      "target": {
-        "type": "string",
-        "description": "The body that the funnel is pouring onto"
-      },
-      "type": {
-        "type": "string",
-        "enum": [
-          "Sand",
-          "Water",
-          "Lava",
-          "Star"
-        ],
-        "default": "Sand"
-      },
-      "tint": {
-        "$ref": "#/$defs/color"
-      },
-      "curve": {
-        "$ref": "#/$defs/curve"
-      }
-    }
-  },
-  "ShipLog": {
-    "type": "object",
-    "properties": {
-      "xmlFile": {
-        "type": "string",
-        "description": "The xml file to load ship log entries from"
-      },
-      "spriteFolder": {
-        "type": "string",
-        "description": "A path to the folder where entry sprites are stored"
-      },
-      "initialReveal": {
-        "type": "array",
-        "description": "A list of fact IDs to reveal when the game starts",
-        "items": {
-          "type": "string"
-        }
-      },
-      "entryPositions": {
-        "type": "array",
-        "description": "A set of positions to use instead of automatic layout in rumor mode",
-        "items": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string",
-              "description": "The name of the entry to apply the position to"
-            },
-            "position": {
-              "$ref": "#/$defs/vector2"
+        },
+        "dialogue": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3"
+              },
+              "radius": {
+                "type": "number",
+                "default": 0
+              },
+              "xmlFile": {
+                "type": "string"
+              },
+              "remoteTriggerPosition": {
+                "$ref": "#/$defs/vector3"
+              }
             }
           }
-        }
-      },
-      "MapMode": {
-        "type": "object",
-        "properties": {
-          "revealedSprite": {
-            "type": "string",
-            "description": "The path to the sprite to show when the planet is revealed in map mode"
-          },
-          "outlineSprite": {
-            "type": "string",
-            "description": "The path to the sprite to show when the planet is unexplored in map mode"
-          },
-          "manualPosition": {
-            "$ref": "#/$defs/vector2",
-            "description": "Manually place this planet at the specified position"
-          },
-          "manualNavigationPosition": {
-            "$ref": "#/$defs/wholeVector2",
-            "description": "Specify where this planet is in terms of navigation"
-          },
-          "scale": {
-            "type": "number",
-            "description": "Scale to apply to the planet in map mode",
-            "default": 1
-          },
-          "invisibleWhenHidden": {
-            "type": "bool",
-            "description": "Hide the planet completely if unexplored instead of showing an outline",
-            "default": false
-          },
-          "offset": {
-            "type": "number",
-            "description": "Extra distance to apply to this object in map mode",
-            "default": 0
-          },
-          "remove": {
-            "type": "boolean",
-            "description": "Completely remove this planet (and it's children) from map mode",
-            "default": false
-          },
-          "details": {
-            "type": "array",
-            "description": "Place non-selectable object in map mode (like sand funnels)",
-            "items": {
-              "type": "object",
-              "properties": {
-                "revealedSprite": {
-                  "type": "string",
-                  "description": "The sprite to show when the parent AstroBody is revealed"
-                },
-                "outlineSprite": {
-                  "type": "string",
-                  "description": "The sprite to show when the parent AstroBody is rumored/unexplored"
-                },
-                "rotation": {
-                  "$refs": "#/$defs/angle",
-                  "description": "The angle in degrees to rotate the detail"
-                },
-                "invisibleWhenHidden": {
-                  "type": "boolean",
-                  "description": "Whether to completely hide this detail when the parent AstroBody is unexplored",
-                  "default": false
-                },
-                "position": {
-                  "$ref": "#/$defs/vector2",
-                  "description": "The position (relative to the parent) to place the detail"
-                },
-                "scale": {
-                  "$ref": "#/$defs/vector2",
-                  "description": "The amount to scale the x and y axis of the detail by"
+        },
+        "reveal": {
+          "type": "array",
+          "description": "A set of volumes that reveal ship log fact",
+          "items": {
+            "type": "object",
+            "properties": {
+              "revealOn": {
+                "type": "string",
+                "enum": ["enter", "observe", "snapshot"],
+                "description": "'enter', 'observe', or 'snapshot' what needs to be done to the volume to unlock the facts"
+              },
+              "reveals": {
+                "type": "array",
+                "description": "A list of facts to reveal",
+                "items": {
+                  "type": "string"
                 }
+              },
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position to place the volume at"
+              },
+              "radius": {
+                "type": "number",
+                "description": "The radius of the volume",
+                "default": 1.0
+              },
+              "maxDistance": {
+                "type": "number",
+                "description": "The max distance the user can be away from the volume to reveal the fact (snapshot and observe only)"
+              },
+              "maxAngle": {
+                "$ref": "#/$defs/angle",
+                "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact",
+                "default": 180.0
+              }
+            }
+          }
+        },
+        "entryLocation": {
+          "type": "array",
+          "description": "A set of locations for ship log entries",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the entry this location is for"
+              },
+              "cloaked": {
+                "type": "bool",
+                "description": "Whether this entry location is in a cloaking field",
+                "default": false
+              },
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this entry location"
+              }
+            }
+          }
+        },
+        "nomaiText": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "position of the text"
+              },
+              "xmlFile": {
+                "type": "string",
+                "description": "XML file to load"
               }
             }
           }
         }
-      },
-      "Curiosities": {
-        "type": "array",
-        "description": "A set of colors to apply to curiosities",
-        "items": {
+      }
+    },
+    "Spawn": {
+      "type": "object",
+      "properties": {
+        "playerSpawnPoint": {
+          "$ref": "#/$defs/vector3"
+        },
+        "shipSpawnPoint": {
+          "$ref": "#/$defs/vector3"
+        },
+        "starWithSuit": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "Signal": {
+      "type": "object",
+      "properties": {
+        "signals": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3"
+              },
+              "frequency": {
+                "type": "string",
+                "enum": [
+                  "Default",
+                  "Traveler",
+                  "Quantum",
+                  "EscapePod",
+                  "Statue",
+                  "WarpCore",
+                  "HideAndSeek",
+                  "Radio"
+                ]
+              },
+              "name": {
+                "type": "string"
+              },
+              "audioClip": {
+                "type": "string",
+                "description": "Name of an existing AudioClip in the game"
+              },
+              "audioFilePath": {
+                "type": "string",
+                "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip"
+              },
+              "reveals": {
+                "type": "string",
+                "description": "A ship log fact to reveal when the signal is identified"
+              },
+              "sourceRadius": {
+                "type": "number",
+                "default": 1,
+                "description": "Radius of the sphere giving off the signal"
+              },
+              "detectionRadius": {
+                "type": "number",
+                "minimum": 0,
+                "description": "How close the player must get to the signal to detect it"
+              },
+              "identificationRadius": {
+                "type": "number",
+                "minimum": 0,
+                "description": "How close the player must get to the signal to identify it"
+              },
+              "onlyAudibleToScope": {
+                "type": "boolean",
+                "default": true,
+                "description": "False if the player can hear the signal without equipping the signal-scope"
+              },
+              "insideCloak": {
+                "type": "boolean",
+                "default": false,
+                "description": "Only set to true if you are putting this signal inside a cloaking field"
+              }
+            }
+          }
+        }
+      }
+    },
+    "Singularity": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0,
+          "minimum": 0
+        },
+        "pairedSingularity": {
+          "type": "string",
+          "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill the player"
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "If you want a black hole to load a new star system scene, put it's name here. Optional."
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "BlackHole",
+            "WhiteHole"
+          ]
+        },
+        "position": {
+          "$ref": "#/$defs/vector3"
+        }
+      }
+    },
+    "Water": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "curve": {
+          "$ref": "#/$defs/curve"
+        }
+      }
+    },
+    "Lava": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "curve": {
+          "$ref": "#/$defs/curve"
+        }
+      }
+    },
+    "Sand": {
+      "type": "object",
+      "properties": {
+        "size": {
+          "type": "number",
+          "default": 0
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "curve": {
+          "$ref": "#/$defs/curve"
+        }
+      }
+    },
+    "Funnel": {
+      "type": "object",
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "The body that the funnel is pouring onto"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "Sand",
+            "Water",
+            "Lava",
+            "Star"
+          ],
+          "default": "Sand"
+        },
+        "tint": {
+          "$ref": "#/$defs/color"
+        },
+        "curve": {
+          "$ref": "#/$defs/curve"
+        }
+      }
+    },
+    "ShipLog": {
+      "type": "object",
+      "properties": {
+        "xmlFile": {
+          "type": "string",
+          "description": "The xml file to load ship log entries from"
+        },
+        "spriteFolder": {
+          "type": "string",
+          "description": "A path to the folder where entry sprites are stored"
+        },
+        "initialReveal": {
+          "type": "array",
+          "description": "A list of fact IDs to reveal when the game starts",
+          "items": {
+            "type": "string"
+          }
+        },
+        "entryPositions": {
+          "type": "array",
+          "description": "A set of positions to use instead of automatic layout in rumor mode",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The name of the entry to apply the position to"
+              },
+              "position": {
+                "$ref": "#/$defs/vector2"
+              }
+            }
+          }
+        },
+        "MapMode": {
           "type": "object",
           "properties": {
-            "id": {
+            "revealedSprite": {
               "type": "string",
-              "description": "The ID of the curiosity to apply the color to"
+              "description": "The path to the sprite to show when the planet is revealed in map mode"
             },
-            "color": {
-              "$ref": "#/$defs/color",
-              "description": "The color to apply to entries with this curiosity"
+            "outlineSprite": {
+              "type": "string",
+              "description": "The path to the sprite to show when the planet is unexplored in map mode"
             },
-            "highlightColor": {
-              "$ref": "#/$defs/color",
-              "description": "The color to apply to highlighted entries with this curiosity"
+            "manualPosition": {
+              "$ref": "#/$defs/vector2",
+              "description": "Manually place this planet at the specified position"
+            },
+            "manualNavigationPosition": {
+              "$ref": "#/$defs/wholeVector2",
+              "description": "Specify where this planet is in terms of navigation"
+            },
+            "scale": {
+              "type": "number",
+              "description": "Scale to apply to the planet in map mode",
+              "default": 1
+            },
+            "invisibleWhenHidden": {
+              "type": "bool",
+              "description": "Hide the planet completely if unexplored instead of showing an outline",
+              "default": false
+            },
+            "offset": {
+              "type": "number",
+              "description": "Extra distance to apply to this object in map mode",
+              "default": 0
+            },
+            "remove": {
+              "type": "boolean",
+              "description": "Completely remove this planet (and it's children) from map mode",
+              "default": false
+            },
+            "details": {
+              "type": "array",
+              "description": "Place non-selectable object in map mode (like sand funnels)",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "revealedSprite": {
+                    "type": "string",
+                    "description": "The sprite to show when the parent AstroBody is revealed"
+                  },
+                  "outlineSprite": {
+                    "type": "string",
+                    "description": "The sprite to show when the parent AstroBody is rumored/unexplored"
+                  },
+                  "rotation": {
+                    "$refs": "#/$defs/angle",
+                    "description": "The angle in degrees to rotate the detail"
+                  },
+                  "invisibleWhenHidden": {
+                    "type": "boolean",
+                    "description": "Whether to completely hide this detail when the parent AstroBody is unexplored",
+                    "default": false
+                  },
+                  "position": {
+                    "$ref": "#/$defs/vector2",
+                    "description": "The position (relative to the parent) to place the detail"
+                  },
+                  "scale": {
+                    "$ref": "#/$defs/vector2",
+                    "description": "The amount to scale the x and y axis of the detail by"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Curiosities": {
+          "type": "array",
+          "description": "A set of colors to apply to curiosities",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string",
+                "description": "The ID of the curiosity to apply the color to"
+              },
+              "color": {
+                "$ref": "#/$defs/color",
+                "description": "The color to apply to entries with this curiosity"
+              },
+              "highlightColor": {
+                "$ref": "#/$defs/color",
+                "description": "The color to apply to highlighted entries with this curiosity"
+              }
             }
           }
         }
