@@ -622,8 +622,9 @@ Here's an example, for `russian.json`:
 
 The star system config can have:
 
-- CanEnterViaWarpDrive: Set to true if you want it to show up in the star chart mode in the ship log. Otherwise it will only be accessible via black holes.
-- StartHere: Set to true if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system.
+- CanEnterViaWarpDrive: (true/false) Set to true if you want it to show up in the star chart mode in the ship log. Otherwise it will only be accessible via black holes.
+- StartHere: (true/false) Set to true if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system.
+- factRequiredForWarp: (string) Set to the FactID that must be revealed before it can be warped to. Don't set "CanEnterViaWarpDrive" to false if you're using this, that would make no sense.
 
 ### How to destroy existing planets
 
