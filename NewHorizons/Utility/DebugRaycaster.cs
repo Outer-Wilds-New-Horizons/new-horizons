@@ -1,4 +1,5 @@
-﻿using NewHorizons.Builder.Body;
+﻿using NewHorizons;
+using NewHorizons.Builder.Body;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace NewHorizons.Utility
 
         private void Update()
         {
-            if (Keyboard.current != null && Keyboard.current[Key.P].wasReleasedThisFrame)
+            if (Main.Debug && Keyboard.current != null && Keyboard.current[Key.P].wasReleasedThisFrame)
             {
                 // Raycast
                 _rb.DisableCollisionDetection();
@@ -31,7 +32,8 @@ namespace NewHorizons.Utility
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
                     var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
-                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{hitInfo.transform.gameObject.name}]");
+                    var o = hitInfo.transform.gameObject;
+                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{o.name}] at [{SearchUtilities.GetPath(o.transform)}]");
                 }
                 _rb.EnableCollisionDetection();
             }
