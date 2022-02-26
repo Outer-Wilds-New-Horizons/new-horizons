@@ -99,10 +99,6 @@ namespace NewHorizons.Handlers
 
                     if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, config.UIDictionary[originalKey]);
                     else _uiTranslationDictionary[language][key] = config.UIDictionary[originalKey];
-
-                    //Also add an upper case version
-                    if (!_uiTranslationDictionary[language].ContainsKey(key.ToUpper())) _uiTranslationDictionary[language].Add(key.ToUpper(), config.UIDictionary[originalKey].ToUpper());
-                    else _uiTranslationDictionary[language][key] = config.UIDictionary[originalKey].ToUpper();
                 }
             }
         }

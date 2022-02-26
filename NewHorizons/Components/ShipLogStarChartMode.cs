@@ -8,6 +8,7 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using UnityEngine.UI;
 using OWML.Common;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Components
 {
@@ -33,6 +34,8 @@ namespace NewHorizons.Components
         private ShipLogEntryCard _target = null;
         private NotificationData _warpNotificationData = null;
 
+        private int _nextCardIndex;
+
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
             root = base.transform.Find("ScaleRoot/PanRoot");
@@ -47,23 +50,32 @@ namespace NewHorizons.Components
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
             GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
 
-            var x = 0;
+            _nextCardIndex = 0;
             foreach (var starSystem in Main.BodyDict.Keys)
             {
                 // Get rid of the warp option for the current system
                 if (starSystem == Main.Instance.CurrentStarSystem) continue;
 
+                var config = Main.SystemDict[starSystem];
+
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
-                else if (Main.SystemDict[starSystem].Spawn?.ShipSpawnPoint != null) flag = true;
+                else if (config.Spawn?.ShipSpawnPoint != null) flag = true;
+
+                if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
 
                 if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
                 {
-                    var card = CreateCard(starSystem, root.transform, new Vector2(x++ * 200, 0));
-                    _starSystemCards.Add(card);
+                    AddSystemCard(starSystem);
                 }
             }
+        }
+
+        public void AddSystemCard(string starSystem)
+        {
+            var card = CreateCard(starSystem, root.transform, new Vector2(_nextCardIndex++ * 200, 0));
+            _starSystemCards.Add(card);
         }
 
         public void OnDestroy()

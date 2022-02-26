@@ -8,6 +8,7 @@ using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Handlers;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Tools
 {
@@ -29,6 +30,8 @@ namespace NewHorizons.Tools
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("Initialize", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogMapModeInitialize));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerAwakeComplete));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogAstroObject>("UpdateState", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogAstroObjectUpdateState));
+
+            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>(nameof(ShipLogManager.RevealFact), typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerRevealFact));
         }
 
         public static void OnShipLogManagerAwake(ShipLogManager __instance)
@@ -210,6 +213,11 @@ namespace NewHorizons.Tools
         {
             ShipLogManager manager = Locator.GetShipLogManager();
             __result = __result.Where(e => manager.GetFact(e) != null).ToList();
+        }
+
+        public static void OnShipLogManagerRevealFact(string __0)
+        {
+            StarChartHandler.OnRevealFact(__0);
         }
     }
 }

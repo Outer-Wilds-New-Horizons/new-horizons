@@ -139,6 +139,9 @@ namespace NewHorizons
 
         private void ReloadConfigs()
         {
+            BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
+            SystemDict = new Dictionary<string, NewHorizonsSystem>();
+
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
             foreach (AssetBundle bundle in AssetBundles.Values)
@@ -196,34 +199,15 @@ namespace NewHorizons
             // By default we dont have it
             HasWarpDrive = false;
 
-            // Lets us warp home if we want
-            if (_currentStarSystem != "SolarSystem")
-            {
-                HasWarpDrive = true;
-            }
-            else
-            {
-                // Make the warp controller if there are multiple star systems
-                foreach (NewHorizonsSystem system in SystemDict.Values)
-                {
-                    Logger.Log($"System {system}, {system.Config.canEnterViaWarpDrive}");
-                    if (system.Config.canEnterViaWarpDrive && system.Spawn?.ShipSpawnPoint != null)
-                    {
-                        HasWarpDrive = true;
-                        break;
-                    }
-                }
-            }
+            // Gotta prepare it anyway
+            StarChartHandler.Init(SystemDict.Values.ToArray());
+            HasWarpDrive = StarChartHandler.CanWarp();
 
-            if (HasWarpDrive == true)
-            {
-                Logger.Log("Setting up warp drive");
-                _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
-                _shipWarpController.Init();
-                StarChartHandler.Init();
+            _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+            _shipWarpController.Init();
 
-                LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));
-            }
+            if (HasWarpDrive == true) EnableWarpDrive();
+
             LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AstroObjectLocator.GetAstroObject("MapSatellite").gameObject.AddComponent<MapSatelliteOrbitFix>());
@@ -328,6 +312,13 @@ namespace NewHorizons
             else Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint), 5);
 
             IsWarping = false;
+        }
+
+        public void EnableWarpDrive()
+        {
+            Logger.Log("Setting up warp drive");
+            LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));
+            HasWarpDrive = true;
         }
 
         #region TitleScreen
@@ -497,7 +488,7 @@ namespace NewHorizons
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
                 Logger.Log($"Loaded {config.Name}");
                 if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
-                if (!BodyDict.ContainsKey(config.StarSystem))
+                if (!SystemDict.ContainsKey(config.StarSystem))
                 {
                     // See if theres a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
