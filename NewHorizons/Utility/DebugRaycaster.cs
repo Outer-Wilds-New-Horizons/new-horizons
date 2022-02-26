@@ -33,7 +33,7 @@ namespace NewHorizons.Utility
                 {
                     var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
                     var o = hitInfo.transform.gameObject;
-                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{o.name}] at [{SearchUtilities.GetPath(o)}]");
+                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{o.name}] at [{SearchUtilities.GetPath(o.transform)}]");
                 }
                 _rb.EnableCollisionDetection();
             }
