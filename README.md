@@ -69,6 +69,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Warp drive with target set in ship's log (done)
 - Implement custom dialogue (done)
 - Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier ([done](https://github.com/xen-42/outer-wilds-unity-template))
+- Custom ship log entries and fact reveals, for rumour mode and map mode (done)
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
