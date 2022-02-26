@@ -17,6 +17,7 @@ namespace NewHorizons.External
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
+        public NomaiTextInfo[] NomaiText;
 
         public class ScatterInfo
         {
@@ -85,6 +86,11 @@ namespace NewHorizons.External
             public string id;
             public bool cloaked;
             public MVector3 position;
+        }
+        public class NomaiTextInfo
+        {
+            public MVector3 position;
+            public string xmlFile;
         }
     }
 }

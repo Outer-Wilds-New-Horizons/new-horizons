@@ -70,6 +70,13 @@ namespace NewHorizons.Builder.Props
                     EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
+            if(config.Props.NomaiText != null)
+            {
+                foreach(var nomaiTextInfo in config.Props.NomaiText)
+                {
+                    NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod);
+                }
+            }
         }
 
         public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModBehaviour mod)
