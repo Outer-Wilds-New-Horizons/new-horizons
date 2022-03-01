@@ -44,26 +44,26 @@
         }
       }
     },
-    "colorPart": {
+    "colourPart": {
       "type": "integer",
       "default": 0,
       "minimum": 0,
       "maximum": 255
     },
-    "color": {
+    "colour": {
       "type": "object",
       "properties": {
         "R": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colourPart"
         },
         "G": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colourPart"
         },
         "B": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colourPart"
         },
         "A": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colourPart"
         }
       }
     },
@@ -98,7 +98,7 @@
           "description": "Average surface size"
         },
         "colour": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of the terrain."
         }
       }
@@ -195,7 +195,7 @@
           "description": "Scale height of the atmosphere"
         },
         "cloudTint": {
-          "$ref": "#/$defs/color"
+          "$ref": "#/$defs/colour"
         },
         "cloud": {
           "type": "string",
@@ -220,7 +220,7 @@
           "description": "If the top layer should have shadows"
         },
         "fogTint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of fog on the planet."
         },
         "fogDensity": {
@@ -251,7 +251,7 @@
           "description": "Whether we use an atmospheric shader on the planet."
         },
         "atmosphereTint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of atmospheric shader on the planet."
         }
       }
@@ -315,7 +315,7 @@
           "description": "Is the body meant to stay in one place without moving?"
         },
         "tint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of the orbit-line in the map view."
         },
         "trackingOrbitLine": {
@@ -420,15 +420,15 @@
           "minimum": 0
         },
         "tint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of the star."
         },
         "solarFlareTint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of the solar flares."
         },
         "lightTint": {
-          "$ref": "#/$defs/color",
+          "$ref": "#/$defs/colour",
           "description": "Colour of the light given off."
         },
         "solarLuminosity": {
@@ -739,7 +739,7 @@
         "default": 0
       },
       "tint": {
-        "$ref": "#/$defs/color"
+        "$ref": "#/$defs/colour"
       },
       "curve": {
         "$ref": "#/$defs/curve"
@@ -754,7 +754,7 @@
         "default": 0
       },
       "tint": {
-        "$ref": "#/$defs/color"
+        "$ref": "#/$defs/colour"
       },
       "curve": {
         "$ref": "#/$defs/curve"
@@ -769,7 +769,7 @@
         "default": 0
       },
       "tint": {
-        "$ref": "#/$defs/color"
+        "$ref": "#/$defs/colour"
       },
       "curve": {
         "$ref": "#/$defs/curve"
@@ -794,7 +794,7 @@
         "default": "Sand"
       },
       "tint": {
-        "$ref": "#/$defs/color"
+        "$ref": "#/$defs/colour"
       },
       "curve": {
         "$ref": "#/$defs/curve"
@@ -889,7 +889,7 @@
                   "description": "The sprite to show when the parent AstroBody is rumored/unexplored"
                 },
                 "rotation": {
-                  "$refs": "#/$defs/angle",
+                  "$ref": "#/$defs/angle",
                   "description": "The angle in degrees to rotate the detail"
                 },
                 "invisibleWhenHidden": {
@@ -912,21 +912,21 @@
       },
       "Curiosities": {
         "type": "array",
-        "description": "A set of colors to apply to curiosities",
+        "description": "A set of colours to apply to curiosities",
         "items": {
           "type": "object",
           "properties": {
             "id": {
               "type": "string",
-              "description": "The ID of the curiosity to apply the color to"
+              "description": "The ID of the curiosity to apply the colour to"
             },
-            "color": {
-              "$ref": "#/$defs/color",
-              "description": "The color to apply to entries with this curiosity"
+            "colour": {
+              "$ref": "#/$defs/colour",
+              "description": "The colour to apply to entries with this curiosity"
             },
-            "highlightColor": {
-              "$ref": "#/$defs/color",
-              "description": "The color to apply to highlighted entries with this curiosity"
+            "highlightColour": {
+              "$ref": "#/$defs/colour",
+              "description": "The colour to apply to highlighted entries with this curiosity"
             }
           }
         }

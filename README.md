@@ -40,6 +40,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
   - [Ship Log](#ship-log)
   - [How to destroy existing planets](#how-to-destroy-existing-planets)
   - [How to update existing planets](#how-to-update-existing-planets)
+  - [Translations](#translations)
+  - [Star System Properties](#star-system-properties)
 - [How to use New Horizons in other mods](#how-to-use-new-horizons-in-other-mods)
 - [Helpful resources](#helpful-resources)
 - [Contact](#contact)
@@ -67,6 +69,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Warp drive with target set in ship's log (done)
 - Implement custom dialogue (done)
 - Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier ([done](https://github.com/xen-42/outer-wilds-unity-template))
+- Custom ship log entries and fact reveals, for rumour mode and map mode (done)
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
@@ -534,10 +537,10 @@ Signal info objects can then have the following values set:
 	- "Radio" : appears in game as "Deep Space Radio"
 - "name" : (string) The name as it will appear in game
 - "audioClip" : (string) The audio clip from the game you want to use (can find these using Unity Explorer or by datamining)
-- "audioFilePath" : (string) The file path to a .wav you want to use as the audio clip
+- "audioFilePath" : (string) The file path to a .wav you want to use as the audio clip (you only need either this or `audioClip`)
 - "sourceRadius" : (decimal number) The radius of the spherical volume the signal appears to come from
 - "detectionRadius" : (decimal number) How close you must be to get the "Unidentified signal detected" pop-up
-- "identiicationRadius" : (decimal number) How close you must get to identify the signal
+- "identificationRadius" : (decimal number) How close you must get to identify the signal
 - "onlyAudibleToScope" : (true/false) 
 - "insideCloak" : (true/false) You have to set this to true if the signal is inside a cloaking field
 
@@ -583,6 +586,46 @@ This allows you to make black holes and white holes, and to pair them.
 
 ### Ship Log
 You can make custom ship logs for your planets. There's a guide [here](https://gist.github.com/Bwc9876/1817f8726e7f1900e57e3b05dd047d86#intro).
+
+### Translations
+
+There are 12 supported languages in Outer Wilds: english, spanish_la, german, french, italian, polish, portuguese_br, japanese, russian, chinese_sinple, korean, and turkish.
+
+All translations must go in a folder in the root directory called "translations".
+
+In this folder you can put json files with the name of the language you want to translate for. Then inside this file you will have:
+
+- DialogueDictionary: A list of key-value pairs where the "keys" are the English translation copied directly from your Dialogue xmls and the "values" are the translated versions.
+- ShipLogDictionary: The same, but for ShipLog xmls.
+
+Here's an example, for `russian.json`:
+
+```json
+{
+    "DialogueDictionary" :
+    {
+        "Fred" : "Фред",
+        "You looking at something?" : "Ты что-то искал?",
+        "Aren't you guys all supposed to be dead?" : "А разве номаи не вымерли?",
+        "OH MY GOD A LIVING NOMAI AHHH WHAT HOW?!" : "ААААА, ЖИВАЯ НОМАИ?!"
+    },
+    "ShipLogDictionary" :
+    {
+        "Unexpected guests" : "Незванные гости",
+        "Visitors" : "Гости",
+        "When I went to sleep by the campfire only Slate was here, who are these characters?" : "Когда я ложился спать у костра здесь был только Сланец. Кто все остальные?",
+        "I met a talking jellyfish. His name is Geswaldo!" : "Я встретил говорящую медузу. Его зовут Гесвальдо!"
+    }
+}
+```
+
+### Star System Properties
+
+The star system config can have:
+
+- CanEnterViaWarpDrive: (true/false) Set to true if you want it to show up in the star chart mode in the ship log. Otherwise it will only be accessible via black holes.
+- StartHere: (true/false) Set to true if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system.
+- factRequiredForWarp: (string) Set to the FactID that must be revealed before it can be warped to. Don't set "CanEnterViaWarpDrive" to false if you're using this, that would make no sense.
 
 ### How to destroy existing planets
 
@@ -651,7 +694,7 @@ New Horizons was made with help from:
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
 - [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
 - [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
-- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.9.0
+- [Bwc9876](https://github.com/Bwc9876): Set up ship log entires for planets in v0.9.0 and debug mode in v0.9.1
 
 Marshmallow was made with help from:
 - TAImatem
