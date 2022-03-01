@@ -10,7 +10,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.Handlers
+namespace NewHorizons.Handlers
 {
     public static class ShipLogHandler
     {

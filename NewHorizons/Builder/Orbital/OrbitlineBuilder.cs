@@ -1,10 +1,10 @@
 ﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Orbital
 {
@@ -27,13 +27,24 @@ namespace NewHorizons.Builder.Orbital
             var parentGravity = astroobject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-            if (ecc == 0)
-                orbitLine = orbitGO.AddComponent<OrbitLine>();
-            // Doesn't work for linear eccentric falloff
-            else if (ecc > 0 && ecc < 1 && (parentGravity != null && parentGravity._falloffType == GravityVolume.FalloffType.inverseSquared)) 
-                orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
-            else 
+
+            if(config.Orbit.TrackingOrbitLine)
+            {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+            }
+            else if (ecc == 0)
+            {
+                orbitLine = orbitGO.AddComponent<OrbitLine>();
+            }
+            else if (ecc > 0 && ecc < 1 && (parentGravity != null && parentGravity._falloffType == GravityVolume.FalloffType.inverseSquared))
+            {
+                // Doesn't work for linear eccentric falloff
+                orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
+            }
+            else
+            {
+                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+            }
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();

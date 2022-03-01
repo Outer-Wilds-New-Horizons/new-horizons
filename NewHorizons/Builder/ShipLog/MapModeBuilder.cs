@@ -9,8 +9,8 @@ using OWML.Common;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Handlers;
 using System;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.ShipLog
 {
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.ShipLog
 
         public static string GetAstroBodyShipLogName(string id)
         {
-            return ShipLogHandler.GetNameFromAstroID(id) ?? id;
+            return TranslationHandler.GetTranslation(ShipLogHandler.GetNameFromAstroID(id) ?? id, TranslationHandler.TextType.UI);
         }
 
         private static GameObject CreateImage(GameObject nodeGO, Texture2D texture, string name, int layer)

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Body
+namespace NewHorizons.Builder.Body.Geometry
 {
     static class CubeSphere
     {

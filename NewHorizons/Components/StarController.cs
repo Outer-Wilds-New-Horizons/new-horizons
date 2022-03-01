@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Components
 {
     public class StarController : MonoBehaviour
     {

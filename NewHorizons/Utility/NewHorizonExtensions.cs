@@ -1,5 +1,4 @@
-﻿using NewHorizons.OrbitalPhysics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
@@ -18,14 +17,6 @@ namespace NewHorizons.Utility
         public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName)
         {
             return (T)dict[settingName];
-        }
-
-        public static OrbitalHelper.FalloffType GetFalloffType(this GravityVolume gv)
-        {
-            if (gv == null) return OrbitalHelper.FalloffType.none;
-            var falloffTypeString = typeof(GravityVolume).GetField("_falloffType", BindingFlags.NonPublic | BindingFlags.Instance).GetValue(gv).ToString();
-            var falloffType = falloffTypeString.Equals("linear") ? OrbitalHelper.FalloffType.linear : OrbitalHelper.FalloffType.inverseSquared;
-            return falloffType;
         }
 
         public static float GetFalloffExponent(this GravityVolume gv)

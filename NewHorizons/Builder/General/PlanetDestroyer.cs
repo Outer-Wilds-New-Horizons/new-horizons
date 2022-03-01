@@ -1,4 +1,5 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.Components;
+using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -143,7 +144,7 @@ namespace NewHorizons.Builder.General
             else if(ao.GetAstroObjectName() == AstroObject.Name.Sun)
             {
                 var starController = ao.gameObject.GetComponent<StarController>();
-                Main.Instance.StarLightController.RemoveStar(starController);
+                StarLightController.RemoveStar(starController);
                 GameObject.Destroy(starController);
 
                 var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();

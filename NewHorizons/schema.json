@@ -317,6 +317,11 @@
         "tint": {
           "$ref": "#/$defs/colour",
           "description": "Colour of the orbit-line in the map view."
+        },
+        "trackingOrbitLine": {
+          "type": "boolean",
+          "default": false,
+          "description": "Should we just draw a line behind its orbit."
         }
       }
     },
@@ -484,11 +489,6 @@
               "scale": {
                 "type": "number",
                 "default": 1
-              },
-              "generateColliders": {
-                "type": "bool",
-                "default": false,
-                "description": "For each mesh filter found here should we make a mesh collider?"
               }
             }
           }

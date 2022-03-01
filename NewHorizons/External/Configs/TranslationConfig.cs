@@ -13,6 +13,7 @@ namespace NewHorizons.External.Configs
     {
         public Dictionary<string, string> DialogueDictionary;
         public Dictionary<string, string> ShipLogDictionary;
+        public Dictionary<string, string> UIDictionary;
 
         public TranslationConfig(string filename)
         {
@@ -25,7 +26,11 @@ namespace NewHorizons.External.Configs
             if (dict.ContainsKey(nameof(ShipLogDictionary)))
             {
                 ShipLogDictionary = (Dictionary<string, string>)(dict[nameof(ShipLogDictionary)] as Newtonsoft.Json.Linq.JObject).ToObject(typeof(Dictionary<string, string>));
-            }            
+            }
+            if (dict.ContainsKey(nameof(UIDictionary)))
+            {
+                UIDictionary = (Dictionary<string, string>)(dict[nameof(UIDictionary)] as Newtonsoft.Json.Linq.JObject).ToObject(typeof(Dictionary<string, string>));
+            }
         }
     }
 }

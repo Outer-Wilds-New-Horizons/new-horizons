@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -18,13 +19,16 @@ namespace NewHorizons.Builder.Props
 
         private static Dictionary<SignalName, string> _customSignalNames;
         private static Stack<SignalName> _availableSignalNames;
-
-        public static Dictionary<SignalFrequency, string> SignalFrequencyOverrides;
-
         private static int _nextCustomSignalName;
 
-        public static void Reset()
+        private static Dictionary<SignalFrequency, string> _customFrequencyNames;
+        private static int _nextCustomFrequencyName;
+
+        public static int NumberOfFrequencies;
+
+        public static void Init()
         {
+            Logger.Log($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
             _availableSignalNames = new Stack<SignalName> (new SignalName[]
             {
@@ -63,12 +67,48 @@ namespace NewHorizons.Builder.Props
                 SignalName.WhiteHole_BH_ForgeReceiver,
                 SignalName.WhiteHole_GD_Receiver,
             });
-            SignalFrequencyOverrides = new Dictionary<SignalFrequency, string>() {
-                { SignalFrequency.Statue, "NOMAI STATUE" }, 
-                { SignalFrequency.Default, "???" }, 
-                { SignalFrequency.WarpCore, "ANTI-GRAVITON FLUX" } 
+            _customFrequencyNames = new Dictionary<SignalFrequency, string>() {
+                { SignalFrequency.Statue, "FREQ_STATUE" }, 
+                { SignalFrequency.Default, "FREQ_UNKNOWN" }, 
+                { SignalFrequency.WarpCore, "FREQ_WARP_CORE" } 
             };
             _nextCustomSignalName = 200;
+            _nextCustomFrequencyName = 256;
+            NumberOfFrequencies = 8;
+        }
+
+        public static SignalFrequency AddFrequency(string str)
+        {
+            Logger.Log($"Registering new frequency name [{str}]");
+
+            if (NumberOfFrequencies == 31)
+            {
+                Logger.LogWarning($"Can't store any more frequencies, skipping [{str}]");
+                return SignalFrequency.Default;
+            }
+
+            var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
+            if (freq != default)
+            {
+                return freq;
+            }
+
+            freq = (SignalFrequency)_nextCustomFrequencyName;
+            _nextCustomFrequencyName *= 2;
+            _customFrequencyNames.Add(freq, str);
+
+            NumberOfFrequencies++;
+
+            // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
+            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies+1];
+
+            return freq;
+        }
+
+        public static string GetCustomFrequencyName(SignalFrequency frequencyName)
+        {
+            _customFrequencyNames.TryGetValue(frequencyName, out string name);
+            return name;
         }
 
         public static SignalName AddSignalName(string str)
@@ -79,7 +119,7 @@ namespace NewHorizons.Builder.Props
             if (_availableSignalNames.Count == 0) newName = (SignalName)_nextCustomSignalName++;
             else newName = _availableSignalNames.Pop();
 
-            _customSignalNames.Add(newName, str.ToUpper());
+            _customSignalNames.Add(newName, str);
             return newName;
         }
 
@@ -122,7 +162,6 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     clip = AudioUtility.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
-                    //clip = mod.Assets.GetAudio(info.AudioFilePath);
                 }
                 catch(Exception e)
                 {
@@ -137,12 +176,10 @@ namespace NewHorizons.Builder.Props
             }
 
             audioSignal.SetSector(sector);
+
+            if(name == SignalName.Default) audioSignal._preventIdentification = true;
+
             audioSignal._frequency = frequency;
-            if (name == SignalName.Default)
-            {
-                name = AddSignalName(info.Name);
-                if(name == SignalName.Default) audioSignal._preventIdentification = true; 
-            }
             audioSignal._name = name;
             audioSignal._sourceRadius = info.SourceRadius;
             audioSignal._revealFactID = info.Reveals;
@@ -185,7 +222,7 @@ namespace NewHorizons.Builder.Props
             audioSignalDetectionTrigger._trigger = owTriggerVolume;
 
             signalGO.SetActive(true);
-            signalDetectionGO.SetActive(true);
+            signalDetectionGO.SetActive(true);                                         
         }
 
         private static SignalFrequency StringToFrequency(string str)
@@ -194,7 +231,11 @@ namespace NewHorizons.Builder.Props
             {
                 if (str.Equals(freq.ToString())) return freq;
             }
-            return SignalFrequency.Default;
+            var customName = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
+
+            if (customName == default) customName = AddFrequency(str);
+
+            return customName;
         }
 
         private static SignalName StringToSignalName(string str)
@@ -203,7 +244,10 @@ namespace NewHorizons.Builder.Props
             {
                 if (str.Equals(name.ToString())) return name;
             }
-            return SignalName.Default;
+            var customName = CollectionUtilities.KeyByValue(_customSignalNames, str);
+            if (customName == default) customName = AddSignalName(str);
+
+            return customName;
         } 
     }
 }

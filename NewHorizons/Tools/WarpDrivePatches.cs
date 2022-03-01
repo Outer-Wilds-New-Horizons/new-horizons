@@ -22,7 +22,7 @@ namespace NewHorizons.Tools
         {
             if (!Main.HasWarpDrive) return;
 
-            var newPrompt = "Interstellar Mode";
+            var newPrompt = TranslationHandler.GetTranslation("INTERSTELLAR_MODE", TranslationHandler.TextType.UI);
             __instance._detectiveModePrompt.SetText(newPrompt);
             var text = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/ScreenPromptListScaleRoot/ScreenPromptList_UpperRight/ScreenPrompt/Text").GetComponent<UnityEngine.UI.Text>();
             text.text = newPrompt;

@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.OrbitalPhysics;
 using Logger = NewHorizons.Utility.Logger;
 using System.Reflection;
 using NewHorizons.Utility;
+using PacificEngine.OW_CommonResources.Geometry.Orbits;
+using NewHorizons.Utility.CommonResources;
 
 namespace NewHorizons.Builder.Orbital
 {
@@ -43,7 +44,7 @@ namespace NewHorizons.Builder.Orbital
                     var gv = primaryBody.GetGravityVolume();
                     if(gv != null)
                     {
-                        var velocity = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(primaryBody.GetGravityVolume()), orbit).Item2;
+                        var velocity = CommonResourcesUtilities.GetCartesian(gv, orbit).Item2;
 
                         // For some stupid reason the InitialMotion awake method transforms the perfectly fine direction vector you give it so we preemptively do the inverse so it all cancels out
                         initialMotion._initLinearDirection = body.transform.InverseTransformDirection(velocity.normalized);

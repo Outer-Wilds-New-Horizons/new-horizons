@@ -1,4 +1,4 @@
-﻿using NewHorizons.Body.Geometry;
+﻿using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External;
 using System;
 using System.Collections.Generic;
@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphereMR = icosphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(Shader.Find("Standard"));
-            cubeSphereMR.material.color = module.Color.ToColor();
+            cubeSphereMR.material.color = module.Color != null ? module.Color.ToColor() : Color.white;
 
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;

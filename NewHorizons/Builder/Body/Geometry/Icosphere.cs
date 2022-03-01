@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace NewHorizons.Body.Geometry
+namespace NewHorizons.Builder.Body.Geometry
 {
     static class Icosphere
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,12 +7,14 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Components
 {
     [RequireComponent(typeof(SunLightController))]
     [RequireComponent(typeof(SunLightParamUpdater))]
     public class StarLightController : MonoBehaviour
     {
+        public static StarLightController Instance { get; private set; }
+
         private List<StarController> _stars = new List<StarController>();
         private StarController _activeStar;
 
@@ -20,31 +23,34 @@ namespace NewHorizons.Utility
 
         public void Awake()
         {
+            Instance = this;
             _sunLightController = GetComponent<SunLightController>();
             _sunLightController.enabled = true;
             _sunLightParamUpdater = GetComponent<SunLightParamUpdater>();
             _sunLightParamUpdater._sunLightController = _sunLightController;
         }
 
-        public void AddStar(StarController star)
+        public static void AddStar(StarController star)
         {
+            if (star == null) return;
+
             Logger.Log($"Adding new star to list: {star.gameObject.name}");
-            _stars.Add(star);
+            Instance._stars.Add(star);
         }
 
-        public void RemoveStar(StarController star)
+        public static void RemoveStar(StarController star)
         {
             Logger.Log($"Removing star from list: {star?.gameObject?.name}");
-            if (_stars.Contains(star))
+            if (Instance._stars.Contains(star))
             {
-                if (_activeStar != null && _activeStar.Equals(star))
+                if (Instance._activeStar != null && Instance._activeStar.Equals(star))
                 {
-                    _stars.Remove(star);
-                    if(_stars.Count > 0) ChangeActiveStar(_stars[0]);
+                    Instance._stars.Remove(star);
+                    if(Instance._stars.Count > 0) Instance.ChangeActiveStar(Instance._stars[0]);
                 }
                 else
                 {
-                    _stars.Remove(star);
+                    Instance._stars.Remove(star);
                 }
             }
         }

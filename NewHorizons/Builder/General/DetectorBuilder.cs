@@ -1,6 +1,6 @@
 ﻿using NewHorizons.Builder.Orbital;
 using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
+using NewHorizons.Components.Orbital;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
@@ -59,9 +59,8 @@ namespace NewHorizons.Builder.General
                         binaryFocalPoint.Planets.Add(astroObject);
                         if(binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
                         {
-                            var primaryGravityVolume = binaryFocalPoint.Primary.GetGravityVolume();
-                            var secondaryGravityVolume = binaryFocalPoint.Secondary.GetGravityVolume();
-                            forceDetector.SetValue("_detectableFields", new ForceVolume[] { primaryGravityVolume, secondaryGravityVolume });
+                            var fakeBarycenterGravityVolume = binaryFocalPoint.FakeMassBody.GetComponent<AstroObject>().GetGravityVolume();
+                            forceDetector.SetValue("_detectableFields", new ForceVolume[] { fakeBarycenterGravityVolume });
                         }
                     }
                 }
@@ -83,9 +82,9 @@ namespace NewHorizons.Builder.General
             var primaryGV = primary.GetGravityVolume();
             var secondaryGV = secondary.GetGravityVolume();
 
-            if (primaryGV.GetFalloffType() != secondaryGV.GetFalloffType())
+            if (primaryGV._falloffType != secondaryGV._falloffType)
             {
-                Logger.LogError($"Binaries must have the same gravity falloff! {primaryGV.GetFalloffType()} != {secondaryGV.GetFalloffType()}");
+                Logger.LogError($"Binaries must have the same gravity falloff! {primaryGV._falloffType} != {secondaryGV._falloffType}");
                 return;
             }
 

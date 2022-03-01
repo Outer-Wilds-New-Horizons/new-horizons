@@ -3,7 +3,7 @@ using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Atmosphere
+namespace NewHorizons.Builder.Atmosphere
 {
     static class SunOverrideBuilder
     {

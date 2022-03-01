@@ -152,14 +152,18 @@ namespace NewHorizons.Builder.Body
             starGO.transform.localPosition = Vector3.zero;
             starGO.transform.localScale = starModule.Size * Vector3.one;
 
-            var starController = body.AddComponent<StarController>();
-            starController.Light = light;
-            starController.AmbientLight = ambientLight;
-            starController.FaceActiveCamera = faceActiveCamera;
-            starController.CSMTextureCacher = csmTextureCacher;
-            starController.ProxyShadowLight = proxyShadowLight;
-            starController.Intensity = starModule.SolarLuminosity;
-            starController.SunColor = lightColour;
+            StarController starController = null;
+            if (starModule.SolarLuminosity != 0)
+            {
+                starController = body.AddComponent<StarController>();
+                starController.Light = light;
+                starController.AmbientLight = ambientLight;
+                starController.FaceActiveCamera = faceActiveCamera;
+                starController.CSMTextureCacher = csmTextureCacher;
+                starController.ProxyShadowLight = proxyShadowLight;
+                starController.Intensity = starModule.SolarLuminosity;
+                starController.SunColor = lightColour;
+            }
 
             if (starModule.Curve != null)
             {

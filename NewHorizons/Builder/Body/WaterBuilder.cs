@@ -101,6 +101,11 @@ namespace NewHorizons.Builder.Body
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
                 sizeController.size = module.Size;
             }
+            else
+            {
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.Size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", module.Size/2f);
+            }
 
             // TODO: make LOD work 
             //waterGO.AddComponent<TessellatedSphereLOD>();

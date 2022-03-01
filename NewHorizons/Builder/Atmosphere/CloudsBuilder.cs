@@ -6,7 +6,7 @@ using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Atmosphere
+namespace NewHorizons.Builder.Atmosphere
 {
     static class CloudsBuilder
     {
@@ -73,6 +73,11 @@ namespace NewHorizons.Atmosphere
                 material.SetTexture("_MainTex", image);
                 material.SetTexture("_RampTex", ramp);
                 material.SetTexture("_CapTex", cap);
+            }
+
+            if(!atmo.ShadowsOnClouds)
+            {
+                cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
 
 
