@@ -7,7 +7,6 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Handlers;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Tools

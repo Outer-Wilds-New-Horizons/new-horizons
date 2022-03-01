@@ -1,5 +1,4 @@
-﻿using NewHorizons.Body;
-using NewHorizons.Body.Geometry;
+﻿using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External;
 using NewHorizons.Utility;
 using OWML.Common;

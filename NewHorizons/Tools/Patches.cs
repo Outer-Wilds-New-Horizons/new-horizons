@@ -18,7 +18,6 @@ using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Handlers;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Handlers;
 
 namespace NewHorizons.Tools
 {

@@ -1,6 +1,4 @@
-﻿using NewHorizons.Atmosphere;
-using NewHorizons.Body;
-using NewHorizons.Builder.Body;
+﻿using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
@@ -27,6 +25,7 @@ using OWML.Common.Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Builder.Atmosphere;
 
 namespace NewHorizons
 {

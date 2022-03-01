@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Body.Geometry
+namespace NewHorizons.Builder.Body.Geometry
 {
     // Perlin noise generator for Unity
     // Keijiro Takahashi, 2013, 2015

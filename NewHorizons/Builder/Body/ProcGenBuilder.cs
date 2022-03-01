@@ -1,4 +1,4 @@
-﻿using NewHorizons.Body.Geometry;
+﻿using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External;
 using System;
 using System.Collections.Generic;
