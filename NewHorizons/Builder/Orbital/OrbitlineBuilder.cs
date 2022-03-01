@@ -1,10 +1,10 @@
 ﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Orbital
 {

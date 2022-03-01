@@ -1,5 +1,5 @@
-﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
+﻿using NewHorizons.Components.Orbital;
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;

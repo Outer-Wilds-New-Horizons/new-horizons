@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.OrbitalPhysics
+namespace NewHorizons.Components.Orbital
 {
 	public class TrackingOrbitLine : OrbitLine
 	{

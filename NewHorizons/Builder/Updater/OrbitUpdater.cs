@@ -1,6 +1,6 @@
 ﻿using NewHorizons.Builder.Orbital;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
+using NewHorizons.Utility.CommonResources;
 using PacificEngine.OW_CommonResources.Game.Resource;
 using PacificEngine.OW_CommonResources.Game.State;
 using System;
@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Updater
             {
                 var original = mapping[heavenlyBody];
 
-                var coords = OrbitalHelper.KeplerCoordinatesFromOrbitModule(body.Config.Orbit);
+                var coords = body.Config.Orbit.GetKeplerCoords();
 
                 var parent = original.state.parent;
                 if (body.Config.Orbit.PrimaryBody != null)

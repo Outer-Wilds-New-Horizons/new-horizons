@@ -1,11 +1,13 @@
 ﻿using PacificEngine.OW_CommonResources.Game.Resource;
+using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.CommonResources
 {
     public static class CommonResourcesUtilities
     {
@@ -56,6 +58,40 @@ namespace NewHorizons.Utility
                 default:
                     return HeavenlyBodies.None;
             }
+        }
+
+        public static Gravity GravityFromVolume(GravityVolume gv)
+        {
+            if (gv == null) return null;
+
+            var constant = GravityVolume.GRAVITATIONAL_CONSTANT;
+            var falloff = gv._falloffExponent;
+            var mass = gv._gravitationalMass / constant;
+            return new Gravity(constant, falloff, mass);
+        }
+
+        public static Tuple<Vector3, Vector3> GetCartesian(Gravity gravity, IKeplerCoordinates keplerCoords)
+        {
+            var cartesian = OrbitHelper.toCartesian(gravity, 0f, keplerCoords.GetKeplerCoords());
+
+            // CR breaks when a = 0
+            if(keplerCoords.SemiMajorAxis == 0)
+            {
+                cartesian = Tuple.Create(Vector3.zero, cartesian.Item2);
+            }
+
+            return cartesian;
+        }
+
+        public static Tuple<Vector3, Vector3> GetCartesian(GravityVolume gv, IKeplerCoordinates keplerCoords)
+        {
+            return GetCartesian(GravityFromVolume(gv), keplerCoords);
+        }
+
+        public static Vector3 GetPosition(IKeplerCoordinates keplerCoords)
+        {
+            if (keplerCoords.SemiMajorAxis == 0) return Vector3.zero;
+            return OrbitHelper.toCartesian(new Gravity(1, 1, 1), 0f, keplerCoords.GetKeplerCoords()).Item1;
         }
     }
 }

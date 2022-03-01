@@ -1,5 +1,4 @@
 ﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.Utils;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.General
 {
@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.General
             if (config.Orbit.PrimaryBody != null && parent == HeavenlyBody.None)
                 Logger.LogWarning($"Could not find [{config.Orbit.PrimaryBody}] parent of [{config.Name}]");
 
-            var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
+            var orbit = config.Orbit.GetKeplerCoords();
 
             var hb = GetBody(config.Name);
             if (hb == null) hb = AddHeavenlyBody(config.Name, config.FocalPoint != null);

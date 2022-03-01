@@ -9,7 +9,6 @@ using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Handlers;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using Newtonsoft.Json.Linq;
 using OWML.Common;
@@ -26,6 +25,8 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Atmosphere;
+using PacificEngine.OW_CommonResources.Geometry.Orbits;
+using NewHorizons.Utility.CommonResources;
 
 namespace NewHorizons
 {
@@ -770,7 +771,7 @@ namespace NewHorizons
         private void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody)
         {
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(1, 100), body.Config.Orbit).Item1 + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
+            go.transform.position = CommonResourcesUtilities.GetPosition(body.Config.Orbit) + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
 
             if (go.transform.position.magnitude > FurthestOrbit)
             {
