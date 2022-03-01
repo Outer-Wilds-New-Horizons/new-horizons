@@ -59,9 +59,8 @@ namespace NewHorizons.Builder.General
                         binaryFocalPoint.Planets.Add(astroObject);
                         if(binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
                         {
-                            var primaryGravityVolume = binaryFocalPoint.Primary.GetGravityVolume();
-                            var secondaryGravityVolume = binaryFocalPoint.Secondary.GetGravityVolume();
-                            forceDetector.SetValue("_detectableFields", new ForceVolume[] { primaryGravityVolume, secondaryGravityVolume });
+                            var fakeBarycenterGravityVolume = binaryFocalPoint.FakeMassBody.GetComponent<AstroObject>().GetGravityVolume();
+                            forceDetector.SetValue("_detectableFields", new ForceVolume[] { fakeBarycenterGravityVolume });
                         }
                     }
                 }

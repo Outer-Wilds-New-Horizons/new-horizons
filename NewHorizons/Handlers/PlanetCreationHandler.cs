@@ -252,7 +252,7 @@ namespace NewHorizons.Handlers
             if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
 
             if (body.Config.FocalPoint != null)
-                FocalPointBuilder.Make(go, body.Config.FocalPoint);
+                FocalPointBuilder.Make(go, ao, body.Config, body.Mod);
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, owRigidBody);
