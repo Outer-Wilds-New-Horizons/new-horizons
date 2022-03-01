@@ -10,6 +10,7 @@ using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -64,7 +65,7 @@ namespace NewHorizons.Builder.Body
                 var asteroidConfig = new PlanetConfig(config);
                 if (belt.ProcGen != null) asteroidConfig.ProcGen = belt.ProcGen;
                 var asteroid = new NewHorizonsBody(new PlanetConfig(config), mod);
-                Main.NextPassBodies.Add(asteroid);
+                PlanetCreationHandler.NextPassBodies.Add(asteroid);
             }
         }
     }

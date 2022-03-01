@@ -102,7 +102,11 @@ namespace NewHorizons.Utility
         {
 			_customAstroObjectDictionary = new Dictionary<string, AstroObject>();
 			_list = new List<AstroObject>();
-        }
+			foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+			{
+				AddAstroObject(ao);
+			}
+		}
 
 		public static AstroObject[] GetAllAstroObjects()
         {
