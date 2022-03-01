@@ -232,7 +232,7 @@ namespace NewHorizons.Builder.Props
                 if (str.Equals(freq.ToString())) return freq;
             }
             var customName = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
-            Logger.Log($"[{str}] [{customName}] FUCK");
+
             if (customName == default) customName = AddFrequency(str);
 
             return customName;
