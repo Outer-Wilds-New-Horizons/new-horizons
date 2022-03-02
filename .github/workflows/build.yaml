@@ -36,6 +36,8 @@ jobs:
     - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
     
     - run: |
+        ls
+        ls NewHorizons/
         ls PacificEngine.OW_CommonResources/
         mv PacificEngine.OW_CommonResources/ NewHorizons/
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
