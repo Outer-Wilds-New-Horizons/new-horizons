@@ -7,6 +7,8 @@
 ![Downloads](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/total)
 ![Downloads of newest version](https://img.shields.io/github/downloads/xen-42/outer-wilds-new-horizons/latest/total)
 
+[![Build](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml/badge.svg)](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml)
+
 A custom world creation tool for Outer Wilds.
 
 You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
