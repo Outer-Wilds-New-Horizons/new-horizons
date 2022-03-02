@@ -67,6 +67,7 @@ jobs:
       with:
         dotnet-version: "5.0.x"
     - run: dotnet build -c Release
+    - run: tree
     - uses: actions/upload-artifact@v2
       with:
         name: NewHorizons-${{ steps.sanitizeRef.outputs.value }}-${{ steps.short-sha.outputs.sha }}
