@@ -1,6 +1,10 @@
 {% extends "base.jinja2" %}
 {% from 'content.html' import content with context %}
 
+{% block resources %}
+    <script src="/schemas/schema_doc.min.js"></script>
+{% endblock %}
+
 {% block content %}
     <div class="row">
         <div class="col text-center">
