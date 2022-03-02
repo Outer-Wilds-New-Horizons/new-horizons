@@ -8,3 +8,5 @@ zip
 
 */Build/*
 .idea/
+docs/out/*
+docs/schemas/*
