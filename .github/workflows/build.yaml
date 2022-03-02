@@ -25,13 +25,6 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-    # Idk
-    - id: CommonResources
-      uses: pozetroninc/github-action-get-latest-release@master
-      with:
-        owner: PacificEngine
-        repo: CommonResources
-        excludes: prerelease, draft
     # Replace / with _ in ref name so that it can be used in a filename
     - uses: mad9000/actions-find-and-replace-string@2
       id: sanitizeRef
@@ -55,9 +48,6 @@ jobs:
     - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
     
     - run: |
-        ls
-        ls NewHorizons/
-        ls PacificEngine.OW_CommonResources/
         mv PacificEngine.OW_CommonResources/ NewHorizons/
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
         $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
