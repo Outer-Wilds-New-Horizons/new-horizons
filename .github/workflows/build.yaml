@@ -25,16 +25,6 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-    
-    - uses: robinraju/release-downloader@v1.3
-      with: 
-        repository: " PacificEngine/OW_CommonResources"
-        latest: true
-        fileName: "PacificEngine.OW_CommonResources.zip"
-        out-file-path: "CR-Download/"
-        
-    - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
-
     # Idk
     - id: CommonResources
       uses: pozetroninc/github-action-get-latest-release@master
@@ -54,6 +44,15 @@ jobs:
       id: short-sha
 
     - uses: actions/checkout@v2
+    
+    - uses: robinraju/release-downloader@v1.3
+      with: 
+        repository: " PacificEngine/OW_CommonResources"
+        latest: true
+        fileName: "PacificEngine.OW_CommonResources.zip"
+        out-file-path: "CR-Download/"
+        
+    - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
     
     - run: |
         ls
