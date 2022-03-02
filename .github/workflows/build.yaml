@@ -5,6 +5,9 @@ on:
     branches: [dev]
   pull_request:
   workflow_dispatch:
+  
+env:
+  GH_ACTIONS: 'true'
 
 jobs:
   pre_job:
@@ -22,6 +25,16 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
+    
+    - uses: robinraju/release-downloader@v1.3
+      with: 
+        repository: " PacificEngine/OW_CommonResources"
+        latest: true
+        fileName: "PacificEngine.OW_CommonResources.zip"
+        out-file-path: "CR-Download/"
+        
+    - run: 7z x -o CR-Build/ CR-Download/PacificEngine.OW_CommonResources.zip
+
     # Idk
     - id: CommonResources
       uses: pozetroninc/github-action-get-latest-release@master
