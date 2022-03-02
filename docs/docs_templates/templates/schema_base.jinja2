@@ -1,0 +1,15 @@
+{% extends "base.jinja2" %}
+{% from 'content.html' import content with context %}
+
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            <h1>{{ title|title }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ content(schema) }}
+        </div>
+    </div>
+{% endblock %}
