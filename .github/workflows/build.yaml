@@ -22,7 +22,13 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-
+    # Idk
+    - uses: PacificEngine/OW_CommonResources/find-latest-tag@v1
+      id: CommonResources
+      with:
+        source: ${{ github.ref_name }}
+        find: '/'
+        replace: '_'
     # Replace / with _ in ref name so that it can be used in a filename
     - uses: mad9000/actions-find-and-replace-string@2
       id: sanitizeRef
