@@ -30,10 +30,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(GH_ACTIONS)' != 'true'">
     <Reference Include="PacificEngine.OW_CommonResources">
       <HintPath>$(OuterWildsModsDirectory)\PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
 	  <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(GH_ACTIONS)' == 'true'">
+    <Reference Include="PacificEngine.OR_CommonResources">
+      <HintPath>PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
+      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
