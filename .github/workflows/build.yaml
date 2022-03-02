@@ -33,7 +33,7 @@ jobs:
         fileName: "PacificEngine.OW_CommonResources.zip"
         out-file-path: "CR-Download/"
         
-    - run: 7z x -o CR-Build/ CR-Download/PacificEngine.OW_CommonResources.zip
+    - run: 7z x -oCR-Build/ CR-Download/PacificEngine.OW_CommonResources.zip
 
     # Idk
     - id: CommonResources
