@@ -72,7 +72,7 @@ print("Initializing")
 
 
 if os.path.exists("out"):
-    os.rmdir("out")
+    os.removedirs("out")
 
 print("Copying Static")
 
