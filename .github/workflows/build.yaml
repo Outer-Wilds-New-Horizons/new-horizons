@@ -8,7 +8,6 @@ on:
   
 env:
   GH_ACTIONS: 'true'
-  OuterWildsModsDirectory: '.'
 
 jobs:
   pre_job:
@@ -38,6 +37,9 @@ jobs:
     
     - run: |
         ls PacificEngine.OW_CommonResources/
+        $data = Get-Content NewHorizons.csproj.user
+        $data = $data.Replace("<OuterWildsModsDirectory>$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
+        $data | Out-File -encoding ASCII NewHorizons.csproj.user
 
     # Idk
     - id: CommonResources
