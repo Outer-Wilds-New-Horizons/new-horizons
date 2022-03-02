@@ -37,8 +37,7 @@ jobs:
     - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
     
     - run: |
-        mkdir PacificEngine.OW_CommonResources/
-        mv PacificEngine.OW_CommonResources.dll PacificEngine.OW_CommonResources/
+        ls PacificEngine.OW_CommonResources/
 
     # Idk
     - id: CommonResources
