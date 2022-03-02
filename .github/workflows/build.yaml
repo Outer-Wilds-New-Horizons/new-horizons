@@ -8,6 +8,7 @@ on:
   
 env:
   GH_ACTIONS: 'true'
+  OuterWildsModsDirectory: '.'
 
 jobs:
   pre_job:
@@ -34,6 +35,10 @@ jobs:
         out-file-path: "CR-Download/"
         
     - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
+    
+    - run: |
+        mkdir PacificEngine.OW_CommonResources/
+        mv PacificEngine.OW_CommonResources.dll PacificEngine.OW_CommonResources/
 
     # Idk
     - id: CommonResources
