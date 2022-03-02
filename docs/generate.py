@@ -1,5 +1,7 @@
+import os
 from dataclasses import dataclass
 from pathlib import Path
+from shutil import copytree
 
 from jinja2 import Environment, PackageLoader, select_autoescape
 from json_schema_for_humans.schema.schema_importer import get_schemas_to_render
@@ -65,6 +67,20 @@ def template_override(template, intermediate_schema, inter_page):
 
     return rendered
 
+
+print("Initializing")
+
+
+if os.path.exists("out"):
+    os.rmdir("out")
+
+print("Copying Static")
+
+copytree("static", "out")
+
+os.makedirs("out/schemas")
+
+print("Rendering Pages")
 
 for page in pages:
     page.render(schemas=schemas)
