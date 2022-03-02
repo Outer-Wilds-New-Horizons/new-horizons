@@ -1,0 +1,48 @@
+name: Build Docs
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - docs/
+      - NewHorizons/*schema*.json
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - run: cp -r docs/** .
+
+      - name: Install dependecies
+        uses: VaultVulp/action-pipenv@v2.0.1
+        with:
+          command: install
+          
+      - name: Copy Schemas
+        run: |
+          mkdir schemas/
+          cp NewHorizons/schema.json schemas/
+          cp NewHorizons/star_system_schema.json schemas/
+          cp NewHorizons/translation_schema.json schemas/
+          
+      - name: Create Output Dir
+        run: |
+          mkdir out/
+          mkdir out/schemas/
+          
+      - name: Build Site
+        uses: VaultVulp/action-pipenv@v2.0.1
+        with:
+          command: run python generate.py
+          
+      - name: Deploy To Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages 
+          folder: out/
+          
