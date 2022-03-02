@@ -66,7 +66,7 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: "5.0.x"
-    - run: dotnet build -c Release
+    - run: dotnet build -c Release -o .\NewHorizons\Bin\Release
     - run: tree
     - uses: actions/upload-artifact@v2
       with:
