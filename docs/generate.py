@@ -29,7 +29,7 @@ class Page:
         template = env.get_template(self.in_name + ".jinja2")
         options.update({'page': self})
         rendered_string = template.render(**options)
-        with open("out/" + self.out_name + ".html", 'w+') as file:
+        with open("out/" + self.out_name + ".html", 'w+', encoding="utf-8") as file:
             file.write(rendered_string)
 
 
