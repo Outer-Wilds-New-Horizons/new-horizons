@@ -38,7 +38,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(GH_ACTIONS)' == 'true'">
     <Reference Include="PacificEngine.OR_CommonResources">
-      <HintPath>PacificEngine.OW_CommonResources\PacificEngine.OW_CommonResources.dll</HintPath>
+      <HintPath>CR-Build\PacificEngine.OW_CommonResources.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
