@@ -60,7 +60,7 @@ jobs:
         ls PacificEngine.OW_CommonResources/
         mv PacificEngine.OW_CommonResources/ NewHorizons/
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
-        $data = $data.Replace("<OuterWildsModsDirectory>$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
+        $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
         $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
     
     - uses: actions/setup-dotnet@v1
