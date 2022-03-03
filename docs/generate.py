@@ -12,6 +12,7 @@ from lib.Schema import Schema
 from lib.Page import Page
 
 OUT_DIR = os.getenv("OUT_DIR", "/")
+BASE_URL = os.getenv("BASE_URL", OUT_DIR)
 
 if Path("out/").exists():
     rmtree("out/", ignore_errors=True)
@@ -43,6 +44,7 @@ schemas_paths = Path("content/schemas").glob("**/*.json")
 router = {}
 
 env.filters['route'] = lambda title:   router.get(title.lower(), "#")
+env.filters['full_url'] = lambda relative: BASE_URL + relative
 
 pages = []
 schemas = []
@@ -57,14 +59,23 @@ for schema_path in schemas_paths:
     router[new_schema.title.lower()] = OUT_DIR + "schemas/" + str(new_schema.out_path.relative_to("out/schemas/"))
     schemas.append(new_schema)
 
-router['home'] = OUT_DIR
+content = pages + schemas
+
+if OUT_DIR != "":
+    router['home'] = OUT_DIR
 
 pages.sort(key=lambda p: p.sort_priority, reverse=True)
 
-for page in pages:
-    print(page.in_path, "->", page.out_path)
-    page.render(page=page, pages=pages, schemas=schemas)
+def build_meta(in_path, out_path):
+    meta_template = env.load_template(str(in_path.relative_to("content/")))
+    with Path("out", out_path).open(mode="w+", encoding="utf-8") as file:
+        file.write(meta_template.render(content=content))
 
-for schema in schemas:
-    print(schema.in_path, "->", schema.out_path)
-    schema.render(page=schema, pages=pages, schemas=schemas)
+print("Building Meta Files")
+build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"))
+build_meta(Path("content/robots.jinja2"), Path("robots.txt"))
+
+print ("Building Pages")
+for item in content:
+    print("Building:", item.in_path, "->", item.out_path)
+    item.render(page=page, pages=pages, schemas=schemas)

@@ -17,7 +17,7 @@ class Schema(Page):
     config: GenerationConfiguration
 
     def __init__(self, path, env, options):
-        self.sort_priority = 0
+        self.sort_priority = 10
         self.in_path = path
         self.config = options
         self.env = env
