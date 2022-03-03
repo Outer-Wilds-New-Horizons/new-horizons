@@ -70,8 +70,8 @@
     "angle": {
       "type": "number",
       "default": 0,
-      "min": 0,
-      "max": 360
+      "minimum": 0,
+      "maximum": 360
     },
     "curve": {
       "type": "array",
@@ -104,7 +104,7 @@
       }
     }
   },
-  "title": "Planet",
+  "title": "Body",
   "description": "A planet or body to generate",
   "type": "object",
   "required": [
@@ -627,7 +627,7 @@
         "shipSpawnPoint": {
           "$ref": "#/$defs/vector3"
         },
-        "starWithSuit": {
+        "startWithSuit": {
           "type": "boolean",
           "default": false
         }

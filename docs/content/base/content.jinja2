@@ -52,7 +52,7 @@
             {{ content(schema.kw_any_of.array_items[0]) }}
         {% else %}
             {% if schema.explicit_no_additional_properties %}
-                {{ " " }}<span class="badge badge-info no-additional">No Additional Properties</span>
+                {{ " " }}<span class="badge bg-info no-additional">No Additional Properties</span>
             {% endif %}
 
             {# Combining: allOf, anyOf, oneOf, not #}

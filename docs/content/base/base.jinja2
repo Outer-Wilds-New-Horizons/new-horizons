@@ -1,3 +1,9 @@
+{% if dumb %}
+    {% from 'macros.jinja2' import external_link, is_active_page, nav_item with context %}
+{% else %}
+    {% from 'base/macros.jinja2' import external_link, is_active_page, nav_item with context %}
+{% endif %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -18,7 +24,7 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">New Horizons</a>
+            <a class="navbar-brand" href="{{ 'home'|route }}">New Horizons</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
@@ -26,32 +32,28 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/">Home</a>
-                    </li>
+                    {% for nav_page in pages %}
+                        {{ nav_item(nav_page.title|title, nav_page.title|route) }}
+                    {% endfor %}
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        <a class="nav-link {% if page in schemas %}active{% endif %} dropdown-toggle" {% if page in schemas %}aria-current="page"{% endif %} href="#" id="navbarDropdown" role="button"
                            data-bs-toggle="dropdown" aria-expanded="false">
                             Schemas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             {% for schema in schemas %}
                                 <li><a class="dropdown-item"
-                                       href="/schemas/{{ schema.out_name }}.html">{{ schema.title|title }}</a></li>
+                                       href="{{ schema.title|route }}">{{ schema.title|title }}</a></li>
                             {% endfor %}
                         </ul>
                     </li>
                 </ul>
-                <ul class="navbar-nav mb-2 mb-lg-0">
+                <ul class="navbar-nav mb-2 ms-md-auto mb-lg-0">
                     <li class="nav-item me-2">
-                        <a class="link-light" href="https://github.com/xen-42/outer-wilds-new-horizons">
-                            <i class="bi-github"></i>
-                        </a>
+                        {{ external_link("<i class=\"bi-github\"></i><small class=\"d-lg-none ms-2\">GitHub</small>", "https://github.com/xen-42/outer-wilds-new-horizons", "nav-link p-2 fs-5") }}
                     </li>
                     <li class="nav-item me-2">
-                        <a class="link-light" href="https://github.com/xen-42/outer-wilds-new-horizons">
-                            <i class="bi-discord"></i>
-                        </a>
+                        {{ external_link("<i class=\"bi-discord\"></i><small class=\"d-lg-none ms-2\">Discord</small>", "https://discord.gg/9vE5aHxcF9", "nav-link p-2 fs-5") }}
                     </li>
                 </ul>
             </div>
@@ -59,7 +61,7 @@
     </nav>
 </header>
 <main>
-    <div class="container-fluid">
+    <div class="container-lg">
         {% block content %} {% endblock %}
     </div>
 </main>

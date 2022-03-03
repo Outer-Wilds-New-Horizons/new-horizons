@@ -1,88 +1,62 @@
 import os
-from dataclasses import dataclass
 from pathlib import Path
-from shutil import copytree, rmtree
 
-from jinja2 import Environment, PackageLoader, select_autoescape
-from json_schema_for_humans.schema.schema_importer import get_schemas_to_render
-from json_schema_for_humans.generate import generate_from_filename, GenerationConfiguration, generate_schemas_doc, \
-    copy_additional_files_to_target
-from json_schema_for_humans.template_renderer import TemplateRenderer, _minify
+from jinja2 import Environment, select_autoescape, FileSystemLoader
+from markupsafe import Markup
+from json_schema_for_humans.generate import GenerationConfiguration
+from markdown import Markdown
+
+from lib.Schema import Schema
+from lib.Page import Page
+
+OUT_DIR = os.getenv("OUT_DIR", "/")
 
 env = Environment(
-    loader=PackageLoader('docs_templates', 'templates'),
+    loader=FileSystemLoader("content"),
     autoescape=select_autoescape(['jinja2'])
 )
 
-env.filters["lowerfirst"] = lambda x:   x[0].lower() + x[1:]
+markdown_settings = {
+    'extensions': ['extra', 'meta']
+}
 
-home = env.get_template("base.jinja2")
+schema_settings = GenerationConfiguration(custom_template_path="content/base/schema_base.jinja2")
+schema_settings.link_to_reused_ref = False
 
+md = Markdown(**markdown_settings)
 
-@dataclass
-class Page:
-    in_name: str
-    out_name: str
-    title: str
+env.filters["upper_first"] = lambda x:   x[0].upper() + x[1:]
+env.filters["markdown"] = lambda text:  Markup(md.convert(text))
+env.filters["static"] = lambda path: OUT_DIR + "/" + path
 
-    def render(self, **options):
-        template = env.get_template(self.in_name + ".jinja2")
-        options.update({'page': self})
-        rendered_string = template.render(**options)
-        with open("out/" + self.out_name + ".html", 'w+', encoding="utf-8") as file:
-            file.write(rendered_string)
+pages_paths = Path("content/pages").glob("**/*.md")
+schemas_paths = Path("content/schemas").glob("**/*.json")
 
+router = {}
 
-config = GenerationConfiguration(custom_template_path="docs_templates/templates/schema_base.jinja2")
-config.link_to_reused_ref = False
+env.filters['route'] = lambda title:   router.get(title.lower(), "#")
 
+pages = []
+schemas = []
 
-@dataclass
-class Schema(Page):
+for page_path in pages_paths:
+    new_page = Page(page_path, env, markdown_settings)
+    router[new_page.title.lower()] = OUT_DIR + str(new_page.out_path.relative_to('out/'))
+    pages.append(new_page)
 
-    def render(self, **options):
-        schemas = get_schemas_to_render("schemas/" + self.in_name + ".json", Path("out/schemas/" + self.out_name + ".html"), ".html")
-        template_renderer = TemplateRenderer(config)
-        template_renderer.render = lambda inter:    template_override(template_renderer, inter, self)
-        generate_schemas_doc(schemas, template_renderer)
-        copy_additional_files_to_target(schemas, config)
+for schema_path in schemas_paths:
+    new_schema = Schema(schema_path, env, schema_settings)
+    router[new_schema.title.lower()] = OUT_DIR + "schemas/" + str(new_schema.out_path.relative_to("out/schemas/"))
+    schemas.append(new_schema)
 
+router['home'] = OUT_DIR
 
-pages = (
-    Page(in_name="home", out_name="index", title="Home"),
-    Schema(in_name="schema", out_name="body_schema", title="Body"),
-    Schema(in_name="star_system_schema", out_name="star_system_schema", title="Star System"),
-    Schema(in_name="translation_schema", out_name="translation_schema", title="Translation")
-)
-
-schemas = [s for s in pages if s.__class__.__name__ == "Schema"]
-
-
-def template_override(template, intermediate_schema, inter_page):
-    template.template.environment.filters["lowerfirst"] = env.filters["lowerfirst"]
-    rendered = template.template.render(schema=intermediate_schema, config=config, schemas=schemas, page=inter_page, title=inter_page.title + " Schema")
-
-    if template.config.minify:
-        rendered = _minify(rendered, template.config.template_is_markdown, template.config.template_is_html)
-
-    return rendered
-
-
-print("Initializing")
-
-
-if os.path.exists("out"):
-    rmtree("out")
-
-print("Copying Static")
-
-copytree("static", "out")
-
-os.makedirs("out/schemas")
-
-print("Rendering Pages")
+pages.sort(key=lambda p: p.sort_priority, reverse=True)
 
 for page in pages:
-    page.render(schemas=schemas)
+    print(page.in_path, "->", page.out_path)
+    page.render(page=page, pages=pages, schemas=schemas)
 
-print("Done")
+for schema in schemas:
+    print(schema.in_path, "->", schema.out_path)
+    schema.render(page=schema, pages=pages, schemas=schemas)

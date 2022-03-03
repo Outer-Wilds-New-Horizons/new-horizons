@@ -1,0 +1,11 @@
+{% macro external_link(display_name, link, class) %}
+    <a class="{{ class|default("") }}" target="_blank" rel="noopener" href="{{ link }}">{{ display_name|safe }}</a>
+{% endmacro %}
+
+{% macro is_active_page(title) %}{% if title == page.title %}active{% endif %}{% endmacro %}
+
+{% macro nav_item(title, href) %}
+    <li class="nav-item">
+        <a href="{{ href }}" class="nav-link {% if title == page.title %}active{% endif %}" {% if title == page.title %}aria-current="page"{% endif %}>{{ title|title }}</a>
+    </li>
+{% endmacro %}
