@@ -19,16 +19,15 @@ classes = {
 def process(node):
     if node.tag in classes.keys:
         node.set("class", classes[node.tag])
-    else:
-        for child in node.getiterator():
-            process(child)
+    for child in node:
+        process(child)
 
 
 
 class BootstrapTreeProcessor(Treeprocessor):
 
     def run(self, node):
-        for child in node.getiterator():
+        for child in node:
             process(child)
         return node
         
