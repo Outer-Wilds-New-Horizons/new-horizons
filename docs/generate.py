@@ -78,4 +78,4 @@ build_meta(Path("content/robots.jinja2"), Path("robots.txt"))
 print ("Building Pages")
 for item in content:
     print("Building:", item.in_path, "->", item.out_path)
-    item.render(page=page, pages=pages, schemas=schemas)
+    item.render(page=item, pages=pages, schemas=schemas)
