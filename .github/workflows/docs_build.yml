@@ -1,11 +1,5 @@
 name: Build Docs
 
-inputs:
-  relative_path:
-    description: "Path to set for relative files, set to a blank string for local builds"
-    required: false
-    default: "/"
-
 on:
   push:
     branches: [ master ]
@@ -14,9 +8,14 @@ on:
       - NewHorizons/*schema*.json
 
   workflow_dispatch:
+    inputs:
+      relative_path:
+        description: "Path to set for relative files, set to a blank string for local builds"
+        required: false
+        default: "/"
 
 env:
-  OUT_DIR:  ${{ inputs.relative_path }}
+  OUT_DIR:  ${{ github.events.inputs.relative_path }}
 
 jobs:
   build:
