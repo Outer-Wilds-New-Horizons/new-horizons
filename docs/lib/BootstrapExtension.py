@@ -11,7 +11,7 @@ class BootstrapExtension(Extension):
 
 
 classes = {
-    'img': "img-fluid",
+    'img': "img-fluid rounded mx-auto d-flex",
     'table': "table-striped"
 }
 
