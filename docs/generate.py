@@ -67,14 +67,17 @@ if OUT_DIR != "":
 pages.sort(key=lambda p: p.sort_priority, reverse=True)
 schemas.sort(key=lambda s: s.title)
 
+
 def log_build(in_path, out_path):
     print("Building:", str(in_path), "->", str(out_path))
+
 
 def build_meta(in_path, out_path):
     log_build(in_path, out_path)
     meta_template = env.get_template(str(in_path.relative_to("content/")))
-    with Path("out", out_path).open(mode="w+", encoding="utf-8") as file:
+    with Path("out/", out_path).open(mode="w+", encoding="utf-8") as file:
         file.write(meta_template.render(content=content))
+
 
 print("Building Meta Files")
 build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"))

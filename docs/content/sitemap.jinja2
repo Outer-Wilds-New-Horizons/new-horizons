@@ -4,7 +4,7 @@
    xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
     {% for item in content %}
         <url>
-            <loc>{{ item.title|route|full_url }}</loc>
+            <loc>{{ item.out_path|string|replace('\\', '/')|full_url }}</loc>
             <priority>{{ item.sort_priority / 100 }}</priority>
         </url>
     {% endfor %}
