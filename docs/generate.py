@@ -67,7 +67,7 @@ if OUT_DIR != "":
 pages.sort(key=lambda p: p.sort_priority, reverse=True)
 
 def build_meta(in_path, out_path):
-    meta_template = env.load_template(str(in_path.relative_to("content/")))
+    meta_template = env.get_template(str(in_path.relative_to("content/")))
     with Path("out", out_path).open(mode="w+", encoding="utf-8") as file:
         file.write(meta_template.render(content=content))
 
