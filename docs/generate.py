@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from shutil import copytree, rmtree
 
 from jinja2 import Environment, select_autoescape, FileSystemLoader
 from markupsafe import Markup
@@ -10,6 +11,11 @@ from lib.Schema import Schema
 from lib.Page import Page
 
 OUT_DIR = os.getenv("OUT_DIR", "/")
+
+if Path("out/").exists():
+    rmtree("out/", ignore_errors=True)
+
+copytree("content/static", "out")
 
 env = Environment(
     loader=FileSystemLoader("content"),
