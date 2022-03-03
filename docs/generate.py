@@ -27,7 +27,7 @@ md = Markdown(**markdown_settings)
 
 env.filters["upper_first"] = lambda x:   x[0].upper() + x[1:]
 env.filters["markdown"] = lambda text:  Markup(md.convert(text))
-env.filters["static"] = lambda path: OUT_DIR + "/" + path
+env.filters["static"] = lambda path: str(Path(OUT_DIR, path).as_posix())
 
 pages_paths = Path("content/pages").glob("**/*.md")
 schemas_paths = Path("content/schemas").glob("**/*.json")
