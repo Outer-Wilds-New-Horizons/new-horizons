@@ -7,6 +7,7 @@ from markupsafe import Markup
 from json_schema_for_humans.generate import GenerationConfiguration
 from markdown import Markdown
 
+from lib.BootstrapExtension import BootstrapExtension
 from lib.Schema import Schema
 from lib.Page import Page
 
@@ -24,7 +25,7 @@ env = Environment(
 )
 
 markdown_settings = {
-    'extensions': ['extra', 'meta']
+    'extensions': ['extra', 'meta', 'bootstrap']
 }
 
 schema_settings = GenerationConfiguration(custom_template_path="content/base/schema_base.jinja2")
