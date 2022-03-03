@@ -17,7 +17,7 @@ classes = {
 
 
 def process(node):
-    if node.tag in classes.keys:
+    if node.tag in classes.keys():
         node.set("class", classes[node.tag])
     for child in node:
         process(child)
