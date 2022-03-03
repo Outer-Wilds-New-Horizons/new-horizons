@@ -4,7 +4,7 @@ from markdown.treeprocessors import Treeprocessor
 class BootstrapExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)
-        self.processor = BootstrapTreeprocessor()
+        self.processor = BootstrapTreeProcessor()
         self.processor.md = md
         self.processor.config = self.getConfigs()
         md.treeprocessors.add('bootstrap', self.processor, '_end')
