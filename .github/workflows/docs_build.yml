@@ -16,6 +16,7 @@ on:
 
 env:
   OUT_DIR:  ${{ github.events.inputs.relative_path }}
+  BASE_URL: https://nh.outerwildsmods.com/
 
 jobs:
   build:
