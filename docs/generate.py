@@ -16,6 +16,7 @@ if Path("out/").exists():
     rmtree("out/", ignore_errors=True)
 
 copytree("content/static", "out")
+os.makedirs("out/schemas", exist_ok=True)
 
 env = Environment(
     loader=FileSystemLoader("content"),
