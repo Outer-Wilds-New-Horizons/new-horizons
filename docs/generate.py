@@ -25,7 +25,7 @@ env = Environment(
 )
 
 markdown_settings = {
-    'extensions': ['extra', 'meta', 'bootstrap']
+    'extensions': ['extra', 'meta', BootstrapExtension()]
 }
 
 schema_settings = GenerationConfiguration(custom_template_path="content/base/schema_base.jinja2")
