@@ -26,9 +26,9 @@ jobs:
       - name: Copy Schemas
         run: |
           mkdir schemas/
-          cp NewHorizons/schema.json schemas/
-          cp NewHorizons/star_system_schema.json schemas/
-          cp NewHorizons/translation_schema.json schemas/
+          cp NewHorizons/schema.json content/schemas/
+          cp NewHorizons/star_system_schema.json content/schemas/
+          cp NewHorizons/translation_schema.json content/schemas/
           
       - name: Create Output Dir
         run: |
