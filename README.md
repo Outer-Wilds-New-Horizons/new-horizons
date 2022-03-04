@@ -78,6 +78,11 @@ New Horizons was made with help from:
 - [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
 - [Bwc9876](https://github.com/Bwc9876): Set up ship log entries and QOL debug options in v0.9.x. Set up the website.
 
+Translation credits:
+- Russian: GrayFix and Tyla
+- German: Nolram
+- Spanish: Ciborgm9 and Ink
+
 Marshmallow was made with help from:
 - TAImatem
 - AmazingAlek
