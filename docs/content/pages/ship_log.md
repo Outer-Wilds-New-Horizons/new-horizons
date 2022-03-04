@@ -11,19 +11,19 @@ Welcome! this page outlines how to create a custom ship log.
 
 These mods are useful when developing your ship log
 
-- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer)
-- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer)
-- [Save Editor](https://outerwildsmods.com/mods/saveeditor)
+- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer){ target="_blank" }
+- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer){ target="_blank" }
+- [Save Editor](https://outerwildsmods.com/mods/saveeditor){ target="_blank" }
 
 ## Helpful Tools
 
 These tools/references are highly recommended
 
 - [VSCode](https://code.visualstudio.com/) { target="_blank" }
-- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
-- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
-- [The XML Schema](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/NewHorizons/shiplog_schema.xsd)
-- [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples)
+- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml){ target="_blank" }
+- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp){ target="_blank" }
+- [The XML Schema](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/NewHorizons/shiplog_schema.xsd){ target="_blank" }
+- [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" }
 
 # Understanding Ship Logs
 
@@ -161,7 +161,7 @@ navigate to ShipLogManager.
 In the example XML, you may notice something like `xsi:noNamespaceSchemaLocation` at the top, this tells whatever editor
 you're using that the file at that link is the schema. The game simply ignores this though, so it won't be able to catch
 errors at runtime.  
-Some editors may require you to [Trust](https://code.visualstudio.com/docs/editor/workspace-trust) the workspace to use
+Some editors may require you to [Trust](https://code.visualstudio.com/docs/editor/workspace-trust){ target="_blank" } the workspace to use
 the schema file. Doing this varies per-editor, and you may also have to right-click the link and click download.
 
 ## Loading The File
