@@ -10,9 +10,11 @@ namespace NewHorizons.Handlers
 {
     public static class OWAssetHandler
     {
+        private static Dictionary<Material, string> _materialCache;
+
         public static void Init()
         {
-
+            _materialCache = new Dictionary<Material, string>();
         }
 
         public static void LoadObject(GameObject obj)
@@ -30,22 +32,34 @@ namespace NewHorizons.Handlers
                 if (streamingHandle is StreamingRenderMeshHandle || streamingHandle is StreamingSkinnedMeshHandle)
                 {
                     var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
-                    foreach (var table in tables)
+                    
+                    if (materials.Length == 0) continue;
+
+                    if (_materialCache == null) _materialCache = new Dictionary<Material, string>();
+
+                    if (_materialCache.TryGetValue(materials[0], out assetBundle))
                     {
-                        foreach(var x in table._materialPropertyLookups)
+                        assetBundles.Add(assetBundle);
+                    }
+                    else
+                    {
+                        foreach (var table in tables)
                         {
-                            if(materials.Contains(x.material))
+                            foreach (var x in table._materialPropertyLookups)
                             {
-                                assetBundles.SafeAdd(table.assetBundle);
+                                if (materials.Contains(x.material))
+                                {
+                                    _materialCache.SafeAdd(x.material, table.assetBundle);
+                                    assetBundles.SafeAdd(table.assetBundle);
+                                }
                             }
-                        }                           
+                        }
                     }
                 }
             }
 
             foreach (var assetBundle in assetBundles)
             {
-                Logger.Log($"Loading {assetBundles.Count} : {assetBundle}");
                 StreamingManager.LoadStreamingAssets(assetBundle);
             }
         }
