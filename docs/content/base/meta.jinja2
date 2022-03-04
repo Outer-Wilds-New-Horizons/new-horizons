@@ -1,0 +1,61 @@
+{# Macros #}
+{% macro og(name, content) %}<meta property="og:{{ name }}" content="{{ content }}"/>{% endmacro %}
+{% macro tw(name, content) %}<meta name="twitter:{{ name }}" content="{{ content }}"/>{% endmacro %}
+{% macro fav(filename) %}{{ ("fav/" + filename)|static }}{% endmacro %}
+
+{# Variable Declarations #}
+{% if page.title|lower == 'home' %}
+    {% set title="New Horizons Documentation" %}
+{% else %}
+    {% set title="New Horizons Documentation | " + page.title|title %}
+{% endif %}
+{% set desc="Documentation for creating planets with the New Horizons mod for Outer Wilds" %}
+{% if page.description %}
+    {% set desc=page.description %}
+{% endif %}
+{% set img="images/home/home_logo.png"|static|full_url %}
+{% set theme_color="#222222" %}
+
+{# Meta Info #}
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>{{ title }}</title>
+<meta name="keywords" content="New Horizons, Outer Wilds, Modding, C#, Unity" />
+<meta name="description" content="{{ desc }}"/>
+
+{# OpenGraph Info #}
+{{ og("type", "website") }}
+{{ og("title", title) }}
+{{ og("description", desc) }}
+{{ og("url", page.title|route|full_url) }}
+{{ og("image", img) }}
+{{ og("image:alt", desc) }}
+
+{# Twitter Info #}
+{{ tw("title", title) }}
+{{ tw("description", desc) }}
+{{ tw("card", "summary_large_image") }}
+{{ tw("image", img) }}
+
+
+{# Favicons #}
+<link rel="apple-touch-icon" sizes="57x57" href="{{ fav('apple-icon-57x57.png') }}">
+<link rel="apple-touch-icon" sizes="60x60" href="{{ fav('apple-icon-60x60.png') }}">
+<link rel="apple-touch-icon" sizes="72x72" href="{{ fav('apple-icon-72x72.png') }}">
+<link rel="apple-touch-icon" sizes="76x76" href="{{ fav('apple-icon-76x76.png') }}">
+<link rel="apple-touch-icon" sizes="114x114" href="{{ fav("apple-icon-114x114.png") }}">
+<link rel="apple-touch-icon" sizes="120x120" href="{{ fav("apple-icon-120x120.png") }}">
+<link rel="apple-touch-icon" sizes="144x144" href="{{ fav("apple-icon-144x144.png") }}">
+<link rel="apple-touch-icon" sizes="152x152" href="{{ fav("apple-icon-152x152.png") }}">
+<link rel="apple-touch-icon" sizes="180x180" href="{{ fav("apple-icon-180x180.png") }}">
+<link rel="icon" type="image/png" sizes="192x192" href="{{ fav("android-icon-192x192.png") }}">
+<link rel="icon" type="image/png" sizes="32x32" href="{{ fav("favicon-32x32.png") }}">
+<link rel="icon" type="image/png" sizes="96x96" href="{{ fav("favicon-96x96.png") }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ fav("favicon-16x16.png") }}">
+<link rel="manifest" href="{{ "manifest.json"|static }}">
+<meta name="msapplication-config" content="{{ "fav/browserconfig.xml"|static }}" />
+<meta name="msapplication-TileColor" content="{{ theme_color }}">
+<meta name="msapplication-TileImage" content="{{ fav("ms-icon-144x144.png") }}">
+<meta name="theme-color" data-react-helmet="true" content="{{ theme_color }}">
+

@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "type": "object",
+  "title": "Star System",
   "description": "Configuration for a specific star system",
   "properties": {
     "canEnterViaWarpDrive": {

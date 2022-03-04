@@ -1,0 +1,16 @@
+{% extends "base/base.jinja2" %}
+
+{% block resources %}
+    <link rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/styles/github-dark-dimmed.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col">
+            {{ content|markdown }}
+        </div>
+    </div>
+{% endblock %}

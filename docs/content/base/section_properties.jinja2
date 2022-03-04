@@ -13,7 +13,7 @@
                         {% if sub_property.is_additional_properties %}
                             <em>
                         {% endif %}
-                        <span class="property-nam align-middle pb-1">{{ sub_property.property_display_name | lowerfirst | escape }}</span>
+                        <span class="property-nam align-middle pb-1">{{ sub_property.property_display_name | upper_first | escape }}</span>
                         {% if sub_property.is_additional_properties %}
                             </em>
                         {% endif %}

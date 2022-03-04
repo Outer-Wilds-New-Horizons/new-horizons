@@ -396,7 +396,7 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
-.idea
+.idea/
 
 packages
 .vs
@@ -405,9 +405,9 @@ obj
 zip
 *.zip
 
-*/Build/*
-.idea/
-docs/out/*
-docs/schemas/*
+*/Build/**
+NewHorizons/Properties/**
 
-NewHorizons/Properties/*
+# Docs
+docs/out/**
+docs/content/schemas/**
