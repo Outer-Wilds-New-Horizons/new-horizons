@@ -190,6 +190,7 @@ namespace NewHorizons
                 SignalBuilder.Init();
                 AstroObjectLocator.RefreshList();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                OWAssetHandler.Init();
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
