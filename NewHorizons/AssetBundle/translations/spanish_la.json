@@ -1,0 +1,16 @@
+{
+    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
+    "DialogueDictionary": 
+    {
+        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1" : "¡Tu nave ahora tiene un motor de curvatura!",
+        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "Puedes usar la nueva página de \"modo interestelar\" en el registro de la nave para fijar el piloto automático a otro sistema solar.",
+        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "¡Después abróchate el cinturón y enciende el piloto automático para teletransportarte allí!"
+    },
+    "UIDictionary": 
+    {
+        "INTERSTELLAR_MODE" : "Modo Interestelar",
+        "FREQ_STATUE" : "Estatua Nomai",
+        "FREQ_WARP_CORE" : "Flujo De Anti-Gravitones",
+        "FREQ_UNKNOWN" : "???"
+    }
+}

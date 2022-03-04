@@ -2,6 +2,7 @@ import os
 from pathlib import Path
 from shutil import copytree, rmtree
 
+from htmlmin import minify
 from jinja2 import Environment, select_autoescape, FileSystemLoader
 from markupsafe import Markup
 from json_schema_for_humans.generate import GenerationConfiguration
@@ -26,11 +27,20 @@ env = Environment(
 )
 
 markdown_settings = {
-    'extensions': ['extra', 'meta', BootstrapExtension()]
+    'extensions': ['extra', 'toc', 'meta', BootstrapExtension()]
 }
 
 schema_settings = GenerationConfiguration(custom_template_path="content/base/schema_base.jinja2")
 schema_settings.link_to_reused_ref = False
+schema_settings.minify = True
+
+minify_settings = {
+    'remove_empty_space': True,
+    'keep_pre': True,
+    'remove_optional_attribute_quotes': False
+}
+
+env.minify_settings = minify_settings
 
 md = Markdown(**markdown_settings)
 
@@ -72,19 +82,22 @@ def log_build(in_path, out_path):
     print("Building:", str(in_path), "->", str(out_path))
 
 
-def build_meta(in_path, out_path):
+def build_meta(in_path, out_path, do_minify=False):
     log_build(in_path, out_path)
     meta_template = env.get_template(str(in_path.relative_to("content/")))
     with Path("out/", out_path).open(mode="w+", encoding="utf-8") as file:
-        file.write(meta_template.render(content=content))
+        out = meta_template.render(content=content)
+        if do_minify:
+            out = minify(out, **minify_settings)
+        file.write(out)
 
 
 print("Building Meta Files")
-build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"))
+build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"), do_minify=True)
 build_meta(Path("content/robots.jinja2"), Path("robots.txt"))
-build_meta(Path("content/browserconfig.jinja2"), Path("fav/browserconfig.xml"))
+build_meta(Path("content/browserconfig.jinja2"), Path("fav/browserconfig.xml"), do_minify=True)
 
-print ("Building Pages")
+print("Building Pages")
 for item in content:
     log_build(item.in_path, item.out_path)
     item.render(page=item, pages=pages, schemas=schemas)

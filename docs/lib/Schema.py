@@ -2,6 +2,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from htmlmin import minify
 from json_schema_for_humans.generate import generate_schemas_doc, copy_additional_files_to_target
 from json_schema_for_humans.schema.schema_importer import get_schemas_to_render
 from json_schema_for_humans.template_renderer import TemplateRenderer, _minify
@@ -38,6 +39,6 @@ class Schema(Page):
         rendered = template.template.render(schema=intermediate_schema, dumb=True, config=self.config, title=self.title + " Schema", **options)
 
         if template.config.minify:
-            rendered = _minify(rendered, template.config.template_is_markdown, template.config.template_is_html)
+            rendered = minify(rendered, **self.env.minify_settings)
 
         return rendered

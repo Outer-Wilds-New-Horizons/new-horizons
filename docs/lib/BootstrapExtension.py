@@ -1,6 +1,7 @@
 from markdown import Extension
 from markdown.treeprocessors import Treeprocessor
 
+
 class BootstrapExtension(Extension):
     def extendMarkdown(self, md, md_globals):
         md.registerExtension(self)
@@ -21,7 +22,6 @@ def process(node):
         node.set("class", classes[node.tag])
     for child in node:
         process(child)
-
 
 
 class BootstrapTreeProcessor(Treeprocessor):

@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from pathlib import Path
 
+from htmlmin import minify
 from jinja2 import Environment
 from markdown import Markdown
 
@@ -12,17 +13,17 @@ class Page:
     out_path: Path
     title: str
     description: str | None
-    env: Environment
+    env: object
 
     def __init__(self, path, environment, options):
         self.in_path = path
         self.env = environment
         md = Markdown(**options)
-        with path.open() as file:
+        with path.open('r', encoding='utf-8') as file:
             md.convert(file.read())
         self.sort_priority = int(md.Meta.get('sort-priority', '20')[0])
         self.title = md.Meta.get('title', (path.stem,))[0]
-        self.description = md.Meta.get('description', None)
+        self.description = md.Meta.get('description', [None])[0]
         outfile: Path
         try:
             outfile = Path("out/", path.relative_to(Path("content/pages/")).parent,
@@ -39,4 +40,4 @@ class Page:
         self.out_path.parent.mkdir(mode=511, parents=True, exist_ok=True)
 
         with self.out_path.open(mode='w+', encoding='utf-8') as file:
-            file.write(rendered_string)
+            file.write(minify(rendered_string, **self.env.minify_settings))
