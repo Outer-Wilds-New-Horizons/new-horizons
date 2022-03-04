@@ -32,7 +32,7 @@ pipenv install
 
 
 ## Copy Schemas
-Create a folder called `schemas` in this folder and copy all schemas to generate into it, make sure not to add this folder to git.
+Create a folder called `schemas` in the content folder and copy all schemas to generate into it, make sure not to add this folder to git.
 Production build automatically copies over schemas.
 
 ## Generating
