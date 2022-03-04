@@ -1,7 +1,7 @@
-Title: New Horizons Mod API
-Sort-Priority: 100
+Title: API
+Sort-Priority: 40
 
-## How to use New Horizons in other mods
+## How to use New Horizons in Other Mods
 
 First create the following interface in your mod:
 
@@ -21,4 +21,4 @@ In your main `ModBehaviour` class you can get the NewHorizons API like so:
 INewHorizons NewHorizonsAPI = ModHelper.Interaction.GetModApi<INewHorizons>("xen.NewHorizons")
 ```
 
-You can then use the API's `LoadConfigs()` method to load from a "planets" folder, or use the `Create()` and `GetPlanet` methods to create planets and do whatever with them. Just make sure you create planets in the `Start()` method or at least before the SolarSystem scene loads, or they will not be created.
+You can then use the APIs `LoadConfigs()` method to load from a "planets" folder, or use the `Create()` and `GetPlanet` methods to create planets and do whatever with them. Just make sure you create planets in the `Start()` method or at least before the SolarSystem scene loads, or they will not be created.

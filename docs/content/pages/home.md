@@ -8,7 +8,7 @@ Sort-Priority: 200
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons)
         
-## Getting Started With Planet Creation
+## Getting Started with Planet Creation
 
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own planet mod using configs. You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
 
@@ -31,7 +31,7 @@ Now that you have created your planets folder, this is where you will put your p
 		"groundSize" : 100,
 		"surfaceSize" : 101,
 		"surfaceGravity" : 12,
-		"hasMapMarker" : true,
+		"hasMapMarker" : true
 	},
 	"Orbit" : 
 	{
@@ -56,7 +56,7 @@ Now that you have created your planets folder, this is where you will put your p
 		},
 		"fogSize": 150,
 		"fogDensity":0.2,
-		"hasRain" : true,
+		"hasRain" : true
 	},
 	"Props" :
 	{
@@ -69,27 +69,27 @@ Now that you have created your planets folder, this is where you will put your p
 
 The first field you should have in any config file is the `name`. This should be unique in the solar system. If it isn't, the mod will instead try to modify the planet that already has that name.
 
-After `name` is `starSystem`. You can use this to place the planet in a different system accessible using a black-hole (see the [Singularity](#singularity) module). To ensure compatibility with other mods this name should be unique. After setting a value for this, the changes in the config will only affect that body in that star system. By default it is "SolarSystem", which is the scene from the stock game.
+After `name` is `starSystem`. You can use this to place the planet in a different system accessible using a black-hole (see the [Singularity](#singularity) module). To ensure compatibility with other mods this name should be unique. After setting a value for this, the changes in the config will only affect that body in that star system. By default, it is "SolarSystem", which is the scene from the stock game.
 
 Including the "$schema" line is optional, but will allow your text editor to highlight errors and auto-suggest words in your config. I recommend using VSCode as a text editor, but anything that supports Json files will work. Something as basic as notepad will work but will not highlight any of your errors.
 
-The config file is then split into modules, each one with it's own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
+The config file is then split into modules, each one with its own fields that define how that part of the planet will be generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must have a `Base` and `Orbit` module, the rest are optional.
 
 Each { must match up with a closing } to denote its section. If you don't know how JSONs work then check Wikipedia.
 
 Modules look like this:
 
 ```json
-"Star" :
 {
-	"size" : 3000,
-	"tint" : 
-	{
-		"r" : 201,
-		"g" : 87,
-		"b" : 55,
-		"a" : 255
-	},
+  "Star": {
+    "size": 3000,
+    "tint": {
+      "r": 201,
+      "g": 87,
+      "b": 55,
+      "a": 255
+    }
+  }
 }
 ```
 

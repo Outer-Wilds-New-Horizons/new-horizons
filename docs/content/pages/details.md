@@ -1,7 +1,8 @@
 Title: Detailing
-Sort-Priority: 100
+Sort-Priority: 90
 
 ## Details/Scatterer
+
 For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 - Use "Object Explorer" to search
 - Do not use the search functionality on Scene Explorer, it is really really slow. Use the "Object Search" tab instead.

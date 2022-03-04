@@ -1,12 +1,13 @@
-Title: XML Examples
-Sort-Priority: 100
+Title: Dialogue
+Sort-Priority: 50
 
-## XML Examples
+## Dialogue
 
 Here's an example dialogue XML:
 
 ```xml
-<DialogueTree>
+<DialogueTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/dialogue_schema.xsd">
 	<NameField>EXAMPLE NPC</NameField>
 
 	<DialogueNode>
@@ -16,7 +17,7 @@ Here's an example dialogue XML:
 			<Page>Start</Page>
       		<Page>Start Part 2</Page>
 		</Dialogue>
-		
+        
 		<DialogueOptionsList>
 			<DialogueOption>
 				<Text>Goto 1</Text>
@@ -50,8 +51,7 @@ Here's an example dialogue XML:
 			</DialogueOption>
 		</DialogueOptionsList>
 	</DialogueNode>
-
-
+    
 	<DialogueNode>
 		<Name>2</Name>
 		<Dialogue>
@@ -68,7 +68,6 @@ Here's an example dialogue XML:
 				<DialogueTarget>End</DialogueTarget>
 			</DialogueOption>
 		</DialogueOptionsList>
-
 	</DialogueNode>
 	
 	<DialogueNode>
@@ -79,4 +78,4 @@ Here's an example dialogue XML:
 	</DialogueNode>
 
 </DialogueTree>
-```	  
+```
