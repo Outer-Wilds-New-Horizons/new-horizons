@@ -12,7 +12,7 @@ from lib.Schema import Schema
 from lib.Page import Page
 
 OUT_DIR = os.getenv("OUT_DIR", "/")
-BASE_URL = os.getenv("BASE_URL", OUT_DIR)
+BASE_URL = os.getenv("BASE_URL", "")
 
 if Path("out/").exists():
     rmtree("out/", ignore_errors=True)
@@ -44,7 +44,7 @@ schemas_paths = Path("content/schemas").glob("**/*.json")
 router = {}
 
 env.filters['route'] = lambda title:   router.get(title.lower(), "#")
-env.filters['full_url'] = lambda relative: BASE_URL + relative
+env.filters['full_url'] = lambda relative: BASE_URL + (relative[1:] if relative[0] == "/" else relative)
 
 pages = []
 schemas = []
@@ -82,6 +82,7 @@ def build_meta(in_path, out_path):
 print("Building Meta Files")
 build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"))
 build_meta(Path("content/robots.jinja2"), Path("robots.txt"))
+build_meta(Path("content/browserconfig.jinja2"), Path("fav/browserconfig.xml"))
 
 print ("Building Pages")
 for item in content:

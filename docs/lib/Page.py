@@ -11,6 +11,7 @@ class Page:
     in_path: Path
     out_path: Path
     title: str
+    description: str | None
     env: Environment
 
     def __init__(self, path, environment, options):
@@ -21,6 +22,7 @@ class Page:
             md.convert(file.read())
         self.sort_priority = int(md.Meta.get('sort-priority', '20')[0])
         self.title = md.Meta.get('title', (path.stem,))[0]
+        self.description = md.Meta.get('description', None)
         outfile: Path
         try:
             outfile = Path("out/", path.relative_to(Path("content/pages/")).parent,

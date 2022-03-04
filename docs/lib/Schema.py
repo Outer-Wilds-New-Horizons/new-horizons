@@ -23,6 +23,7 @@ class Schema(Page):
         self.env = env
         with path.open() as file:
             self.title = json.load(file).get('title', path.stem)
+        self.description = "Schema for a " + self.title + " in New Horizons"
         self.out_path = Path('out/schemas/', self.in_path.relative_to(Path("content/schemas/")).with_name(self.title.replace(" ", "_").lower()).with_suffix(".html"))
 
     def render(self, **options):

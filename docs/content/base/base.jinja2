@@ -7,10 +7,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New Horizons Documentation | {{ page.title|title }}</title>
+    {% if dumb %}
+        {% include "meta.jinja2" %}
+    {% else %}
+        {% include "base/meta.jinja2" %}
+    {% endif %}
     <link href="https://bootswatch.com/5/darkly/bootstrap.min.css"
           crossorigin="anonymous" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
@@ -24,8 +25,10 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ 'home'|route }}">New Horizons</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            <a class="navbar-brand" href="{{ 'home'|route }}" aria-label="Home">
+                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo" class="d-inline-block align-text-top me-2"/>
+                New Horizons</a>
+            <button class="navbar-toggler align-text-middle" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
