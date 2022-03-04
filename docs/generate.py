@@ -7,10 +7,12 @@ from markupsafe import Markup
 from json_schema_for_humans.generate import GenerationConfiguration
 from markdown import Markdown
 
+from lib.BootstrapExtension import BootstrapExtension
 from lib.Schema import Schema
 from lib.Page import Page
 
 OUT_DIR = os.getenv("OUT_DIR", "/")
+BASE_URL = os.getenv("BASE_URL", "")
 
 if Path("out/").exists():
     rmtree("out/", ignore_errors=True)
@@ -24,7 +26,7 @@ env = Environment(
 )
 
 markdown_settings = {
-    'extensions': ['extra', 'meta']
+    'extensions': ['extra', 'meta', BootstrapExtension()]
 }
 
 schema_settings = GenerationConfiguration(custom_template_path="content/base/schema_base.jinja2")
@@ -42,6 +44,7 @@ schemas_paths = Path("content/schemas").glob("**/*.json")
 router = {}
 
 env.filters['route'] = lambda title:   router.get(title.lower(), "#")
+env.filters['full_url'] = lambda relative: BASE_URL + (relative[1:] if relative[0] == "/" else relative)
 
 pages = []
 schemas = []
@@ -56,14 +59,32 @@ for schema_path in schemas_paths:
     router[new_schema.title.lower()] = OUT_DIR + "schemas/" + str(new_schema.out_path.relative_to("out/schemas/"))
     schemas.append(new_schema)
 
-router['home'] = OUT_DIR
+content = pages + schemas
+
+if OUT_DIR != "":
+    router['home'] = OUT_DIR
 
 pages.sort(key=lambda p: p.sort_priority, reverse=True)
+schemas.sort(key=lambda s: s.title)
 
-for page in pages:
-    print(page.in_path, "->", page.out_path)
-    page.render(page=page, pages=pages, schemas=schemas)
 
-for schema in schemas:
-    print(schema.in_path, "->", schema.out_path)
-    schema.render(page=schema, pages=pages, schemas=schemas)
+def log_build(in_path, out_path):
+    print("Building:", str(in_path), "->", str(out_path))
+
+
+def build_meta(in_path, out_path):
+    log_build(in_path, out_path)
+    meta_template = env.get_template(str(in_path.relative_to("content/")))
+    with Path("out/", out_path).open(mode="w+", encoding="utf-8") as file:
+        file.write(meta_template.render(content=content))
+
+
+print("Building Meta Files")
+build_meta(Path("content/sitemap.jinja2"), Path("sitemap.xml"))
+build_meta(Path("content/robots.jinja2"), Path("robots.txt"))
+build_meta(Path("content/browserconfig.jinja2"), Path("fav/browserconfig.xml"))
+
+print ("Building Pages")
+for item in content:
+    log_build(item.in_path, item.out_path)
+    item.render(page=item, pages=pages, schemas=schemas)
