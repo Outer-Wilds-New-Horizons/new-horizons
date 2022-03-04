@@ -19,7 +19,7 @@ These mods are useful when developing your ship log
 
 These tools/references are highly recommended
 
-- [VSCode](https://code.visualstudio.com/)
+- [VSCode](https://code.visualstudio.com/) { target="_blank" }
 - [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml)
 - [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp)
 - [The XML Schema](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/NewHorizons/shiplog_schema.xsd)

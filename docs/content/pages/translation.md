@@ -3,7 +3,7 @@ Sort-Priority: 60
 
 ## Translations
 
-There are 12 supported languages in Outer Wilds: english, spanish_la, german, french, italian, polish, portuguese_br, japanese, russian, chinese_sinple, korean, and turkish.
+There are 12 supported languages in Outer Wilds: english, spanish_la, german, french, italian, polish, portuguese_br, japanese, russian, chinese_simple, korean, and turkish.
 
 All translations must go in a folder in the root directory called "translations".
 
