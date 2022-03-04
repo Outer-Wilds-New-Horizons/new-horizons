@@ -30,6 +30,11 @@ pipenv install
   - Local (but wanting to test open-graph/twitter): "https://nh.outerwildsmods.com/"
   - Production: "https://nh.outerwildsmods.com/"
 
+
+## Copy Schemas
+Create a folder called `schemas` in this folder and copy all schemas to generate into it, make sure not to add this folder to git.
+Production build automatically copies over schemas.
+
 ## Generating
 Run `generate.py` with pipenv
 ```shell
