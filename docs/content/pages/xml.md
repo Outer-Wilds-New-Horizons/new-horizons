@@ -1,6 +1,8 @@
 Title: XML Examples
 Sort-Priority: 100
 
+## XML Examples
+
 Here's an example dialogue XML:
 
 ```xml
