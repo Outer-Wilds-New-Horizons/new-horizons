@@ -1,5 +1,4 @@
 Title: XML Examples
-Out-File: index
 Sort-Priority: 100
 
 Here's an example dialogue XML:

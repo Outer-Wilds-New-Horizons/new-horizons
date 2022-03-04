@@ -1,5 +1,4 @@
-Title: How to Update Existing Planets
-Out-File: index
+Title: Update Existing Planets
 Sort-Priority: 100
 
 ### How to update existing planets

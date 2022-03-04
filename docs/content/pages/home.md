@@ -1,6 +1,6 @@
 Title: Home
 Out-File: index
-Sort-Priority: 100
+Sort-Priority: 200
 
 ![New Horizons Logo]({{ 'images/home/home_logo.png'|static }})
 

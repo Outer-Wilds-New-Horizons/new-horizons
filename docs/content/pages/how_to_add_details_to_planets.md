@@ -1,5 +1,4 @@
-Title: How to Add Details to Planets
-Out-File: index
+Title: Detailing
 Sort-Priority: 100
 
 #### Details/Scatterer

@@ -1,5 +1,4 @@
-Title: How to Use New Horizons in Other Mods
-Out-File: index
+Title: New Horizons Mod API
 Sort-Priority: 100
 
 ## How to use New Horizons in other mods
