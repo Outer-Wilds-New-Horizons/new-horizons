@@ -1,3 +1,4 @@
+{% from "base/macros.jinja2" import badge %}
 {% set html_id = sub_property.html_id %}
 <div class="row my-2">
     <div class="col">
@@ -17,14 +18,15 @@
                         {% if sub_property.is_additional_properties %}
                             </em>
                         {% endif %}
+                        {% macro subprop_badge(type, content) %}{{ badge(type, content|title, "required-property, ms-2") }}{% endmacro %}
                         {% if sub_property.is_required_property %}
-                            {{ " " }}<span class="badge bg-warning required-property ms-2">Required</span>
+                            {{ " " }}{{ subprop_badge('warning', "Required") }}
                         {% endif %}
                         {% if sub_property is deprecated %}
-                            {{ " " }}<span class="badge bg-danger deprecated-property ms-2">Deprecated</span>
+                            {{ " " }}{{ subprop_badge('danger', "Deprecated") }}
                         {% endif %}
                         {% if sub_property.is_pattern_property %}
-                            {{ " " }}<span class="badge bg-info pattern-property ms-2">Pattern Property</span>
+                            {{ " " }}{{ subprop_badge('info', "Pattern Property") }}
                         {% endif %}
                     </button>
                 </h2>

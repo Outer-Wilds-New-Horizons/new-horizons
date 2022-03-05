@@ -8,6 +8,7 @@ jinja2 = "*"
 json-schema-for-humans = "*"
 markdown = "*"
 htmlmin = "*"
+xmlschema = "*"
 
 [dev-packages]
 

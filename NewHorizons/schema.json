@@ -62,7 +62,8 @@
           "$ref": "#/$defs/colorPart"
         },
         "A": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colorPart",
+          "default": 255
         }
       }
     },
@@ -112,8 +113,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Unique name of your planet",
-      "default": "New planet"
+      "description": "Unique name of your planet"
     },
     "starSystem": {
       "type": "string",

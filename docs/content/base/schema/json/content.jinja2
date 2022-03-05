@@ -1,4 +1,5 @@
 {% from "base/schema/json/macro_restriction.jinja2" import restriction with context %}
+{% from "base/macros.jinja2" import badge %}
 
 {% macro tabbed_section(operator, current_node) %}
     {% include "base/schema/json/tabbed_section.jinja2" %}
@@ -19,7 +20,7 @@
         {% if not schema is combining %}
             <div class="row">
                 <div class="col">
-                    <span class="badge bg-secondary">Type: {{ type_name }}</span>
+                    {{ badge("secondary", "Type: " + type_name) }}
                 </div>
             </div>
         {% endif %}
@@ -29,7 +30,7 @@
         {% if default_value %}
             <div class="row">
                 <div class="col">
-                    {{ " " }}<span class="badge bg-secondary">Default: {{ default_value }}</span>
+                    {{ badge("secondary", "Default: " + default_value) }}
                 </div>
             </div>
         {% endif %}
@@ -52,7 +53,7 @@
             {{ content(schema.kw_any_of.array_items[0]) }}
         {% else %}
             {% if schema.explicit_no_additional_properties %}
-                {{ " " }}<span class="badge bg-info no-additional">No Additional Properties</span>
+                {{ badge("info", "No Additional Properties") }}
             {% endif %}
 
             {# Combining: allOf, anyOf, oneOf, not #}

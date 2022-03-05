@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from pathlib import Path
 
 from json_schema_for_humans.generate import generate_schemas_doc
@@ -11,6 +13,16 @@ from lib.Content.AbstractSchemaItem import AbstractSchemaItem
 SCHEMA_SETTINGS = GenerationConfiguration()
 SCHEMA_SETTINGS.link_to_reused_ref = False
 SCHEMA_SETTINGS.minify = False
+
+
+class NoPrint:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 
 class JSONSchema(AbstractSchemaItem):
@@ -35,7 +47,8 @@ class JSONSchema(AbstractSchemaItem):
         schema_template = self.env.get_template(str(Path('base/schema/json/schema_base.jinja2').as_posix()))
         template_renderer = TemplateRenderer(SCHEMA_SETTINGS, schema_template)
         template_renderer.render = lambda inter: self.template_override(template_renderer, inter, **context)
-        rendered = generate_schemas_doc(schemas, template_renderer)
+        with NoPrint():
+            rendered = generate_schemas_doc(schemas, template_renderer)
         return rendered[str(self.in_path.name)]
 
     def template_override(self, template: TemplateRenderer, intermediate_schema, **context):

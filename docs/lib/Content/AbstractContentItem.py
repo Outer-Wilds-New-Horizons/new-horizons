@@ -13,8 +13,10 @@ class AbstractContentItem(ABC):
     out_path: Path
     root_dir: Path
 
-    def __init__(self, in_path: Path):
+    def __init__(self, in_path: Path, ext: str = None):
         self.env = None
+        if ext is not None:
+            self.output_ext = ext
         self.in_path = in_path
         self.out_path = Path('out/', in_path.name).with_suffix(self.output_ext)
 
