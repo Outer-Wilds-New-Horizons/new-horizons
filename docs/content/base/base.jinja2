@@ -15,17 +15,18 @@
 </head>
 <body onload="{% block onLoad %}{% endblock %}">
 <header>
-    <nav class="navbar navbar-expand-xl navbar-dark bg-dark mb-2">
+    <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top mb-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ 'home'|route }}" aria-label="Home">
-                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo" class="d-inline-block align-text-top me-2"/>
+                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo"
+                     class="d-inline-block align-text-top me-2"/>
                 New Horizons</a>
             <button class="navbar-toggler align-text-middle" type="button" data-bs-toggle="collapse"
                     data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% for nav_page in pages %}
                         {{ nav_item(nav_page.title, nav_page.title|route) }}
