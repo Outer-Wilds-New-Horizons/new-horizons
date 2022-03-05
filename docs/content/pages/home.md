@@ -6,14 +6,14 @@ Sort-Priority: 200
 
 # Welcome!
         
-This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons)
+This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
 ## Getting Started with Planet Creation
 
-There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template) if you want to release your own
+There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } if you want to release your own
 planet mod using configs. You can learn how the configs work by picking apart
-the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system) mod or
-the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples) mod.
+the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system){ target="_blank" } mod or
+the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" } mod.
 
 Planets are created using a JSON file format structure, and placed in a folder called planets (or in any subdirectory of
 it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within
@@ -89,7 +89,7 @@ The config file is then split into modules, each one with its own fields that de
 generated. In the example above I've used the `Base`, `Orbit`, `Atmosphere`, and `Props` modules. A config file must
 have a `Base` and `Orbit` module, the rest are optional.
 
-Each { must match up with a closing } to denote its section. If you don't know how JSONs work then check Wikipedia.
+Each `{` must match up with a closing `}` to denote its section. If you don't know how JSONs work then check Wikipedia.
 
 Modules look like this:
 
@@ -108,7 +108,7 @@ Modules look like this:
 ```
 
 In this example the `Star` module has a `size` field and a `tint` field. Since the colour is a complex object it needs
-another set of { and } around it, and then it has its own fields inside it : `r`, `g`, `b`, and `a`. Don't forget to put
+another set of `{` and `}` around it, and then it has its own fields inside it : `r`, `g`, `b`, and `a`. Don't forget to put
 commas after each field.
 
 Most fields are either true/false, a decimal number, and integer number, or a string (word with quotation marks around
@@ -120,7 +120,7 @@ Check out the rest of the site for how to format planet, star system, dialogue, 
 
 The texturemap/heightmap feature was inspired by the KSP mod Kopernicus. A lot of the same techniques that apply to
 planet creation there apply to New Horizons. You can check out a planetary texturing guide
-repository [here](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/).
+repository [here](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
 
-[Photopea](https://www.photopea.com/) is a free browser-based photo editor which has useful features like
+[Photopea](https://www.photopea.com/){ target="_blank" } is a free browser-based photo editor which has useful features like
 rectangular-to-polar coordinate transformation, useful for fixing abnormalities at the poles of your planets. 
