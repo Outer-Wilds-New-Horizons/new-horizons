@@ -1,0 +1,5 @@
+{% from "base/macros.jinja2" import badge %}
+
+{% macro restriction(inner_text, css_class_name, html_id) %}
+    <p>{{ badge("dark", inner_text|safe, 'p-1') }}</p>
+{% endmacro %}

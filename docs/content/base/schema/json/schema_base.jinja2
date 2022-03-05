@@ -1,9 +1,11 @@
-{% extends "base.jinja2" %}
-{% from 'content.jinja2' import content with context %}
+{% extends "base/base.jinja2" %}
+{% from 'base/schema/json/content.jinja2' import content with context %}
 
 {% block resources %}
-    <script src="/schemas/schema_doc.min.js"></script>
+    {% include "base/schema/schema_includes.jinja2" %}
 {% endblock %}
+
+{% block onLoad %}anchorOnLoad();{% endblock %}
 
 {% block content %}
     <div class="row">

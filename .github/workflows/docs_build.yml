@@ -42,6 +42,8 @@ jobs:
           cp NewHorizons/schema.json content/schemas/
           cp NewHorizons/star_system_schema.json content/schemas/
           cp NewHorizons/translation_schema.json content/schemas/
+          cp NewHorizons/shiplog_schema.xsd content/schemas/
+          cp NewHorizons/dialogue_schema.xsd content/schemas/
           
       - name: Create Output Dir
         run: |

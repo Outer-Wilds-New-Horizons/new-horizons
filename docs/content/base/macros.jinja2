@@ -3,3 +3,5 @@
 {% macro is_active_page(title) %}{% if title == page.title %}active{% endif %}{% endmacro %}
 
 {% macro nav_item(title, href) %}<li class="nav-item me-1"><a href="{{ href }}" class="nav-link {% if title|lower == page.title|lower %}active{% endif %}" {% if title|lower == page.title|lower %}aria-current="page"{% endif %}>{{ title }}</a></li>{% endmacro %}
+
+{% macro badge(type, content, classes) %}<span class="badge rounded-pill bg-{{ type }} {{ classes }}">{{ content|safe }}</span>{% endmacro %}
