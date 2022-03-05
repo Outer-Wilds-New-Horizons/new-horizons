@@ -1,7 +1,7 @@
-{% from "macro_restriction.jinja2" import restriction with context %}
+{% from "base/schema/json/macro_restriction.jinja2" import restriction with context %}
 
 {% macro tabbed_section(operator, current_node) %}
-    {% include "tabbed_section.jinja2" %}
+    {% include "base/schema/json/tabbed_section.jinja2" %}
 {% endmacro %}
 
 {% macro content(schema, skip_headers=False) %}
@@ -12,7 +12,7 @@
 
     {% if not skip_headers %}
         {% if config.show_breadcrumbs %}
-            {% include "breadcrumbs.jinja2" %}
+            {% include "base/schema/json/breadcrumbs.jinja2" %}
         {% endif %}
 
         {# Display type #}
@@ -36,7 +36,7 @@
         <br/>
 
         {% set description = (schema | get_description) %}
-        {% include "section_description.jinja2" %}
+        {% include "base/schema/json/section_description.jinja2" %}
     {% endif %}
 
 
@@ -66,7 +66,7 @@
                 <div class="one-of-value" id="{{ schema.kw_one_of.html_id }}">{{ tabbed_section("oneOf", schema.kw_one_of) }}</div>
             {% endif %}
             {% if schema.kw_not %}
-                {% include "section_not.jinja2" %}
+                {% include "base/schema/json/section_not.jinja2" %}
             {% endif %}
 
             {# Enum and const #}
@@ -91,29 +91,29 @@
 
             {# Conditional subschema, or if-then-else section #}
             {% if schema.has_conditional %}
-                {% include "section_conditional_subschema.jinja2" %}
+                {% include "base/schema/json/section_conditional_subschema.jinja2" %}
             {% endif %}
 
             {# Required properties that are not defined under "properties". They will only be listed #}
-            {% include "section_undocumented_required_properties.jinja2" %}
+            {% include "base/schema/json/section_undocumented_required_properties.jinja2" %}
 
             {# Show the requested type(s) #}
-            {% include "badge_type.jinja2" %}
+            {% include "base/schema/json/badge_type.jinja2" %}
 
             {# Show array restrictions #}
             {% if type_name.startswith("array") %}
-                {% include "section_array.jinja2" %}
+                {% include "base/schema/json/section_array.jinja2" %}
             {% endif %}
 
             {# Display examples #}
             {% set examples = schema.examples %}
             {% if examples %}
-                {% include "section_examples.jinja2" %}
+                {% include "base/schema/json/section_examples.jinja2" %}
             {% endif %}
 
             {# Properties, pattern properties, additional properties #}
             {% for sub_property in schema.iterate_properties %}
-                {% include "section_properties.jinja2" %}
+                {% include "base/schema/json/section_properties.jinja2" %}
             {% endfor %}
 
         {% endif %}

@@ -1,0 +1,39 @@
+{% extends "base/base.jinja2" %}
+{% from 'base/schema/json/content.jinja2' import content with context %}
+
+{% block resources %}
+    <script src="{{ 'scripts/json_schema_doc.min.js'|static }}"></script>
+    <style>
+        .jsfh-animated-property {
+            animation: eclair;
+            animation-iteration-count: 1;
+            animation-fill-mode: forwards;
+            animation-duration: .75s;
+
+        }
+
+        @keyframes eclair {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.03);
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block onLoad %}anchorOnLoad();{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col text-center">
+            <h1>{{ title|title }}</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ content(schema) }}
+        </div>
+    </div>
+{% endblock %}
