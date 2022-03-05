@@ -1,4 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- Astro Object Entry -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
     <!-- Astro Object Entry Info -->
     <xs:element name="AstroObjectEntry">
