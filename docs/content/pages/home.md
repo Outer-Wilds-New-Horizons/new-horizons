@@ -10,6 +10,8 @@ This is the official documentation for [New Horizons](https://github.com/xen-42/
 
 ## Getting Started with Planet Creation
 
+#### DO NOT USE THE AUTORESUME MOD. GO INTO SETTINGS, ENABLE NEW HORIZONS DEBUG MODE, AND USE THE "RELOAD CONFIGS" BUTTON IN THE PAUSE MENU.
+
 There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } if you want to release your own
 planet mod using configs. You can learn how the configs work by picking apart
 the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system){ target="_blank" } mod or
