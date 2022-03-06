@@ -35,6 +35,10 @@ namespace NewHorizons.Builder.Props
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.HeightMap);
                 }
                 catch (Exception) { }
+                if(heightMapTexture == null)
+                {
+                    radius = heightMap.MaxHeight;
+                }
             }
 
             foreach (var propInfo in scatterInfo)
