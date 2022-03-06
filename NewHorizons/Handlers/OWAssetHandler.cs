@@ -37,6 +37,7 @@ namespace NewHorizons.Handlers
 
                     if (_materialCache == null) _materialCache = new Dictionary<Material, string>();
 
+                    // Gonna assume that if theres more than one material its probably in the same asset bundle anyway right
                     if (_materialCache.TryGetValue(materials[0], out assetBundle))
                     {
                         assetBundles.Add(assetBundle);
