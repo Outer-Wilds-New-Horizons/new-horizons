@@ -1,6 +1,7 @@
 Title: Home
 Out-File: index
 Sort-Priority: 200
+TOC: True
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 

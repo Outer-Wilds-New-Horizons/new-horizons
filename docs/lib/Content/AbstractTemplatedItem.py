@@ -12,6 +12,7 @@ class AbstractTemplatedItem(MinifyMixin, AbstractItem, ABC):
     title: str = None
     description: str | None = None
     sort_priority: int = None
+    render_toc: bool = False
 
     def load_metadata(self):
         if self.title is None:

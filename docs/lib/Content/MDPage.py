@@ -21,6 +21,7 @@ class MDPage(AbstractTemplatedItem):
 
         self.title = md.Meta.get('title')[0]
         self.description = md.Meta.get('description', [None])[0]
+        self.render_toc = bool(md.Meta.get('toc', 'False'))
         raw_priority = md.Meta.get('sort-priority')
         if raw_priority is not None:
             self.sort_priority = int(raw_priority[0])

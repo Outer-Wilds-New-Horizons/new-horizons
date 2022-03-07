@@ -57,11 +57,28 @@
         </div>
     </nav>
 </header>
-<main class="flex-grow-1">
-    <div class="container-lg">
-        {% block content %} {% endblock %}
-    </div>
-</main>
+{% if render_toc %}
+    <nav id="subnav" class="d-lg-none">
+        <button class="btn" type="button" data-bs-target="#outline-nav" aria-controls="outline-nav" aria-expanded="true" aria-label="Expand Outline"><i class="bi bi-chevron-expand"></i></button>    
+    </nav>
+{% endif %}
+<div class="container-lg flex-grow-1">
+    {% if render_toc %}
+        <aside>
+            <nav id="outline-nav" class="collapse show">
+                <ul class="list-unstyled">
+                    <li><a href="#">Test Link 1</a></li>
+                    <li><a href="#">Test Link 2</a></li>
+                </ul>
+            </nav>
+        </aside>
+    {% endif %}
+    <main>
+        <div>
+            {% block content %} {% endblock %}
+        </div>
+    </main>
+</div>
 <footer class="container-fluid w-100 mt-5 pt-4 pb-3 bg-dark">
     <div class="row gy-3 text-center">
         <div class="col-md">
