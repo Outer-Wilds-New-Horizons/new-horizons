@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Props
                 if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
                     Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as AnglerfishAnimController).enabled = false);
 
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => (component as Animator).enabled = true, 5);
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);

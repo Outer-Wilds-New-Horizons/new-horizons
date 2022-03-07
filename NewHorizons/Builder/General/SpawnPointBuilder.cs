@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.General
             if(!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
             {
                 suitUpQueued = true;
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SuitUp(), 4);
+                Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
             }
 
             Logger.Log("Made spawnpoint on [" + body.name + "]");

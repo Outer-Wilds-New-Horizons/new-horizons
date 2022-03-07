@@ -43,6 +43,7 @@ namespace NewHorizons
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
+        public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
 
         public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
@@ -91,6 +92,7 @@ namespace NewHorizons
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
+            GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
@@ -170,6 +172,12 @@ namespace NewHorizons
             Logger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
+            GlobalMessenger.RemoveListener("WakeUp", new Callback(OnWakeUp));
+        }
+
+        private static void OnWakeUp()
+        {
+            IsSystemReady = true;
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -185,6 +193,8 @@ namespace NewHorizons
 
             if(scene.name == "SolarSystem")
             {
+                IsSystemReady = false;
+
                 HeavenlyBodyBuilder.Reset();
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
@@ -203,8 +213,8 @@ namespace NewHorizons
                 if (HasWarpDrive == true) EnableWarpDrive();
 
                 Logger.Log($"Is the player warping in? {IsWarping}");
-                if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.FireInNUpdates(() => _shipWarpController.WarpIn(WearingSuit), 5);
-                else Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint), 5);
+                if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => _shipWarpController.WarpIn(WearingSuit));
+                else Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint));
                 IsWarping = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
