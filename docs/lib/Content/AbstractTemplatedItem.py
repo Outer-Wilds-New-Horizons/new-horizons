@@ -4,10 +4,10 @@ from pathlib import Path
 
 from jinja2 import Template, Environment
 
-from lib.Content.AbstractContentItem import AbstractContentItem, MinifyMixin
+from lib.Content.AbstractItem import AbstractItem, MinifyMixin
 
 
-class AbstractTemplatedItem(MinifyMixin, AbstractContentItem, ABC):
+class AbstractTemplatedItem(MinifyMixin, AbstractItem, ABC):
     extensions: tuple[str]
     title: str = None
     description: str | None = None

@@ -7,6 +7,12 @@ on:
       - docs/**
       - NewHorizons/*schema*.json
 
+  pull_request:
+    paths:
+      - dev/**
+      - NewHorizons/*schema*.json
+      - NewHorizons/*.xsd
+
   workflow_dispatch:
     inputs:
       relative_path:

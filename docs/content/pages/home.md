@@ -2,7 +2,7 @@ Title: Home
 Out-File: index
 Sort-Priority: 200
 
-![New Horizons Logo]({{ 'images/home/home_logo.png'|static }})
+![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
 # Welcome!
         
@@ -10,7 +10,7 @@ This is the official documentation for [New Horizons](https://github.com/xen-42/
 
 ## Getting Started with Planet Creation
 
-There is a template [here](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } if you want to release your own
+The [Config Template](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } is available if you want to release your own
 planet mod using configs. You can learn how the configs work by picking apart
 the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system){ target="_blank" } mod or
 the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" } mod.
@@ -22,9 +22,12 @@ the xen.NewHorizons directory).
 To locate this directory, click the "⋮" symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "
 show in explorer" in the pop-up.
 
-![Click the three dots in the mod manager]({{ 'images/home/mod_manager_dots.png'|static }})
+![Click the three dots in the mod manager]({{ 'images/home/mod_manager_dots.webp'|static }})
 
-![Create a new folder named "planets"]({{ 'images/home/create_planets.png'|static }})
+![Create a new folder named "planets"]({{ 'images/home/create_planets.webp'|static }})
+
+Now that you have created your planets folder, this is where you will put your planet config files. A config file will
+look something like this:
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:
@@ -119,8 +122,7 @@ Check out the rest of the site for how to format planet, star system, dialogue, 
 ## Helpful resources
 
 The texturemap/heightmap feature was inspired by the KSP mod Kopernicus. A lot of the same techniques that apply to
-planet creation there apply to New Horizons. You can check out a planetary texturing guide
-repository [here](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
+planet creation there apply to New Horizons. If you need help with planetary texturing, check out [The KSP texturing guide](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
 
 [Photopea](https://www.photopea.com/){ target="_blank" } is a free browser-based photo editor which has useful features like
 rectangular-to-polar coordinate transformation, useful for fixing abnormalities at the poles of your planets. 

@@ -1,4 +1,4 @@
-{% from 'base/macros.jinja2' import external_link, is_active_page, nav_item with context %}
+{% from 'base/macros.jinja2' import external_link, is_active_page, nav_item, defer_css with context %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -6,19 +6,19 @@
     {% include "base/meta.jinja2" %}
     <link href="https://bootswatch.com/5/darkly/bootstrap.min.css"
           crossorigin="anonymous" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    {{ defer_css("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css") }}
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
     <script crossorigin="anonymous" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% block resources %} {% endblock %}
 </head>
-<body onload="{% block onLoad %}{% endblock %}">
+<body class="vh-100 d-flex flex-column" id="top" onload="{% block onLoad %}{% endblock %}">
 <header>
     <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top mb-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ 'home'|route }}" aria-label="Home">
-                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo"
+                <img width="29" height="29" src="{{ "images/icon.webp"|static }}" alt="New Horizons Logo"
                      class="d-inline-block align-text-top me-2"/>
                 New Horizons</a>
             <button class="navbar-toggler align-text-middle" type="button" data-bs-toggle="collapse"
@@ -57,10 +57,23 @@
         </div>
     </nav>
 </header>
-<main>
+<main class="flex-grow-1">
     <div class="container-lg">
         {% block content %} {% endblock %}
     </div>
 </main>
+<footer class="container-fluid w-100 mt-5 pt-4 pb-3 bg-dark">
+    <div class="row text-center">
+        <div class="col">
+            <p>Last Generated: {{ ''|gen_time }}</p>
+        </div>
+        <div class="col">
+            <a class="link-light" href="#top">Back To Top</a>
+        </div>
+        <div class="col">
+            {{ external_link('Report An Issue', "https://github.com/xen-42/outer-wilds-new-horizons/issues/new/choose", 'link-light') }}
+        </div>
+    </div>
+</footer>
 </body>
 </html>
