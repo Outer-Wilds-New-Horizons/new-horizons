@@ -64,7 +64,7 @@ namespace NewHorizons.Builder.Props
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
             prop.SetActive(false);
 
-            sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.LoadObject(prop);
+            sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
             OWAssetHandler.LoadObject(prop);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
