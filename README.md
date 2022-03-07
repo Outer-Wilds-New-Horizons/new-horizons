@@ -79,7 +79,7 @@ New Horizons was made with help from:
 - [Bwc9876](https://github.com/Bwc9876): Set up ship log entries and QOL debug options in v0.9.x. Set up the website.
 
 Translation credits:
-- Russian: GrayFix and Tyla
+- Russian: GrayFix and Tlya
 - German: Nolram
 - Spanish: Ciborgm9 and Ink
 
