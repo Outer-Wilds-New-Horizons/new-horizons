@@ -62,7 +62,8 @@
           "$ref": "#/$defs/colorPart"
         },
         "A": {
-          "$ref": "#/$defs/colorPart"
+          "$ref": "#/$defs/colorPart",
+          "default": 255
         }
       }
     },
@@ -112,8 +113,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "description": "Unique name of your planet",
-      "default": "New planet"
+      "description": "Unique name of your planet"
     },
     "starSystem": {
       "type": "string",
@@ -647,14 +647,16 @@
       "type": "object",
       "properties": {
         "playerSpawnPoint": {
-          "$ref": "#/$defs/vector3"
+          "$ref": "#/$defs/vector3",
+          "description" : "If you want the player to spawn on the new body, set a value for this. Press \"P\" in game with Debug mode on to have the game log the position you're looking at to find a good value for this."
         },
         "shipSpawnPoint": {
           "$ref": "#/$defs/vector3"
         },
         "startWithSuit": {
           "type": "boolean",
-          "default": false
+          "default": false,
+          "description" : "If you spawn on a planet with no oxygen, you probably want to set this to true ;)"
         }
       }
     },

@@ -1,42 +1,35 @@
-{% if dumb %}
-    {% from 'macros.jinja2' import external_link, is_active_page, nav_item with context %}
-{% else %}
-    {% from 'base/macros.jinja2' import external_link, is_active_page, nav_item with context %}
-{% endif %}
+{% from 'base/macros.jinja2' import external_link, is_active_page, nav_item with context %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% if dumb %}
-        {% include "meta.jinja2" %}
-    {% else %}
-        {% include "base/meta.jinja2" %}
-    {% endif %}
+    {% include "base/meta.jinja2" %}
     <link href="https://bootswatch.com/5/darkly/bootstrap.min.css"
           crossorigin="anonymous" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
             crossorigin="anonymous"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script crossorigin="anonymous" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% block resources %} {% endblock %}
 </head>
-<body>
+<body onload="{% block onLoad %}{% endblock %}">
 <header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-2">
+    <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top mb-3">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ 'home'|route }}" aria-label="Home">
-                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo" class="d-inline-block align-text-top me-2"/>
+                <img width="29" height="29" src="{{ "fav/favicon-96x96.png"|static }}" alt="New Horizons Logo"
+                     class="d-inline-block align-text-top me-2"/>
                 New Horizons</a>
             <button class="navbar-toggler align-text-middle" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    data-bs-target="#navbarMain" aria-controls="navbarMain"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="collapse navbar-collapse" id="navbarMain">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     {% for nav_page in pages %}
-                        {{ nav_item(nav_page.title|title, nav_page.title|route) }}
+                        {{ nav_item(nav_page.title, nav_page.title|route) }}
                     {% endfor %}
                     <li class="nav-item dropdown">
                         <a class="nav-link {% if page in schemas %}active{% endif %} dropdown-toggle" {% if page in schemas %}aria-current="page"{% endif %} href="#" id="navbarDropdown" role="button"
@@ -51,12 +44,13 @@
                         </ul>
                     </li>
                 </ul>
+                <hr class="d-xl-none"/>
                 <ul class="navbar-nav mb-2 ms-md-auto mb-lg-0">
                     <li class="nav-item me-2">
-                        {{ external_link("<i class=\"bi-github\"></i><small class=\"d-lg-none ms-2\">GitHub</small>", "https://github.com/xen-42/outer-wilds-new-horizons", "nav-link p-2 fs-5") }}
+                        {{ external_link("<i class=\"bi-github\"></i><small class=\"d-xl-none ms-2\">GitHub</small>", "https://github.com/xen-42/outer-wilds-new-horizons", "nav-link p-2 fs-5") }}
                     </li>
                     <li class="nav-item me-2">
-                        {{ external_link("<i class=\"bi-discord\"></i><small class=\"d-lg-none ms-2\">Discord</small>", "https://discord.gg/9vE5aHxcF9", "nav-link p-2 fs-5") }}
+                        {{ external_link("<i class=\"bi-discord\"></i><small class=\"d-xl-none ms-2\">Discord</small>", "https://discord.gg/9vE5aHxcF9", "nav-link p-2 fs-5") }}
                     </li>
                 </ul>
             </div>
