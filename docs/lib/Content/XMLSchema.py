@@ -1,6 +1,7 @@
 import os
 
 import xmlschema
+from jinja2 import Environment
 from xmlschema.extras.codegen import AbstractGenerator, filter_method
 
 __all__ = ('XMLSchema',)
@@ -55,8 +56,10 @@ class HTMLConverter(AbstractGenerator):
         }
         return "Appears " + words[occurs[0]] + " To " + words[occurs[1]] + " " + ("Time" if occurs[1] == 1 else "Times")
 
-    def update_filters(self, filters):
-        self._env.filters.update(filters)
+    def setup(self, other: Environment):
+        other.filters.update(self._env.filters)
+        other.globals.update(self._env.filters)
+        self._env = other
 
 
 class XMLSchema(AbstractSchemaItem):
@@ -77,7 +80,7 @@ class XMLSchema(AbstractSchemaItem):
         with self.in_path.open(mode='r', encoding='utf-8') as file:
             schema = xmlschema.XMLSchema(file)
         converter = HTMLConverter(schema)
-        converter.update_filters(self.env.filters)
+        converter.setup(self.env)
         return converter.render('base/schema/xml/schema_base.jinja2', global_vars=context)[0]
 
 

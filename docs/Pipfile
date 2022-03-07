@@ -9,6 +9,9 @@ json-schema-for-humans = "*"
 markdown = "*"
 htmlmin = "*"
 xmlschema = "*"
+rcssmin = "*"
+rjsmin = "*"
+pillow = "*"
 
 [dev-packages]
 

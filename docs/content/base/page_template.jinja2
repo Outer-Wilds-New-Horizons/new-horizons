@@ -1,10 +1,11 @@
 {% extends "base/base.jinja2" %}
 
+{% from "base/macros.jinja2" import defer_css %}
+
 {% block resources %}
-    <link rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/styles/github-dark-dimmed.min.css">
-    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
+    {{ defer_css("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/styles/github-dark-dimmed.min.css") }}
+    <script onload="hljs.highlightAll();" defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
+    <style>code{background-color: #1a1a1a !important;}</style>
 {% endblock %}
 
 {% block content %}

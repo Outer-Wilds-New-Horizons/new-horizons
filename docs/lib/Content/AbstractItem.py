@@ -5,7 +5,7 @@ from htmlmin import minify
 from jinja2 import Environment
 
 
-class AbstractContentItem(ABC):
+class AbstractItem(ABC):
 
     output_ext: str = '.html'
     env: Environment
@@ -40,7 +40,7 @@ class AbstractContentItem(ABC):
         pass
 
 
-class MinifyMixin(AbstractContentItem, ABC):
+class MinifyMixin(AbstractItem, ABC):
 
     MINIFY_SETTINGS = {
         'remove_empty_space': True,

@@ -1,9 +1,9 @@
 from jinja2 import Environment
 
-from lib.Content.AbstractContentItem import AbstractContentItem, MinifyMixin
+from lib.Content.AbstractItem import AbstractItem, MinifyMixin
 
 
-class MetaItem(AbstractContentItem):
+class MetaItem(AbstractItem):
 
     @classmethod
     def initialize(cls, env: Environment) -> list:

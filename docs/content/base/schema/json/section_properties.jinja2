@@ -8,7 +8,7 @@
                     <button class="accordion-button{% if not expanded %} collapsed{% endif %}" type="button"
                             data-bs-toggle="collapse"
                             data-bs-target="#{{ html_id }}"
-                            aria-expanded="{{ expanded }}" aria-controls="{{ html_id }}"
+                            aria-expanded="false" aria-controls="{{ html_id }}"
                             onclick="setAnchor('#{{ html_id }}')">
 
                         {% if sub_property.is_additional_properties %}
