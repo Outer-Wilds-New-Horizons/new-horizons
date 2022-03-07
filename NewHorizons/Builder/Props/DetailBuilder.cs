@@ -10,6 +10,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
 using OWML.Common;
 using NewHorizons.External.Configs;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.Props
 {
@@ -63,21 +64,8 @@ namespace NewHorizons.Builder.Props
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
             prop.SetActive(false);
 
-            List<string> assetBundles = new List<string>();
-            foreach (var streamingHandle in prop.GetComponentsInChildren<StreamingMeshHandle>())
-            {
-                var assetBundle = streamingHandle.assetBundle;
-                if (!assetBundles.Contains(assetBundle))
-                {
-                    assetBundles.Add(assetBundle);
-                }
-            }
-
-            foreach (var assetBundle in assetBundles)
-            {
-                sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle);
-                StreamingManager.LoadStreamingAssets(assetBundle);
-            }
+            sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
+            OWAssetHandler.LoadObject(prop);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {
@@ -93,7 +81,7 @@ namespace NewHorizons.Builder.Props
                 if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
                     Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as AnglerfishAnimController).enabled = false);
 
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => (component as Animator).enabled = true, 5);
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
