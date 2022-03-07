@@ -29,6 +29,9 @@ show in explorer" in the pop-up.
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:
 
+Now that you have created your planets folder, this is where you will put your planet config files. A config file will
+look something like this:
+
 ```json
 {
   "name": "Wetrock",

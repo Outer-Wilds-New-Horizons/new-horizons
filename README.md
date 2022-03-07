@@ -25,8 +25,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- /TOC -->
 
 ## Incompatible mods
-- Autoresume (breaks the ship's warp drive).
-- Multiplayer mods like QSB and OWO.
+- Autoresume.
+- Multiplayer mods like QSB and OWO. QSB actually kinda works decently as long as you don't warp.
 
 ## Roadmap
 - Heightmaps/texturemaps (Done)
@@ -77,6 +77,11 @@ New Horizons was made with help from:
 - [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
 - [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
 - [Bwc9876](https://github.com/Bwc9876): Set up ship log entries and QOL debug options in v0.9.x. Set up the website.
+
+Translation credits:
+- Russian: GrayFix and Tlya
+- German: Nolram
+- Spanish: Ciborgm9 and Ink
 
 Marshmallow was made with help from:
 - TAImatem
