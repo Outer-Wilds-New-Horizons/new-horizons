@@ -12,6 +12,7 @@ class StaticItem:
         self.out_path.parent.mkdir(parents=True, exist_ok=True)
 
     def generate(self, **kwargs):
+        print("Building:", str(self.in_path), "->", str(self.out_path))
         with self.in_path.open(mode='rb') as file:
             content = file.read()
         with self.out_path.open(mode='wb+') as file:
@@ -28,6 +29,7 @@ class MinifiedStaticItem(StaticItem, ABC):
         raise NotImplementedError()
 
     def generate(self, **kwargs):
+        print("Building:", str(self.in_path), "->", str(self.out_path))
         with self.in_path.open(mode='r') as file:
             content = file.read()
         with self.out_path.open(mode='w+') as file:
