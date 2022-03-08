@@ -85,12 +85,10 @@ navigate to ShipLogManager.
     <Entry> <!-- An Entry For This Planet -->
         <ID>EXAMPLE_ENTRY</ID> <!-- The ID of this entry -->
         <Name>Example Planet</Name> <!-- The name to show for this entry both on the card and in map mode -->
-        <Curiosity>EXAMPLE_ENTRY
-        </Curiosity> <!-- The curiosity this entry belongs to (optional) in this case, it belongs to itself -->
+        <Curiosity>EXAMPLE_ENTRY</Curiosity> <!-- The curiosity this entry belongs to (optional) in this case, it belongs to itself -->
         <IsCuriosity/> <!-- Marks this entry as a curiosity, makes it bigger in rumor mode and allows custom colors -->
         <IgnoreMoreToExplore/> <!-- Don't show a "more to explore" icon -->
-        <AltPhotoCondition>EXAMPLE_EXPLORE_FACT
-        </AltPhotoCondition> <!-- Show an alternate picture if a fact is known -->
+        <AltPhotoCondition>EXAMPLE_EXPLORE_FACT</AltPhotoCondition> <!-- Show an alternate picture if a fact is known -->
 
         <RumorFact> <!-- A rumor fact that belongs to this entry -->
             <ID>EXAMPLE_RUMOR_FACT</ID> <!-- The ID of this fact -->
@@ -100,12 +98,10 @@ navigate to ShipLogManager.
 
         <ExploreFact> <!-- An explore fact that belongs to this entry -->
             <ID>EXAMPLE_EXPLORE_FACT</ID> <!-- The ID of this fact -->
-            <Text>Example Explore Fact
-                <![CDATA[<color=orange>This is orange</color>]]></Text> <!-- The Text to display for this fact, notice how you can use color just like in dialogue -->
+            <Text>Example Explore Fact <![CDATA[<color=orange>This is orange</color>]]></Text> <!-- The Text to display for this fact, notice how you can use color just like in dialogue -->
             <AltText> <!-- Text to display for this fact if another fact is known -->
                 <Text><![CDATA[<color=blue>Different Text To Display</color>]]></Text> <!-- The text to display -->
-                <Condition>EXAMPLE_CHILD_RUMOR_FACT
-                </Condition> <!-- The fact that needs to be known to make this text display -->
+                <Condition>EXAMPLE_CHILD_RUMOR_FACT</Condition> <!-- The fact that needs to be known to make this text display -->
             </AltText>
         </ExploreFact>
 
@@ -132,8 +128,7 @@ navigate to ShipLogManager.
         <ID>EXAMPLE_ENTRY_2</ID> <!-- Make sure IDs are unique! -->
         <Name>Example Entry 2</Name>
         <Curiosity>EXAMPLE_ENTRY</Curiosity> <!-- Set this entry's curiosity to the other one we defined -->
-        <IgnoreMoreToExploreCondition>EXAMPLE_EXPLORE_FACT_2
-        </IgnoreMoreToExploreCondition> <!-- Don't show a more to explore icon if a fact is known -->
+        <IgnoreMoreToExploreCondition>EXAMPLE_EXPLORE_FACT_2</IgnoreMoreToExploreCondition> <!-- Don't show a more to explore icon if a fact is known -->
 
         <!-- Make some facts for this second entry -->
         <RumorFact>
