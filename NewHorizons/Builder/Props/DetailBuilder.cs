@@ -44,8 +44,9 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var childPath in detail.removeChildren)
                 {
-                    var childObj = SearchUtilities.Find(SearchUtilities.GetPath(detailGO.transform) + "/" + childPath);
-                    childObj.gameObject.SetActive(false);
+                    var childObj = detailGO.transform.Find(childPath);
+                    if (childObj != null) childObj.gameObject.SetActive(false);
+                    else Logger.LogWarning($"Couldn't find {childPath}");
                 }
             }
         }

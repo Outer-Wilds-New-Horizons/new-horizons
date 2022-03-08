@@ -75,7 +75,7 @@ namespace NewHorizons.Utility
 
         public static string GetPath(Transform current)
         {
-            if (current.parent == null) return "/" + current.name;
+            if (current.parent == null) return current.name;
             return GetPath(current.parent) + "/" + current.name;
         }
 

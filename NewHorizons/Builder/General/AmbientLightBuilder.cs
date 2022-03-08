@@ -16,7 +16,13 @@ namespace NewHorizons.Builder.General
 
             var light = lightGO.GetComponent<Light>();
             light.name = "AmbientLight";
-            light.color = new Color(0.5f, 1f, 1f, 0.0225f);
+            /* R is related to the inner radius of the ambient light volume
+             * G is if its a shell or not. 1.0f for shell else 0.0f.
+             * B is just 1.0 always I think, altho no because changing it changes the brightness so idk
+             * A is the intensity and its like square rooted and squared and idgi
+             */
+
+            light.color = new Color(0.0f, 0.0f, 0.8f, 0.0225f);
             light.range = scale;
             light.intensity = 0.5f;
         }
