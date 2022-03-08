@@ -12,16 +12,6 @@
     <style>pre > code {
         background-color: #1a1a1a !important;
     }</style>
-    <script defer>
-        $(document).ready(() => {
-            $("a.toc-link").click((e) => {
-                $(`.toc-link:not(#${e.target.id}-toc)`).toggleClass('active', false);
-                $(e.target).toggleClass('active', true);
-            });
-            console.log(window.location.hash.split("?")[0].split("&")[0]);
-            $(window.location.hash.split("?")[0].split("&")[0] + "-toc").click();
-        });
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -29,10 +19,10 @@
         {% if page.render_toc %}
             <div class="col-{{ br }}-{{ col_num }}">
                 <nav id="TableOfContents"
-                     class="navbar navbar-light sticky-top flex-column align-items-stretch p-3 overflow-scroll"
+                     class="navbar navbar-light sticky-top flex-column align-items-stretch p-3 overflow-auto"
                      style="max-height: 100vh !important;">
                     {% macro render(item) %}
-                        <a id="{{ item['id'] }}-toc" class="nav-link toc-link px-1" href="#{{ item['id'] }}"
+                        <a id="{{ item['id'] }}-toc" class="nav-link toc-link px-1 mb-1" href="#{{ item['id'] }}"
                            style="margin-left: {{ 0.7 * item['level'] }}rem;">{{ item['name'] }}</a>
                         {% if item['children'] %}
                             <nav class="nav nav-pills flex-column">
