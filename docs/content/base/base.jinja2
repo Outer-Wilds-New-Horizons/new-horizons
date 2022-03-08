@@ -13,7 +13,7 @@
     <script crossorigin="anonymous" src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     {% block resources %} {% endblock %}
 </head>
-<body class="vh-100 d-flex flex-column" style="overflow-x: hidden;" id="top" onload="{% block onLoad %}{% endblock %}">
+<body class="vh-100 d-flex flex-column" style="overflow-x: hidden;" id="top" onload="{% block onLoad %}{% endblock %}" {% if page.render_toc %}data-bs-spy="scroll" data-bs-target="#TableOfContents" data-bs-offset="0"{% endif %}>
 <header>
     <nav class="navbar navbar-expand-xl navbar-dark bg-dark sticky-top mb-3">
         <div class="container-fluid">
