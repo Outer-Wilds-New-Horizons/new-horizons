@@ -4,7 +4,7 @@ Sort-Priority: 70
 
 {% macro image(name) %}{{ ("images/ship_log/" + name)|static }}{% endmacro %}
 
-# Ship Log
+# Intro
 Welcome! this page outlines how to create a custom ship log.
 
 ## Helpful Mods

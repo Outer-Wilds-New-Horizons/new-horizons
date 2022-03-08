@@ -1,7 +1,7 @@
 Title: Update Planets
 Sort-Priority: 80
 
-## How to Update Existing Planets
+## Update Existing Planets
 
 Similar to above, make a config where "Name" is the name of the planet. The name should be able to just match their in-game english names, however if you encounter any issues with that here are the in-code names for planets that are guaranteed to work: `SUN`, `CAVE_TWIN` (Ember Twin), `TOWER_TWIN` (Ash Twin), `TIMBER_HEARTH`, `BRITTLE_HOLLOW`, `GIANTS_DEEP`, `DARK_BRAMBLE`, `COMET` (Interloper), `WHITE_HOLE`, `WHITE_HOLE_TARGET` (Whitehole station I believe), `QUANTUM_MOON`, `ORBITAL_PROBE_CANNON`, `TIMBER_MOON` (Attlerock), `VOLCANIC_MOON` (Hollow's Lantern), `DREAMWORLD`, `MapSatellite`, `RINGWORLD` (the Stranger).
 
@@ -19,7 +19,7 @@ You can also delete parts of an existing planet. Here's part of an example confi
 
 In `childrenToDestroy` you list the relative paths for the children of the planet's gameObject that you want to delete.
 
-## How to Destroy Existing Planets
+## Destroy Existing Planets
 
 You do this (but with the appropriate name) as its own config.
 ```json

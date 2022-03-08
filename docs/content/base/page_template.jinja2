@@ -2,15 +2,57 @@
 
 {% from "base/macros.jinja2" import defer_css %}
 
+{% set br="lg" %}
+{% set col_num=3 %}
+
 {% block resources %}
     {{ defer_css("https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/styles/github-dark-dimmed.min.css") }}
-    <script onload="hljs.highlightAll();" defer src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
-    <style>code{background-color: #1a1a1a !important;}</style>
+    <script onload="hljs.highlightAll();" defer
+            src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.4.0/build/highlight.min.js"></script>
+    <style>code {
+        background-color: #1a1a1a !important;
+    }</style>
+    <script defer>
+        $(document).ready(() => {
+            $("a.toc-link").click((e) => {
+                $(`.toc-link:not(#${e.target.id}-toc)`).toggleClass('active', false);
+                $(e.target).toggleClass('active', true);
+            });
+            console.log(window.location.hash.split("?")[0].split("&")[0]);
+            $(window.location.hash.split("?")[0].split("&")[0] + "-toc").click();
+        });
+    </script>
 {% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col">
+    <div class="row g-6">
+        {% if page.render_toc %}
+            <div class="col-{{ br }}-{{ col_num }}">
+                <nav id="TableOfContents"
+                     class="navbar navbar-light sticky-top flex-column align-items-stretch p-3 overflow-scroll"
+                     style="max-height: 100vh !important;">
+                    {% macro render(item) %}
+                        <a id="{{ item['id'] }}-toc" class="nav-link toc-link px-1" href="#{{ item['id'] }}"
+                           style="margin-left: {{ 0.7 * item['level'] }}rem;">{{ item['name'] }}</a>
+                        {% if item['children'] %}
+                            <nav class="nav nav-pills flex-column">
+                                {% for child in item['children'] %}
+                                    {{ render(child) }}
+                                {% endfor %}
+                            </nav>
+                        {% endif %}
+                    {% endmacro %}
+                    <nav class="nav nav-pills flex-column">
+                        <strong class="nav-text pb-2">On This Page</strong>
+                        {% for item in page.table_of_contents %}
+                            {{ render(item) }}
+                        {% endfor %}
+                    </nav>
+                </nav>
+            </div>
+            <hr class="d-{{ br }}-none mt-3"/>
+        {% endif %}
+        <div id="page-contents" {% if page.render_toc %}class="col-{{ br }}-{{ 12 - col_num }}"{% else %}class="col"{% endif %}>
             {{ rendered|safe }}
         </div>
     </div>
