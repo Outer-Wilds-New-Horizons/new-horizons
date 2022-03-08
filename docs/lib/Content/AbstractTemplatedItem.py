@@ -12,6 +12,8 @@ class AbstractTemplatedItem(MinifyMixin, AbstractItem, ABC):
     title: str = None
     description: str | None = None
     sort_priority: int = None
+    render_toc: bool = False
+    table_of_contents: dict = {}
 
     def load_metadata(self):
         if self.title is None:
@@ -40,7 +42,8 @@ class AbstractTemplatedItem(MinifyMixin, AbstractItem, ABC):
         template = self.env.get_template(str(self.in_path.relative_to(Path('content/')).as_posix()))
         context.update({
             'page': self,
-            'rendered': self.inner_render(template, **context)
+            'rendered': self.inner_render(template, **context),
+            'render_toc': self.render_toc
         })
         return container.render(**context)
 

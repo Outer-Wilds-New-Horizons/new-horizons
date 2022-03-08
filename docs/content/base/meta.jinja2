@@ -14,6 +14,7 @@
     {% set desc=page.description %}
 {% endif %}
 {% set img="images/home/home_logo.webp"|static|full_url %}
+{% set canonical=page.title|route|full_url %}
 {% set theme_color="#222222" %}
 
 {# Meta Info #}
@@ -23,14 +24,15 @@
 <title>{{ title }}</title>
 <meta name="keywords" content="New Horizons, Outer Wilds, Modding, C#, Unity" />
 <meta name="description" content="{{ desc }}"/>
+<link rel="canonical" href="{{ canonical }}">
 
 {# OpenGraph Info #}
 {{ og("type", "website") }}
 {{ og("title", title) }}
 {{ og("description", desc) }}
-{{ og("url", page.title|route|full_url) }}
+{{ og("url", canonical) }}
 {{ og("image", img) }}
-{{ og("image:alt", desc) }}
+{{ og("image:alt", "The New Horizons Logo") }}
 
 {# Twitter Info #}
 {{ tw("title", title) }}
