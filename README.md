@@ -44,7 +44,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole
 - Warp drive with target set in ship's log
 - Implement custom dialogue 
-- Make a [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier.
+- Make a [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
 - Custom ship log entries and fact reveals, for rumour mode and map mode
 - Funnels (sand/water/lava/star)
 - Variable surface height (sand/water/lava/star)
