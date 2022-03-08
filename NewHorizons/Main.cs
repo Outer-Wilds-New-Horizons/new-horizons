@@ -58,6 +58,8 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
+        private GameObject _ship;
+
         public override object GetApi()
         {
             return new NewHorizonsApi();
@@ -95,6 +97,7 @@ namespace NewHorizons
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
+            BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
 
             Tools.Patches.Apply();
@@ -189,6 +192,27 @@ namespace NewHorizons
             if (scene.name == "TitleScreen")
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+            }
+
+            if(scene.name == "EyeOfTheUniverse" && IsWarping)
+            {
+                if(_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
+                
+                // Don't do this for now
+                IsWarping = false;
+
+                Instance.ModHelper.Events.Unity.RunWhen(
+                    () => GameObject.Find("Ship_Body") != null && GameObject.Find("Player_Body") != null,
+                    () => _ship.transform.position = GameObject.Find("Player_Body").transform.position
+                );
+                Instance.ModHelper.Events.Unity.RunWhen(
+                    () => Locator.GetDeathManager() != null && Locator.GetPlayerTransform() != null, 
+                    () => {
+                    Locator.GetDeathManager()._invincible = true;
+                    Locator.GetPlayerTransform().GetComponent<PlayerResources>()._invincible = true;
+                });
+
+                _ship = null;
             }
 
             if(scene.name == "SolarSystem")
@@ -348,7 +372,19 @@ namespace NewHorizons
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
 
-            LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            if(newStarSystem == "EyeOfTheUniverse")
+            {
+                // Else it drops us in the observator
+                PlayerData.SaveWarpedToTheEye(60);
+                // This is jank look out
+                _ship = Locator.GetShipBody().gameObject;
+                DontDestroyOnLoad(_ship);
+                LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            }
+            else
+            {
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            }
         }
 
         void OnDeath(DeathType _)

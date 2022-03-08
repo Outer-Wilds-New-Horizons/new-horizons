@@ -59,6 +59,8 @@ namespace NewHorizons.Tools
 
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<PlayerSpawner>("SpawnPlayer", typeof(Patches), nameof(Patches.OnPlayerSpawnerSpawnPlayerPreFix));
 
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<DeathManager>("KillPlayer", typeof(Patches), nameof(Patches.OnDeathManagerKillPlayer));
+
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
@@ -359,6 +361,11 @@ namespace NewHorizons.Tools
         {
             Logger.Log("Player spawning");
             __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
+        }
+
+        public static bool OnDeathManagerKillPlayer()
+        {
+            return (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse");
         }
     }
 }

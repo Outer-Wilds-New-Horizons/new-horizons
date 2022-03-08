@@ -104,5 +104,18 @@ namespace NewHorizons.Utility
                 "$1 $2"
             );
         }
+
+        public static GameObject InstantiateInactive(this GameObject original)
+        {
+            if (!original.activeSelf)
+            {
+                return UnityEngine.Object.Instantiate(original);
+            }
+
+            original.SetActive(false);
+            var copy = UnityEngine.Object.Instantiate(original);
+            original.SetActive(true);
+            return copy;
+        }
     }
 }
