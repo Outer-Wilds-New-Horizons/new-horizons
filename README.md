@@ -29,32 +29,32 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Autoresume.
 - Multiplayer mods like QSB and OWO. QSB actually kinda works decently as long as you don't warp.
 
+## Features
+- Heightmaps/texturemaps
+- Remove existing planets
+- Stars
+- Binary orbits
+- Comets
+- Signalscope signals
+- Asteroid belts 
+- Support satellites 
+- Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
+- Load planet meshes from asset bundle 
+- Black hole / white hole pairs 
+- Separate solar system scenes accessible via wormhole
+- Warp drive with target set in ship's log
+- Implement custom dialogue 
+- Make a [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier.
+- Custom ship log entries and fact reveals, for rumour mode and map mode
+- Funnels (sand/water/lava/star)
+- Variable surface height (sand/water/lava/star)
+
 ## Roadmap
-- Heightmaps/texturemaps (Done)
-- Remove existing planets (Done)
-- Stars (Done)
-- Binary orbits (Done)
-- Comets (Done)
-- Signalscope signals (Done)
-- Asteroid belts (Done)
-- Support satellites (Done)
-- Surface scatter: rocks, trees, etc, using in-game models (done) or custom ones (done)
-- Load planet meshes from asset bundle (done)
-- Black hole / white hole pairs (done)
-- Separate solar system scenes accessible via wormhole (done)
-- Warp drive with target set in ship's log (done)
-- Implement custom dialogue (done)
-- Make a template Unity project to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier ([done](https://github.com/xen-42/outer-wilds-unity-template))
-- Custom ship log entries and fact reveals, for rumour mode and map mode (done)
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
 - Edit existing planet orbits
 - Implement all planet features:
- 	- Funnels (sand/water/lava/star) (done)
-	- Variable surface height (sand/water/lava/star) (done)
-	- Zero-g volumes (done, with Unity template)
-	- Ghost matter (done, by copying props via game hierarchy)
 	- Tornados + floating islands
 	- Let any star go supernova
 	- Geysers
