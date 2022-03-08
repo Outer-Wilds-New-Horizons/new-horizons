@@ -8,13 +8,13 @@
 ![Latest release date](https://img.shields.io/github/release-date/xen-42/outer-wilds-new-horizons)
 [![Build](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml/badge.svg)](https://github.com/xen-42/outer-wilds-new-horizons/actions/workflows/build.yaml)
 
+*Do you want to create planets using New Horizons?* Then check out our [website](https://nh.outerwildsmods.com/) for all our documentation!
+
 A custom world creation tool for Outer Wilds.
 
 You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
 Check the ship's log for how to use your warp drive to travel between star systems!
-
-*Do you want to create planets using New Horizons?* Then check out our [website](https://nh.outerwildsmods.com/) for all our documentation!
 
 <!-- TOC -->
 
