@@ -197,26 +197,15 @@ namespace NewHorizons
             if(scene.name == "EyeOfTheUniverse" && IsWarping)
             {
                 if(_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
-                
-                // Don't do this for now
-                IsWarping = false;
-
-                Instance.ModHelper.Events.Unity.RunWhen(
-                    () => GameObject.Find("Ship_Body") != null && GameObject.Find("Player_Body") != null,
-                    () => _ship.transform.position = GameObject.Find("Player_Body").transform.position
-                );
-                Instance.ModHelper.Events.Unity.RunWhen(
-                    () => Locator.GetDeathManager() != null && Locator.GetPlayerTransform() != null, 
-                    () => {
-                    Locator.GetDeathManager()._invincible = true;
-                    Locator.GetPlayerTransform().GetComponent<PlayerResources>()._invincible = true;
-                });
-
-                _ship = null;
+                _ship.transform.position = new Vector3(50, 0, 0);
+                _ship.SetActive(true);
             }
 
             if(scene.name == "SolarSystem")
             {
+                _ship = GameObject.Find("Ship_Body").InstantiateInactive();
+                DontDestroyOnLoad(_ship);
+
                 IsSystemReady = false;
 
                 HeavenlyBodyBuilder.Reset();
@@ -374,11 +363,7 @@ namespace NewHorizons
 
             if(newStarSystem == "EyeOfTheUniverse")
             {
-                // Else it drops us in the observator
                 PlayerData.SaveWarpedToTheEye(60);
-                // This is jank look out
-                _ship = Locator.GetShipBody().gameObject;
-                DontDestroyOnLoad(_ship);
                 LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, true, LoadManager.FadeType.ToBlack, 0.1f, true);
             }
             else
