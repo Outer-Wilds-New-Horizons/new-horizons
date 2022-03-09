@@ -369,8 +369,10 @@ namespace NewHorizons.Tools
             return (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse");
         }
 
-        public static bool OnShipThrusterControllerReadTranslationalInput(ShipThrusterController __instance, Vector3 __result)
+        public static bool OnShipThrusterControllerReadTranslationalInput(ShipThrusterController __instance, ref Vector3 __result)
         {
+            if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse") return true;
+
             float value = OWInput.GetValue(InputLibrary.thrustX, InputMode.All);
             float value2 = OWInput.GetValue(InputLibrary.thrustZ, InputMode.All);
             float value3 = OWInput.GetValue(InputLibrary.thrustUp, InputMode.All);
