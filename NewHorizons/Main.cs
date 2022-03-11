@@ -203,8 +203,11 @@ namespace NewHorizons
 
             if(scene.name == "SolarSystem")
             {
-                _ship = GameObject.Find("Ship_Body").InstantiateInactive();
-                DontDestroyOnLoad(_ship);
+                if(_ship != null)
+                {
+                    _ship = GameObject.Find("Ship_Body").InstantiateInactive();
+                    DontDestroyOnLoad(_ship);
+                }
 
                 IsSystemReady = false;
 
