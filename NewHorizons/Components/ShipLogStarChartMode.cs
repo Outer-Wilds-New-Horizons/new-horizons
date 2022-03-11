@@ -71,7 +71,7 @@ namespace NewHorizons.Components
                 }
             }
 
-            AddSystemCard("EyeOfTheUniverse");
+            //AddSystemCard("EyeOfTheUniverse");
 
             /* Ship log manager isnt initiatiized yet
             if(Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1"))
