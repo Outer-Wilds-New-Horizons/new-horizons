@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.Body.Geometry;
+using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -42,7 +43,9 @@ namespace NewHorizons.Builder.Body
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            // TODO: fix UVs so we can switch to the default shader
+            if (PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);

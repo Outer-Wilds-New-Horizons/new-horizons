@@ -120,7 +120,8 @@ namespace NewHorizons.Builder.Props
                         continue;
                     }
 
-                    material.shader = Shader.Find(material.shader.name);
+                    var replacementShader = Shader.Find(material.shader.name);
+                    if (replacementShader != null) material.shader = replacementShader;
                 }
             }
         }
