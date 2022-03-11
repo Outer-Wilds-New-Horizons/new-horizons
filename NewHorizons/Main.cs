@@ -414,7 +414,12 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x).ToList().FirstOrDefault(x => x.Config.Name == name).Object;
+            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.Name == name)?.Object;
+        }
+
+        public string GetCurrentStarSystem()
+        {
+            return Main.Instance.CurrentStarSystem;
         }
     }
     #endregion API
