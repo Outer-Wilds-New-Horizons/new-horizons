@@ -66,6 +66,15 @@ namespace NewHorizons.Builder.General
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment.SetValue("_usePhysicsToRotate", true);
+                if(config.Orbit.AlignmentAxis == null)
+                {
+                    alignment._localAlignmentAxis = new Vector3(0, -1, 0);
+                }
+                else
+                {
+                    alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
+                }
+                
             }
 
             if (config.Base.CenterOfSolarSystem)

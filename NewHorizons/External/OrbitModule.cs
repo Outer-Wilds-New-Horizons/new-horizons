@@ -22,6 +22,7 @@ namespace NewHorizons.External
         public float AxialTilt { get; set; }
         public float SiderealPeriod { get; set; }
         public bool IsTidallyLocked { get; set; }
+        public MVector3 AlignmentAxis { get; set; }
         public bool ShowOrbitLine { get; set; } = true;
         public bool IsStatic { get; set; }
         public MColor Tint { get; set; }

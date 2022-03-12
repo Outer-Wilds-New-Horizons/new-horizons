@@ -58,6 +58,8 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
+        private GameObject _ship;
+
         public override object GetApi()
         {
             return new NewHorizonsApi();
@@ -95,6 +97,7 @@ namespace NewHorizons
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
+            BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
 
             Tools.Patches.Apply();
@@ -191,11 +194,30 @@ namespace NewHorizons
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
             }
 
+            if(scene.name == "EyeOfTheUniverse" && IsWarping)
+            {
+                if(_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
+                _ship.transform.position = new Vector3(50, 0, 0);
+                _ship.SetActive(true);
+            }
+
             if(scene.name == "SolarSystem")
             {
+                foreach(var body in GameObject.FindObjectsOfType<AstroObject>())
+                {
+                    Logger.Log($"{body.name}, {body.transform.rotation}");
+                }
+
+                if(_ship != null)
+                {
+                    _ship = GameObject.Find("Ship_Body").InstantiateInactive();
+                    DontDestroyOnLoad(_ship);
+                }
+
                 IsSystemReady = false;
 
                 HeavenlyBodyBuilder.Reset();
+                CommonResourcesFix.Apply();
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
                 AstroObjectLocator.RefreshList();
@@ -348,7 +370,15 @@ namespace NewHorizons
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
 
-            LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            if(newStarSystem == "EyeOfTheUniverse")
+            {
+                PlayerData.SaveWarpedToTheEye(60);
+                LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            }
+            else
+            {
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            }
         }
 
         void OnDeath(DeathType _)
@@ -390,7 +420,12 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x).ToList().FirstOrDefault(x => x.Config.Name == name).Object;
+            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.Name == name)?.Object;
+        }
+
+        public string GetCurrentStarSystem()
+        {
+            return Main.Instance.CurrentStarSystem;
         }
     }
     #endregion API

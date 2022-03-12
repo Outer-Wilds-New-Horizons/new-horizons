@@ -23,6 +23,7 @@ namespace NewHorizons.Builder.Props
             if (detail.assetBundle != null)
             {
                 var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, mod);
+
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
             else if (detail.objFilePath != null)
@@ -30,6 +31,7 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
+                    PropBuildManager.ReplaceShaders(prefab);
                     prefab.SetActive(false);
                     detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }

@@ -104,7 +104,26 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
+            ReplaceShaders(prefab);
+
             return prefab;
+        }
+
+        public static void ReplaceShaders(GameObject prefab)
+        {
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                foreach (var material in renderer.sharedMaterials)
+                {
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    var replacementShader = Shader.Find(material.shader.name);
+                    if (replacementShader != null) material.shader = replacementShader;
+                }
+            }
         }
     }
 }

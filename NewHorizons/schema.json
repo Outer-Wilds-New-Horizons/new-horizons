@@ -131,12 +131,12 @@
         "hasMapMarker": {
           "type": "boolean",
           "default": false,
-          "description" : "If the body should have a marker on the map screen."
+          "description": "If the body should have a marker on the map screen."
         },
         "hasAmbientLight": {
           "type": "boolean",
           "default": false,
-          "description" : "If the dark side of the body should have some slight ammount of light"
+          "description": "If the dark side of the body should have some slight ammount of light"
         },
         "surfaceGravity": {
           "type": "number",
@@ -150,7 +150,7 @@
             "inverseSquared"
           ],
           "default": "linear",
-          "description" : "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared."
+          "description": "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared."
         },
         "surfaceSize": {
           "type": "number",
@@ -170,7 +170,11 @@
         "hasCometTail": {
           "type": "boolean",
           "default": false,
-          "description" : "If you want the body to have a tail like the Interloper."
+          "description": "If you want the body to have a tail like the Interloper."
+        },
+        "cometTailRotation": {
+          "type": "#/$defs/vector3",
+          "description": "If it has a comet tail, it'll be oriented according to these Euler angles."
         },
         "hasReferenceFrame": {
           "type": "boolean",
@@ -286,41 +290,45 @@
         },
         "longitudeOfAscendingNode": {
           "$ref": "#/$defs/angle",
-          "description" : "An angle (in degrees) defining the point where the orbit of the body rises above the orbital plane if it has nonzero inclination."
+          "description": "An angle (in degrees) defining the point where the orbit of the body rises above the orbital plane if it has nonzero inclination."
         },
         "eccentricity": {
           "type": "number",
           "default": 0,
           "minimum": 0,
           "maximum": 0.99999,
-          "description" : "At 0 the orbit is a circle. The closer to 1 it is, the more oval-shaped the orbit is."
+          "description": "At 0 the orbit is a circle. The closer to 1 it is, the more oval-shaped the orbit is."
         },
         "argumentOfPeriapsis": {
           "$ref": "#/$defs/angle",
-          "description" : "An angle (in degrees) defining the location of the periapsis (closest distance to it's primary body) if it has nonzero eccentricity."
+          "description": "An angle (in degrees) defining the location of the periapsis (closest distance to it's primary body) if it has nonzero eccentricity."
         },
         "trueAnomaly": {
           "$ref": "#/$defs/angle",
-          "description" : "Where the planet should start off in its orbit in terms of the central angle."
+          "description": "Where the planet should start off in its orbit in terms of the central angle."
         },
         "axialTilt": {
           "$ref": "#/$defs/angle",
-          "description" : "The angle between the normal to the orbital plane and its axis of rotation."
+          "description": "The angle between the normal to the orbital plane and its axis of rotation."
         },
         "siderealPeriod": {
           "type": "number",
           "default": 0,
-          "description" : "Rotation period in minutes."
+          "description": "Rotation period in minutes."
         },
         "isTidallyLocked": {
           "type": "boolean",
           "default": false,
-          "description" : "Should the body always have one side facing its primary?"
+          "description": "Should the body always have one side facing its primary?"
+        },
+        "alignmentAxis": {
+          "type": "#/$defs/vector3",
+          "description": "If it is tidally locked, this direction will face towards the primary. Ex) Interloper uses 0, -1, 0. Most planets will want something like -1, 0, 0."
         },
         "showOrbitLine": {
           "type": "boolean",
           "default": false,
-          "description" : "Referring to the orbit line in the map screen."
+          "description": "Referring to the orbit line in the map screen."
         },
         "isStatic": {
           "type": "boolean",
