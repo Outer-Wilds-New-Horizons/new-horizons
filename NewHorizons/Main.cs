@@ -37,7 +37,6 @@ namespace NewHorizons
         public static Main Instance { get; private set; }
 
         public static bool Debug;
-        private static IModButton _reloadButton;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
@@ -75,7 +74,7 @@ namespace NewHorizons
         public override void Configure(IModConfig config)
         {
             Debug = config.GetSettingsValue<bool>("Debug");
-            UpdateReloadButton();
+            DebugReload.UpdateReloadButton();
             string logLevel = config.GetSettingsValue<string>("LogLevel");
             Logger.LogType logType;
             switch (logLevel)
@@ -129,56 +128,10 @@ namespace NewHorizons
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
-            Instance.ModHelper.Menus.PauseMenu.OnInit += InitializePauseMenu;
+            Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
         }
         
-        #region Reloading
-        private void InitializePauseMenu()
-        {
-            _reloadButton = ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
-            _reloadButton.OnClick += ReloadConfigs;
-            UpdateReloadButton();
-        }
-
-        private void UpdateReloadButton()
-        {
-            if (_reloadButton != null)
-            {
-                if (Debug) _reloadButton.Show();
-                else _reloadButton.Hide();
-            }
-        }
-
-        private void ReloadConfigs()
-        {
-            BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-            SystemDict = new Dictionary<string, NewHorizonsSystem>();
-
-            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
-            foreach (AssetBundle bundle in AssetBundles.Values)
-            {
-                bundle.Unload(true);
-            }
-            AssetBundles.Clear();
-            
-            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
-
-            try
-            {
-                foreach (IModBehaviour mountedAddon in MountedAddons)
-                {
-                    LoadConfigs(mountedAddon);
-                }
-            }
-            catch (Exception)
-            {
-                Logger.LogWarning("Error While Reloading");
-            }
-            
-            ChangeCurrentStarSystem(_currentStarSystem);
-        }
-        #endregion
+        
 
         public void OnDestroy()
         {
