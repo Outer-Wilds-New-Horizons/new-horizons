@@ -19,10 +19,10 @@ namespace NewHorizons.Builder.Body
             cometTail.name = "CometTail";
             cometTail.transform.localScale = Vector3.one * config.Base.SurfaceSize / 110;
 
-            Vector3 alignmentAxis = new Vector3(0, -1, 0);
-            if (config.Orbit.AlignmentAxis != null) alignmentAxis = config.Orbit.AlignmentAxis;
+            Vector3 alignment = new Vector3(0, 270, 90);
+            if (config.Base.CometTailRotation != null) alignment = config.Base.CometTailRotation;
 
-            cometTail.transform.localRotation = Quaternion.Euler(0, 270, 90) * Quaternion.FromToRotation(new Vector3(0, -1, 0), alignmentAxis);
+            cometTail.transform.rotation = Quaternion.Euler(alignment);
         }
     }
 }
