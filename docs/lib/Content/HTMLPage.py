@@ -11,7 +11,6 @@ class HTMLPage(AbstractTemplatedItem):
             content = file.read()
         for match in re.findall(r"{#~(.*?)~#}", content, re.MULTILINE):
             seperated = match.strip().split(':')
-            print(match.strip())
             self.meta[seperated[0].lower().replace('-', '_')] = seperated[1]
         super(HTMLPage, self).load_metadata()
 
