@@ -13,6 +13,8 @@ public interface INewHorizons
     void LoadConfigs(IModBehaviour mod);
 
     GameObject GetPlanet(string name);
+	
+	string GetCurrentStarSystem(); 
 }
 ```
 
