@@ -59,8 +59,11 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
-        public class ChangeStarSystemEvent : UnityEvent<string> { }
-        public ChangeStarSystemEvent OnChangeStarSystem;
+        // API events
+        public class StarSystemEvent : UnityEvent<string> { }
+        public StarSystemEvent OnChangeStarSystem;
+        public StarSystemEvent OnStarSystemLoaded;
+
 
         private GameObject _ship;
 
@@ -95,7 +98,8 @@ namespace NewHorizons
 
         public void Start()
         {
-            OnChangeStarSystem = new ChangeStarSystemEvent();
+            OnChangeStarSystem = new StarSystemEvent();
+            OnStarSystemLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
@@ -187,6 +191,7 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
+            Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -240,9 +245,20 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
-                Logger.Log($"Is the player warping in? {IsWarping}");
-                if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => _shipWarpController.WarpIn(WearingSuit));
-                else Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint));
+                if (IsWarping && _shipWarpController)
+                {
+                    Instance.ModHelper.Events.Unity.RunWhen(
+                        () => IsSystemReady, 
+                        () => _shipWarpController.WarpIn(WearingSuit)
+                    );
+                }
+                else
+                {
+                    Instance.ModHelper.Events.Unity.RunWhen(
+                        () => IsSystemReady, 
+                        () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint)
+                    );
+                }
                 IsWarping = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
@@ -439,6 +455,11 @@ namespace NewHorizons
         public UnityEvent<string> GetChangeStarSystemEvent()
         {
             return Main.Instance.OnChangeStarSystem;
+        }
+
+        public UnityEvent<string> GetStarSystemLoadedEvent()
+        {
+            return Main.Instance.OnStarSystemLoaded;
         }
     }
     #endregion API
