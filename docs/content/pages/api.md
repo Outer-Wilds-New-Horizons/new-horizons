@@ -1,7 +1,7 @@
 Title: API
 Sort-Priority: 40
 
-## How to use New Horizons in Other Mods
+## How to use the API
 
 First create the following interface in your mod:
 

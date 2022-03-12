@@ -1,6 +1,6 @@
 Title: Home
 Out-File: index
-Sort-Priority: 200
+Sort-Priority: 100
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
@@ -8,7 +8,7 @@ Sort-Priority: 200
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
-## Getting Started with Planet Creation
+## Getting Started
 
 The [Config Template](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } is available if you want to release your own
 planet mod using configs. You can learn how the configs work by picking apart
@@ -119,7 +119,7 @@ it).
 
 Check out the rest of the site for how to format planet, star system, dialogue, ship log, and translation files!
 
-## Helpful resources
+## Helpful Resources
 
 The texturemap/heightmap feature was inspired by the KSP mod Kopernicus. A lot of the same techniques that apply to
 planet creation there apply to New Horizons. If you need help with planetary texturing, check out [The KSP texturing guide](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
