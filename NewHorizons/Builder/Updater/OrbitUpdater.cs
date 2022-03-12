@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.Updater
                 var planetoid = new Planet.Plantoid(
                     original.size,
                     original.gravity,
-                    go.transform.rotation,
+                    mapping[heavenlyBody].state.orbit.orientation.rotation,
                     InitialMotionBuilder.SiderealPeriodToAngularSpeed(body.Config.Orbit.SiderealPeriod),
                     parent,
                     coords

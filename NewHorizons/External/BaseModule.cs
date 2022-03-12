@@ -17,6 +17,7 @@ namespace NewHorizons.External
         public float SphereOfInfluence { get; set; }
         public float GroundSize { get; set; }
         public bool HasCometTail { get; set; }
+        public MVector3 CometTailRotation { get; set; }
         public bool HasReferenceFrame { get; set; } = true;
         public bool CenterOfSolarSystem { get; set; } = false;
         public bool IsSatellite { get; set; }

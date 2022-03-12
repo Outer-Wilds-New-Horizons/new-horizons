@@ -51,7 +51,7 @@ namespace NewHorizons.Components
             GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
 
             _nextCardIndex = 0;
-            foreach (var starSystem in Main.BodyDict.Keys)
+            foreach (var starSystem in Main.SystemDict.Keys)
             {
                 // Get rid of the warp option for the current system
                 if (starSystem == Main.Instance.CurrentStarSystem) continue;
@@ -70,6 +70,15 @@ namespace NewHorizons.Components
                     AddSystemCard(starSystem);
                 }
             }
+
+            //AddSystemCard("EyeOfTheUniverse");
+
+            /* Ship log manager isnt initiatiized yet
+            if(Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1"))
+            {
+                AddSystemCard("EyeOfTheUniverse");
+            }
+            */
         }
 
         public void AddSystemCard(string starSystem)

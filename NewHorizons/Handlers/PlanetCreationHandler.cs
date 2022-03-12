@@ -292,7 +292,7 @@ namespace NewHorizons.Handlers
                 AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Mod);
 
             if (body.Config.Base.HasCometTail)
-                CometTailBuilder.Make(go, body.Config.Base, go.GetComponent<AstroObject>().GetPrimaryBody());
+                CometTailBuilder.Make(go, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
 
             // Backwards compatability
             if (body.Config.Base.LavaSize != 0)
