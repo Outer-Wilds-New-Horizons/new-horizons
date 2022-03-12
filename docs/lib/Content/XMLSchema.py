@@ -70,7 +70,7 @@ class XMLSchema(AbstractSchemaItem):
             file.readline()
             line = file.readline()
         if len(line.strip()) != 0 and '<!--' in line and '-->' in line:
-            self.title = line.replace('<!--', '').replace('-->', '').strip()
+            self.meta['title'] = line.replace('<!--', '').replace('-->', '').strip()
         super(XMLSchema, self).load_metadata()
 
     def render(self, **context):

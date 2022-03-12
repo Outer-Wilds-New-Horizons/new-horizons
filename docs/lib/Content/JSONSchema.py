@@ -29,10 +29,10 @@ class JSONSchema(AbstractSchemaItem):
     extensions = ('json',)
 
     def load_metadata(self):
-        self.sort_priority = 10
+        self.meta['sort_priority'] = 10
         with self.in_path.open(mode='r', encoding='utf-8') as file:
-            self.title = json.load(file).get('title', self.in_path.stem)
-        self.description = "Schema for a " + self.title + " in New Horizons"
+            self.meta['title'] = json.load(file).get('title', self.in_path.stem)
+        self.meta['description'] = "Schema for a " + self.meta['title'] + " in New Horizons"
         super(JSONSchema, self).load_metadata()
 
     def render(self, **context):
