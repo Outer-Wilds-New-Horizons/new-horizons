@@ -4,6 +4,7 @@ from pathlib import Path
 from shutil import rmtree
 
 from jinja2 import Environment, select_autoescape, FileSystemLoader
+from markdown import Markdown
 
 from lib.Content.CSSStaticItem import CSSStaticItem
 from lib.Content.HTMLPage import HTMLPage
@@ -42,12 +43,16 @@ meta_files = [MinifiedMetaItem(Path('browserconfig.jinja2'), '.xml'),
 
 router = {}
 
+filter_md = Markdown(extensions=['extra'], output_format='html5')
+
 env.filters.update({
     'upper_first': lambda x:   x[0].upper() + x[1:],
     'static': lambda path: str(Path(OUT_DIR, path).as_posix()),
     'route': lambda title:   router.get(title.lower(), "#"),
     'full_url': lambda relative: BASE_URL + (relative[1:] if relative[0] == "/" else relative),
-    'gen_time': lambda x: GEN_TIME
+    'gen_time': lambda x: GEN_TIME,
+    'simple_md': lambda s:  filter_md.convert(s),
+    'inline_md': lambda s:  filter_md.convert(s)[3:-4].replace("<em>", "<span style=\"font-style: italic;\">").replace("</em>", "</span>")
 })
 
 MetaItem.initialize(env)

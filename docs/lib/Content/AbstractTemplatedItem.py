@@ -14,14 +14,16 @@ class AbstractTemplatedItem(MinifyMixin, AbstractItem, ABC):
     sort_priority: int = None
     render_toc: bool = False
     table_of_contents: dict = {}
+    meta: dict = {
+        'title': None,
+        'description': None,
+        'sort_priority': 10
+    }
 
     def load_metadata(self):
-        if self.title is None:
-            self.title = self.in_path.stem
-        if self.description is None:
-            self.description = None
-        if self.sort_priority is None:
-            self.sort_priority = 10
+        self.title = self.meta['title'] if self.meta['title'] is not None else self.in_path.stem
+        self.description = self.meta['description']
+        self.sort_priority = int(self.meta['sort_priority'])
 
     @classmethod
     def initialize(cls, env: Environment):
