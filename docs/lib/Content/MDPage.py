@@ -11,7 +11,8 @@ class MDPage(AbstractTemplatedItem):
     extensions = ('md', 'markdown')
 
     MARKDOWN_SETTINGS = {
-        'extensions': ['extra', 'toc', 'meta', BootstrapExtension()]
+        'extensions': ['extra', 'toc', 'meta', BootstrapExtension()],
+        'output-format': 'html5'
     }
 
     def load_metadata(self):
@@ -19,14 +20,14 @@ class MDPage(AbstractTemplatedItem):
         with self.in_path.open(mode='r', encoding='utf-8') as file:
             md.convert(file.read())
 
-        self.title = md.Meta.get('title')[0]
-        self.description = md.Meta.get('description', [None])[0]
+        self.meta['title'] = md.Meta.get('title')[0]
+        self.meta['description'] = md.Meta.get('description', [None])[0]
         self.render_toc = md.Meta.get('toc', ['True'])[0].strip().lower() == "true"
         if self.render_toc:
             self.table_of_contents = md.toc_tokens
         raw_priority = md.Meta.get('sort-priority')
         if raw_priority is not None:
-            self.sort_priority = int(raw_priority[0])
+            self.meta['sort_priority'] = int(raw_priority[0])
         out_name = md.Meta.get('out-file', None)
         if out_name is not None:
             self.out_path = self.out_path.with_stem(out_name[0])

@@ -1,0 +1,26 @@
+{#~ Title:FAQ ~#}
+{#~ Sort-Priority:95 ~#}
+
+
+{% macro faq(id, q, a) %}
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button id="{{ id }}-heading" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#{{ id }}" aria-expanded="false" aria-controls="{{ id }}">
+                Q: {{ q }}
+            </button>
+        </h2>
+        <div id="{{ id }}" class="accordion-collapse collapse" aria-labelledby="{{ id }}-heading" data-bs-parent="#accordionFAQ">
+            <div class="accordion-body">
+                {{ ("A: " + a)|simple_md|replace('p', 'p class="my-0 ms-2" ')|safe }}
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+<h1 class="text-center pb-2">FAQ</h1>
+
+<div class="accordion" id="accordionFAQ">
+    {{ faq("jammer", "Will Jammer Be Added?", "Yes! Check  **your front door**") }}
+    {{ faq("rails", "Will Rails Be Added?", "No") }}
+</div>
+
