@@ -173,7 +173,7 @@
           "description": "If you want the body to have a tail like the Interloper."
         },
         "cometTailRotation": {
-          "type": "#/$defs/vector3",
+          "$ref": "#/$defs/vector3",
           "description": "If it has a comet tail, it'll be oriented according to these Euler angles."
         },
         "hasReferenceFrame": {
@@ -322,7 +322,7 @@
           "description": "Should the body always have one side facing its primary?"
         },
         "alignmentAxis": {
-          "type": "#/$defs/vector3",
+          "$ref": "#/$defs/vector3",
           "description": "If it is tidally locked, this direction will face towards the primary. Ex) Interloper uses 0, -1, 0. Most planets will want something like -1, 0, 0."
         },
         "showOrbitLine": {
