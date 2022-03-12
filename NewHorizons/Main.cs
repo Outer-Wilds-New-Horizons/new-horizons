@@ -27,6 +27,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Atmosphere;
 using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using NewHorizons.Utility.CommonResources;
+using UnityEngine.Events;
 
 namespace NewHorizons
 {
@@ -57,6 +58,9 @@ namespace NewHorizons
         private bool _isChangingStarSystem = false;
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
+
+        public class ChangeStarSystemEvent : UnityEvent<string> { }
+        public ChangeStarSystemEvent OnChangeStarSystem;
 
         private GameObject _ship;
 
@@ -91,6 +95,8 @@ namespace NewHorizons
 
         public void Start()
         {
+            OnChangeStarSystem = new ChangeStarSystemEvent();
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
@@ -360,6 +366,8 @@ namespace NewHorizons
         {
             if (_isChangingStarSystem) return;
 
+            OnChangeStarSystem?.Invoke(newStarSystem);
+
             Logger.Log($"Warping to {newStarSystem}");
             if(warp && _shipWarpController) _shipWarpController.WarpOut();
             _currentStarSystem = newStarSystem;
@@ -426,6 +434,11 @@ namespace NewHorizons
         public string GetCurrentStarSystem()
         {
             return Main.Instance.CurrentStarSystem;
+        }
+
+        public UnityEvent<string> GetChangeStarSystemEvent()
+        {
+            return Main.Instance.OnChangeStarSystem;
         }
     }
     #endregion API
