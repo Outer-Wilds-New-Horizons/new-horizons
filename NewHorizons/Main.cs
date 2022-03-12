@@ -203,6 +203,11 @@ namespace NewHorizons
 
             if(scene.name == "SolarSystem")
             {
+                foreach(var body in GameObject.FindObjectsOfType<AstroObject>())
+                {
+                    Logger.Log($"{body.name}, {body.transform.rotation}");
+                }
+
                 if(_ship != null)
                 {
                     _ship = GameObject.Find("Ship_Body").InstantiateInactive();
@@ -212,6 +217,7 @@ namespace NewHorizons
                 IsSystemReady = false;
 
                 HeavenlyBodyBuilder.Reset();
+                CommonResourcesFix.Apply();
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
                 AstroObjectLocator.RefreshList();
