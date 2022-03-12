@@ -11,7 +11,7 @@
         </h2>
         <div id="{{ id }}" class="accordion-collapse collapse" aria-labelledby="{{ id }}-heading" data-bs-parent="#accordionFAQ">
             <div class="accordion-body">
-                {{ ("A: " + a)|simple_md|replace('p', 'p class="my-0 ms-2" ')|safe }}
+                {{ ("A: " + a)|simple_md|replace('<p>', '<p class="my-0 ms-2">')|safe }}
             </div>
         </div>
     </div>
@@ -38,7 +38,7 @@
 		faq(
 			"why-no-planet",
 			"Why doesn't my planet show up in game?", 
-			"Have you checked the logs for errors? Are you using a program like VS code to write your configs that validates them against our schema to catch your errors? Do you incrementally test each new planet that you add, or did you write 10 json files and then try them all at once? If you're still not sure, come by our Discord channel and we'll try to help out!"
+			"Have you checked the logs for errors? Are you using a program like [VSCode](https://code.visualstudio.com/){ target='_blank' } to write your configs that validates them against our schema to catch your errors? Do you incrementally test each new planet that you add, or did you write 10 json files and then try them all at once? If you're still not sure, come by our Discord channel and we'll try to help out!"
 		) 
 	}}
 	{{ 
