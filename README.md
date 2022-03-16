@@ -30,30 +30,24 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Multiplayer mods like QSB and OWO. QSB actually kinda works decently as long as you don't warp.
 
 ## Features
-- Heightmaps/texturemaps
+- Load planet meshes or details from asset bundles 
+- Use our [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
+- Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove existing planets
-- Stars
+- Create basic planets from heightmaps/texturemaps
+- Stars, comets, asteroid belts, satellites
 - Binary orbits
-- Comets
-- Signalscope signals
-- Asteroid belts 
-- Support satellites 
+- Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
-- Load planet meshes from asset bundle 
 - Black hole / white hole pairs 
-- Separate solar system scenes accessible via wormhole
-- Warp drive with target set in ship's log
-- Implement custom dialogue 
-- Make a [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to use with NH, including all game scripts recovered using UtinyRipper to make AssetBundle creation easier
-- Custom ship log entries and fact reveals, for rumour mode and map mode
-- Funnels (sand/water/lava/star)
-- Variable surface height (sand/water/lava/star)
+- Custom dialogue and custom ship log entries for rumour mode and map mode
+- Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
 - Procedural terrain generation (started)
 - "Quantum" planet parameters
 - Better terrain and water LOD
-- Edit existing planet orbits
+- Edit existing planet orbits (started)
 - Implement all planet features:
 	- Tornados + floating islands
 	- Let any star go supernova
@@ -64,20 +58,21 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
 - Destroy planets that fall into a star
+- Add cloaking volumes
 
 ## Contact
 Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you have any questions or just want to chat about modding! Theres a New Horizons category there dedicated to discussion of this mod.
 
 ## Credits
-Authors:
+Main authors:
 - xen (New Horizons v0.1.0 onwards)
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
+- [Bwc9876](https://github.com/Bwc9876): Set up ship log entries and QOL debug options in v0.9.x, and set up the website.
+- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
 - [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
-- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
-- [Bwc9876](https://github.com/Bwc9876): Set up ship log entries and QOL debug options in v0.9.x. Set up the website.
 
 Translation credits:
 - Russian: GrayFix and Tlya
