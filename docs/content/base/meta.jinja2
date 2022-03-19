@@ -7,7 +7,7 @@
 {% if page.title|lower == 'home' %}
     {% set title="New Horizons Documentation" %}
 {% else %}
-    {% set title="New Horizons Documentation | " + page.title|title %}
+    {% set title=page.title|title + " - New Horizons Documentation"  %}
 {% endif %}
 {% set desc="Documentation for creating planets with the New Horizons mod for Outer Wilds" %}
 {% if page.description %}
