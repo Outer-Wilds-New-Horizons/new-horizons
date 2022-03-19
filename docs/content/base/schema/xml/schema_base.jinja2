@@ -17,9 +17,23 @@
         {% endfor %}
     </div>
     {% if element.occurs[0] != 1 or element.occurs[1] != 1 %}
-        {{ badge("secondary", element.occurs|occurs_text) }}
+        <div class="row">
+            <div class="col">
+                {{ badge("secondary", element.occurs|occurs_text) }}
+            </div>
+        </div>
     {% endif %}
-    {{ badge("secondary", "Type: " + element.type|name, "ms-2") }}
+    <div class="row">
+        <div class="col">
+            {{ badge("secondary", "Type: " + element.type|name) }}
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col">
+            <span>{{ element|get_desc }}</span>
+        </div>
+    </div>
     {% if element.type.has_complex_content() %}
         {% for child in element.type.content|children %}
             {{ render(child, trail) }}
