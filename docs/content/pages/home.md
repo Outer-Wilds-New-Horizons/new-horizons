@@ -4,7 +4,7 @@ Sort-Priority: 100
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
-# Welcome!
+# Outer Wilds New Horizons
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
@@ -25,9 +25,6 @@ show in explorer" in the pop-up.
 ![Click the three dots in the mod manager]({{ 'images/home/mod_manager_dots.webp'|static }})
 
 ![Create a new folder named "planets"]({{ 'images/home/create_planets.webp'|static }})
-
-Now that you have created your planets folder, this is where you will put your planet config files. A config file will
-look something like this:
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:

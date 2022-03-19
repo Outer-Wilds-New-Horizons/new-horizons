@@ -1,7 +1,8 @@
 import os
 
 import xmlschema
-from jinja2 import Environment
+from jinja2 import Environment, UndefinedError
+from xmlschema import XsdElement
 from xmlschema.extras.codegen import AbstractGenerator, filter_method
 
 __all__ = ('XMLSchema',)
@@ -48,6 +49,14 @@ class HTMLConverter(AbstractGenerator):
 
     @staticmethod
     @filter_method
+    def get_desc(element: XsdElement):
+        try:
+            return str(element.annotation.documentation[0].text.strip())
+        except (UndefinedError, AttributeError):
+            return ""
+
+    @staticmethod
+    @filter_method
     def occurs_text(occurs):
         words = {
             0: "Zero",
@@ -82,7 +91,3 @@ class XMLSchema(AbstractSchemaItem):
         converter = HTMLConverter(schema)
         converter.setup(self.env)
         return converter.render('base/schema/xml/schema_base.jinja2', global_vars=context)[0]
-
-
-
-
