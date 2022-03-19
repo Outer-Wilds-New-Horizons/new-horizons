@@ -16,8 +16,8 @@
         {% if page.render_toc %}
             <div class="col-{{ br }}-{{ col_num }}">
                 <nav id="TableOfContents"
-                     class="navbar navbar-light sticky-top flex-column align-items-stretch p-3 overflow-auto"
-                     style="max-height: 100vh !important;">
+                     class="navbar navbar-light sticky-top flex-column align-items-stretch p-3"
+                     style="max-height: 100vh !important;overflow-x: hidden;overflow-y: auto;">
                     {% macro render(item) %}
                         <a id="{{ item['id'] }}-toc" class="nav-link toc-link px-1 mb-1" href="#{{ item['id'] }}"
                            style="margin-left: {{ 0.7 * item['level'] }}rem;">{{ item['name'] }}</a>

@@ -4,7 +4,7 @@ Sort-Priority: 100
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
-# Welcome!
+# Outer Wilds New Horizons
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
