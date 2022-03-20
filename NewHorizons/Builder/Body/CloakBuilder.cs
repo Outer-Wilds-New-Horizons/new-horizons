@@ -1,4 +1,5 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.Components;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,22 +11,19 @@ namespace NewHorizons.Builder.Body
 {
     static class CloakBuilder
     {
-        public static void Make(GameObject body, OWRigidbody rigidbody, float radius)
+        public static void Make(GameObject body, Sector sector, float radius)
         {
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
 
             var newCloak = GameObject.Instantiate(cloak, body.transform);
             newCloak.transform.localPosition = Vector3.zero;
+            newCloak.SetActive(true);
 
-            // Get all the mesh renders
-            var renderers = new List<Renderer>();
+            var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
+            cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), sector);
 
-            foreach(var renderer in body.GetComponentsInChildren<Renderer>())
-            {
-                renderers.SafeAdd(renderer);
-                renderer.enabled = false;
-            }
-
+            // To cloak from the start
+            cloakSectorController.OnPlayerExit();
         }
     }
 }

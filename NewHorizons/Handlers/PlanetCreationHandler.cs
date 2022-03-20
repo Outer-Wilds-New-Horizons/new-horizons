@@ -353,7 +353,7 @@ namespace NewHorizons.Handlers
 
             // Has to go last probably
             if (body.Config.Base.CloakRadius != 0f)
-                CloakBuilder.Make(go, rb, body.Config.Base.CloakRadius);
+                CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
 
             return go;
         }
