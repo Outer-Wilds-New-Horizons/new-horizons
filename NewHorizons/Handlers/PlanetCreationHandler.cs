@@ -351,6 +351,10 @@ namespace NewHorizons.Handlers
             if (body.Config.Funnel != null)
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
 
+            // Has to go last probably
+            if (body.Config.Base.CloakRadius != 0f)
+                CloakBuilder.Make(go, rb, body.Config.Base.CloakRadius);
+
             return go;
         }
 
