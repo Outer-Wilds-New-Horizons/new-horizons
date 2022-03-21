@@ -14,7 +14,7 @@ namespace NewHorizons.Components
         {
             var detector = base.transform.GetComponentInChildren<DynamicForceDetector>();
             var ao = base.GetComponent<AstroObject>();
-            var newDetector = DetectorBuilder.Make(base.gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao);
+            var newDetector = DetectorBuilder.Make(base.gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao, true, false);
             newDetector.transform.parent = detector.transform.parent;
             GameObject.Destroy(detector);
         }

@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
 {
     static class DetectorBuilder
     {
-        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit = true)
+        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit, bool destroyedBySun)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
@@ -24,6 +24,13 @@ namespace NewHorizons.Builder.General
             ConstantForceDetector forceDetector = detectorGO.AddComponent<ConstantForceDetector>();
             forceDetector.SetValue("_inheritElement0", inherit);
             OWRB.RegisterAttachedForceDetector(forceDetector);
+
+            // For falling into sun
+            if(destroyedBySun)
+            {
+                var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
+                // Could copy the splash from the interloper
+            }
 
             GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
             if (parentGravityVolume != null)
