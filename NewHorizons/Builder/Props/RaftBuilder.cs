@@ -80,9 +80,9 @@ namespace NewHorizons.Builder.Props
                 StreamingManager.LoadStreamingAssets(child.assetBundle);
             }
 
-            var detectorGO = DetectorBuilder.Make(raftObject, owRigidBody, ao, null, false, false);
-            var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => fluidDetector._activeVolumes = new EffectVolume[] { body.GetComponentInChildren<RadialFluidVolume>() }.ToList());
+            //var detectorGO = DetectorBuilder.Make(raftObject, owRigidBody, ao, null, false, false);
+            //var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
+            //Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => fluidDetector._activeVolumes = new EffectVolume[] { body.GetComponentInChildren<RadialFluidVolume>() }.ToList());
 
 
             var targetBodyAlignment = raftObject.AddComponent<AlignWithTargetBody>();

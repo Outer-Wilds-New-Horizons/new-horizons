@@ -211,6 +211,8 @@ namespace NewHorizons.Builder.Body
 
                 var destructionVolume = child.gameObject.AddComponent<DestructionVolume>();
                 destructionVolume._deathType = deathType;
+                // Only stars should destroy planets
+                destructionVolume._onlyAffectsPlayerAndShip = deathType != DeathType.Energy;
             }
         }
     }

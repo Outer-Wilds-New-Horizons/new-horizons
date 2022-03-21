@@ -23,5 +23,14 @@ namespace NewHorizons.Components
             var dist = (transform.position - target.position).magnitude;
             transform.localScale = new Vector3(num, dist/500f, num);
         }
+
+        private void Update()
+        {
+            // The target or anchor could have been destroyed by a star
+            if(!target.gameObject.activeInHierarchy || !anchor.gameObject.activeInHierarchy)
+            {
+                gameObject.SetActive(false);
+            }
+        }
     }
 }
