@@ -10,14 +10,20 @@ namespace NewHorizons.Components
     public class CloakSectorController : MonoBehaviour
     {
         private CloakFieldController _cloak;
-        private Sector _sector;
+        private GameObject _root;
 
         private bool _isInitialized;
 
-        public void Init(CloakFieldController cloak, Sector sector)
+        private List<Renderer> _renderers = null;
+
+        public void Init(CloakFieldController cloak, GameObject root)
         {
             _cloak = cloak;
-            _sector = sector;
+            _root = root;
+
+            // Lets just clear these off idc
+            _cloak.OnPlayerEnter = new OWEvent();
+            _cloak.OnPlayerExit = new OWEvent();
 
             _cloak.OnPlayerEnter += OnPlayerEnter;
             _cloak.OnPlayerExit += OnPlayerExit;
@@ -34,19 +40,28 @@ namespace NewHorizons.Components
             }
         }
 
+        private void SetUpList()
+        {
+            _renderers = _root.GetComponentsInChildren<Renderer>().ToList();
+        }
+
         public void OnPlayerEnter()
         {
-            foreach(Transform child in _sector.transform)
+            SetUpList();
+
+            foreach (var renderer in _renderers)
             {
-                child.gameObject.SetActive(true);
+                renderer.forceRenderingOff = false;
             }
         }
 
         public void OnPlayerExit()
         {
-            foreach (Transform child in _sector.transform)
+            SetUpList();
+
+            foreach (var renderer in _renderers)
             {
-                child.gameObject.SetActive(false);
+                renderer.forceRenderingOff = true;
             }
         }
     }
