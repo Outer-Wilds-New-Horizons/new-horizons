@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Updater
         public static void Update(NewHorizonsBody body, GameObject go)
         {
             var mapping = Planet.defaultMapping;
-            var heavenlyBody = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(AstroObjectLocator.GetAstroObject(body.Config.Name));
+            var heavenlyBody = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(go.GetComponent<AstroObject>());
 
             Logger.Log($"Updating position of {body.Config.Name}/{heavenlyBody}");
 

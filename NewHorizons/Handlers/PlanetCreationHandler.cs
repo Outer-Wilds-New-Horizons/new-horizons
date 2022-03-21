@@ -102,7 +102,7 @@ namespace NewHorizons.Handlers
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveDistantProxyClones(), 1);
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
             if (Main.Instance.CurrentStarSystem != "SolarSystem") PlanetDestroyer.RemoveSolarSystem();
         }
@@ -350,6 +350,10 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Funnel != null)
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+
+            // Has to go last probably
+            if (body.Config.Base.CloakRadius != 0f)
+                CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
 
             return go;
         }

@@ -13,6 +13,11 @@ namespace NewHorizons.Utility.CommonResources
     {
         public static HeavenlyBody HeavenlyBodyFromAstroObject(AstroObject obj)
         {
+            if(obj == null)
+            {
+                Logger.LogError("Asking for a heavenly body from astro object but it is null");
+            }
+
             switch (obj.GetAstroObjectName())
             {
                 case AstroObject.Name.CustomString:
