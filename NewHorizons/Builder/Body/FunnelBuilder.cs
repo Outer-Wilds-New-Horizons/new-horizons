@@ -33,7 +33,6 @@ namespace NewHorizons.Builder.Body
             funnelGO.transform.parent = go.transform;
 
             var owrb = funnelGO.AddComponent<OWRigidbody>();
-            var alignment = funnelGO.AddComponent<AlignWithTargetBody>();
 
             var matchMotion = funnelGO.AddComponent<MatchInitialMotion>();
             matchMotion.SetBodyToMatch(rigidbody);
@@ -51,9 +50,9 @@ namespace NewHorizons.Builder.Body
 
             var scaleRoot = new GameObject("ScaleRoot");
             scaleRoot.transform.parent = funnelGO.transform;
-            scaleRoot.transform.rotation = Quaternion.Euler(90, 0, 0);
-            scaleRoot.transform.localPosition = new Vector3(0, 30, 0);
-            scaleRoot.transform.localScale = new Vector3(1, 1, 1.075f);
+            scaleRoot.transform.rotation = Quaternion.identity;
+            scaleRoot.transform.localPosition = Vector3.zero;
+            scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
             var proxyGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
@@ -171,10 +170,10 @@ namespace NewHorizons.Builder.Body
             funnelSizeController.anchor = go.transform;
 
             // Finish up next tick
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, alignment, funnelSizeController, module));
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
         }
 
-        private static void PostMake(GameObject funnelGO, AlignWithTargetBody alignment, FunnelController funnelSizeController, FunnelModule module)
+        private static void PostMake(GameObject funnelGO, FunnelController funnelSizeController, FunnelModule module)
         {
             var targetAO = AstroObjectLocator.GetAstroObject(module.Target);
             var target = targetAO?.GetAttachedOWRigidbody();
@@ -185,14 +184,9 @@ namespace NewHorizons.Builder.Body
                 return;
             }
 
-            alignment.SetTargetBody(target);
-
             funnelSizeController.target = target.gameObject.transform;
 
             funnelGO.SetActive(true);
-
-            // This has to happen last idk
-            alignment.SetUsePhysicsToRotate(true);
         }
 
         private static void AddDestructionVolumes(GameObject go, DeathType deathType)
