@@ -187,6 +187,7 @@ namespace NewHorizons
                 AstroObjectLocator.RefreshList();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
@@ -306,14 +307,11 @@ namespace NewHorizons
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
                     else Logger.Log($"Loaded system config for {config.StarSystem}");
 
-                    // Since we only load stuff the first time we can do this now
-                    if (starSystemConfig.startHere)
-                    {
-                        _defaultStarSystem = config.StarSystem;
-                        _currentStarSystem = config.StarSystem;
-                    }
+                    var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);
 
-                    SystemDict.Add(config.StarSystem, new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod));
+                    if (system.Config.startHere) SetDefaultSystem(system.Name);
+
+                    SystemDict.Add(config.StarSystem, system);
 
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
@@ -326,6 +324,12 @@ namespace NewHorizons
             }
 
             return body;
+        }
+
+        public void SetDefaultSystem(string defaultSystem)
+        {
+            _defaultStarSystem = defaultSystem;
+            _currentStarSystem = defaultSystem;
         }
 
         #endregion Load
