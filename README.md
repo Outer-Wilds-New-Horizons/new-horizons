@@ -15,6 +15,8 @@ A custom world creation tool for Outer Wilds.
 
 You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
+If you want to see examples of what NH can do check out the [examples add-on](https://github.com/xen-42/ow-new-horizons-examples) or [real solar system add-on](https://github.com/xen-42/outer-wilds-real-solar-system).
+
 Check the ship's log for how to use your warp drive to travel between star systems!
 
 <!-- TOC -->
