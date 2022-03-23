@@ -55,7 +55,7 @@ namespace NewHorizons.External
         public class TornadoInfo
         {
             public float elevation;
-            public MVector3 position;
+            public MVector3 position = null;
             public float height;
             public float width;
             public MColor tint;
