@@ -23,5 +23,25 @@ namespace NewHorizons.Components.Orbital
         {
             FakeMassBody.SetActive(true);   
         }
+
+        void Update()
+        {
+            // Secondary and primary must have been engulfed by a star
+            if(!Primary.isActiveAndEnabled && !Secondary.isActiveAndEnabled)
+            {
+                ReferenceFrameTracker component = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
+                if (component.GetReferenceFrame(true) != null && component.GetReferenceFrame(true).GetOWRigidBody() == gameObject)
+                {
+                    component.UntargetReferenceFrame();
+                }
+                MapMarker component2 = gameObject.GetComponent<MapMarker>();
+                if (component2 != null)
+                {
+                    component2.DisableMarker();
+                }
+                gameObject.SetActive(false);
+                FakeMassBody.SetActive(false);
+            }
+        }
     }
 }

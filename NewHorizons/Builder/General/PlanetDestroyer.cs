@@ -211,9 +211,14 @@ namespace NewHorizons.Builder.General
             HeavenlyBodyBuilder.Remove(ao);
         }
 
-        public static void RemoveDistantProxyClones()
+        public static void RemoveAllProxies()
         {
             GameObject.Destroy(GameObject.FindObjectOfType<DistantProxyManager>().gameObject);
+
+            foreach(var name in _solarSystemBodies)
+            {
+                RemoveProxy(name.Replace(" ", "").Replace("'", ""));
+            }
         }
 
         private static void DisableBody(GameObject go, bool delete)
@@ -233,6 +238,9 @@ namespace NewHorizons.Builder.General
 
             if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
             if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
+
+            if (distantProxy == null && distantProxyClone == null)
+                Logger.Log($"Couldn't find proxy for {name}");
         }
     }
 }

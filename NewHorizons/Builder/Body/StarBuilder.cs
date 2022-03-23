@@ -108,6 +108,8 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
+            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
+            deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = false;
             deathVolume.name = "DestructionVolume";
 
             TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();

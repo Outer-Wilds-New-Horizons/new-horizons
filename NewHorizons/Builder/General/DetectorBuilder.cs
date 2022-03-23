@@ -8,22 +8,39 @@ using System.Reflection;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.General
 {
     static class DetectorBuilder
     {
-        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, bool inherit = true)
+        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, IPlanetConfig config)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
             detectorGO.transform.parent = body.transform;
             detectorGO.transform.localPosition = Vector3.zero;
-            detectorGO.layer = 20;
+            detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
 
             ConstantForceDetector forceDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            forceDetector.SetValue("_inheritElement0", inherit);
+            forceDetector.SetValue("_inheritElement0", true);
             OWRB.RegisterAttachedForceDetector(forceDetector);
+
+            // For falling into sun
+            if(!config.Base.InvulnerableToSun && config.Star == null && config.FocalPoint == null)
+            {
+                detectorGO.layer = LayerMask.NameToLayer("AdvancedDetector");
+
+                var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
+                var sphereCollider = detectorGO.AddComponent<SphereCollider>();
+                sphereCollider.radius = config.Base.SurfaceSize;
+
+                var owCollider = detectorGO.AddComponent<OWCollider>();
+                
+                fluidDetector._collider = sphereCollider;
+
+                // Could copy the splash from the interloper as well some day
+            }
 
             GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
             if (parentGravityVolume != null)

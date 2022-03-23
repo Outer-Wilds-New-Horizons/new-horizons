@@ -186,8 +186,8 @@ namespace NewHorizons.Builder.General
                 float r1 = r.magnitude * m2 / (m1 + m2);
                 float r2 = r.magnitude * m1 / (m1 + m2);
 
-                ParameterizedAstroObject primaryAO = Position.AstroLookup[primaryHB].Invoke() as ParameterizedAstroObject;
-                ParameterizedAstroObject secondaryAO = Position.AstroLookup[secondaryHB].Invoke() as ParameterizedAstroObject;
+                NHAstroObject primaryAO = Position.AstroLookup[primaryHB].Invoke() as NHAstroObject;
+                NHAstroObject secondaryAO = Position.AstroLookup[secondaryHB].Invoke() as NHAstroObject;
 
                 float ecc = primaryAO.Eccentricity;
                 float i = primaryAO.Inclination;

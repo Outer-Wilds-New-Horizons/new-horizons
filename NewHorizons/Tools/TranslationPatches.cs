@@ -1,4 +1,5 @@
-﻿using NewHorizons.Handlers;
+﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,16 @@ namespace NewHorizons.Tools
         public static bool GetHUDDisplayName(ReferenceFrame __instance, ref string __result)
         {
             var ao = __instance.GetAstroObject();
-            if (ao != null && ao.GetAstroObjectName() == AstroObject.Name.CustomString)
+
+            if (ao == null) return true;
+
+            if(ao is NHAstroObject) 
             {
-                __result = TranslationHandler.GetTranslation(ao.GetCustomName(), TranslationHandler.TextType.UI);
+                if((ao as NHAstroObject).HideDisplayName) __result = "";
+                else __result = TranslationHandler.GetTranslation(ao.GetCustomName(), TranslationHandler.TextType.UI);
                 return false;
             }
+
             return true;
         }
 

@@ -38,7 +38,8 @@ namespace NewHorizons.Builder.General
             owRigidBody.EnableKinematicSimulation();
             owRigidBody.MakeKinematic();
 
-            ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
+            NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.HideDisplayName = !config.Base.HasMapMarker;
 
             if (config.Orbit != null) astroObject.SetKeplerCoordinatesFromOrbitModule(config.Orbit);
 

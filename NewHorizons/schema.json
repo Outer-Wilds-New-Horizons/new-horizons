@@ -165,7 +165,7 @@
         "groundSize": {
           "type": "number",
           "default": 0,
-          "description": "Radius of the a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as 0."
+          "description": "Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as 0."
         },
         "hasCometTail": {
           "type": "boolean",
@@ -190,6 +190,16 @@
           "type": "boolean",
           "default": false,
           "description": "Is this body an artificial satellite of a planet/moon/star?"
+        },
+        "cloakRadius": {
+          "type": "number",
+          "default": 0,
+          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you don't want a cloak, leave this as 0."
+        },
+        "invulnerableToSun": {
+          "type": "boolean",
+          "default": false,
+          "description": "Can this planet survive entering a star?"
         }
       }
     },
