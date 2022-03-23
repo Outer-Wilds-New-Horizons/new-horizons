@@ -36,7 +36,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove existing planets
 - Create basic planets from heightmaps/texturemaps
-- Stars, comets, asteroid belts, satellites
+- Stars, comets, asteroid belts, satellites, geysers, cloak fields
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
