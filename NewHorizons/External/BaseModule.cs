@@ -21,6 +21,8 @@ namespace NewHorizons.External
         public bool HasReferenceFrame { get; set; } = true;
         public bool CenterOfSolarSystem { get; set; } = false;
         public bool IsSatellite { get; set; }
+        public float CloakRadius { get; set; } = 0f;
+        public bool InvulnerableToSun { get; set; }
 
         // Old, see SingularityModule instead
         public float BlackHoleSize { get; set; }

@@ -26,9 +26,9 @@ namespace NewHorizons.Builder.General
             sectorGO.AddComponent<OWTriggerVolume>();
 
             Sector S = sectorGO.AddComponent<Sector>();
-            S.SetValue("_name", Sector.Name.Unnamed);
-            S.SetValue("_attachedOWRigidbody", rigidbody);
-            S.SetValue("_subsectors", new List<Sector>());
+            S._name = (Sector.Name)24;
+            S._attachedOWRigidbody = rigidbody;
+            S._subsectors = new List<Sector>();
 
             sectorGO.SetActive(true);
 

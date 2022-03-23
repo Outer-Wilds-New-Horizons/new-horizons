@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var geyserInfo in config.Props.Geysers)
                 {
-                    //GeyserBuilder.Make(go, sector, geyserInfo);
+                    GeyserBuilder.Make(go, sector, geyserInfo);
                 }
             }
             if(config.Props.Rafts != null)

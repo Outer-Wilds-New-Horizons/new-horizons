@@ -27,6 +27,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Atmosphere;
 using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using NewHorizons.Utility.CommonResources;
+using UnityEngine.Events;
 
 namespace NewHorizons
 {
@@ -36,7 +37,6 @@ namespace NewHorizons
         public static Main Instance { get; private set; }
 
         public static bool Debug;
-        private static IModButton _reloadButton;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
@@ -58,6 +58,12 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
+        // API events
+        public class StarSystemEvent : UnityEvent<string> { }
+        public StarSystemEvent OnChangeStarSystem;
+        public StarSystemEvent OnStarSystemLoaded;
+
+
         private GameObject _ship;
 
         public override object GetApi()
@@ -68,7 +74,7 @@ namespace NewHorizons
         public override void Configure(IModConfig config)
         {
             Debug = config.GetSettingsValue<bool>("Debug");
-            UpdateReloadButton();
+            DebugReload.UpdateReloadButton();
             string logLevel = config.GetSettingsValue<string>("LogLevel");
             Logger.LogType logType;
             switch (logLevel)
@@ -91,6 +97,9 @@ namespace NewHorizons
 
         public void Start()
         {
+            OnChangeStarSystem = new StarSystemEvent();
+            OnStarSystemLoaded = new StarSystemEvent();
+
             SceneManager.sceneLoaded += OnSceneLoaded;
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
@@ -119,56 +128,10 @@ namespace NewHorizons
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
-            Instance.ModHelper.Menus.PauseMenu.OnInit += InitializePauseMenu;
+            Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
         }
         
-        #region Reloading
-        private void InitializePauseMenu()
-        {
-            _reloadButton = ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
-            _reloadButton.OnClick += ReloadConfigs;
-            UpdateReloadButton();
-        }
-
-        private void UpdateReloadButton()
-        {
-            if (_reloadButton != null)
-            {
-                if (Debug) _reloadButton.Show();
-                else _reloadButton.Hide();
-            }
-        }
-
-        private void ReloadConfigs()
-        {
-            BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-            SystemDict = new Dictionary<string, NewHorizonsSystem>();
-
-            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
-            foreach (AssetBundle bundle in AssetBundles.Values)
-            {
-                bundle.Unload(true);
-            }
-            AssetBundles.Clear();
-            
-            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
-
-            try
-            {
-                foreach (IModBehaviour mountedAddon in MountedAddons)
-                {
-                    LoadConfigs(mountedAddon);
-                }
-            }
-            catch (Exception)
-            {
-                Logger.LogWarning("Error While Reloading");
-            }
-            
-            ChangeCurrentStarSystem(_currentStarSystem);
-        }
-        #endregion
+        
 
         public void OnDestroy()
         {
@@ -181,6 +144,7 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
+            Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
         }
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
@@ -223,6 +187,7 @@ namespace NewHorizons
                 AstroObjectLocator.RefreshList();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
@@ -234,9 +199,20 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
-                Logger.Log($"Is the player warping in? {IsWarping}");
-                if (IsWarping && _shipWarpController) Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => _shipWarpController.WarpIn(WearingSuit));
-                else Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint));
+                if (IsWarping && _shipWarpController)
+                {
+                    Instance.ModHelper.Events.Unity.RunWhen(
+                        () => IsSystemReady, 
+                        () => _shipWarpController.WarpIn(WearingSuit)
+                    );
+                }
+                else
+                {
+                    Instance.ModHelper.Events.Unity.RunWhen(
+                        () => IsSystemReady, 
+                        () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint)
+                    );
+                }
                 IsWarping = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
@@ -331,14 +307,11 @@ namespace NewHorizons
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
                     else Logger.Log($"Loaded system config for {config.StarSystem}");
 
-                    // Since we only load stuff the first time we can do this now
-                    if (starSystemConfig.startHere)
-                    {
-                        _defaultStarSystem = config.StarSystem;
-                        _currentStarSystem = config.StarSystem;
-                    }
+                    var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);
 
-                    SystemDict.Add(config.StarSystem, new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod));
+                    if (system.Config.startHere) SetDefaultSystem(system.Name);
+
+                    SystemDict.Add(config.StarSystem, system);
 
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
@@ -353,12 +326,20 @@ namespace NewHorizons
             return body;
         }
 
+        public void SetDefaultSystem(string defaultSystem)
+        {
+            _defaultStarSystem = defaultSystem;
+            _currentStarSystem = defaultSystem;
+        }
+
         #endregion Load
 
         #region Change star system
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
             if (_isChangingStarSystem) return;
+
+            OnChangeStarSystem?.Invoke(newStarSystem);
 
             Logger.Log($"Warping to {newStarSystem}");
             if(warp && _shipWarpController) _shipWarpController.WarpOut();
@@ -426,6 +407,16 @@ namespace NewHorizons
         public string GetCurrentStarSystem()
         {
             return Main.Instance.CurrentStarSystem;
+        }
+
+        public UnityEvent<string> GetChangeStarSystemEvent()
+        {
+            return Main.Instance.OnChangeStarSystem;
+        }
+
+        public UnityEvent<string> GetStarSystemLoadedEvent()
+        {
+            return Main.Instance.OnStarSystemLoaded;
         }
     }
     #endregion API

@@ -30,6 +30,9 @@ namespace NewHorizons.Tools
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunLightParamUpdater>("LateUpdate", typeof(Patches), nameof(Patches.OnSunLightParamUpdaterLateUpdate));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<SunSurfaceAudioController>("Update", typeof(Patches), nameof(Patches.OnSunSurfaceAudioControllerUpdate));
 
+            var locatorRegisterCloakFieldController = typeof(Locator).GetMethod(nameof(Locator.RegisterCloakFieldController));
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(locatorRegisterCloakFieldController, typeof(Patches), nameof(Patches.OnLocatorRegisterCloakFieldController));
+
             // Lot of audio signal stuff
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("SignalNameToString", typeof(Patches), nameof(Patches.OnAudioSignalSignalNameToString));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<AudioSignal>("IndexToFrequency", typeof(Patches), nameof(Patches.OnAudioSignalIndexToFrequency));
@@ -454,6 +457,11 @@ namespace NewHorizons.Tools
             __result = vector2;
 
             return false;
+        }
+
+        public static bool OnLocatorRegisterCloakFieldController()
+        {
+            return Locator._cloakFieldController == null;
         }
     }
 }

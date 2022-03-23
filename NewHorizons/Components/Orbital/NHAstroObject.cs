@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.Components.Orbital
 {
-    public class ParameterizedAstroObject : AstroObject, IKeplerCoordinates
+    public class NHAstroObject : AstroObject, IKeplerCoordinates
     {
         public float Inclination { get; set; }
         public int SemiMajorAxis { get; set; }
@@ -17,6 +17,7 @@ namespace NewHorizons.Components.Orbital
         public float Eccentricity { get; set; }
         public float ArgumentOfPeriapsis { get; set; }
         public float TrueAnomaly { get; set; }
+        public bool HideDisplayName { get; set; }
 
         public void SetKeplerCoordinatesFromOrbitModule(OrbitModule orbit)
         {

@@ -27,6 +27,7 @@ namespace NewHorizons.Builder.Props
             }
             else if (info.elevation != 0f)
             {
+                Logger.Log("Giving tornado random pos");
                 position = UnityEngine.Random.insideUnitSphere * info.elevation;
                 elevation = info.elevation;
             }
@@ -51,13 +52,14 @@ namespace NewHorizons.Builder.Props
             var width = 40f;
             if (info.width != 0f) width = info.width;
 
-            var scale = new Vector3(width / 40f, height / 837.0669f, width / 40f);
+            var scale = new Vector3(width / 40f, 1f, width / 40f);
 
             tornado.transform.localScale = scale;
 
             var tornadoController = tornado.GetComponent<TornadoController>();
             tornadoController.SetSector(sector);
             var n = position.normalized;
+
             var up = new Vector3(0, 1, 0);
 
             var h1 = elevation;
@@ -69,17 +71,20 @@ namespace NewHorizons.Builder.Props
             tornadoController._bottomStartPos = n * h1;
             tornadoController._bottomBasePos = up * h1;
             tornadoController._bottomBone.localPosition = n * h1;
+            tornadoController._bottomBone.rotation.SetFromToRotation(tornadoController._bottomBone.up, up);
 
             tornadoController._midElevation = h2;
             tornadoController._midStartElevation = h2;
             tornadoController._midStartPos = n * h2;
             tornadoController._midBasePos = up * h2;
             tornadoController._midBone.localPosition = n * h2;
+            tornadoController._midBone.rotation.SetFromToRotation(tornadoController._midBone.up, up);
 
             tornadoController._topElevation = h3;
             tornadoController._topStartPos = n * h3;
             tornadoController._topBasePos = up * h3;
             tornadoController._topBone.localPosition = n * h3;
+            tornadoController._topBone.rotation.SetFromToRotation(tornadoController._topBone.up, up);
 
             tornadoController._snapBonesToSphere = true;
             tornadoController._wander = true;
@@ -101,7 +106,6 @@ namespace NewHorizons.Builder.Props
                 GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Medium")?.gameObject);
                 GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Small")?.gameObject);
 
-                /*
                 var top_objects = new GameObject[3];
                 top_objects[0] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Large").gameObject, top.transform);
                 top_objects[1] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Medium").gameObject, top.transform);
@@ -112,7 +116,6 @@ namespace NewHorizons.Builder.Props
                     obj.transform.localPosition = new Vector3(0, -20, 0);
                     obj.transform.localRotation = Quaternion.Euler(180, 0, 0);
                 }
-                */
             }
 
             tornadoController._startActive = false;
