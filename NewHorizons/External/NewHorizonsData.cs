@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NewHorizons.Handlers;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External
@@ -59,12 +60,14 @@ namespace NewHorizons.External
             {
                 Load();
             }
-            Logger.Log($"Reseting save data for {_activeProfileName}");
+            Logger.Log($"Resetting save data for {_activeProfileName}");
             _activeProfile = new NewHorizonsProfile();
             _saveFile.Profiles[_activeProfileName] = _activeProfile;
 
             Save();
         }
+        
+        # region Frequencies
 
         public static bool KnowsFrequency(string frequency)
         {
@@ -81,7 +84,16 @@ namespace NewHorizons.External
                 Save();
             }
         }
+        
+        public static bool KnowsMultipleFrequencies()
+        {
+            return (_activeProfile != null && _activeProfile.KnownFrequencies.Count > 0);
+        }
+        
+        # endregion
 
+        # region Signals
+        
         public static bool KnowsSignal(string signal)
         {
             if (_activeProfile == null) return true;
@@ -97,11 +109,29 @@ namespace NewHorizons.External
                 Save();
             }
         }
+        
+        # endregion
+        
+        # region Newly Revealed Facts
 
-        public static bool KnowsMultipleFrequencies()
+        public static void AddNewlyRevealedFactID(string id)
         {
-            return (_activeProfile != null && _activeProfile.KnownFrequencies.Count > 0);
+            _activeProfile?.NewlyRevealedFactIDs.Add(id);
+            Save();
         }
+
+        public static List<string> GetNewlyRevealedFactIDs()
+        {
+            return _activeProfile?.NewlyRevealedFactIDs;
+        }
+
+        public static void ClearNewlyRevealedFactIDs()
+        {
+            _activeProfile?.NewlyRevealedFactIDs.Clear();
+            Save();
+        }
+        
+        # endregion
 
         private class NewHorizonsSaveFile
         {
@@ -119,10 +149,13 @@ namespace NewHorizons.External
             {
                 KnownFrequencies = new List<string>();
                 KnownSignals = new List<string>();
+                NewlyRevealedFactIDs = new List<string>();
             }
 
             public List<string> KnownFrequencies { get; set; }
             public List<string> KnownSignals { get; set; }
+            
+            public List<string> NewlyRevealedFactIDs { get; set; }
         }
     }
 }

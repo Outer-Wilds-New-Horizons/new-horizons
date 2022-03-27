@@ -55,6 +55,14 @@ namespace NewHorizons.Tools
             var playerDataResetGame = typeof(PlayerData).GetMethod("ResetGame");
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataResetGame, typeof(Patches), nameof(Patches.OnPlayerDataResetGame));
 
+            var playerDataAddNewlyRevealedFactID = typeof(PlayerData).GetMethod("AddNewlyRevealedFactID");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataAddNewlyRevealedFactID, typeof(Patches), nameof(Patches.OnPlayerDataAddNewlyRevealedFactID));
+            var playerDataGetNewlyRevealedFactIDs = typeof(PlayerData).GetMethod("GetNewlyRevealedFactIDs");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataGetNewlyRevealedFactIDs, typeof(Patches), nameof(Patches.OnPlayerDataGetNewlyRevealedFactIDs));
+            var playerDataClearNewlyRevealedFactIDs = typeof(PlayerData).GetMethod("ClearNewlyRevealedFactIDs");
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix(playerDataClearNewlyRevealedFactIDs, typeof(Patches), nameof(Patches.OnPlayerDataClearNewlyRevealedFactIDs));
+            
+
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<BlackHoleVolume>("Start", typeof(Patches), nameof(Patches.OnBlackHoleVolumeStart));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<WhiteHoleVolume>("Awake", typeof(Patches), nameof(Patches.OnWhiteHoleVolumeAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ProbeLauncher>("UpdateOrbitalLaunchValues", typeof(Patches), nameof(Patches.OnProbeLauncherUpdateOrbitalLaunchValues));
@@ -309,6 +317,32 @@ namespace NewHorizons.Tools
                 return false;
             }
             return true;
+        }
+
+        public static bool OnPlayerDataAddNewlyRevealedFactID(string __0)
+        {
+            if (ShipLogHandler.IsModdedFact(__0))
+            {
+                NewHorizonsData.AddNewlyRevealedFactID(__0);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        public static bool OnPlayerDataGetNewlyRevealedFactIDs(ref List<string> __result)
+        {
+            __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(NewHorizonsData.GetNewlyRevealedFactIDs()).ToList();
+            return false;
+        }
+
+        public static bool OnPlayerDataClearNewlyRevealedFactIDs()
+        {
+            PlayerData._currentGameSave.newlyRevealedFactIDs.Clear();
+            NewHorizonsData.ClearNewlyRevealedFactIDs();
+            return false;
         }
         
         public static void OnPlayerDataResetGame()
