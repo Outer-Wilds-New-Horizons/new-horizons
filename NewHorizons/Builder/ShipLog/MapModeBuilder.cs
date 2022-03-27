@@ -488,7 +488,6 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
-                astroObject.transform.localScale = node.lastSibling.astroObject.transform.localScale;
             }
             node.astroObject = astroObject;
             if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);
