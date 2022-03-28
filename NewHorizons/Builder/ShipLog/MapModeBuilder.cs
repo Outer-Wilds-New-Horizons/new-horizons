@@ -305,15 +305,15 @@ namespace NewHorizons.Builder.ShipLog
             public List<MapModeObject> children;
             public MapModeObject parent;
             public MapModeObject lastSibling;
-            public void Increment_width()
+            public void IncrementWidth()
             {
                 branch_width++;
-                parent?.Increment_width();
+                parent?.IncrementWidth();
             }
-            public void Increment_height()
+            public void IncrementHeight()
             {
                 branch_height++;
-                parent?.Increment_height();
+                parent?.IncrementHeight();
             }
         }
         
@@ -416,12 +416,12 @@ namespace NewHorizons.Builder.ShipLog
                 if (even)
                 {
                     newY += newNode.branch_height;
-                    parent.Increment_height();
+                    parent.IncrementHeight();
                 }
                 else
                 {
                     newX += newNode.branch_width;
-                    parent.Increment_width();
+                    parent.IncrementWidth();
                 }
 
                 lastSibling = newNode;
@@ -488,7 +488,6 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
-                astroObject.transform.localScale = node.lastSibling.astroObject.transform.localScale;
             }
             node.astroObject = astroObject;
             if (node.lastSibling != null) ConnectNodeToLastSibling(node, greyScaleMaterial);

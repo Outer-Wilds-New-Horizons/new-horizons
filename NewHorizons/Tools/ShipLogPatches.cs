@@ -66,6 +66,7 @@ namespace NewHorizons.Tools
 
         public static void OnShipLogManagerAwakeComplete(ShipLogManager __instance)
         {
+            ShipLogHandler.CheckForModdedFacts(__instance);
             RumorModeBuilder.GenerateEntryData(__instance);
             for (var i = 0; i < __instance._entryList.Count; i++)
             {
