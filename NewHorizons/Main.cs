@@ -418,6 +418,19 @@ namespace NewHorizons
         {
             return Main.Instance.OnStarSystemLoaded;
         }
+
+        public bool ChangeCurrentStarSystem(string name)
+        {
+            if (!Main.SystemDict.ContainsKey(name)) return false;
+
+            Main.Instance.ChangeCurrentStarSystem(name);
+            return true;
+        }
+
+        public string[] GetInstalledAddons()
+        {
+            return Main.MountedAddons.ConvertAll(x => x.ModHelper.Manifest.UniqueName).ToArray();
+        }
     }
     #endregion API
 }
