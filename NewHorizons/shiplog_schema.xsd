@@ -122,14 +122,14 @@
             <xs:element name="RumorName" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        No clue what this does
+                        Displays on the card in detective mode if no ExploreFacts have been revealed on the parent entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="RumorNamePriority" type="xs:int" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        Also have no clue what this does
+                        Priority over other RumorFacts to appear as the entry card's title
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
