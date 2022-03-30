@@ -6,6 +6,7 @@ on:
     paths:
       - docs/**
       - NewHorizons/*schema*.json
+      - NewHorizons/*.xsd
 
   pull_request:
     paths:
