@@ -429,7 +429,7 @@ namespace NewHorizons
 
         public string[] GetInstalledAddons()
         {
-            return Main.MountedAddons.ConvertAll(x => x.ModHelper.Manifest.UniqueName).ToArray();
+            return Main.MountedAddons.Select(x => x.ModHelper.Manifest.UniqueName).ToArray();
         }
     }
     #endregion API

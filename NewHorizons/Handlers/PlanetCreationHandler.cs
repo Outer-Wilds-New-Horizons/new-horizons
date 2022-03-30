@@ -128,8 +128,8 @@ namespace NewHorizons.Handlers
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 1);
-                        else Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 1);
+                        if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
+                        else Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
                     }
                     else UpdateBody(body, existingPlanet);
                 }
