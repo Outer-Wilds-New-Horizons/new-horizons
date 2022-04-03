@@ -25,14 +25,6 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-    # Set to Release if we're in master, otherwise keep us in Debug
-    - name: Set Release
-      if: github.ref == 'refs/heads/master'
-      run: echo "BUILD_TYPE=Release" >> $GITHUB_ENV
-      
-    - name: Set Debug
-      if: github.ref != 'refs/heads/master'
-      run: echo "BUILD_TYPE=Debug" >> $GITHUB_ENV
 
     - uses: actions/checkout@v2
     
@@ -50,11 +42,20 @@ jobs:
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
         $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
         $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
+        
+    # Set to Release if we're in master, otherwise keep us in Debug
+    - name: Set Release
+      if: github.ref == 'refs/heads/master'
+      run: echo "BUILD_TYPE=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+      
+    - name: Set Debug
+      if: github.ref != 'refs/heads/master'
+      run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
     
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: "5.0.x"
-    - run: dotnet build -c ${{ env.BUILD_TYPE }} -o .\NewHorizons\Bin\${{ env.BUILD_TYPE }}
+    - run: dotnet build -c $Env:BUILD_TYPE -o .\NewHorizons\Bin\$Env:BUILD_TYPE
     - uses: actions/upload-artifact@v2
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
