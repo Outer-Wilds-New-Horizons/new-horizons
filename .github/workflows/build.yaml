@@ -50,6 +50,8 @@ jobs:
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
         $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
         $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
+        
+    - run: echo $Env:BUILD_TYPE
     
     - uses: actions/setup-dotnet@v1
       with:
