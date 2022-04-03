@@ -150,6 +150,8 @@ namespace NewHorizons
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
+            
+            SearchUtilities.ClearCache();
 
             _isChangingStarSystem = false;
 
@@ -417,6 +419,19 @@ namespace NewHorizons
         public UnityEvent<string> GetStarSystemLoadedEvent()
         {
             return Main.Instance.OnStarSystemLoaded;
+        }
+
+        public bool ChangeCurrentStarSystem(string name)
+        {
+            if (!Main.SystemDict.ContainsKey(name)) return false;
+
+            Main.Instance.ChangeCurrentStarSystem(name);
+            return true;
+        }
+
+        public string[] GetInstalledAddons()
+        {
+            return Main.MountedAddons.Select(x => x.ModHelper.Manifest.UniqueName).ToArray();
         }
     }
     #endregion API

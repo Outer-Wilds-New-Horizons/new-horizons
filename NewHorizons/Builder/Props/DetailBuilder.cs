@@ -73,8 +73,13 @@ namespace NewHorizons.Builder.Props
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {
                 // Enable all children or something
-                var enabledField = component.GetType().GetField("enabled");
+                var enabledField = component?.GetType()?.GetField("enabled");
                 if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
+
+                if(component is Sector)
+                {
+                    (component as Sector)._parentSector = sector;
+                }
 
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
@@ -98,6 +103,11 @@ namespace NewHorizons.Builder.Props
                 if (component is SectoredMonoBehaviour)
                 {
                     (component as SectoredMonoBehaviour).SetSector(sector);
+                }
+                else
+                {
+                    var sectorField = component?.GetType()?.GetField("_sector");
+                    if (sectorField != null && sectorField.FieldType == typeof(Sector)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                 }
 
                 if (component is AnglerfishController)

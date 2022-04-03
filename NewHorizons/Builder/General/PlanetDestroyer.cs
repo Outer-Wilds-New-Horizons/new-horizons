@@ -43,11 +43,11 @@ namespace NewHorizons.Builder.General
             foreach(var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => RemoveBody(ao, false));
+                if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(ao, false), 2);
             }
 
             // Bring the sun back because why not
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 2);
+            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
         }
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)

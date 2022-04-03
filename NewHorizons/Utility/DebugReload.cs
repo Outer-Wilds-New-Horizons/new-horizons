@@ -41,6 +41,7 @@ namespace NewHorizons.Utility
                 bundle.Unload(true);
             }
             Main.AssetBundles.Clear();
+            TranslationHandler.ClearTables();
             
             Logger.Log("Begin reload of config files...", Logger.LogType.Log);
 

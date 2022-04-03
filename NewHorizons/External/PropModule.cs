@@ -14,6 +14,7 @@ namespace NewHorizons.External
         public RaftInfo[] Rafts;
         public GeyserInfo[] Geysers;
         public TornadoInfo[] Tornados;
+        public VolcanoInfo[] Volcanos;
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
@@ -59,6 +60,13 @@ namespace NewHorizons.External
             public float height;
             public float width;
             public MColor tint;
+        }
+
+        public class VolcanoInfo
+        {
+            public MVector3 position = null;
+            public MColor stoneTint = null;
+            public MColor lavaTint = null;
         }
 
         public class DialogueInfo

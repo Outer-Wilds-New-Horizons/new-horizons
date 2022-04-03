@@ -72,33 +72,35 @@ namespace NewHorizons.Builder.General
         {
             suitUpQueued = false;
             if (Locator.GetPlayerController()._isWearingSuit) return;
-            try
+
+            Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
+
+            // Make the ship act as if the player took the suit
+            var spv = GameObject.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
+
+            if (spv == null) return;
+
+            spv._containsSuit = false;
+
+            if (spv._allowSuitReturn)
             {
-                var spv = GameObject.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear").GetComponent<SuitPickupVolume>();
-                spv.SetValue("_containsSuit", false);
-
-                if (spv.GetValue<bool>("_allowSuitReturn"))
-                    spv.GetValue<MultipleInteractionVolume>("_interactVolume").ChangePrompt(UITextType.ReturnSuitPrompt, spv.GetValue<int>("_pickupSuitCommandIndex"));
-                else
-                    spv.GetValue<MultipleInteractionVolume>("_interactVolume").EnableSingleInteraction(false, spv.GetValue<int>("_pickupSuitCommandIndex"));
-
-                Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
-                
-                spv.SetValue("_timer", 0f);
-                spv.SetValue("_index", 0);
-
-                GameObject suitGeometry = spv.GetValue<GameObject>("_suitGeometry");
-                if (suitGeometry != null) suitGeometry.SetActive(false);
-                
-                OWCollider suitOWCollider = spv.GetValue<OWCollider>("_suitOWCollider");
-                if (suitOWCollider != null) suitOWCollider.SetActivation(false);
-                
-                spv.enabled = true;
+                spv._interactVolume.ChangePrompt(UITextType.ReturnSuitPrompt, spv._pickupSuitCommandIndex);
             }
-            catch(Exception e)
+            else
             {
-                Logger.LogWarning($"Was unable to suit up player. {e.Message}, {e.StackTrace}");
+                spv._interactVolume.EnableSingleInteraction(false, spv._pickupSuitCommandIndex);
             }
+                
+            spv._timer = 0f;
+            spv._index = 0;
+
+            GameObject suitGeometry = spv._suitGeometry;
+            if (suitGeometry != null) suitGeometry.SetActive(false);
+                
+            OWCollider suitOWCollider = spv._suitOWCollider;
+            if (suitOWCollider != null) suitOWCollider.SetActivation(false);
+                
+            spv.enabled = true;
         }
     }
 }

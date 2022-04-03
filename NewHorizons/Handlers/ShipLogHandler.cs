@@ -23,8 +23,9 @@ namespace NewHorizons.Handlers
         // NewHorizonsBody -> AstroID
         private static Dictionary<NewHorizonsBody, string> _nhBodyToAstroIDs;
 
-        private static string[] vanillaBodies;
-        private static string[] vanillaIDs;
+        private static string[] _vanillaBodies;
+        private static string[] _vanillaBodyIDs;
+        private static string[] _moddedFactsIDs;
 
         public static void Init()
         {
@@ -33,13 +34,19 @@ namespace NewHorizons.Handlers
             _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
 
             List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
-            vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
-            vanillaIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+            _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
+            _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+        }
+
+        public static void CheckForModdedFacts(ShipLogManager manager)
+        {
+            List<ShipLogFact> moddedFacts = manager._factList.Where(e => manager._entryDataDict.ContainsKey(e._entryID) == false).ToList();
+            _moddedFactsIDs = moddedFacts.ConvertAll(e => e.GetID()).ToArray();
         }
 
         public static bool IsVanillaAstroID(string astroId)
         {
-            return vanillaIDs.Contains(astroId);
+            return _vanillaBodyIDs.Contains(astroId);
         }
 
         public static bool IsVanillaBody(NewHorizonsBody body)
@@ -48,7 +55,7 @@ namespace NewHorizons.Handlers
             if (existingBody != null && existingBody.GetAstroObjectName() != AstroObject.Name.CustomString)
                 return true;
 
-            return vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
+            return _vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
         }
 
         public static string GetNameFromAstroID(string astroID)
@@ -64,6 +71,11 @@ namespace NewHorizons.Handlers
                 Logger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
                 return null;
             }
+        }
+
+        public static bool IsModdedFact(string FactID)
+        {
+            return _moddedFactsIDs.Contains(FactID);
         }
 
         public static void AddConfig(string astroID, List<string> entryIDs, NewHorizonsBody body)

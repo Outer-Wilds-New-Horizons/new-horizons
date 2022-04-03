@@ -140,5 +140,12 @@ namespace NewHorizons.Handlers
 
             return key;
         }
+
+        public static void ClearTables()
+        {
+            _shipLogTranslationDictionary.Clear();
+            _dialogueTranslationDictionary.Clear();
+            _uiTranslationDictionary.Clear();
+        }
     }
 }
