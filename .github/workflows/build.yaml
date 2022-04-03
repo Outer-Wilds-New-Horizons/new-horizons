@@ -46,11 +46,11 @@ jobs:
     # Set to Release if we're in master, otherwise keep us in Debug
     - name: Set Release
       if: github.ref == 'refs/heads/master'
-      run: $Env:BUILD_TYPE = "Release"
+      run: echo "BUILD_TYPE=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       
     - name: Set Debug
       if: github.ref != 'refs/heads/master'
-      run: $Env:BUILD_TYPE = "Debug"
+      run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
         
     - run: echo $Env:BUILD_TYPE
     
