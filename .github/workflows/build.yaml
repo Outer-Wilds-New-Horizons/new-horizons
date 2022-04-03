@@ -54,7 +54,7 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: "5.0.x"
-    - run: dotnet build -c $Env:BUILD_TYPE -o .\NewHorizons\Bin\$Env:BUILD_TYPE }}
+    - run: dotnet build -c $Env:BUILD_TYPE -o .\NewHorizons\Bin\$Env:BUILD_TYPE
     - uses: actions/upload-artifact@v2
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
