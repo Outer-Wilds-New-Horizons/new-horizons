@@ -102,7 +102,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             const float unviewedIconOffset = 15;
             
-            GameObject unviewedReference = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
+            GameObject unviewedReference = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
             
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
@@ -244,7 +244,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
-                    GameObject gameObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
+                    GameObject gameObject = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
                     if (body.Config.Destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
                     {
                         ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();

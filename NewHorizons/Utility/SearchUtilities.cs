@@ -10,6 +10,30 @@ namespace NewHorizons.Utility
 {
     public static class SearchUtilities
     {
+        private static readonly Dictionary<string, GameObject> CachedGameObjects = new Dictionary<string, GameObject>();
+
+        public static void ClearCache()
+        {
+            CachedGameObjects.Clear();
+        }
+
+        public static GameObject CachedFind(string path)
+        {
+            if (CachedGameObjects.ContainsKey(path))
+            {
+                return CachedGameObjects[path];
+            }
+            else
+            {
+                GameObject foundObject = GameObject.Find(path);
+                if (foundObject != null)
+                {
+                    CachedGameObjects.Add(path, foundObject); 
+                }
+                return foundObject;
+            }
+        }
+
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
         {
             T[] firstList = GameObject.FindObjectsOfType<T>();
@@ -99,6 +123,10 @@ namespace NewHorizons.Utility
 
         public static GameObject Find(string path)
         {
+            if (CachedGameObjects.ContainsKey(path))
+            {
+                return CachedGameObjects[path];
+            }
             try
             {
                 var go = GameObject.Find(path);
@@ -153,6 +181,11 @@ namespace NewHorizons.Utility
                     var name = names.Last();
                     Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
                     go = FindObjectOfTypeAndName<GameObject>(name);
+                }
+
+                if (go != null)
+                {
+                    CachedGameObjects.Add(path, go);
                 }
 
                 return go;

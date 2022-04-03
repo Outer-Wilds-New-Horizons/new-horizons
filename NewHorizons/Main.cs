@@ -150,6 +150,8 @@ namespace NewHorizons
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
+            
+            SearchUtilities.ClearCache();
 
             _isChangingStarSystem = false;
 
