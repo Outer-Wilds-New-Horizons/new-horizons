@@ -28,11 +28,11 @@ jobs:
     # Set to Release if we're in master, otherwise keep us in Debug
     - name: Set Release
       if: github.ref == 'refs/heads/master'
-      run: echo "BUILD_TYPE=Release" >> $GITHUB_ENV
+      run: $Env:BUILD_TYPE = Release
       
     - name: Set Debug
       if: github.ref != 'refs/heads/master'
-      run: echo "BUILD_TYPE=Debug" >> $GITHUB_ENV
+      run: $Env:BUILD_TYPE = Debug
 
     - uses: actions/checkout@v2
     
