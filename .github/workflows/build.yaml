@@ -25,16 +25,14 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-    # Replace / with _ in ref name so that it can be used in a filename
-    - uses: mad9000/actions-find-and-replace-string@2
-      id: sanitizeRef
-      with:
-        source: ${{ github.ref_name }}
-        find: '/'
-        replace: '_'
-    # Get short-sha so that it can be used in a filename
-    - uses: benjlevesque/short-sha@v1.2
-      id: short-sha
+    # Set to Release if we're in master, otherwise keep us in Debug
+    - name: Set Release
+      if: github.ref == 'refs/heads/master'
+      run: echo "BUILD_TYPE=Release" >> $GITHUB_ENV
+      
+    - name: Set Debug
+      if: github.ref != 'refs/heads/master'
+      run: echo "BUILD_TYPE=Debug" >> $GITHUB_ENV
 
     - uses: actions/checkout@v2
     
@@ -56,9 +54,8 @@ jobs:
     - uses: actions/setup-dotnet@v1
       with:
         dotnet-version: "5.0.x"
-    - run: dotnet build -c Release -o .\NewHorizons\Bin\Release
-    - run: tree
+    - run: dotnet build -c ${{ env.BUILD_TYPE }} -o .\NewHorizons\Bin\${{ env.BUILD_TYPE }}
     - uses: actions/upload-artifact@v2
       with:
-        name: NewHorizons-${{ steps.sanitizeRef.outputs.value }}-${{ steps.short-sha.outputs.sha }}
-        path: .\NewHorizons\Bin\Release
+        name: NewHorizons-${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\Bin\${{ env.BUILD_TYPE }}
