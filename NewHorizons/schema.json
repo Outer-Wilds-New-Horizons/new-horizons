@@ -507,65 +507,65 @@
       "type": "object",
       "properties": {
         "scatter": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "count": {
-              "type": "integer"
-            },
-            "path": {
-              "type": "string",
-              "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
-            },
-            "assetBundle": {
-              "type": "string",
-              "description": "Relative filepath to an asset-bundle"
-            },
-            "offset": {
-              "$ref": "#/$defs/vector3"
-            },
-            "rotation": {
-              "$ref": "#/$defs/vector3",
-              "description": "Euler angle degrees"
-            },
-            "scale": {
-              "type": "number",
-              "default": 1,
-              "description" : "How many props to scatter around the planet."
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "count": {
+                "type": "integer"
+              },
+              "path": {
+                "type": "string",
+                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+              },
+              "assetBundle": {
+                "type": "string",
+                "description": "Relative filepath to an asset-bundle"
+              },
+              "offset": {
+                "$ref": "#/$defs/vector3"
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "Euler angle degrees"
+              },
+              "scale": {
+                "type": "number",
+                "default": 1,
+                "description": "How many props to scatter around the planet."
+              }
             }
           }
-        }
         },
         "details": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "path": {
-              "type": "string",
-              "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
-            },
-            "assetBundle": {
-              "type": "string",
-              "description": "Relative filepath to an asset-bundle"
-            },
-            "position": {
-              "$ref": "#/$defs/vector3"
-            },
-            "rotation": {
-              "$ref": "#/$defs/vector3",
-              "description": "Euler angle degrees"
-            },
-            "scale": {
-              "type": "number",
-              "default": 1
-            },
-            "alignToNormal": {
-              "type": "boolean",
-              "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
-              "default": false
-            }
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+              },
+              "assetBundle": {
+                "type": "string",
+                "description": "Relative filepath to an asset-bundle"
+              },
+              "position": {
+                "$ref": "#/$defs/vector3"
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "Euler angle degrees"
+              },
+              "scale": {
+                "type": "number",
+                "default": 1
+              },
+              "alignToNormal": {
+                "type": "boolean",
+                "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
+                "default": false
+              }
             },
             "scale": {
               "type": "number",
@@ -580,20 +580,20 @@
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
-                "description" : "When you enter into dialogue, you will look here."
+                "description": "When you enter into dialogue, you will look here."
               },
               "radius": {
                 "type": "number",
                 "default": 0,
-                "description" : "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, this will instead be the size of the volume that will trigger the dialogue when you enter it."
+                "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, this will instead be the size of the volume that will trigger the dialogue when you enter it."
               },
               "xmlFile": {
                 "type": "string",
-                "description" : "Relative path to the xml file defining the dialogue."
+                "description": "Relative path to the xml file defining the dialogue."
               },
               "remoteTriggerPosition": {
                 "$ref": "#/$defs/vector3",
-                "description" : "Allows you to trigger dialogue from a distance when you walk into an area."
+                "description": "Allows you to trigger dialogue from a distance when you walk into an area."
               }
             }
           }
@@ -606,7 +606,7 @@
             "properties": {
               "revealOn": {
                 "type": "string",
-                "enum": ["enter", "observe", "snapshot"],
+                "enum": [ "enter", "observe", "snapshot" ],
                 "description": "'enter', 'observe', or 'snapshot' what needs to be done to the volume to unlock the facts"
               },
               "reveals": {
@@ -655,6 +655,19 @@
               "position": {
                 "$ref": "#/$defs/vector3",
                 "description": "The position of this entry location"
+              }
+            }
+          }
+        },
+        "geysers": {
+          "type": "array",
+          "description": "A set of geysers",
+          "items": {
+            "type": "object",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this geyser"
               }
             }
           }

@@ -15,6 +15,8 @@ A custom world creation tool for Outer Wilds.
 
 You can view the addons creators have made (or upload one yourself) [here](https://outerwildsmods.com/custom-worlds)!
 
+If you want to see examples of what NH can do check out the [examples add-on](https://github.com/xen-42/ow-new-horizons-examples) or [real solar system add-on](https://github.com/xen-42/outer-wilds-real-solar-system).
+
 Check the ship's log for how to use your warp drive to travel between star systems!
 
 <!-- TOC -->
@@ -36,7 +38,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove existing planets
 - Create basic planets from heightmaps/texturemaps
-- Stars, comets, asteroid belts, satellites
+- Stars, comets, asteroid belts, satellites, geysers, cloak fields
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
@@ -52,14 +54,11 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement all planet features:
 	- Tornados + floating islands
 	- Let any star go supernova
-	- Geysers
 	- Meteors
 	- Pocket dimensions
 	- Timed position/velocity changes
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
-- Destroy planets that fall into a star
-- Add cloaking volumes
 
 ## Contact
 Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you have any questions or just want to chat about modding! Theres a New Horizons category there dedicated to discussion of this mod.
