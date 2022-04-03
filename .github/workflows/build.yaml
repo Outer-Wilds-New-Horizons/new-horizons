@@ -25,14 +25,6 @@ jobs:
     if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
-    # Set to Release if we're in master, otherwise keep us in Debug
-    - name: Set Release
-      if: github.ref == 'refs/heads/master'
-      run: $Env:BUILD_TYPE = "Release"
-      
-    - name: Set Debug
-      if: github.ref != 'refs/heads/master'
-      run: $Env:BUILD_TYPE = "Debug"
 
     - uses: actions/checkout@v2
     
@@ -50,6 +42,15 @@ jobs:
         $data = Get-Content NewHorizons/NewHorizons.csproj.user
         $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
         $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
+        
+    # Set to Release if we're in master, otherwise keep us in Debug
+    - name: Set Release
+      if: github.ref == 'refs/heads/master'
+      run: $Env:BUILD_TYPE = "Release"
+      
+    - name: Set Debug
+      if: github.ref != 'refs/heads/master'
+      run: $Env:BUILD_TYPE = "Debug"
         
     - run: echo $Env:BUILD_TYPE
     
