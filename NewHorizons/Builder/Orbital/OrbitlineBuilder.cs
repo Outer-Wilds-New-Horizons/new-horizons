@@ -28,6 +28,7 @@ namespace NewHorizons.Builder.Orbital
 
             OrbitLine orbitLine;
 
+            /*
             if(config.Orbit.TrackingOrbitLine)
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
@@ -45,6 +46,9 @@ namespace NewHorizons.Builder.Orbital
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }
+            */
+
+            orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
