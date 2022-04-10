@@ -207,8 +207,6 @@ namespace NewHorizons.Builder.General
                     GameObject.Destroy(proxy.gameObject);
                 }
             }
-
-            HeavenlyBodyBuilder.Remove(ao);
         }
 
         public static void RemoveAllProxies()

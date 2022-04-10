@@ -7,7 +7,6 @@ using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
-using NewHorizons.Utility.CommonResources;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -278,8 +277,6 @@ namespace NewHorizons.Handlers
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
 
-            HeavenlyBodyBuilder.Make(go, body.Config, sphereOfInfluence, gv, initialMotion);
-
             return go;
         }
 
@@ -361,7 +358,7 @@ namespace NewHorizons.Handlers
         private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody)
         {
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = CommonResourcesUtilities.GetPosition(body.Config.Orbit) + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
+            go.transform.position = body.Config.Orbit.GetOrbitalParameters().GetPosition() + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {

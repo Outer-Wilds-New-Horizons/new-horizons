@@ -32,5 +32,10 @@ namespace NewHorizons.Components.Orbital
         {
             return Vector3.zero;
         }
+
+        public Vector3 GetPosition()
+        {
+            return Vector3.zero;
+        }
     }
 }
