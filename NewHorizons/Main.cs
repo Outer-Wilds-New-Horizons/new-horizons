@@ -14,7 +14,6 @@ using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,8 +24,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Atmosphere;
-using PacificEngine.OW_CommonResources.Geometry.Orbits;
-using NewHorizons.Utility.CommonResources;
 using UnityEngine.Events;
 
 namespace NewHorizons
@@ -182,8 +179,6 @@ namespace NewHorizons
 
                 IsSystemReady = false;
 
-                HeavenlyBodyBuilder.Reset();
-                CommonResourcesFix.Apply();
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
                 AstroObjectLocator.RefreshList();

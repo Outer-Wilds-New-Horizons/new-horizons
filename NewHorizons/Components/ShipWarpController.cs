@@ -1,5 +1,4 @@
 ﻿using NewHorizons.Builder.General;
-using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -133,11 +132,11 @@ namespace NewHorizons.Components
 
             if (_waitingToBeSeated)
             {
-                if (Player.getResources()._currentHealth < 100f)
+                if (Locator.GetPlayerTransform().TryGetComponent<PlayerResources>(out var resources) && resources._currentHealth < 100f)
                 {
                     Logger.Log("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
-                    Player.getResources()._currentHealth = 100f;
+                    resources._currentHealth = 100f;
                     if (!PlayerState.AtFlightConsole()) TeleportToShip();
                 }
             }
@@ -182,18 +181,20 @@ namespace NewHorizons.Components
             _waitingToBeSeated = false;
             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => _whitehole.Collapse(), 30);
 
+            var resources = Locator.GetPlayerTransform().GetComponent<PlayerResources>();
+
             Locator.GetDeathManager()._impactDeathSpeed = _impactDeathSpeed;
-            Player.getResources()._currentHealth = 100f;
+            resources._currentHealth = 100f;
             Locator.GetDeathManager()._invincible = false;
 
             // For some reason warping into the ship makes you suffocate while in the ship
-            if(_wearingSuit) Player.getResources().OnSuitUp();
+            if(_wearingSuit) resources.OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
             var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
-            Player.getResources()._cameraFluidDetector.AddVolume(atmoVolume);
-            Player.getResources()._cameraFluidDetector.OnVolumeAdded(atmoVolume);
-            Player.getResources()._cameraFluidDetector.OnVolumeActivated(atmoVolume);
+            resources._cameraFluidDetector.AddVolume(atmoVolume);
+            resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);
+            resources._cameraFluidDetector.OnVolumeActivated(atmoVolume);
 
             GlobalMessenger.FireEvent("EnterShip");
             PlayerState.OnEnterShip();

@@ -1,6 +1,5 @@
-﻿using NewHorizons.Utility;
-using NewHorizons.Utility.CommonResources;
-using PacificEngine.OW_CommonResources.Geometry.Orbits;
+﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.External
 {
-    public class OrbitModule : Module, IKeplerCoordinates
+    public class OrbitModule : Module, IOrbitalParameters
     {
-        public int SemiMajorAxis { get; set; }
+        public float SemiMajorAxis { get; set; }
         public float Inclination { get; set; }
         public string PrimaryBody { get; set; }
         public bool IsMoon { get; set; }
@@ -28,9 +27,9 @@ namespace NewHorizons.External
         public MColor Tint { get; set; }
         public bool TrackingOrbitLine { get; set; } = false;
 
-        public KeplerCoordinates GetKeplerCoords()
+        public OrbitalParameters GetOrbitalParameters()
         {
-            return KeplerCoordinates.fromTrueAnomaly(Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
+            return OrbitalParameters.FromTrueAnomaly(Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
         }
     }
 }

@@ -5,7 +5,6 @@
   "uniqueName": "xen.NewHorizons",
   "version": "0.10.2",
   "owmlVersion": "2.1.0",
-  "dependencies": [ "PacificEngine.OW_CommonResources" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.OuterWildsMMO", "Vesper.AutoResume" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }

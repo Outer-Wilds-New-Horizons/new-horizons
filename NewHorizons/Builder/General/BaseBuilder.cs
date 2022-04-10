@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.General
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.HasMapMarker;
 
-            if (config.Orbit != null) astroObject.SetKeplerCoordinatesFromOrbitModule(config.Orbit);
+            if (config.Orbit != null) astroObject.SetOrbitalParametersFromOrbitModule(config.Orbit);
 
             var type = AstroObject.Type.Planet;
             if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
