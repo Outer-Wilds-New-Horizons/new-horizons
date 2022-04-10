@@ -15,6 +15,6 @@ namespace NewHorizons.Components.Orbital
         float ArgumentOfPeriapsis { get; set; }
         float TrueAnomaly { get; set; }
 
-        OrbitalParameters GetOrbitalParameters();
+        OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity);
     }
 }

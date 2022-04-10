@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
 using System;
@@ -259,10 +260,10 @@ namespace NewHorizons.Handlers
             body.Object = go;
 
             // Now that we're done move the planet into place
-            UpdatePosition(go, body, primaryBody);
+            UpdatePosition(go, body, primaryBody, ao);
 
             // Have to do this after setting position
-            var initialMotion = InitialMotionBuilder.Make(go, primaryBody, owRigidBody, body.Config.Orbit);
+            var initialMotion = InitialMotionBuilder.Make(go, primaryBody, ao, owRigidBody, body.Config.Orbit);
 
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
@@ -355,10 +356,20 @@ namespace NewHorizons.Handlers
             return go;
         }
 
-        private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody)
+        private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody, AstroObject secondaryBody)
         {
             go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = body.Config.Orbit.GetOrbitalParameters().GetPosition() + (primaryBody == null ? Vector3.zero : primaryBody.transform.position);
+
+            if(primaryBody != null)
+            {
+                var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
+                var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
+                go.transform.position = body.Config.Orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+            }
+            else
+            {
+                go.transform.position = Vector3.zero;
+            }
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {

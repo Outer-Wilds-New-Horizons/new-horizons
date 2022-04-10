@@ -27,9 +27,9 @@ namespace NewHorizons.External
         public MColor Tint { get; set; }
         public bool TrackingOrbitLine { get; set; } = false;
 
-        public OrbitalParameters GetOrbitalParameters()
+        public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {
-            return OrbitalParameters.FromTrueAnomaly(Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
+            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
         }
     }
 }
