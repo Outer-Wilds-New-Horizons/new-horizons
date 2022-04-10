@@ -31,8 +31,16 @@ namespace NewHorizons.Components.Orbital
 
         public Gravity(GravityVolume gv)
         {
-            Mass = gv._gravitationalMass;
-            Power = gv._falloffType == GravityVolume.FalloffType.linear ? 1 : 2;
+            if(gv == null)
+            {
+                Mass = 0;
+                Power = 2;
+            }
+            else
+            {
+                Mass = gv._gravitationalMass;
+                Power = gv._falloffType == GravityVolume.FalloffType.linear ? 1 : 2;
+            }
         }
     }
 }
