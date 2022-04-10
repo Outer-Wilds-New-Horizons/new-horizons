@@ -63,13 +63,13 @@ namespace NewHorizons.Components.Orbital
             var x = r * (Mathf.Cos(la) * Mathf.Cos(ap + f) - Mathf.Sin(la) * Mathf.Sin(ap + f) * Mathf.Cos(i));
             var y = r * (Mathf.Sin(la) * Mathf.Cos(ap + f) - Mathf.Cos(la) * Mathf.Sin(ap + f) * Mathf.Cos(i));
             var z = r * (Mathf.Sin(i) * Mathf.Sin(ap + f));
-            orbitalParameters.InitialPosition = new Vector3(x, z, y); 
+            orbitalParameters.InitialPosition = new Vector3(x, y, z); 
 
             var coefficient = h * eccentricity * Mathf.Sin(f) / (r * p);
             var vx = x * coefficient - (h / r) * (Mathf.Cos(la) * Mathf.Sin(ap + f) + Mathf.Sin(la) * Mathf.Cos(ap + f) * Mathf.Cos(i));
             var vy = y * coefficient - (h / r) * (Mathf.Sin(la) * Mathf.Sin(ap + f) - Mathf.Cos(la) * Mathf.Cos(ap + f) * Mathf.Cos(i));
             var vz = z * coefficient + (h / r) * (Mathf.Sin(i) * Mathf.Cos(ap + f));
-            orbitalParameters.InitialVelocity = new Vector3(vx, vz, vy);
+            orbitalParameters.InitialVelocity = new Vector3(vx, vy, vz);
 
             return orbitalParameters;
         }

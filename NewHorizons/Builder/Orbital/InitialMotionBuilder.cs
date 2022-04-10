@@ -45,8 +45,7 @@ namespace NewHorizons.Builder.Orbital
                     var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
                     var velocity = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity;
 
-                    // For some stupid reason the InitialMotion awake method transforms the perfectly fine direction vector you give it so we preemptively do the inverse so it all cancels out
-                    initialMotion._initLinearDirection = body.transform.InverseTransformDirection(velocity.normalized);
+                    initialMotion._initLinearDirection = velocity.normalized;
                     initialMotion._initLinearSpeed = velocity.magnitude;
                 }
             }
