@@ -27,21 +27,6 @@ jobs:
     steps:
 
     - uses: actions/checkout@v2
-    
-    - uses: robinraju/release-downloader@v1.3
-      with: 
-        repository: " PacificEngine/OW_CommonResources"
-        latest: true
-        fileName: "PacificEngine.OW_CommonResources.zip"
-        out-file-path: "CR-Download/"
-        
-    - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
-    
-    - run: |
-        mv PacificEngine.OW_CommonResources/ NewHorizons/
-        $data = Get-Content NewHorizons/NewHorizons.csproj.user
-        $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
-        $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
         
     # Set to Release if we're in master, otherwise keep us in Debug
     - name: Set Release
