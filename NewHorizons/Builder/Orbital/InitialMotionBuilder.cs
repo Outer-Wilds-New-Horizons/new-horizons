@@ -17,24 +17,19 @@ namespace NewHorizons.Builder.Orbital
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
+            body.SetActive(false);
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
-            return Update(initialMotion, body, primaryBody, secondaryBody, OWRB, orbit);
-        }
 
-        public static float SiderealPeriodToAngularSpeed(float siderealPeriod)
-        {
-            return siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (siderealPeriod * 60f);
-        }
+            // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
+            initialMotion._orbitImpulseScalar = 0f;
 
-        public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
-        {
             // Rotation
-            initialMotion._initAngularSpeed = SiderealPeriodToAngularSpeed(orbit.SiderealPeriod);
+            initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
+            //initialMotion._primaryBody = primaryBody?.GetAttachedOWRigidbody();
 
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
-            body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+            initialMotion._rotationAxis = rotationAxis;
 
-            initialMotion._orbitImpulseScalar = 0f;
             if (!orbit.IsStatic && primaryBody != null)
             {                
                 initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
@@ -45,10 +40,18 @@ namespace NewHorizons.Builder.Orbital
                     var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
                     var velocity = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity;
 
-                    initialMotion._initLinearDirection = velocity.normalized;
-                    initialMotion._initLinearSpeed = velocity.magnitude;
+                    initialMotion._cachedInitVelocity = velocity + primaryBody?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
+                    initialMotion._isInitVelocityDirty = false;
                 }
             }
+            else
+            {
+                initialMotion._initLinearDirection = Vector3.forward;
+                initialMotion._initLinearSpeed = 0f;
+            }
+
+
+            body.SetActive(true);
 
             return initialMotion;
         }
