@@ -366,8 +366,7 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var relativePosition = body.Config.Orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
-                // Rotate it 90 degrees bc reasons
-                go.transform.position = Quaternion.AngleAxis(90, Vector3.left) * relativePosition + primaryBody.transform.position;
+                go.transform.position = relativePosition + primaryBody.transform.position;
             }
             else
             {

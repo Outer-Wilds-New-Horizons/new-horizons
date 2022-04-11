@@ -69,12 +69,11 @@ namespace NewHorizons.Components.Orbital
             var n_p = new Vector2(x, y).normalized;
             var n_v = new Vector2(-y, x).normalized;
 
-            // Idk why y and z get swapped just go with it
-            var pos = new Vector3(r * n_p.x, r * n_p.y, 0f);
-            var vel = new Vector3(v * n_v.x, 0f, -v * n_v.y);
+            var pos = new Vector3(r * n_p.x, 0f, r * n_p.y);
+            var vel = new Vector3(v * n_v.x, 0f, v * n_v.y);
 
-            orbitalParameters.InitialPosition = R1 * R2 * R3 * pos;
-            orbitalParameters.InitialVelocity = R1 * R2 * R3 * vel;
+            orbitalParameters.InitialPosition = R3 * pos;
+            orbitalParameters.InitialVelocity = R3 * vel;
 
             Logger.Log($"POSITION: {orbitalParameters.InitialPosition}, {orbitalParameters.InitialVelocity}, {n_p}, {n_v}");
 
