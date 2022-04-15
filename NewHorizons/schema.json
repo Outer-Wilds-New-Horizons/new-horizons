@@ -1,5 +1,9 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$docs": {
+    "title": "Celestial Body Schema",
+    "description": "Schema for a celestial body in New Horizons"
+  },
   "$defs": {
     "vector3": {
       "type": "object",
@@ -122,7 +126,7 @@
     },
     "destroy": {
       "type": "boolean",
-      "description": "True if you want to delete this planet",
+      "description": "`true` if you want to delete this planet",
       "default": false
     },
     "Base": {
@@ -136,7 +140,7 @@
         "hasAmbientLight": {
           "type": "boolean",
           "default": false,
-          "description": "If the dark side of the body should have some slight ammount of light"
+          "description": "If the dark side of the body should have some slight amount of light"
         },
         "surfaceGravity": {
           "type": "number",
@@ -230,7 +234,7 @@
         "useBasicCloudShader": {
           "type": "boolean",
           "default": false,
-          "description": "Set to false to use Giant's deep shader. Set to true to just apply the cloud texture as is."
+          "description": "Set to `false` in order to use Giant's deep shader. Set to `true` to just apply the cloud texture as is."
         },
         "shadowsOnClouds": {
           "type": "boolean",
@@ -311,7 +315,7 @@
         },
         "argumentOfPeriapsis": {
           "$ref": "#/$defs/angle",
-          "description": "An angle (in degrees) defining the location of the periapsis (closest distance to it's primary body) if it has nonzero eccentricity."
+          "description": "An angle (in degrees) defining the location of the periapsis (the closest distance to it's primary body) if it has nonzero eccentricity."
         },
         "trueAnomaly": {
           "$ref": "#/$defs/angle",
@@ -333,7 +337,7 @@
         },
         "alignmentAxis": {
           "$ref": "#/$defs/vector3",
-          "description": "If it is tidally locked, this direction will face towards the primary. Ex) Interloper uses 0, -1, 0. Most planets will want something like -1, 0, 0."
+          "description": "If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets will want something like `-1, 0, 0`."
         },
         "showOrbitLine": {
           "type": "boolean",
@@ -735,7 +739,7 @@
               "identificationRadius": {
                 "type": "number",
                 "minimum": 0,
-                "description": "How close the player must get to the signal to identify it. This is when you learn it's name."
+                "description": "How close the player must get to the signal to identify it. This is when you learn its name."
               },
               "onlyAudibleToScope": {
                 "type": "boolean",
@@ -767,7 +771,7 @@
         },
         "targetStarSystem": {
           "type": "string",
-          "description": "If you want a black hole to load a new star system scene, put it's name here. Optional."
+          "description": "If you want a black hole to load a new star system scene, put its name here. Optional."
         },
         "type": {
           "type": "string",
@@ -953,7 +957,7 @@
                   },
                   "scale": {
                     "$ref": "#/$defs/vector2",
-                    "description": "The amount to scale the x and y axis of the detail by."
+                    "description": "The amount to scale the x and y-axis of the detail by."
                   }
                 }
               }

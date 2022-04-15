@@ -95,7 +95,7 @@
             <xs:element name="Entry" type="Entry" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
-                        Child entires within this entry
+                        Child entries within this entry
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

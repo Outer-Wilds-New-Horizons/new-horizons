@@ -8,7 +8,8 @@
                 <xs:element name="NameField" type="xs:string">
                     <xs:annotation>
                         <xs:documentation>
-                            The name of the character, used for the interaction prompt. Set to "SIGN" for the prompt "Read", or "RECORDING" for "Play Recording"
+                            The name of the character, used for the interaction prompt. Set to `SIGN` for the prompt
+                            "Read", or `RECORDING` for "Play Recording"
                         </xs:documentation>
                     </xs:annotation>
                 </xs:element>
@@ -22,7 +23,7 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
+
     <!-- Dialogue Node Info -->
     <xs:complexType name="DialogueNode">
         <xs:sequence>
@@ -36,7 +37,8 @@
             <xs:element name="EntryCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
-                        The condition that needs to be met in order for the dialogue to begin at this node. There must be one node that uses "DEFAULT"
+                        The condition that needs to be met in order for the dialogue to begin at this node. There must
+                        be one node that has a value of `DEFAULT`
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
@@ -71,27 +73,29 @@
             <xs:element name="SetPersistentCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
-                        Set a new persistent condition that will last indefinitely in the current save, unless cancelled or deleted
+                        Set a new persistent condition that will last indefinitely in the current save, unless cancelled
+                        or deleted
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="DialogueTargetShipLogCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
-                        A ship log fact that must be revealed in order to proceed to the DialogueTarget
+                        A ship log fact that must be revealed in order to proceed to the `DialogueTarget`
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
             <xs:element name="DialogueTarget" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        The name of the DialogueNode to go to after this node. Mutually exclusive with DialogueOptionsList here
+                        The name of the `DialogueNode` to go to after this node. Mutually exclusive with
+                        `DialogueOptionsList` here
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
+
     <!-- Dialogue Info -->
     <xs:complexType name="Dialogue">
         <xs:sequence>
@@ -104,7 +108,7 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
+
     <!-- Reveal Facts Info -->
     <xs:complexType name="RevealFacts">
         <xs:sequence>
@@ -117,7 +121,7 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
+
     <!-- Dialogue Options List Info -->
     <xs:complexType name="DialogueOptionsList">
         <xs:sequence>
@@ -130,7 +134,7 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
+
     <!-- Dialogue Option Info -->
     <xs:complexType name="DialogueOption">
         <xs:sequence>
@@ -193,11 +197,10 @@
             <xs:element name="DialogueTarget" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        The name of the DialogueNode to go to when this option is selected
+                        The name of the `DialogueNode` to go to when this option is selected
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-    
 </xs:schema>

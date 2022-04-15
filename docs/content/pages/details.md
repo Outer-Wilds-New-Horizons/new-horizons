@@ -1,5 +1,5 @@
 Title: Detailing
-Sort-Priority: 90
+Sort_Priority: 90
 
 ## Details/Scatterer
 

@@ -1,5 +1,5 @@
 Title: API
-Sort-Priority: 40
+Sort_Priority: 40
 
 ## How to use the API
 

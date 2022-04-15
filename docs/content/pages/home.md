@@ -1,6 +1,6 @@
 Title: Home
-Out-File: index
-Sort-Priority: 100
+Out_File: index
+Sort_Priority: 100
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
@@ -22,9 +22,9 @@ the xen.NewHorizons directory).
 To locate this directory, click the "⋮" symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "
 show in explorer" in the pop-up.
 
-![Click the three dots in the mod manager]({{ 'images/home/mod_manager_dots.webp'|static }})
+![Click the three dots in the mod manager]({{ "images/home/mod_manager_dots.webp"|static }})
 
-![Create a new folder named "planets"]({{ 'images/home/create_planets.webp'|static }})
+![Create a new folder named "planets"]({{ "images/home/create_planets.webp"|static }})
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:
