@@ -34,7 +34,13 @@
       }
     ],
     "meta": {
-      "keywords": ["New Horizons", "Outer Wilds", "Modding", "C#", "Unity"]
+      "description": "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
+      "keywords": ["New Horizons", "Outer Wilds", "Modding", "C#", "Unity"],
+      "categories": ["games", "utilities"],
+      "image": "images/home/home_logo.webp",
+      "image_alt": "The New Horizons Logo",
+      "theme_color": "#303030",
+      "bg_color": "#1a1a1a"
     },
     "footer": {
       "show_made_with": false,
