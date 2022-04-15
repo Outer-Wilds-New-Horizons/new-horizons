@@ -116,6 +116,11 @@ it).
 
 Check out the rest of the site for how to format planet, star system, dialogue, ship log, and translation files!
 
+## Publishing Your Mod
+
+Once your mod is complete, you can use the [addon creation tool](https://outerwildsmods.com/custom-worlds/create/) to upload your mod to the database.  
+Alternatively, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme) GitHub template if you're familiar with Git and GitHub
+
 ## Helpful Resources
 
 The texturemap/heightmap feature was inspired by the KSP mod Kopernicus. A lot of the same techniques that apply to
