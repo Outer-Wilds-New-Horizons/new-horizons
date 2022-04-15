@@ -19,6 +19,8 @@ Planets are created using a JSON file format structure, and placed in a folder c
 it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within
 the xen.NewHorizons directory).
 
+You may want to get [VSCode](https://code.visualstudio.com/){ target="_blank" } if you are unfamiliar with the JSON language, as it will help highlight common errors.
+
 To locate this directory, click the "⋮" symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "
 show in explorer" in the pop-up.
 
@@ -118,8 +120,8 @@ Check out the rest of the site for how to format planet, star system, dialogue, 
 
 ## Publishing Your Mod
 
-Once your mod is complete, you can use the [addon creation tool](https://outerwildsmods.com/custom-worlds/create/) to upload your mod to the database.  
-Alternatively, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme) GitHub template if you're familiar with Git and GitHub
+Once your mod is complete, you can use the [addon creation tool](https://outerwildsmods.com/custom-worlds/create/){ target="_blank" } to upload your mod to the database.  
+Alternatively, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme){ target="_blank" } GitHub template if you're familiar with Git and GitHub
 
 ## Helpful Resources
 
