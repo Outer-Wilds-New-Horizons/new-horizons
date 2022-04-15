@@ -23,7 +23,7 @@ on:
 
 env:
   URL_PREFIX:  ${{ github.events.inputs.relative_path }}
-  PIPENV_VENV_IN_PROJECT: enabled
+  PIPENV_VENV_IN_PROJECT: 1
 
 jobs:
   build:
@@ -31,6 +31,8 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+      
+      - run: mkdir ./.venv
       
       - run: cp -r docs/** .
       
