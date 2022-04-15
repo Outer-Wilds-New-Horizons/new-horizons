@@ -21,8 +21,7 @@ pre > code {
     background: #555;
 }
 
-.accordion-button:not(.collapsed) {
-    color: #effff7 !important;
+.accordion-button {
     background-color: #2b2b2b !important;
 }
 
@@ -47,4 +46,8 @@ pre > code {
 
 .accordion-item {
     border: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.accordion-body {
+    background-color: #353535 !important;
 }

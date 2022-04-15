@@ -1,6 +1,6 @@
 Title: Home
-Out-File: index
-Sort-Priority: 100
+Out_File: index
+Sort_Priority: 100
 
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
@@ -19,12 +19,14 @@ Planets are created using a JSON file format structure, and placed in a folder c
 it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within
 the xen.NewHorizons directory).
 
+You may want to get [VSCode](https://code.visualstudio.com/){ target="_blank" } if you are unfamiliar with the JSON language, as it will help highlight common errors.
+
 To locate this directory, click the "⋮" symbol next to "New Horizons" in the Outer Wilds Mod Manager and then click "
 show in explorer" in the pop-up.
 
-![Click the three dots in the mod manager]({{ 'images/home/mod_manager_dots.webp'|static }})
+![Click the three dots in the mod manager]({{ "images/home/mod_manager_dots.webp"|static }})
 
-![Create a new folder named "planets"]({{ 'images/home/create_planets.webp'|static }})
+![Create a new folder named "planets"]({{ "images/home/create_planets.webp"|static }})
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:
@@ -115,6 +117,11 @@ Most fields are either true/false, a decimal number, and integer number, or a st
 it).
 
 Check out the rest of the site for how to format planet, star system, dialogue, ship log, and translation files!
+
+## Publishing Your Mod
+
+Once your mod is complete, you can use the [addon creation tool](https://outerwildsmods.com/custom-worlds/create/){ target="_blank" } to upload your mod to the database.  
+Alternatively, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme){ target="_blank" } GitHub template if you're familiar with Git and GitHub
 
 ## Helpful Resources
 
