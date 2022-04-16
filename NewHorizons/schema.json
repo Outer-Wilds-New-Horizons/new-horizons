@@ -129,6 +129,11 @@
       "description": "`true` if you want to delete this planet",
       "default": false
     },
+    "childrenToDestroy": {
+      "type": "string",
+      "description": "A list of paths to child GameObjects to destroy on this planet",
+      "default": []
+    },
     "Base": {
       "type": "object",
       "properties": {
