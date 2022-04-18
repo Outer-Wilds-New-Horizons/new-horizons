@@ -18,7 +18,8 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            var orbitLinePrefab = GameObject.Find("OrbitLine_GD").GetComponent<OrbitLine>();
+            lineRenderer.material = orbitLinePrefab.GetComponent<LineRenderer>().material;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
 
@@ -28,27 +29,14 @@ namespace NewHorizons.Builder.Orbital
 
             OrbitLine orbitLine;
 
-            /*
-            if(config.Orbit.TrackingOrbitLine)
-            {
-                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
-            }
-            else if (ecc == 0)
+            if(config.Orbit.Eccentricity == 0)
             {
                 orbitLine = orbitGO.AddComponent<OrbitLine>();
-            }
-            else if (ecc > 0 && ecc < 1 && (parentGravity != null && parentGravity._falloffType == GravityVolume.FalloffType.inverseSquared))
-            {
-                // Doesn't work for linear eccentric falloff
-                orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
             }
             else
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }
-            */
-
-            orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
@@ -68,15 +56,13 @@ namespace NewHorizons.Builder.Orbital
                 orbitLine._fadeStartDist = 3000;
             }
             
-            orbitLine.SetValue("_color", color);
+            orbitLine._color = color;
 
-            orbitLine.SetValue("_astroObject", astroobject);
-            orbitLine.SetValue("_fade", fade);
-            orbitLine.SetValue("_lineWidth", 2f);
+            orbitLine._astroObject = astroobject;
+            orbitLine._fade = fade;
+            orbitLine._lineWidth = 0.3f;
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
-                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   
-            );
+            orbitLine.InitializeLineRenderer();
         }
     }
 }
