@@ -53,9 +53,34 @@ namespace NewHorizons.Components.Orbital
 
             var p = semiMajorAxis * (1 - (eccentricity * eccentricity)); // Semi-latus rectum
             var r = p / (1 + eccentricity * Mathf.Cos(f));
-            var mu = GravityVolume.GRAVITATIONAL_CONSTANT * primaryMass;
-            var h = Mathf.Sqrt(mu * p);
-            var v = Mathf.Sqrt(mu * ((2 / r) - (1 / semiMajorAxis)));
+
+            var G = GravityVolume.GRAVITATIONAL_CONSTANT;
+            var mu = G * (primaryMass + secondaryMass);
+
+            var r_p = semiMajorAxis * (1 - eccentricity);
+            var r_a = semiMajorAxis * (1 + eccentricity);
+
+            float v;
+            if(primaryGravity.Power == 1)
+            {
+                // Have to deal with a limit
+                if(eccentricity == 0)
+                {
+                    var v2 = 2 * mu * (Mathf.Log(r_a / r) + (1 / 2f));
+                    v = Mathf.Sqrt(v2);
+                }
+                else
+                {
+                    var coeff = (r_p * r_p) / (r_p * r_p - r_a * r_a);
+                    var v2 = 2 * mu * secondaryMass * (coeff * Mathf.Log(r_p / r_a) + Mathf.Log(r_a / r));
+                    v = Mathf.Sqrt(v2);
+                }
+            }
+            else
+            {
+                v = Mathf.Sqrt(G * primaryMass * ((2f / r) - (1f / semiMajorAxis)));
+            }
+
             var semiMinorAxis = semiMajorAxis * Mathf.Sqrt(1 - (eccentricity * eccentricity));
             var focusDistance = Mathf.Sqrt((semiMajorAxis * semiMajorAxis) - (semiMinorAxis * semiMinorAxis));
 
@@ -72,10 +97,10 @@ namespace NewHorizons.Components.Orbital
             var pos = new Vector3(r * n_p.x, 0f, r * n_p.y);
             var vel = new Vector3(v * n_v.x, 0f, v * n_v.y);
 
-            orbitalParameters.InitialPosition = R3 * pos;
-            orbitalParameters.InitialVelocity = R3 * vel;
+            orbitalParameters.InitialPosition = R1 * R2 * R3 * pos;
+            orbitalParameters.InitialVelocity = R1 * R2 * R3 * vel;
 
-            Logger.Log($"POSITION: {orbitalParameters.InitialPosition}, {orbitalParameters.InitialVelocity}, {n_p}, {n_v}");
+            Logger.Log($"POSITION: {orbitalParameters.InitialPosition}, {orbitalParameters.InitialVelocity}, {n_p}, {n_v}, {primaryMass}");
 
             /*
             var x = r * (Mathf.Cos(la) * Mathf.Cos(ap + f) - Mathf.Sin(la) * Mathf.Sin(ap + f) * Mathf.Cos(i));

@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Orbital
 
             // Rotation
             initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
-            //initialMotion._primaryBody = primaryBody?.GetAttachedOWRigidbody();
+            initialMotion._primaryBody = primaryBody?.GetAttachedOWRigidbody();
 
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
             initialMotion._rotationAxis = rotationAxis;
@@ -40,7 +40,8 @@ namespace NewHorizons.Builder.Orbital
                     var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
                     var velocity = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity;
 
-                    initialMotion._cachedInitVelocity = velocity + primaryBody?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
+                    var parentVelocity = primaryBody?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
+                    initialMotion._cachedInitVelocity = velocity + parentVelocity;
                     initialMotion._isInitVelocityDirty = false;
                 }
             }
@@ -49,7 +50,6 @@ namespace NewHorizons.Builder.Orbital
                 initialMotion._initLinearDirection = Vector3.forward;
                 initialMotion._initLinearSpeed = 0f;
             }
-
 
             body.SetActive(true);
 
