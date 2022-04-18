@@ -55,7 +55,7 @@ namespace NewHorizons.Components.Orbital
             var r = p / (1 + eccentricity * Mathf.Cos(f));
 
             var G = GravityVolume.GRAVITATIONAL_CONSTANT;
-            var mu = G * (primaryMass + secondaryMass);
+            var mu = G * (primaryMass);
 
             var r_p = semiMajorAxis * (1 - eccentricity);
             var r_a = semiMajorAxis * (1 + eccentricity);
