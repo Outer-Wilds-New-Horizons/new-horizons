@@ -74,7 +74,7 @@ namespace NewHorizons.Components.Orbital
                 else
                 {
                     var coeff = (r_p * r_p) / (r_p * r_p - r_a * r_a);
-                    var v2 = 2 * mu * secondaryMass * (coeff * Mathf.Log(r_p / r_a) + Mathf.Log(r_a / r));
+                    var v2 = 2 * mu * (coeff * Mathf.Log(r_p / r_a) + Mathf.Log(r_a / r));
                     v = Mathf.Sqrt(v2);
                 }
             }
