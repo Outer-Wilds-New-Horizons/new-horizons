@@ -1,5 +1,5 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "https://json-schema.org/draft-07/schema",
   "$docs": {
     "title": "Celestial Body Schema",
     "description": "Schema for a celestial body in New Horizons"
@@ -222,7 +222,7 @@
         },
         "cloudTint": {
           "$ref": "#/$defs/color",
-          "description" : "Colour of the cloud layer. Only relevant if \"cloud\" has a value"
+          "description": "Colour of the cloud layer. Only relevant if \"cloud\" has a value"
         },
         "cloud": {
           "type": "string",
@@ -254,7 +254,7 @@
           "type": "number",
           "minimum": 0,
           "maximum": 1,
-          "description" : "How dense the fog is, if you put fog."
+          "description": "How dense the fog is, if you put fog."
         },
         "fogSize": {
           "type": "number",
@@ -272,7 +272,7 @@
         "hasOxygen": {
           "type": "boolean",
           "default": false,
-          "description" : "Lets you survive on the planet without a suit."
+          "description": "Lets you survive on the planet without a suit."
         },
         "hasAtmosphere": {
           "type": "boolean",
@@ -372,7 +372,7 @@
           "type": "number",
           "default": 0,
           "minimum": 0,
-          "description" : "Inner radius of the disk "
+          "description": "Inner radius of the disk "
         },
         "outerRadius": {
           "type": "number",
@@ -382,11 +382,11 @@
         "inclination": {
           "type": "number",
           "default": 0,
-          "description" : "Angle between the rings and the equatorial plane of the planet."
+          "description": "Angle between the rings and the equatorial plane of the planet."
         },
         "longitudeOfAscendingNode": {
           "$ref": "#/$defs/angle",
-          "description" : "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero."
+          "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero."
         },
         "texture": {
           "type": "string",
@@ -395,11 +395,11 @@
         "rotationSpeed": {
           "type": "number",
           "default": 0,
-          "description" : "Allows the rings to rotate."
+          "description": "Allows the rings to rotate."
         },
         "curve": {
           "$ref": "#/$defs/curve",
-          "description" : "Allows the rings to grow/shrink with time."
+          "description": "Allows the rings to grow/shrink with time."
         }
       }
     },
@@ -417,12 +417,12 @@
         "minHeight": {
           "type": "number",
           "minimum": 0,
-          "description" : "The lowest points on your planet will be at this height."
+          "description": "The lowest points on your planet will be at this height."
         },
         "maxHeight": {
           "type": "number",
           "minimum": 0,
-          "description" : "The highest points on your planet will be at this height."
+          "description": "The highest points on your planet will be at this height."
         }
       }
     },
@@ -444,11 +444,11 @@
         },
         "inclination": {
           "$ref": "#/$defs/angle",
-          "description" : "Angle between the rings and the equatorial plane of the planet."
+          "description": "Angle between the rings and the equatorial plane of the planet."
         },
         "longitudeOfAscendingNode": {
           "$ref": "#/$defs/angle",
-          "description" : "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero."
+          "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero."
         },
         "randomSeed": {
           "type": "integer",
@@ -467,7 +467,7 @@
           "type": "number",
           "default": 2000,
           "minimum": 0,
-          "description" : "Radius of the star."
+          "description": "Radius of the star."
         },
         "tint": {
           "$ref": "#/$defs/color",
@@ -490,11 +490,11 @@
         "hasAtmosphere": {
           "type": "boolean",
           "default": true,
-          "description" : "The default sun has its own atmosphere that is different from regular planets. If you want that, set this to true."
+          "description": "The default sun has its own atmosphere that is different from regular planets. If you want that, set this to true."
         },
         "curve": {
           "$ref": "#/$defs/curve",
-          "description" : "Allows the star to shrink/grow over time."
+          "description": "Allows the star to shrink/grow over time."
         }
       }
     },
@@ -615,7 +615,11 @@
             "properties": {
               "revealOn": {
                 "type": "string",
-                "enum": [ "enter", "observe", "snapshot" ],
+                "enum": [
+                  "enter",
+                  "observe",
+                  "snapshot"
+                ],
                 "description": "'enter', 'observe', or 'snapshot' what needs to be done to the volume to unlock the facts"
               },
               "reveals": {
@@ -657,7 +661,7 @@
                 "description": "The ID of the entry this location is for"
               },
               "cloaked": {
-                "type": "bool",
+                "type": "boolean",
                 "description": "Whether this entry location is in a cloaking field",
                 "default": false
               },
@@ -688,7 +692,7 @@
       "properties": {
         "playerSpawnPoint": {
           "$ref": "#/$defs/vector3",
-          "description" : "If you want the player to spawn on the new body, set a value for this. Press \"P\" in game with Debug mode on to have the game log the position you're looking at to find a good value for this."
+          "description": "If you want the player to spawn on the new body, set a value for this. Press \"P\" in game with Debug mode on to have the game log the position you're looking at to find a good value for this."
         },
         "shipSpawnPoint": {
           "$ref": "#/$defs/vector3"
@@ -696,7 +700,7 @@
         "startWithSuit": {
           "type": "boolean",
           "default": false,
-          "description" : "If you spawn on a planet with no oxygen, you probably want to set this to true ;)"
+          "description": "If you spawn on a planet with no oxygen, you probably want to set this to true ;)"
         }
       }
     },
@@ -713,11 +717,11 @@
               },
               "frequency": {
                 "type": "string",
-                "description" : "The frequency ID of the signal. The built-in game values are \"Default\", \"Traveler\", \"Quantum\", \"EscapePod\", \"Statue\", \"WarpCore\", \"HideAndSeek\", and \"Radio\". You can also put a custom value."
+                "description": "The frequency ID of the signal. The built-in game values are \"Default\", \"Traveler\", \"Quantum\", \"EscapePod\", \"Statue\", \"WarpCore\", \"HideAndSeek\", and \"Radio\". You can also put a custom value."
               },
               "name": {
                 "type": "string",
-                "description" : "The unique ID of the signal."
+                "description": "The unique ID of the signal."
               },
               "audioClip": {
                 "type": "string",
@@ -768,7 +772,7 @@
           "type": "number",
           "default": 0,
           "minimum": 0,
-          "description" : "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that has warped effects in it."
+          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that has warped effects in it."
         },
         "pairedSingularity": {
           "type": "string",
@@ -919,7 +923,7 @@
               "default": 1
             },
             "invisibleWhenHidden": {
-              "type": "bool",
+              "type": "boolean",
               "description": "Hide the planet completely if unexplored instead of showing an outline.",
               "default": false
             },
