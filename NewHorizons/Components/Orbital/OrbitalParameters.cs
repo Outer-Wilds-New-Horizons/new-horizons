@@ -61,6 +61,8 @@ namespace NewHorizons.Components.Orbital
             var r_a = semiMajorAxis * (1 + eccentricity);
 
             float v;
+
+            // For linear
             if(primaryGravity.Power == 1)
             {
                 // Have to deal with a limit
@@ -76,6 +78,7 @@ namespace NewHorizons.Components.Orbital
                     v = Mathf.Sqrt(v2);
                 }
             }
+            // For inverseSquare
             else
             {
                 v = Mathf.Sqrt(G * primaryMass * ((2f / r) - (1f / semiMajorAxis)));
@@ -99,45 +102,6 @@ namespace NewHorizons.Components.Orbital
 
             orbitalParameters.InitialPosition = R1 * R2 * R3 * pos;
             orbitalParameters.InitialVelocity = R1 * R2 * R3 * vel;
-
-            Logger.Log($"POSITION: {orbitalParameters.InitialPosition}, {orbitalParameters.InitialVelocity}, {n_p}, {n_v}, {primaryMass}");
-
-            /*
-            var x = r * (Mathf.Cos(la) * Mathf.Cos(ap + f) - Mathf.Sin(la) * Mathf.Sin(ap + f) * Mathf.Cos(i));
-            var y = r * (Mathf.Sin(la) * Mathf.Cos(ap + f) + Mathf.Cos(la) * Mathf.Sin(ap + f) * Mathf.Cos(i));
-            var z = r * (Mathf.Sin(i) * Mathf.Sin(ap + f));
-            orbitalParameters.InitialPosition = new Vector3(x, y, z); 
-
-            // Velocity
-
-            var coefficient = h * eccentricity * Mathf.Sin(f) / (r * p);
-            var vx = x * coefficient - (h / r) * (Mathf.Cos(la) * Mathf.Sin(ap + f) + Mathf.Sin(la) * Mathf.Cos(ap + f) * Mathf.Cos(i));
-            var vy = y * coefficient - (h / r) * (Mathf.Sin(la) * Mathf.Sin(ap + f) - Mathf.Cos(la) * Mathf.Cos(ap + f) * Mathf.Cos(i));
-            var vz = z * coefficient + (h / r) * (Mathf.Sin(i) * Mathf.Cos(ap + f));
-            orbitalParameters.InitialVelocity = new Vector3(vx, vy, vz);
-            */
-
-            /*
-            // Where x points towards the periapsis 
-            var ox = semiMajorAxis * Mathf.Cos(f);
-            var oy = semiMinorAxis * Mathf.Sin(f);
-            var o = new Vector3(ox, 0, oy);
-
-            var mu = GravityVolume.GRAVITATIONAL_CONSTANT * primaryMass;
-            var r = o.magnitude;
-            var o_dot_coeff = Mathf.Sqrt(mu * ((2/r) - (1/semiMajorAxis)));
-            var ox_dot = o_dot_coeff * -Mathf.Sin(eccentricAnomaly);
-            var oy_dot = o_dot_coeff * Mathf.Cos(eccentricAnomaly);
-            var o_dot = new Vector3(ox_dot, 0, oy_dot);
-
-            // Do some rotations
-            var R1 = Quaternion.AngleAxis(Mathf.Rad2Deg * -longitudeOfAscendingNode, Vector3.up);
-            var R2 = Quaternion.AngleAxis(Mathf.Rad2Deg * -inclination, Vector3.forward);
-            var R3 = Quaternion.AngleAxis(Mathf.Rad2Deg * -argumentOfPeriapsis, Vector3.up);
-
-            orbitalParameters.InitialPosition = R1 * R2 * R3 * o;
-            orbitalParameters.InitialVelocity = R1 * R2 * R3 * o_dot;
-            */
 
             return orbitalParameters;
         }
