@@ -127,36 +127,30 @@ namespace NewHorizons.Builder.Orbital
             var reducedMassGravity = new Gravity(reducedMass, primaryGravity.Power);
             var baryCenterVelocity = baryCenter?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
 
-            var primaryOrbit = OrbitalParameters.FromTrueAnomaly(
-                reducedMassGravity,
-                primaryGravity,
-                primaryBody.Eccentricity,
-                r1,
-                primaryBody.Inclination,
-                primaryBody.ArgumentOfPeriapsis,
-                primaryBody.LongitudeOfAscendingNode,
-                0f
-            );
-
-            var primaryVelocity = primaryOrbit.InitialVelocity;
-            var primaryInitialMotion = primaryBody.GetComponent<InitialMotion>();
-            primaryInitialMotion._cachedInitVelocity = primaryVelocity + baryCenterVelocity;
-            primaryInitialMotion._isInitVelocityDirty = false;
-
-            var secondaryOrbit = OrbitalParameters.FromTrueAnomaly(
+            // Doing the two body problem as a single one body problem gives the relative velocity of secondary to primary
+            var reducedOrbit = OrbitalParameters.FromTrueAnomaly(
                 reducedMassGravity,
                 secondaryGravity,
-                primaryBody.Eccentricity,
-                r2,
-                primaryBody.Inclination,
-                primaryBody.ArgumentOfPeriapsis,
-                primaryBody.LongitudeOfAscendingNode,
-                180f
+                secondaryBody.Eccentricity,
+                distance.magnitude,
+                secondaryBody.Inclination,
+                secondaryBody.ArgumentOfPeriapsis,
+                secondaryBody.LongitudeOfAscendingNode,
+                secondaryBody.TrueAnomaly
             );
 
-            var secondaryVelocity = secondaryOrbit.InitialVelocity;
+            // We know their velocities sum up to the total relative velocity and are related to the masses / distances
+            var relativeVelocity = 2f * reducedOrbit.InitialVelocity;
+            var secondaryVelocity = relativeVelocity / (1f + (r1 / r2));
+            var primaryVelocity = relativeVelocity - secondaryVelocity;
+
+            // Now we just set things
+            var primaryInitialMotion = primaryBody.GetComponent<InitialMotion>();
+            primaryInitialMotion._cachedInitVelocity = baryCenterVelocity + primaryVelocity;
+            primaryInitialMotion._isInitVelocityDirty = false;
+
             var secondaryInitialMotion = secondaryBody.GetComponent<InitialMotion>();
-            secondaryInitialMotion._cachedInitVelocity = secondaryVelocity + baryCenterVelocity;
+            secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity - secondaryVelocity;
             secondaryInitialMotion._isInitVelocityDirty = false;
 
             Logger.Log($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
