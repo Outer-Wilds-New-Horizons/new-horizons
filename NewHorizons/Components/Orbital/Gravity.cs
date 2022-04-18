@@ -38,8 +38,8 @@ namespace NewHorizons.Components.Orbital
             }
             else
             {
-                Mass = gv._gravitationalMass;
                 Power = gv._falloffType == GravityVolume.FalloffType.linear ? 1 : 2;
+                Mass = gv._surfaceAcceleration * Mathf.Pow(gv._upperSurfaceRadius, Power) / GravityVolume.GRAVITATIONAL_CONSTANT;
             }
         }
     }
