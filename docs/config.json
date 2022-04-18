@@ -39,7 +39,7 @@
       "categories": ["games", "utilities"],
       "image": "images/home/home_logo.webp",
       "image_alt": "The New Horizons Logo",
-      "theme_color": "#303030",
+      "theme_color": "#ffab8a",
       "bg_color": "#1a1a1a"
     },
     "footer": {
