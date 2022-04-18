@@ -17,7 +17,6 @@ namespace NewHorizons.Builder.Orbital
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
-            body.SetActive(false);
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
 
             // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
@@ -75,8 +74,6 @@ namespace NewHorizons.Builder.Orbital
                 initialMotion._initLinearDirection = Vector3.forward;
                 initialMotion._initLinearSpeed = 0f;
             }
-
-            body.SetActive(true);
 
             return initialMotion;
         }
@@ -140,6 +137,7 @@ namespace NewHorizons.Builder.Orbital
             );
 
             // We know their velocities sum up to the total relative velocity and are related to the masses / distances
+            // Idk where the times 2 comes from but it makes it work? Idk theres 2 planets? Makes no sense
             var relativeVelocity = 2f * reducedOrbit.InitialVelocity;
             var secondaryVelocity = relativeVelocity / (1f + (r1 / r2));
             var primaryVelocity = relativeVelocity - secondaryVelocity;

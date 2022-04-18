@@ -17,9 +17,10 @@ namespace NewHorizons.Components.Orbital
 
         public GameObject FakeMassBody { get; set; }
 
-        void Awake()
+        void Start()
         {
-            FakeMassBody.SetActive(true);   
+            // Make sure its active but maybe it hasn't been set yet
+            if(FakeMassBody) FakeMassBody.SetActive(true);   
         }
 
         void Update()
