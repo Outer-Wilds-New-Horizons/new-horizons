@@ -138,35 +138,35 @@
     <!-- Dialogue Option Info -->
     <xs:complexType name="DialogueOption">
         <xs:sequence>
-            <xs:element name="RequiredPersistentCondition" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="RequiredPersistentCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Require a persistent condition to be met to show this option
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="CancelledPersistentCondition" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="CancelledPersistentCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Hide this option if a persistent condition has been met
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RequiredCondition" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="RequiredCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Require a (single-loop) condition to be met to show this option
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="CancelledCondition" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="CancelledCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Hide this option if a (single-loop) condition has been met
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="RequiredLogCondition" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="RequiredLogCondition" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Require a ship log fact to be known to show this option
@@ -180,14 +180,14 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ConditionToSet" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="ConditionToSet" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Set a condition when this option is chosen
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ConditionToCancel" type="xs:string" maxOccurs="unbounded">
+            <xs:element name="ConditionToCancel" type="xs:string" minOccurs="0" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         Cancel a condition when this option is chosen
