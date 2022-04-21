@@ -412,3 +412,6 @@ NewHorizons/Properties/**
 docs/out/**
 docs/content/schemas/**
 docs/schemas/**
+
+# Unity project
+NewHorizonsUnity/**
