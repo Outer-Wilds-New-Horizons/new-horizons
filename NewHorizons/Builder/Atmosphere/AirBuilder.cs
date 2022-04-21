@@ -18,12 +18,12 @@ namespace NewHorizons.Builder.Atmosphere
             SC.radius = airScale;
 
             SimpleFluidVolume SFV = airGO.AddComponent<SimpleFluidVolume>();
-            SFV.SetValue("_layer", 5);
-            SFV.SetValue("_priority", 1);
-            SFV.SetValue("_density", 1.2f);
-            SFV.SetValue("_fluidType", FluidVolume.Type.AIR);
-            SFV.SetValue("_allowShipAutoroll", true);
-            SFV.SetValue("_disableOnStart", false);
+            SFV._layer = 5;
+            SFV._priority = 1;
+            SFV._density = 1.2f;
+            SFV._fluidType = FluidVolume.Type.AIR;
+            SFV._allowShipAutoroll = true;
+            SFV._disableOnStart = false;
 
             if(hasOxygen)
             {
@@ -33,9 +33,9 @@ namespace NewHorizons.Builder.Atmosphere
             if (isRaining)
             {
                 VisorRainEffectVolume VREF = airGO.AddComponent<VisorRainEffectVolume>();
-                VREF.SetValue("_rainDirection", VisorRainEffectVolume.RainDirection.Radial);
-                VREF.SetValue("_layer", 0);
-                VREF.SetValue("_priority", 0);
+                VREF._rainDirection = VisorRainEffectVolume.RainDirection.Radial;
+                VREF._layer = 0;
+                VREF._priority = 0;
 
                 AudioSource AS = airGO.AddComponent<AudioSource>();
                 AS.mute = false;
@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.Atmosphere
                 AS.reverbZoneMix = 1f;
 
                 OWAudioSource OWAS = airGO.AddComponent<OWAudioSource>();
-                OWAS.SetValue("_audioLibraryClip", AudioType.GD_RainAmbient_LP);
+                OWAS._audioLibraryClip = AudioType.GD_RainAmbient_LP;
                 OWAS.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
                 OWAS.SetTrack(OWAudioMixer.TrackName.Environment);
 

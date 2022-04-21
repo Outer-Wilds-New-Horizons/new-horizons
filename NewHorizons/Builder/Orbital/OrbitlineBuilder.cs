@@ -64,11 +64,11 @@ namespace NewHorizons.Builder.Orbital
                 orbitLine._fadeStartDist = 3000;
             }
             
-            orbitLine.SetValue("_color", color);
+            orbitLine._color = color;
 
-            orbitLine.SetValue("_astroObject", astroobject);
-            orbitLine.SetValue("_fade", fade);
-            orbitLine.SetValue("_lineWidth", 2f);
+            orbitLine._astroObject = astroobject;
+            orbitLine._fade = fade;
+            orbitLine._lineWidth = 2f;
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
                 typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   
