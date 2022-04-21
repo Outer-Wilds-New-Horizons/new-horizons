@@ -1,5 +1,5 @@
 Title: Dialogue
-Sort-Priority: 50
+Sort_Priority: 50
 
 ## Dialogue
 
