@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             /*
             SectorProxy lodFogSectorProxy = lodFogGO.AddComponent<SectorProxy>();
-            lodFogSectorProxy.SetValue("_renderers", new List<Renderer> { lodMR });
+            lodFogSectorProxy._renderers = new List<Renderer> { lodMR };
             lodFogSectorProxy.SetSector(sector);
             */
 

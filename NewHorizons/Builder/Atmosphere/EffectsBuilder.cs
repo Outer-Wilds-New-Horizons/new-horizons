@@ -15,11 +15,11 @@ namespace NewHorizons.Builder.Atmosphere
             effectsGO.transform.localPosition = Vector3.zero;
 
             SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
-            SCG.SetValue("_sector", sector);
-            SCG.SetValue("_particleSystemSuspendMode", CullGroup.ParticleSystemSuspendMode.Stop);
-            SCG.SetValue("_occlusionCulling", false);
-            SCG.SetValue("_dynamicCullingBounds", false);
-            SCG.SetValue("_waitForStreaming", false);
+            SCG._sector = sector;
+            SCG._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
+            SCG._occlusionCulling = false;
+            SCG._dynamicCullingBounds = false;
+            SCG._waitForStreaming = false;
 
             if(hasRain)
             {
@@ -34,8 +34,8 @@ namespace NewHorizons.Builder.Atmosphere
                     new Keyframe(atmoSize, 0f) 
                 });
 
-                rainGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
-                rainGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
+                rainGO.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
+                rainGO.GetComponent<PlanetaryVectionController>()._exclusionSectors = new Sector[] { };
                 rainGO.SetActive(true);
             }
             
@@ -58,8 +58,8 @@ namespace NewHorizons.Builder.Atmosphere
                         new Keyframe(atmoSize, 0f)
                     });
 
-                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
-                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
+                    snowEmitter.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
+                    snowEmitter.GetComponent<PlanetaryVectionController>()._exclusionSectors = new Sector[] { };
                     snowEmitter.SetActive(true);
                 }
             }
