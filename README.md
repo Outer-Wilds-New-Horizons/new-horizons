@@ -63,6 +63,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Development
 If you want to help (please dear god help us) then check out the [contact](#contact) info below.
+
 The Unity project we use to make asset bundles for this mod is [here](https://github.com/xen-42/new-horizons-unity).
 
 ## Contact
