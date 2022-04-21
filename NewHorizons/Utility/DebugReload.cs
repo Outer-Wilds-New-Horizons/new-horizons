@@ -42,6 +42,7 @@ namespace NewHorizons.Utility
             }
             Main.AssetBundles.Clear();
             TranslationHandler.ClearTables();
+            TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
             
             Logger.Log("Begin reload of config files...", Logger.LogType.Log);
 
