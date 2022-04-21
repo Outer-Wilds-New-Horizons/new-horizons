@@ -412,3 +412,7 @@ NewHorizons/Properties/**
 docs/out/**
 docs/content/schemas/**
 docs/schemas/**
+
+# Unity project
+new-horizons-unity
+new-horizons-unity/**

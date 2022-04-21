@@ -82,9 +82,9 @@ namespace NewHorizons.Builder.Atmosphere
 
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            topRT.SetValue("_localAxis", Vector3.up);
-            topRT.SetValue("degreesPerSecond", 10);
-            topRT.SetValue("randomizeRotationRate", false);
+            topRT._localAxis = Vector3.up;
+            topRT._degreesPerSecond = 10;
+            topRT._randomizeRotationRate = false;
 
             GameObject cloudsBottomGO = new GameObject();
             cloudsBottomGO.SetActive(false);
@@ -94,7 +94,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
             bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            var bottomTSRMaterials = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            var bottomTSRMaterials = GameObject.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
             var bottomTSRTempArray = new Material[bottomTSRMaterials.Length];
             
             // It's a bit too green
@@ -112,7 +112,7 @@ namespace NewHorizons.Builder.Atmosphere
             bottomTSR.LODRadius = 1f;
 
             TessSphereSectorToggle bottomTSST = cloudsBottomGO.AddComponent<TessSphereSectorToggle>();
-            bottomTSST.SetValue("_sector", sector);
+            bottomTSST._sector = sector;
 
             GameObject cloudsFluidGO = new GameObject();
             cloudsFluidGO.SetActive(false);
@@ -125,15 +125,15 @@ namespace NewHorizons.Builder.Atmosphere
             fluidSC.radius = atmo.Size;
 
             OWShellCollider fluidOWSC = cloudsFluidGO.AddComponent<OWShellCollider>();
-            fluidOWSC.SetValue("_innerRadius", atmo.Size * 0.9f);
+            fluidOWSC._innerRadius = atmo.Size * 0.9f;
 
             CloudLayerFluidVolume fluidCLFV = cloudsFluidGO.AddComponent<CloudLayerFluidVolume>();
-            fluidCLFV.SetValue("_layer", 5);
-            fluidCLFV.SetValue("_priority", 1);
-            fluidCLFV.SetValue("_density", 1.2f);
-            fluidCLFV.SetValue("_fluidType", FluidVolume.Type.CLOUD);
-            fluidCLFV.SetValue("_allowShipAutoroll", true);
-            fluidCLFV.SetValue("_disableOnStart", false);
+            fluidCLFV._layer = 5;
+            fluidCLFV._priority = 1;
+            fluidCLFV._density = 1.2f;
+            fluidCLFV._fluidType = FluidVolume.Type.CLOUD;
+            fluidCLFV._allowShipAutoroll = true;
+            fluidCLFV._disableOnStart = false;
 
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
