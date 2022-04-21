@@ -342,7 +342,6 @@ namespace NewHorizons.Components
 
         private void Update()
         {
-            Logger.Log("???");
             _warpPrompt.SetVisibility(IsWarpDriveAvailable());
         }
     }
