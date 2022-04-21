@@ -90,14 +90,10 @@ namespace NewHorizons.Components.Orbital
             var x = semiMajorAxis * Mathf.Cos(eccentricAnomaly) - focusDistance;
             var y = semiMinorAxis * Mathf.Sin(eccentricAnomaly);
 
-            var R1 = Quaternion.AngleAxis(longitudeOfAscendingNode, Vector3.up);
-            var R2 = Quaternion.AngleAxis(inclination, Vector3.forward);
-            var R3 = Quaternion.AngleAxis(argumentOfPeriapsis, Vector3.up);
-
             var n_p = new Vector2(x, y).normalized;
 
-            var dir = R1 * R2 * R3 * new Vector3(n_p.x, 0f, n_p.y).normalized;
-            var up = R1 * R2 * R3 * Vector3.up;
+            var dir = Rotate(new Vector3(n_p.x, 0f, n_p.y).normalized, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
+            var up = Rotate(Vector3.up, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
 
             var pos = r * dir;
             var vel = v * Vector3.Cross(dir, up).normalized;
@@ -106,6 +102,15 @@ namespace NewHorizons.Components.Orbital
             orbitalParameters.InitialVelocity = vel;
 
             return orbitalParameters;
+        }
+
+        public static Vector3 Rotate(Vector3 vector, float longitudeOfAscendingNode, float inclination, float argumentOfPeriapsis)
+        {
+            var R1 = Quaternion.AngleAxis(longitudeOfAscendingNode, Vector3.up);
+            var R2 = Quaternion.AngleAxis(inclination, Vector3.forward);
+            var R3 = Quaternion.AngleAxis(argumentOfPeriapsis, Vector3.up);
+
+            return R1 * R2 * R3 * vector;
         }
     }
 }

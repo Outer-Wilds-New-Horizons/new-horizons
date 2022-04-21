@@ -214,29 +214,42 @@ namespace NewHorizons.Handlers
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
-            if (body.Config.Base.GroundSize != 0) GeometryBuilder.Make(go, body.Config.Base.GroundSize);
+            if (body.Config.Base.GroundSize != 0)
+            {
+                GeometryBuilder.Make(go, body.Config.Base.GroundSize);
+            }
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
             var overrideSOI = body.Config.Base.SphereOfInfluence;
-            if (overrideSOI != 0) sphereOfInfluence = overrideSOI;
+            if (overrideSOI != 0)
+            {
+                sphereOfInfluence = overrideSOI;
+            }
 
             var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
-            var ao = (AstroObject)outputTuple.Item1;
-            var owRigidBody = (OWRigidbody)outputTuple.Item2;
+            var ao = outputTuple.Item1;
+            var owRigidBody = outputTuple.Item2;
 
-            GravityVolume gv = null;
             if (body.Config.Base.SurfaceGravity != 0)
-                gv = GravityBuilder.Make(go, ao, body.Config);
+            {
+                GravityBuilder.Make(go, ao, body.Config);
+            }
 
             if (body.Config.Base.HasReferenceFrame)
+            {
                 RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
+            }
 
             if (body.Config.Base.HasMapMarker)
+            {
                 MarkerBuilder.Make(go, body.Config.Name, body.Config);
+            }
 
             if (body.Config.Base.HasAmbientLight)
+            {
                 AmbientLightBuilder.Make(go, sphereOfInfluence);
+            }
 
             var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
@@ -244,15 +257,24 @@ namespace NewHorizons.Handlers
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, body.Config);
 
             if (body.Config.HeightMap != null)
+            {
                 HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod);
+            }
 
             if (body.Config.ProcGen != null)
+            {
                 ProcGenBuilder.Make(go, body.Config.ProcGen);
+            }
 
-            if (body.Config.Star != null) StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+            if (body.Config.Star != null)
+            {
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+            }
 
             if (body.Config.FocalPoint != null)
+            {
                 FocalPointBuilder.Make(go, ao, body.Config, body.Mod);
+            }
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, owRigidBody);
@@ -272,11 +294,20 @@ namespace NewHorizons.Handlers
                 Main.SystemDict[body.Config.StarSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
-            if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic) OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.IsMoon, body.Config);
+            if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic)
+            {
+                OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.IsMoon, body.Config);
+            }
 
-            if (!body.Config.Orbit.IsStatic) DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
+            if (!body.Config.Orbit.IsStatic)
+            {
+                DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
+            }
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString) AstroObjectLocator.RegisterCustomAstroObject(ao);
+            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
+            {
+                AstroObjectLocator.RegisterCustomAstroObject(ao);
+            }
 
             return go;
         }
@@ -360,7 +391,7 @@ namespace NewHorizons.Handlers
         {
             go.transform.parent = Locator.GetRootTransform();
 
-            if(primaryBody != null)
+            if (primaryBody != null)
             {
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());

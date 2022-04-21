@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.Orbital
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, AstroObject astroobject, bool isMoon, IPlanetConfig config)
+        public static void Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
@@ -25,18 +25,31 @@ namespace NewHorizons.Builder.Orbital
 
             var ecc = config.Orbit.Eccentricity;
 
-            var parentGravity = astroobject.GetPrimaryBody()?.GetGravityVolume();
+            var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-
-            if(config.Orbit.Eccentricity == 0)
+            if(ecc == 0)
             {
-                orbitLine = orbitGO.AddComponent<OrbitLine>();
+                orbitLine = new OrbitLine();
             }
             else
             {
-                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+                orbitLine = new TrackingOrbitLine();
             }
+
+            /*
+            NHOrbitLine orbitLine = orbitGO.AddComponent<NHOrbitLine>();
+
+            var a = astroObject.SemiMajorAxis;
+            var e = astroObject.Eccentricity;
+            var b = a * Mathf.Sqrt(1f - (e * e));
+            var l = astroObject.LongitudeOfAscendingNode;
+            var p = astroObject.ArgumentOfPeriapsis;
+            var i = astroObject.Inclination;
+
+            orbitLine.SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
+            orbitLine.SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.left, l, i, p);
+            */
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
@@ -58,7 +71,7 @@ namespace NewHorizons.Builder.Orbital
             
             orbitLine._color = color;
 
-            orbitLine._astroObject = astroobject;
+            orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
             orbitLine._lineWidth = 2f;
 
