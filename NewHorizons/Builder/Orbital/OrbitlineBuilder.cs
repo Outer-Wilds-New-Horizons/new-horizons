@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._astroObject = astroobject;
             orbitLine._fade = fade;
-            orbitLine._lineWidth = 1f;
+            orbitLine._lineWidth = 2f;
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
         }

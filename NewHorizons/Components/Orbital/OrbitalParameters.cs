@@ -95,13 +95,15 @@ namespace NewHorizons.Components.Orbital
             var R3 = Quaternion.AngleAxis(argumentOfPeriapsis, Vector3.up);
 
             var n_p = new Vector2(x, y).normalized;
-            var n_v = new Vector2(-y, x).normalized;
 
-            var pos = new Vector3(r * n_p.x, 0f, r * n_p.y);
-            var vel = new Vector3(v * n_v.x, 0f, v * n_v.y);
+            var dir = R1 * R2 * R3 * new Vector3(n_p.x, 0f, n_p.y).normalized;
+            var up = R1 * R2 * R3 * Vector3.up;
 
-            orbitalParameters.InitialPosition = R1 * R2 * R3 * pos;
-            orbitalParameters.InitialVelocity = R1 * R2 * R3 * vel;
+            var pos = r * dir;
+            var vel = v * Vector3.Cross(dir, up).normalized;
+
+            orbitalParameters.InitialPosition = pos;
+            orbitalParameters.InitialVelocity = vel;
 
             return orbitalParameters;
         }
