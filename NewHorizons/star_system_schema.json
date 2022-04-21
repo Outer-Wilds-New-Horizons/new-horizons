@@ -14,7 +14,7 @@
     },
     "factRequiredForWarp": {
       "type": "string",
-      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set \"CanEnterViaWarpDrive\" to false if you're using this, that would make no sense."
+      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to false if you're using this, that would make no sense."
     }
   }
 }

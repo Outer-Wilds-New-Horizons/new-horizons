@@ -3,7 +3,7 @@
   "author": "xen, Idiot, & Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "0.10.2",
+  "version": "0.10.3",
   "owmlVersion": "2.1.0",
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.OuterWildsMMO", "Vesper.AutoResume" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]

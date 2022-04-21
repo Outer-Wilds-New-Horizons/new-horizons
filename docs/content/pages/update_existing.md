@@ -1,5 +1,5 @@
 Title: Update Planets
-Sort-Priority: 80
+Sort_Priority: 80
 
 ## Update Existing Planets
 

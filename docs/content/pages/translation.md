@@ -1,5 +1,5 @@
 Title: Translations
-Sort-Priority: 60
+Sort_Priority: 60
 
 ## Translations
 

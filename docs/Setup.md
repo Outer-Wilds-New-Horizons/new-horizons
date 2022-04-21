@@ -17,28 +17,24 @@ pip install --user pipenv
 ```
 Install dependencies
 ```shell
-pipenv install
+pipenv install --dev
 ```
 
 ## Environment Variables
-- OUT_DIR: Path to put before all links and static files, see below for recommended values
+- URL_PREFIX: Path to put before all links and static files, see below for recommended values
   - Production: "/"
   - Local Build: "" (set as empty string)
   - PyCharm Development Server: "/outer-wilds-new-horizons/docs/out/"
-- BASE_URL: Base url of the website we're hosting on
-  - Local: Leave blank
-  - Local (but wanting to test open-graph/twitter): "https://nh.outerwildsmods.com/"
-  - Production: "https://nh.outerwildsmods.com/"
 
 
 ## Copy Schemas
-Create a folder called `schemas` in the content folder and copy all schemas to generate into it, make sure not to add this folder to git.
+Create a folder called `schemas` in the `docs/content/pages/` folder and copy all schemas to generate into it, make sure not to add this folder to git.
 Production build automatically copies over schemas.
 
 ## Generating
-Run `generate.py` with pipenv
+Run `generate` with pipenv
 ```shell
-pipenv run python generate.py
+pipenv run python -m menagerie generate
 ```
 
 ## Opening

@@ -10,7 +10,7 @@ on:
 
   pull_request:
     paths:
-      - dev/**
+      - docs/**
       - NewHorizons/*schema*.json
       - NewHorizons/*.xsd
 
@@ -22,9 +22,8 @@ on:
         default: "/"
 
 env:
-  OUT_DIR:  ${{ github.events.inputs.relative_path }}
-  BASE_URL: https://nh.outerwildsmods.com/
-  PIPENV_VENV_IN_PROJECT: enabled
+  URL_PREFIX:  ${{ github.events.inputs.relative_path }}
+  PIPENV_VENV_IN_PROJECT: 1
 
 jobs:
   build:
@@ -33,11 +32,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       
+      - run: mkdir ./.venv
+      
       - run: cp -r docs/** .
       
       - if: github.ref == 'refs/heads/master'
         run: |
-          echo "OUT_DIR=/" >> $GITHUB_ENV
+          echo "URL_PREFIX=/" >> $GITHUB_ENV
           
       - name: Cache Dependencies
         uses: actions/cache@v2
@@ -51,26 +52,21 @@ jobs:
       - name: Install dependecies
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
-          command: install
+          command: install --dev
           
       - name: Copy Schemas
         run: |
-          mkdir content/schemas/
-          cp NewHorizons/schema.json content/schemas/
-          cp NewHorizons/star_system_schema.json content/schemas/
-          cp NewHorizons/translation_schema.json content/schemas/
-          cp NewHorizons/shiplog_schema.xsd content/schemas/
-          cp NewHorizons/dialogue_schema.xsd content/schemas/
-          
-      - name: Create Output Dir
-        run: |
-          mkdir out/
-          mkdir out/schemas/
+          mkdir content/pages/schemas/
+          cp NewHorizons/schema.json content/pages/schemas/
+          cp NewHorizons/star_system_schema.json content/pages/schemas/
+          cp NewHorizons/translation_schema.json content/pages/schemas/
+          cp NewHorizons/shiplog_schema.xsd content/pages/schemas/
+          cp NewHorizons/dialogue_schema.xsd content/pages/schemas/
           
       - name: Build Site
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
-          command: run python generate.py
+          command: run python -m menagerie generate
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v2

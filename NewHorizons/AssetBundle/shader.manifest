@@ -1,16 +1,17 @@
 ManifestFileVersion: 0
-CRC: 2524157958
+CRC: 1131808909
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 882ab688c937b5592f590a313cfc0529
+    Hash: 183a5bb48d2c1afa94657b52eb300f40
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 6370d3f9de9eca57f523bce048404a46
+    Hash: 55d48f4ad9c3b13330b9eb5ee5686477
 HashAppended: 0
 ClassTypes:
 - Class: 48
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Shaders/SphereTextureWrapper.shader
 - Assets/Shaders/Ring.shader

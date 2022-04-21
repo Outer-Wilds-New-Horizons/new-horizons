@@ -1,8 +1,6 @@
 Title: Ship Log 
 Description: A guide to editing the ship log in New Horizons 
-Sort-Priority: 70
-
-{% macro image(name) %}{{ ("images/ship_log/" + name)|static }}{% endmacro %}
+Sort_Priority: 70
 
 # Intro
 Welcome! this page outlines how to create a custom ship log.
@@ -35,7 +33,7 @@ An entry is a card you see in rumor mode, it represents a specific area or conce
 village or the southern observatory on Brittle Hollow.  
 An entry is split up into facts, a fact can either be a rumor fact or an explore fact.
 
-![entryExample]({{ image("entry_example.webp") }})
+![entryExample]({{ "images/ship_log/entry_example.webp"|static }})
 *In red you can see an entry, in green you can see the entry's facts*
 
 ### Curiosities
@@ -44,14 +42,14 @@ Curiosities are entries that represent big ideas in the story, such as the ATP o
 Non-curiosity entries have a Curiosity attribute that can be set to make the color of that entry match the color of the
 curiosity (Like how everything regarding the Vessel is red)
 
-![curiosityExample]({{ image("curiosity_example.webp") }})
+![curiosityExample]({{ "images/ship_log/curiosity_example.webp"|static }})
 *The Ash Twin Project is an example of a curiosity (internally it's called TIME_LOOP)*
 
 ### Child Entries
 
 Entries can be children of other entries, meaning they'll be smaller.
 
-![childEntryExample]({{ image("child_entry_example.webp") }})
+![childEntryExample]({{ "images/ship_log/child_entry_example.webp"|static }})
 *The murals at the old settlement on Brittle Hollow are examples of child entries*
 
 ## Rumor Facts
@@ -59,13 +57,13 @@ Entries can be children of other entries, meaning they'll be smaller.
 A rumor fact represents the information you might hear about a specific area or concept, usually, you get these through
 dialogue or maybe by observing a faraway planet.
 
-![rumorFactExample]({{ image("rumor_example.webp") }})
+![rumorFactExample]({{ "images/ship_log/rumor_example.webp"|static }})
 
 ## Explore Facts
 
 Explore facts represent the information you learn about a specific area or concept.
 
-![exploreFactExample]({{ image("explore_example.webp") }})
+![exploreFactExample]({{ "images/ship_log/explore_example.webp"|static }})
 
 # The XML
 
@@ -203,7 +201,7 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
 }
 ```
 
-![autoDetectiveMode]({{ image("auto_rumor_mode.webp") }})
+![autoDetectiveMode]({{ "images/ship_log/auto_rumor_mode.webp"|static }})
 *A set of entries laid out with auto mode*
 
 ## Images
@@ -254,7 +252,7 @@ Colors for each curiosity is given in a list, so if I wanted the curiosity `EXAM
 }
 ```
 
-![curiosityColorChange]({{ image("change_color.webp") }})
+![curiosityColorChange]({{ "images/ship_log/change_color.webp"|static }})
 *The curiosity's color is changed to blue*
 
 # Map Mode Options
@@ -272,7 +270,7 @@ those planets are put in a column, then, each planet orbiting *those* planets ar
 are. The order of each planet is determined by their semi-major axis, if two planets have the same semi-major axis then
 they're sorted by order loaded in.
 
-![autoMapMode]({{ image("auto_map_mode.webp") }})
+![autoMapMode]({{ "images/ship_log/auto_map_mode.webp"|static }})
 *An example system laid out with auto mode*
 
 #### Offset
@@ -345,7 +343,7 @@ second row (you can't select the sun, so it doesn't have a row or column). So, b
 We say this planet is to the right of the sun station (putting in a position that is already occupied will override what
 is in that position).
 
-![navigationIndices]({{ image("map_indices.webp") }})
+![navigationIndices]({{ "images/ship_log/map_indices.webp"|static }})
 
 #### Overriding Vanilla Planets
 
@@ -576,4 +574,4 @@ Adding an entry location is similar to adding a Reveal Volume:
 }
 ```
 
-![entryLocationExample]({{ image("entry_position.webp") }})
+![entryLocationExample]({{ "images/ship_log/entry_position.webp"|static }})
