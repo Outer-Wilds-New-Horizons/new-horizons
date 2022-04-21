@@ -214,6 +214,9 @@ namespace NewHorizons
 
                 var map = GameObject.FindObjectOfType<MapController>();
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+
+                // Fix the map satellite
+                AstroObjectLocator.GetAstroObject(AstroObject.Name.MapSatellite).gameObject.AddComponent<MapSatelliteOrbitFix>();
             }
             else
             {
