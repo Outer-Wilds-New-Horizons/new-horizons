@@ -23,6 +23,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 - [Incompatible mods](#incompatible-mods)
 - [Roadmap](#roadmap)
+- [Development](#development)
 - [Contact](#contact)
 - [Credits](#credits)
 
@@ -59,6 +60,10 @@ Check the ship's log for how to use your warp drive to travel between star syste
 	- Timed position/velocity changes
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
+
+## Development
+If you want to help (please dear god help us) then check out the [contact](#contact) info below.
+The Unity project we use to make asset bundles for this mod is [here](https://github.com/xen-42/new-horizons-unity).
 
 ## Contact
 Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you have any questions or just want to chat about modding! Theres a New Horizons category there dedicated to discussion of this mod.
