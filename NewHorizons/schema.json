@@ -603,6 +603,10 @@
               "remoteTriggerPosition": {
                 "$ref": "#/$defs/vector3",
                 "description": "Allows you to trigger dialogue from a distance when you walk into an area."
+              },
+              "blockAfterPersistentCondition": {
+                "type": "string",
+                "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue triggers that you want to have happen only once."
               }
             }
           }
