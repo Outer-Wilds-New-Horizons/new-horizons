@@ -61,7 +61,7 @@ To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-w
 ]
 ```
 
-To scatter 12 trees from the Dream World around the Moon, the following was put into the `Props` module:
+To scatter 12 trees from the Dream World around Wetrock in [NH Examples](https://github.com/xen-42/ow-new-horizons-examples) , the following was put into the `Props` module:
 ```json
 "Scatter" : 
 [
