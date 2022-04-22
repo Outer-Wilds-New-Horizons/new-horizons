@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Props
             var heightMap = config.HeightMap;
 
             var area = 4f * Mathf.PI * radius * radius;
-            var points = RandomUtility.FibonacciSphere(Math.Max((int)(area * 10), );
+            var points = RandomUtility.FibonacciSphere((int)(area * 10));
 
             Texture2D heightMapTexture = null;
             if (heightMap != null)
