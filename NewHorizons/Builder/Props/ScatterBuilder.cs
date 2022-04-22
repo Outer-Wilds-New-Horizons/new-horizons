@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = GameObject.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
-                    var randomInd = (int)Random.Range(0, points.Count);
+                    var randomInd = (int)Random.Range(0, points.Count-1);
                     var point = points[randomInd];
 
                     var height = radius;
@@ -83,7 +83,7 @@ namespace NewHorizons.Builder.Props
                     // Rotate around normal
                     prop.transform.localRotation *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up);
 
-                    points.RemoveAt(randomInd % points.Count);
+                    points.RemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }
             }
