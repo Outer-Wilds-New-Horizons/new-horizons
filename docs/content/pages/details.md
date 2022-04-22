@@ -45,3 +45,39 @@ public class CreateAssetBundles
 
 5. In the top left click the "Assets" drop-down and select "Build AssetBundles". This should create your asset bundle in a folder in the root directory called "StreamingAssets".
 6. Copy the asset bundle and asset bundle .manifest files from StreamingAssets into your mod's "planets" folder. If you did everything properly they should work in game. To double-check everything is included, open the .manifest file in a text editor to see the files included and their paths.
+
+## Importing a planet's surface from Unity
+
+Making a planet's entire surface from a Unity prefab is the exact same thing as adding one single big detail at position (0, 0, 0).  
+
+## Examples
+
+To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-wilds-real-solar-system), its model was put in an asset bundle as explained above, and then the following was put into the `Props` module:
+
+```json
+"Details" :
+[
+	{ "assetBundle" : "planets/assetbundle/rss", "path" : "Assets/RSS/Prefabs/Rover.prefab", "position" : {"x": 146.5099, "y": -10.83688, "z": -36.02736}, "alignToNormal" : true }
+]
+```
+
+To scatter 12 trees from the Dream World around the Moon, the following was put into the `Props` module:
+```json
+"Scatter" : 
+[
+	{"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var", "count" : 12}
+]
+```
+
+You can swap these around too. The following would scatter 12 Mars rovers across the planet and place a single tree at a given position:
+
+```json
+"Details" :
+[
+	{"path" : "DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var",  "position" : {"x": 146.5099, "y": -10.83688, "z": -36.02736}, "alignToNormal" : true }
+],
+"Scatter" : 
+[
+	{ "assetBundle" : "planets/assetbundle/rss", "path" : "Assets/RSS/Prefabs/Rover.prefab", "count" : 12}
+]
+```
