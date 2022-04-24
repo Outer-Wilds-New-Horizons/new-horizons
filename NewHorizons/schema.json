@@ -442,6 +442,24 @@
           "default": 0,
           "minimum": 0
         },
+        "minSize": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0,
+          "description": "Minimum size of the asteroids."
+        },
+        "maxSize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 0,
+          "description": "Maximum size of the asteroids."
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200,
+          "description": "Amount of asteroids to create."
+        },
         "inclination": {
           "$ref": "#/$defs/angle",
           "description": "Angle between the rings and the equatorial plane of the planet."
