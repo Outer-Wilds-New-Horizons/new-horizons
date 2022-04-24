@@ -428,6 +428,10 @@
           "type": "number",
           "minimum": 0,
           "description": "The highest points on your planet will be at this height."
+        },
+        "stretch": {
+          "$ref": "#/$defs/vector3",
+          "description": "The scale of the terrain."
         }
       }
     },
