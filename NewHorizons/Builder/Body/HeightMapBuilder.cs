@@ -49,6 +49,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);
+            cubeSphereMR.material.name = textureMap.name;
             cubeSphereMR.material.mainTexture = textureMap;
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();

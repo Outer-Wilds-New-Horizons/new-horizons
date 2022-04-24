@@ -1,5 +1,5 @@
 ﻿using OWML.Common;
-﻿using System;
+using System;
 using System.IO;
 using UnityEngine;
 
@@ -10,6 +10,7 @@ namespace NewHorizons.Utility
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
             var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
+            outline.name = texture.name + "Outline";
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
 
@@ -62,6 +63,7 @@ namespace NewHorizons.Utility
             }
 
             var newImage = new Texture2D(image.width, image.height);
+            newImage.name = image.name + "Tinted";
             newImage.SetPixels(pixels);
             newImage.Apply();
             return newImage;
@@ -78,6 +80,7 @@ namespace NewHorizons.Utility
             }
 
             var newImage = new Texture2D(image.width, image.height);
+            newImage.name = image.name + "LerpedGrayscale";
             newImage.SetPixels(pixels);
             newImage.Apply();
             return newImage;
@@ -86,6 +89,7 @@ namespace NewHorizons.Utility
         public static Texture2D LoadImage(string filepath)
         {
             Texture2D tex = new Texture2D(2, 2);
+            tex.name = Path.GetFileNameWithoutExtension(filepath);
             tex.LoadRawTextureData(File.ReadAllBytes(filepath));
             return tex;
         }
@@ -93,6 +97,7 @@ namespace NewHorizons.Utility
         public static Texture2D ClearTexture(int width, int height)
         {
             var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
+            tex.name = "Clear";
             Color fillColor = Color.clear;
             Color[] fillPixels = new Color[tex.width * tex.height];
             for(int i = 0; i < fillPixels.Length; i++)
@@ -107,6 +112,7 @@ namespace NewHorizons.Utility
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
             var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
+            tex.name = src.name + "CanvasScaled";
             Color[] fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
@@ -126,6 +132,7 @@ namespace NewHorizons.Utility
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
             var data = File.ReadAllBytes(path);
             var texture = new Texture2D(2, 2);
+            texture.name = Path.GetFileNameWithoutExtension(path);
             texture.LoadImage(data);
             return texture;
 		}
