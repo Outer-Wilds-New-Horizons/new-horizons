@@ -1,5 +1,6 @@
 ﻿using OWML.Common;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
@@ -126,14 +127,24 @@ namespace NewHorizons.Utility
             return tex;
         }
 
+        private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
+
         public static Texture2D GetTexture(IModBehaviour mod, string filename)
         {
             // Copied from OWML but without the print statement lol
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            if (_loadedTextures.ContainsKey(path))
+            {
+                Logger.Log($"Already loaded image at path: {path}");
+                return _loadedTextures[path];
+            }
+            Logger.Log($"Loading image at path: {path}");
             var data = File.ReadAllBytes(path);
             var texture = new Texture2D(2, 2);
             texture.name = Path.GetFileNameWithoutExtension(path);
             texture.LoadImage(data);
+            UnityEngine.Object.DontDestroyOnLoad(texture);
+            _loadedTextures.Add(path, texture);
             return texture;
 		}
 
