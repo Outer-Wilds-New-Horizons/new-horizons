@@ -30,8 +30,8 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = outerRadius;
-            PR._useMinimap = !config.Base.IsSatellite;
-            PR._useAltimeter = !config.Base.IsSatellite;
+            PR._useMinimap = !(config.Base.IsSatellite || config.Base.IsSpaceStation);
+            PR._useAltimeter = !(config.Base.IsSatellite || config.Base.IsSpaceStation);
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;

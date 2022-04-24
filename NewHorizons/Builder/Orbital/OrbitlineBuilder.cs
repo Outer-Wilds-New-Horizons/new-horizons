@@ -56,7 +56,7 @@ namespace NewHorizons.Builder.Orbital
             else if (config.Atmosphere != null && config.Atmosphere.FogTint != null) color = config.Atmosphere.FogTint.ToColor32();
 
             var fade = isMoon;
-            if (config.Base.IsSatellite)
+            if (config.Base.IsSatellite || config.Base.IsSpaceStation)
             {
                 if(config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
                 fade = true;
