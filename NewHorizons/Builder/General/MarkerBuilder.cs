@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.General
             {
                 markerType = MapMarker.MarkerType.HourglassTwins;
             }
-            else if(config.Base.IsSatellite || config.Base.IsSpaceStation)
+            else if(config.Base.IsSatellite)
             {
                 markerType = MapMarker.MarkerType.Probe;
             }

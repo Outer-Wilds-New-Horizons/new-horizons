@@ -200,11 +200,6 @@
           "default": false,
           "description": "Is this body an artificial satellite of a planet/moon/star?"
         },
-        "isSpaceStation": {
-          "type": "boolean",
-          "default": false,
-          "description": "Is this body a space station of a planet/moon/star?"
-        },
         "cloakRadius": {
           "type": "number",
           "default": 0,
