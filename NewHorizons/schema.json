@@ -123,7 +123,8 @@
   "additionalProperties": false,
   "properties": {
     "$schema": {
-      "type": "string"
+      "type": "string",
+      "description": "The schema used to validate your config."
     },
     "name": {
       "type": "string",
