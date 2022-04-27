@@ -1,12 +1,12 @@
 name: Feature Request
-description: Request a feature you'd like to see
+description: Request a feature you'd like to see in a later release
 labels: ["enhancement"]
 body:
   - type: textarea
     id: feature
     attributes:
       label: Feature
-      description: Describe the feature you'd like to see in New Horizons
+      description: Describe the feature you'd like to see in New Horizons.
   - type: textarea
     id: context
     attributes:
