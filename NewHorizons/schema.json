@@ -122,6 +122,9 @@
   ],
   "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string"
+    },
     "name": {
       "type": "string",
       "description": "Unique name of your planet"
