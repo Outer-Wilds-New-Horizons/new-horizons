@@ -1,0 +1,14 @@
+name: Feature Request
+description: Request a feature you'd like to see
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: feature
+    attributes:
+      label: Feature
+      description: Describe the feature you'd like to see in New Horizons
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide any additional context such as screenshots or diagrams here.
