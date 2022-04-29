@@ -596,11 +596,14 @@
                 "type": "boolean",
                 "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
                 "default": false
+              },
+              "removeChildren": {
+                "type": "array",
+                "description": "A list of children to remove from this detail",
+                "items": {
+                  "type": "string"
+                }
               }
-            },
-            "scale": {
-              "type": "number",
-              "default": 1
             }
           }
         },
