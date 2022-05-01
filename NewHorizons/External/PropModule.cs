@@ -76,6 +76,8 @@ namespace NewHorizons.External
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;
+            public string pathToAnimController;
+            public float lookAtRadius;
         }
 
         public class RevealInfo

@@ -56,6 +56,7 @@ namespace NewHorizons.Builder.Props
                     VolcanoBuilder.Make(go, sector, volcanoInfo);
                 }
             }
+            // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
             if (config.Props.Dialogue != null)
             {
                 foreach(var dialogueInfo in config.Props.Dialogue)
