@@ -174,7 +174,6 @@ namespace NewHorizons.Handlers
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
-            // Update a position using CommonResources
             // Since orbits are always there just check if they set a semi major axis
             if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
             {
@@ -296,7 +295,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic)
             {
-                OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.IsMoon, body.Config);
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.IsMoon, body.Config));
             }
 
             if (!body.Config.Orbit.IsStatic)

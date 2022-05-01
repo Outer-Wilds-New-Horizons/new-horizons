@@ -119,6 +119,16 @@ namespace NewHorizons.Builder.Orbital
             primaryBody.transform.position = baryCenter.transform.position + r1 * distance.normalized;
             secondaryBody.transform.position = baryCenter.transform.position - r2 * distance.normalized;
 
+            var ecc = secondaryBody.Eccentricity;
+            var inc = secondaryBody.Inclination;
+            var arg = secondaryBody.ArgumentOfPeriapsis;
+            var lon = secondaryBody.LongitudeOfAscendingNode;
+            var tru = secondaryBody.TrueAnomaly;
+
+            // Update their astro objects
+            primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg, lon, tru - 180);
+            secondaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r2, inc, arg, lon, tru);
+
             // Update the velocities
             var reducedMass = 1f / ((1f / m1) + (1f / m2));
             var reducedMassGravity = new Gravity(reducedMass, primaryGravity.Power);
@@ -128,12 +138,12 @@ namespace NewHorizons.Builder.Orbital
             var reducedOrbit = OrbitalParameters.FromTrueAnomaly(
                 reducedMassGravity,
                 secondaryGravity,
-                secondaryBody.Eccentricity,
+                ecc,
                 distance.magnitude,
-                secondaryBody.Inclination,
-                secondaryBody.ArgumentOfPeriapsis,
-                secondaryBody.LongitudeOfAscendingNode,
-                secondaryBody.TrueAnomaly
+                inc,
+                arg,
+                lon,
+                tru
             );
 
             // We know their velocities sum up to the total relative velocity and are related to the masses / distances
