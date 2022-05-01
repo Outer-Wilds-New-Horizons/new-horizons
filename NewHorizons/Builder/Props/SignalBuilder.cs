@@ -198,7 +198,8 @@ namespace NewHorizons.Builder.Props
                 _customCurve = GameObject.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
-            source.playOnAwake = false;
+            // If it can be heard regularly then we play it immediately
+            source.playOnAwake = !info.OnlyAudibleToScope;
             source.spatialBlend = 1f;
             source.volume = 0.5f;
             source.dopplerLevel = 0;
