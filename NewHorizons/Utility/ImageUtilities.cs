@@ -31,6 +31,8 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
+            Logger.Log("Cleaing image cache");
+
             foreach (var texture in _loadedTextures.Values)
             {
                 if (texture == null) continue;

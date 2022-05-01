@@ -14,6 +14,7 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
+            Logger.Log("Clearing search cache");
             CachedGameObjects.Clear();
         }
 

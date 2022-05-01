@@ -29,6 +29,8 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
+            Logger.Log("Clearing audio cache");
+
             foreach (var audioClip in _loadedAudioClips.Values)
             {
                 if (audioClip == null) continue;
