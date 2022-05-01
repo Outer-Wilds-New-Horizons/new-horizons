@@ -5,6 +5,7 @@ using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components.Orbital;
+using System;
 
 namespace NewHorizons.Builder.Orbital
 {
@@ -65,6 +66,8 @@ namespace NewHorizons.Builder.Orbital
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
             orbitLine._lineWidth = 0.2f;
+
+            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, 128, 4096);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
         }
