@@ -143,10 +143,19 @@ namespace NewHorizons.Utility
             var texture = new Texture2D(2, 2);
             texture.name = Path.GetFileNameWithoutExtension(path);
             texture.LoadImage(data);
-            UnityEngine.Object.DontDestroyOnLoad(texture);
             _loadedTextures.Add(path, texture);
             return texture;
 		}
+
+        public static void ClearCache()
+        {
+            foreach(var texture in _loadedTextures.Values)
+            {
+                if (texture == null) continue;
+                UnityEngine.Object.Destroy(texture);
+            }
+            _loadedTextures.Clear();
+        }
 
         public static Color GetAverageColor(Texture2D src)
         {
