@@ -1,5 +1,6 @@
 pre > code {
     background-color: #1a1a1a !important;
+    border-radius: .25rem !important;
 }
 
 ::-webkit-scrollbar {
