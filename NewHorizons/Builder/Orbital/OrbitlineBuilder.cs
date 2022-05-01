@@ -18,9 +18,15 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
+            int se = config.Orbit.DottedOrbitLine ? 100 : 50;
+            lineRenderer.startWidth = se;
+            lineRenderer.endWidth = se;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
+            int vp = config.Orbit.DottedOrbitLine ? 128 : 256;
+            lineRenderer.positionCount = vp;
 
             var ecc = config.Orbit.Eccentricity;
 
@@ -69,6 +75,7 @@ namespace NewHorizons.Builder.Orbital
             orbitLine._astroObject = astroobject;
             orbitLine._fade = fade;
             orbitLine._lineWidth = 2f;
+            orbitLine._numVerts = vp;
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
                 typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   

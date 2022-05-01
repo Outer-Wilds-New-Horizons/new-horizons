@@ -24,6 +24,7 @@ namespace NewHorizons.External
         public bool IsTidallyLocked { get; set; }
         public MVector3 AlignmentAxis { get; set; }
         public bool ShowOrbitLine { get; set; } = true;
+        public bool DottedOrbitLine { get; set; } = false;
         public bool IsStatic { get; set; }
         public MColor Tint { get; set; }
         public bool TrackingOrbitLine { get; set; } = false;

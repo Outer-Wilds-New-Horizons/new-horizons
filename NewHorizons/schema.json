@@ -363,6 +363,10 @@
           "default": false,
           "description": "Referring to the orbit line in the map screen."
         },
+        "dottedOrbitLine": {
+          "type": "boolean",
+          "default": false
+        },
         "isStatic": {
           "type": "boolean",
           "default": false,
