@@ -32,16 +32,14 @@ namespace NewHorizons.Builder.Atmosphere
 
             Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor32();
 
-            GameObject cloudsMainGO = new GameObject();
+            GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
             cloudsMainGO.transform.parent = body.transform;
-            cloudsMainGO.name = "Clouds";
 
-            GameObject cloudsTopGO = new GameObject();
+            GameObject cloudsTopGO = new GameObject("TopClouds");
             cloudsTopGO.SetActive(false);
             cloudsTopGO.transform.parent = cloudsMainGO.transform;
             cloudsTopGO.transform.localScale = Vector3.one * atmo.Size;
-            cloudsTopGO.name = "TopClouds";
 
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
@@ -54,6 +52,7 @@ namespace NewHorizons.Builder.Atmosphere
                 {
                     var mat = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
                     if (!atmo.ShadowsOnClouds) mat.renderQueue = 2550;
+                    mat.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
                     tempArray[i] = mat;
                 }
                 topMR.sharedMaterials = tempArray;
@@ -63,6 +62,7 @@ namespace NewHorizons.Builder.Atmosphere
                 if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
                 topMR.material = new Material(_sphereShader);
                 if (!atmo.ShadowsOnClouds) topMR.material.renderQueue = 2550;
+                topMR.material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
             }
 
             foreach (var material in topMR.sharedMaterials)
@@ -86,11 +86,10 @@ namespace NewHorizons.Builder.Atmosphere
             topRT._degreesPerSecond = 10;
             topRT._randomizeRotationRate = false;
 
-            GameObject cloudsBottomGO = new GameObject();
+            GameObject cloudsBottomGO = new GameObject("BottomClouds");
             cloudsBottomGO.SetActive(false);
             cloudsBottomGO.transform.parent = cloudsMainGO.transform;
             cloudsBottomGO.transform.localScale = Vector3.one * (atmo.Size * 0.9f);
-            cloudsBottomGO.name = "BottomClouds";
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
             bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
@@ -114,11 +113,10 @@ namespace NewHorizons.Builder.Atmosphere
             TessSphereSectorToggle bottomTSST = cloudsBottomGO.AddComponent<TessSphereSectorToggle>();
             bottomTSST._sector = sector;
 
-            GameObject cloudsFluidGO = new GameObject();
+            GameObject cloudsFluidGO = new GameObject("CloudsFluid");
             cloudsFluidGO.SetActive(false);
             cloudsFluidGO.layer = 17;
             cloudsFluidGO.transform.parent = cloudsMainGO.transform;
-            cloudsFluidGO.name = "CloudsFluid";
 
             SphereCollider fluidSC = cloudsFluidGO.AddComponent<SphereCollider>();
             fluidSC.isTrigger = true;
