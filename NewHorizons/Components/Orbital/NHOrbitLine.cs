@@ -16,6 +16,9 @@ namespace NewHorizons.Components.Orbital
 		private float _fociDistance;
 		private Vector3[] _verts;
 
+		private float semiMajorAxis;
+		private float semiMinorAxis;
+
 		public override void InitializeLineRenderer()
 		{
 			base.GetComponent<LineRenderer>().positionCount = this._numVerts;
@@ -49,6 +52,9 @@ namespace NewHorizons.Components.Orbital
 
 			transform.localRotation = Quaternion.Euler(270, 90, 0);
 
+			semiMajorAxis = SemiMajorAxis.magnitude;
+			semiMinorAxis = SemiMinorAxis.magnitude;
+
 			base.enabled = false;
 		}
 
@@ -69,13 +75,14 @@ namespace NewHorizons.Components.Orbital
 			
 			for (int i = 0; i < _numVerts; i++)
 			{
-				float f = (float)i / (float)(_numVerts - 1) * 3.1415927f * 2f - (num + 3.1415927f);
+				var stepSize = 2f * Mathf.PI / (float)(_numVerts - 1);
+				float f = num + stepSize * i;
 				_verts[i] = SemiMajorAxis * Mathf.Cos(f) + SemiMinorAxis * Mathf.Sin(f);
 			}
 			_lineRenderer.SetPositions(_verts);
 
 			transform.position = origin;
-			transform.rotation = Quaternion.LookRotation(SemiMinorAxis, _upAxis);
+			transform.rotation = Quaternion.Euler(0, 0, 0); //Quaternion.LookRotation(-SemiMajorAxis, _upAxis);
 
 			float num2 = DistanceToEllipticalOrbitLine(origin, SemiMajorAxis, SemiMinorAxis, _upAxis, Locator.GetActiveCamera().transform.position);
 			float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);

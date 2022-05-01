@@ -18,7 +18,10 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            var orbitLinePrefab = GameObject.Find("OrbitLine_GD").GetComponent<OrbitLine>();
+
+            OrbitLine orbitLinePrefab;
+            orbitLinePrefab = GameObject.Find("GiantsDeep_Body/OrbitLine_GD").GetComponent<OrbitLine>();
+            //orbitLinePrefab = GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<OrbitLine>();
             lineRenderer.material = orbitLinePrefab.GetComponent<LineRenderer>().material;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
@@ -27,17 +30,6 @@ namespace NewHorizons.Builder.Orbital
 
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
-            OrbitLine orbitLine;
-            if(ecc == 0)
-            {
-                orbitLine = new OrbitLine();
-            }
-            else
-            {
-                orbitLine = new TrackingOrbitLine();
-            }
-
-            /*
             NHOrbitLine orbitLine = orbitGO.AddComponent<NHOrbitLine>();
 
             var a = astroObject.SemiMajorAxis;
@@ -47,9 +39,8 @@ namespace NewHorizons.Builder.Orbital
             var p = astroObject.ArgumentOfPeriapsis;
             var i = astroObject.Inclination;
 
-            orbitLine.SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
-            orbitLine.SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.left, l, i, p);
-            */
+            orbitLine.SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
+            orbitLine.SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
 
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
