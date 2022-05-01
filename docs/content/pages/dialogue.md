@@ -2,6 +2,7 @@ Title: Dialogue
 Sort_Priority: 50
 
 ## Dialogue
+___
 
 Here's an example dialogue XML:
 

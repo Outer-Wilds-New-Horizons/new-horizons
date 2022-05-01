@@ -2,6 +2,7 @@ Title: API
 Sort_Priority: 40
 
 ## How to use the API
+___
 
 First create the following interface in your mod:
 
