@@ -136,6 +136,7 @@ namespace NewHorizons
             
             SearchUtilities.ClearCache();
             ImageUtilities.ClearCache();
+            AudioUtilities.ClearCache();
 
             _isChangingStarSystem = false;
 

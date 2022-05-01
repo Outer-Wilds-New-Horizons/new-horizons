@@ -9,18 +9,36 @@ using UnityEngine.Networking;
 
 namespace NewHorizons.Utility
 {
-    public static class AudioUtility
+    public static class AudioUtilities
     {
-        public static AudioClip LoadAudio(string filePath)
+        private static Dictionary<string, AudioClip> _loadedAudioClips = new Dictionary<string, AudioClip>();
+
+        public static AudioClip LoadAudio(string path)
         {
-            var task = Task.Run(async () => await GetAudioClip(filePath));
+            if (_loadedAudioClips.ContainsKey(path))
+            {
+                Logger.Log($"Already loaded audio at path: {path}");
+                return _loadedAudioClips[path];
+            }
+            Logger.Log($"Loading audio at path: {path}");
+            var task = Task.Run(async () => await GetAudioClip(path));
             task.Wait();
+            _loadedAudioClips.Add(path, task.Result);
             return task.Result;
+        }
+
+        public static void ClearCache()
+        {
+            foreach (var audioClip in _loadedAudioClips.Values)
+            {
+                if (audioClip == null) continue;
+                UnityEngine.Object.Destroy(audioClip);
+            }
+            _loadedAudioClips.Clear();
         }
 
         private static async Task<AudioClip> GetAudioClip(string filePath)
         {
-
             var extension = filePath.Split(new char[] { '.' }).Last();
 
             UnityEngine.AudioType audioType;

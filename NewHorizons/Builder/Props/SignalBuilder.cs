@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    clip = AudioUtility.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
+                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
                 }
                 catch(Exception e)
                 {
