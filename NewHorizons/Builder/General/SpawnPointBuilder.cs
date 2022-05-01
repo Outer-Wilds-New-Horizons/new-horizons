@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.General
                 spawnGO.transform.localPosition = module.ShipSpawnPoint;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
-                spawnPoint.SetValue("_isShipSpawn", true);
+                spawnPoint._isShipSpawn = true;
 
                 var ship = GameObject.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;

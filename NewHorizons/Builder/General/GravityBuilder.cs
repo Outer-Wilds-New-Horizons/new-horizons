@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.General
             OWTriggerVolume OWTV = gravityGO.AddComponent<OWTriggerVolume>();
 
             GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
-            GV.SetValue("_cutoffAcceleration", 0.1f);
+            GV._cutoffAcceleration = 0.1f;
 
             GravityVolume.FalloffType falloff = GravityVolume.FalloffType.linear;
             if (config.Base.GravityFallOff.ToUpper().Equals("LINEAR")) falloff = GravityVolume.FalloffType.linear;
@@ -49,20 +49,20 @@ namespace NewHorizons.Builder.General
             else Logger.LogError($"Couldn't set gravity type {config.Base.GravityFallOff}. Must be either \"linear\" or \"inverseSquared\". Defaulting to linear.");
             GV._falloffType = falloff;
 
-            GV.SetValue("_alignmentRadius", config.Base.SurfaceGravity != 0 ? 1.5f * config.Base.SurfaceSize : 0f);
-            GV.SetValue("_upperSurfaceRadius", config.Base.SurfaceSize);
-            GV.SetValue("_lowerSurfaceRadius", 0);
-            GV.SetValue("_layer", 3);
-            GV.SetValue("_priority", 0);
-            GV.SetValue("_alignmentPriority", 0);
-            GV.SetValue("_surfaceAcceleration", config.Base.SurfaceGravity);
-            GV.SetValue("_inheritable", false);
-            GV.SetValue("_isPlanetGravityVolume", true);
-            GV.SetValue("_cutoffRadius", 0f);
+            GV._alignmentRadius = config.Base.SurfaceGravity != 0 ? 1.5f * config.Base.SurfaceSize : 0f;
+            GV._upperSurfaceRadius = config.Base.SurfaceSize;
+            GV._lowerSurfaceRadius = 0;
+            GV._layer = 3;
+            GV._priority = 0;
+            GV._alignmentPriority = 0;
+            GV._surfaceAcceleration = config.Base.SurfaceGravity;
+            GV._inheritable = false;
+            GV._isPlanetGravityVolume = true;
+            GV._cutoffRadius = 0f;
 
             gravityGO.SetActive(true);
 
-            ao.SetValue("_gravityVolume", GV);
+            ao._gravityVolume = GV;
 
             return GV;
         }

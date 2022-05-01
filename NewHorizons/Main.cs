@@ -75,24 +75,7 @@ namespace NewHorizons
         {
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
-            string logLevel = config.GetSettingsValue<string>("LogLevel");
-            Logger.LogType logType;
-            switch (logLevel)
-            {
-                case "Info":
-                    logType = Logger.LogType.Log;
-                    break;
-                case "Warning":
-                    logType = Logger.LogType.Warning;
-                    break;
-                case "Critical":
-                    logType = Logger.LogType.Error;
-                    break;
-                default:
-                    logType = Logger.LogType.Error;
-                    break;
-            }
-            Logger.UpdateLogLevel(logType);
+            Logger.UpdateLogLevel(Debug? Logger.LogType.Log : Logger.LogType.Error);
         }
 
         public void Start()

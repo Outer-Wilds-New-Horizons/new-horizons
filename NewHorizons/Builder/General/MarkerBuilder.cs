@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, string name, IPlanetConfig config)
         {
             MapMarker mapMarker = body.AddComponent<MapMarker>();
-            mapMarker.SetValue("_labelID", (UITextType)TranslationHandler.AddUI(config.Name));
+            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.Name);
 
             var markerType = MapMarker.MarkerType.Planet;
 

@@ -7,6 +7,7 @@
   "$defs": {
     "vector3": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "x": {
           "type": "number",
@@ -24,6 +25,7 @@
     },
     "vector2": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "x": {
           "type": "number",
@@ -37,6 +39,7 @@
     },
     "wholeVector2": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "x": {
           "type": "integer",
@@ -55,6 +58,7 @@
     },
     "color": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "R": {
           "$ref": "#/$defs/colorPart"
@@ -81,6 +85,7 @@
       "type": "array",
       "items": {
         "type": "object",
+        "additionalProperties": false,
         "properties": {
           "time": {
             "type": "integer",
@@ -95,6 +100,7 @@
     },
     "procGen": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "scale": {
           "type": "number",
@@ -114,7 +120,12 @@
   "required": [
     "name"
   ],
+  "additionalProperties": false,
   "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "The schema used to validate your config."
+    },
     "name": {
       "type": "string",
       "description": "Unique name of your planet"
@@ -136,6 +147,7 @@
     },
     "Base": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "hasMapMarker": {
           "type": "boolean",
@@ -214,6 +226,7 @@
     },
     "Atmosphere": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -287,6 +300,7 @@
     },
     "Orbit": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "semiMajorAxis": {
           "type": "integer",
@@ -367,6 +381,7 @@
     },
     "Ring": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "innerRadius": {
           "type": "number",
@@ -405,6 +420,7 @@
     },
     "HeightMap": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "heightMap": {
           "type": "string",
@@ -435,6 +451,7 @@
     },
     "AsteroidBelt": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "innerRadius": {
           "type": "number",
@@ -484,6 +501,7 @@
     },
     "Star": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -522,6 +540,7 @@
     },
     "FocalPoint": {
       "type": "object",
+      "additionalProperties": false,
       "description": "Use this to create the focal point that two objects can orbit in a binary system",
       "properties": {
         "primary": {
@@ -536,11 +555,13 @@
     },
     "Props": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "scatter": {
           "type": "array",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "count": {
                 "type": "integer"
@@ -572,6 +593,7 @@
           "type": "array",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "path": {
                 "type": "string",
@@ -607,14 +629,11 @@
               },
               "removeChildren": {
                 "type": "array",
+                "description": "A list of children to remove from this detail",
                 "items": {
                   "type": "string"
                 }
               }
-            },
-            "scale": {
-              "type": "number",
-              "default": 1
             }
           }
         },
@@ -622,6 +641,7 @@
           "type": "array",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
@@ -652,6 +672,7 @@
           "description": "A set of volumes that reveal ship log fact",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "revealOn": {
                 "type": "string",
@@ -695,6 +716,7 @@
           "description": "A set of locations for ship log entries",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "type": "string",
@@ -717,6 +739,7 @@
           "description": "A set of geysers",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
@@ -729,6 +752,7 @@
     },
     "Spawn": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "playerSpawnPoint": {
           "$ref": "#/$defs/vector3",
@@ -746,11 +770,13 @@
     },
     "Signal": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "signals": {
           "type": "array",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3"
@@ -807,6 +833,7 @@
     },
     "Singularity": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -836,6 +863,7 @@
     },
     "Water": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -851,6 +879,7 @@
     },
     "Lava": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -866,6 +895,7 @@
     },
     "Sand": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "size": {
           "type": "number",
@@ -881,6 +911,7 @@
     },
     "Funnel": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "target": {
           "type": "string",
@@ -906,6 +937,7 @@
     },
     "ShipLog": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "xmlFile": {
           "type": "string",
@@ -927,6 +959,7 @@
           "description": "A set of positions to use instead of automatic layout in rumor mode.",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "type": "string",
@@ -940,6 +973,7 @@
         },
         "MapMode": {
           "type": "object",
+          "additionalProperties": false,
           "properties": {
             "revealedSprite": {
               "type": "string",
@@ -982,6 +1016,7 @@
               "description": "Place non-selectable object in map mode (like sand funnels).",
               "items": {
                 "type": "object",
+                "additionalProperties": false,
                 "properties": {
                   "revealedSprite": {
                     "type": "string",
@@ -1018,6 +1053,7 @@
           "description": "A set of colors to apply to curiosities.",
           "items": {
             "type": "object",
+            "additionalProperties": false,
             "properties": {
               "id": {
                 "type": "string",

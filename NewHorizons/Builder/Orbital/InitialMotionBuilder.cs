@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.Orbital
         public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
             // Rotation
-            initialMotion.SetValue("_initAngularSpeed", SiderealPeriodToAngularSpeed(orbit.SiderealPeriod));
+            initialMotion._initAngularSpeed = SiderealPeriodToAngularSpeed(orbit.SiderealPeriod);
 
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
