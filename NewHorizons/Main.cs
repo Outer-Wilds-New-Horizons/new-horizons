@@ -132,6 +132,7 @@ namespace NewHorizons
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
             
             SearchUtilities.ClearCache();
+            ImageUtilities.ClearCache();
 
             _isChangingStarSystem = false;
 

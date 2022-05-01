@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Atmosphere
             volumesGO.SetActive(false);
             volumesGO.transform.parent = body.transform;
 
-            GameObject rulesetGO = new GameObject();
+            GameObject rulesetGO = new GameObject("Ruleset");
             rulesetGO.SetActive(false);
             rulesetGO.transform.parent = volumesGO.transform;
 

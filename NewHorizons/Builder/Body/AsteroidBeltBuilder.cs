@@ -20,9 +20,10 @@ namespace NewHorizons.Builder.Body
         {
             var belt = parentConfig.AsteroidBelt;
 
-            var minSize = 20;
-            var maxSize = 50;
+            float minSize = belt.MinSize;
+            float maxSize = belt.MaxSize;
             int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
+            if (belt.Amount >= 0) count = belt.Amount;
             if (count > 200) count = 200;
 
             Random.InitState(belt.RandomSeed);

@@ -439,6 +439,10 @@
           "type": "number",
           "minimum": 0,
           "description": "The highest points on your planet will be at this height."
+        },
+        "stretch": {
+          "$ref": "#/$defs/vector3",
+          "description": "The scale of the terrain."
         }
       }
     },
@@ -458,6 +462,24 @@
           "type": "number",
           "default": 0,
           "minimum": 0
+        },
+        "minSize": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0,
+          "description": "Minimum size of the asteroids."
+        },
+        "maxSize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 0,
+          "description": "Maximum size of the asteroids."
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200,
+          "description": "Amount of asteroids to create."
         },
         "inclination": {
           "$ref": "#/$defs/angle",
@@ -580,6 +602,14 @@
               "assetBundle": {
                 "type": "string",
                 "description": "Relative filepath to an asset-bundle"
+              },
+              "objFilePath": {
+                "type": "string",
+                "description": "Relative filepath to the obj file"
+              },
+              "mtlFilePath": {
+                "type": "string",
+                "description": "Relative filepath to the mtl file of the obj file"
               },
               "position": {
                 "$ref": "#/$defs/vector3"
