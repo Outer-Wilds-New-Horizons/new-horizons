@@ -34,7 +34,7 @@ Production build automatically copies over schemas.
 ## Generating
 Run `generate` with pipenv
 ```shell
-pipenv run python -m menagerie generate
+pipenv run menagerie generate
 ```
 
 ## Opening

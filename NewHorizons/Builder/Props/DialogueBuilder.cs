@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
             conversationTrigger.SetActive(false);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
-            var boxCollider = conversationTrigger.AddComponent<BoxCollider>();
+            var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
             conversationTrigger.AddComponent<OWCollider>();
 
             remoteDialogueTrigger._listDialogues = new RemoteDialogueTrigger.RemoteDialogueCondition[]
@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.Props
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
 
-            boxCollider.size = Vector3.one * info.radius / 2f;
+            sphereCollider.radius = info.radius;
 
             conversationTrigger.transform.parent = sector?.transform ?? go.transform;
             conversationTrigger.transform.localPosition = info.remoteTriggerPosition;
