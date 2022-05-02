@@ -17,6 +17,7 @@ namespace NewHorizons.Builder.Props
             var launcherGO = prefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
             launcherGO.transform.localPosition = info.position == null ? Vector3.zero : (Vector3) info.position;
+            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
@@ -24,30 +25,49 @@ namespace NewHorizons.Builder.Props
             meteorLauncher._detectableFluid = null;
             meteorLauncher._detectableField = null;
 
-            meteorLauncher._launchDirection = info.position == null ? Vector3.up : ((Vector3)info.position).normalized;
+            meteorLauncher._launchDirection = Vector3.up;
 
-            var meteorPrefab = GameObject.Instantiate(meteorLauncher._meteorPrefab);
-            FixMeteor(meteorPrefab, info);
+            meteorLauncher._dynamicProbability = 0f;
 
-            meteorLauncher._meteorPrefab = meteorPrefab;
+            meteorLauncher._minLaunchSpeed = info.minLaunchSpeed;
+            meteorLauncher._maxLaunchSpeed = info.maxLaunchSpeed;
+            meteorLauncher._minInterval = info.minInterval;
+            meteorLauncher._maxInterval = info.maxInterval;
 
             launcherGO.SetActive(true);
 
-            // Kill the prefab when its done with it
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => meteorPrefab.SetActive(false));
+            // Have to null check else it breaks on reload configs
+            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () => {
+                foreach (var meteor in meteorLauncher._meteorPool)
+                {
+                    FixMeteor(meteor, info);
+                }
+            });
         }
-        private static void FixMeteor(GameObject meteor, PropModule.VolcanoInfo info)
+        private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
         {
             var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
             mat.SetColor("_Color", info.stoneTint == null ? defaultStoneTint : info.stoneTint.ToColor());
             mat.SetColor("_EmissionColor", info.lavaTint == null ? defaultLavaTint : info.lavaTint.ToColor());
 
-            var detectors = meteor.transform.Find("ConstantDetectors");
+            var detectors = meteor.transform.Find("ConstantDetectors").gameObject;
             GameObject.Destroy(detectors.GetComponent<ConstantForceDetector>());
             GameObject.Destroy(detectors.GetComponent<ConstantFluidDetector>());
 
-            detectors.gameObject.AddComponent<DynamicForceDetector>();
+            var forceDetector = detectors.gameObject.AddComponent<DynamicForceDetector>();
             detectors.gameObject.AddComponent<DynamicFluidDetector>();
+
+            detectors.layer = LayerMask.NameToLayer("BasicDetector");
+
+            var sphere = detectors.AddComponent<SphereCollider>();
+            sphere.radius = 1;
+
+            var sphere2 = detectors.AddComponent<SphereShape>();
+            sphere2._collisionMode = Shape.CollisionMode.Detector;
+            sphere2.radius = 1;
+
+            forceDetector._collider = sphere;
+            forceDetector._shape = sphere2;
         }
     }
 }

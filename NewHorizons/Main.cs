@@ -135,6 +135,7 @@ namespace NewHorizons
             SearchUtilities.ClearCache();
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
+            IsSystemReady = false;
         }
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)

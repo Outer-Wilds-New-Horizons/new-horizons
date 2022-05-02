@@ -49,9 +49,9 @@ namespace NewHorizons.Builder.Props
                     TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
-            if (config.Props.Volcanos != null)
+            if (config.Props.Volcanoes != null)
             {
-                foreach (var volcanoInfo in config.Props.Volcanos)
+                foreach (var volcanoInfo in config.Props.Volcanoes)
                 {
                     VolcanoBuilder.Make(go, sector, volcanoInfo);
                 }
