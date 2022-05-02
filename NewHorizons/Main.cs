@@ -227,31 +227,56 @@ namespace NewHorizons
         #region Load
         public void LoadConfigs(IModBehaviour mod)
         {
-            if (_firstLoad)
+            try
             {
-                MountedAddons.Add(mod);
-            }
-            var folder = mod.ModHelper.Manifest.ModFolderPath;
-            if(Directory.Exists(folder + "planets"))
-            {
-                foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+                if (_firstLoad)
                 {
-                    var relativeDirectory = file.Replace(folder, "");
-                    var body = LoadConfig(mod, relativeDirectory);
+                    MountedAddons.Add(mod);
+                }
+                var folder = mod.ModHelper.Manifest.ModFolderPath;
 
-                    if (body != null)
+                // Load systems first so that when we load bodies later we can check for missing ones
+                if (Directory.Exists(folder + @"systems\"))
+                {
+                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json", SearchOption.AllDirectories))
                     {
-                        // Wanna track the spawn point of each system
-                        if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+                        var name = Path.GetFileNameWithoutExtension(file);
 
-                        // Add the new planet to the planet dictionary
-                        BodyDict[body.Config.StarSystem].Add(body);
+                        Logger.Log($"Loading system {name}");
+
+                        var relativePath = file.Replace(folder, "");
+                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+
+                        var system = new NewHorizonsSystem(name, starSystemConfig, mod);
+                        SystemDict[name] = system;
                     }
                 }
+                if (Directory.Exists(folder + "planets"))
+                {
+                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+                    {
+                        var relativeDirectory = file.Replace(folder, "");
+                        var body = LoadConfig(mod, relativeDirectory);
+
+                        if (body != null)
+                        {
+                            // Wanna track the spawn point of each system
+                            if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+
+                            // Add the new planet to the planet dictionary
+                            if (!BodyDict.ContainsKey(body.Config.StarSystem)) BodyDict[body.Config.StarSystem] = new List<NewHorizonsBody>();
+                            BodyDict[body.Config.StarSystem].Add(body);
+                        }
+                    }
+                }
+                if (Directory.Exists(folder + @"translations\"))
+                {
+                    LoadTranslations(folder, mod);
+                }
             }
-            if(Directory.Exists(folder + @"translations\"))
+            catch(Exception ex)
             {
-                LoadTranslations(folder, mod);
+                Logger.LogError($"{ex.Message}, {ex.StackTrace}");
             }
         }
 
