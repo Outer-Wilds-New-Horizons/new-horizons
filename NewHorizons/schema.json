@@ -752,48 +752,6 @@
               }
             }
           }
-        },
-        "volcanoes": {
-          "type": "array",
-          "description": "A set of meteor-spewing volcanoes",
-          "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "position": {
-                "$ref": "#/$defs/vector3",
-                "description": "The position of this volcano."
-              },
-              "stoneTint": {
-                "$ref": "#/$defs/color",
-                "description": "The colour of the meteor's stone."
-              },
-              "lavaTint": {
-                "$ref": "#/$defs/color",
-                "description": "The colour of the meteor's lava."
-              },
-              "minLaunchSpeed": {
-                "type": "number",
-                "description": "Minimum random speed at which meteors are launched.",
-                "default": 50
-              },
-              "maxLaunchSpeed": {
-                "type": "number",
-                "description": "Maximum random speed at which meteors are launched.",
-                "default": 150
-              },
-              "minInterval": {
-                "type": "number",
-                "description": "Minimum time between meteor launches.",
-                "default": 5
-              },
-              "maxInterval": {
-                "type": "number",
-                "description": "Maximum time between meteor launches."
-                "default": 20
-              }
-            }
-          }
         }
       }
     },
