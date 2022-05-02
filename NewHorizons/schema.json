@@ -752,6 +752,20 @@
               }
             }
           }
+        },
+        "volcanoes": {
+          "type": "array",
+          "description": "A set of meteor-spewing volcanoes",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this volcano."
+              }
+            }
+          }
         }
       }
     },
