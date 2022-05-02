@@ -35,7 +35,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove existing planets
 - Create planets from heightmaps/texturemaps
-- Create stars, comets, asteroid belts, satellites, geysers, cloak fields
+- Create stars, comets, asteroid belts, satellites, geysers, cloak fields, meteor-launching volcanoes
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
@@ -51,7 +51,6 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Implement all planet features:
 	- Tornados + floating islands
 	- Let any star go supernova
-	- Meteors
 	- Pocket dimensions
 	- Timed position/velocity changes
 - Implement custom Nomai scrolls
