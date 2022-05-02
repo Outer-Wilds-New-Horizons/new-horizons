@@ -16,10 +16,16 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
         {
+            // In stock I think they disable dialogue stuff with conditions
+            // Here we just don't make it at all
             if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
             if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+
+            // Make the character look at the player
+            // Useful for dialogue replacement
+            if (!string.IsNullOrEmpty(info.pathToAnimController)) MakePlayerTrackingZone(go, dialogue, info);
         }
 
         public static void MakeRemoteDialogueTrigger(GameObject go, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
@@ -79,6 +85,83 @@ namespace NewHorizons.Builder.Props
             conversationZone.SetActive(true);
 
             return dialogueTree;
+        }
+
+        public static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
+        {
+            var character = go.transform.Find(info.pathToAnimController);
+
+            // At most one of these should ever not be null
+            var nomaiController = character.GetComponent<SolanumAnimController>();
+            var controller = character.GetComponent<CharacterAnimController>();
+
+            var lookOnlyWhenTalking = info.lookAtRadius <= 0;
+
+            // To have them look when you start talking
+            if (controller != null)
+            {
+                controller._dialogueTree = dialogue;
+                controller.lookOnlyWhenTalking = lookOnlyWhenTalking;
+            }
+            else if(nomaiController != null)
+            {
+                if (lookOnlyWhenTalking)
+                {
+                    dialogue.OnStartConversation += nomaiController.StartWatchingPlayer;
+                    dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
+                }
+            }
+            else
+            {
+                // TODO: make a custom controller for basic characters to just turn them to face you
+            }
+
+            if (info.lookAtRadius > 0)
+            {
+                GameObject playerTrackingZone = new GameObject("PlayerTrackingZone");
+                playerTrackingZone.SetActive(false);
+
+                playerTrackingZone.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                playerTrackingZone.SetActive(false);
+
+                var sphereCollider = playerTrackingZone.AddComponent<SphereCollider>();
+                sphereCollider.radius = info.lookAtRadius;
+                sphereCollider.isTrigger = true;
+
+                playerTrackingZone.AddComponent<OWCollider>();
+
+                var triggerVolume = playerTrackingZone.AddComponent<OWTriggerVolume>();
+
+                if (controller)
+                {
+                    // Since the Awake method is CharacterAnimController was already called 
+                    if (controller.playerTrackingZone)
+                    {
+                        controller.playerTrackingZone.OnEntry -= controller.OnZoneEntry;
+                        controller.playerTrackingZone.OnExit -= controller.OnZoneExit;
+                    }
+                    // Set it to use the new zone
+                    controller.playerTrackingZone = triggerVolume;
+                    triggerVolume.OnEntry += controller.OnZoneEntry;
+                    triggerVolume.OnExit += controller.OnZoneExit;
+                }
+                // Simpler for the Nomai
+                else if(nomaiController)
+                {
+                    triggerVolume.OnEntry += (_) => nomaiController.StartWatchingPlayer();
+                    triggerVolume.OnExit += (_) => nomaiController.StopWatchingPlayer();
+                }
+                // No controller
+                else
+                {
+                    // TODO
+                }
+
+                playerTrackingZone.transform.parent = dialogue.gameObject.transform;
+                playerTrackingZone.transform.localPosition = Vector3.zero;
+
+                playerTrackingZone.SetActive(true);
+            }
         }
 
         private static void AddTranslation(string xml)

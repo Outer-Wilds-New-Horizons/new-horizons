@@ -1,9 +1,9 @@
 {
   "filename": "NewHorizons.dll",
-  "author": "xen, Idiot, & Book",
+  "author": "xen, Bwc9876, & Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "0.10.3",
+  "version": "0.11.0",
   "owmlVersion": "2.1.0",
   "dependencies": [ "PacificEngine.OW_CommonResources" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.OuterWildsMMO", "Vesper.AutoResume" ],

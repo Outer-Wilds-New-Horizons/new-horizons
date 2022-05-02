@@ -14,11 +14,11 @@ namespace NewHorizons.Builder.Atmosphere
             overrideGO.transform.parent = body.transform;
 
             GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
-            GDSOV.SetValue("_sector", sector);
-            GDSOV.SetValue("_cloudsOuterRadius", atmo.Size);
-            GDSOV.SetValue("_cloudsInnerRadius", atmo.Size * 0.9f);
-            GDSOV.SetValue("_waterOuterRadius", surfaceSize);
-            GDSOV.SetValue("_waterInnerRadius", 0f);
+            GDSOV._sector = sector;
+            GDSOV._cloudsOuterRadius = atmo.Size;
+            GDSOV._cloudsInnerRadius = atmo.Size * 0.9f;
+            GDSOV._waterOuterRadius = surfaceSize;
+            GDSOV._waterInnerRadius = 0f;
 
             overrideGO.transform.localPosition = Vector3.zero;
             overrideGO.SetActive(true);

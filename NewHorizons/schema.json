@@ -363,6 +363,10 @@
           "default": false,
           "description": "Referring to the orbit line in the map screen."
         },
+        "dottedOrbitLine": {
+          "type": "boolean",
+          "default": false
+        },
         "isStatic": {
           "type": "boolean",
           "default": false,
@@ -439,6 +443,10 @@
           "type": "number",
           "minimum": 0,
           "description": "The highest points on your planet will be at this height."
+        },
+        "stretch": {
+          "$ref": "#/$defs/vector3",
+          "description": "The scale of the terrain."
         }
       }
     },
@@ -458,6 +466,24 @@
           "type": "number",
           "default": 0,
           "minimum": 0
+        },
+        "minSize": {
+          "type": "number",
+          "default": 20,
+          "minimum": 0,
+          "description": "Minimum size of the asteroids."
+        },
+        "maxSize": {
+          "type": "number",
+          "default": 50,
+          "minimum": 0,
+          "description": "Maximum size of the asteroids."
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 200,
+          "description": "Amount of asteroids to create."
         },
         "inclination": {
           "$ref": "#/$defs/angle",
@@ -633,6 +659,15 @@
               "blockAfterPersistentCondition": {
                 "type": "string",
                 "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue triggers that you want to have happen only once."
+              },
+              "pathToAnimController": {
+                "type": "string",
+                "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's CharacterAnimController or SolanumAnimController."
+              },
+              "lookAtRadius": {
+                "type": "number",
+                "default": 0,
+                "description": "If a pathToAnimController is supplied, if you are within this distance the character will look at you. If it is set to 0, they will only look at you when spoken to."
               }
             }
           }
@@ -714,6 +749,48 @@
               "position": {
                 "$ref": "#/$defs/vector3",
                 "description": "The position of this geyser"
+              }
+            }
+          }
+        },
+        "volcanoes": {
+          "type": "array",
+          "description": "A set of meteor-spewing volcanoes",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this volcano."
+              },
+              "stoneTint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the meteor's stone."
+              },
+              "lavaTint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the meteor's lava."
+              },
+              "minLaunchSpeed": {
+                "type": "number",
+                "description": "Minimum random speed at which meteors are launched.",
+                "default": 50
+              },
+              "maxLaunchSpeed": {
+                "type": "number",
+                "description": "Maximum random speed at which meteors are launched.",
+                "default": 150
+              },
+              "minInterval": {
+                "type": "number",
+                "description": "Minimum time between meteor launches.",
+                "default": 5
+              },
+              "maxInterval": {
+                "type": "number",
+                "description": "Maximum time between meteor launches.",
+                "default": 20
               }
             }
           }

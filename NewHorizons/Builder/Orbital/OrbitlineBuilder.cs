@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.Orbital
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, AstroObject astroobject, bool isMoon, IPlanetConfig config)
+        public static void Make(GameObject body, AstroObject astroObject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
@@ -18,13 +18,21 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
+            
+            var width = config.Orbit.DottedOrbitLine ? 100 : 50;
+            lineRenderer.startWidth = width;
+            lineRenderer.endWidth = width;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
 
+            var numVerts = config.Orbit.DottedOrbitLine ? 128 : 256;
+            lineRenderer.positionCount = numVerts;
+
             var ecc = config.Orbit.Eccentricity;
 
-            var parentGravity = astroobject.GetPrimaryBody()?.GetGravityVolume();
+            var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
 
@@ -64,11 +72,12 @@ namespace NewHorizons.Builder.Orbital
                 orbitLine._fadeStartDist = 3000;
             }
             
-            orbitLine.SetValue("_color", color);
+            orbitLine._color = color;
 
-            orbitLine.SetValue("_astroObject", astroobject);
-            orbitLine.SetValue("_fade", fade);
-            orbitLine.SetValue("_lineWidth", 2f);
+            orbitLine._astroObject = astroObject;
+            orbitLine._fade = fade;
+            orbitLine._lineWidth = 2f;
+            orbitLine._numVerts = numVerts;
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
                 typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   

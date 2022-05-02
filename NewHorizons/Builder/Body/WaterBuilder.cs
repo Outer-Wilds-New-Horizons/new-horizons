@@ -50,8 +50,8 @@ namespace NewHorizons.Builder.Body
             TSR.LODRadius = 0;
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
-            OEC.SetValue("_sector", sector);
-            OEC.SetValue("_ocean", TSR);
+            OEC._sector = sector;
+            OEC._ocean = TSR;
 
             //Buoyancy
             var buoyancyObject = new GameObject("WaterVolume");
@@ -64,18 +64,18 @@ namespace NewHorizons.Builder.Body
             sphereCollider.isTrigger = true;
 
             var owCollider = buoyancyObject.AddComponent<OWCollider>();
-            owCollider.SetValue("_parentBody", rb);
-            owCollider.SetValue("_collider", sphereCollider);
+            owCollider._parentBody = rb;
+            owCollider._collider = sphereCollider;
 
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
-            buoyancyTriggerVolume.SetValue("_owCollider", owCollider);
+            buoyancyTriggerVolume._owCollider = owCollider;
 
             var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
-            fluidVolume.SetValue("_fluidType", FluidVolume.Type.WATER);
-            fluidVolume.SetValue("_attachedBody", rb);
-            fluidVolume.SetValue("_triggerVolume", buoyancyTriggerVolume);
-            fluidVolume.SetValue("_radius", waterSize);
-            fluidVolume.SetValue("_layer", LayerMask.NameToLayer("BassicEffectVolume"));
+            fluidVolume._fluidType = FluidVolume.Type.WATER;
+            fluidVolume._attachedBody = rb;
+            fluidVolume._triggerVolume = buoyancyTriggerVolume;
+            fluidVolume._radius = waterSize;
+            fluidVolume._layer = LayerMask.NameToLayer("BassicEffectVolume");
 
             var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";

@@ -75,24 +75,7 @@ namespace NewHorizons
         {
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
-            string logLevel = config.GetSettingsValue<string>("LogLevel");
-            Logger.LogType logType;
-            switch (logLevel)
-            {
-                case "Info":
-                    logType = Logger.LogType.Log;
-                    break;
-                case "Warning":
-                    logType = Logger.LogType.Warning;
-                    break;
-                case "Critical":
-                    logType = Logger.LogType.Error;
-                    break;
-                default:
-                    logType = Logger.LogType.Error;
-                    break;
-            }
-            Logger.UpdateLogLevel(logType);
+            Logger.UpdateLogLevel(Debug? Logger.LogType.Log : Logger.LogType.Error);
         }
 
         public void Start()
@@ -101,6 +84,8 @@ namespace NewHorizons
             OnStarSystemLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
@@ -129,9 +114,7 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
-        }
-        
-        
+        }        
 
         public void OnDestroy()
         {
@@ -147,11 +130,17 @@ namespace NewHorizons
             Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        private void OnSceneUnloaded(Scene scene)
+        {
+            SearchUtilities.ClearCache();
+            ImageUtilities.ClearCache();
+            AudioUtilities.ClearCache();
+            IsSystemReady = false;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
-            
-            SearchUtilities.ClearCache();
 
             _isChangingStarSystem = false;
 

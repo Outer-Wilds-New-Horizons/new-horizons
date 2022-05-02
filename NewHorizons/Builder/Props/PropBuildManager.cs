@@ -46,16 +46,17 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
-                    TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                    //TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
-            if (config.Props.Volcanos != null)
+            if (config.Props.Volcanoes != null)
             {
-                foreach (var volcanoInfo in config.Props.Volcanos)
+                foreach (var volcanoInfo in config.Props.Volcanoes)
                 {
                     VolcanoBuilder.Make(go, sector, volcanoInfo);
                 }
             }
+            // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
             if (config.Props.Dialogue != null)
             {
                 foreach(var dialogueInfo in config.Props.Dialogue)

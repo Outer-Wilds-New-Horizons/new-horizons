@@ -85,9 +85,23 @@ namespace NewHorizons.Builder.Props
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                // If it's not a moving anglerfish make sure the anim controller is off
+                // If it's not a moving anglerfish make sure the anim controller is regular
                 if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
-                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as AnglerfishAnimController).enabled = false);
+                    Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
+                    {
+                        Logger.Log("Enabling anglerfish animation");
+                        var angler = (component as AnglerfishAnimController);
+                        // Remove any reference to its angler
+                        if(angler._anglerfishController)
+                        {
+                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                        }
+                        angler.enabled = true;
+                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    });
 
                 if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
@@ -133,6 +147,8 @@ namespace NewHorizons.Builder.Props
                 var front = Vector3.Cross(up, Vector3.left);
                 if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
                 if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
+
+                front = rot * front;
 
                 prop.transform.LookAt(prop.transform.position + front, up);
             }

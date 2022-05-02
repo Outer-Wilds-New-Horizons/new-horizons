@@ -14,7 +14,7 @@ namespace NewHorizons.External
         public RaftInfo[] Rafts;
         public GeyserInfo[] Geysers;
         public TornadoInfo[] Tornados;
-        public VolcanoInfo[] Volcanos;
+        public VolcanoInfo[] Volcanoes;
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
@@ -33,8 +33,8 @@ namespace NewHorizons.External
         public class DetailInfo
         {
             public string path;
-            public string objFilePath;
-            public string mtlFilePath;
+            public string objFilePath; //obsolete DO NOT DOCUMENT
+            public string mtlFilePath; //obsolete
             public string assetBundle;
             public MVector3 position;
             public MVector3 rotation;
@@ -67,6 +67,10 @@ namespace NewHorizons.External
             public MVector3 position = null;
             public MColor stoneTint = null;
             public MColor lavaTint = null;
+            public float minLaunchSpeed = 50f;
+            public float maxLaunchSpeed = 150f;
+            public float minInterval = 5f;
+            public float maxInterval = 20f;
         }
 
         public class DialogueInfo
@@ -76,6 +80,8 @@ namespace NewHorizons.External
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;
+            public string pathToAnimController;
+            public float lookAtRadius;
         }
 
         public class RevealInfo

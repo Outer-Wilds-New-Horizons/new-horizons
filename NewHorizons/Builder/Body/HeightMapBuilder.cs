@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.transform.parent = go.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight);
+            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, module.Stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
@@ -49,6 +49,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);
+            cubeSphereMR.material.name = textureMap.name;
             cubeSphereMR.material.mainTexture = textureMap;
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
