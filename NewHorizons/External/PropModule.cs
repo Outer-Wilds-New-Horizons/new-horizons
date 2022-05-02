@@ -33,8 +33,8 @@ namespace NewHorizons.External
         public class DetailInfo
         {
             public string path;
-            public string objFilePath;
-            public string mtlFilePath;
+            public string objFilePath; //obsolete DO NOT DOCUMENT
+            public string mtlFilePath; //obsolete
             public string assetBundle;
             public MVector3 position;
             public MVector3 rotation;
