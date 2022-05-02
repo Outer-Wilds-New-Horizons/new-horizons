@@ -5,10 +5,12 @@ Sort_Priority: 100
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
 # Outer Wilds New Horizons
+___
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
 ## Getting Started
+___
 
 Before starting, go into your in-game mod settings for New Horizons and switch Debug mode on. This allows you to:
 
@@ -114,11 +116,13 @@ To see all the different things you can put into a config file check out the [Ce
 Check out the rest of the site for how to format [star system]({{ 'Star System Schema'|route}}), [dialogue]({{ 'Dialogue Schema'|route}}), [ship log]({{ 'Shiplog Schema'|route}}), and [translation]({{ 'Translation Schema'|route}}) files!
 
 ## Publishing Your Mod
+___
 
 Once your mod is complete, you can use the [addon creation tool](https://outerwildsmods.com/custom-worlds/create/){ target="_blank" } to upload your mod to the database.  
 Alternatively, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme){ target="_blank" } GitHub template if you're familiar with Git and GitHub
 
 ## Helpful Resources
+___
 
 The texturemap/heightmap feature was inspired by the Kerbal Space Program mod Kopernicus. A lot of the same techniques that apply to
 planet creation there apply to New Horizons. If you need help with planetary texturing, check out [The KSP texturing guide](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.

@@ -81,6 +81,8 @@ namespace NewHorizons
             OnStarSystemLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
@@ -109,9 +111,7 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
-        }
-        
-        
+        }        
 
         public void OnDestroy()
         {
@@ -127,12 +127,17 @@ namespace NewHorizons
             Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        private void OnSceneUnloaded(Scene scene)
         {
-            Logger.Log($"Scene Loaded: {scene.name} {mode}");
-            
             SearchUtilities.ClearCache();
             ImageUtilities.ClearCache();
+            AudioUtilities.ClearCache();
+            IsSystemReady = false;
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        {
+            Logger.Log($"Scene Loaded: {scene.name} {mode}");
 
             _isChangingStarSystem = false;
 

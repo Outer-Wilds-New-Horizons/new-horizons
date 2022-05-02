@@ -19,13 +19,17 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-
-            OrbitLine orbitLinePrefab;
-            orbitLinePrefab = GameObject.Find("GiantsDeep_Body/OrbitLine_GD").GetComponent<OrbitLine>();
-            //orbitLinePrefab = GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<OrbitLine>();
-            lineRenderer.material = orbitLinePrefab.GetComponent<LineRenderer>().material;
+            lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
+            
+            var width = config.Orbit.DottedOrbitLine ? 100 : 50;
+            lineRenderer.startWidth = width;
+            lineRenderer.endWidth = width;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
+
+            var numVerts = config.Orbit.DottedOrbitLine ? 128 : 256;
+            lineRenderer.positionCount = numVerts;
 
             var ecc = config.Orbit.Eccentricity;
 
@@ -65,9 +69,10 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
+
             orbitLine._lineWidth = 0.2f;
 
-            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, 128, 4096);
+            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, numVerts, 4096);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
         }
