@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Body
             if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
 
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
-            sectorProxy.SetValue("_renderers", new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() });
+            sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };
             sectorProxy.SetSector(sector);
             
             var destructionVolume = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);

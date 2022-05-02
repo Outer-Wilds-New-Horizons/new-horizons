@@ -35,6 +35,10 @@ namespace NewHorizons.Builder.Props
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.HeightMap);
                 }
                 catch (Exception) { }
+                if(heightMapTexture == null)
+                {
+                    radius = heightMap.MaxHeight;
+                }
             }
 
             foreach (var propInfo in scatterInfo)
@@ -46,7 +50,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = GameObject.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
-                    var randomInd = (int)Random.Range(0, points.Count);
+                    var randomInd = (int)Random.Range(0, points.Count-1);
                     var point = points[randomInd];
 
                     var height = radius;
@@ -69,12 +73,16 @@ namespace NewHorizons.Builder.Props
                         if (config.Water != null && height - 1f < config.Water.Size) continue;
 
                         // Move it slightly into the ground
-                        height -= 0.2f;
+                        height -= 0.1f;
                     }
 
                     var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true);
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if (propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation);
+
+                    // Rotate around normal
+                    prop.transform.localRotation *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up);
+
                     points.RemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }

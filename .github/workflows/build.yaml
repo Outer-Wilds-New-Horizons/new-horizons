@@ -1,0 +1,62 @@
+name: Build
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+  workflow_dispatch:
+  
+env:
+  GH_ACTIONS: 'true'
+
+jobs:
+  pre_job:
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          paths_ignore: '["**/README.md"]'
+          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
+  build:
+    needs: pre_job
+    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
+    runs-on: windows-latest
+    steps:
+
+    - uses: actions/checkout@v2
+    
+    - uses: robinraju/release-downloader@v1.3
+      with: 
+        repository: " PacificEngine/OW_CommonResources"
+        latest: true
+        fileName: "PacificEngine.OW_CommonResources.zip"
+        out-file-path: "CR-Download/"
+        
+    - run: 7z x CR-Download/PacificEngine.OW_CommonResources.zip
+    
+    - run: |
+        mv PacificEngine.OW_CommonResources/ NewHorizons/
+        $data = Get-Content NewHorizons/NewHorizons.csproj.user
+        $data = $data.Replace("<OuterWildsModsDirectory>`$(AppData)\OuterWildsModManager\OWML\Mods</OuterWildsModsDirectory>", "<OuterWildsModsDirectory>.</OuterWildsModsDirectory>")
+        $data | Out-File -encoding ASCII NewHorizons/NewHorizons.csproj.user
+        
+    # Set to Release if we're in master, otherwise keep us in Debug
+    - name: Set Release
+      if: github.ref == 'refs/heads/master'
+      run: echo "BUILD_TYPE=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+      
+    - name: Set Debug
+      if: github.ref != 'refs/heads/master'
+      run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+    
+    - uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: "5.0.x"
+    - run: dotnet build -c $Env:BUILD_TYPE -o .\NewHorizons\Bin\$Env:BUILD_TYPE
+    - uses: actions/upload-artifact@v2
+      with:
+        name: NewHorizons-${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\Bin\${{ env.BUILD_TYPE }}

@@ -1,8 +1,9 @@
-﻿using OWML.Utils;
+﻿using NewHorizons.Utility;
+using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Atmosphere
+namespace NewHorizons.Builder.Atmosphere
 {
     static class EffectsBuilder
     {
@@ -14,15 +15,15 @@ namespace NewHorizons.Atmosphere
             effectsGO.transform.localPosition = Vector3.zero;
 
             SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
-            SCG.SetValue("_sector", sector);
-            SCG.SetValue("_particleSystemSuspendMode", CullGroup.ParticleSystemSuspendMode.Stop);
-            SCG.SetValue("_occlusionCulling", false);
-            SCG.SetValue("_dynamicCullingBounds", false);
-            SCG.SetValue("_waitForStreaming", false);
+            SCG._sector = sector;
+            SCG._particleSystemSuspendMode = CullGroup.ParticleSystemSuspendMode.Stop;
+            SCG._occlusionCulling = false;
+            SCG._dynamicCullingBounds = false;
+            SCG._waitForStreaming = false;
 
             if(hasRain)
             {
-                var rainGO = GameObject.Instantiate(GameObject.Find("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
+                var rainGO = GameObject.Instantiate(SearchUtilities.CachedFind("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
                 rainGO.transform.localPosition = Vector3.zero;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
@@ -33,8 +34,8 @@ namespace NewHorizons.Atmosphere
                     new Keyframe(atmoSize, 0f) 
                 });
 
-                rainGO.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
-                rainGO.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
+                rainGO.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
+                rainGO.GetComponent<PlanetaryVectionController>()._exclusionSectors = new Sector[] { };
                 rainGO.SetActive(true);
             }
             
@@ -45,7 +46,7 @@ namespace NewHorizons.Atmosphere
                 snowGO.transform.localPosition = Vector3.zero;
                 for(int i = 0; i < 5; i++)
                 {
-                    var snowEmitter = GameObject.Instantiate(GameObject.Find("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
+                    var snowEmitter = GameObject.Instantiate(SearchUtilities.CachedFind("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
                     snowEmitter.name = "SnowEmitter";
                     snowEmitter.transform.localPosition = Vector3.zero;
 
@@ -57,8 +58,8 @@ namespace NewHorizons.Atmosphere
                         new Keyframe(atmoSize, 0f)
                     });
 
-                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_activeInSector", sector);
-                    snowEmitter.GetComponent<PlanetaryVectionController>().SetValue("_exclusionSectors", new Sector[] { });
+                    snowEmitter.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
+                    snowEmitter.GetComponent<PlanetaryVectionController>()._exclusionSectors = new Sector[] { };
                     snowEmitter.SetActive(true);
                 }
             }

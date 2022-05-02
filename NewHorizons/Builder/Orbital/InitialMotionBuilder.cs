@@ -6,10 +6,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.OrbitalPhysics;
 using Logger = NewHorizons.Utility.Logger;
 using System.Reflection;
 using NewHorizons.Utility;
+using PacificEngine.OW_CommonResources.Geometry.Orbits;
+using NewHorizons.Utility.CommonResources;
 
 namespace NewHorizons.Builder.Orbital
 {
@@ -29,7 +30,7 @@ namespace NewHorizons.Builder.Orbital
         public static InitialMotion Update(InitialMotion initialMotion, GameObject body, AstroObject primaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
             // Rotation
-            initialMotion.SetValue("_initAngularSpeed", SiderealPeriodToAngularSpeed(orbit.SiderealPeriod));
+            initialMotion._initAngularSpeed = SiderealPeriodToAngularSpeed(orbit.SiderealPeriod);
 
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
             body.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
@@ -43,7 +44,7 @@ namespace NewHorizons.Builder.Orbital
                     var gv = primaryBody.GetGravityVolume();
                     if(gv != null)
                     {
-                        var velocity = OrbitalHelper.GetCartesian(new OrbitalHelper.Gravity(primaryBody.GetGravityVolume()), orbit).Item2;
+                        var velocity = CommonResourcesUtilities.GetCartesian(gv, orbit).Item2;
 
                         // For some stupid reason the InitialMotion awake method transforms the perfectly fine direction vector you give it so we preemptively do the inverse so it all cancels out
                         initialMotion._initLinearDirection = body.transform.InverseTransformDirection(velocity.normalized);

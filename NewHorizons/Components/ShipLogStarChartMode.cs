@@ -30,11 +30,19 @@ namespace NewHorizons.Components
 
         private ScreenPrompt _detectiveModePrompt;
         private ScreenPrompt _targetSystemPrompt;
+        private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
         private ShipLogEntryCard _target = null;
         private NotificationData _warpNotificationData = null;
 
         private int _nextCardIndex;
+        private bool _isAtFlightConsole;
+
+        private void Awake()
+        {
+            // Prompts
+            Locator.GetPromptManager().AddScreenPrompt(_warpPrompt, PromptPosition.UpperLeft, false);
+        }
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
@@ -49,9 +57,12 @@ namespace NewHorizons.Components
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
             GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
+            GlobalMessenger.AddListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
+            GlobalMessenger.AddListener("GamePaused", new Callback(OnGamePaused));
+            GlobalMessenger.AddListener("GameUnpaused", new Callback(OnGameUnpaused));
 
             _nextCardIndex = 0;
-            foreach (var starSystem in Main.BodyDict.Keys)
+            foreach (var starSystem in Main.SystemDict.Keys)
             {
                 // Get rid of the warp option for the current system
                 if (starSystem == Main.Instance.CurrentStarSystem) continue;
@@ -70,6 +81,15 @@ namespace NewHorizons.Components
                     AddSystemCard(starSystem);
                 }
             }
+
+            //AddSystemCard("EyeOfTheUniverse");
+
+            /* Ship log manager isnt initiatiized yet
+            if(Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1"))
+            {
+                AddSystemCard("EyeOfTheUniverse");
+            }
+            */
         }
 
         public void AddSystemCard(string starSystem)
@@ -82,11 +102,39 @@ namespace NewHorizons.Components
         {
             GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
             GlobalMessenger<OWRigidbody>.RemoveListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
+            GlobalMessenger.RemoveListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
+            GlobalMessenger.RemoveListener("GamePaused", new Callback(OnGamePaused));
+            GlobalMessenger.RemoveListener("GameUnpaused", new Callback(OnGameUnpaused));
+
+            Locator.GetPromptManager().RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
         }
 
         private void OnEnterFlightConsole(OWRigidbody _)
         {
-            if (_target == null) GlobalMessenger.FireEvent("UntargetReferenceFrame");
+            _isAtFlightConsole = true;
+            if(_target != null)
+            {
+                _warpPrompt.SetVisibility(true);
+            }
+        }
+
+        private void OnExitFlightConsole()
+        {
+            _isAtFlightConsole = false;
+            _warpPrompt.SetVisibility(false);
+        }
+
+        private void OnGamePaused()
+        {
+            _warpPrompt.SetVisibility(false);
+        }
+
+        private void OnGameUnpaused()
+        {
+            if(_target != null && _isAtFlightConsole)
+            {
+                _warpPrompt.SetVisibility(true);
+            }
         }
 
         public GameObject CreateCard(string uniqueName, Transform parent, Vector2 position)
@@ -262,9 +310,13 @@ namespace NewHorizons.Components
             _oneShotSource.PlayOneShot(global::AudioType.ShipLogUnmarkLocation, 1f);
             _target = shipLogEntryCard;
             _target.SetMarkedOnHUD(true);
+            Locator._rfTracker.UntargetReferenceFrame();
+
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
             _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueNameToString(shipLogEntryCard.name).ToUpper()}");
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
+
+            _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueNameToString(shipLogEntryCard.name)}");
         }
 
         private void RemoveWarpTarget(bool playSound = false)
@@ -274,11 +326,23 @@ namespace NewHorizons.Components
             if(playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
             _target.SetMarkedOnHUD(false);
             _target = null;
+
+            _warpPrompt.SetVisibility(false);
         }
 
         public string GetTargetStarSystem()
         {
             return _target?.name;
+        }
+
+        private bool IsWarpDriveAvailable()
+        {
+            return OWInput.IsInputMode(InputMode.ShipCockpit) && _target != null;
+        }
+
+        private void Update()
+        {
+            _warpPrompt.SetVisibility(IsWarpDriveAvailable());
         }
     }
 }

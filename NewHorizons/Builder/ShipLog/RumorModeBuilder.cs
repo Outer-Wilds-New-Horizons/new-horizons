@@ -10,7 +10,6 @@ using OWML.Common;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Handlers;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.ShipLog
@@ -72,26 +71,32 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     XElement curiosityName = entryElement.Element("Curiosity");
                     XElement id = entryElement.Element("ID");
-                    if (curiosityName != null && id != null && _entryIdToRawName.ContainsKey(id.Value) == false)
+                    if (id != null)
                     {
                         entryIDs.Add(id.Value);
-                        _entryIdToRawName.Add(id.Value, curiosityName.Value);
+                        if (curiosityName != null && _entryIdToRawName.ContainsKey(id.Value) == false)
+                        {
+                            _entryIdToRawName.Add(id.Value, curiosityName.Value);
+                        }
                     }
                     foreach (XElement childEntryElement in entryElement.Elements("Entry"))
                     {
                         XElement childCuriosityName = childEntryElement.Element("Curiosity");
                         XElement childId = childEntryElement.Element("ID");
-                        if (childId != null && _entryIdToRawName.ContainsKey(childId.Value))
+                        if (childId != null)
                         {
-                            if (childCuriosityName == null && curiosityName != null)
-                            {
-                                _entryIdToRawName.Add(childId.Value, curiosityName.Value);
-                            }
-                            else if (childCuriosityName != null)
-                            {
-                                _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
-                            }
                             entryIDs.Add(childId.Value);
+                            if (_entryIdToRawName.ContainsKey(childId.Value))
+                            {
+                                if (childCuriosityName == null && curiosityName != null)
+                                {
+                                    _entryIdToRawName.Add(childId.Value, curiosityName.Value);
+                                }
+                                else if (childCuriosityName != null)
+                                {
+                                    _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
+                                }
+                            }
                         }
                         AddTranslation(childEntryElement);
                     }

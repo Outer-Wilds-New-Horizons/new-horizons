@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    clip = AudioUtility.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
+                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
                 }
                 catch(Exception e)
                 {
@@ -198,7 +198,8 @@ namespace NewHorizons.Builder.Props
                 _customCurve = GameObject.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
-            source.playOnAwake = false;
+            // If it can be heard regularly then we play it immediately
+            source.playOnAwake = !info.OnlyAudibleToScope;
             source.spatialBlend = 1f;
             source.volume = 0.5f;
             source.dopplerLevel = 0;
@@ -232,7 +233,7 @@ namespace NewHorizons.Builder.Props
                 if (str.Equals(freq.ToString())) return freq;
             }
             var customName = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
-            Logger.Log($"[{str}] [{customName}] FUCK");
+
             if (customName == default) customName = AddFrequency(str);
 
             return customName;

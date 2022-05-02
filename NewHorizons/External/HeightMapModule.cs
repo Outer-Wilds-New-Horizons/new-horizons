@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NewHorizons.Utility;
+using UnityEngine;
 
 namespace NewHorizons.External
 {
@@ -12,5 +9,6 @@ namespace NewHorizons.External
         public string TextureMap { get; set; }
         public float MinHeight { get; set; }
         public float MaxHeight { get; set; }
+        public MVector3 Stretch { get; set; } = (MVector3)Vector3.one;
     }
 }

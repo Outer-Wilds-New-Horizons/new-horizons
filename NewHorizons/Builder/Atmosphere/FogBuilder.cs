@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Atmosphere
+namespace NewHorizons.Builder.Atmosphere
 {
     static class FogBuilder
     {
@@ -55,7 +55,7 @@ namespace NewHorizons.Atmosphere
 
             /*
             SectorProxy lodFogSectorProxy = lodFogGO.AddComponent<SectorProxy>();
-            lodFogSectorProxy.SetValue("_renderers", new List<Renderer> { lodMR });
+            lodFogSectorProxy._renderers = new List<Renderer> { lodMR };
             lodFogSectorProxy.SetSector(sector);
             */
 

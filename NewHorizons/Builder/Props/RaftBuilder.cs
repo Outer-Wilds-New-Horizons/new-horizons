@@ -49,9 +49,9 @@ namespace NewHorizons.Builder.Props
             kinematicRigidBody.centerOfMass = Vector3.zero;
 
             var owRigidBody = raftObject.AddComponent<OWRigidbody>();
-            owRigidBody.SetValue("_kinematicSimulation", true);
-            owRigidBody.SetValue("_rigidbody", rigidBody);
-            owRigidBody.SetValue("_kinematicRigidbody", kinematicRigidBody);
+            owRigidBody._kinematicSimulation = true;
+            owRigidBody._rigidbody = rigidBody;
+            owRigidBody._kinematicRigidbody = kinematicRigidBody;
             kinematicRigidBody._rigidbody = rigidBody;
             kinematicRigidBody._owRigidbody = owRigidBody;
 
@@ -80,9 +80,9 @@ namespace NewHorizons.Builder.Props
                 StreamingManager.LoadStreamingAssets(child.assetBundle);
             }
 
-            var detectorGO = DetectorBuilder.Make(raftObject, owRigidBody, ao, null, false);
-            var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => fluidDetector._activeVolumes = new EffectVolume[] { body.GetComponentInChildren<RadialFluidVolume>() }.ToList());
+            //var detectorGO = DetectorBuilder.Make(raftObject, owRigidBody, ao, null, false, false);
+            //var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
+            //Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => fluidDetector._activeVolumes = new EffectVolume[] { body.GetComponentInChildren<RadialFluidVolume>() }.ToList());
 
 
             var targetBodyAlignment = raftObject.AddComponent<AlignWithTargetBody>();

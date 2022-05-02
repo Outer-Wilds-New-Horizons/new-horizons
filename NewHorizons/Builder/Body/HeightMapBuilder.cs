@@ -1,5 +1,5 @@
-﻿using NewHorizons.Body;
-using NewHorizons.Body.Geometry;
+﻿using NewHorizons.Builder.Body.Geometry;
+using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -38,15 +38,18 @@ namespace NewHorizons.Builder.Body
             cubeSphere.transform.parent = go.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight);
+            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, module.Stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            if(PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            // TODO: fix UVs so we can switch to the default shader
+            if (PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(PlanetShader);
+            cubeSphereMR.material.name = textureMap.name;
             cubeSphereMR.material.mainTexture = textureMap;
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();

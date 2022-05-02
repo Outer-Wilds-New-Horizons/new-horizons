@@ -1,0 +1,16 @@
+{
+	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
+	"DialogueDictionary": 
+	{
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1" : "Твой корабль теперь экипирован варп-двигателем!",
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "Ты можешь использовать новый \"Режим Interstellar\" на своем корабле, что-бы закрепить автопилот на выбранную звёздную систему.",
+		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "Так что просто сядь за руль, и включи автопилот!"
+	},
+	"UIDictionary": 
+	{
+		"INTERSTELLAR_MODE" : "Режим Interstellar",
+		"FREQ_STATUE" : "Статуя Номаи",
+		"FREQ_WARP_CORE" : "Гиперядро",
+		"FREQ_UNKNOWN" : "???"
+	}	
+}

@@ -1,0 +1,45 @@
+name: Bug Report
+description: File a bug report
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What Happened?
+      description: Please describe what happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What was supposed to happen?
+      description: If applicable, describe what should have happened instead.
+    validations:
+      required: false
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      description: Please provide which platform you were playing on when you encountered this bug.
+      options:
+        - Steam
+        - Epic Games
+        - Xbox Game Pass
+    validations:
+      required: true
+  - type: textarea
+    id: mods
+    attributes:
+      label: Mods
+      description: Please define which mods you had enabled when the problem occurred.
+      render: Markdown
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: If you can, try to locate the point in the logs where the error occurred and paste the message displayed here.
+      render: Shell
+    validations:
+      required: false

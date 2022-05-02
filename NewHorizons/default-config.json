@@ -1,12 +1,6 @@
 {
 	"enabled": true,
 	"settings": {
-		"Debug": false,
-		"LogLevel": {
-			"type": "selector",
-			"value": "Critical",
-			"options": ["Info", "Warning", "Critical"],
-			"title": "Log Type"
-		}
+		"Debug": false
 	}
 }

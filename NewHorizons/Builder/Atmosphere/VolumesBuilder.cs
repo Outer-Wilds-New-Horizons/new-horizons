@@ -4,7 +4,7 @@ using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Atmosphere
+namespace NewHorizons.Builder.Atmosphere
 {
     static class VolumesBuilder
     {
@@ -14,7 +14,7 @@ namespace NewHorizons.Atmosphere
             volumesGO.SetActive(false);
             volumesGO.transform.parent = body.transform;
 
-            GameObject rulesetGO = new GameObject();
+            GameObject rulesetGO = new GameObject("Ruleset");
             rulesetGO.SetActive(false);
             rulesetGO.transform.parent = volumesGO.transform;
 

@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 920416521
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: shader
+      Dependencies: {}

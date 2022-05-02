@@ -10,6 +10,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External;
 using OWML.Common;
 using NewHorizons.External.Configs;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.Props
 {
@@ -22,6 +23,7 @@ namespace NewHorizons.Builder.Props
             if (detail.assetBundle != null)
             {
                 var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, mod);
+
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
             else if (detail.objFilePath != null)
@@ -29,6 +31,7 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
+                    PropBuildManager.ReplaceShaders(prefab);
                     prefab.SetActive(false);
                     detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }
@@ -43,8 +46,9 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var childPath in detail.removeChildren)
                 {
-                    var childObj = SearchUtilities.Find(SearchUtilities.GetPath(detailGO.transform) + "/" + childPath);
-                    childObj.gameObject.SetActive(false);
+                    var childObj = detailGO.transform.Find(childPath);
+                    if (childObj != null) childObj.gameObject.SetActive(false);
+                    else Logger.LogWarning($"Couldn't find {childPath}");
                 }
             }
         }
@@ -63,37 +67,43 @@ namespace NewHorizons.Builder.Props
             GameObject prop = GameObject.Instantiate(prefab, sector.transform);
             prop.SetActive(false);
 
-            List<string> assetBundles = new List<string>();
-            foreach (var streamingHandle in prop.GetComponentsInChildren<StreamingMeshHandle>())
-            {
-                var assetBundle = streamingHandle.assetBundle;
-                if (!assetBundles.Contains(assetBundle))
-                {
-                    assetBundles.Add(assetBundle);
-                }
-            }
-
-            foreach (var assetBundle in assetBundles)
-            {
-                sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingManager.LoadStreamingAssets(assetBundle);
-                StreamingManager.LoadStreamingAssets(assetBundle);
-            }
+            sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
+            OWAssetHandler.LoadObject(prop);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {
                 // Enable all children or something
-                var enabledField = component.GetType().GetField("enabled");
+                var enabledField = component?.GetType()?.GetField("enabled");
                 if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
+
+                if(component is Sector)
+                {
+                    (component as Sector)._parentSector = sector;
+                }
 
                 // TODO: Make this work or smthng
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                // If it's not a moving anglerfish make sure the anim controller is off
+                // If it's not a moving anglerfish make sure the anim controller is regular
                 if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
-                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as AnglerfishAnimController).enabled = false);
+                    Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
+                    {
+                        Logger.Log("Enabling anglerfish animation");
+                        var angler = (component as AnglerfishAnimController);
+                        // Remove any reference to its angler
+                        if(angler._anglerfishController)
+                        {
+                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                        }
+                        angler.enabled = true;
+                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    });
 
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => (component as Animator).enabled = true, 5);
+                if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
                 if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
 
                 if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
@@ -107,6 +117,11 @@ namespace NewHorizons.Builder.Props
                 if (component is SectoredMonoBehaviour)
                 {
                     (component as SectoredMonoBehaviour).SetSector(sector);
+                }
+                else
+                {
+                    var sectorField = component?.GetType()?.GetField("_sector");
+                    if (sectorField != null && sectorField.FieldType == typeof(Sector)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                 }
 
                 if (component is AnglerfishController)
@@ -132,6 +147,8 @@ namespace NewHorizons.Builder.Props
                 var front = Vector3.Cross(up, Vector3.left);
                 if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
                 if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
+
+                front = rot * front;
 
                 prop.transform.LookAt(prop.transform.position + front, up);
             }

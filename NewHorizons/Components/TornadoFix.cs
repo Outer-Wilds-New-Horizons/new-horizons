@@ -53,7 +53,8 @@ namespace NewHorizons.Components
 
         public void OnOccupantExitSector(SectorDetector _)
         {
-            if (!_sector.ContainsOccupant(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship))
+            
+            if (!_sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship))
             {
                 tornadoController.StartCollapse();
             }

@@ -1,11 +1,11 @@
 ﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.General
 {
@@ -28,17 +28,18 @@ namespace NewHorizons.Builder.General
             kinematicRigidBody.centerOfMass = Vector3.zero;
 
             OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
-            owRigidBody.SetValue("_kinematicSimulation", true);
-            owRigidBody.SetValue("_autoGenerateCenterOfMass", true);
+            owRigidBody._kinematicSimulation = true;
+            owRigidBody._autoGenerateCenterOfMass = true;
             owRigidBody.SetIsTargetable(true);
-            owRigidBody.SetValue("_maintainOriginalCenterOfMass", true);
-            owRigidBody.SetValue("_rigidbody", rigidBody);
-            owRigidBody.SetValue("_kinematicRigidbody", kinematicRigidBody);
+            owRigidBody._maintainOriginalCenterOfMass = true;
+            owRigidBody._rigidbody = rigidBody;
+            owRigidBody._kinematicRigidbody = kinematicRigidBody;
             owRigidBody._origParent = GameObject.Find("SolarSystemRoot").transform;
             owRigidBody.EnableKinematicSimulation();
             owRigidBody.MakeKinematic();
 
-            ParameterizedAstroObject astroObject = body.AddComponent<ParameterizedAstroObject>();
+            NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            astroObject.HideDisplayName = !config.Base.HasMapMarker;
 
             if (config.Orbit != null) astroObject.SetKeplerCoordinatesFromOrbitModule(config.Orbit);
 
@@ -48,10 +49,10 @@ namespace NewHorizons.Builder.General
             else if (config.Base.HasCometTail) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
             else if (config.FocalPoint != null) type = AstroObject.Type.None;
-            astroObject.SetValue("_type", type);
-            astroObject.SetValue("_name", AstroObject.Name.CustomString);
-            astroObject.SetValue("_customName", config.Name);
-            astroObject.SetValue("_primaryBody", primaryBody);
+            astroObject._type = type;
+            astroObject._name = AstroObject.Name.CustomString;
+            astroObject._customName = config.Name;
+            astroObject._primaryBody = primaryBody;
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
             if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
@@ -65,7 +66,16 @@ namespace NewHorizons.Builder.General
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment.SetValue("_usePhysicsToRotate", true);
+                alignment._usePhysicsToRotate = true;
+                if(config.Orbit.AlignmentAxis == null)
+                {
+                    alignment._localAlignmentAxis = new Vector3(0, -1, 0);
+                }
+                else
+                {
+                    alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
+                }
+                
             }
 
             if (config.Base.CenterOfSolarSystem)

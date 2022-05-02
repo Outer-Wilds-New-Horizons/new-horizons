@@ -1,6 +1,6 @@
 ﻿using NewHorizons.Builder.Orbital;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
+using NewHorizons.Utility.CommonResources;
 using PacificEngine.OW_CommonResources.Game.Resource;
 using PacificEngine.OW_CommonResources.Game.State;
 using System;
@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Updater
         public static void Update(NewHorizonsBody body, GameObject go)
         {
             var mapping = Planet.defaultMapping;
-            var heavenlyBody = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(AstroObjectLocator.GetAstroObject(body.Config.Name));
+            var heavenlyBody = CommonResourcesUtilities.HeavenlyBodyFromAstroObject(go.GetComponent<AstroObject>());
 
             Logger.Log($"Updating position of {body.Config.Name}/{heavenlyBody}");
 
@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Updater
             {
                 var original = mapping[heavenlyBody];
 
-                var coords = OrbitalHelper.KeplerCoordinatesFromOrbitModule(body.Config.Orbit);
+                var coords = body.Config.Orbit.GetKeplerCoords();
 
                 var parent = original.state.parent;
                 if (body.Config.Orbit.PrimaryBody != null)
@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.Updater
                 var planetoid = new Planet.Plantoid(
                     original.size,
                     original.gravity,
-                    go.transform.rotation,
+                    mapping[heavenlyBody].state.orbit.orientation.rotation,
                     InitialMotionBuilder.SiderealPeriodToAngularSpeed(body.Config.Orbit.SiderealPeriod),
                     parent,
                     coords

@@ -1,5 +1,4 @@
 ﻿using NewHorizons.External;
-using NewHorizons.OrbitalPhysics;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.Utils;
@@ -15,6 +14,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.General
 {
@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.General
             if (config.Orbit.PrimaryBody != null && parent == HeavenlyBody.None)
                 Logger.LogWarning($"Could not find [{config.Orbit.PrimaryBody}] parent of [{config.Name}]");
 
-            var orbit = OrbitalHelper.KeplerCoordinatesFromOrbitModule(config.Orbit);
+            var orbit = config.Orbit.GetKeplerCoords();
 
             var hb = GetBody(config.Name);
             if (hb == null) hb = AddHeavenlyBody(config.Name, config.FocalPoint != null);
@@ -50,114 +50,16 @@ namespace NewHorizons.Builder.General
                 var focalPoint = Position.AstroLookup[parent].Invoke()?.gameObject.GetComponent<BinaryFocalPoint>();
                 if (focalPoint != null && mapping.ContainsKey(parent))
                 {
-                    GameObject primary = null;
-                    GameObject secondary = null;
-
-                    Gravity primaryGravity = null;
-                    Gravity secondaryGravity = null;
-
-                    // One of them is null if it's the one being loaded
-                    if (config.Name.Equals(focalPoint.PrimaryName))
+                    if(config.Name == focalPoint.Primary?.GetCustomName() || config.Name == focalPoint.Secondary?.GetCustomName())
                     {
-                        primary = body;
-                        primaryGravity = GetGravity(bodyGravity, false);
-                        secondary = Position.getBody(GetBody(focalPoint.SecondaryName))?.gameObject;
-                        var secondaryGV = Position.getBody(GetBody(focalPoint.SecondaryName))?.GetAttachedGravityVolume();
-                        if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV, false);
+                        FixBinaryPair(body, bodyGravity, config, focalPoint, parent, ref mapping);
                     }
-                    else if (config.Name.Equals(focalPoint.SecondaryName))
+                    else
                     {
-                        secondary = body;
-                        secondaryGravity = GetGravity(bodyGravity, false);
-                        primary = Position.getBody(GetBody(focalPoint.PrimaryName))?.gameObject;
-                        var primaryGV = Position.getBody(GetBody(focalPoint.PrimaryName))?.GetAttachedGravityVolume();
-                        if (primaryGV != null) primaryGravity = GetGravity(primaryGV, false);
-                    }
-
-                    if (primaryGravity != null && secondaryGravity != null)
-                    {
-
-                        // Also have to fix the children
-                        var primaryHB = GetBody(focalPoint.PrimaryName);
-                        var secondaryHB = GetBody(focalPoint.SecondaryName);
-
-                        var r = primary.transform.position - secondary.transform.position;
-
-                        var m1 = primaryGravity.mass;
-                        var m2 = secondaryGravity.mass;
-
-                        float r1 = r.magnitude * m2 / (m1 + m2);
-                        float r2 = r.magnitude * m1 / (m1 + m2);
-
-                        ParameterizedAstroObject primaryAO = Position.AstroLookup[primaryHB].Invoke() as ParameterizedAstroObject;
-                        ParameterizedAstroObject secondaryAO = Position.AstroLookup[secondaryHB].Invoke() as ParameterizedAstroObject;
-
-                        float ecc = primaryAO.Eccentricity;
-                        float i = primaryAO.Inclination;
-                        float l = primaryAO.LongitudeOfAscendingNode;
-                        float p = primaryAO.ArgumentOfPeriapsis;
-
-                        var primaryKeplerCoordinates = KeplerCoordinates.fromEccentricAnomaly(ecc, r1 / (1 - ecc), i, p, l, 0);
-                        var secondaryKeplerCoordinates = KeplerCoordinates.fromEccentricAnomaly(ecc, r2 / (1 - ecc), i, p, l, 180);
-
-                        var totalMass = m1 + m2;
-
-                        var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
-                        var primaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, primaryKeplerCoordinates);
-                        var secondaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, secondaryKeplerCoordinates);
-
-                        var point = Position.AstroLookup[parent].Invoke();
-
-                        primary.transform.position = point.transform.position + primaryCartesianState.Item1;
-                        secondary.transform.position = point.transform.position + secondaryCartesianState.Item1;
-
-                        var primaryOriginal = mapping[primaryHB];
-                        var secondaryOriginal = mapping[secondaryHB];
-
-                        // TODO: Idk if this works at all... probably not
-                        var primaryRotation = 0f;
-                        try
-                        {
-                            primaryRotation = primaryOriginal.state.relative.angularVelocity.magnitude;
-                        }
-                        catch (Exception) { };
-
-                        var secondaryRotation = 0f;
-                        try
-                        {
-                            secondaryRotation = secondaryOriginal.state.relative.angularVelocity.magnitude;
-                        }
-                        catch (Exception) { };
-
-                        mapping[primaryHB] = new Planet.Plantoid(
-                            primaryOriginal.size,
-                            primaryOriginal.gravity,
-                            primary.transform.rotation,
-                            primaryRotation,
-                            parent,
-                            primaryKeplerCoordinates);
-
-                        mapping[secondaryHB] = new Planet.Plantoid(
-                            secondaryOriginal.size,
-                            secondaryOriginal.gravity,
-                            secondary.transform.rotation,
-                            secondaryRotation,
-                            parent,
-                            secondaryKeplerCoordinates);
-
-                        var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r.magnitude, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
-
-                        var trackingOrbitPrimary = primary.GetComponentInChildren<TrackingOrbitLine>();
-                        if (trackingOrbitPrimary != null)
-                        {
-                            trackingOrbitPrimary.TrailTime = period;
-                        }
-
-                        var trackingOrbitSecondary = secondary.GetComponentInChildren<TrackingOrbitLine>();
-                        if (trackingOrbitSecondary != null)
-                        {
-                            trackingOrbitSecondary.TrailTime = period;
-                        }
+                        // Circumbinary
+                        parent = GetBody(focalPoint.FakeMassBody.GetComponent<AstroObject>().GetCustomName());
+                        planetoid = new Planet.Plantoid(size, gravity, body.transform.rotation, initialMotion._initAngularSpeed, parent, orbit);
+                        mapping[hb] = planetoid;
                     }
                 }
             }
@@ -241,6 +143,119 @@ namespace NewHorizons.Builder.General
         {
             var astroBody = GetAstroObject(name);
             return astroBody?.GetOWRigidbody();
+        }
+
+        private static void FixBinaryPair(GameObject body, GravityVolume bodyGravity, IPlanetConfig config, BinaryFocalPoint focalPoint, HeavenlyBody parent, ref Dictionary<HeavenlyBody, Planet.Plantoid> mapping)
+        {
+            GameObject primary = null;
+            GameObject secondary = null;
+
+            Gravity primaryGravity = null;
+            Gravity secondaryGravity = null;
+
+            // One of them is null if it's the one being loaded
+            if (config.Name.Equals(focalPoint.PrimaryName))
+            {
+                primary = body;
+                primaryGravity = GetGravity(bodyGravity, false);
+                secondary = Position.getBody(GetBody(focalPoint.SecondaryName))?.gameObject;
+                var secondaryGV = Position.getBody(GetBody(focalPoint.SecondaryName))?.GetAttachedGravityVolume();
+                if (secondaryGV != null) secondaryGravity = GetGravity(secondaryGV, false);
+            }
+            else if (config.Name.Equals(focalPoint.SecondaryName))
+            {
+                secondary = body;
+                secondaryGravity = GetGravity(bodyGravity, false);
+                primary = Position.getBody(GetBody(focalPoint.PrimaryName))?.gameObject;
+                var primaryGV = Position.getBody(GetBody(focalPoint.PrimaryName))?.GetAttachedGravityVolume();
+                if (primaryGV != null) primaryGravity = GetGravity(primaryGV, false);
+            }
+
+            if (primaryGravity != null && secondaryGravity != null)
+            {
+
+                // Also have to fix the children
+                var primaryHB = GetBody(focalPoint.PrimaryName);
+                var secondaryHB = GetBody(focalPoint.SecondaryName);
+
+                var r = primary.transform.position - secondary.transform.position;
+
+                var m1 = primaryGravity.mass;
+                var m2 = secondaryGravity.mass;
+
+                float r1 = r.magnitude * m2 / (m1 + m2);
+                float r2 = r.magnitude * m1 / (m1 + m2);
+
+                NHAstroObject primaryAO = Position.AstroLookup[primaryHB].Invoke() as NHAstroObject;
+                NHAstroObject secondaryAO = Position.AstroLookup[secondaryHB].Invoke() as NHAstroObject;
+
+                float ecc = primaryAO.Eccentricity;
+                float i = primaryAO.Inclination;
+                float l = primaryAO.LongitudeOfAscendingNode;
+                float p = primaryAO.ArgumentOfPeriapsis;
+
+                var primaryKeplerCoordinates = KeplerCoordinates.fromEccentricAnomaly(ecc, r1 / (1 - ecc), i, p, l, 0);
+                var secondaryKeplerCoordinates = KeplerCoordinates.fromEccentricAnomaly(ecc, r2 / (1 - ecc), i, p, l, 180);
+
+                var totalMass = m1 + m2;
+
+                var exponent = (primaryGravity.exponent + secondaryGravity.exponent) / 2f;
+                var primaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, primaryKeplerCoordinates);
+                var secondaryCartesianState = OrbitHelper.toCartesian(Gravity.of(exponent, totalMass), 0, secondaryKeplerCoordinates);
+
+                var point = Position.AstroLookup[parent].Invoke();
+
+                primary.transform.position = point.transform.position + primaryCartesianState.Item1;
+                secondary.transform.position = point.transform.position + secondaryCartesianState.Item1;
+
+                var primaryOriginal = mapping[primaryHB];
+                var secondaryOriginal = mapping[secondaryHB];
+
+                // TODO: Idk if this works at all... probably not
+                var primaryRotation = 0f;
+                try
+                {
+                    primaryRotation = primaryOriginal.state.relative.angularVelocity.magnitude;
+                }
+                catch (Exception) { };
+
+                var secondaryRotation = 0f;
+                try
+                {
+                    secondaryRotation = secondaryOriginal.state.relative.angularVelocity.magnitude;
+                }
+                catch (Exception) { };
+
+                mapping[primaryHB] = new Planet.Plantoid(
+                    primaryOriginal.size,
+                    primaryOriginal.gravity,
+                    primary.transform.rotation,
+                    primaryRotation,
+                    parent,
+                    primaryKeplerCoordinates);
+
+                mapping[secondaryHB] = new Planet.Plantoid(
+                    secondaryOriginal.size,
+                    secondaryOriginal.gravity,
+                    secondary.transform.rotation,
+                    secondaryRotation,
+                    parent,
+                    secondaryKeplerCoordinates);
+
+                var period = 2 * Mathf.PI * Mathf.Sqrt(Mathf.Pow(r.magnitude, exponent + 1) / (GravityVolume.GRAVITATIONAL_CONSTANT * totalMass));
+
+                var trackingOrbitPrimary = primary.GetComponentInChildren<TrackingOrbitLine>();
+                if (trackingOrbitPrimary != null)
+                {
+                    trackingOrbitPrimary.TrailTime = period;
+                }
+
+                var trackingOrbitSecondary = secondary.GetComponentInChildren<TrackingOrbitLine>();
+                if (trackingOrbitSecondary != null)
+                {
+                    trackingOrbitSecondary.TrailTime = period;
+                }
+            }
         }
     }
 }

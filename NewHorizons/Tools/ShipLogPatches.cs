@@ -7,7 +7,6 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Handlers;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Tools
@@ -67,6 +66,7 @@ namespace NewHorizons.Tools
 
         public static void OnShipLogManagerAwakeComplete(ShipLogManager __instance)
         {
+            ShipLogHandler.CheckForModdedFacts(__instance);
             RumorModeBuilder.GenerateEntryData(__instance);
             for (var i = 0; i < __instance._entryList.Count; i++)
             {

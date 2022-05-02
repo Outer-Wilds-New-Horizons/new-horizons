@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
             {
                 foreach(var geyserInfo in config.Props.Geysers)
                 {
-                    //GeyserBuilder.Make(go, sector, geyserInfo);
+                    GeyserBuilder.Make(go, sector, geyserInfo);
                 }
             }
             if(config.Props.Rafts != null)
@@ -49,7 +49,15 @@ namespace NewHorizons.Builder.Props
                     //TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
-            if(config.Props.Dialogue != null)
+            if (config.Props.Volcanoes != null)
+            {
+                foreach (var volcanoInfo in config.Props.Volcanoes)
+                {
+                    VolcanoBuilder.Make(go, sector, volcanoInfo);
+                }
+            }
+            // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
+            if (config.Props.Dialogue != null)
             {
                 foreach(var dialogueInfo in config.Props.Dialogue)
                 {
@@ -111,7 +119,26 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
+            ReplaceShaders(prefab);
+
             return prefab;
+        }
+
+        public static void ReplaceShaders(GameObject prefab)
+        {
+            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            {
+                foreach (var material in renderer.sharedMaterials)
+                {
+                    if (material == null)
+                    {
+                        continue;
+                    }
+
+                    var replacementShader = Shader.Find(material.shader.name);
+                    if (replacementShader != null) material.shader = replacementShader;
+                }
+            }
         }
     }
 }
