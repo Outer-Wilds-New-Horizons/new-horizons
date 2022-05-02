@@ -135,6 +135,12 @@ namespace NewHorizons.Builder.Props
                         Logger.LogError($"Couldn't update AnglerFish chase speed: {e.Message}");
                     }
                 }
+
+                // Fix slide reel
+                if(component is SlideCollectionContainer)
+                {
+                    sector.OnOccupantEnterSector.AddListener((_) => (component as SlideCollectionContainer).LoadStreamingTextures());
+                }
             }
 
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);

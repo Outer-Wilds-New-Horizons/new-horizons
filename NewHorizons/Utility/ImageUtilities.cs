@@ -48,6 +48,44 @@ namespace NewHorizons.Utility
             _generatedTextures.Clear();
         }
 
+        public static Texture2D GetTextureForSlide(IModBehaviour mod, string filename)
+        {
+            var texture = GetTexture(mod, filename);
+
+            var pixels = texture.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                var x = i % texture.width;
+                var y = (int)Mathf.Floor(i / texture.height);
+
+                // Needs a black border
+                if(x == 0 || y == 0 || x == texture.width-1 || y == texture.height-1)
+                {
+                    pixels[i].r = 1;
+                    pixels[i].g = 1;
+                    pixels[i].b = 1;
+                    pixels[i].a = 1;
+                }
+                else
+                {
+                    pixels[i].r = 1f - pixels[i].r;
+                    pixels[i].g = 1f - pixels[i].g;
+                    pixels[i].b = 1f - pixels[i].b;
+                }
+            }
+
+            var newTexture = new Texture2D(texture.width, texture.height);
+            newTexture.name = texture.name + "SlideReel";
+            newTexture.SetPixels(pixels);
+            newTexture.Apply();
+
+            newTexture.wrapMode = TextureWrapMode.Clamp;
+
+            _generatedTextures.Add(newTexture);
+
+            return newTexture;
+        }
+
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
             var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
