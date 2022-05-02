@@ -763,6 +763,14 @@
               "position": {
                 "$ref": "#/$defs/vector3",
                 "description": "The position of this volcano."
+              },
+              "stoneTint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the meteor's stone."
+              },
+              "lavaTint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the meteor's lava."
               }
             }
           }
