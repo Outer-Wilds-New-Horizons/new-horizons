@@ -141,6 +141,11 @@ namespace NewHorizons.Builder.Props
                 {
                     sector.OnOccupantEnterSector.AddListener((_) => (component as SlideCollectionContainer).LoadStreamingTextures());
                 }
+
+                if(component is OWItemSocket)
+                {
+                    (component as OWItemSocket)._sector = sector;
+                }
             }
 
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);

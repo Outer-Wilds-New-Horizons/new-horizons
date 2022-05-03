@@ -48,10 +48,8 @@ namespace NewHorizons.Utility
             _generatedTextures.Clear();
         }
 
-        public static Texture2D GetTextureForSlide(IModBehaviour mod, string filename)
+        public static Texture2D Invert(Texture2D texture)
         {
-            var texture = GetTexture(mod, filename);
-
             var pixels = texture.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -75,7 +73,7 @@ namespace NewHorizons.Utility
             }
 
             var newTexture = new Texture2D(texture.width, texture.height);
-            newTexture.name = texture.name + "SlideReel";
+            newTexture.name = texture.name + "Inverted";
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
@@ -84,6 +82,58 @@ namespace NewHorizons.Utility
             _generatedTextures.Add(newTexture);
 
             return newTexture;
+        }
+
+        public static Texture2D MakeReelTexture(Texture2D[] textures)
+        {
+            var size = 256;
+
+            var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
+            texture.name = "SlideReelAtlas";
+
+            Color[] fillPixels = new Color[size * size * 4 * 4];
+            for(int xIndex = 0; xIndex < 4; xIndex++)
+            {
+                for(int yIndex = 0; yIndex < 4; yIndex++)
+                {
+                    int index = yIndex * 4 + xIndex;
+                    var srcTexture = index < textures.Length ? textures[index] : null;
+
+                    for(int i = 0; i < size; i++)
+                    {
+                        for(int j = 0; j < size; j++)
+                        {
+                            var colour = Color.black;
+
+                            if(srcTexture)
+                            {
+                                var srcX = i * srcTexture.width / (float)size;
+                                var srcY = j * srcTexture.height / (float)size;
+                                if (srcX >= 0 && srcX < srcTexture.width && srcY >= 0 && srcY < srcTexture.height)
+                                {
+                                    colour = srcTexture.GetPixel((int)srcX, (int)srcY);
+                                }
+                            }
+
+                            var x = xIndex * size + i;
+                            // Want it to start from the first row from the bottom then go down then modulo around idk
+                            // 5 because no pos mod idk
+                            var y = ((5 - yIndex)%4) * size + j;
+
+                            var pixelIndex = x + y * (size * 4);
+
+                            if(pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
+                        }
+                    }
+                }
+            }
+
+            texture.SetPixels(fillPixels);
+            texture.Apply();
+
+            _generatedTextures.Add(texture);
+
+            return texture;
         }
 
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
@@ -200,7 +250,13 @@ namespace NewHorizons.Utility
             {
                 for(int j = 0; j < tex.height; j++)
                 {
-                    fillPixels[i + j * tex.width] = src.GetPixel(i, j);
+                    var x = i + (src.width - width) / 2;
+                    var y = j + (src.height - height) / 2;
+
+                    var colour = Color.black;
+                    if (x < src.width && y < src.height) colour = src.GetPixel(i, j);
+
+                    fillPixels[i + j * tex.width] = colour;
                 }
             }
             tex.SetPixels(fillPixels);

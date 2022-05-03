@@ -107,7 +107,35 @@ namespace NewHorizons.External
             public MVector3 position;
             public MVector3 rotation;
             public string[] reveals;
-            public string[] slideImagePaths;
+            public SlideInfo[] slides;
+        }
+
+        public class SlideInfo
+        {
+            public string imagePath;
+
+            // SlideBeatAudioModule
+            public string beatAudio;
+            public float beatDelay;
+
+            // SlideBackdropAudioModule
+            public string backdropAudio;
+            public float backdropFadeTime;
+
+            // SlideAmbientLightModule
+            public float ambientLightIntensity;
+            public float ambientLightRange;
+            public MColor ambientLightColor;
+            public float spotIntensityMod;
+
+            // SlidePlayTimeModule
+            public float playTimeDuration;
+
+            // SlideBlackFrameModule
+            public float blackFrameDuration;
+
+            // SlideShipLogEntryModule
+            public string reveal;
         }
     }
 }
