@@ -40,7 +40,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
 - Black hole / white hole pairs 
-- Custom dialogue and custom ship log entries for rumour mode and map mode
+- Custom dialogue, slide-reel projections, and custom ship log entries for rumour mode and map mode
 - Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
