@@ -40,7 +40,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
 - Black hole / white hole pairs 
-- Custom dialogue and custom ship log entries for rumour mode and map mode
+- Custom dialogue, slide-reel projections, and custom ship log entries for rumour mode and map mode
 - Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
@@ -49,10 +49,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Better terrain and water LOD
 - Edit existing planet orbits (started)
 - Implement all planet features:
-	- Tornados + floating islands
-	- Let any star go supernova
-	- Pocket dimensions
-	- Timed position/velocity changes
+	- Tornados
+	- Supernovae
+	- Bramble dimensions
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
 
@@ -73,7 +72,8 @@ Main authors:
 New Horizons was made with help from:
 - [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
-- [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
+- [Raicuparta](https://github.com/Raicuparta)
+- [MegaPiggy](https://github.com/MegaPiggy)
 
 Translation credits:
 - Russian: GrayFix and Tlya

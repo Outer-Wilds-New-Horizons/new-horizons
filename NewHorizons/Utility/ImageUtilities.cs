@@ -48,6 +48,94 @@ namespace NewHorizons.Utility
             _generatedTextures.Clear();
         }
 
+        public static Texture2D Invert(Texture2D texture)
+        {
+            var pixels = texture.GetPixels();
+            for (int i = 0; i < pixels.Length; i++)
+            {
+                var x = i % texture.width;
+                var y = (int)Mathf.Floor(i / texture.height);
+
+                // Needs a black border
+                if(x == 0 || y == 0 || x == texture.width-1 || y == texture.height-1)
+                {
+                    pixels[i].r = 1;
+                    pixels[i].g = 1;
+                    pixels[i].b = 1;
+                    pixels[i].a = 1;
+                }
+                else
+                {
+                    pixels[i].r = 1f - pixels[i].r;
+                    pixels[i].g = 1f - pixels[i].g;
+                    pixels[i].b = 1f - pixels[i].b;
+                }
+            }
+
+            var newTexture = new Texture2D(texture.width, texture.height);
+            newTexture.name = texture.name + "Inverted";
+            newTexture.SetPixels(pixels);
+            newTexture.Apply();
+
+            newTexture.wrapMode = TextureWrapMode.Clamp;
+
+            _generatedTextures.Add(newTexture);
+
+            return newTexture;
+        }
+
+        public static Texture2D MakeReelTexture(Texture2D[] textures)
+        {
+            var size = 256;
+
+            var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
+            texture.name = "SlideReelAtlas";
+
+            Color[] fillPixels = new Color[size * size * 4 * 4];
+            for(int xIndex = 0; xIndex < 4; xIndex++)
+            {
+                for(int yIndex = 0; yIndex < 4; yIndex++)
+                {
+                    int index = yIndex * 4 + xIndex;
+                    var srcTexture = index < textures.Length ? textures[index] : null;
+
+                    for(int i = 0; i < size; i++)
+                    {
+                        for(int j = 0; j < size; j++)
+                        {
+                            var colour = Color.black;
+
+                            if(srcTexture)
+                            {
+                                var srcX = i * srcTexture.width / (float)size;
+                                var srcY = j * srcTexture.height / (float)size;
+                                if (srcX >= 0 && srcX < srcTexture.width && srcY >= 0 && srcY < srcTexture.height)
+                                {
+                                    colour = srcTexture.GetPixel((int)srcX, (int)srcY);
+                                }
+                            }
+
+                            var x = xIndex * size + i;
+                            // Want it to start from the first row from the bottom then go down then modulo around idk
+                            // 5 because no pos mod idk
+                            var y = ((5 - yIndex)%4) * size + j;
+
+                            var pixelIndex = x + y * (size * 4);
+
+                            if(pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
+                        }
+                    }
+                }
+            }
+
+            texture.SetPixels(fillPixels);
+            texture.Apply();
+
+            _generatedTextures.Add(texture);
+
+            return texture;
+        }
+
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
             var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
@@ -162,7 +250,13 @@ namespace NewHorizons.Utility
             {
                 for(int j = 0; j < tex.height; j++)
                 {
-                    fillPixels[i + j * tex.width] = src.GetPixel(i, j);
+                    var x = i + (src.width - width) / 2;
+                    var y = j + (src.height - height) / 2;
+
+                    var colour = Color.black;
+                    if (x < src.width && y < src.height) colour = src.GetPixel(i, j);
+
+                    fillPixels[i + j * tex.width] = colour;
                 }
             }
             tex.SetPixels(fillPixels);

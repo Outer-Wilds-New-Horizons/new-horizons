@@ -794,6 +794,98 @@
               }
             }
           }
+        },
+        "slideShows": {
+          "type": "array",
+          "description": "For creating custom auto projectors or slide reels from the DLC",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this object."
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "The euler angle rotation of this object."
+              },
+              "reveals": {
+                "type": "array",
+                "description": "The ship log entries revealed after finishing this slide reel.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "slides": {
+                "type": "array",
+                "description": "The list of slides for this object.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "imagePath": {
+                      "type": "string",
+                      "description": "The path to the image file for this slide."
+                    },
+                    "beatAudio": {
+                      "type": "string",
+                      "description": "The name of the AudioClip for a one-shot sound when opening the slide."
+                    },
+                    "beatDelay": {
+                      "type": "number",
+                      "description": "The time delay until the one-shot audio"
+                    },
+                    "backdropAudio": {
+                      "type": "string",
+                      "description": "The name of the AudioClip that will continuously play while watching these slides"
+                    },
+                    "backdropFadeTime": {
+                      "type": "number",
+                      "description": "The time to fade into the backdrop audio"
+                    },
+                    "ambientLightIntensity": {
+                      "type": "number",
+                      "description": "Ambient light intensity when viewing this slide."
+                    },
+                    "ambientLightRange": {
+                      "type": "number",
+                      "description": "Ambient light range when viewing this slide."
+                    },
+                    "ambientLightColor": {
+                      "$ref": "#/$defs/color",
+                      "description": "Ambient light colour when viewing this slide."
+                    },
+                    "spotIntensityMod": {
+                      "type": "number",
+                      "description": "Spotlight intensity modifier when viewing this slide."
+                    },
+                    "playTimeDuration": {
+                      "type": "number",
+                      "description": "Play-time duration for auto-projector slides."
+                    },
+                    "blackFrameDuration": {
+                      "type": "number",
+                      "description": "Before viewing this slide, there will be a black frame for this many seconds."
+                    },
+                    "reveal": {
+                      "type": "string",
+                      "description": "Ship log entry revealed when viewing this slide."
+                    }
+                  }
+                }
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of object this is. Must be either SlideReel or AutoProjector",
+                "enum": [
+                  "slideReel",
+                  "autoProjector"
+                ],
+                "default": "slideReel"
+              }
+            }
+          }
         }
       }
     },
