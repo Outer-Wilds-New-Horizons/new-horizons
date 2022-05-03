@@ -76,6 +76,8 @@ namespace NewHorizons.Tools
             // Postfixes
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("Awake", typeof(Patches), nameof(Patches.OnMapControllerAwake));
             Main.Instance.ModHelper.HarmonyHelper.AddPostfix<MapController>("OnTargetReferenceFrame", typeof(Patches), nameof(Patches.OnMapControllerOnTargetReferenceFrame));
+
+            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ScrollItem>("Awake", typeof(Patches), nameof(Patches.OnScrollItemAwake));
         }
 
         public static bool CheckShipOutersideSolarSystem(PlayerState __instance, ref bool __result)
@@ -496,6 +498,62 @@ namespace NewHorizons.Tools
         public static bool OnLocatorRegisterCloakFieldController()
         {
             return Locator._cloakFieldController == null;
+        }
+
+        public static bool OnScrollItemAwake(ScrollItem __instance)
+        {
+            try
+            {
+                __instance._type = ItemType.Scroll;
+                __instance._nomaiWallText = __instance.GetComponentInChildren<NomaiWallText>();
+                if (__instance._nomaiWallText == null)
+                {
+                    Logger.LogError("No NomaiWallText found!");
+                    return false;
+                }
+                __instance._nomaiWallText.InitializeAsWhiteboardText();
+
+                // base.awake
+                //base.awake
+                if (__instance._sector == null)
+                {
+                    __instance._sector = __instance.GetComponentInParent<Sector>();
+                }
+                if (__instance._sector != null)
+                {
+                    __instance._sector.OnOccupantEnterSector += __instance.OnSectorOccupantAdded;
+                    __instance._sector.OnOccupantExitSector += __instance.OnSectorOccupantRemoved;
+                    __instance._sector.OnSectorOccupantsUpdated += __instance.OnSectorOccupantsUpdated;
+                }
+                // back
+
+                if (!__instance._prebuilt)
+                {
+                    __instance.FindComponentsInHierarchy();
+                }
+                __instance._parentFragment = __instance.GetComponentInParent<DetachableFragment>();
+                if (__instance._parentFragment != null)
+                {
+                    __instance._parentFragment.OnChangeSector += __instance.OnParentFragmentChangeSector;
+                }
+                GlobalMessenger.AddListener("EnterMapView", new Callback(__instance.OnEnterMapView));
+                GlobalMessenger.AddListener("ExitMapView", new Callback(__instance.OnExitMapView));
+
+                // Back to normal stuff
+                for (int i = 0; i < __instance._colliders.Length; i++)
+                {
+                    if (__instance._colliders[i].GetComponent<NomaiWallText>() != null)
+                    {
+                        __instance._colliders[i] = null;
+                    }
+                }
+                return false;
+            }
+            catch(Exception e)
+            {
+                Logger.LogError($"{e.Message}, {e.StackTrace}");
+            }
+            return false;
         }
     }
 }

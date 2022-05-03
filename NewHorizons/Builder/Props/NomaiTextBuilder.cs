@@ -1,5 +1,6 @@
 using NewHorizons.External;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -14,110 +15,172 @@ namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextBuilder
     {
+        private static GameObject _arcPrefab;
+        private static GameObject _scrollPrefab;
+
         //TODO Scrolls
         public static void Make(GameObject go, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
         {
+            if (_arcPrefab == null)
+            {
+                _arcPrefab = GameObject.Find("TimberHearth_Body/Sector_TH/Sector_Village/Sector_Observatory/Interactables_Observatory/NomaiEyeExhibit/NomaiEyePivot/Arc_TH_Museum_EyeSymbol/Arc 1").InstantiateInactive();
+                _arcPrefab.name = "Arc";
+            }
+            if (_scrollPrefab == null)
+            {
+                _scrollPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive();
+                _scrollPrefab.name = "Prefab_NOM_Scroll";
+            }
 
-            GameObject conversationZone = new GameObject("ConversationZone");
-            conversationZone.SetActive(false);
-            conversationZone.name = "NomaiText";
+            if (info.type == "wall")
+            {
+                var nomaiWallTextObj = MakeWallText(go, sector, info, mod).gameObject;
 
+                nomaiWallTextObj.transform.parent = sector?.transform ?? go.transform;
+                nomaiWallTextObj.transform.localPosition = info.position;
+                nomaiWallTextObj.transform.localRotation = Quaternion.FromToRotation(Vector3.up, info.normal ?? Vector3.forward);
 
-            var box = conversationZone.AddComponent<BoxCollider>();
-            //TODO better bounds
-            box.size = new Vector3(3f, 6f, 1f);
+                nomaiWallTextObj.SetActive(true);
+            }
+            else if (info.type == "scroll")
+            {
+                var customScroll = _scrollPrefab.InstantiateInactive();
+
+                var nomaiWallText = MakeWallText(go, sector, info, mod);
+                nomaiWallText.transform.parent = customScroll.transform;
+                nomaiWallText.transform.localPosition = Vector3.zero;
+                nomaiWallText.transform.localRotation = Quaternion.identity;
+
+                // Don't want to be able to translate until its in a socket
+                nomaiWallText.GetComponent<Collider>().enabled = false;
+
+                nomaiWallText.gameObject.SetActive(true);
+
+                var scrollItem = customScroll.GetComponent<ScrollItem>();
+
+                // Idk why this thing is always around
+                GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+
+                // This variable is the bane of my existence i dont get it
+                scrollItem._nomaiWallText = nomaiWallText;
+
+                // Because the scroll was already awake it does weird shit in Awake and makes some of the entries in this array be null
+                scrollItem._colliders = new OWCollider[] { scrollItem.GetComponent<OWCollider>() };
+
+                // Else when you put them down you can't pick them back up
+                customScroll.GetComponent<OWCollider>()._physicsRemoved = false;
+
+                // Place scroll
+                customScroll.transform.parent = sector?.transform ?? go.transform;
+                customScroll.transform.localPosition = info.position ?? Vector3.zero;
+
+                var up = customScroll.transform.localPosition.normalized;
+                customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+
+                customScroll.SetActive(true);
+
+                // Enable the collider and renderer
+                Main.Instance.ModHelper.Events.Unity.RunWhen(
+                    () => Main.IsSystemReady,
+                    () =>
+                    {
+                        Logger.Log("Fixing scroll!");
+                        scrollItem._nomaiWallText = nomaiWallText;
+                        scrollItem.SetSector(sector);
+                        customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;
+                        customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Collider").gameObject.SetActive(true);
+                        nomaiWallText.gameObject.GetComponent<Collider>().enabled = false;
+                        customScroll.GetComponent<CapsuleCollider>().enabled = true;
+                    }
+                );
+            }
+            else
+            {
+                Logger.LogError($"Unsupported NomaiText type {info.type}");
+            }
+        }
+
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        {
+            GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
+            nomaiWallTextObj.SetActive(false);
+
+            // TODO better bounds
+            var box = nomaiWallTextObj.AddComponent<BoxCollider>();
+            box.center = new Vector3(-0.0643f, 1.1254f, 0f);
+            box.size = new Vector3(6.1424f, 5.2508f, 0.5f);
+
             box.isTrigger = true;
 
-            conversationZone.AddComponent<OWCollider>();
-            var NomaiWall = conversationZone.AddComponent<NomaiWallText>();
-
+            nomaiWallTextObj.AddComponent<OWCollider>();
+            var nomaiWallText = nomaiWallTextObj.AddComponent<NomaiWallText>();
 
             var xml = System.IO.File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
 
-            NomaiWall._dictNomaiTextData = new Dictionary<int, NomaiText.NomaiTextData>(ComparerLibrary.intEqComparer);
-            NomaiWall._nomaiTextAsset = text;
+            nomaiWallText._dictNomaiTextData = new Dictionary<int, NomaiText.NomaiTextData>(ComparerLibrary.intEqComparer);
+            nomaiWallText._nomaiTextAsset = text;
 
-            conversationZone.transform.parent = sector?.transform ?? go.transform;
-            conversationZone.transform.localPosition = info.position;
+            BuildArcs(xml, nomaiWallText, nomaiWallTextObj);
+            AddTranslation(xml);
 
-            buildArcs(xml, NomaiWall, conversationZone);
-            NomaiWall.SetTextAsset(text);
+            nomaiWallText.SetTextAsset(text);
 
-
-            conversationZone.SetActive(true);
-
+            return nomaiWallText;
         }
 
-        public static void buildArcs(string xml, NomaiWallText nomai, GameObject conversationZone)
+        private static void BuildArcs(string xml, NomaiWallText nomai, GameObject conversationZone)
         {
             XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
             XmlNode rootNode = xmlDocument.SelectSingleNode("NomaiObject");
 
-            
+            var i = 1;
             foreach (object obj in rootNode.SelectNodes("TextBlock"))
             {
                 XmlNode xmlNode = (XmlNode)obj;
-                int num = -1;
+                int textEntryID = -1;
                 XmlNode xmlNode2 = xmlNode.SelectSingleNode("ID");
                 XmlNode textNode = xmlNode.SelectSingleNode("Text");
                 XmlNode xmlNode3 = xmlNode.SelectSingleNode("ParentID");
                 int parentID = -1;
-                if (xmlNode2 != null && !int.TryParse(xmlNode2.InnerText, out num))
+                if (xmlNode2 != null && !int.TryParse(xmlNode2.InnerText, out textEntryID))
                 {
-                    num = -1;
+                    textEntryID = -1;
                 }
                 if (xmlNode3 != null && !int.TryParse(xmlNode3.InnerText, out parentID))
                 {
                     parentID = -1;
                 }
-                //TODO translation table
-                //TODO verify shiplogs
-                NomaiText.NomaiTextData value = new NomaiText.NomaiTextData(num, parentID, textNode, false, NomaiText.Location.UNSPECIFIED);
-                nomai._dictNomaiTextData.Add(num, value);
 
-                GameObject Arc = new GameObject($"Arc {num}");
-                Arc.SetActive(false);
-                var textLine = Arc.AddComponent<NomaiTextLine>();
-                textLine.SetEntryID(num);
+                NomaiText.NomaiTextData value = new NomaiText.NomaiTextData(textEntryID, parentID, textNode, false, NomaiText.Location.UNSPECIFIED);
+                nomai._dictNomaiTextData.Add(textEntryID, value);
 
-                Arc.transform.parent = conversationZone.transform;
-
-                //TODO Modify so spirals are connected
-                Vector3 center = new Vector3(Mathf.Sin((num * 90 * Mathf.PI) / 180), Mathf.Cos((num * 90 * Mathf.PI) / 180), 0);
-                Arc.transform.localPosition = center;
-                //TODO fix centering
-                textLine._center = center;
-                textLine._radius = 1;
-
-                textLine.SetPoints(makePoints(5, num));
-
-                //TODO pull assets directly instead of ripping off existing text
-                GameObject copiedArc = GameObject.Find("TimberHearth_Body/Sector_TH/Sector_Village/Sector_Observatory/Interactables_Observatory/NomaiEyeExhibit/NomaiEyePivot/Arc_TH_Museum_EyeSymbol/Arc 1");
-                
-                MeshFilter meshFilter = Arc.AddComponent<MeshFilter>();
-                meshFilter.sharedMesh = copiedArc.GetComponent<MeshFilter>().sharedMesh;
-
-
-                MeshRenderer meshRenderer = Arc.AddComponent<MeshRenderer>();
-                meshRenderer.materials = copiedArc.GetComponent<MeshRenderer>().materials;
-                Arc.SetActive(true);
+                var arc = _arcPrefab.InstantiateInactive();
+                arc.name = $"Arc {i++}";
+                arc.transform.parent = conversationZone.transform;
+                arc.transform.localPosition = Vector3.zero;
+                arc.transform.LookAt(Vector3.forward);
+                arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
+                arc.GetComponent<MeshRenderer>().enabled = false;
+                arc.SetActive(true);
             }
-
         }
 
-
-        private static Vector3[] makePoints(int length, int num)
+        private static void AddTranslation(string xml)
         {
-            Vector3[] array = new Vector3[length];
-            for (int i = 0; i < length; i++)
-            {
-                //TODO figure out an actual formula
-                array[i] = new Vector3((i + num + 1) / 50F, (i + num + 1) / 10F, 0);
+            XmlDocument xmlDocument = new XmlDocument();
+            xmlDocument.LoadXml(xml);
 
+            XmlNode xmlNode = xmlDocument.SelectSingleNode("NomaiObject");
+            XmlNodeList xmlNodeList = xmlNode.SelectNodes("TextBlock");
+
+            foreach (object obj in xmlNodeList)
+            {
+                XmlNode xmlNode2 = (XmlNode)obj;
+                var text = xmlNode2.SelectSingleNode("Text").InnerText;
+                TranslationHandler.AddDialogue(text);
             }
-            return array;
         }
     }
 }
