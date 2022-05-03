@@ -445,7 +445,15 @@ namespace NewHorizons
 
         public string[] GetInstalledAddons()
         {
-            return Main.MountedAddons.Select(x => x.ModHelper.Manifest.UniqueName).ToArray();
+            try
+            {
+                return Main.MountedAddons.Select(x => x?.ModHelper?.Manifest?.UniqueName).ToArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't get installed addons {ex.Message}, {ex.StackTrace}");
+                return new string[] { };
+            }
         }
     }
     #endregion API
