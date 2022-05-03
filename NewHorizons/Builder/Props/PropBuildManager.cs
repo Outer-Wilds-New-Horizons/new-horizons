@@ -78,6 +78,13 @@ namespace NewHorizons.Builder.Props
                     EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
+            if(config.Props.SlideShows != null)
+            {
+                foreach (var slideReelInfo in config.Props.SlideShows)
+                {
+                    ProjectionBuilder.Make(go, sector, slideReelInfo, mod);
+                }
+            }
         }
 
         public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModBehaviour mod)

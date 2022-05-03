@@ -18,6 +18,7 @@ namespace NewHorizons.External
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
+        public ProjectionInfo[] SlideShows;
 
         public class ScatterInfo
         {
@@ -99,6 +100,43 @@ namespace NewHorizons.External
             public string id;
             public bool cloaked;
             public MVector3 position;
+        }
+
+        public class ProjectionInfo
+        {
+            public MVector3 position;
+            public MVector3 rotation;
+            public string[] reveals;
+            public SlideInfo[] slides;
+            public string type = "SlideReel";
+        }
+
+        public class SlideInfo
+        {
+            public string imagePath;
+
+            // SlideBeatAudioModule
+            public string beatAudio;
+            public float beatDelay;
+
+            // SlideBackdropAudioModule
+            public string backdropAudio;
+            public float backdropFadeTime;
+
+            // SlideAmbientLightModule
+            public float ambientLightIntensity;
+            public float ambientLightRange;
+            public MColor ambientLightColor;
+            public float spotIntensityMod;
+
+            // SlidePlayTimeModule
+            public float playTimeDuration;
+
+            // SlideBlackFrameModule
+            public float blackFrameDuration;
+
+            // SlideShipLogEntryModule
+            public string reveal;
         }
     }
 }
