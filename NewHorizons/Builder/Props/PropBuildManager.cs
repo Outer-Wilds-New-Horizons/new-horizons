@@ -78,11 +78,11 @@ namespace NewHorizons.Builder.Props
                     EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
-            if(config.Props.SlideReels != null)
+            if(config.Props.SlideShows != null)
             {
-                foreach (var slideReelInfo in config.Props.SlideReels)
+                foreach (var slideReelInfo in config.Props.SlideShows)
                 {
-                    SlideReelBuilder.Make(go, sector, slideReelInfo, mod);
+                    ProjectionBuilder.Make(go, sector, slideReelInfo, mod);
                 }
             }
         }

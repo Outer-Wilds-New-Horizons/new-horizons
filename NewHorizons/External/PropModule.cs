@@ -18,7 +18,7 @@ namespace NewHorizons.External
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
-        public SlideReelInfo[] SlideReels;
+        public ProjectionInfo[] SlideShows;
 
         public class ScatterInfo
         {
@@ -102,12 +102,13 @@ namespace NewHorizons.External
             public MVector3 position;
         }
 
-        public class SlideReelInfo
+        public class ProjectionInfo
         {
             public MVector3 position;
             public MVector3 rotation;
             public string[] reveals;
             public SlideInfo[] slides;
+            public string type = "SlideReel";
         }
 
         public class SlideInfo
