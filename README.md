@@ -49,10 +49,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Better terrain and water LOD
 - Edit existing planet orbits (started)
 - Implement all planet features:
-	- Tornados + floating islands
-	- Let any star go supernova
-	- Pocket dimensions
-	- Timed position/velocity changes
+	- Tornados
+	- Supernovae
+	- Bramble dimensions
 - Implement custom Nomai scrolls
 - Implement custom translatable writing
 
