@@ -881,7 +881,8 @@
                 "enum": [
                   "slideReel",
                   "autoProjector"
-                ]
+                ],
+                "default": "slideReel"
               }
             }
           }
