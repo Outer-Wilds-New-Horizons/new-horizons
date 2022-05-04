@@ -107,6 +107,7 @@ namespace NewHorizons.External
         {
             public MVector3 position;
             public MVector3 normal;
+            public MVector3 rotation;
             public string type = "wall";
             public string xmlFile;
 		}
