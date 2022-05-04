@@ -6,6 +6,6 @@
   "version": "0.12.0",
   "owmlVersion": "2.1.0",
   "dependencies": [ "PacificEngine.OW_CommonResources" ],
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.OuterWildsMMO", "Vesper.AutoResume" ],
+  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
