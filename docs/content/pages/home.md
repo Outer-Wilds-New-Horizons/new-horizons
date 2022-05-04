@@ -124,6 +124,8 @@ Alternatively, you can use the [planet creation template](https://github.com/xen
 ## Helpful Resources
 ___
 
+[Unity Explorer](https://outerwildsmods.com/mods/unityexplorer/) is useful for manually positioning props, ship log entry cards, and dialogue volumes at run time. Be sure to use [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer/) in order to see dialogue volumes when positioning them. Copy paste the values into your json configs and click "Reload Configs" to see if you set the positions correctly. Use [Save Editor](https://outerwildsmods.com/mods/saveeditor/) to learn all ship log facts that you've added into the game so you can see them in the ship's computer.
+
 The texturemap/heightmap feature was inspired by the Kerbal Space Program mod Kopernicus. A lot of the same techniques that apply to
 planet creation there apply to New Horizons. If you need help with planetary texturing, check out [The KSP texturing guide](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
 
