@@ -18,6 +18,7 @@ namespace NewHorizons.Builder.Props
     {
         private static List<GameObject> _arcPrefabs;
         private static List<GameObject> _childArcPrefabs;
+        private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _cairnPrefab;
@@ -29,20 +30,30 @@ namespace NewHorizons.Builder.Props
             var existingArcs = GameObject.FindObjectsOfType<ScrollItem>().Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject).Where(x => x != null).ToArray();
             _arcPrefabs = new List<GameObject>();
             _childArcPrefabs = new List<GameObject>();
-            for (int i = 0; i < existingArcs.Count(); i++)
+            foreach (var existingArc in existingArcs)
             {
-                if (existingArcs[i].GetComponent<MeshRenderer>().material.name.Contains("Child"))
+                if (existingArc.GetComponent<MeshRenderer>().material.name.Contains("Child"))
                 {
-                    var arc = existingArcs[i].InstantiateInactive();
+                    var arc = existingArc.InstantiateInactive();
                     arc.name = "Arc (Child)";
                     _childArcPrefabs.Add(arc);
                 }
                 else
                 {
-                    var arc = existingArcs[i].InstantiateInactive();
+                    var arc = existingArc.InstantiateInactive();
                     arc.name = "Arc";
                     _arcPrefabs.Add(arc);
                 }
+            }
+
+            var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>().Select(x => x?._textLine?.gameObject).Where(x => x != null).ToArray();
+            _ghostArcPrefabs = new List<GameObject>();
+            foreach (var existingArc in existingGhostArcs)
+            {
+                Logger.Log("Found ghost");
+                var arc = existingArc.InstantiateInactive();
+                arc.name = "Arc";
+                _ghostArcPrefabs.Add(arc);
             }
 
             _scrollPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive();
@@ -73,7 +84,15 @@ namespace NewHorizons.Builder.Props
 
                 nomaiWallTextObj.transform.parent = sector?.transform ?? go.transform;
                 nomaiWallTextObj.transform.localPosition = info.position;
-                nomaiWallTextObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, info.normal) * nomaiWallTextObj.transform.rotation;
+                if (info.normal != null)
+                {
+                    nomaiWallTextObj.transform.LookAt(nomaiWallTextObj.transform.position + info.normal);
+                    nomaiWallTextObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.forward) * nomaiWallTextObj.transform.rotation;
+                }
+                if(info.rotation != null)
+                {
+                    nomaiWallTextObj.transform.localRotation = Quaternion.Euler(info.rotation);
+                }
 
                 nomaiWallTextObj.SetActive(true);
             }
@@ -285,9 +304,14 @@ namespace NewHorizons.Builder.Props
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
                 GameObject arc;
-                if (info.arcInfo != null && info.arcInfo[i].type == "child")
+                var type = info.arcInfo != null ? info.arcInfo[i].type : "adult";
+                if (type == "child")
                 {
                     arc = _childArcPrefabs[Random.Range(0, _childArcPrefabs.Count())].InstantiateInactive();
+                }
+                else if(type == "stranger")
+                {
+                    arc = _ghostArcPrefabs[Random.Range(0, _ghostArcPrefabs.Count())].InstantiateInactive();
                 }
                 else
                 {
