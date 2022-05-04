@@ -27,7 +27,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Incompatible mods
 - Autoresume.
-- Multiplayer mods like QSB and OWO. QSB actually kinda works decently as long as you don't warp.
+- Quantum Space Buddies.
 
 ## Features
 - Load planet meshes or details from asset bundles 
@@ -70,7 +70,7 @@ Main authors:
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
+- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0, worked on Nomai text in v0.12.0.
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
 - [Raicuparta](https://github.com/Raicuparta)
 - [MegaPiggy](https://github.com/MegaPiggy)
