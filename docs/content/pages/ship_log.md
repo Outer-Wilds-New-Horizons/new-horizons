@@ -6,26 +6,6 @@ Sort_Priority: 70
 ___
 Welcome! this page outlines how to create a custom ship log.
 
-## Helpful Mods
-___
-
-These mods are useful when developing your ship log
-
-- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer){ target="_blank" }
-- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer){ target="_blank" }
-- [Save Editor](https://outerwildsmods.com/mods/saveeditor){ target="_blank" }
-
-## Helpful Tools
-___
-
-These tools/references are highly recommended
-
-- [VSCode](https://code.visualstudio.com/){ target="_blank" }
-- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml){ target="_blank" }
-- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp){ target="_blank" }
-- [The XML Schema](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/NewHorizons/shiplog_schema.xsd){ target="_blank" }
-- [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" }
-
 # Understanding Ship Logs
 ___
 
