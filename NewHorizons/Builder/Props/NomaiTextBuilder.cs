@@ -86,8 +86,12 @@ namespace NewHorizons.Builder.Props
                 nomaiWallTextObj.transform.localPosition = info.position;
                 if (info.normal != null)
                 {
-                    nomaiWallTextObj.transform.LookAt(nomaiWallTextObj.transform.position + info.normal);
-                    nomaiWallTextObj.transform.rotation = Quaternion.FromToRotation(Vector3.up, Vector3.forward) * nomaiWallTextObj.transform.rotation;
+                    // In global coordinates (normal was in local coordinates)
+                    var up = (nomaiWallTextObj.transform.position - go.transform.position).normalized;
+                    var forward = go.transform.TransformDirection(info.normal).normalized;
+
+                    nomaiWallTextObj.transform.up = up;
+                    nomaiWallTextObj.transform.forward = forward;
                 }
                 if(info.rotation != null)
                 {
@@ -279,11 +283,11 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        private static void BuildArcs(string xml, NomaiWallText nomai, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        private static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
             var dict = MakeNomaiTextDict(xml);
 
-            nomai._dictNomaiTextData = dict;
+            nomaiWallText._dictNomaiTextData = dict;
 
             Random.InitState(info.seed);
 
@@ -342,13 +346,14 @@ namespace NewHorizons.Builder.Props
                         var point = points[points.Count() / 2];
 
                         arc.transform.localPosition = point;
-                        arc.transform.localRotation = Quaternion.identity;
+                        arc.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
                     }
                 }
 
                 arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
                 arc.GetComponent<MeshRenderer>().enabled = false;
                 arc.name = $"Arc {++i}";
+
                 arc.SetActive(true);
 
                 arcsByID.Add(textEntryID, arc);
