@@ -110,7 +110,16 @@ namespace NewHorizons.External
             public MVector3 rotation;
             public string type = "wall";
             public string xmlFile;
+            public int seed; // For randomizing arcs
+            public NomaiTextArcInfo[] arcInfo;
 		}
+
+        public class NomaiTextArcInfo
+        {
+            public MVector2 position;
+            public float zRotation;
+            public string type = "adult";
+        }
 
         public class ProjectionInfo
         {

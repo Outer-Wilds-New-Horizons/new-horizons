@@ -32,7 +32,7 @@ namespace NewHorizons.Utility
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
                     var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
-                    var norm = hitInfo.transform.InverseTransformPoint(hitInfo.normal);
+                    var norm = hitInfo.normal;
                     var o = hitInfo.transform.gameObject;
 
                     var posText = $"{{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}}";
