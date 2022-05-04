@@ -4,7 +4,7 @@ namespace NewHorizons.Utility
 {
     static class AddDebugShape
     {
-        public static void AddSphere(GameObject obj, float radius, Color color)
+        public static GameObject AddSphere(GameObject obj, float radius, Color color)
         {
             var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphere.GetComponent<SphereCollider>().enabled = false;
@@ -14,7 +14,7 @@ namespace NewHorizons.Utility
             sphere.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
             sphere.GetComponent<MeshRenderer>().material.color = color;
 
-            sphere.AddComponent<MakeMeshDoubleFaced>();
+            return sphere.gameObject;
         }
     }
 }
