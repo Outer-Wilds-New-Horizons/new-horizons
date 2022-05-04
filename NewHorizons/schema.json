@@ -886,6 +886,79 @@
               }
             }
           }
+        },
+        "nomaiText": {
+          "type": "array",
+          "description": "For creating different objects containing translatable text.",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this object."
+              },
+              "normal": {
+                "$ref": "#/$defs/vector3",
+                "description": "The normal vector for this object. Only used for writing on walls to orient it properly."
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient themselves to the surface of the planet automatically."
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of object this is. Must be wall, scroll, computer, cairn, or recorder",
+                "enum": [
+                  "wall",
+                  "scroll",
+                  "computer",
+                  "cairn",
+                  "recorder"
+                ],
+                "default": "wall"
+              },
+              "xmlFile": {
+                "type": "string",
+                "description": "The relative path to the xml file for this object."
+              },
+              "seed": {
+                "type": "integer",
+                "description": "The random seed used to pick what the text arcs will look like."
+              },
+              "arcInfo": {
+                "type": "array",
+                "description": "Additional information about each arc in the text",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": "false",
+                  "properties": {
+                    "position": {
+                      "$ref": "#/$defs/vector2",
+                      "description": "The local position of this object on the wall."
+                    },
+                    "zRotation": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 360,
+                      "description": "The z euler angle for this arc.",
+                      "default": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of text to display. Must be one of adult, child, or stranger.",
+                      "enum": [
+                        "adult",
+                        "child",
+                        "stranger"
+                      ],
+                      "default": "adult"
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },

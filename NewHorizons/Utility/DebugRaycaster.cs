@@ -14,7 +14,10 @@ namespace NewHorizons.Utility
     public class DebugRaycaster : MonoBehaviour
     {
         private OWRigidbody _rb;
-		
+        private GameObject _surfaceSphere;
+        private GameObject _normalSphere1;
+        private GameObject _normalSphere2;
+
         private void Awake()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
@@ -32,8 +35,25 @@ namespace NewHorizons.Utility
                 if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
                 {
                     var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
+                    var norm = hitInfo.transform.InverseTransformDirection(hitInfo.normal);
                     var o = hitInfo.transform.gameObject;
-                    Logger.Log($"Raycast hit {{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}} on [{o.name}] at [{SearchUtilities.GetPath(o.transform)}]");
+
+                    var posText = $"{{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}}";
+                    var normText = $"{{\"x\": {norm.x}, \"y\": {norm.y}, \"z\": {norm.z}}}";
+
+                    if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
+                    if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
+                    if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
+
+                    _surfaceSphere = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.1f, Color.green);
+                    _normalSphere1 = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.01f, Color.red);
+                    _normalSphere2 = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.01f, Color.red);
+
+                    _surfaceSphere.transform.localPosition = pos;
+                    _normalSphere1.transform.localPosition = pos + norm * 0.5f;
+                    _normalSphere2.transform.localPosition = pos + norm;
+
+                    Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{o.name}] at [{SearchUtilities.GetPath(o.transform)}]");
                 }
                 _rb.EnableCollisionDetection();
             }

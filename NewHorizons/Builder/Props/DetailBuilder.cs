@@ -155,13 +155,7 @@ namespace NewHorizons.Builder.Props
             if (alignWithNormal)
             {
                 var up = prop.transform.localPosition.normalized;
-                var front = Vector3.Cross(up, Vector3.left);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
-
-                front = rot * front;
-
-                prop.transform.LookAt(prop.transform.position + front, up);
+                prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
             }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;

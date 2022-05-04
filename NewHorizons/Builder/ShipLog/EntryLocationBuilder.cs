@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject entryLocationGameObject = new GameObject("Entry Location (" + info.id + ")");
             entryLocationGameObject.SetActive(false);
             entryLocationGameObject.transform.parent = sector?.transform ?? go.transform;
-            entryLocationGameObject.transform.localPosition = info.position;
+            entryLocationGameObject.transform.localPosition = info.position ?? Vector3.zero;
             ShipLogEntryLocation newLocation = entryLocationGameObject.AddComponent<ShipLogEntryLocation>();
             newLocation._entryID = info.id;
             newLocation._isWithinCloakField = info.cloaked;

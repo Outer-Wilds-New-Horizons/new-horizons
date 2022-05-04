@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
             revealTriggerVolume.SetActive(false);
             revealTriggerVolume.transform.parent = sector?.transform ?? go.transform;
-            revealTriggerVolume.transform.localPosition = info.position;
+            revealTriggerVolume.transform.localPosition = info.position ?? Vector3.zero;
             return revealTriggerVolume;
         }
 

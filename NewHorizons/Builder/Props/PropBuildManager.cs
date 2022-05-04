@@ -78,6 +78,13 @@ namespace NewHorizons.Builder.Props
                     EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                 }
             }
+            if(config.Props.NomaiText != null)
+            {
+                foreach(var nomaiTextInfo in config.Props.NomaiText)
+                {
+                    NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod);
+				}
+			}
             if(config.Props.SlideShows != null)
             {
                 foreach (var slideReelInfo in config.Props.SlideShows)
