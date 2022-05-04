@@ -130,3 +130,23 @@ planet creation there apply to New Horizons. If you need help with planetary tex
 
 [Photopea](https://www.photopea.com/){ target="_blank" } is a free browser-based photo editor which has useful features like
 rectangular-to-polar coordinate transformation, useful for fixing abnormalities at the poles of your planets. 
+
+### Helpful Mods
+___
+
+These mods are useful when developing your addon
+
+- [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer){ target="_blank" } - Used to find the paths of game objects for copying and can be used to manually position props, ship log entries, and more.
+- [Collider Visualizer](https://outerwildsmods.com/mods/collidervisualizer){ target="_blank" } - Useful when creating dialogue triggers or reveal volumes
+- [Save Editor](https://outerwildsmods.com/mods/saveeditor){ target="_blank" } - Useful when creating a custom [ship log]({{ "Ship Log"|route }}), can be used to reveal all custom facts so you can see them in the ship's computer
+
+### Helpful Tools
+___
+
+These tools/references are highly recommended
+
+- [VSCode](https://code.visualstudio.com/){ target="_blank" }
+- [VSCode XML Addon](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml){ target="_blank" }
+- [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp){ target="_blank" }
+- [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm){ target="_blank" }
+- [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" }
