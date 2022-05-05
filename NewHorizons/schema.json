@@ -254,6 +254,18 @@
           "type": "string",
           "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. If you don't put anything here it will be auto-generated."
         },
+        "cloudFluidType": {
+          "type": "string",
+          "default": "CLOUD",
+          "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
+        },
         "useBasicCloudShader": {
           "type": "boolean",
           "default": false,
