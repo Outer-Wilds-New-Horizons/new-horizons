@@ -145,6 +145,11 @@
       "description": "A list of paths to child GameObjects to destroy on this planet",
       "default": []
     },
+    "canShowOnTitle": {
+      "type": "boolean",
+      "description": "Should this planet ever be shown on the title screen",
+      "default": "true"
+    }
     "Base": {
       "type": "object",
       "additionalProperties": false,

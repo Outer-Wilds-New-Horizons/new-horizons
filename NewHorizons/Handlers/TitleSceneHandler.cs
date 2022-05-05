@@ -18,7 +18,7 @@ namespace NewHorizons.Handlers
         {
             //Try loading one planet why not
             //var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
-            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
+            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null && b.Config.CanShowOnTitle).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
