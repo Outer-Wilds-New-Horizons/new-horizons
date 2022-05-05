@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -41,10 +42,11 @@ namespace NewHorizons.Builder.Props
 
             // Default radius is 40, height is 837.0669
 
-            var tornado = GameObject.Instantiate(prefab, sector.transform);
-            tornado.SetActive(false);
-
-            tornado.transform.localPosition = Vector3.zero;
+            var tornadoGO = prefab.InstantiateInactive();
+            tornadoGO.transform.parent = sector?.transform ?? go.transform;
+            tornadoGO.transform.localPosition = Vector3.zero;
+            var tornado = tornadoGO.GetComponent<TornadoController>();
+            tornado.SetSector(sector);
 
             var height = 837.0669f;
             if (info.height != 0f) height = info.height;
@@ -52,54 +54,24 @@ namespace NewHorizons.Builder.Props
             var width = 40f;
             if (info.width != 0f) width = info.width;
 
-            var scale = new Vector3(width / 40f, 1f, width / 40f);
+            tornado._bottomBone.localPosition = new Vector3(0, elevation, 0);
+            tornado._midBone.localPosition = new Vector3(0, elevation + height / 2f, 0);
+            tornado._topBone.localPosition = new Vector3(0, elevation + height, 0);
 
-            tornado.transform.localScale = scale;
+            tornado._startActive = false;
 
-            var tornadoController = tornado.GetComponent<TornadoController>();
-            tornadoController.SetSector(sector);
-            var n = position.normalized;
+            // TODO make these settings
+            tornado._wanderRate = 0.5f;
+            tornado._wanderDegreesX = 45f;
+            tornado._wanderDegreesZ = 45f;
 
-            var up = new Vector3(0, 1, 0);
-
-            var h1 = elevation;
-            var h2 = (elevation + height / 2f);
-            var h3 = (elevation + height);
-
-            tornadoController._bottomElevation = h1;
-            tornadoController._bottomStartElevation = h1;
-            tornadoController._bottomStartPos = n * h1;
-            tornadoController._bottomBasePos = up * h1;
-            tornadoController._bottomBone.localPosition = n * h1;
-            tornadoController._bottomBone.rotation.SetFromToRotation(tornadoController._bottomBone.up, up);
-
-            tornadoController._midElevation = h2;
-            tornadoController._midStartElevation = h2;
-            tornadoController._midStartPos = n * h2;
-            tornadoController._midBasePos = up * h2;
-            tornadoController._midBone.localPosition = n * h2;
-            tornadoController._midBone.rotation.SetFromToRotation(tornadoController._midBone.up, up);
-
-            tornadoController._topElevation = h3;
-            tornadoController._topStartPos = n * h3;
-            tornadoController._topBasePos = up * h3;
-            tornadoController._topBone.localPosition = n * h3;
-            tornadoController._topBone.rotation.SetFromToRotation(tornadoController._topBone.up, up);
-
-            tornadoController._snapBonesToSphere = true;
-            tornadoController._wander = true;
-            tornadoController._wanderRate = 0.02f;
-            tornadoController._wanderDegreesX = 45f;
-            tornadoController._wanderDegreesZ = 45f;
-
-            if(!hasClouds)
+            /*
+            if (!hasClouds)
             {
-                var fix = tornado.AddComponent<TornadoFix>();
+                var fix = tornadoGO.AddComponent<TornadoFix>();
                 fix.SetSector(sector);
 
-                var top = tornado.transform.Find("UpTornado/Effects_GD_TornadoCyclone/Tornado_Top");
-
-                Logger.Log($"{top.name}");
+                var top = tornadoGO.transform.Find("UpTornado/Effects_GD_TornadoCyclone/Tornado_Top");
 
                 // Get rid of the bit that appears above the clouds
                 GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Large")?.gameObject);
@@ -117,9 +89,9 @@ namespace NewHorizons.Builder.Props
                     obj.transform.localRotation = Quaternion.Euler(180, 0, 0);
                 }
             }
+            */
 
-            tornadoController._startActive = false;
-            tornado.SetActive(true);
+            tornadoGO.SetActive(true);
         }
     }
 }
