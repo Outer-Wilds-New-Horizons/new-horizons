@@ -1,17 +1,20 @@
-Title: Ship Log 
-Description: A guide to editing the ship log in New Horizons 
+Title: Ship Log
+Description: A guide to editing the ship log in New Horizons
 Sort_Priority: 70
 
 # Intro
+
 ___
 Welcome! this page outlines how to create a custom ship log.
 
 # Understanding Ship Logs
+
 ___
 
 First thing's first, I'll define some terminology regarding ship logs in the game, and how ship logs are structured.
 
 ## Entries
+
 ___
 
 An entry is a card you see in rumor mode, it represents a specific area or concept in the game, such as Timber Hearth's
@@ -38,6 +41,7 @@ Entries can be children of other entries, meaning they'll be smaller.
 *The murals at the old settlement on Brittle Hollow are examples of child entries*
 
 ## Rumor Facts
+
 ___
 
 A rumor fact represents the information you might hear about a specific area or concept, usually, you get these through
@@ -46,6 +50,7 @@ dialogue or maybe by observing a faraway planet.
 ![rumorFactExample]({{ "images/ship_log/rumor_example.webp"|static }})
 
 ## Explore Facts
+
 ___
 
 Explore facts represent the information you learn about a specific area or concept.
@@ -53,6 +58,7 @@ Explore facts represent the information you learn about a specific area or conce
 ![exploreFactExample]({{ "images/ship_log/explore_example.webp"|static }})
 
 # The XML
+
 ___
 
 Now that we know some terminology, let's get into how the XML works.  
@@ -60,6 +66,7 @@ Every planet in the ship log is represented by a single XML file, you can see th
 navigate to ShipLogManager.
 
 ## Example File
+
 ___
 
 ```xml
@@ -139,6 +146,7 @@ ___
 ```
 
 ## Using The Schema
+
 ___
 
 In the example XML, you may notice something like `xsi:noNamespaceSchemaLocation` at the top, this tells whatever editor
@@ -148,6 +156,7 @@ Some editors may require you to [Trust](https://code.visualstudio.com/docs/edito
 the schema file. Doing this varies per-editor, and you may also have to right-click the link and click download.
 
 ## Loading The File
+
 ___
 
 You can load your XML file to your planet by doing adding the following to your planet's config
@@ -163,6 +172,7 @@ You can load your XML file to your planet by doing adding the following to your 
 # Rumor Mode Options
 
 ## Entry Layout
+
 ___
 
 By default, entries in rumor mode are laid out by rows, where each row is one planet. This will not make for a perfect
@@ -197,6 +207,7 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
 *A set of entries laid out with auto mode*
 
 ## Images
+
 ___
 
 Custom entry images are a bit different from other custom images, instead of pointing to each file for each entry, you
@@ -217,6 +228,7 @@ you set alternate sprites by making a file with the entry's ID and `_ALT` at the
 would be `EXAMPLE_ENTRY_ALT.png`.
 
 ## Curiosity Colors
+
 ___
 
 Colors for each curiosity is given in a list, so if I wanted the curiosity `EXAMPLE_ENTRY` to have a color of blue:
@@ -250,9 +262,11 @@ Colors for each curiosity is given in a list, so if I wanted the curiosity `EXAM
 *The curiosity's color is changed to blue*
 
 # Map Mode Options
+
 ___
 
 ## Layout
+
 ___
 
 Layout in map mode can be handled in two different ways, either manual or automatic, if you try to mix them you'll get
@@ -420,11 +434,13 @@ between Ash Twin and Ember Twin)
 As you can see, they have similar properties to planets, with the addition of rotation
 
 # Revealing Facts
+
 ___
 
 Of course, having a custom ship log is neat and all, but what use is it if the player can't unlock it?
 
 ## Initial Reveal
+
 ___
 
 You can set facts to reveal as soon as the player enters the system by adding the `initialReveal` property
@@ -441,6 +457,7 @@ You can set facts to reveal as soon as the player enters the system by adding th
 ```
 
 ## Signal Discovery
+
 ___
 
 You can set a fact to reveal as soon as a signal is identified by editing the signal's `Reveals` attribute
@@ -462,6 +479,7 @@ You can set a fact to reveal as soon as a signal is identified by editing the si
 ```
 
 ## Dialogue
+
 ___
 
 You can set a fact to reveal in dialogue with the `<RevealFacts>` tag
@@ -484,6 +502,7 @@ You can set a fact to reveal in dialogue with the `<RevealFacts>` tag
 ```
 
 ## Reveal Volumes
+
 ___
 
 Reveal volumes are triggers/colliders in the world that can unlock facts from a variety of actions.  
@@ -552,6 +571,7 @@ trigger the reveal
 ```
 
 # Setting Entry Locations
+
 ___
 
 Entry locations are the "Mark On HUD" option you see when in map mode, this allows the player to go back to where they
