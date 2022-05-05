@@ -1,6 +1,7 @@
 {
 	"enabled": true,
 	"settings": {
-		"Debug": false
+		"Debug": false,
+		"Custom title screen": true
 	}
 }

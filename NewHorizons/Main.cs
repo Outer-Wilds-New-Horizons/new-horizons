@@ -36,7 +36,10 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
+        // Settings
         public static bool Debug;
+        private static bool _useCustomTitleScreen;
+        private static bool _wasConfigured = false;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
@@ -63,7 +66,7 @@ namespace NewHorizons
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
 
-
+        // For warping to the eye system
         private GameObject _ship;
 
         public override object GetApi()
@@ -73,9 +76,23 @@ namespace NewHorizons
 
         public override void Configure(IModConfig config)
         {
+            Logger.Log("Settings changed");
+
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
-            Logger.UpdateLogLevel(Debug? Logger.LogType.Log : Logger.LogType.Error);
+            Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
+
+            var wasUsingCustomTitleScreen = _useCustomTitleScreen;
+            _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
+            // Reload the title screen if this was updated on it
+            // Don't reload if we haven't configured yet (called on game start)
+            if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
+            {
+                Logger.Log("Reloading");
+                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+            }
+
+            _wasConfigured = true;
         }
 
         public void Start()
@@ -144,7 +161,7 @@ namespace NewHorizons
 
             _isChangingStarSystem = false;
 
-            if (scene.name == "TitleScreen")
+            if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
             }
