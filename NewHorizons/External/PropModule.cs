@@ -79,6 +79,7 @@ namespace NewHorizons.External
         {
             public MVector3 position;
             public float radius = 1f;
+            public float remoteTriggerRadius;
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;
