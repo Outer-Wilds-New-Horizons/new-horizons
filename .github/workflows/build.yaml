@@ -3,6 +3,9 @@ name: Build
 on:
   push:
     branches: [dev, master]
+    paths-ignore:
+      - docs/**
+      - "**schema**"
   pull_request:
   workflow_dispatch:
   

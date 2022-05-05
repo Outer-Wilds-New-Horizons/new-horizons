@@ -66,6 +66,12 @@ jobs:
           cp NewHorizons/translation_schema.json content/pages/schemas/
           cp NewHorizons/shiplog_schema.xsd content/pages/schemas/
           cp NewHorizons/dialogue_schema.xsd content/pages/schemas/
+
+      - name: Cache Site
+        uses: actions/cache@v2
+        with:
+          path: .m_cache
+          key: docs-cache
           
       - name: Build Site
         uses: VaultVulp/action-pipenv@v2.0.1
