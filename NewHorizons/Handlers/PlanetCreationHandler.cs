@@ -340,7 +340,7 @@ namespace NewHorizons.Handlers
             }
 
             if (body.Config.Props != null)
-                PropBuildManager.Make(go, sector, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName);
+                PropBuildManager.Make(go, sector, rb, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName);
 
             if (body.Config.Signal != null)
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);

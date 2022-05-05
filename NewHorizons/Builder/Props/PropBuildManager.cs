@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {
@@ -40,7 +40,10 @@ namespace NewHorizons.Builder.Props
             }
             if(config.Props.Rafts != null)
             {
-                // TODO
+                foreach(var raftInfo in config.Props.Rafts)
+                {
+                    RaftBuilder.Make(go, sector, raftInfo, planetBody);
+                }
             }
             if(config.Props.Tornados != null)
             {

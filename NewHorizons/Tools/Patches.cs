@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Harmony;
+using HarmonyLib;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
