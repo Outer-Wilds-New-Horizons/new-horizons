@@ -421,6 +421,18 @@
           "default": 0,
           "description": "Allows the rings to rotate."
         },
+        "fluidType": {
+          "type": "string",
+          "default": "NONE",
+          "description": "Fluid type for sounds/effects when colliding with this ring.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
+        },
         "curve": {
           "$ref": "#/$defs/curve",
           "description": "Allows the rings to grow/shrink with time."

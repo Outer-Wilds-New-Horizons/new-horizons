@@ -77,29 +77,47 @@ namespace NewHorizons.Builder.Body
 				rot._localAxis = Vector3.down;
             }
 
-			// Collider can't be concave so nvm
-			/*
-			var collider = new GameObject("Collider");
-			collider.SetActive(false);
-			collider.transform.parent = ringGO.transform;
-			collider.transform.localPosition = Vector3.zero;
-			collider.transform.localScale = Vector3.one;
-			collider.layer = 17;
+			// Funny collider thing
+			var ringVolume = new GameObject("RingVolume");
+			ringVolume.SetActive(false);
+			ringVolume.transform.parent = ringGO.transform;
+			ringVolume.transform.localPosition = Vector3.zero;
+			ringVolume.transform.localScale = Vector3.one;
+			ringVolume.transform.localRotation = Quaternion.identity;
+			ringVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-			var mf = collider.AddComponent<MeshFilter>();
-			mf.mesh = ringMesh;
+			var ringShape = ringVolume.AddComponent<RingShape>();
+			ringShape.innerRadius = ring.InnerRadius;
+			ringShape.outerRadius = ring.OuterRadius;
+			ringShape.height = 2f;
+			ringShape.center = Vector3.zero;
+			ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
+			ringShape.SetLayer(Shape.Layer.Default);
+			ringShape.layerMask = -1;
+			ringShape.pointChecksOnly = true;
+			
+			var trigger = ringVolume.AddComponent<OWTriggerVolume>();
+			trigger._shape = ringShape;
 
-			var mc = collider.AddComponent<MeshCollider>();
-			mc.isTrigger = true;
+			var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
+			var fluidType = FluidVolume.Type.NONE;
 
-			var owCollider = collider.AddComponent<OWCollider>();
-			var trigger = collider.AddComponent<OWTriggerVolume>();
-			var sfv = collider.AddComponent<SimpleFluidVolume>();
-			sfv._fluidType = FluidVolume.Type.SAND;
-			sfv._density = 2f;
+			if(!string.IsNullOrEmpty(ring.FluidType))
+            {
+				try
+				{
+					fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), ring.FluidType.ToUpper());
+				}
+				catch (Exception ex)
+				{
+					Logger.LogError($"Couldn't parse fluid volume type [{ring.FluidType}]: {ex.Message}, {ex.StackTrace}");
+				}
+			}
 
-			collider.SetActive(true);
-			*/
+			sfv._fluidType = fluidType;
+			sfv._density = 1f;
+
+			ringVolume.SetActive(true);
 
 			if (ring.Curve != null)
 			{
