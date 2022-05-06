@@ -3,7 +3,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
-using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.VariableSize;
@@ -163,6 +162,17 @@ namespace NewHorizons.Handlers
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
+            // Since orbits are always there just check if they set a semi major axis
+            if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
+            {
+                // If we aren't able to update the orbit wait until later
+                if(!UpdateBodyOrbit(body, go))
+                {
+                    NextPassBodies.Add(body);
+                    return null;
+                }
+            }
+
             if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
             {
                 foreach (var child in body.Config.ChildrenToDestroy)
@@ -173,12 +183,6 @@ namespace NewHorizons.Handlers
 
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
-
-            // Since orbits are always there just check if they set a semi major axis
-            if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
-            {
-                OrbitUpdater.Update(body, go);
-            }
 
             return go;
         }
@@ -226,9 +230,8 @@ namespace NewHorizons.Handlers
                 sphereOfInfluence = overrideSOI;
             }
 
-            var outputTuple = BaseBuilder.Make(go, primaryBody, body.Config);
-            var ao = outputTuple.Item1;
-            var owRigidBody = outputTuple.Item2;
+            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
 
             if (body.Config.Base.SurfaceGravity != 0)
             {
@@ -384,6 +387,76 @@ namespace NewHorizons.Handlers
                 CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
 
             return go;
+        }
+
+        public static bool UpdateBodyOrbit(NewHorizonsBody body, GameObject go)
+        {
+            Logger.Log($"Updating orbit of [{body.Config.Name}] to [{body.Config.Orbit}]");
+
+            try
+            {
+                var ao = go.GetComponent<AstroObject>();
+                var aoName = ao.GetAstroObjectName();
+                var aoType = ao.GetAstroObjectType();
+
+                var owrb = go.GetComponent<OWRigidbody>();
+
+                var im = go.GetComponent<InitialMotion>();
+
+                // By default keep it with the same primary body else update to the new one
+                var primary = ao._primaryBody;
+                if (!string.IsNullOrEmpty(body.Config.Orbit.PrimaryBody))
+                {
+                    // If we can't find the new one we want to try again later (return false)
+                    primary = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+                    if (primary == null) return false;
+                }
+
+                // Just destroy the existing AO after copying everything over
+                var newAO = AstroObjectBuilder.Make(go, primary, body.Config);
+                newAO._gravityVolume = ao._gravityVolume;
+                newAO._moon = ao._moon;
+                newAO._name = ao._name;
+                newAO._owRigidbody = ao._owRigidbody;
+                newAO._primaryBody = ao._primaryBody;
+                newAO._rootSector = ao._rootSector;
+                newAO._sandLevelController = ao._sandLevelController;
+                newAO._satellite = ao._satellite;
+                newAO._type = ao._type;
+                // We need these for later
+                var moons = AstroObjectLocator.GetMoons(ao);
+                GameObject.Destroy(ao);
+
+                var orbitLine = go.GetComponentInChildren<OrbitLine>();
+                var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
+                var newOrbitLine = OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+
+                DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
+
+                // Get ready to move all the satellites
+                var relativeMoonPositions = moons.Select(x => x.transform.position - go.transform.position).ToArray();
+                
+                // Move the primary
+                UpdatePosition(go, body, primary, newAO);
+
+                for(int i = 0; i < moons.Count(); i++)
+                {
+                    moons[i].transform.position = go.transform.position + relativeMoonPositions[i];
+                }
+
+                // Have to do this after setting position
+                InitialMotionBuilder.SetInitialMotion(im, primary, newAO, owrb, body.Config.Orbit);
+
+                // Have to register this new AO to the locator
+                Locator.RegisterAstroObject(newAO);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't update orbit of [{body.Config.Name}]: {ex.Message}, {ex.StackTrace}");
+                // If it doesn't here there's no point trying again so we'll still return true
+            }
+
+            return true;
         }
 
         //private static int j = 0;

@@ -17,8 +17,13 @@ namespace NewHorizons.Builder.Orbital
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
+            // Doing it like this so the planet orbit updater can just use an existing initial motion with the other method
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
+            return SetInitialMotion(initialMotion, primaryBody, secondaryBody, OWRB, orbit);
+        }
 
+        public static InitialMotion SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
+        {
             // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
             initialMotion._orbitImpulseScalar = 0f;
 

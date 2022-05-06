@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Orbital
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
+        public static OrbitLine Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
@@ -75,6 +75,8 @@ namespace NewHorizons.Builder.Orbital
             orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, numVerts, 4096);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+
+            return orbitLine;
         }
     }
 }

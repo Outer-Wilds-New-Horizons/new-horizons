@@ -3,7 +3,6 @@ using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.Configs;

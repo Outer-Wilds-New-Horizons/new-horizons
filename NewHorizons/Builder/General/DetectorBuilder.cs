@@ -42,6 +42,14 @@ namespace NewHorizons.Builder.General
                 // Could copy the splash from the interloper as well some day
             }
 
+            SetDetector(primaryBody, astroObject, forceDetector);
+
+            detectorGO.SetActive(true);
+            return detectorGO;
+        }
+
+        public static void SetDetector(AstroObject primaryBody, AstroObject astroObject, ConstantForceDetector forceDetector)
+        {
             GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
             if (parentGravityVolume != null)
             {
@@ -51,9 +59,10 @@ namespace NewHorizons.Builder.General
             {
                 // It's probably a focal point (or its just broken)
                 var binaryFocalPoint = primaryBody?.gameObject?.GetComponent<BinaryFocalPoint>();
-                if(binaryFocalPoint != null)
+                if (binaryFocalPoint != null)
                 {
-                    if(astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName)) {
+                    if (astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName))
+                    {
                         binaryFocalPoint.Primary = astroObject;
                         if (binaryFocalPoint.Secondary != null)
                         {
@@ -73,7 +82,7 @@ namespace NewHorizons.Builder.General
                     else
                     {
                         // It's a planet
-                        if(binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
+                        if (binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
                         {
                             var fakeBarycenterGravityVolume = binaryFocalPoint.FakeMassBody.GetComponent<AstroObject>().GetGravityVolume();
                             forceDetector._detectableFields = new ForceVolume[] { fakeBarycenterGravityVolume };
@@ -81,9 +90,6 @@ namespace NewHorizons.Builder.General
                     }
                 }
             }
-
-            detectorGO.SetActive(true);
-            return detectorGO;
         }
 
         private static void SetBinaryForceDetectableFields(BinaryFocalPoint point, ConstantForceDetector primaryCFD, ConstantForceDetector secondaryCFD)

@@ -9,35 +9,10 @@ using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.General
 {
-    static class BaseBuilder
+    static class AstroObjectBuilder
     {
-        public static Tuple<AstroObject, OWRigidbody> Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {
-            body.AddComponent<ProxyShadowCasterSuperGroup>();
-
-            Rigidbody rigidBody = body.AddComponent<Rigidbody>();
-            rigidBody.mass = 10000;
-            rigidBody.drag = 0f;
-            rigidBody.angularDrag = 0f;
-            rigidBody.useGravity = false;
-            rigidBody.isKinematic = true;
-            rigidBody.interpolation = RigidbodyInterpolation.None;
-            rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
-
-            KinematicRigidbody kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
-            kinematicRigidBody.centerOfMass = Vector3.zero;
-
-            OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
-            owRigidBody._kinematicSimulation = true;
-            owRigidBody._autoGenerateCenterOfMass = true;
-            owRigidBody.SetIsTargetable(true);
-            owRigidBody._maintainOriginalCenterOfMass = true;
-            owRigidBody._rigidbody = rigidBody;
-            owRigidBody._kinematicRigidbody = kinematicRigidBody;
-            owRigidBody._origParent = GameObject.Find("SolarSystemRoot").transform;
-            owRigidBody.EnableKinematicSimulation();
-            owRigidBody.MakeKinematic();
-
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.HasMapMarker;
 
@@ -75,16 +50,16 @@ namespace NewHorizons.Builder.General
                 {
                     alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
                 }
-                
             }
 
             if (config.Base.CenterOfSolarSystem)
             {
                 Logger.Log($"Setting center of universe to {config.Name}");
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = owRigidBody, 2);
+                // By the time it runs we'll be able to get the OWRB with the method
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
             }
 
-            return new Tuple<AstroObject, OWRigidbody>(astroObject, owRigidBody);
+            return astroObject;
         }
     }
 }

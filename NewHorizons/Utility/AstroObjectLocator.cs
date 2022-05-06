@@ -122,5 +122,10 @@ namespace NewHorizons.Utility
         {
 			_list.Remove(ao);
         }
+
+		public static AstroObject[] GetMoons(AstroObject primary)
+        {
+			return _list.Where(x => x._primaryBody == primary).ToArray();
+        }
 	}
 }
