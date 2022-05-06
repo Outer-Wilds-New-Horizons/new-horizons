@@ -141,8 +141,11 @@
       "default": false
     },
     "childrenToDestroy": {
-      "type": "string",
+      "type": "array",
       "description": "A list of paths to child GameObjects to destroy on this planet",
+      "items": {
+        "type": "string"
+      },
       "default": []
     },
     "canShowOnTitle": {
