@@ -59,7 +59,7 @@ namespace NewHorizons.External
         {
             public MVector3 position;
             public float elevation;
-            public float height;
+            public float height = 30;
             public MColor tint;
             public bool downwards;
             public float wanderRate;
