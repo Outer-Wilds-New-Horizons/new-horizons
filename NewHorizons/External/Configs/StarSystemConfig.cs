@@ -11,6 +11,7 @@ namespace NewHorizons.External.Configs
     {
         public bool canEnterViaWarpDrive = true;
         public bool startHere = false;
+        public bool destroyStockPlanets = true;
         public string factRequiredForWarp;
         public NomaiCoordinates coords;
 

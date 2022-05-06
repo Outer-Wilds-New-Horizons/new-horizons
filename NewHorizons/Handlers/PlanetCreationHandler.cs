@@ -104,7 +104,7 @@ namespace NewHorizons.Handlers
             // I don't know what these do but they look really weird from a distance
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
-            if (Main.Instance.CurrentStarSystem != "SolarSystem") PlanetDestroyer.RemoveSolarSystem();
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestroyer.RemoveSolarSystem();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
