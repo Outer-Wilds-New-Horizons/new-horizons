@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.Props
             fluidDetector._alignmentFluid = waterVolume;
 
             // Light sensors
-            foreach(var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
+            foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
             {
                 lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
                 lightSensor._sector = sector;
