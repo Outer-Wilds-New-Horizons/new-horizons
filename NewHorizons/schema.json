@@ -149,7 +149,7 @@
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen",
       "default": "true"
-    }
+    },
     "Base": {
       "type": "object",
       "additionalProperties": false,
@@ -989,6 +989,66 @@
                     }
                   }
                 }
+              }
+            }
+          }
+        },
+        "tornados": {
+          "type": "array",
+          "description": "Like those on Giant's Deep",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this tornado."
+              },
+              "elevation": {
+                "type": "number",
+                "description": "Alternative to setting the position. Will choose a random place at this elevation."
+              },
+              "height": {
+                "type": "number",
+                "description": "The height of this tornado.",
+                "default": 30
+              },
+              "tint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the tornado."
+              },
+              "downwards": {
+                "type": "boolean",
+                "description": "Should it pull things downwards? Will push them upwards by default."
+              },
+              "wanderRate": {
+                "type": "number",
+                "description": "The rate at which the tornado will wander around the planet. Set to 0 for it to be stationary. Should be around 0.1.",
+                "default": 0
+              },
+              "wanderDegreesX": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "default": 45
+              },
+              "wanderDegreesZ": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "default": 45
+              }
+            }
+          }
+        },
+        "rafts": {
+          "type": "array",
+          "description": "Like those in the DLC",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this raft."
               }
             }
           }
