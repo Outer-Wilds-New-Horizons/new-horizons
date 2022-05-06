@@ -24,10 +24,10 @@ using OWML.Common.Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Atmosphere;
-using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using NewHorizons.Utility.CommonResources;
 using UnityEngine.Events;
+using HarmonyLib;
+using System.Reflection;
 
 namespace NewHorizons
 {
@@ -36,7 +36,10 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
+        // Settings
         public static bool Debug;
+        private static bool _useCustomTitleScreen;
+        private static bool _wasConfigured = false;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
@@ -63,7 +66,7 @@ namespace NewHorizons
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
 
-
+        // For warping to the eye system
         private GameObject _ship;
 
         public override object GetApi()
@@ -73,13 +76,30 @@ namespace NewHorizons
 
         public override void Configure(IModConfig config)
         {
+            Logger.Log("Settings changed");
+
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
-            Logger.UpdateLogLevel(Debug? Logger.LogType.Log : Logger.LogType.Error);
+            Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
+
+            var wasUsingCustomTitleScreen = _useCustomTitleScreen;
+            _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
+            // Reload the title screen if this was updated on it
+            // Don't reload if we haven't configured yet (called on game start)
+            if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
+            {
+                Logger.Log("Reloading");
+                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+            }
+
+            _wasConfigured = true;
         }
 
         public void Start()
         {
+            // Patches
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
 
@@ -90,15 +110,12 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
+            
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
 
-            Tools.Patches.Apply();
-            Tools.WarpDrivePatches.Apply();
-            Tools.OWCameraFix.Apply();
-            Tools.ShipLogPatches.Apply();
-            Tools.TranslationPatches.Apply();
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
+            SystemDict["SolarSystem"].Config.destroyStockPlanets = false;
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
@@ -144,7 +161,7 @@ namespace NewHorizons
 
             _isChangingStarSystem = false;
 
-            if (scene.name == "TitleScreen")
+            if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
             }

@@ -13,6 +13,7 @@ namespace NewHorizons.External.Configs
         public bool Destroy { get; set; }
         public string[] ChildrenToDestroy { get; set; }
         public int BuildPriority { get; set; } = -1;
+        public bool CanShowOnTitle { get; set; } = true;
         public BaseModule Base { get; set; }
         public AtmosphereModule Atmosphere { get; set; }
         public OrbitModule Orbit { get; set; }

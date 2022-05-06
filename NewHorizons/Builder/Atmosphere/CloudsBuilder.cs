@@ -138,7 +138,21 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
-            fluidCLFV._fluidType = FluidVolume.Type.CLOUD;
+
+            var fluidType = FluidVolume.Type.CLOUD;
+            if (!string.IsNullOrEmpty(atmo.CloudFluidType))
+            {
+                try
+                {
+                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), atmo.CloudFluidType.ToUpper());
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Couldn't parse fluid volume type [{atmo.CloudFluidType}]: {ex.Message}, {ex.StackTrace}");
+                }
+            }
+
+            fluidCLFV._fluidType = fluidType;
             fluidCLFV._allowShipAutoroll = true;
             fluidCLFV._disableOnStart = false;
 

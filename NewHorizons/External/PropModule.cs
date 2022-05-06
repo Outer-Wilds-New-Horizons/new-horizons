@@ -57,11 +57,14 @@ namespace NewHorizons.External
 
         public class TornadoInfo
         {
+            public MVector3 position;
             public float elevation;
-            public MVector3 position = null;
             public float height;
-            public float width;
             public MColor tint;
+            public bool downwards;
+            public float wanderRate;
+            public float wanderDegreesX = 45;
+            public float wanderDegreesZ = 45;
         }
 
         public class VolcanoInfo
@@ -79,6 +82,7 @@ namespace NewHorizons.External
         {
             public MVector3 position;
             public float radius = 1f;
+            public float remoteTriggerRadius;
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;

@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Body
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
 
-            var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
+            var fluidVolume = buoyancyObject.AddComponent<NHFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;

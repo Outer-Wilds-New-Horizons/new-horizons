@@ -148,6 +148,11 @@
       },
       "default": []
     },
+    "canShowOnTitle": {
+      "type": "boolean",
+      "description": "Should this planet ever be shown on the title screen",
+      "default": "true"
+    },
     "Base": {
       "type": "object",
       "additionalProperties": false,
@@ -251,6 +256,18 @@
         "cloudRamp": {
           "type": "string",
           "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. If you don't put anything here it will be auto-generated."
+        },
+        "cloudFluidType": {
+          "type": "string",
+          "default": "CLOUD",
+          "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
         },
         "useBasicCloudShader": {
           "type": "boolean",
@@ -418,6 +435,18 @@
           "type": "number",
           "default": 0,
           "description": "Allows the rings to rotate."
+        },
+        "fluidType": {
+          "type": "string",
+          "default": "NONE",
+          "description": "Fluid type for sounds/effects when colliding with this ring.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
         },
         "curve": {
           "$ref": "#/$defs/curve",
@@ -649,7 +678,7 @@
               "radius": {
                 "type": "number",
                 "default": 0,
-                "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, this will instead be the size of the volume that will trigger the dialogue when you enter it."
+                "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, you can set this to 0 to make the dialogue only trigger remotely."
               },
               "xmlFile": {
                 "type": "string",
@@ -658,6 +687,10 @@
               "remoteTriggerPosition": {
                 "$ref": "#/$defs/vector3",
                 "description": "Allows you to trigger dialogue from a distance when you walk into an area."
+              },
+              "remoteTriggerRadius": {
+                "type": "number",
+                "description": "The radius of the remote trigger volume."
               },
               "blockAfterPersistentCondition": {
                 "type": "string",
@@ -959,6 +992,66 @@
                     }
                   }
                 }
+              }
+            }
+          }
+        },
+        "tornados": {
+          "type": "array",
+          "description": "Like those on Giant's Deep",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this tornado."
+              },
+              "elevation": {
+                "type": "number",
+                "description": "Alternative to setting the position. Will choose a random place at this elevation."
+              },
+              "height": {
+                "type": "number",
+                "description": "The height of this tornado.",
+                "default": 30
+              },
+              "tint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the tornado."
+              },
+              "downwards": {
+                "type": "boolean",
+                "description": "Should it pull things downwards? Will push them upwards by default."
+              },
+              "wanderRate": {
+                "type": "number",
+                "description": "The rate at which the tornado will wander around the planet. Set to 0 for it to be stationary. Should be around 0.1.",
+                "default": 0
+              },
+              "wanderDegreesX": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "default": 45
+              },
+              "wanderDegreesZ": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "default": 45
+              }
+            }
+          }
+        },
+        "rafts": {
+          "type": "array",
+          "description": "Like those in the DLC",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this raft."
               }
             }
           }

@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {
@@ -40,13 +40,16 @@ namespace NewHorizons.Builder.Props
             }
             if(config.Props.Rafts != null)
             {
-                // TODO
+                foreach(var raftInfo in config.Props.Rafts)
+                {
+                    RaftBuilder.Make(go, sector, raftInfo, planetBody);
+                }
             }
             if(config.Props.Tornados != null)
             {
                 foreach(var tornadoInfo in config.Props.Tornados)
                 {
-                    //TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                    TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
                 }
             }
             if (config.Props.Volcanoes != null)

@@ -1,5 +1,7 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,119 +9,127 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props
 {
     public static class TornadoBuilder
     {
-        public static string tornadoParentName = "Tornados";
+        private static GameObject upPrefab;
+        private static GameObject downPrefab;
+        private static GameObject soundPrefab;
 
         public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
-            // If we are given elevation choose a random position
-            Vector3 position;
-            float elevation = 0f;
-
-            if (info.position != null)
+            if (upPrefab == null)
             {
-                position = info.position;
+                upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
+                upPrefab.name = "Tornado_Up_Prefab";
+            }
+            if(downPrefab == null)
+            {
+                downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
+                downPrefab.name = "Tornado_Down_Prefab";
+            }
+            if(soundPrefab == null)
+            {
+                soundPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
+                soundPrefab.name = "AudioRail_Prefab";
+            }
+
+            float elevation;
+            Vector3 position;
+            if(info.position != null)
+            {
+                position = info.position ?? Random.onUnitSphere * info.elevation;
                 elevation = position.magnitude;
             }
-            else if (info.elevation != 0f)
+            else if(info.elevation != 0)
             {
-                Logger.Log("Giving tornado random pos");
-                position = UnityEngine.Random.insideUnitSphere * info.elevation;
+                position = Random.onUnitSphere * info.elevation;
                 elevation = info.elevation;
             }
             else
             {
-                Logger.LogError($"Couldn't make tornado for {go.name}: No elevation or position was given");
+                Logger.LogError($"Need either a position or an elevation for tornados");
                 return;
             }
 
-            var prefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/MovingTornadoes/Root/UpTornado_Pivot (2)");
+            var tornadoGO = info.downwards ? downPrefab.InstantiateInactive() : upPrefab.InstantiateInactive();
+            tornadoGO.transform.parent = sector.transform;
+            tornadoGO.transform.localPosition = position;
+            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
-            // Default radius is 40, height is 837.0669
+            // Add the sound thing before changing the scale
+            var soundGO = soundPrefab.InstantiateInactive();
+            soundGO.name = "AudioRail";
+            soundGO.transform.parent = tornadoGO.transform;
+            soundGO.transform.localPosition = Vector3.zero;
+            soundGO.transform.localRotation = Quaternion.identity;
 
-            var tornado = GameObject.Instantiate(prefab, sector.transform);
-            tornado.SetActive(false);
-
-            tornado.transform.localPosition = Vector3.zero;
-
-            var height = 837.0669f;
-            if (info.height != 0f) height = info.height;
-
-            var width = 40f;
-            if (info.width != 0f) width = info.width;
-
-            var scale = new Vector3(width / 40f, 1f, width / 40f);
-
-            tornado.transform.localScale = scale;
-
-            var tornadoController = tornado.GetComponent<TornadoController>();
-            tornadoController.SetSector(sector);
-            var n = position.normalized;
-
-            var up = new Vector3(0, 1, 0);
-
-            var h1 = elevation;
-            var h2 = (elevation + height / 2f);
-            var h3 = (elevation + height);
-
-            tornadoController._bottomElevation = h1;
-            tornadoController._bottomStartElevation = h1;
-            tornadoController._bottomStartPos = n * h1;
-            tornadoController._bottomBasePos = up * h1;
-            tornadoController._bottomBone.localPosition = n * h1;
-            tornadoController._bottomBone.rotation.SetFromToRotation(tornadoController._bottomBone.up, up);
-
-            tornadoController._midElevation = h2;
-            tornadoController._midStartElevation = h2;
-            tornadoController._midStartPos = n * h2;
-            tornadoController._midBasePos = up * h2;
-            tornadoController._midBone.localPosition = n * h2;
-            tornadoController._midBone.rotation.SetFromToRotation(tornadoController._midBone.up, up);
-
-            tornadoController._topElevation = h3;
-            tornadoController._topStartPos = n * h3;
-            tornadoController._topBasePos = up * h3;
-            tornadoController._topBone.localPosition = n * h3;
-            tornadoController._topBone.rotation.SetFromToRotation(tornadoController._topBone.up, up);
-
-            tornadoController._snapBonesToSphere = true;
-            tornadoController._wander = true;
-            tornadoController._wanderRate = 0.02f;
-            tornadoController._wanderDegreesX = 45f;
-            tornadoController._wanderDegreesZ = 45f;
-
-            if(!hasClouds)
+            // Height of the tornado is 10 by default
+            var audioRail = soundGO.GetComponent<AudioRail>();
+            audioRail.SetSector(sector);
+            audioRail._railPointsRoot.GetChild(0).transform.localPosition = Vector3.zero;
+            audioRail._railPointsRoot.GetChild(1).transform.localPosition = Vector3.up * 10;
+            audioRail._railPoints = new Vector3[]
             {
-                var fix = tornado.AddComponent<TornadoFix>();
-                fix.SetSector(sector);
+                Vector3.zero,
+                Vector3.up * 10
+            };
 
-                var top = tornado.transform.Find("UpTornado/Effects_GD_TornadoCyclone/Tornado_Top");
+            var audioSpreadController = soundGO.GetComponentInChildren<AudioSpreadController>();
+            audioSpreadController.SetSector(sector);
 
-                Logger.Log($"{top.name}");
+            var audioSource = audioRail._audioTransform.GetComponent<AudioSource>();
+            audioSource.playOnAwake = true;
 
-                // Get rid of the bit that appears above the clouds
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Large")?.gameObject);
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Medium")?.gameObject);
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Small")?.gameObject);
+            var scale = info.height == 0 ? 1 : info.height / 10f;
 
-                var top_objects = new GameObject[3];
-                top_objects[0] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Large").gameObject, top.transform);
-                top_objects[1] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Medium").gameObject, top.transform);
-                top_objects[2] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Small").gameObject, top.transform);
+            tornadoGO.transform.localScale = Vector3.one * scale;
 
-                foreach(var obj in top_objects)
+            // Resize the distance it can be heard from to match roughly with the size
+            audioSource.maxDistance = 100 * scale;
+
+            var controller = tornadoGO.GetComponent<TornadoController>();
+            controller.SetSector(sector);
+
+            // Found these values by messing around in unity explorer until it looked right
+            controller._bottomStartPos = Vector3.up * -20;
+            controller._midStartPos = Vector3.up * 150;
+            controller._topStartPos = Vector3.up * 300;
+
+            controller._bottomBone.localPosition = controller._bottomStartPos;
+            controller._midBone.localPosition = controller._midStartPos;
+            controller._topBone.localPosition = controller._topStartPos;
+            
+            OWAssetHandler.LoadObject(tornadoGO);
+            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.LoadObject(tornadoGO);
+
+            tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
+
+            if(info.tint != null)
+            {
+                var colour = info.tint.ToColor();
+                foreach(var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
                 {
-                    obj.transform.localPosition = new Vector3(0, -20, 0);
-                    obj.transform.localRotation = Quaternion.Euler(180, 0, 0);
+                    renderer.material.color = colour;
+                    renderer.material.SetColor("_DetailColor", colour);
+                    renderer.material.SetColor("_TintColor", colour);
                 }
             }
 
-            tornadoController._startActive = false;
-            tornado.SetActive(true);
+            if(info.wanderRate != 0)
+            {
+                var wanderer = tornadoGO.AddComponent<NHTornadoWanderController>();
+                wanderer.wanderRate = info.wanderRate;
+                wanderer.wanderDegreesX = info.wanderDegreesX;
+                wanderer.wanderDegreesZ = info.wanderDegreesZ;
+                wanderer.sector = sector;
+            }
+
+            soundGO.SetActive(true);
+            tornadoGO.SetActive(true);
         }
     }
 }

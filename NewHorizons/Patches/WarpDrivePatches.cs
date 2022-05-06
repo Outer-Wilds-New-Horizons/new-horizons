@@ -1,4 +1,5 @@
-﻿using NewHorizons.Builder.General;
+﻿using HarmonyLib;
+using NewHorizons.Builder.General;
 using NewHorizons.Handlers;
 using System;
 using System.Collections.Generic;
@@ -7,18 +8,14 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Tools
+namespace NewHorizons.Patches
 {
+    [HarmonyPatch]
     public static class WarpDrivePatches
     {
-        public static void Apply()
-        {
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipCockpitController>("Update", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipCockpitControllerUpdate));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("EnterMode", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipLogMapModeEnterMode));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogController>("Update", typeof(WarpDrivePatches), nameof(WarpDrivePatches.OnShipLogControllerUpdate));
-        }
-
-        public static void OnShipLogMapModeEnterMode(ShipLogMapMode __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipLogMapMode), nameof(ShipLogMapMode.EnterMode))]
+        public static void ShipLogMapMode_EnterMode(ShipLogMapMode __instance)
         {
             if (!Main.HasWarpDrive) return;
 
@@ -28,7 +25,9 @@ namespace NewHorizons.Tools
             text.text = newPrompt;
         }
 
-        public static bool OnShipCockpitControllerUpdate(ShipCockpitController __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipCockpitController), nameof(ShipCockpitController.Update))]
+        public static bool ShipCockpitController_Update(ShipCockpitController __instance)
         {
             if (!Main.HasWarpDrive) return true;
 
@@ -44,7 +43,9 @@ namespace NewHorizons.Tools
             return true;
         }
 
-        public static bool OnShipLogControllerUpdate(ShipLogController __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogController), nameof(ShipLogController.Update))]
+        public static bool ShipLogController_Update(ShipLogController __instance)
         {
             if (!Main.HasWarpDrive) return true;
 
@@ -54,6 +55,7 @@ namespace NewHorizons.Tools
                 || StarChartHandler.ShipLogStarChartMode == null)
                 return true;
 
+            // Mostly copied from the base method but we're trying to fit in our new mode
             __instance._exitPrompt.SetVisibility(__instance._currentMode.AllowCancelInput());
             __instance._currentMode.UpdateMode();
             if (__instance._currentMode.AllowModeSwap() && OWInput.IsNewlyPressed(InputLibrary.swapShipLogMode, InputMode.All))
