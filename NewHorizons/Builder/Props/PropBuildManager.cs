@@ -26,12 +26,12 @@ namespace NewHorizons.Builder.Props
                 {
                     ScatterBuilder.Make(go, sector, config, mod, uniqueModName);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     Logger.LogError($"Couldn't make planet scatter for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                 }
             }
-            if(config.Props.Details != null)
+            if (config.Props.Details != null)
             {
                 foreach (var detail in config.Props.Details)
                 {
@@ -45,9 +45,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if(config.Props.Geysers != null)
+            if (config.Props.Geysers != null)
             {
-                foreach(var geyserInfo in config.Props.Geysers)
+                foreach (var geyserInfo in config.Props.Geysers)
                 {
                     try
                     {
@@ -59,9 +59,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if(Main.HasDLC && config.Props.Rafts != null)
+            if (Main.HasDLC && config.Props.Rafts != null)
             {
-                foreach(var raftInfo in config.Props.Rafts)
+                foreach (var raftInfo in config.Props.Rafts)
                 {
                     try
                     {
@@ -73,9 +73,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if(config.Props.Tornados != null)
+            if (config.Props.Tornados != null)
             {
-                foreach(var tornadoInfo in config.Props.Tornados)
+                foreach (var tornadoInfo in config.Props.Tornados)
                 {
                     try
                     {
@@ -95,7 +95,7 @@ namespace NewHorizons.Builder.Props
                     {
                         VolcanoBuilder.Make(go, sector, volcanoInfo);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.LogError($"Couldn't make volcano for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
@@ -104,7 +104,7 @@ namespace NewHorizons.Builder.Props
             // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
             if (config.Props.Dialogue != null)
             {
-                foreach(var dialogueInfo in config.Props.Dialogue)
+                foreach (var dialogueInfo in config.Props.Dialogue)
                 {
                     try
                     {
@@ -138,28 +138,28 @@ namespace NewHorizons.Builder.Props
                     {
                         EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
                 }
             }
-            if(config.Props.NomaiText != null)
+            if (config.Props.NomaiText != null)
             {
-                foreach(var nomaiTextInfo in config.Props.NomaiText)
+                foreach (var nomaiTextInfo in config.Props.NomaiText)
                 {
                     try
                     {
                         NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
 
-				}
-			}
-            if(Main.HasDLC && config.Props.SlideShows != null)
+                }
+            }
+            if (Main.HasDLC && config.Props.SlideShows != null)
             {
                 foreach (var slideReelInfo in config.Props.SlideShows)
                 {
