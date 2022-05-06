@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Components;
 using NewHorizons.External;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -8,88 +9,91 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props
 {
     public static class TornadoBuilder
     {
-        public static string tornadoParentName = "Tornados";
+        private static GameObject upPrefab;
+        private static GameObject downPrefab;
 
         public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
-            // If we are given elevation choose a random position
-            Vector3 position;
-            float elevation = 0f;
-
-            if (info.position != null)
+            if (upPrefab == null)
             {
-                position = info.position;
+                upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
+                upPrefab.name = "Tornado_Up_Prefab";
+            }
+            if(downPrefab == null)
+            {
+                downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
+                downPrefab.name = "Tornado_Down_Prefab";
+                downPrefab.name = "Tornado_Down_Prefab";
+            }
+
+            float elevation;
+            Vector3 position;
+            if(info.position != null)
+            {
+                position = info.position ?? Random.onUnitSphere * info.elevation;
                 elevation = position.magnitude;
             }
-            else if (info.elevation != 0f)
+            else if(info.elevation != 0)
             {
-                Logger.Log("Giving tornado random pos");
-                position = UnityEngine.Random.insideUnitSphere * info.elevation;
+                position = Random.onUnitSphere * info.elevation;
                 elevation = info.elevation;
             }
             else
             {
-                Logger.LogError($"Couldn't make tornado for {go.name}: No elevation or position was given");
+                Logger.LogError($"Need either a position or an elevation for tornados");
                 return;
             }
 
-            var upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado");
-            var downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado");
-            // Default radius is 40, height is 837.0669
+            var tornadoGO = info.downwards ? downPrefab.InstantiateInactive() : upPrefab.InstantiateInactive();
+            tornadoGO.transform.parent = sector.transform;
+            tornadoGO.transform.localPosition = position;
+            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
-            var tornadoGO = upPrefab.InstantiateInactive();
-            tornadoGO.transform.parent = sector?.transform ?? go.transform;
-            tornadoGO.transform.localPosition = Vector3.zero;
-            var tornado = tornadoGO.GetComponent<TornadoController>();
-            tornado.SetSector(sector);
+            var scale = info.height == 0 ? 1 : info.height / 10f;
 
-            var height = 837.0669f;
-            if (info.height != 0f) height = info.height;
+            tornadoGO.transform.localScale = Vector3.one * scale;
 
-            var width = 40f;
-            if (info.width != 0f) width = info.width;
+            var controller = tornadoGO.GetComponent<TornadoController>();
+            controller.SetSector(sector);
 
-            tornado._bottomBone.localPosition = new Vector3(0, elevation, 0);
-            tornado._midBone.localPosition = new Vector3(0, elevation + height / 2f, 0);
-            tornado._topBone.localPosition = new Vector3(0, elevation + height, 0);
+            controller._bottomStartPos = Vector3.up * -20;
+            controller._midStartPos = Vector3.up * 150;
+            controller._topStartPos = Vector3.up * 300;
 
-            tornado._startActive = false;
+            controller._bottomBone.localPosition = controller._bottomStartPos;
+            controller._midBone.localPosition = controller._midStartPos;
+            controller._topBone.localPosition = controller._topStartPos;
+            
+            OWAssetHandler.LoadObject(tornadoGO);
+            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.LoadObject(tornadoGO);
 
-            // TODO make these settings
-            tornado._wanderRate = 0.5f;
-            tornado._wanderDegreesX = 45f;
-            tornado._wanderDegreesZ = 45f;
+            tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
-            /*
-            if (!hasClouds)
+            if(info.tint != null)
             {
-                var fix = tornadoGO.AddComponent<TornadoFix>();
-                fix.SetSector(sector);
-
-                var top = tornadoGO.transform.Find("UpTornado/Effects_GD_TornadoCyclone/Tornado_Top");
-
-                // Get rid of the bit that appears above the clouds
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Large")?.gameObject);
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Medium")?.gameObject);
-                GameObject.Destroy(top.transform.Find("Effects_GD_TornadoCloudCap_Small")?.gameObject);
-
-                var top_objects = new GameObject[3];
-                top_objects[0] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Large").gameObject, top.transform);
-                top_objects[1] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Medium").gameObject, top.transform);
-                top_objects[2] = GameObject.Instantiate(top.transform.Find("Effects_GD_TornadoCloudBlend_Small").gameObject, top.transform);
-
-                foreach(var obj in top_objects)
+                var colour = info.tint.ToColor();
+                foreach(var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
                 {
-                    obj.transform.localPosition = new Vector3(0, -20, 0);
-                    obj.transform.localRotation = Quaternion.Euler(180, 0, 0);
+                    renderer.material.color = colour;
+                    renderer.material.SetColor("_DetailColor", colour);
+                    renderer.material.SetColor("_TintColor", colour);
                 }
             }
-            */
+
+            if(info.wanderRate != 0)
+            {
+                var wanderer = tornadoGO.AddComponent<NHTornadoWanderController>();
+                wanderer.wanderRate = info.wanderRate;
+                wanderer.wanderDegreesX = info.wanderDegreesX;
+                wanderer.wanderDegreesZ = info.wanderDegreesZ;
+                wanderer.sector = sector;
+            }
 
             tornadoGO.SetActive(true);
         }
