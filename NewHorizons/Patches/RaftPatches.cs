@@ -103,10 +103,9 @@ namespace NewHorizons.Patches
                 var alignmentDirection = (__instance.transform.position - __instance._alignmentFluid.transform.position).normalized;
                 var degreesToTarget = Vector3.Angle(currentDirection, alignmentDirection);
 
-                var adjustedSlerpRate = Mathf.Clamp01(10f / degreesToTarget * Time.fixedDeltaTime);
+                var adjustedSlerpRate = Mathf.Clamp01(0.01f * degreesToTarget * Time.fixedDeltaTime);
 
                 Vector3 a = OWPhysics.FromToAngularVelocity(currentDirection, alignmentDirection);
-                //__instance._owRigidbody.SetAngularVelocity(Vector3.zero);
                 __instance._owRigidbody.AddAngularVelocityChange(a * adjustedSlerpRate);
             }
 
