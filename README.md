@@ -33,9 +33,10 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Load planet meshes or details from asset bundles 
 - Use our [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
-- Remove existing planets
-- Create planets from heightmaps/texturemaps
-- Create stars, comets, asteroid belts, satellites, geysers, cloak fields, meteor-launching volcanoes
+- Remove or edit existing planets
+- Create custom planets from heightmaps/texturemaps
+- Create stars, comets, asteroid belts, and satellites too.
+- Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, and tornados.
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
@@ -44,14 +45,9 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
-- Procedural terrain generation (started)
 - "Quantum" planet parameters
-- Better terrain and water LOD
 - Edit existing planet orbits (started)
-- Implement all planet features:
-	- Tornados
-	- Supernovae
-	- Bramble dimensions
+- Let custom stars go supernova
 
 ## Development
 If you want to help (please dear god help us) then check out the [contact](#contact) info below.
