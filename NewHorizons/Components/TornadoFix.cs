@@ -48,16 +48,21 @@ namespace NewHorizons.Components
 
         public void OnOccupantEnterSector(SectorDetector _)
         {
-            if(!tornadoController._tornadoRoot.activeInHierarchy) tornadoController.StartFormation();
+            // Only form if not active and not forming
+            if (tornadoController._tornadoRoot.activeInHierarchy || tornadoController._tornadoForming) return;
+
+            tornadoController.StartFormation();
         }
 
         public void OnOccupantExitSector(SectorDetector _)
         {
-            
-            if (!_sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship))
-            {
-                tornadoController.StartCollapse();
-            }
+
+            if (_sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe | DynamicOccupant.Ship)) return;
+
+            // If the root is inactive it has collapsed. Also don't collapse if we're already doing it
+            if (!tornadoController._tornadoRoot.activeInHierarchy || tornadoController._tornadoCollapsing) return;
+
+            tornadoController.StartCollapse();
         }
     }
 }

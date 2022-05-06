@@ -27,34 +27,27 @@ Check the ship's log for how to use your warp drive to travel between star syste
 
 ## Incompatible mods
 - Autoresume.
-- Multiplayer mods like QSB and OWO. QSB actually kinda works decently as long as you don't warp.
+- Quantum Space Buddies.
 
 ## Features
 - Load planet meshes or details from asset bundles 
 - Use our [template Unity project](https://github.com/xen-42/outer-wilds-unity-template) to create assets for use in NH, including all game scripts recovered using UtinyRipper
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
-- Remove existing planets
-- Create planets from heightmaps/texturemaps
-- Create stars, comets, asteroid belts, satellites, geysers, cloak fields, meteor-launching volcanoes
+- Remove or edit existing planets
+- Create custom planets from heightmaps/texturemaps
+- Create stars, comets, asteroid belts, and satellites too.
+- Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, and tornados.
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
 - Black hole / white hole pairs 
-- Custom dialogue and custom ship log entries for rumour mode and map mode
+- Custom dialogue, slide-reel projections, translatable text, and custom ship log entries for rumour mode and map mode
 - Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
-- Procedural terrain generation (started)
 - "Quantum" planet parameters
-- Better terrain and water LOD
 - Edit existing planet orbits (started)
-- Implement all planet features:
-	- Tornados + floating islands
-	- Let any star go supernova
-	- Pocket dimensions
-	- Timed position/velocity changes
-- Implement custom Nomai scrolls
-- Implement custom translatable writing
+- Let custom stars go supernova
 
 ## Development
 If you want to help (please dear god help us) then check out the [contact](#contact) info below.
@@ -71,9 +64,10 @@ Main authors:
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0
+- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0, worked on Nomai text in v0.12.0.
 - [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
-- [Raicuparta](https://github.com/Raicuparta): Integrated the [New Horizons Template](https://github.com/xen-42/ow-new-horizons-config-template) into the Outer Wilds Mods website
+- [Raicuparta](https://github.com/Raicuparta)
+- [MegaPiggy](https://github.com/MegaPiggy)
 
 Translation credits:
 - Russian: GrayFix and Tlya

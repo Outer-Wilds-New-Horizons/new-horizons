@@ -92,20 +92,29 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsBottomGO.transform.localScale = Vector3.one * (atmo.Size * 0.9f);
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
-            bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
+            bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
             var bottomTSRMaterials = GameObject.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
-            var bottomTSRTempArray = new Material[bottomTSRMaterials.Length];
-            
-            // It's a bit too green
-            var bottomColor = atmo.CloudTint.ToColor32();
-            bottomColor.g = (byte)(bottomColor.g * 0.5f);
-            for (int i = 0; i < bottomTSRMaterials.Length; i++) 
+
+            // If they set a colour apply it to all the materials else keep the default QM one
+            if (atmo.CloudTint != null)
             {
-                bottomTSRTempArray[i] = new Material(bottomTSRMaterials[i]);
-                bottomTSRTempArray[i].SetColor("_Color", bottomColor);
-                bottomTSRTempArray[i].SetColor("_TintColor", bottomColor);
+                var bottomColor = atmo.CloudTint.ToColor32();
+
+                var bottomTSRTempArray = new Material[2];
+
+                bottomTSRTempArray[0] = new Material(bottomTSRMaterials[0]);
+                bottomTSRTempArray[0].SetColor("_Color", bottomColor);
+                bottomTSRTempArray[0].SetColor("_TintColor", bottomColor);
+
+                bottomTSRTempArray[1] = new Material(bottomTSRMaterials[1]);
+
+                bottomTSR.sharedMaterials = bottomTSRTempArray;
             }
-            bottomTSR.sharedMaterials = bottomTSRTempArray;
+            else
+            {
+                bottomTSR.sharedMaterials = bottomTSRMaterials;
+            }
+
             bottomTSR.maxLOD = 6;
             bottomTSR.LODBias = 0;
             bottomTSR.LODRadius = 1f;
@@ -129,7 +138,21 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
-            fluidCLFV._fluidType = FluidVolume.Type.CLOUD;
+
+            var fluidType = FluidVolume.Type.CLOUD;
+            if (!string.IsNullOrEmpty(atmo.CloudFluidType))
+            {
+                try
+                {
+                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), atmo.CloudFluidType.ToUpper());
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Couldn't parse fluid volume type [{atmo.CloudFluidType}]: {ex.Message}, {ex.StackTrace}");
+                }
+            }
+
+            fluidCLFV._fluidType = fluidType;
             fluidCLFV._allowShipAutoroll = true;
             fluidCLFV._disableOnStart = false;
 

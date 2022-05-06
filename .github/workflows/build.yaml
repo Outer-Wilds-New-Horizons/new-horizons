@@ -2,7 +2,10 @@ name: Build
 
 on:
   push:
-    branches: [dev]
+    branches: [dev, master]
+    paths-ignore:
+      - docs/**
+      - "**schema**"
   pull_request:
   workflow_dispatch:
   
@@ -10,19 +13,7 @@ env:
   GH_ACTIONS: 'true'
 
 jobs:
-  pre_job:
-    runs-on: ubuntu-latest
-    outputs:
-      should_skip: ${{ steps.skip_check.outputs.should_skip }}
-    steps:
-      - id: skip_check
-        uses: fkirc/skip-duplicate-actions@master
-        with:
-          paths_ignore: '["**/README.md"]'
-          do_not_skip: '["pull_request", "workflow_dispatch", "schedule"]'
   build:
-    needs: pre_job
-    if: ${{ needs.pre_job.outputs.should_skip != 'true' }}
     runs-on: windows-latest
     steps:
 

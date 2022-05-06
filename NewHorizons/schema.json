@@ -141,9 +141,17 @@
       "default": false
     },
     "childrenToDestroy": {
-      "type": "string",
+      "type": "array",
       "description": "A list of paths to child GameObjects to destroy on this planet",
+      "items": {
+        "type": "string"
+      },
       "default": []
+    },
+    "canShowOnTitle": {
+      "type": "boolean",
+      "description": "Should this planet ever be shown on the title screen",
+      "default": "true"
     },
     "Base": {
       "type": "object",
@@ -248,6 +256,18 @@
         "cloudRamp": {
           "type": "string",
           "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. If you don't put anything here it will be auto-generated."
+        },
+        "cloudFluidType": {
+          "type": "string",
+          "default": "CLOUD",
+          "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
         },
         "useBasicCloudShader": {
           "type": "boolean",
@@ -415,6 +435,18 @@
           "type": "number",
           "default": 0,
           "description": "Allows the rings to rotate."
+        },
+        "fluidType": {
+          "type": "string",
+          "default": "NONE",
+          "description": "Fluid type for sounds/effects when colliding with this ring.",
+          "enum": [
+            "NONE",
+            "WATER",
+            "CLOUD",
+            "SAND",
+            "PLASMA"
+          ]
         },
         "curve": {
           "$ref": "#/$defs/curve",
@@ -646,7 +678,7 @@
               "radius": {
                 "type": "number",
                 "default": 0,
-                "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, this will instead be the size of the volume that will trigger the dialogue when you enter it."
+                "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a remoteTriggerPosition, you can set this to 0 to make the dialogue only trigger remotely."
               },
               "xmlFile": {
                 "type": "string",
@@ -655,6 +687,10 @@
               "remoteTriggerPosition": {
                 "$ref": "#/$defs/vector3",
                 "description": "Allows you to trigger dialogue from a distance when you walk into an area."
+              },
+              "remoteTriggerRadius": {
+                "type": "number",
+                "description": "The radius of the remote trigger volume."
               },
               "blockAfterPersistentCondition": {
                 "type": "string",
@@ -791,6 +827,231 @@
                 "type": "number",
                 "description": "Maximum time between meteor launches.",
                 "default": 20
+              }
+            }
+          }
+        },
+        "slideShows": {
+          "type": "array",
+          "description": "For creating custom auto projectors or slide reels from the DLC",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this object."
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "The euler angle rotation of this object."
+              },
+              "reveals": {
+                "type": "array",
+                "description": "The ship log entries revealed after finishing this slide reel.",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "slides": {
+                "type": "array",
+                "description": "The list of slides for this object.",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "properties": {
+                    "imagePath": {
+                      "type": "string",
+                      "description": "The path to the image file for this slide."
+                    },
+                    "beatAudio": {
+                      "type": "string",
+                      "description": "The name of the AudioClip for a one-shot sound when opening the slide."
+                    },
+                    "beatDelay": {
+                      "type": "number",
+                      "description": "The time delay until the one-shot audio"
+                    },
+                    "backdropAudio": {
+                      "type": "string",
+                      "description": "The name of the AudioClip that will continuously play while watching these slides"
+                    },
+                    "backdropFadeTime": {
+                      "type": "number",
+                      "description": "The time to fade into the backdrop audio"
+                    },
+                    "ambientLightIntensity": {
+                      "type": "number",
+                      "description": "Ambient light intensity when viewing this slide."
+                    },
+                    "ambientLightRange": {
+                      "type": "number",
+                      "description": "Ambient light range when viewing this slide."
+                    },
+                    "ambientLightColor": {
+                      "$ref": "#/$defs/color",
+                      "description": "Ambient light colour when viewing this slide."
+                    },
+                    "spotIntensityMod": {
+                      "type": "number",
+                      "description": "Spotlight intensity modifier when viewing this slide."
+                    },
+                    "playTimeDuration": {
+                      "type": "number",
+                      "description": "Play-time duration for auto-projector slides."
+                    },
+                    "blackFrameDuration": {
+                      "type": "number",
+                      "description": "Before viewing this slide, there will be a black frame for this many seconds."
+                    },
+                    "reveal": {
+                      "type": "string",
+                      "description": "Ship log entry revealed when viewing this slide."
+                    }
+                  }
+                }
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of object this is. Must be either SlideReel or AutoProjector",
+                "enum": [
+                  "slideReel",
+                  "autoProjector"
+                ],
+                "default": "slideReel"
+              }
+            }
+          }
+        },
+        "nomaiText": {
+          "type": "array",
+          "description": "For creating different objects containing translatable text.",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this object."
+              },
+              "normal": {
+                "$ref": "#/$defs/vector3",
+                "description": "The normal vector for this object. Only used for writing on walls to orient it properly."
+              },
+              "rotation": {
+                "$ref": "#/$defs/vector3",
+                "description": "The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient themselves to the surface of the planet automatically."
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of object this is. Must be wall, scroll, computer, cairn, or recorder",
+                "enum": [
+                  "wall",
+                  "scroll",
+                  "computer",
+                  "cairn",
+                  "recorder"
+                ],
+                "default": "wall"
+              },
+              "xmlFile": {
+                "type": "string",
+                "description": "The relative path to the xml file for this object."
+              },
+              "seed": {
+                "type": "integer",
+                "description": "The random seed used to pick what the text arcs will look like."
+              },
+              "arcInfo": {
+                "type": "array",
+                "description": "Additional information about each arc in the text",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": "false",
+                  "properties": {
+                    "position": {
+                      "$ref": "#/$defs/vector2",
+                      "description": "The local position of this object on the wall."
+                    },
+                    "zRotation": {
+                      "type": "number",
+                      "minimum": 0,
+                      "maximum": 360,
+                      "description": "The z euler angle for this arc.",
+                      "default": 0
+                    },
+                    "type": {
+                      "type": "string",
+                      "description": "The type of text to display. Must be one of adult, child, or stranger.",
+                      "enum": [
+                        "adult",
+                        "child",
+                        "stranger"
+                      ],
+                      "default": "adult"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "tornados": {
+          "type": "array",
+          "description": "Like those on Giant's Deep",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this tornado."
+              },
+              "elevation": {
+                "type": "number",
+                "description": "Alternative to setting the position. Will choose a random place at this elevation."
+              },
+              "height": {
+                "type": "number",
+                "description": "The height of this tornado.",
+                "default": 30
+              },
+              "tint": {
+                "$ref": "#/$defs/color",
+                "description": "The colour of the tornado."
+              },
+              "downwards": {
+                "type": "boolean",
+                "description": "Should it pull things downwards? Will push them upwards by default."
+              },
+              "wanderRate": {
+                "type": "number",
+                "description": "The rate at which the tornado will wander around the planet. Set to 0 for it to be stationary. Should be around 0.1.",
+                "default": 0
+              },
+              "wanderDegreesX": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "default": 45
+              },
+              "wanderDegreesZ": {
+                "type": "number",
+                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "default": 45
+              }
+            }
+          }
+        },
+        "rafts": {
+          "type": "array",
+          "description": "Like those in the DLC",
+          "items": {
+            "type": "object",
+            "additionalProperties": "false",
+            "properties": {
+              "position": {
+                "$ref": "#/$defs/vector3",
+                "description": "The position of this raft."
               }
             }
           }

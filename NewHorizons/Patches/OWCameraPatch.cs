@@ -1,20 +1,19 @@
-﻿using System;
+﻿using HarmonyLib;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Tools
+namespace NewHorizons.Patches
 {
-    public static class OWCameraFix
+    [HarmonyPatch]
+    public static class OWCameraPatch
     {
-        public static void Apply()
-        {
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<OWCamera>("Awake", typeof(OWCameraFix), nameof(OWCameraFix.OnOWCameraAwake));
-        }
-
-        private static void OnOWCameraAwake(OWCamera __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(OWCamera), nameof(OWCamera.Awake))]
+        public static void OnOWCameraAwake(OWCamera __instance)
         {
             var oldDist = __instance.farClipPlane;
             var newDist = __instance.farClipPlane * 10f;

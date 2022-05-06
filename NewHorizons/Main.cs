@@ -25,6 +25,8 @@ using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Builder.Atmosphere;
 using UnityEngine.Events;
+using HarmonyLib;
+using System.Reflection;
 
 namespace NewHorizons
 {
@@ -33,7 +35,10 @@ namespace NewHorizons
         public static AssetBundle ShaderBundle;
         public static Main Instance { get; private set; }
 
+        // Settings
         public static bool Debug;
+        private static bool _useCustomTitleScreen;
+        private static bool _wasConfigured = false;
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
@@ -60,8 +65,10 @@ namespace NewHorizons
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
 
-
+        // For warping to the eye system
         private GameObject _ship;
+
+        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
         public override object GetApi()
         {
@@ -70,13 +77,30 @@ namespace NewHorizons
 
         public override void Configure(IModConfig config)
         {
+            Logger.Log("Settings changed");
+
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
-            Logger.UpdateLogLevel(Debug? Logger.LogType.Log : Logger.LogType.Error);
+            Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
+
+            var wasUsingCustomTitleScreen = _useCustomTitleScreen;
+            _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
+            // Reload the title screen if this was updated on it
+            // Don't reload if we haven't configured yet (called on game start)
+            if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
+            {
+                Logger.Log("Reloading");
+                SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
+            }
+
+            _wasConfigured = true;
         }
 
         public void Start()
         {
+            // Patches
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
 
@@ -87,15 +111,12 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
+            
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
 
-            Tools.Patches.Apply();
-            Tools.WarpDrivePatches.Apply();
-            Tools.OWCameraFix.Apply();
-            Tools.ShipLogPatches.Apply();
-            Tools.TranslationPatches.Apply();
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
+            SystemDict["SolarSystem"].Config.destroyStockPlanets = false;
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
@@ -141,7 +162,7 @@ namespace NewHorizons
 
             _isChangingStarSystem = false;
 
-            if (scene.name == "TitleScreen")
+            if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
             }
@@ -225,31 +246,56 @@ namespace NewHorizons
         #region Load
         public void LoadConfigs(IModBehaviour mod)
         {
-            if (_firstLoad)
+            try
             {
-                MountedAddons.Add(mod);
-            }
-            var folder = mod.ModHelper.Manifest.ModFolderPath;
-            if(Directory.Exists(folder + "planets"))
-            {
-                foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+                if (_firstLoad)
                 {
-                    var relativeDirectory = file.Replace(folder, "");
-                    var body = LoadConfig(mod, relativeDirectory);
+                    MountedAddons.Add(mod);
+                }
+                var folder = mod.ModHelper.Manifest.ModFolderPath;
 
-                    if (body != null)
+                // Load systems first so that when we load bodies later we can check for missing ones
+                if (Directory.Exists(folder + @"systems\"))
+                {
+                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json", SearchOption.AllDirectories))
                     {
-                        // Wanna track the spawn point of each system
-                        if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+                        var name = Path.GetFileNameWithoutExtension(file);
 
-                        // Add the new planet to the planet dictionary
-                        BodyDict[body.Config.StarSystem].Add(body);
+                        Logger.Log($"Loading system {name}");
+
+                        var relativePath = file.Replace(folder, "");
+                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+
+                        var system = new NewHorizonsSystem(name, starSystemConfig, mod);
+                        SystemDict[name] = system;
                     }
                 }
+                if (Directory.Exists(folder + "planets"))
+                {
+                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+                    {
+                        var relativeDirectory = file.Replace(folder, "");
+                        var body = LoadConfig(mod, relativeDirectory);
+
+                        if (body != null)
+                        {
+                            // Wanna track the spawn point of each system
+                            if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+
+                            // Add the new planet to the planet dictionary
+                            if (!BodyDict.ContainsKey(body.Config.StarSystem)) BodyDict[body.Config.StarSystem] = new List<NewHorizonsBody>();
+                            BodyDict[body.Config.StarSystem].Add(body);
+                        }
+                    }
+                }
+                if (Directory.Exists(folder + @"translations\"))
+                {
+                    LoadTranslations(folder, mod);
+                }
             }
-            if(Directory.Exists(folder + @"translations\"))
+            catch(Exception ex)
             {
-                LoadTranslations(folder, mod);
+                Logger.LogError($"{ex.Message}, {ex.StackTrace}");
             }
         }
 
@@ -418,7 +464,15 @@ namespace NewHorizons
 
         public string[] GetInstalledAddons()
         {
-            return Main.MountedAddons.Select(x => x.ModHelper.Manifest.UniqueName).ToArray();
+            try
+            {
+                return Main.MountedAddons.Select(x => x?.ModHelper?.Manifest?.UniqueName).ToArray();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't get installed addons {ex.Message}, {ex.StackTrace}");
+                return new string[] { };
+            }
         }
     }
     #endregion API

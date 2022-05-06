@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Props
             if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
-            if (info.remoteTriggerPosition != null) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
 
             // Make the character look at the player
             // Useful for dialogue replacement
@@ -51,10 +51,10 @@ namespace NewHorizons.Builder.Props
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
 
-            sphereCollider.radius = info.radius;
+            sphereCollider.radius = info.remoteTriggerRadius == 0 ? info.radius : info.remoteTriggerRadius;
 
             conversationTrigger.transform.parent = sector?.transform ?? go.transform;
-            conversationTrigger.transform.localPosition = info.remoteTriggerPosition;
+            conversationTrigger.transform.localPosition = info.remoteTriggerPosition ?? info.position;
             conversationTrigger.SetActive(true);
         }
 
@@ -69,8 +69,15 @@ namespace NewHorizons.Builder.Props
             sphere.radius = info.radius;
             sphere.isTrigger = true;
 
-            conversationZone.AddComponent<OWCollider>();
-            conversationZone.AddComponent<InteractReceiver>();
+            var owCollider = conversationZone.AddComponent<OWCollider>();
+            var interact = conversationZone.AddComponent<InteractReceiver>();
+
+            if(info.radius <= 0)
+            {
+                sphere.enabled = false;
+                owCollider.enabled = false;
+                interact.enabled = false;
+            }
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 

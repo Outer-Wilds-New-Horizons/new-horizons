@@ -18,6 +18,8 @@ namespace NewHorizons.External
         public DialogueInfo[] Dialogue;
         public RevealInfo[] Reveal;
         public EntryLocationInfo[] EntryLocation;
+        public NomaiTextInfo[] NomaiText;
+        public ProjectionInfo[] SlideShows;
 
         public class ScatterInfo
         {
@@ -55,11 +57,14 @@ namespace NewHorizons.External
 
         public class TornadoInfo
         {
+            public MVector3 position;
             public float elevation;
-            public MVector3 position = null;
-            public float height;
-            public float width;
+            public float height = 30;
             public MColor tint;
+            public bool downwards;
+            public float wanderRate;
+            public float wanderDegreesX = 45;
+            public float wanderDegreesZ = 45;
         }
 
         public class VolcanoInfo
@@ -77,6 +82,7 @@ namespace NewHorizons.External
         {
             public MVector3 position;
             public float radius = 1f;
+            public float remoteTriggerRadius;
             public string xmlFile;
             public MVector3 remoteTriggerPosition;
             public string blockAfterPersistentCondition;
@@ -88,7 +94,7 @@ namespace NewHorizons.External
         {
             public string revealOn = "enter";
             public string[] reveals;
-            public MVector3 position = new MVector3(0, 0, 0);
+            public MVector3 position;
             public float radius = 1f;
             public float maxDistance = -1f; // Snapshot & Observe Only
             public float maxAngle = 180f; // Observe Only
@@ -99,6 +105,61 @@ namespace NewHorizons.External
             public string id;
             public bool cloaked;
             public MVector3 position;
+        }
+		
+        public class NomaiTextInfo
+        {
+            public MVector3 position;
+            public MVector3 normal;
+            public MVector3 rotation;
+            public string type = "wall";
+            public string xmlFile;
+            public int seed; // For randomizing arcs
+            public NomaiTextArcInfo[] arcInfo;
+		}
+
+        public class NomaiTextArcInfo
+        {
+            public MVector2 position;
+            public float zRotation;
+            public string type = "adult";
+        }
+
+        public class ProjectionInfo
+        {
+            public MVector3 position;
+            public MVector3 rotation;
+            public string[] reveals;
+            public SlideInfo[] slides;
+            public string type = "SlideReel";
+        }
+
+        public class SlideInfo
+        {
+            public string imagePath;
+
+            // SlideBeatAudioModule
+            public string beatAudio;
+            public float beatDelay;
+
+            // SlideBackdropAudioModule
+            public string backdropAudio;
+            public float backdropFadeTime;
+
+            // SlideAmbientLightModule
+            public float ambientLightIntensity;
+            public float ambientLightRange;
+            public MColor ambientLightColor;
+            public float spotIntensityMod;
+
+            // SlidePlayTimeModule
+            public float playTimeDuration;
+
+            // SlideBlackFrameModule
+            public float blackFrameDuration;
+
+            // SlideShipLogEntryModule
+            public string reveal;
         }
     }
 }

@@ -135,6 +135,17 @@ namespace NewHorizons.Builder.Props
                         Logger.LogError($"Couldn't update AnglerFish chase speed: {e.Message}");
                     }
                 }
+
+                // Fix slide reel
+                if(component is SlideCollectionContainer)
+                {
+                    sector.OnOccupantEnterSector.AddListener((_) => (component as SlideCollectionContainer).LoadStreamingTextures());
+                }
+
+                if(component is OWItemSocket)
+                {
+                    (component as OWItemSocket)._sector = sector;
+                }
             }
 
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
@@ -144,13 +155,7 @@ namespace NewHorizons.Builder.Props
             if (alignWithNormal)
             {
                 var up = prop.transform.localPosition.normalized;
-                var front = Vector3.Cross(up, Vector3.left);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.forward);
-                if (front.sqrMagnitude == 0f) front = Vector3.Cross(up, Vector3.up);
-
-                front = rot * front;
-
-                prop.transform.LookAt(prop.transform.position + front, up);
+                prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
             }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;

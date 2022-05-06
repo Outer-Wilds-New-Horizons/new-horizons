@@ -15,6 +15,10 @@
     "factRequiredForWarp": {
       "type": "string",
       "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to false if you're using this, that would make no sense."
+    },
+    "destroyStockPlanets": {
+      "type": "bool",
+      "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original."
     }
   }
 }
