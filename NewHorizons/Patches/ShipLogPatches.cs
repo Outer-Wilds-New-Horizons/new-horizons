@@ -8,32 +8,16 @@ using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Handlers;
+using HarmonyLib;
 
-namespace NewHorizons.Tools
+namespace NewHorizons.Patches
 {
+    [HarmonyPatch]
     public static class ShipLogPatches
     {
-        public static void Apply()
-        {
-            var playerDataGetNewlyRevealedFactIDs = typeof(PlayerData).GetMethod("GetNewlyRevealedFactIDs");
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix(playerDataGetNewlyRevealedFactIDs, typeof(ShipLogPatches), nameof(ShipLogPatches.OnPlayerDataGetNewlyRevealedFactIDsComplete));
-
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerAwake));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("Start", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerStart));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("IsFactRevealed", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerIsFactRevealed));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogManager>("CheckForCompletionAchievement", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerCheckForCompletionAchievement));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<UIStyleManager>("GetCuriosityColor", typeof(ShipLogPatches), nameof(ShipLogPatches.OnUIStyleManagerGetCuriosityColor));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogSandFunnel>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.DisableShipLogSandFunnel));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogSandFunnel>("UpdateState", typeof(ShipLogPatches), nameof(ShipLogPatches.DisableShipLogSandFunnel));
-            Main.Instance.ModHelper.HarmonyHelper.AddPrefix<ShipLogAstroObject>("GetName", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogAstroObjectGetName));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogMapMode>("Initialize", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogMapModeInitialize));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>("Awake", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerAwakeComplete));
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogAstroObject>("UpdateState", typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogAstroObjectUpdateState));
-
-            Main.Instance.ModHelper.HarmonyHelper.AddPostfix<ShipLogManager>(nameof(ShipLogManager.RevealFact), typeof(ShipLogPatches), nameof(ShipLogPatches.OnShipLogManagerRevealFact));
-        }
-
-        public static void OnShipLogManagerAwake(ShipLogManager __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Awake))]
+        public static void ShipLogManager_Awake_Prefix(ShipLogManager __instance)
         {
             RumorModeBuilder.Init();
             ShipLogHandler.Init();
@@ -64,7 +48,9 @@ namespace NewHorizons.Tools
             }
         }
 
-        public static void OnShipLogManagerAwakeComplete(ShipLogManager __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Awake))]
+        public static void ShipLogManager_Awake_Postfix(ShipLogManager __instance)
         {
             ShipLogHandler.CheckForModdedFacts(__instance);
             RumorModeBuilder.GenerateEntryData(__instance);
@@ -77,7 +63,9 @@ namespace NewHorizons.Tools
             Logger.Log("Ship Log Generation Complete For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
         }
 
-        public static bool OnShipLogManagerIsFactRevealed(ShipLogManager __instance, ref bool __result, string __0)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.IsFactRevealed))]
+        public static bool ShipLogManager_IsFactRevealed(ShipLogManager __instance, ref bool __result, string __0)
         {
             if (__instance._factDict != null && __instance._factDict.ContainsKey(__0))
             {
@@ -91,7 +79,9 @@ namespace NewHorizons.Tools
             return false;
         }
 
-        public static bool OnShipLogManagerCheckForCompletionAchievement(ShipLogManager __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.CheckForCompletionAchievement))]
+        public static bool ShipLogManager_CheckForCompletionAchievement(ShipLogManager __instance)
         {
             foreach (KeyValuePair<string, ShipLogFact> keyValuePair in __instance._factDict)
             {
@@ -104,7 +94,9 @@ namespace NewHorizons.Tools
             return false;
         }
 
-        public static bool OnShipLogManagerStart(ShipLogManager __instance)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Start))]
+        public static bool ShipLogManager_Start(ShipLogManager __instance)
         {
             foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
@@ -125,9 +117,11 @@ namespace NewHorizons.Tools
             }
         }
 
-        public static bool OnUIStyleManagerGetCuriosityColor(UIStyleManager __instance, CuriosityName __0, bool __1, ref Color __result)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(UIStyleManager), nameof(UIStyleManager.GetCuriosityColor))]
+        public static bool UIStyleManager_GetCuriosityColor(UIStyleManager __instance, CuriosityName __0, bool __1, ref Color __result)
         {
-            if ((int) __0 < 7)
+            if ((int)__0 < 7)
             {
                 return true;
             }
@@ -138,7 +132,9 @@ namespace NewHorizons.Tools
             }
         }
 
-        public static void OnShipLogMapModeInitialize(ShipLogMapMode __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipLogMapMode), nameof(ShipLogMapMode.Initialize))]
+        public static void ShipLogMapMode_Initialize(ShipLogMapMode __instance)
         {
             GameObject panRoot = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH);
             GameObject sunObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
@@ -168,7 +164,9 @@ namespace NewHorizons.Tools
             Logger.Log("Map Mode Construction Complete", Logger.LogType.Log);
         }
 
-        public static bool OnShipLogAstroObjectGetName(ShipLogAstroObject __instance, ref string __result)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogAstroObject), nameof(ShipLogAstroObject.GetName))]
+        public static bool ShipLogAstroObject_GetName(ShipLogAstroObject __instance, ref string __result)
         {
             if (ShipLogHandler.IsVanillaAstroID(__instance.GetID()))
             {
@@ -181,15 +179,16 @@ namespace NewHorizons.Tools
             }
         }
 
-        public static void OnShipLogAstroObjectUpdateState(ShipLogAstroObject __instance)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipLogAstroObject), nameof(ShipLogAstroObject.UpdateState))]
+        public static void ShipLogAstroObject_UpdateState(ShipLogAstroObject __instance)
         {
             Transform detailsParent = __instance.transform.Find("Details");
             if (detailsParent != null)
             {
                 foreach (GameObject child in SearchUtilities.GetAllChildren(detailsParent.gameObject))
                 {
-                    Component detail;
-                    if (child.TryGetComponent(typeof(ShipLogDetail), out detail))
+                    if (child.TryGetComponent(typeof(ShipLogDetail), out Component detail))
                     {
                         (detail as ShipLogDetail)?.UpdateState(__instance._state);
                     }
@@ -204,18 +203,23 @@ namespace NewHorizons.Tools
             }
         }
 
-        public static bool DisableShipLogSandFunnel()
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogSandFunnel), nameof(ShipLogSandFunnel.UpdateState))]
+        public static bool ShipLogSandFunnel_UpdateState()
         {
             return Main.Instance.CurrentStarSystem == "SolarSystem";
         }
 
-        public static void OnPlayerDataGetNewlyRevealedFactIDsComplete(ref List<string> __result)
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogSandFunnel), nameof(ShipLogSandFunnel.Awake))]
+        public static bool ShipLogSandFunnel_Awake()
         {
-            ShipLogManager manager = Locator.GetShipLogManager();
-            __result = __result.Where(e => manager.GetFact(e) != null).ToList();
+            return Main.Instance.CurrentStarSystem == "SolarSystem";
         }
 
-        public static void OnShipLogManagerRevealFact(string __0)
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.RevealFact))]
+        public static void ShipLogManager_RevealFact(string __0)
         {
             StarChartHandler.OnRevealFact(__0);
         }

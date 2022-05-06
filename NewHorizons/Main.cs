@@ -24,8 +24,6 @@ using OWML.Common.Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Atmosphere;
-using PacificEngine.OW_CommonResources.Geometry.Orbits;
 using NewHorizons.Utility.CommonResources;
 using UnityEngine.Events;
 using HarmonyLib;
@@ -99,6 +97,9 @@ namespace NewHorizons
 
         public void Start()
         {
+            // Patches
+            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
 
@@ -112,15 +113,6 @@ namespace NewHorizons
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
             SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
-
-            // Patches
-            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            Tools.Patches.Apply();
-            Tools.WarpDrivePatches.Apply();
-            Tools.OWCameraFix.Apply();
-            Tools.ShipLogPatches.Apply();
-            Tools.TranslationPatches.Apply();
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 

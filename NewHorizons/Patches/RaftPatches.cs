@@ -20,97 +20,97 @@ namespace NewHorizons.Patches
             // If it has a river fluid its a normal one and we don't do anything
             if (__instance._riverFluid != null) return true;
 
-			// Copy paste the original method
-			if (__instance._raftBody.IsSuspended())
-			{
-				return false;
-			}
-			bool playerInEffectsRange = __instance._playerInEffectsRange;
-			__instance._playerInEffectsRange = ((Locator.GetPlayerBody().GetPosition() - __instance._raftBody.GetPosition()).sqrMagnitude < 2500f);
-			if (playerInEffectsRange && !__instance._playerInEffectsRange)
-			{
-				__instance._effectsController.StopAllEffects();
-			}
-			if (__instance._dock != null || __instance._movingToTarget)
-			{
-				__instance._localAcceleration = Vector3.zero;
-				if (__instance._playerInEffectsRange)
-				{
-					__instance._effectsController.UpdateMovementAudio(false, __instance._lightSensors);
-				}
-				if (__instance._movingToTarget)
-				{
-					__instance.UpdateMoveToTarget();
-				}
-				return false;
-			}
-			if (__instance._fluidDetector.InFluidType(FluidVolume.Type.WATER))
-			{
-				if (__instance._lightSensors[0].IsIlluminated())
-				{
-					__instance._localAcceleration += Vector3.forward * __instance._acceleration;
-				}
-				if (__instance._lightSensors[1].IsIlluminated())
-				{
-					__instance._localAcceleration += Vector3.right * __instance._acceleration;
-				}
-				if (__instance._lightSensors[2].IsIlluminated())
-				{
-					__instance._localAcceleration -= Vector3.forward * __instance._acceleration;
-				}
-				if (__instance._lightSensors[3].IsIlluminated())
-				{
-					__instance._localAcceleration -= Vector3.right * __instance._acceleration;
-				}
-			}
-			if (__instance._localAcceleration.sqrMagnitude > 0.001f)
-			{
-				__instance._raftBody.AddLocalAcceleration(__instance._localAcceleration);
-			}
-			if (__instance._playerInEffectsRange)
-			{
-				// All this to change what fluidVolume we use on this line
-				float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) ? __instance._fluidDetector._alignmentFluid.GetFractionSubmerged(__instance._fluidDetector) : 0f;
-				bool allowMovement = num > 0.25f && num < 1f;
-				__instance._effectsController.UpdateMovementAudio(allowMovement, __instance._lightSensors);
-				__instance._effectsController.UpdateGroundedAudio(__instance._fluidDetector);
-			}
-			__instance._localAcceleration = Vector3.zero;
+            // Copy paste the original method
+            if (__instance._raftBody.IsSuspended())
+            {
+                return false;
+            }
+            bool playerInEffectsRange = __instance._playerInEffectsRange;
+            __instance._playerInEffectsRange = ((Locator.GetPlayerBody().GetPosition() - __instance._raftBody.GetPosition()).sqrMagnitude < 2500f);
+            if (playerInEffectsRange && !__instance._playerInEffectsRange)
+            {
+                __instance._effectsController.StopAllEffects();
+            }
+            if (__instance._dock != null || __instance._movingToTarget)
+            {
+                __instance._localAcceleration = Vector3.zero;
+                if (__instance._playerInEffectsRange)
+                {
+                    __instance._effectsController.UpdateMovementAudio(false, __instance._lightSensors);
+                }
+                if (__instance._movingToTarget)
+                {
+                    __instance.UpdateMoveToTarget();
+                }
+                return false;
+            }
+            if (__instance._fluidDetector.InFluidType(FluidVolume.Type.WATER))
+            {
+                if (__instance._lightSensors[0].IsIlluminated())
+                {
+                    __instance._localAcceleration += Vector3.forward * __instance._acceleration;
+                }
+                if (__instance._lightSensors[1].IsIlluminated())
+                {
+                    __instance._localAcceleration += Vector3.right * __instance._acceleration;
+                }
+                if (__instance._lightSensors[2].IsIlluminated())
+                {
+                    __instance._localAcceleration -= Vector3.forward * __instance._acceleration;
+                }
+                if (__instance._lightSensors[3].IsIlluminated())
+                {
+                    __instance._localAcceleration -= Vector3.right * __instance._acceleration;
+                }
+            }
+            if (__instance._localAcceleration.sqrMagnitude > 0.001f)
+            {
+                __instance._raftBody.AddLocalAcceleration(__instance._localAcceleration);
+            }
+            if (__instance._playerInEffectsRange)
+            {
+                // All this to change what fluidVolume we use on this line
+                float num = __instance._fluidDetector.InFluidType(FluidVolume.Type.WATER) ? __instance._fluidDetector._alignmentFluid.GetFractionSubmerged(__instance._fluidDetector) : 0f;
+                bool allowMovement = num > 0.25f && num < 1f;
+                __instance._effectsController.UpdateMovementAudio(allowMovement, __instance._lightSensors);
+                __instance._effectsController.UpdateGroundedAudio(__instance._fluidDetector);
+            }
+            __instance._localAcceleration = Vector3.zero;
 
-			return false;
-		}
-
-		[HarmonyReversePatch]
-		[HarmonyPatch(typeof(AsymmetricFluidDetector), "ManagedFixedUpdate")]
-		public static void AsymmetricFluidDetector_ManagedFixedUpdate(AsymmetricFluidDetector __instance)
-        {
-			// This is like doing base.FixedUpdate
+            return false;
         }
 
-		[HarmonyPrefix]
-		[HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
-		public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(AsymmetricFluidDetector), "ManagedFixedUpdate")]
+        public static void AsymmetricFluidDetector_ManagedFixedUpdate(AsymmetricFluidDetector __instance)
         {
-			if (!__instance._alignmentFluid is NHFluidVolume) return true;
+            // This is like doing base.FixedUpdate
+        }
 
-			// Mostly copy pasting from the AlignWithDirection class
-			AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
+        public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
+        {
+            if (!__instance._alignmentFluid is NHFluidVolume) return true;
 
-			if (__instance._inAlignmentFluid)
-			{
-				// Both in world space
-				var currentDirection = __instance._owRigidbody.transform.up;
-				var alignmentDirection = (__instance.transform.position - __instance._alignmentFluid.transform.position).normalized;
-				var degreesToTarget = Vector3.Angle(currentDirection, alignmentDirection);
+            // Mostly copy pasting from the AlignWithDirection class
+            AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
 
-				var adjustedSlerpRate = Mathf.Clamp01(100f / degreesToTarget * Time.fixedDeltaTime);
+            if (__instance._inAlignmentFluid)
+            {
+                // Both in world space
+                var currentDirection = __instance._owRigidbody.transform.up;
+                var alignmentDirection = (__instance.transform.position - __instance._alignmentFluid.transform.position).normalized;
+                var degreesToTarget = Vector3.Angle(currentDirection, alignmentDirection);
 
-				Vector3 a = OWPhysics.FromToAngularVelocity(currentDirection, alignmentDirection);
-				__instance._owRigidbody.SetAngularVelocity(Vector3.zero);
-				__instance._owRigidbody.AddAngularVelocityChange(a * adjustedSlerpRate);
-			}
+                var adjustedSlerpRate = Mathf.Clamp01(10f / degreesToTarget * Time.fixedDeltaTime);
 
-			return false;
-		}
-	}
+                Vector3 a = OWPhysics.FromToAngularVelocity(currentDirection, alignmentDirection);
+                //__instance._owRigidbody.SetAngularVelocity(Vector3.zero);
+                __instance._owRigidbody.AddAngularVelocityChange(a * adjustedSlerpRate);
+            }
+
+            return false;
+        }
+    }
 }
