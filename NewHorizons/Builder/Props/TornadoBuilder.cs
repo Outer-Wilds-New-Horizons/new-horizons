@@ -38,11 +38,11 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
-            var prefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/MovingTornadoes/Root/UpTornado_Pivot (2)");
-
+            var upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado");
+            var downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado");
             // Default radius is 40, height is 837.0669
 
-            var tornadoGO = prefab.InstantiateInactive();
+            var tornadoGO = upPrefab.InstantiateInactive();
             tornadoGO.transform.parent = sector?.transform ?? go.transform;
             tornadoGO.transform.localPosition = Vector3.zero;
             var tornado = tornadoGO.GetComponent<TornadoController>();
