@@ -69,6 +69,8 @@ namespace NewHorizons
         // For warping to the eye system
         private GameObject _ship;
 
+        public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
+
         public override object GetApi()
         {
             return new NewHorizonsApi();

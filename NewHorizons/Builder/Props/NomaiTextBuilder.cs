@@ -50,7 +50,6 @@ namespace NewHorizons.Builder.Props
             _ghostArcPrefabs = new List<GameObject>();
             foreach (var existingArc in existingGhostArcs)
             {
-                Logger.Log("Found ghost");
                 var arc = existingArc.InstantiateInactive();
                 arc.name = "Arc";
                 _ghostArcPrefabs.Add(arc);
@@ -313,7 +312,7 @@ namespace NewHorizons.Builder.Props
                 {
                     arc = _childArcPrefabs[Random.Range(0, _childArcPrefabs.Count())].InstantiateInactive();
                 }
-                else if(type == "stranger")
+                else if(type == "stranger" && _ghostArcPrefabs.Count() > 0) // It could be empty if they dont have the DLC
                 {
                     arc = _ghostArcPrefabs[Random.Range(0, _ghostArcPrefabs.Count())].InstantiateInactive();
                 }

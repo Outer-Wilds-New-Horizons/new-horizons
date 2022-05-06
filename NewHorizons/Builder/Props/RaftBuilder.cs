@@ -22,7 +22,12 @@ namespace NewHorizons.Builder.Props
         {
             if(_prefab == null)
             {
-                _prefab = GameObject.FindObjectOfType<RaftController>().gameObject.InstantiateInactive();
+                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
+                if (_prefab == null)
+                {
+                    Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    return;
+                }
                 _prefab.name = "Raft_Body_Prefab";
             }
 
