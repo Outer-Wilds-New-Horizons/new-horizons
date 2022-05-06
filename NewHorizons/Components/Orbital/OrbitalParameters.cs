@@ -16,8 +16,6 @@ namespace NewHorizons.Components.Orbital
         public float Eccentricity { get; private set; }
         public float ArgumentOfPeriapsis { get; private set; }
         public float TrueAnomaly { get; private set; }
-        public float MeanAnomaly { get; private set; }
-        public float EccentricAnomaly { get; private set; }
         public float Period { get; private set; }
 
         public Vector3 InitialPosition { get; private set; }
@@ -42,15 +40,10 @@ namespace NewHorizons.Components.Orbital
             var power = primaryGravity.Power;
             var period = (float) (GravityVolume.GRAVITATIONAL_CONSTANT * (primaryMass + secondaryMass) / (4 * Math.PI * Math.PI * Math.Pow(semiMajorAxis, power)));
 
+            orbitalParameters.Period = period;
+
             // All in radians
             var f = Mathf.Deg2Rad * trueAnomaly;
-            var eccentricAnomaly = Mathf.Atan2(Mathf.Sqrt(1 - (eccentricity * eccentricity)) * Mathf.Sin(f), eccentricity + Mathf.Cos(f));
-            var meanAnomaly = eccentricAnomaly - eccentricity * Mathf.Sin(eccentricAnomaly);
-
-            orbitalParameters.Period = period;
-            orbitalParameters.MeanAnomaly = meanAnomaly * Mathf.Rad2Deg;
-            orbitalParameters.EccentricAnomaly = eccentricAnomaly * Mathf.Rad2Deg;
-
             var p = semiMajorAxis * (1 - (eccentricity * eccentricity)); // Semi-latus rectum
             var r = p / (1 + eccentricity * Mathf.Cos(f));
 
@@ -84,11 +77,9 @@ namespace NewHorizons.Components.Orbital
                 v = Mathf.Sqrt(G * primaryMass * ((2f / r) - (1f / semiMajorAxis)));
             }
 
-            var semiMinorAxis = semiMajorAxis * Mathf.Sqrt(1 - (eccentricity * eccentricity));
-            var focusDistance = Mathf.Sqrt((semiMajorAxis * semiMajorAxis) - (semiMinorAxis * semiMinorAxis));
-
-            var x = semiMajorAxis * Mathf.Cos(eccentricAnomaly) - focusDistance;
-            var y = semiMinorAxis * Mathf.Sin(eccentricAnomaly);
+            // Origin is the focus
+            var x = r * Mathf.Cos(f);
+            var y = r * Mathf.Sin(f);
 
             var n_p = new Vector2(x, y).normalized;
 

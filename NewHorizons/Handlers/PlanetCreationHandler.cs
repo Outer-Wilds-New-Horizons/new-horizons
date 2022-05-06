@@ -386,6 +386,7 @@ namespace NewHorizons.Handlers
             return go;
         }
 
+        //private static int j = 0;
         private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody, AstroObject secondaryBody)
         {
             go.transform.parent = Locator.GetRootTransform();
@@ -396,6 +397,24 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var relativePosition = body.Config.Orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
+
+                /* Debugging true anomaly
+                if(Main.Instance.CurrentStarSystem != "SolarSystem")
+                {
+                    var colors = new Color[] { Color.red, Color.blue, Color.yellow, Color.green, Color.grey, Color.white }; 
+                    var orbit = body.Config.Orbit;
+                    // This is gonna be wacky
+                    for (int i = 0; i < 360; i += 20)
+                    {
+                        var color = colors[j % (colors.Count() - 1)];
+                        orbit.TrueAnomaly = i;
+                        var shape = AddDebugShape.AddSphere(primaryBody.gameObject, 100, color);
+                        shape.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+                    }
+                    j++;
+                }
+                */
+
                 go.transform.position = relativePosition + primaryBody.transform.position;
             }
             else
