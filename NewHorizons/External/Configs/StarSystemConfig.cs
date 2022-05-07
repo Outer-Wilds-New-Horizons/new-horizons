@@ -14,6 +14,7 @@ namespace NewHorizons.External.Configs
         public bool destroyStockPlanets = true;
         public string factRequiredForWarp;
         public NomaiCoordinates coords;
+        public SkyboxConfig skybox;
 
         public class NomaiCoordinates
         {
@@ -22,6 +23,14 @@ namespace NewHorizons.External.Configs
             public int[] z;
         }
 
+        public class SkyboxConfig
+        {
+            public string assetBundle = null;
+            public string path = null;
+            public bool destroyStarField = false;
+        }
+
         public StarSystemConfig(Dictionary<string, object> dict) : base(dict) { }
+        
     }
 }
