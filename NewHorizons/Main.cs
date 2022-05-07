@@ -97,6 +97,30 @@ namespace NewHorizons
             _wasConfigured = true;
         }
 
+        public static void ResetConfigs(bool resetTranslation = true)
+        {
+            BodyDict.Clear();
+            SystemDict.Clear();
+
+            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
+            BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), Instance)
+            {
+                Config =
+                {
+                    destroyStockPlanets = false
+                }
+            };
+            foreach (AssetBundle bundle in AssetBundles.Values)
+            {
+                bundle.Unload(true);
+            }
+            AssetBundles.Clear();
+            if (!resetTranslation) return;
+            TranslationHandler.ClearTables();
+            TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
+        }
+
         public void Start()
         {
             // Patches
@@ -113,12 +137,8 @@ namespace NewHorizons
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
             ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
             
-            BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
-            BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), this);
-            SystemDict["SolarSystem"].Config.destroyStockPlanets = false;
-
+            ResetConfigs(resetTranslation: false);
+            
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
 
             try
