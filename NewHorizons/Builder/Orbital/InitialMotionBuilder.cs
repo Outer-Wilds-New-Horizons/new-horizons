@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
             initialMotion._primaryBody = primaryBody?.GetAttachedOWRigidbody();
 
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt + 90f, Vector3.right) * Vector3.up;
+            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt, Vector3.right) * Vector3.up;
             initialMotion._rotationAxis = rotationAxis;
 
             if (!orbit.IsStatic && primaryBody != null)
