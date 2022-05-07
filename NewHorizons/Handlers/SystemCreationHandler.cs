@@ -5,7 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NewHorizons.Builder.StarSystem;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+using Object = UnityEngine.Object;
 
 namespace NewHorizons.Handlers
 {
@@ -17,23 +20,15 @@ namespace NewHorizons.Handlers
 
             var skybox = GameObject.Find("Skybox/Starfield");
 
-            /*
-            skybox.GetComponent<MeshRenderer>().material.shader = Shader.Find("Standard");
-            */
+            if (system.Config.skybox?.destroyStarField ?? false)
+            {
+                Object.Destroy(skybox);
+            }
 
-            /*
-            var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            GameObject.Destroy(sphere.GetComponent<SphereCollider>());
-
-            sphere.transform.parent = skybox.transform;
-            sphere.transform.localPosition = Vector3.zero;
-
-            var meshFilter = sphere.GetComponent<MeshFilter>();
-            meshFilter.mesh.triangles = meshFilter.mesh.triangles.Reverse().ToArray();
-
-            var meshRenderer = sphere.GetComponent<MeshRenderer>();
-            meshRenderer.material.color = Color.green;
-            */
+            if (system.Config.skybox?.assetBundle != null && system.Config.skybox?.path != null)
+            {
+                SkyboxBuilder.Make(system.Config.skybox, system.Mod);
+            }
 
         }
     }
