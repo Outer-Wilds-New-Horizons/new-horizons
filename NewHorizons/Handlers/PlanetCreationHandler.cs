@@ -391,7 +391,7 @@ namespace NewHorizons.Handlers
 
         public static bool UpdateBodyOrbit(NewHorizonsBody body, GameObject go)
         {
-            Logger.Log($"Updating orbit of [{body.Config.Name}] to [{body.Config.Orbit}]");
+            Logger.Log($"Updating orbit of [{body.Config.Name}]");
 
             try
             {
@@ -418,7 +418,7 @@ namespace NewHorizons.Handlers
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
                 newAO._owRigidbody = ao._owRigidbody;
-                newAO._primaryBody = ao._primaryBody;
+                newAO._primaryBody = primary;
                 newAO._rootSector = ao._rootSector;
                 newAO._sandLevelController = ao._sandLevelController;
                 newAO._satellite = ao._satellite;
@@ -459,9 +459,10 @@ namespace NewHorizons.Handlers
             return true;
         }
 
-        //private static int j = 0;
         private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody, AstroObject secondaryBody)
         {
+            Logger.Log($"Placing [{secondaryBody.name}] around [{primaryBody.name}]");
+
             go.transform.parent = Locator.GetRootTransform();
 
             if (primaryBody != null)
@@ -470,23 +471,6 @@ namespace NewHorizons.Handlers
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 var relativePosition = body.Config.Orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
-
-                /* Debugging true anomaly
-                if(Main.Instance.CurrentStarSystem != "SolarSystem")
-                {
-                    var colors = new Color[] { Color.red, Color.blue, Color.yellow, Color.green, Color.grey, Color.white }; 
-                    var orbit = body.Config.Orbit;
-                    // This is gonna be wacky
-                    for (int i = 0; i < 360; i += 20)
-                    {
-                        var color = colors[j % (colors.Count() - 1)];
-                        orbit.TrueAnomaly = i;
-                        var shape = AddDebugShape.AddSphere(primaryBody.gameObject, 100, color);
-                        shape.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
-                    }
-                    j++;
-                }
-                */
 
                 go.transform.position = relativePosition + primaryBody.transform.position;
             }
