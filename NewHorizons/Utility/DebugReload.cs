@@ -31,20 +31,9 @@ namespace NewHorizons.Utility
 
         private static void ReloadConfigs()
         {
-            Main.BodyDict.Clear();
-            Main.SystemDict.Clear();
-
-            Main.BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
-            Main.SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), Main.Instance);
-            foreach (AssetBundle bundle in Main.AssetBundles.Values)
-            {
-                bundle.Unload(true);
-            }
-            Main.AssetBundles.Clear();
-            TranslationHandler.ClearTables();
-            TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
-            
             Logger.Log("Begin reload of config files...", Logger.LogType.Log);
+            
+            Main.ResetConfigs();
 
             try
             {
