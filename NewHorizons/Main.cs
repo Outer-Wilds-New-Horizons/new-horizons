@@ -210,7 +210,7 @@ namespace NewHorizons
 
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
-                AstroObjectLocator.RefreshList();
+                AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);

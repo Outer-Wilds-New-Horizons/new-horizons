@@ -91,54 +91,23 @@ namespace NewHorizons.Builder.General
             {
                 if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
                 {
-                    if (ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-                    {
-                        DisableBody(GameObject.Find("TimeLoopRing_Body"), delete);
-                    }
                     DisableBody(GameObject.Find("FocalBody"), delete);
                 }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
                 {
                     DisableBody(GameObject.Find("MapSatellite_Body"), delete);
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.ProbeCannon)
-                {
-                    DisableBody(GameObject.Find("NomaiProbe_Body"), delete);
-                    DisableBody(GameObject.Find("CannonMuzzle_Body"), delete);
-                    DisableBody(GameObject.Find("FakeCannonMuzzle_Body (1)"), delete);
-                    DisableBody(GameObject.Find("CannonBarrel_Body"), delete);
-                    DisableBody(GameObject.Find("FakeCannonBarrel_Body (1)"), delete);
-                    DisableBody(GameObject.Find("Debris_Body (1)"), delete);
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.SunStation)
-                {
-                    DisableBody(GameObject.Find("SS_Debris_Body"), delete);
-                }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
                 {
-                    DisableBody(GameObject.Find("BrambleIsland_Body"), delete);
-                    DisableBody(GameObject.Find("GabbroIsland_Body"), delete);
-                    DisableBody(GameObject.Find("QuantumIsland_Body"), delete);
-                    DisableBody(GameObject.Find("StatueIsland_Body"), delete);
-                    DisableBody(GameObject.Find("ConstructionYardIsland_Body"), delete);
-                    DisableBody(GameObject.Find("GabbroShip_Body"), delete);
-
                     foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
                     {
                         DisableBody(jelly.gameObject, delete);
                     }
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
-                {
-                    DisableBody(GameObject.Find("WhiteholeStation_Body"), delete);
-                    DisableBody(GameObject.Find("WhiteholeStationSuperstructure_Body"), delete);
-                }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
                 {
                     // Always just fucking kill this one to stop THE WARP BUG!!!
                     DisableBody(GameObject.Find("StreamingGroup_TH"), true);
-
-                    DisableBody(GameObject.Find("MiningRig_Body"), delete);
 
                     foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
                     {
@@ -176,10 +145,11 @@ namespace NewHorizons.Builder.General
                         GameObject.Destroy(sunProxy.gameObject);
                     }
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.DreamWorld)
+
+                // Just delete the children
+                foreach(var child in AstroObjectLocator.GetChildren(ao))
                 {
-                    DisableBody(GameObject.Find("BackRaft_Body"), delete);
-                    DisableBody(GameObject.Find("SealRaft_Body"), delete);
+                    DisableBody(child, true);
                 }
             }
             catch(Exception e)

@@ -17,6 +17,16 @@ namespace NewHorizons.Utility
 
 		private static List<AstroObject> _list = new List<AstroObject>();
 
+		public static void Init()
+		{
+			_list = new List<AstroObject>();
+			_customAstroObjectDictionary = new Dictionary<string, AstroObject>();
+			foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+			{
+				AddAstroObject(ao);
+			}
+		}
+
 		public static AstroObject GetAstroObject(string name, bool flag = false)
         {
 			if (_customAstroObjectDictionary.ContainsKey(name)) return _customAstroObjectDictionary[name];
@@ -98,16 +108,6 @@ namespace NewHorizons.Utility
 			_customAstroObjectDictionary.Remove(ao.GetCustomName());
         }
 
-		public static void RefreshList()
-        {
-			_customAstroObjectDictionary = new Dictionary<string, AstroObject>();
-			_list = new List<AstroObject>();
-			foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
-			{
-				AddAstroObject(ao);
-			}
-		}
-
 		public static AstroObject[] GetAllAstroObjects()
         {
 			return _list.ToArray();
@@ -123,9 +123,54 @@ namespace NewHorizons.Utility
 			_list.Remove(ao);
         }
 
-		public static AstroObject[] GetMoons(AstroObject primary)
-        {
-			return _list.Where(x => x._primaryBody == primary).ToArray();
+		public static GameObject[] GetMoons(AstroObject primary)
+		{
+			return _list.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
+		}
+
+		public static GameObject[] GetChildren(AstroObject primary)
+		{
+			var otherChildren = new List<GameObject>();
+			switch(primary.GetAstroObjectName())
+            {
+				case AstroObject.Name.TowerTwin:
+					otherChildren.Add(GameObject.Find("TimeLoopRing_Body"));
+					break;
+				case AstroObject.Name.ProbeCannon:
+					otherChildren.Add(GameObject.Find("NomaiProbe_Body"));
+					otherChildren.Add(GameObject.Find("CannonMuzzle_Body"));
+					otherChildren.Add(GameObject.Find("FakeCannonMuzzle_Body (1)"));
+					otherChildren.Add(GameObject.Find("CannonBarrel_Body"));
+					otherChildren.Add(GameObject.Find("FakeCannonBarrel_Body (1)"));
+					otherChildren.Add(GameObject.Find("Debris_Body (1)"));
+					break;
+				case AstroObject.Name.SunStation:
+					otherChildren.Add(GameObject.Find("SS_Debris_Body"));
+					break;
+				case AstroObject.Name.GiantsDeep:
+					otherChildren.Add(GameObject.Find("BrambleIsland_Body"));
+					otherChildren.Add(GameObject.Find("GabbroIsland_Body"));
+					otherChildren.Add(GameObject.Find("QuantumIsland_Body"));
+					otherChildren.Add(GameObject.Find("StatueIsland_Body"));
+					otherChildren.Add(GameObject.Find("ConstructionYardIsland_Body"));
+					otherChildren.Add(GameObject.Find("GabbroShip_Body"));
+					break;
+				case AstroObject.Name.WhiteHole:
+					otherChildren.Add(GameObject.Find("WhiteholeStation_Body"));
+					otherChildren.Add(GameObject.Find("WhiteholeStationSuperstructure_Body"));
+					break;
+				case AstroObject.Name.TimberHearth:
+					otherChildren.Add(GameObject.Find("MiningRig_Body"));
+					break;
+				case AstroObject.Name.DreamWorld:
+					otherChildren.Add(GameObject.Find("BackRaft_Body"));
+					otherChildren.Add(GameObject.Find("SealRaft_Body"));
+					break;
+				default:
+					break;
+            }
+
+			return otherChildren.ToArray();
         }
 	}
 }
