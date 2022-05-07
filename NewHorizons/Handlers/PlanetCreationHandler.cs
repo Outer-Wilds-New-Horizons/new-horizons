@@ -21,10 +21,13 @@ namespace NewHorizons.Handlers
     {
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
         private static List<NewHorizonsBody> ToLoad;
+        private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
             Main.FurthestOrbit = 30000;
+
+            ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -428,13 +431,14 @@ namespace NewHorizons.Handlers
                 var children = AstroObjectLocator.GetChildren(ao).Concat(AstroObjectLocator.GetMoons(ao)).ToArray();
                 AstroObjectLocator.DeregisterCustomAstroObject(ao);
                 GameObject.Destroy(ao);
+                Locator.RegisterAstroObject(newAO);
                 AstroObjectLocator.RegisterCustomAstroObject(newAO);
 
                 newAO._primaryBody = primary;
 
-                var orbitLine = go.GetComponentInChildren<OrbitLine>();
+                GameObject.Destroy(go.GetComponentInChildren<OrbitLine>().gameObject);
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
-                var newOrbitLine = OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if(body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
@@ -456,16 +460,24 @@ namespace NewHorizons.Handlers
                     var child = children[i];
 
                     // If the child is an AO we do stuff too
-                    var childAO = child.GetComponent<AstroObject>();
+                    var childAO = child.GetComponent<NHAstroObject>() ?? child.GetComponent<AstroObject>();
                     if (childAO != null)
                     {
-                        foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
+                        if (childAO is NHAstroObject && ExistingAOConfigs.ContainsKey(childAO))
                         {
-                            var dPos = childChild.transform.position - child.transform.position;
-                            childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
+                            // If it's already and NH object we repeat the whole process else it doesn't work idk
+                            NextPassBodies.Add(ExistingAOConfigs[childAO]);
                         }
-                        // Make sure the moons get updated to the new AO
-                        childAO._primaryBody = newAO;
+                        else
+                        {
+                            foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
+                            {
+                                var dPos = childChild.transform.position - child.transform.position;
+                                childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
+                            }
+                            // Make sure the moons get updated to the new AO
+                            childAO._primaryBody = newAO;
+                        }
                     }
 
                     child.transform.position = go.transform.position + relativeMoonPositions[i];
@@ -476,6 +488,8 @@ namespace NewHorizons.Handlers
 
                 // Have to register this new AO to the locator
                 Locator.RegisterAstroObject(newAO);
+
+                ExistingAOConfigs.Add(newAO, body);
             }
             catch (Exception ex)
             {
