@@ -40,7 +40,7 @@ namespace NewHorizons.Builder.General
             var sunVolumes = GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
-            foreach(var name in _solarSystemBodies)
+            foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
                 if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(ao, false), 2);
@@ -68,7 +68,7 @@ namespace NewHorizons.Builder.General
 
             if (ao.GetAstroObjectName() == AstroObject.Name.BrittleHollow)
             {
-                RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole), delete, toDestroy);
+                RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
             }
 
             // Check if any other objects depend on it and remove them too
@@ -77,12 +77,12 @@ namespace NewHorizons.Builder.General
             {
                 if (obj?.gameObject == null || !obj.gameObject.activeInHierarchy)
                 {
-                    AstroObjectLocator.RemoveAstroObject(obj);
+                    AstroObjectLocator.DeregisterCustomAstroObject(obj);
                     continue;
                 }
                 if (ao.Equals(obj.GetPrimaryBody()))
                 {
-                    AstroObjectLocator.RemoveAstroObject(obj);
+                    AstroObjectLocator.DeregisterCustomAstroObject(obj);
                     RemoveBody(obj, delete, toDestroy);
                 }
             }
@@ -147,12 +147,13 @@ namespace NewHorizons.Builder.General
                 }
 
                 // Just delete the children
-                foreach(var child in AstroObjectLocator.GetChildren(ao))
+                foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
+                    if (child.name == "Ship_Body") continue;
                     DisableBody(child, true);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogWarning($"Exception thrown when trying to delete bodies related to [{ao.name}]: {e.Message}, {e.StackTrace}");
             }
@@ -183,7 +184,7 @@ namespace NewHorizons.Builder.General
         {
             GameObject.Destroy(GameObject.FindObjectOfType<DistantProxyManager>().gameObject);
 
-            foreach(var name in _solarSystemBodies)
+            foreach (var name in _solarSystemBodies)
             {
                 RemoveProxy(name.Replace(" ", "").Replace("'", ""));
             }

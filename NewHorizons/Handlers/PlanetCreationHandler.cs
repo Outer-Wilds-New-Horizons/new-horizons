@@ -166,7 +166,7 @@ namespace NewHorizons.Handlers
             if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
             {
                 // If we aren't able to update the orbit wait until later
-                if(!UpdateBodyOrbit(body, go))
+                if (!UpdateBodyOrbit(body, go))
                 {
                     NextPassBodies.Add(body);
                     return null;
@@ -418,14 +418,18 @@ namespace NewHorizons.Handlers
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;
                 newAO._owRigidbody = ao._owRigidbody;
-                newAO._primaryBody = primary;
                 newAO._rootSector = ao._rootSector;
                 newAO._sandLevelController = ao._sandLevelController;
                 newAO._satellite = ao._satellite;
                 newAO._type = ao._type;
+
                 // We need these for later
-                var moons = AstroObjectLocator.GetMoons(ao);
+                var children = AstroObjectLocator.GetChildren(ao).Concat(AstroObjectLocator.GetMoons(ao)).ToArray();
+                AstroObjectLocator.DeregisterCustomAstroObject(ao);
                 GameObject.Destroy(ao);
+                AstroObjectLocator.RegisterCustomAstroObject(newAO);
+
+                newAO._primaryBody = primary;
 
                 var orbitLine = go.GetComponentInChildren<OrbitLine>();
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
@@ -434,18 +438,40 @@ namespace NewHorizons.Handlers
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
                 // Get ready to move all the satellites
-                var relativeMoonPositions = moons.Select(x => x.transform.position - go.transform.position).ToArray();
-                
+                var relativeMoonPositions = children.Select(x => x.transform.position - go.transform.position).ToArray();
+
+                // If its tidally locked change the alignment
+                var alignment = go.GetComponent<AlignWithTargetBody>();
+                if (alignment != null)
+                {
+                    alignment.SetTargetBody(primary.GetComponent<OWRigidbody>());
+                }
+
                 // Move the primary
                 UpdatePosition(go, body, primary, newAO);
 
-                for(int i = 0; i < moons.Count(); i++)
+                for (int i = 0; i < children.Count(); i++)
                 {
-                    moons[i].transform.position = go.transform.position + relativeMoonPositions[i];
+                    var child = children[i];
+
+                    // If the child is an AO we do stuff too
+                    var childAO = child.GetComponent<AstroObject>();
+                    if (childAO != null)
+                    {
+                        foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
+                        {
+                            var dPos = childChild.transform.position - child.transform.position;
+                            childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
+                        }
+                        // Make sure the moons get updated to the new AO
+                        childAO._primaryBody = newAO;
+                    }
+
+                    child.transform.position = go.transform.position + relativeMoonPositions[i];
                 }
 
                 // Have to do this after setting position
-                InitialMotionBuilder.SetInitialMotion(im, primary, newAO, owrb, body.Config.Orbit);
+                InitialMotionBuilder.SetInitialMotion(im, primary, newAO);
 
                 // Have to register this new AO to the locator
                 Locator.RegisterAstroObject(newAO);
@@ -461,7 +487,7 @@ namespace NewHorizons.Handlers
 
         private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody, AstroObject secondaryBody)
         {
-            Logger.Log($"Placing [{secondaryBody.name}] around [{primaryBody.name}]");
+            Logger.Log($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
             go.transform.parent = Locator.GetRootTransform();
 

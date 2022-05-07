@@ -245,7 +245,7 @@ namespace NewHorizons
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
                 // Fix the map satellite
-                AstroObjectLocator.GetAstroObject(AstroObject.Name.MapSatellite).gameObject.AddComponent<MapSatelliteOrbitFix>();
+                GameObject.Find("HearthianMapSatellite_Body").AddComponent<MapSatelliteOrbitFix>();
             }
             else
             {

@@ -19,10 +19,10 @@ namespace NewHorizons.Builder.Orbital
         {
             // Doing it like this so the planet orbit updater can just use an existing initial motion with the other method
             InitialMotion initialMotion = body.AddComponent<InitialMotion>();
-            return SetInitialMotion(initialMotion, primaryBody, secondaryBody, OWRB, orbit);
+            return SetInitialMotionFromConfig(initialMotion, primaryBody, secondaryBody, orbit);
         }
 
-        public static InitialMotion SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
+        public static InitialMotion SetInitialMotionFromConfig(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OrbitModule orbit)
         {
             // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
             initialMotion._orbitImpulseScalar = 0f;
@@ -34,43 +34,7 @@ namespace NewHorizons.Builder.Orbital
 
             if (!orbit.IsStatic && primaryBody != null)
             {
-                var focalPoint = primaryBody.GetComponent<BinaryFocalPoint>();
-                if (focalPoint)
-                {
-                    // Focal stuff
-                    var name = secondaryBody.GetCustomName();
-                    if (name == focalPoint.PrimaryName || name == focalPoint.SecondaryName)
-                    {
-                        // The one we're currently looking at is always null
-                        var otherBody = focalPoint.Primary ?? focalPoint.Secondary;
-                        if (otherBody != null)
-                        {
-                            // We set the positions and velocities of both right now
-                            if (name == focalPoint.PrimaryName)
-                            {
-                                SetBinaryInitialMotion(primaryBody, secondaryBody as NHAstroObject, otherBody as NHAstroObject);
-                            }
-                            else
-                            {
-                                SetBinaryInitialMotion(primaryBody, otherBody as NHAstroObject, secondaryBody as NHAstroObject);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // It's a circumbinary moon/planet
-                        var fakePrimaryBody = focalPoint.FakeMassBody.GetComponent<AstroObject>();
-                        SetMotionFromPrimary(fakePrimaryBody, secondaryBody as NHAstroObject, initialMotion);
-                    }
-                }
-                else if (primaryBody.GetGravityVolume())
-                {
-                    SetMotionFromPrimary(primaryBody, secondaryBody as NHAstroObject, initialMotion);
-                }
-                else
-                {
-                    Logger.Log($"No primary gravity or focal point for {primaryBody}");
-                }
+                SetInitialMotion(initialMotion, primaryBody, secondaryBody);
             }
             else
             {
@@ -79,6 +43,47 @@ namespace NewHorizons.Builder.Orbital
             }
 
             return initialMotion;
+        }
+
+        public static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
+        {
+            var focalPoint = primaryBody.GetComponent<BinaryFocalPoint>();
+            if (focalPoint)
+            {
+                // Focal stuff
+                var name = secondaryBody.GetCustomName();
+                if (name == focalPoint.PrimaryName || name == focalPoint.SecondaryName)
+                {
+                    // The one we're currently looking at is always null
+                    var otherBody = focalPoint.Primary ?? focalPoint.Secondary;
+                    if (otherBody != null)
+                    {
+                        // We set the positions and velocities of both right now
+                        if (name == focalPoint.PrimaryName)
+                        {
+                            SetBinaryInitialMotion(primaryBody, secondaryBody as NHAstroObject, otherBody as NHAstroObject);
+                        }
+                        else
+                        {
+                            SetBinaryInitialMotion(primaryBody, otherBody as NHAstroObject, secondaryBody as NHAstroObject);
+                        }
+                    }
+                }
+                else
+                {
+                    // It's a circumbinary moon/planet
+                    var fakePrimaryBody = focalPoint.FakeMassBody.GetComponent<AstroObject>();
+                    SetMotionFromPrimary(fakePrimaryBody, secondaryBody as NHAstroObject, initialMotion);
+                }
+            }
+            else if (primaryBody.GetGravityVolume())
+            {
+                SetMotionFromPrimary(primaryBody, secondaryBody as NHAstroObject, initialMotion);
+            }
+            else
+            {
+                Logger.Log($"No primary gravity or focal point for {primaryBody}");
+            }
         }
 
         private static void SetMotionFromPrimary(AstroObject primaryBody, NHAstroObject secondaryBody, InitialMotion initialMotion)
