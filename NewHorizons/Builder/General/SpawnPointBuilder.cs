@@ -94,6 +94,8 @@ namespace NewHorizons.Builder.General
             spv._timer = 0f;
             spv._index = 0;
 
+            spv.OnSuitUp();
+            
             GameObject suitGeometry = spv._suitGeometry;
             if (suitGeometry != null) suitGeometry.SetActive(false);
                 
