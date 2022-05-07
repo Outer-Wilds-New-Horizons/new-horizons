@@ -166,6 +166,9 @@ namespace NewHorizons.Handlers
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
+            // Did we already generate the rest of the body
+            var justUpdateOrbit = go.GetComponent<NHAstroObject>() != null && ExistingAOConfigs.ContainsKey(go.GetComponent<NHAstroObject>());
+
             // Since orbits are always there just check if they set a semi major axis
             if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
             {
@@ -176,6 +179,8 @@ namespace NewHorizons.Handlers
                     return null;
                 }
             }
+
+            if (justUpdateOrbit) return go;
 
             if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
             {
