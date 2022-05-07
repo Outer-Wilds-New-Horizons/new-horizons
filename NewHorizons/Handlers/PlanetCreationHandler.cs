@@ -20,6 +20,7 @@ namespace NewHorizons.Handlers
     public static class PlanetCreationHandler
     {
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
+        private static List<NewHorizonsBody> ToLoad;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -54,7 +55,7 @@ namespace NewHorizons.Handlers
             starLightGO.SetActive(true);
 
             // Order by stars then planets then moons (not necessary but probably speeds things up, maybe) ALSO only include current star system
-            var toLoad = bodies
+            ToLoad = bodies
                 .OrderBy(b =>
                 (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
                 (b.Config.FocalPoint != null ? 0 :
@@ -63,11 +64,11 @@ namespace NewHorizons.Handlers
                 ))).ToList();
 
             var passCount = 0;
-            while (toLoad.Count != 0)
+            while (ToLoad.Count != 0)
             {
                 Logger.Log($"Starting body loading pass #{++passCount}");
                 var flagNoneLoadedThisPass = true;
-                foreach (var body in toLoad)
+                foreach (var body in ToLoad)
                 {
                     if (LoadBody(body)) flagNoneLoadedThisPass = false;
                 }
@@ -75,7 +76,7 @@ namespace NewHorizons.Handlers
                 {
                     Logger.LogWarning("No objects were loaded this pass");
                     // Try again but default to sun
-                    foreach (var body in toLoad)
+                    foreach (var body in ToLoad)
                     {
                         if (LoadBody(body, true)) flagNoneLoadedThisPass = false;
                     }
@@ -87,7 +88,7 @@ namespace NewHorizons.Handlers
                     return;
                 }
 
-                toLoad = NextPassBodies;
+                ToLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
 
                 // Infinite loop failsafe
