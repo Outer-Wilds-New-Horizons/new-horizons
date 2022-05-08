@@ -91,7 +91,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
-            if (!__instance._alignmentFluid is NHFluidVolume) return true;
+            // if (!__instance._alignmentFluid is NHFluidVolume) return true;
 
             // Mostly copy pasting from the AlignWithDirection class
             AsymmetricFluidDetector_ManagedFixedUpdate(__instance);

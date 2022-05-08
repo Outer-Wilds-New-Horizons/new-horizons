@@ -20,7 +20,6 @@ namespace NewHorizons.Handlers
     public static class PlanetCreationHandler
     {
         public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
-        private static List<NewHorizonsBody> ToLoad;
         private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
 
         public static void Init(List<NewHorizonsBody> bodies)
@@ -57,49 +56,30 @@ namespace NewHorizons.Handlers
 
             starLightGO.SetActive(true);
 
-            // Order by stars then planets then moons (not necessary but probably speeds things up, maybe) ALSO only include current star system
-            ToLoad = bodies
-                .OrderBy(b =>
-                (b.Config.BuildPriority != -1 ? b.Config.BuildPriority :
-                (b.Config.FocalPoint != null ? 0 :
-                (b.Config.Star != null) ? 0 :
-                (b.Config.Orbit.IsMoon ? 2 : 1)
-                ))).ToList();
+            var planetGraph = new PlanetGraphHandler(bodies.OrderBy(b => b.Config?.BuildPriority ?? 0));
 
-            var passCount = 0;
-            while (ToLoad.Count != 0)
+            foreach (var node in planetGraph)
             {
-                Logger.Log($"Starting body loading pass #{++passCount}");
-                var flagNoneLoadedThisPass = true;
-                foreach (var body in ToLoad)
+                LoadBody(node.body);
+                if (node is PlanetGraphHandler.FocalPointNode focal)
                 {
-                    if (LoadBody(body)) flagNoneLoadedThisPass = false;
+                    LoadBody(focal.primary.body);
+                    LoadBody(focal.secondary.body);
                 }
-                if (flagNoneLoadedThisPass)
-                {
-                    Logger.LogWarning("No objects were loaded this pass");
-                    // Try again but default to sun
-                    foreach (var body in ToLoad)
-                    {
-                        if (LoadBody(body, true)) flagNoneLoadedThisPass = false;
-                    }
-                }
-                if (flagNoneLoadedThisPass)
-                {
-                    // Give up
-                    Logger.Log($"Couldn't finish adding bodies.");
-                    return;
-                }
+            }
 
-                ToLoad = NextPassBodies;
+            var nextPassLoad = NextPassBodies.Select(x => x).ToList();
+            
+            Logger.Log("Loading Deferred Bodies");
+
+            while (NextPassBodies.Count != 0)
+            {
+                foreach (var body in nextPassLoad)
+                {
+                    LoadBody(body, true);
+                }
+                nextPassLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
-
-                // Infinite loop failsafe
-                if (passCount > 10)
-                {
-                    Logger.Log("Something went wrong");
-                    break;
-                }
             }
 
             Logger.Log("Done loading bodies");
