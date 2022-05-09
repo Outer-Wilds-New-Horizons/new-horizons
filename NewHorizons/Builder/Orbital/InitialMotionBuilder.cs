@@ -138,14 +138,20 @@ namespace NewHorizons.Builder.Orbital
             secondaryBody.transform.position = baryCenter.transform.position + secondaryBody.GetOrbitalParameters(secondaryGravity, primaryGravity).InitialPosition;
 
             // Update the velocities
+
+            // Two-body is equivalent to reduced mass orbiting the combined mass
             var reducedMass = 1f / ((1f / m1) + (1f / m2));
+            var combinedMass = m1 + m2;
+
             var reducedMassGravity = new Gravity(reducedMass, primaryGravity.Power);
+            var combinedMassGravity = new Gravity(combinedMass, primaryGravity.Power);
+
             var baryCenterVelocity = baryCenter?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
 
             // Doing the two body problem as a single one body problem gives the relative velocity of secondary to primary
             var reducedOrbit = OrbitalParameters.FromTrueAnomaly(
+                combinedMassGravity,
                 reducedMassGravity,
-                secondaryGravity,
                 ecc,
                 distance,
                 inc,
@@ -154,19 +160,18 @@ namespace NewHorizons.Builder.Orbital
                 tru
             );
 
-            // We know their velocities sum up to the total relative velocity and are related to the masses / distances
-            // Idk where the times 2 comes from but it makes it work? Idk theres 2 planets? Makes no sense
-            var relativeVelocity = 2f * reducedOrbit.InitialVelocity;
-            var secondaryVelocity = relativeVelocity / (1f + (r1 / r2));
-            var primaryVelocity = relativeVelocity - secondaryVelocity;
+            // mf uh sin theta = v1 / r1 = v2 / r2 bc same angular speed same angle I win!
+            var v = reducedOrbit.InitialVelocity;
+            var primaryVelocity = v / (1 + r2 / r1);
+            var secondaryVelocity = primaryVelocity * r2 / r1;
 
             // Now we just set things
             var primaryInitialMotion = primaryBody.GetComponent<InitialMotion>();
-            primaryInitialMotion._cachedInitVelocity = baryCenterVelocity + primaryVelocity;
+            primaryInitialMotion._cachedInitVelocity = baryCenterVelocity - primaryVelocity;
             primaryInitialMotion._isInitVelocityDirty = false;
 
             var secondaryInitialMotion = secondaryBody.GetComponent<InitialMotion>();
-            secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity - secondaryVelocity;
+            secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity + secondaryVelocity;
             secondaryInitialMotion._isInitVelocityDirty = false;
 
             Logger.Log($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
