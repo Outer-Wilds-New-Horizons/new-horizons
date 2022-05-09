@@ -126,4 +126,4 @@ You can swap these around too. The following would scatter 12 Mars rovers across
 
 ## Use the schema
 
-To view additional options for detaling, check [the schema]({{ "Celestial Body Schema"|route}}#Props_details)
+To view additional options for detailing, check [the schema]({{ "Celestial Body Schema"|route}}#Props_details)
