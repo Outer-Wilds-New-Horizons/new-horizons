@@ -5,12 +5,13 @@ using UnityEngine;
 using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components.Orbital;
+using System;
 
 namespace NewHorizons.Builder.Orbital
 {
     static class OrbitlineBuilder
     {
-        public static void Make(GameObject body, AstroObject astroObject, bool isMoon, IPlanetConfig config)
+        public static OrbitLine Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = body.transform;
@@ -35,23 +36,23 @@ namespace NewHorizons.Builder.Orbital
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-
-            if(config.Orbit.TrackingOrbitLine)
+            if(config.Orbit.TrackingOrbitLine || (new Gravity(parentGravity).Power == 1 && ecc != 0))
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
-            }
-            else if (ecc == 0)
-            {
-                orbitLine = orbitGO.AddComponent<OrbitLine>();
-            }
-            else if (ecc > 0 && ecc < 1 && (parentGravity != null && parentGravity._falloffType == GravityVolume.FalloffType.inverseSquared))
-            {
-                // Doesn't work for linear eccentric falloff
-                orbitLine = orbitGO.AddComponent<EllipticOrbitLine>();
             }
             else
             {
-                orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
+                orbitLine = orbitGO.AddComponent<NHOrbitLine>();
+
+                var a = astroObject.SemiMajorAxis;
+                var e = astroObject.Eccentricity;
+                var b = a * Mathf.Sqrt(1f - (e * e));
+                var l = astroObject.LongitudeOfAscendingNode;
+                var p = astroObject.ArgumentOfPeriapsis;
+                var i = astroObject.Inclination;
+
+                (orbitLine as NHOrbitLine).SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
+                (orbitLine as NHOrbitLine).SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
             }
 
             var color = Color.white;
@@ -76,12 +77,14 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
-            orbitLine._lineWidth = 2f;
-            orbitLine._numVerts = numVerts;
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
-                typeof(OrbitLine).GetMethod("InitializeLineRenderer", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance).Invoke(orbitLine, new object[] { })   
-            );
+            orbitLine._lineWidth = 0.2f;
+
+            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, numVerts, 4096);
+
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+
+            return orbitLine;
         }
     }
 }

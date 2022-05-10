@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Orbital
 
             if(primary == null || secondary == null)
             {
-                Logger.LogError($"Couldn't make focal point between {module.Primary} and {module.Secondary}");
+                Logger.LogError($"Couldn't make focal point between [{module.Primary} = {primary}] and [{module.Secondary} = {secondary}]");
                 return;
             }
 

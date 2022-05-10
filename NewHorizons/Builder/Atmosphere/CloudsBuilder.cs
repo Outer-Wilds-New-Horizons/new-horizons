@@ -82,7 +82,8 @@ namespace NewHorizons.Builder.Atmosphere
 
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            topRT._localAxis = Vector3.up;
+            // Idk why but the axis is weird
+            topRT._localAxis = atmo.UseBasicCloudShader ? Vector3.forward : Vector3.up;
             topRT._degreesPerSecond = 10;
             topRT._randomizeRotationRate = false;
 
