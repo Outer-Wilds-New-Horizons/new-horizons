@@ -30,6 +30,13 @@ namespace NewHorizons.Components.Orbital
             orbitalParameters.LongitudeOfAscendingNode = longitudeOfAscendingNode;
             orbitalParameters.Eccentricity = eccentricity;
             orbitalParameters.ArgumentOfPeriapsis = argumentOfPeriapsis;    
+
+            // If primary gravity is linear and the orbit is eccentric its not even an ellipse so theres no true anomaly
+            if(primaryGravity.Power == 1 && eccentricity != 0)
+            {
+                trueAnomaly = 0;
+            }
+
             orbitalParameters.TrueAnomaly = trueAnomaly;
 
             // Have to calculate the rest
@@ -81,9 +88,7 @@ namespace NewHorizons.Components.Orbital
             var x = r * Mathf.Cos(f);
             var y = r * Mathf.Sin(f);
 
-            var n_p = new Vector2(x, y).normalized;
-
-            var dir = Rotate(new Vector3(n_p.x, 0f, n_p.y).normalized, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
+            var dir = Rotate(new Vector3(x, 0f, y).normalized, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
             var up = Rotate(Vector3.up, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
 
             var pos = r * dir;
