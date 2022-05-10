@@ -57,25 +57,26 @@ namespace NewHorizons.Handlers
             starLightGO.SetActive(true);
 
             // Load all planets
-            var newPlanetGraph = new PlanetGraphHandler(bodies);
+            var toLoad = bodies.ToList();
+            var newPlanetGraph = new PlanetGraphHandler(toLoad);
             
             foreach (var node in newPlanetGraph)
             {
                 LoadBody(node.body);
-                bodies.Remove(node.body);
+                toLoad.Remove(node.body);
 
                 if (node is PlanetGraphHandler.FocalPointNode focal)
                 {
                     LoadBody(focal.primary.body);
                     LoadBody(focal.secondary.body);
 
-                    bodies.Remove(focal.primary.body);
-                    bodies.Remove(focal.secondary.body);
+                    toLoad.Remove(focal.primary.body);
+                    toLoad.Remove(focal.secondary.body);
                 }
             }
             
             // Remaining planets are orphaned and either are stock bodies or just incorrectly set up
-            var planetGraphs = PlanetGraphHandler.ConstructStockGraph(bodies.ToArray());
+            var planetGraphs = PlanetGraphHandler.ConstructStockGraph(toLoad.ToArray());
 
             foreach(var planetGraph in planetGraphs)
             {
@@ -93,7 +94,7 @@ namespace NewHorizons.Handlers
             Logger.Log("Loading Deferred Bodies");
 
             // Make a copy of the next pass of bodies so that the array can be edited while we load them
-            var toLoad = NextPassBodies.Select(x => x).ToList();
+            toLoad = NextPassBodies.Select(x => x).ToList();
             while (NextPassBodies.Count != 0)
             {
                 foreach (var body in toLoad)
