@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.Orbital
 {
@@ -60,36 +61,44 @@ namespace NewHorizons.Components.Orbital
 
 		public override void Update()
 		{
-			AstroObject primary = _astroObject?.GetPrimaryBody();
-			
-			// If it has nothing to orbit then why is this here
-			if (primary == null)
-			{
-				base.enabled = false;
-				return;
+            try
+            {
+				AstroObject primary = _astroObject?.GetPrimaryBody();
+
+				// If it has nothing to orbit then why is this here
+				if (primary == null)
+				{
+					base.enabled = false;
+					return;
+				}
+
+				Vector3 origin = primary.transform.position + SemiMajorAxis.normalized * _fociDistance;
+
+				float num = CalcProjectedAngleToCenter(origin, SemiMajorAxis, SemiMinorAxis, _astroObject.transform.position);
+
+				for (int i = 0; i < _numVerts; i++)
+				{
+					var stepSize = 2f * Mathf.PI / (float)(_numVerts - 1);
+					float f = num + stepSize * i;
+					_verts[i] = SemiMajorAxis * Mathf.Cos(f) + SemiMinorAxis * Mathf.Sin(f);
+				}
+				_lineRenderer.SetPositions(_verts);
+
+				transform.position = origin;
+				transform.rotation = Quaternion.Euler(0, 0, 0); //Quaternion.LookRotation(-SemiMajorAxis, _upAxis);
+
+				float num2 = DistanceToEllipticalOrbitLine(origin, SemiMajorAxis, SemiMinorAxis, _upAxis, Locator.GetActiveCamera().transform.position);
+				float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
+				float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
+
+				_lineRenderer.widthMultiplier = widthMultiplier;
+				_lineRenderer.startColor = new Color(_color.r, _color.g, _color.b, num3 * num3);
 			}
-
-			Vector3 origin = primary.transform.position + SemiMajorAxis.normalized * _fociDistance;
-
-			float num = CalcProjectedAngleToCenter(origin, SemiMajorAxis, SemiMinorAxis, _astroObject.transform.position);
-			
-			for (int i = 0; i < _numVerts; i++)
-			{
-				var stepSize = 2f * Mathf.PI / (float)(_numVerts - 1);
-				float f = num + stepSize * i;
-				_verts[i] = SemiMajorAxis * Mathf.Cos(f) + SemiMinorAxis * Mathf.Sin(f);
-			}
-			_lineRenderer.SetPositions(_verts);
-
-			transform.position = origin;
-			transform.rotation = Quaternion.Euler(0, 0, 0); //Quaternion.LookRotation(-SemiMajorAxis, _upAxis);
-
-			float num2 = DistanceToEllipticalOrbitLine(origin, SemiMajorAxis, SemiMinorAxis, _upAxis, Locator.GetActiveCamera().transform.position);
-			float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
-			float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
-
-			_lineRenderer.widthMultiplier = widthMultiplier;
-			_lineRenderer.startColor = new Color(_color.r, _color.g, _color.b, num3 * num3);
+			catch(Exception ex)
+            {
+				Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}] : {ex.Message}, {ex.StackTrace}");
+				enabled = false;
+            }
 		}
 
 		private float CalcProjectedAngleToCenter(Vector3 foci, Vector3 semiMajorAxis, Vector3 semiMinorAxis, Vector3 point)

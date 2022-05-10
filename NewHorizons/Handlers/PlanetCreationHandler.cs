@@ -83,12 +83,23 @@ namespace NewHorizons.Handlers
                 foreach (var node in planetGraph)
                 {
                     LoadBody(node.body);
+                    toLoad.Remove(node.body);
+
                     if (node is PlanetGraphHandler.FocalPointNode focal)
                     {
                         LoadBody(focal.primary.body);
                         LoadBody(focal.secondary.body);
+
+                        toLoad.Remove(focal.primary.body);
+                        toLoad.Remove(focal.secondary.body);
                     }
                 }
+            }
+
+            // Are there more?
+            foreach(var body in toLoad)
+            {
+                LoadBody(body);
             }
 
             Logger.Log("Loading Deferred Bodies");
@@ -169,27 +180,17 @@ namespace NewHorizons.Handlers
             var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
 
-            // Did we already generate the rest of the body
-            var justUpdateOrbit = go.GetComponent<NHAstroObject>() != null && ExistingAOConfigs.ContainsKey(go.GetComponent<NHAstroObject>());
-
             // Since orbits are always there just check if they set a semi major axis
             if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
             {
-                // If we aren't able to update the orbit wait until later
-                if (!UpdateBodyOrbit(body, go))
-                {
-                    NextPassBodies.Add(body);
-                    return null;
-                }
+                UpdateBodyOrbit(body, go);
             }
-
-            if (justUpdateOrbit) return go;
 
             if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
             {
                 foreach (var child in body.Config.ChildrenToDestroy)
                 {
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child).SetActive(false), 2);
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 
@@ -401,7 +402,7 @@ namespace NewHorizons.Handlers
             return go;
         }
 
-        public static bool UpdateBodyOrbit(NewHorizonsBody body, GameObject go)
+        public static void UpdateBodyOrbit(NewHorizonsBody body, GameObject go)
         {
             Logger.Log($"Updating orbit of [{body.Config.Name}]");
 
@@ -421,7 +422,7 @@ namespace NewHorizons.Handlers
                 {
                     // If we can't find the new one we want to try again later (return false)
                     primary = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
-                    if (primary == null) return false;
+                    if (primary == null) return;
                 }
 
                 // Just destroy the existing AO after copying everything over
@@ -505,10 +506,10 @@ namespace NewHorizons.Handlers
             catch (Exception ex)
             {
                 Logger.LogError($"Couldn't update orbit of [{body.Config.Name}]: {ex.Message}, {ex.StackTrace}");
-                // If it doesn't here there's no point trying again so we'll still return true
+                // If it doesn't work here there's no point trying again so we'll still return true
             }
 
-            return true;
+            return;
         }
 
         private static void UpdatePosition(GameObject go, NewHorizonsBody body, AstroObject primaryBody, AstroObject secondaryBody)
