@@ -28,6 +28,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 ## Incompatible mods
 - Autoresume.
 - Quantum Space Buddies.
+- OW Randomizer.
 
 ## Features
 - Load planet meshes or details from asset bundles 
