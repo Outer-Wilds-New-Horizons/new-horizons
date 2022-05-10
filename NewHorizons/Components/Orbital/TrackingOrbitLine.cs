@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.Orbital
 {
@@ -58,32 +59,40 @@ namespace NewHorizons.Components.Orbital
 
 		public override void Update()
 		{
-			var primary = _astroObject.GetPrimaryBody();
-			Vector3 origin = primary == null ? Locator.GetRootTransform().position : primary.transform.position;
-
-			_timer += Time.deltaTime;
-			var updateTime = (TrailTime / (float)_numVerts);
-
-			if (_timer > updateTime)
+			try
 			{
-				for (int i = _numVerts - 1; i > 0; i--)
+				var primary = _astroObject.GetPrimaryBody();
+				Vector3 origin = primary == null ? Locator.GetRootTransform().position : primary.transform.position;
+
+				_timer += Time.deltaTime;
+				var updateTime = (TrailTime / (float)_numVerts);
+
+				if (_timer > updateTime)
 				{
-					var v = _vertices[i - 1];
-					_vertices[i] = new Vector3(v.x, v.y, v.z);
+					for (int i = _numVerts - 1; i > 0; i--)
+					{
+						var v = _vertices[i - 1];
+						_vertices[i] = new Vector3(v.x, v.y, v.z);
+					}
+					_timer = 0;
 				}
-				_timer = 0;
+				_vertices[0] = transform.parent.position - origin;
+				_lineRenderer.SetPositions(_vertices);
+
+				base.transform.position = origin;
+				base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
+
+				float num2 = DistanceToTrackingOrbitLine(Locator.GetActiveCamera().transform.position);
+				float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
+				float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
+				_lineRenderer.widthMultiplier = widthMultiplier;
+				_lineRenderer.startColor = new Color(_color.r, _color.g, _color.b, num3 * num3);
 			}
-			_vertices[0] = transform.parent.position - origin;
-			_lineRenderer.SetPositions(_vertices);
-
-			base.transform.position = origin;
-			base.transform.rotation = Quaternion.AngleAxis(0f, Vector3.up);
-
-			float num2 = DistanceToTrackingOrbitLine(Locator.GetActiveCamera().transform.position);
-			float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
-			float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
-			_lineRenderer.widthMultiplier = widthMultiplier;
-			_lineRenderer.startColor = new Color(_color.r, _color.g, _color.b, num3 * num3);
+			catch (Exception ex)
+			{
+				Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}] : {ex.Message}, {ex.StackTrace}");
+				enabled = false;
+			}
 		}
 
 		private float DistanceToTrackingOrbitLine(Vector3 point)
