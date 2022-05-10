@@ -56,29 +56,51 @@ namespace NewHorizons.Handlers
 
             starLightGO.SetActive(true);
 
-            var planetGraph = new PlanetGraphHandler(bodies.OrderBy(b => b.Config?.BuildPriority ?? 0));
-
-            foreach (var node in planetGraph)
+            // Load all planets
+            var newPlanetGraph = new PlanetGraphHandler(bodies);
+            
+            foreach (var node in newPlanetGraph)
             {
                 LoadBody(node.body);
+                bodies.Remove(node.body);
+
                 if (node is PlanetGraphHandler.FocalPointNode focal)
                 {
                     LoadBody(focal.primary.body);
                     LoadBody(focal.secondary.body);
+
+                    bodies.Remove(focal.primary.body);
+                    bodies.Remove(focal.secondary.body);
+                }
+            }
+            
+            // Remaining planets are orphaned and either are stock bodies or just incorrectly set up
+            var planetGraphs = PlanetGraphHandler.ConstructStockGraph(bodies.ToArray());
+
+            foreach(var planetGraph in planetGraphs)
+            {
+                foreach (var node in planetGraph)
+                {
+                    LoadBody(node.body);
+                    if (node is PlanetGraphHandler.FocalPointNode focal)
+                    {
+                        LoadBody(focal.primary.body);
+                        LoadBody(focal.secondary.body);
+                    }
                 }
             }
 
-            var nextPassLoad = NextPassBodies.Select(x => x).ToList();
-            
             Logger.Log("Loading Deferred Bodies");
 
+            // Make a copy of the next pass of bodies so that the array can be edited while we load them
+            var toLoad = NextPassBodies.Select(x => x).ToList();
             while (NextPassBodies.Count != 0)
             {
-                foreach (var body in nextPassLoad)
+                foreach (var body in toLoad)
                 {
                     LoadBody(body, true);
                 }
-                nextPassLoad = NextPassBodies;
+                toLoad = NextPassBodies;
                 NextPassBodies = new List<NewHorizonsBody>();
             }
 
@@ -420,6 +442,9 @@ namespace NewHorizons.Handlers
                 AstroObjectLocator.RegisterCustomAstroObject(newAO);
 
                 newAO._primaryBody = primary;
+
+                // Since we destroyed the AO we have to replace links to it in other places
+                newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame._attachedAstroObject = newAO;
 
                 GameObject.Destroy(go.GetComponentInChildren<OrbitLine>().gameObject);
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;

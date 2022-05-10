@@ -5,6 +5,8 @@ using System.Linq;
 using JetBrains.Annotations;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
+using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -13,6 +15,7 @@ namespace NewHorizons.Handlers
         public class PlanetNode
         {
             public NewHorizonsBody body;
+            public PlanetNode parent;
             public IEnumerable<PlanetNode> children;
         }
 
@@ -49,6 +52,75 @@ namespace NewHorizons.Handlers
             }
         }
 
+        public PlanetGraphHandler() { }
+
+        public static List<PlanetGraphHandler> ConstructStockGraph(NewHorizonsBody[] bodies)
+        {
+            var astroObjects = bodies.Select(x => AstroObjectLocator.GetAstroObject(x.Config.Name)).ToArray();
+            var children = astroObjects.Select(x => AstroObjectLocator.GetChildren(x)).ToArray();
+            var nodeDict = new Dictionary<NewHorizonsBody, PlanetNode>();
+
+            //Logger.Log($"AstroObjects [{String.Join(", ", astroObjects.ToList())}]");
+
+            var childBodyDict = new Dictionary<NewHorizonsBody, List<NewHorizonsBody>>();
+
+            // Mmmm O(N^2) moment but this is limited to stock bodies
+            for (int i = 0; i < bodies.Length; i++)
+            {
+                var ao = astroObjects[i];
+
+                var childBodies = new List<NewHorizonsBody>();
+                for (int j = 0; j < bodies.Length; j++)
+                {
+                    if (i == j) continue;
+                    // If the list of children for current object (i) containes the ao for body at index j
+                    if (children[i] != null && astroObjects[j]?.gameObject != null && children[i].Contains(astroObjects[j].gameObject))
+                    {
+                        childBodies.Add(bodies[j]);
+                    }
+                    // If uh the primary body straight up matches the name
+                    else if (bodies[j].Config.Orbit.PrimaryBody == bodies[i].Config.Name)
+                    {
+                        childBodies.Add(bodies[j]);
+                    }
+                    // If finding the astro object of the primary body matches the astro object but not null bc if its a new planet it'll always be null
+                    else if (AstroObjectLocator.GetAstroObject(bodies[j].Config.Orbit.PrimaryBody) == astroObjects[i] && astroObjects[i] != null)
+                    {
+                        childBodies.Add(bodies[j]);
+                    }
+                }
+
+                childBodyDict.Add(bodies[i], childBodies);
+
+                //Logger.Log($"Children of [{ao}] : [{String.Join(", ", childBodyDict[bodies[i]].Select(x => x.Config.Name).ToList())}]");
+
+                nodeDict.Add(bodies[i], new PlanetNode
+                {
+                    body = bodies[i]
+                });
+            }
+
+            // Set their children/parents
+            foreach (var body in bodies)
+            {
+                nodeDict[body].children = childBodyDict[body].Select(x => nodeDict[x]);
+                foreach (var child in nodeDict[body].children)
+                {
+                    child.parent = nodeDict[body];
+                }
+            }
+
+            // Verifying it worked
+            foreach (var node in nodeDict.Values.ToList())
+            {
+                var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.Name).ToList());
+                Logger.Log($"NODE: [{node?.body?.Config?.Name}], [{node?.parent?.body?.Config?.Name}], [{childrenString}]");
+            }
+
+            // Return all tree roots (no parents)
+            return nodeDict.Values.Where(x => x.parent == null).Select(x => new PlanetGraphHandler() { _rootNode = x }).ToList();
+        }
+
         private static bool DetermineIfChildOfFocal(NewHorizonsBody body, FocalPointNode node)
         {
             var name = body.Config.Name.ToLower();
@@ -57,7 +129,7 @@ namespace NewHorizons.Handlers
             var secondaryName = node.secondary.body.Config.Name.ToLower();
             return name != primaryName && name != secondaryName && (primary == node.body.Config.Name.ToLower() || primary == primaryName || primary == secondaryName);
         }
-        
+
 
         private static PlanetNode ConstructGraph(NewHorizonsBody body, NewHorizonsBody[] bodies)
         {

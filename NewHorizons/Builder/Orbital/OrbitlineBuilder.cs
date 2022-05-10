@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.Orbital
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-            if(parentGravity?.GetFalloffExponent() == 1 && ecc != 0)
+            if(config.Orbit.TrackingOrbitLine || parentGravity?.GetFalloffExponent() == 1 && ecc != 0)
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }

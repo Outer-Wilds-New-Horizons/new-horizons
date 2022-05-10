@@ -22,6 +22,8 @@ namespace NewHorizons.Utility
 
         public static AstroObject GetAstroObject(string name, bool flag = false)
         {
+            if (string.IsNullOrEmpty(name)) return null;
+
             if (_customAstroObjectDictionary.ContainsKey(name))
             {
                 return _customAstroObjectDictionary[name];
@@ -90,6 +92,8 @@ namespace NewHorizons.Utility
 
         public static GameObject[] GetChildren(AstroObject primary)
         {
+            if (primary == null) return new GameObject[0];
+
             var otherChildren = new List<GameObject>();
             switch (primary.GetAstroObjectName())
             {
