@@ -5,6 +5,6 @@
   "uniqueName": "xen.NewHorizons",
   "version": "0.14.0",
   "owmlVersion": "2.1.0",
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume" ],
+  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
