@@ -3,7 +3,6 @@ using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Updater;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -14,7 +13,6 @@ using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
-using PacificEngine.OW_CommonResources.Game.Player;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -24,7 +22,7 @@ using OWML.Common.Menus;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Utility.CommonResources;
+using NewHorizons.Builder.Atmosphere;
 using UnityEngine.Events;
 using HarmonyLib;
 using System.Reflection;
@@ -210,11 +208,9 @@ namespace NewHorizons
 
                 IsSystemReady = false;
 
-                HeavenlyBodyBuilder.Reset();
-                CommonResourcesFix.Apply();
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
-                AstroObjectLocator.RefreshList();
+                AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
@@ -247,6 +243,9 @@ namespace NewHorizons
 
                 var map = GameObject.FindObjectOfType<MapController>();
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+
+                // Fix the map satellite
+                GameObject.Find("HearthianMapSatellite_Body").AddComponent<MapSatelliteOrbitFix>();
             }
             else
             {
@@ -428,72 +427,4 @@ namespace NewHorizons
         }
         #endregion Change star system
     }
-
-    #region API
-    public class NewHorizonsApi
-    {
-        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use Create(Dictionary<string, object> config, IModBehaviour mod) instead")]
-        public void Create(Dictionary<string, object> config)
-        {
-            Create(config, null);
-        }
-
-        public void Create(Dictionary<string, object> config, IModBehaviour mod)
-        {
-            Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
-            var planetConfig = new PlanetConfig(config);
-
-            var body = new NewHorizonsBody(planetConfig, mod ?? Main.Instance);
-
-            if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
-            Main.BodyDict[body.Config.StarSystem].Add(body);
-        }
-
-        public void LoadConfigs(IModBehaviour mod)
-        {
-            Main.Instance.LoadConfigs(mod);
-        }
-
-        public GameObject GetPlanet(string name)
-        {
-            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.Name == name)?.Object;
-        }
-
-        public string GetCurrentStarSystem()
-        {
-            return Main.Instance.CurrentStarSystem;
-        }
-
-        public UnityEvent<string> GetChangeStarSystemEvent()
-        {
-            return Main.Instance.OnChangeStarSystem;
-        }
-
-        public UnityEvent<string> GetStarSystemLoadedEvent()
-        {
-            return Main.Instance.OnStarSystemLoaded;
-        }
-
-        public bool ChangeCurrentStarSystem(string name)
-        {
-            if (!Main.SystemDict.ContainsKey(name)) return false;
-
-            Main.Instance.ChangeCurrentStarSystem(name);
-            return true;
-        }
-
-        public string[] GetInstalledAddons()
-        {
-            try
-            {
-                return Main.MountedAddons.Select(x => x?.ModHelper?.Manifest?.UniqueName).ToArray();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't get installed addons {ex.Message}, {ex.StackTrace}");
-                return new string[] { };
-            }
-        }
-    }
-    #endregion API
 }

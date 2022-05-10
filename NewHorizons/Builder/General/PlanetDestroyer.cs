@@ -40,10 +40,11 @@ namespace NewHorizons.Builder.General
             var sunVolumes = GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
-            foreach(var name in _solarSystemBodies)
+            foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
                 if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(ao, false), 2);
+                else Logger.LogError($"Couldn't find [{name}]");
             }
 
             // Bring the sun back because why not
@@ -52,9 +53,13 @@ namespace NewHorizons.Builder.General
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
-            Logger.Log($"Removing {ao.name}");
+            Logger.Log($"Removing [{ao.name}]");
 
-            if (ao.gameObject == null || !ao.gameObject.activeInHierarchy) return;
+            if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
+            {
+                Logger.Log($"[{ao.name}] was already removed");
+                return;
+            }
 
             if (toDestroy == null) toDestroy = new List<AstroObject>();
 
@@ -66,79 +71,31 @@ namespace NewHorizons.Builder.General
 
             toDestroy.Add(ao);
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.BrittleHollow)
-            {
-                RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole), delete, toDestroy);
-            }
-
-            // Check if any other objects depend on it and remove them too
-            var aoArray = AstroObjectLocator.GetAllAstroObjects();
-            foreach (AstroObject obj in aoArray)
-            {
-                if (obj?.gameObject == null || !obj.gameObject.activeInHierarchy)
-                {
-                    AstroObjectLocator.RemoveAstroObject(obj);
-                    continue;
-                }
-                if (ao.Equals(obj.GetPrimaryBody()))
-                {
-                    AstroObjectLocator.RemoveAstroObject(obj);
-                    RemoveBody(obj, delete, toDestroy);
-                }
-            }
-
             try
             {
-                if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
+                if (ao.GetAstroObjectName() == AstroObject.Name.BrittleHollow)
                 {
-                    if (ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-                    {
-                        DisableBody(GameObject.Find("TimeLoopRing_Body"), delete);
-                    }
+                    RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
+                }
+                else if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
+                {
                     DisableBody(GameObject.Find("FocalBody"), delete);
                 }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
                 {
                     DisableBody(GameObject.Find("MapSatellite_Body"), delete);
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.ProbeCannon)
-                {
-                    DisableBody(GameObject.Find("NomaiProbe_Body"), delete);
-                    DisableBody(GameObject.Find("CannonMuzzle_Body"), delete);
-                    DisableBody(GameObject.Find("FakeCannonMuzzle_Body (1)"), delete);
-                    DisableBody(GameObject.Find("CannonBarrel_Body"), delete);
-                    DisableBody(GameObject.Find("FakeCannonBarrel_Body (1)"), delete);
-                    DisableBody(GameObject.Find("Debris_Body (1)"), delete);
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.SunStation)
-                {
-                    DisableBody(GameObject.Find("SS_Debris_Body"), delete);
-                }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
                 {
-                    DisableBody(GameObject.Find("BrambleIsland_Body"), delete);
-                    DisableBody(GameObject.Find("GabbroIsland_Body"), delete);
-                    DisableBody(GameObject.Find("QuantumIsland_Body"), delete);
-                    DisableBody(GameObject.Find("StatueIsland_Body"), delete);
-                    DisableBody(GameObject.Find("ConstructionYardIsland_Body"), delete);
-                    DisableBody(GameObject.Find("GabbroShip_Body"), delete);
-
                     foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
                     {
                         DisableBody(jelly.gameObject, delete);
                     }
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.WhiteHole)
-                {
-                    DisableBody(GameObject.Find("WhiteholeStation_Body"), delete);
-                    DisableBody(GameObject.Find("WhiteholeStationSuperstructure_Body"), delete);
-                }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
                 {
                     // Always just fucking kill this one to stop THE WARP BUG!!!
                     DisableBody(GameObject.Find("StreamingGroup_TH"), true);
-
-                    DisableBody(GameObject.Find("MiningRig_Body"), delete);
 
                     foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
                     {
@@ -176,13 +133,21 @@ namespace NewHorizons.Builder.General
                         GameObject.Destroy(sunProxy.gameObject);
                     }
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.DreamWorld)
+
+                // Just delete the children
+                foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
-                    DisableBody(GameObject.Find("BackRaft_Body"), delete);
-                    DisableBody(GameObject.Find("SealRaft_Body"), delete);
+                    if (child.name == "Ship_Body") continue;
+                    DisableBody(child, true);
+                }
+
+                // Delete moons
+                foreach (var obj in AstroObjectLocator.GetMoons(ao))
+                {
+                    RemoveBody(obj.GetComponent<AstroObject>(), false, toDestroy);
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogWarning($"Exception thrown when trying to delete bodies related to [{ao.name}]: {e.Message}, {e.StackTrace}");
             }
@@ -207,15 +172,13 @@ namespace NewHorizons.Builder.General
                     GameObject.Destroy(proxy.gameObject);
                 }
             }
-
-            HeavenlyBodyBuilder.Remove(ao);
         }
 
         public static void RemoveAllProxies()
         {
             GameObject.Destroy(GameObject.FindObjectOfType<DistantProxyManager>().gameObject);
 
-            foreach(var name in _solarSystemBodies)
+            foreach (var name in _solarSystemBodies)
             {
                 RemoveProxy(name.Replace(" ", "").Replace("'", ""));
             }
@@ -226,7 +189,15 @@ namespace NewHorizons.Builder.General
             if (go == null) return;
 
             if (delete) GameObject.Destroy(go);
-            else go.SetActive(false);
+            else
+            {
+                go.SetActive(false);
+                var ol = go.GetComponentInChildren<OrbitLine>();
+                if (ol)
+                {
+                    ol.enabled = false;
+                }
+            }
         }
 
         private static void RemoveProxy(string name)

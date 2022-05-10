@@ -20,7 +20,7 @@ namespace NewHorizons.Patches
         {
             var ao = __instance.GetAstroObject();
 
-            if (ao == null) return true;
+            if (ao == null || ao._name != AstroObject.Name.CustomString) return true;
 
             if (ao is NHAstroObject)
             {

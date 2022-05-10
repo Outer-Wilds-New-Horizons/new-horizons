@@ -9,19 +9,18 @@ namespace NewHorizons.Components.Orbital
 {
     public class BinaryFocalPoint : MonoBehaviour
     {
-        public string PrimaryName = null;
-        public string SecondaryName = null;
+        public string PrimaryName { get; set; }
+        public string SecondaryName { get; set; }
 
-        public AstroObject Primary = null;
-        public AstroObject Secondary = null;
+        public AstroObject Primary { get; set; }
+        public AstroObject Secondary { get; set; }
 
-        public GameObject FakeMassBody = null;
+        public GameObject FakeMassBody { get; set; }
 
-        public List<AstroObject> Planets { get; private set; } = new List<AstroObject>(); 
-
-        void Awake()
+        void Start()
         {
-            FakeMassBody.SetActive(true);   
+            // Make sure its active but maybe it hasn't been set yet
+            if(FakeMassBody) FakeMassBody.SetActive(true);   
         }
 
         void Update()

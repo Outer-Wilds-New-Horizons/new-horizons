@@ -15,7 +15,6 @@ namespace NewHorizons.Components.Orbital
 
 		public float TrailTime = 120f;
 
-
 		public override void InitializeLineRenderer()
 		{
 			_lineRenderer.positionCount = this._numVerts;

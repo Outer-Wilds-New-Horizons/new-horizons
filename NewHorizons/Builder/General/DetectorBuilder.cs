@@ -42,6 +42,14 @@ namespace NewHorizons.Builder.General
                 // Could copy the splash from the interloper as well some day
             }
 
+            SetDetector(primaryBody, astroObject, forceDetector);
+
+            detectorGO.SetActive(true);
+            return detectorGO;
+        }
+
+        public static void SetDetector(AstroObject primaryBody, AstroObject astroObject, ConstantForceDetector forceDetector)
+        {
             GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
             if (parentGravityVolume != null)
             {
@@ -51,14 +59,15 @@ namespace NewHorizons.Builder.General
             {
                 // It's probably a focal point (or its just broken)
                 var binaryFocalPoint = primaryBody?.gameObject?.GetComponent<BinaryFocalPoint>();
-                if(binaryFocalPoint != null)
+                if (binaryFocalPoint != null)
                 {
-                    if(astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName)) {
+                    if (astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName))
+                    {
                         binaryFocalPoint.Primary = astroObject;
                         if (binaryFocalPoint.Secondary != null)
                         {
                             var secondaryRB = binaryFocalPoint.Secondary.GetAttachedOWRigidbody();
-                            SetBinaryForceDetectableFields(binaryFocalPoint, forceDetector, secondaryRB.GetAttachedForceDetector() as ConstantForceDetector, OWRB, secondaryRB);
+                            SetBinaryForceDetectableFields(binaryFocalPoint, forceDetector, (ConstantForceDetector)secondaryRB.GetAttachedForceDetector());
                         }
                     }
                     else if (astroObject.GetCustomName().Equals(binaryFocalPoint.SecondaryName))
@@ -67,14 +76,13 @@ namespace NewHorizons.Builder.General
                         if (binaryFocalPoint.Primary != null)
                         {
                             var primaryRB = binaryFocalPoint.Primary.GetAttachedOWRigidbody();
-                            SetBinaryForceDetectableFields(binaryFocalPoint, primaryRB.GetAttachedForceDetector() as ConstantForceDetector, forceDetector, primaryRB, OWRB);
+                            SetBinaryForceDetectableFields(binaryFocalPoint, (ConstantForceDetector)primaryRB.GetAttachedForceDetector(), forceDetector);
                         }
                     }
                     else
                     {
                         // It's a planet
-                        binaryFocalPoint.Planets.Add(astroObject);
-                        if(binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
+                        if (binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
                         {
                             var fakeBarycenterGravityVolume = binaryFocalPoint.FakeMassBody.GetComponent<AstroObject>().GetGravityVolume();
                             forceDetector._detectableFields = new ForceVolume[] { fakeBarycenterGravityVolume };
@@ -82,18 +90,14 @@ namespace NewHorizons.Builder.General
                     }
                 }
             }
-
-            detectorGO.SetActive(true);
-            return detectorGO;
         }
 
-        private static void SetBinaryForceDetectableFields(BinaryFocalPoint point, ConstantForceDetector primaryCFD, ConstantForceDetector secondaryCFD, OWRigidbody primaryRB, OWRigidbody secondaryRB)
+        private static void SetBinaryForceDetectableFields(BinaryFocalPoint point, ConstantForceDetector primaryCFD, ConstantForceDetector secondaryCFD)
         {
             Logger.Log($"Setting up binary focal point for {point.name}");
 
             var primary = point.Primary;
             var secondary = point.Secondary;
-            var planets = point.Planets;
 
             // Binaries have to use the same gravity exponent
             var primaryGV = primary.GetGravityVolume();
@@ -117,15 +121,6 @@ namespace NewHorizons.Builder.General
             secondaryCFD._inheritDetector = pointForceDetector;
             secondaryCFD._activeInheritedDetector = pointForceDetector;
             secondaryCFD._inheritElement0 = false;
-
-            foreach(var planet in planets)
-            {
-                var planetCFD = planet.GetAttachedOWRigidbody().GetAttachedForceDetector() as ConstantForceDetector;
-                planetCFD._detectableFields = new ForceVolume[] { primaryGV, secondaryGV };
-                planetCFD._inheritDetector = pointForceDetector;
-                planetCFD._activeInheritedDetector = pointForceDetector;
-                planetCFD._inheritElement0 = false;
-            }
         }
     }
 }
