@@ -61,11 +61,11 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 Main authors:
 - xen (New Horizons v0.1.0 onwards)
 - [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
+- [Nageld](https://github.com/Nageld): (New Horizons v0.8.0)
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [Nageld](https://github.com/Nageld): Set up xml reading for custom dialogue in v0.8.0, worked on Nomai text in v0.12.0.
-- [jtsalomo](https://github.com/jtsalomo): Implemented [OW_CommonResources](https://github.com/PacificEngine/OW_CommonResources) support introduced in v0.5.0
+- [jtsalomo](https://github.com/jtsalomo)
 - [Raicuparta](https://github.com/Raicuparta)
 - [MegaPiggy](https://github.com/MegaPiggy)
 
