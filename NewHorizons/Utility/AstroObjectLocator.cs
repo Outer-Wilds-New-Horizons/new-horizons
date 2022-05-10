@@ -16,6 +16,9 @@ namespace NewHorizons.Utility
             _customAstroObjectDictionary = new Dictionary<string, AstroObject>();
             foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
             {
+                // Ignore the sun station debris, we handle it as a child of the sun station
+                if (ao.gameObject.name == "SS_Debris_Body") continue;
+
                 RegisterCustomAstroObject(ao);
             }
         }
@@ -64,7 +67,7 @@ namespace NewHorizons.Utility
 
             if (_customAstroObjectDictionary.Keys.Contains(key))
             {
-                Logger.Log($"Registering duplicate [{ao.name}] as [{key}]");
+                Logger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary[key] = ao;
             }
             else
