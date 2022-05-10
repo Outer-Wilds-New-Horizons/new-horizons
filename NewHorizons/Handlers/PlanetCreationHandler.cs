@@ -521,9 +521,9 @@ namespace NewHorizons.Handlers
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
-                var relativePosition = body.Config.Orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
+                var orbit = body.Config.Orbit;
 
-                go.transform.position = relativePosition + primaryBody.transform.position;
+                go.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
             }
             else
             {

@@ -88,11 +88,16 @@ namespace NewHorizons.Components.Orbital
             var x = r * Mathf.Cos(f);
             var y = r * Mathf.Sin(f);
 
+            // Forgot to take the derivative of r as well with respect to f
+            var denominator = Mathf.Pow(eccentricity * Mathf.Cos(f) + 1, 2);
+            var dx = -p * Mathf.Sin(f) / denominator;
+            var dy = p * (eccentricity + Mathf.Cos(f)) / denominator;
+
             var dir = Rotate(new Vector3(x, 0f, y).normalized, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
-            var up = Rotate(Vector3.up, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
+            var velocityDir = Rotate(new Vector3(dx, 0f, dy).normalized, longitudeOfAscendingNode, inclination, argumentOfPeriapsis);
 
             var pos = r * dir;
-            var vel = v * Vector3.Cross(dir, up).normalized;
+            var vel = v * velocityDir;
 
             orbitalParameters.InitialPosition = pos;
             orbitalParameters.InitialVelocity = vel;
