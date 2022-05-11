@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
         {
-            if(_prefab == null)
+            if (_prefab == null)
             {
                 _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
                 if (_prefab == null)
@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Props
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
-            raftObject.transform.parent = sector.transform;
+            raftObject.transform.parent = sector?.transform ?? planetGO.transform;
             raftObject.transform.localPosition = info.position;
             raftObject.transform.localRotation = Quaternion.identity;
 

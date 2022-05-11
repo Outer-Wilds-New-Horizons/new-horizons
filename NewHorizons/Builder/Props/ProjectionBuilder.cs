@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Props
         }
 
         private static void MakeSlideReel(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
-        { 
+        {
             if (_slideReelPrefab == null)
             {
                 _slideReelPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Props
 
             var slideCollectionContainer = slideReelObj.GetRequiredComponent<SlideCollectionContainer>();
 
-            foreach(var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
+            foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
                 renderer.enabled = true;
             }
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Props
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
-            for(int i = 0; i < slidesCount; i++)
+            for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
                 slide.textureOverride = ImageUtilities.Invert(texture);
 
                 // Track the first 15 to put on the slide reel object
-                if(i < 15) textures[i] = texture;
+                if (i < 15) textures[i] = texture;
 
                 AddModules(slideInfo, ref slide);
 

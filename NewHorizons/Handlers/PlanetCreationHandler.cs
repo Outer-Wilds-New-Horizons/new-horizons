@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.External;
 using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
 using System;
@@ -119,9 +120,9 @@ namespace NewHorizons.Handlers
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestructionHandler.RemoveAllProxies);
 
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestroyer.RemoveSolarSystem();
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveSolarSystem();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -145,7 +146,7 @@ namespace NewHorizons.Handlers
                     if (body.Config.Destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestroyer.RemoveBody(ao), 2);
+                        if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
                         else Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
                     }
                     else UpdateBody(body, existingPlanet);
@@ -230,10 +231,8 @@ namespace NewHorizons.Handlers
             var go = new GameObject(body.Config.Name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
-            if (body.Config.Base.GroundSize != 0)
-            {
-                GeometryBuilder.Make(go, body.Config.Base.GroundSize);
-            }
+            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
 
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.Size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.SurfaceSize * 2f);
@@ -243,8 +242,13 @@ namespace NewHorizons.Handlers
                 sphereOfInfluence = overrideSOI;
             }
 
-            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
+            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            ao._rootSector = sector;
+
+            if (body.Config.Base.GroundSize != 0)
+            {
+                GeometryBuilder.Make(go, sector, body.Config.Base.GroundSize);
+            }
 
             if (body.Config.Base.SurfaceGravity != 0)
             {
@@ -263,22 +267,19 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Base.HasAmbientLight)
             {
-                AmbientLightBuilder.Make(go, sphereOfInfluence);
+                AmbientLightBuilder.Make(go, sector, sphereOfInfluence);
             }
 
-            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
-            ao._rootSector = sector;
-
-            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, body.Config);
+            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, !body.Config.Base.IsSatellite);
 
             if (body.Config.HeightMap != null)
             {
-                HeightMapBuilder.Make(go, body.Config.HeightMap, body.Mod);
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod);
             }
 
             if (body.Config.ProcGen != null)
             {
-                ProcGenBuilder.Make(go, body.Config.ProcGen);
+                ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
             }
 
             if (body.Config.Star != null)
@@ -330,13 +331,13 @@ namespace NewHorizons.Handlers
         private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             if (body.Config.Ring != null)
-                RingBuilder.Make(go, body.Config.Ring, body.Mod);
+                RingBuilder.Make(go, sector, body.Config.Ring, body.Mod);
 
             if (body.Config.AsteroidBelt != null)
                 AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Mod);
 
             if (body.Config.Base.HasCometTail)
-                CometTailBuilder.Make(go, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
+                CometTailBuilder.Make(go, sector, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
 
             // Backwards compatability
             if (body.Config.Base.LavaSize != 0)
@@ -366,21 +367,31 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Atmosphere != null)
             {
-                AirBuilder.Make(go, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasOxygen);
+                var airInfo = new AtmosphereModule.AirInfo()
+                {
+                    HasOxygen = body.Config.Atmosphere.HasOxygen,
+                    IsRaining = body.Config.Atmosphere.HasRain,
+                    IsSnowing = body.Config.Atmosphere.HasSnow,
+                    Scale = body.Config.Atmosphere.Size
+                };
+
+                var surfaceSize = body.Config.Base.SurfaceSize;
+
+                AirBuilder.Make(go, sector, airInfo);
 
                 if (body.Config.Atmosphere.Cloud != null)
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere);
+                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);
                 }
 
                 if (body.Config.Atmosphere.HasRain || body.Config.Atmosphere.HasSnow)
-                    EffectsBuilder.Make(go, sector, body.Config.Base.SurfaceSize, body.Config.Atmosphere.Size, body.Config.Atmosphere.HasRain, body.Config.Atmosphere.HasSnow);
+                    EffectsBuilder.Make(go, sector, airInfo, surfaceSize);
 
                 if (body.Config.Atmosphere.FogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
 
-                AtmosphereBuilder.Make(go, body.Config.Atmosphere, body.Config.Base.SurfaceSize);
+                AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);
             }
 
             if (body.Config.Props != null)

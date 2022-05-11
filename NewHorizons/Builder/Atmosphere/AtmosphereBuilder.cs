@@ -6,11 +6,11 @@ namespace NewHorizons.Builder.Atmosphere
 {
     static class AtmosphereBuilder
     {
-        public static void Make(GameObject body, AtmosphereModule atmosphereModule, float surfaceSize)
+        public static void Make(GameObject body, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize)
         {
             GameObject atmoGO = new GameObject("Atmosphere");
             atmoGO.SetActive(false);
-            atmoGO.transform.parent = body.transform;
+            atmoGO.transform.parent = sector?.transform ?? body.transform;
 
             if (atmosphereModule.HasAtmosphere)
             {

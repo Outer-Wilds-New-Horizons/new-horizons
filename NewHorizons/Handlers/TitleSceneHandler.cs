@@ -85,7 +85,7 @@ namespace NewHorizons.Handlers
                 heightMap.TextureMap = body.Config.Atmosphere.Cloud;
             }
 
-            HeightMapBuilder.Make(titleScreenGO, heightMap, body.Mod);
+            HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
 
             GameObject pivot = GameObject.Instantiate(GameObject.Find("Scene/Background/PlanetPivot"), GameObject.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
@@ -101,7 +101,7 @@ namespace NewHorizons.Handlers
                 newRing.InnerRadius = size * 1.2f;
                 newRing.OuterRadius = size * 2f;
                 newRing.Texture = body.Config.Ring.Texture;
-                var ring = RingBuilder.Make(titleScreenGO, newRing, body.Mod);
+                var ring = RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 

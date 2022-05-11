@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.Props
         {
             var original = GameObject.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village");
             GameObject geyserGO = original.InstantiateInactive();
-            geyserGO.transform.parent = sector.transform;
+            geyserGO.transform.parent = sector?.transform ?? go.transform;
             geyserGO.name = "Geyser";
 
             var pos = ((Vector3)info.position);

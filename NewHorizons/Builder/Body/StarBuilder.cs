@@ -17,14 +17,14 @@ namespace NewHorizons.Builder.Body
     static class StarBuilder
     {
         public const float OuterRadiusRatio = 1.5f;
-
         private static Texture2D _colorOverTime;
-        public static StarController Make(GameObject body, Sector sector, StarModule starModule)
+
+        public static StarController Make(GameObject go, Sector sector, StarModule starModule)
         {
             if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
-            starGO.transform.parent = body.transform;
+            starGO.transform.parent = sector?.transform ?? go.transform;
 
             var sunSurface = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface"), starGO.transform);
             sunSurface.transform.localPosition = Vector3.zero;
@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.Body
 
             if(starModule.HasAtmosphere)
             {
-                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), body.transform);
+                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), go.transform);
                 sunAtmosphere.transform.localPosition = Vector3.zero;
                 sunAtmosphere.transform.localScale = Vector3.one;
                 sunAtmosphere.name = "Atmosphere_Star";
@@ -157,7 +157,7 @@ namespace NewHorizons.Builder.Body
             StarController starController = null;
             if (starModule.SolarLuminosity != 0)
             {
-                starController = body.AddComponent<StarController>();
+                starController = go.AddComponent<StarController>();
                 starController.Light = light;
                 starController.AmbientLight = ambientLight;
                 starController.FaceActiveCamera = faceActiveCamera;

@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Atmosphere
         {
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
-            fogGO.transform.parent = body.transform;
+            fogGO.transform.parent = sector?.transform ?? body.transform;
             fogGO.transform.localScale = Vector3.one;
 
             // Going to copy from dark bramble

@@ -11,14 +11,14 @@ namespace NewHorizons.Builder.Body
 {
     static class WaterBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, WaterModule module)
+        public static void Make(GameObject go, Sector sector, OWRigidbody rb, WaterModule module)
         {
             var waterSize = module.Size;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
             waterGO.layer = 15;
-            waterGO.transform.parent = body.transform;
+            waterGO.transform.parent = sector?.transform ?? go.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
 
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();

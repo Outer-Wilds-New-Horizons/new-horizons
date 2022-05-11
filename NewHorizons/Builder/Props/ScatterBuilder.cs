@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.HeightMap);
                 }
                 catch (Exception) { }
-                if(heightMapTexture == null)
+                if (heightMapTexture == null)
                 {
                     radius = heightMap.MaxHeight;
                 }
@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = GameObject.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
-                    var randomInd = (int)Random.Range(0, points.Count-1);
+                    var randomInd = (int)Random.Range(0, points.Count - 1);
                     var point = points[randomInd];
 
                     var height = radius;

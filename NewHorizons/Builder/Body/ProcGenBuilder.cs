@@ -11,10 +11,10 @@ namespace NewHorizons.Builder.Body
 {
     static class ProcGenBuilder
     {
-        public static void Make(GameObject go, ProcGenModule module)
+        public static void Make(GameObject go, Sector sector, ProcGenModule module)
         {
             GameObject icosphere = new GameObject("Icosphere");
-            icosphere.transform.parent = go.transform;
+            icosphere.transform.parent = sector?.transform ?? go.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
             icosphere.transform.localPosition = Vector3.zero;
 

@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
-            cloudsMainGO.transform.parent = body.transform;
+            cloudsMainGO.transform.parent = sector?.transform ?? body.transform;
 
             GameObject cloudsTopGO = new GameObject("TopClouds");
             cloudsTopGO.SetActive(false);
