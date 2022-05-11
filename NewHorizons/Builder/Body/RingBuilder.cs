@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.Body
             }
 
             var ringGO = new GameObject("Ring");
-            ringGO.transform.parent = sector.transform ?? body.transform;
+            ringGO.transform.parent = sector?.transform ?? body.transform;
             ringGO.transform.localPosition = Vector3.zero;
             ringGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
