@@ -166,7 +166,16 @@ namespace NewHorizons.Handlers
                             var rootSector = quantumPlanet.GetComponentInChildren<Sector>();
                             var groundOrbit = _dict[ao].Config.Orbit;
 
-                            quantumPlanet.states.Add(new QuantumPlanet.State(rootSector, groundOrbit));
+                            quantumPlanet.groundState = new QuantumPlanet.State(rootSector, groundOrbit);
+                            quantumPlanet.states.Add(quantumPlanet.groundState);
+
+                            var visibilityTracker = new GameObject("VisibilityTracker_Sphere");
+                            visibilityTracker.transform.parent = existingPlanet.transform;
+                            visibilityTracker.transform.localPosition = Vector3.zero;
+                            var sphere = visibilityTracker.AddComponent<SphereShape>();
+                            sphere.radius = GetSphereOfInfluence(_dict[ao]);
+                            var tracker = visibilityTracker.AddComponent<ShapeVisibilityTracker>();
+                            quantumPlanet._visibilityTrackers = new VisibilityTracker[] { tracker };
                         }
 
                         var rb = existingPlanet.GetComponent<OWRigidbody>();
@@ -177,10 +186,10 @@ namespace NewHorizons.Handlers
                         SharedGenerateBody(body, existingPlanet, sector, rb);
 
                         // If nothing was generated then forget the sector
-                        if (sector.transform.childCount == 0) sector = null;
+                        if (sector.transform.childCount == 0) sector = quantumPlanet.groundState.sector;
 
                         // If semimajor axis is 0 then forget the orbit
-                        var orbit = body.Config.Orbit.SemiMajorAxis == 0 ? null : body.Config.Orbit;
+                        var orbit = body.Config.Orbit.SemiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
                         quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
                     }

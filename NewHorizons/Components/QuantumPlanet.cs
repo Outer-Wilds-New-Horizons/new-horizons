@@ -18,6 +18,7 @@ namespace NewHorizons.Components
     public class QuantumPlanet : QuantumObject
     {
         public List<State> states = new List<State>();
+        public State groundState;
 
         private int _currentIndex;
         private NHAstroObject _astroObject;
@@ -33,6 +34,8 @@ namespace NewHorizons.Components
             _detector = GetComponentInChildren<ConstantForceDetector>();
             _alignment = GetComponent<AlignWithTargetBody>();
             _rb = GetComponent<OWRigidbody>();
+
+            GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
         }
 
         public override void Start()
@@ -62,8 +65,8 @@ namespace NewHorizons.Components
             var oldState = states[_currentIndex];
             var newState = states[newIndex];
 
-            if (newState.sector != null) SetNewSector(oldState, newState);
-            if(newState.orbit != null) SetNewOrbit(newState);
+            if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
+            if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(newState);
 
             _currentIndex = newIndex;
 
@@ -92,6 +95,19 @@ namespace NewHorizons.Components
             var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
 
             _rb.SetVelocity(currentOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity);
+        }
+
+        private void OnPlayerBlink()
+        {
+            if (base.IsVisible())
+            {
+                base.Collapse(true);
+            }
+        }
+
+        public override bool IsPlayerEntangled()
+        {
+            return states[_currentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
         }
 
         public class State
