@@ -24,8 +24,9 @@ namespace NewHorizons.Utility
             public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
         }
 
-        // placeholder currentObject
-        public static string currentObject = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
+        public static readonly string DEFAULT_OBJECT = currentObject = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
+
+        public static string currentObject = DEFAULT_OBJECT;
         private static List<PropPlacementData> props = new List<PropPlacementData>();
         private static List<PropPlacementData> deletedProps = new List<PropPlacementData>();
 
@@ -43,14 +44,19 @@ namespace NewHorizons.Utility
             { 
                 // TODO: if currentObject == "" or null, spawn some generic placeholder instead
 
+                if (currentObject == "" || currentObject == null)
+                {
+                    currentObject = DEFAULT_OBJECT;   
+                }
+
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
                 propData.initial_pos = data.pos;
                 propData.initial_rotation = data.norm;
 
+                // TODO: rotate around vertical axis to face player
                 string origEul = prop.transform.localEulerAngles.ToString();
                 prop.transform.localRotation = Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward);
-                Logger.Log($"{data.norm.ToString()}   -=-    {prop.transform.localEulerAngles.ToString()}  =>  {prop.transform.localEulerAngles.ToString()}");
             } 
             catch (Exception e)
             {
