@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject downPrefab;
         private static GameObject soundPrefab;
 
-        public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
             if (upPrefab == null)
             {
@@ -57,7 +57,7 @@ namespace NewHorizons.Builder.Props
 
             var tornadoGO = info.downwards ? downPrefab.InstantiateInactive() : upPrefab.InstantiateInactive();
             tornadoGO.transform.parent = sector.transform;
-            tornadoGO.transform.localPosition = position;
+            tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
             // Add the sound thing before changing the scale

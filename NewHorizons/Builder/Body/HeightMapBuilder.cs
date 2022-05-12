@@ -17,7 +17,7 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject go, Sector sector, HeightMapModule module, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod)
         {
             Texture2D heightMap, textureMap;
             try
@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Body
 
             GameObject cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
-            cubeSphere.transform.parent = sector?.transform ?? go.transform;
+            cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, module.Stretch);
@@ -55,11 +55,11 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
-            if(go.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
+            if(planetGO.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
 
             // Fix rotation in the end
-            cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            cubeSphere.transform.localPosition = Vector3.zero;
+            cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            cubeSphere.transform.position = planetGO.transform.position;
 
             cubeSphere.SetActive(true);
         }

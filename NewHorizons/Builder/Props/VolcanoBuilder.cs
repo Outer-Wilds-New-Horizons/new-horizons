@@ -10,13 +10,13 @@ namespace NewHorizons.Builder.Props
         private static Color defaultStoneTint = new Color(0.07450981f, 0.07450981f, 0.07450981f);
         private static Color defaultLavaTint = new Color(4.594794f, 0.3419145f, 0f, 1f);
 
-        public static void Make(GameObject go, Sector sector, PropModule.VolcanoInfo info)
+        public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
         {
             var prefab = GameObject.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher");
 
             var launcherGO = prefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
-            launcherGO.transform.localPosition = info.position == null ? Vector3.zero : (Vector3)info.position;
+            launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
             launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
 

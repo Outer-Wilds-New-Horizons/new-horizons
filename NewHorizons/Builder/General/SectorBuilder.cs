@@ -8,11 +8,11 @@ namespace NewHorizons.Builder.General
 {
     public static class MakeSector
     {
-        public static Sector Make(GameObject body, OWRigidbody rigidbody, float sphereOfInfluence)
+        public static Sector Make(GameObject planetBody, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
             GameObject sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
-            sectorGO.transform.parent = body.transform;
+            sectorGO.transform.parent = planetBody.transform;
             sectorGO.transform.localPosition = Vector3.zero;
 
             SphereShape SS = sectorGO.AddComponent<SphereShape>();
@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.General
 
             Sector S = sectorGO.AddComponent<Sector>();
             S._name = (Sector.Name)24;
-            S._attachedOWRigidbody = rigidbody;
+            S._attachedOWRigidbody = owRigidBody;
             S._subsectors = new List<Sector>();
 
             sectorGO.SetActive(true);

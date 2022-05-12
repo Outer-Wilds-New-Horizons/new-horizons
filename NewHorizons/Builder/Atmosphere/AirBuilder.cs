@@ -7,12 +7,12 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class AirBuilder
     {
-        public static void Make(GameObject body, Sector sector, AtmosphereModule.AirInfo info)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule.AirInfo info)
         {
             GameObject airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
-            airGO.transform.parent = sector?.transform ?? body.transform;
+            airGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             SphereCollider SC = airGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Atmosphere
                 airGO.AddComponent<AudioVolume>();
             }
 
-            airGO.transform.localPosition = Vector3.zero;
+            airGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             airGO.SetActive(true);
         }
     }

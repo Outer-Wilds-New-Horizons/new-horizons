@@ -94,12 +94,12 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        public static GameObject MakeBlackHole(GameObject go, Sector sector, Vector3 localPosition, float size, bool hasDestructionVolume, string targetSolarSystem, bool makeAudio = true)
+        public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, bool hasDestructionVolume, string targetSolarSystem, bool makeAudio = true)
         {
             var blackHole = new GameObject("BlackHole");
             blackHole.SetActive(false);
-            blackHole.transform.parent = sector?.transform ?? go.transform;
-            blackHole.transform.localPosition = localPosition;
+            blackHole.transform.parent = sector?.transform ?? planetGO.transform;
+            blackHole.transform.position = planetGO.transform.TransformPoint(localPosition);
 
             var blackHoleRender = new GameObject("BlackHoleRender");
             blackHoleRender.transform.parent = blackHole.transform;
@@ -165,12 +165,12 @@ namespace NewHorizons.Builder.Body
             return blackHole;
         }
 
-        public static GameObject MakeWhiteHole(GameObject body, Sector sector, OWRigidbody OWRB, Vector3 localPosition, float size, bool makeZeroGVolume = true)
+        public static GameObject MakeWhiteHole(GameObject planetGO, Sector sector, OWRigidbody OWRB, Vector3 localPosition, float size, bool makeZeroGVolume = true)
         {
             var whiteHole = new GameObject("WhiteHole");
             whiteHole.SetActive(false);
-            whiteHole.transform.parent = sector?.transform ?? body.transform;
-            whiteHole.transform.localPosition = localPosition;
+            whiteHole.transform.parent = sector?.transform ?? planetGO.transform;
+            whiteHole.transform.position = planetGO.transform.TransformPoint(localPosition);
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
             whiteHoleRenderer.transform.parent = whiteHole.transform;
@@ -214,7 +214,7 @@ namespace NewHorizons.Builder.Body
             whiteHoleVolume._whiteHoleSector = sector;
             whiteHoleVolume._fluidVolume = whiteHoleFluidVolume;
             whiteHoleVolume._whiteHoleBody = OWRB;
-            whiteHoleVolume._whiteHoleProxyShadowSuperGroup = body.GetComponent<ProxyShadowCasterSuperGroup>();
+            whiteHoleVolume._whiteHoleProxyShadowSuperGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             whiteHoleVolume._radius = size * 0.5f;
             
             whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = size;
@@ -230,7 +230,7 @@ namespace NewHorizons.Builder.Body
                 zeroGVolume.GetComponent<SphereCollider>().radius = size * 10f;
                 zeroGVolume.GetComponent<ZeroGVolume>()._attachedBody = OWRB;
 
-                var rulesetVolume = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/Sector_WhiteHole/RulesetVolumes_WhiteHole"), body.transform);
+                var rulesetVolume = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/Sector_WhiteHole/RulesetVolumes_WhiteHole"), planetGO.transform);
                 rulesetVolume.name = "RulesetVolume";
                 rulesetVolume.transform.localPosition = Vector3.zero;
                 rulesetVolume.transform.localScale = Vector3.one * size / 100f;
