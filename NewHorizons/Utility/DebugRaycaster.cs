@@ -25,38 +25,75 @@ namespace NewHorizons.Utility
 
         private void Update()
         {
-            if (Main.Debug && Keyboard.current != null && Keyboard.current[Key.P].wasReleasedThisFrame)
+            if (!Main.Debug) return;
+            if (Keyboard.current == null) return;
+
+            if (Keyboard.current[Key.P].wasReleasedThisFrame)
             {
-                // Raycast
-                _rb.DisableCollisionDetection();
-                int layerMask = OWLayerMask.physicalMask;
-                var origin = Locator.GetActiveCamera().transform.position;
-                var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
-                if (Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask))
-                {
-                    var pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
-                    var norm = hitInfo.transform.InverseTransformDirection(hitInfo.normal);
-                    var o = hitInfo.transform.gameObject;
-
-                    var posText = $"{{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}}";
-                    var normText = $"{{\"x\": {norm.x}, \"y\": {norm.y}, \"z\": {norm.z}}}";
-
-                    if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
-                    if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
-                    if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
-
-                    _surfaceSphere = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.1f, Color.green);
-                    _normalSphere1 = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.01f, Color.red);
-                    _normalSphere2 = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.01f, Color.red);
-
-                    _surfaceSphere.transform.localPosition = pos;
-                    _normalSphere1.transform.localPosition = pos + norm * 0.5f;
-                    _normalSphere2.transform.localPosition = pos + norm;
-
-                    Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{o.name}] at [{SearchUtilities.GetPath(o.transform)}]");
-                }
-                _rb.EnableCollisionDetection();
+                PrintRaycast();
             }
+
+            if (Keyboard.current[Key.L].wasReleasedThisFrame)
+            {
+                PlaceObject();
+            }
+
+            if (Keyboard.current[Key.Semicolon].wasReleasedThisFrame)
+            {
+                DebugPropPlacer.PrintConfig();
+            }
+        }
+
+        internal void PlaceObject()
+        {
+            DebugRaycastData data = Raycast();
+            DebugPropPlacer.PlaceObject(data);
+        }
+
+        internal void PrintRaycast()
+        {
+            DebugRaycastData data = Raycast();
+            var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
+            var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
+
+            if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
+            if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
+            if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
+
+            _surfaceSphere = AddDebugShape.AddSphere(data.hitObject, 0.1f, Color.green);
+            _normalSphere1 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
+            _normalSphere2 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
+
+            _surfaceSphere.transform.localPosition = data.pos;
+            _normalSphere1.transform.localPosition = data.pos + data.norm * 0.5f;
+            _normalSphere2.transform.localPosition = data.pos + data.norm;
+
+            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
+        }
+
+        internal DebugRaycastData Raycast()
+        {
+            DebugRaycastData data = new DebugRaycastData();
+
+            _rb.DisableCollisionDetection();
+            int layerMask = OWLayerMask.physicalMask;
+            var origin = Locator.GetActiveCamera().transform.position;
+            var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
+            
+            data.hit = Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask);
+            if (data.hit)
+            {
+                data.pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
+                data.norm = hitInfo.transform.InverseTransformDirection(hitInfo.normal);
+                var o = hitInfo.transform.gameObject;
+
+                data.bodyName = o.name;
+                data.bodyPath = SearchUtilities.GetPath(o.transform);
+                data.hitObject = hitInfo.transform.gameObject;
+            }
+            _rb.EnableCollisionDetection();
+
+            return data;
         }
     }
 }
