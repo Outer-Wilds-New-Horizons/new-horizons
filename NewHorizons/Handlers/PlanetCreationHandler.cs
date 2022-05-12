@@ -156,42 +156,50 @@ namespace NewHorizons.Handlers
                     }
                     else if (body.Config.IsQuantumState)
                     {
-                        var quantumPlanet = existingPlanet.GetComponent<QuantumPlanet>();
-                        if (quantumPlanet == null)
+                        try
                         {
-                            // Have to also add the root orbit and sector
-                            quantumPlanet = existingPlanet.AddComponent<QuantumPlanet>();
-                            var ao = quantumPlanet.GetComponent<NHAstroObject>();
+                            var quantumPlanet = existingPlanet.GetComponent<QuantumPlanet>();
+                            if (quantumPlanet == null)
+                            {
+                                // Have to also add the root orbit and sector
+                                quantumPlanet = existingPlanet.AddComponent<QuantumPlanet>();
+                                var ao = quantumPlanet.GetComponent<NHAstroObject>();
 
-                            var rootSector = quantumPlanet.GetComponentInChildren<Sector>();
-                            var groundOrbit = _dict[ao].Config.Orbit;
+                                var rootSector = quantumPlanet.GetComponentInChildren<Sector>();
+                                var groundOrbit = _dict[ao].Config.Orbit;
 
-                            quantumPlanet.groundState = new QuantumPlanet.State(rootSector, groundOrbit);
-                            quantumPlanet.states.Add(quantumPlanet.groundState);
+                                quantumPlanet.groundState = new QuantumPlanet.State(rootSector, groundOrbit);
+                                quantumPlanet.states.Add(quantumPlanet.groundState);
 
-                            var visibilityTracker = new GameObject("VisibilityTracker_Sphere");
-                            visibilityTracker.transform.parent = existingPlanet.transform;
-                            visibilityTracker.transform.localPosition = Vector3.zero;
-                            var sphere = visibilityTracker.AddComponent<SphereShape>();
-                            sphere.radius = GetSphereOfInfluence(_dict[ao]);
-                            var tracker = visibilityTracker.AddComponent<ShapeVisibilityTracker>();
-                            quantumPlanet._visibilityTrackers = new VisibilityTracker[] { tracker };
+                                var visibilityTracker = new GameObject("VisibilityTracker_Sphere");
+                                visibilityTracker.transform.parent = existingPlanet.transform;
+                                visibilityTracker.transform.localPosition = Vector3.zero;
+                                var sphere = visibilityTracker.AddComponent<SphereShape>();
+                                sphere.radius = GetSphereOfInfluence(_dict[ao]);
+                                var tracker = visibilityTracker.AddComponent<ShapeVisibilityTracker>();
+                                quantumPlanet._visibilityTrackers = new VisibilityTracker[] { tracker };
+                            }
+
+                            var rb = existingPlanet.GetComponent<OWRigidbody>();
+
+                            var sector = MakeSector.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
+
+                            SharedGenerateBody(body, existingPlanet, sector, rb);
+
+                            // If nothing was generated then forget the sector
+                            if (sector.transform.childCount == 0) sector = quantumPlanet.groundState.sector;
+
+                            // If semimajor axis is 0 then forget the orbit
+                            var orbit = body.Config.Orbit.SemiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
+
+                            quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
                         }
-
-                        var rb = existingPlanet.GetComponent<OWRigidbody>();
-
-                        var sector = MakeSector.Make(existingPlanet, rb, GetSphereOfInfluence(body));
-                        sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
-
-                        SharedGenerateBody(body, existingPlanet, sector, rb);
-
-                        // If nothing was generated then forget the sector
-                        if (sector.transform.childCount == 0) sector = quantumPlanet.groundState.sector;
-
-                        // If semimajor axis is 0 then forget the orbit
-                        var orbit = body.Config.Orbit.SemiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
-
-                        quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
+                        catch(Exception ex)
+                        {
+                            Logger.LogError($"Couldn't make quantum state for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
+                            return false;
+                        }
                     }
                     else
                     {
@@ -295,11 +303,6 @@ namespace NewHorizons.Handlers
             var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
 
-            if (body.Config.Base.GroundSize != 0)
-            {
-                GeometryBuilder.Make(go, sector, body.Config.Base.GroundSize);
-            }
-
             if (body.Config.Base.SurfaceGravity != 0)
             {
                 GravityBuilder.Make(go, ao, body.Config);
@@ -315,27 +318,7 @@ namespace NewHorizons.Handlers
                 MarkerBuilder.Make(go, body.Config.Name, body.Config);
             }
 
-            if (body.Config.Base.HasAmbientLight)
-            {
-                AmbientLightBuilder.Make(go, sector, sphereOfInfluence);
-            }
-
             VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, !body.Config.Base.IsSatellite);
-
-            if (body.Config.HeightMap != null)
-            {
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod);
-            }
-
-            if (body.Config.ProcGen != null)
-            {
-                ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
-            }
-
-            if (body.Config.Star != null)
-            {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
-            }
 
             if (body.Config.FocalPoint != null)
             {
@@ -389,14 +372,47 @@ namespace NewHorizons.Handlers
 
         private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
+            var sphereOfInfluence = GetSphereOfInfluence(body);
+
+            if (body.Config.Base.HasAmbientLight)
+            {
+                AmbientLightBuilder.Make(go, sector, sphereOfInfluence);
+            }
+
+            if (body.Config.Base.GroundSize != 0)
+            {
+                GeometryBuilder.Make(go, sector, body.Config.Base.GroundSize);
+            }
+
+            if (body.Config.HeightMap != null)
+            {
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod);
+            }
+
+            if (body.Config.ProcGen != null)
+            {
+                ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
+            }
+
+            if (body.Config.Star != null)
+            {
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+            }
+
             if (body.Config.Ring != null)
+            {
                 RingBuilder.Make(go, sector, body.Config.Ring, body.Mod);
+            }
 
             if (body.Config.AsteroidBelt != null)
+            {
                 AsteroidBeltBuilder.Make(body.Config.Name, body.Config, body.Mod);
+            }
 
             if (body.Config.Base.HasCometTail)
+            {
                 CometTailBuilder.Make(go, sector, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
+            }
 
             // Backwards compatability
             if (body.Config.Base.LavaSize != 0)
@@ -407,7 +423,9 @@ namespace NewHorizons.Handlers
             }
 
             if (body.Config.Lava != null)
+            {
                 LavaBuilder.Make(go, sector, rb, body.Config.Lava);
+            }
 
             // Backwards compatability
             if (body.Config.Base.WaterSize != 0)
@@ -419,10 +437,14 @@ namespace NewHorizons.Handlers
             }
 
             if (body.Config.Water != null)
+            {
                 WaterBuilder.Make(go, sector, rb, body.Config.Water);
+            }
 
             if (body.Config.Sand != null)
+            {
                 SandBuilder.Make(go, sector, rb, body.Config.Sand);
+            }
 
             if (body.Config.Atmosphere != null)
             {
@@ -454,20 +476,30 @@ namespace NewHorizons.Handlers
             }
 
             if (body.Config.Props != null)
+            {
                 PropBuildManager.Make(go, sector, rb, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName);
+            }
 
             if (body.Config.Signal != null)
+            {
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
+            }
 
             if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
+            {
                 SingularityBuilder.Make(go, sector, rb, body.Config);
+            }
 
             if (body.Config.Funnel != null)
+            {
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+            }
 
             // Has to go last probably
             if (body.Config.Base.CloakRadius != 0f)
+            {
                 CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
+            }
 
             return go;
         }
