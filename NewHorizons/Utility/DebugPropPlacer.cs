@@ -13,8 +13,6 @@ namespace NewHorizons.Utility
     {
         private struct PropPlacementData
         {
-            public Vector3 initial_pos;
-            public Vector3 initial_rotation;
             public string body;
 
             public string propPath;
@@ -33,7 +31,7 @@ namespace NewHorizons.Utility
         // TODO: RegisterProp function, call it in DetailBuilder.MakeDetail
         // TODO: Add default rotation and position offsets
 
-        public static void PlaceObject(DebugRaycastData data)
+        public static void PlaceObject(DebugRaycastData data, Vector3 playerAbsolutePosition)
         {
             if (!data.hitObject.name.EndsWith("_Body"))
             {
@@ -51,12 +49,44 @@ namespace NewHorizons.Utility
 
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
-                propData.initial_pos = data.pos;
-                propData.initial_rotation = data.norm;
 
                 // TODO: rotate around vertical axis to face player
-                string origEul = prop.transform.localEulerAngles.ToString();
-                prop.transform.localRotation = Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward);
+                //var dirTowardsPlayer = playerAbsolutePosition - prop.transform.position;
+                //dirTowardsPlayer.y = 0;
+                
+                // align with surface normal
+                Vector3 alignToSurface = (Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward)).eulerAngles;
+                prop.transform.localEulerAngles = alignToSurface;     
+        
+                // rotate facing dir
+                GameObject g = new GameObject();
+                g.transform.parent = prop.transform.parent;
+                g.transform.localPosition = prop.transform.localPosition;
+                g.transform.localRotation = prop.transform.localRotation;
+                
+                System.Random r = new System.Random();
+                prop.transform.parent = g.transform;
+
+                var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
+                dirTowardsPlayer.y = 0;
+                float rotation = Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.y;
+                prop.transform.localEulerAngles = new Vector3(0, rotation, 0);
+                
+                prop.transform.parent = g.transform.parent;
+                GameObject.Destroy(g);
+
+                //// rotate to face player
+                //var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
+                //dirTowardsPlayer.z = 0;
+                //float rotation = Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.z;
+                
+                //Logger.Log("===");
+                //Logger.Log(dirTowardsPlayer.ToString());
+                //Logger.Log(Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.ToString());
+                //Logger.Log(alignToSurface.ToString());
+                //prop.transform.localEulerAngles = new Vector3(0, alignToSurface.y, alignToSurface.z);
+
+
             } 
             catch (Exception e)
             {

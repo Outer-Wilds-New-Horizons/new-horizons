@@ -67,7 +67,7 @@ namespace NewHorizons.Utility
         internal void PlaceObject()
         {
             DebugRaycastData data = Raycast();
-            DebugPropPlacer.PlaceObject(data);
+            DebugPropPlacer.PlaceObject(data, this.gameObject.transform.position);
         }
 
         internal void PrintRaycast()
