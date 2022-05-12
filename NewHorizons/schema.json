@@ -153,6 +153,11 @@
       "description": "Should this planet ever be shown on the title screen",
       "default": "true"
     },
+    "isQuantumState": {
+      "type": "boolean",
+      "description": "Does this config describe a quantum state of a custom planet defined in another file?",
+      "default": "false"
+    },
     "Base": {
       "type": "object",
       "additionalProperties": false,
