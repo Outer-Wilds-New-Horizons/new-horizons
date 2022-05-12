@@ -36,13 +36,15 @@ namespace NewHorizons.Components
             _rb = GetComponent<OWRigidbody>();
 
             GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
+
+            _maxSnapshotLockRange = 300000f;
         }
 
         public override void Start()
         {
             base.Start();
 
-            foreach(var state in states)
+            foreach (var state in states)
             {
                 state.sector?.gameObject?.SetActive(false);
             }
@@ -52,23 +54,68 @@ namespace NewHorizons.Components
 
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
-            Logger.Log($"Changing quantum state");
+            Logger.Log($"Trying to change quantum state");
 
             if (states.Count <= 1) return false;
 
-            var newIndex = _currentIndex;
-            while(newIndex == _currentIndex)
-            {
-                newIndex = Random.Range(0, states.Count);
-            }
+            // Don't move if we have a picture or if we're on it
+            if (IsLockedByProbeSnapshot() || IsPlayerEntangled()) return false;
+
+            var canChange = false;
 
             var oldState = states[_currentIndex];
-            var newState = states[newIndex];
+            
+            // This will all get set in the for loop
+            State newState = oldState;
+            int newIndex = _currentIndex;
+            AstroObject primaryBody = null;
+            OrbitalParameters orbitalParams = null;
 
-            if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
-            if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(newState);
+            // The QM tries to switch 10 times so we'll do that too
+            for (int i = 0; i < 10; i++)
+            {
+                newIndex = _currentIndex;
+                while (newIndex == _currentIndex)
+                {
+                    newIndex = Random.Range(0, states.Count);
+                }
 
-            _currentIndex = newIndex;
+                newState = states[newIndex];
+
+                // Figure out what the new orbit will be if we switch
+                var newOrbit = newState.orbit ?? groundState.orbit;
+                newOrbit.TrueAnomaly = Random.Range(0f, 360f);
+
+                primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.PrimaryBody);
+                var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
+                var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
+                orbitalParams = newOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity);
+
+                var pos = primaryBody.transform.position + orbitalParams.InitialPosition;
+
+                // See if we can switch, so we move the visibility tracker to the new position
+                _visibilityTrackers[0].transform.position = pos;
+
+                // Only if not seen
+                if (!CheckVisibilityInstantly())
+                {
+                    canChange = true;
+
+                    // Since we were able to change states we break
+                    break;
+                }
+            }
+
+            if(canChange)
+            {
+                if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
+                if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
+
+                _currentIndex = newIndex;
+            }
+
+            // Be completely sure we move the visibility tracker back to our planet
+            _visibilityTrackers[0].transform.localPosition = Vector3.zero;
 
             return true;
         }
@@ -79,23 +126,22 @@ namespace NewHorizons.Components
             newState.sector.gameObject.SetActive(true);
         }
 
-        private void SetNewOrbit(State state)
+        private void SetNewOrbit(AstroObject primaryBody, OrbitalParameters orbitalParameters)
         {
-            var currentOrbit = state.orbit;
 
-            var primaryBody = AstroObjectLocator.GetAstroObject(currentOrbit.PrimaryBody);
 
             _astroObject._primaryBody = primaryBody;
             DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
 
-            currentOrbit.TrueAnomaly = Random.Range(0, 360);
-            PlanetCreationHandler.UpdatePosition(gameObject, currentOrbit, primaryBody, _astroObject);
+            PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
 
-            var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
-            var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
+            if (!Physics.autoSyncTransforms)
+            {
+                Physics.SyncTransforms();
+            }
 
-            _rb.SetVelocity(currentOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity);
+            _rb.SetVelocity(orbitalParameters.InitialVelocity);
         }
 
         private void OnPlayerBlink()

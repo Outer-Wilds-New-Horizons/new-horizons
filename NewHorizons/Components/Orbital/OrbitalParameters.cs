@@ -8,15 +8,15 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.Orbital
 {
-    public class OrbitalParameters
+    public class OrbitalParameters : IOrbitalParameters
     {
-        public float Inclination { get; private set; }
-        public float SemiMajorAxis { get; private set; }
-        public float LongitudeOfAscendingNode { get; private set; }
-        public float Eccentricity { get; private set; }
-        public float ArgumentOfPeriapsis { get; private set; }
-        public float TrueAnomaly { get; private set; }
-        public float Period { get; private set; }
+        public float Inclination { get; set; }
+        public float SemiMajorAxis { get; set; }
+        public float LongitudeOfAscendingNode { get; set; }
+        public float Eccentricity { get; set; }
+        public float ArgumentOfPeriapsis { get; set; }
+        public float TrueAnomaly { get; set; }
+        public float Period { get; set; }
 
         public Vector3 InitialPosition { get; private set; }
         public Vector3 InitialVelocity { get; private set; }
@@ -111,6 +111,11 @@ namespace NewHorizons.Components.Orbital
             var R2 = Quaternion.AngleAxis(inclination, R1 * Vector3.left);
 
             return R1 * R2 * vector;
+        }
+
+        public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
+        {
+            return FromTrueAnomaly(primaryGravity, secondaryGravity, Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
         }
     }
 }
