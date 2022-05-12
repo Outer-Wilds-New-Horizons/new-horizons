@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class SandBuilder
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody rb, SandModule module)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, SandModule module)
         {
             var sandGO = new GameObject("Sand");
             sandGO.SetActive(false);
@@ -56,8 +56,8 @@ namespace NewHorizons.Builder.Body
                 levelController._scaleCurve = curve;
             }
 
-            sandGO.transform.parent = sector?.transform ?? go.transform;
-            sandGO.transform.localPosition = Vector3.zero;
+            sandGO.transform.parent = sector?.transform ?? planetGO.transform;
+            sandGO.transform.position = planetGO.transform.position;
             sandGO.transform.localScale = Vector3.one * module.Size * 2f;
 
             sandGO.SetActive(true);

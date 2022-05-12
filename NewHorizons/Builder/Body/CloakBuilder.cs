@@ -11,12 +11,12 @@ namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
     {
-        public static void Make(GameObject body, Sector sector, float radius)
+        public static void Make(GameObject planetGO, Sector sector, float radius)
         {
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
 
-            var newCloak = GameObject.Instantiate(cloak, body.transform);
-            newCloak.transform.localPosition = Vector3.zero;
+            var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);
+            newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;
 
@@ -28,11 +28,11 @@ namespace NewHorizons.Builder.Body
             cloakFieldController._innerCloakRadius = radius * 900 / 3000f;
             cloakFieldController._nearCloakRadius = radius * 800 / 3000f;
 
-            cloakFieldController._referenceFrameVolume = body.GetAttachedOWRigidbody()._attachedRFVolume;
+            cloakFieldController._referenceFrameVolume = planetGO.GetAttachedOWRigidbody()._attachedRFVolume;
             cloakFieldController._exclusionSector = null;
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
-            cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), body);
+            cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), planetGO);
 
             newCloak.SetActive(true);
             cloakFieldController.enabled = true;

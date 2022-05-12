@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
         public static Shader UnlitRingShader;
         public static Shader UnlitRingShader1Pixel;
 
-        public static GameObject Make(GameObject body, Sector sector, RingModule ring, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
             // Properly lit shader doesnt work yet
             ring.Unlit = true;
@@ -38,9 +38,9 @@ namespace NewHorizons.Builder.Body
             }
 
             var ringGO = new GameObject("Ring");
-            ringGO.transform.parent = sector?.transform ?? body.transform;
-            ringGO.transform.localPosition = Vector3.zero;
-            ringGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            ringGO.transform.parent = sector?.transform ?? planetGO.transform;
+            ringGO.transform.position = planetGO.transform.position;
+            ringGO.transform.rotation = planetGO.transform.rotation;
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.right), ring.Inclination);
 

@@ -44,12 +44,12 @@ namespace NewHorizons.Builder.ShipLog
             return newShape;
         }
 
-        private static GameObject MakeGameObject(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        private static GameObject MakeGameObject(GameObject planetGO, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
             revealTriggerVolume.SetActive(false);
-            revealTriggerVolume.transform.parent = sector?.transform ?? go.transform;
-            revealTriggerVolume.transform.localPosition = info.position ?? Vector3.zero;
+            revealTriggerVolume.transform.parent = sector?.transform ?? planetGO.transform;
+            revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
             return revealTriggerVolume;
         }
 

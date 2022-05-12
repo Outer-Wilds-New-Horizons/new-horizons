@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Atmosphere
     public static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             Texture2D image, cap, ramp;
 
@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
-            cloudsMainGO.transform.parent = sector?.transform ?? body.transform;
+            cloudsMainGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             GameObject cloudsTopGO = new GameObject("TopClouds");
             cloudsTopGO.SetActive(false);
@@ -158,14 +158,14 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._disableOnStart = false;
 
             // Fix the rotations once the rest is done
-            cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
-            cloudsMainGO.transform.localPosition = Vector3.zero;
-            cloudsBottomGO.transform.localPosition = Vector3.zero;
-            cloudsFluidGO.transform.localPosition = Vector3.zero;
-            cloudsTopGO.transform.localPosition = Vector3.zero;
+            cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsBottomGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsFluidGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsTopGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
 
             cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);

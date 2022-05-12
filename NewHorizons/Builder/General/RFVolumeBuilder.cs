@@ -7,10 +7,10 @@ namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject body, OWRigidbody rigidbody, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
             GameObject rfGO = new GameObject("RFVolume");
-            rfGO.transform.parent = body.transform;
+            rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
             rfGO.layer = 19;
             rfGO.SetActive(false);
@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.General
 
             ReferenceFrameVolume RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
-            ReferenceFrame RV = new ReferenceFrame(rigidbody);
+            ReferenceFrame RV = new ReferenceFrame(owRigidBody);
             RV._minSuitTargetDistance = sphereOfInfluence;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;

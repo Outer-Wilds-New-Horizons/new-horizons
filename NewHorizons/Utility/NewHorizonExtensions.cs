@@ -117,5 +117,10 @@ namespace NewHorizons.Utility
             original.SetActive(true);
             return copy;
         }
+
+        public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
+        {
+            return transform.rotation * localRotation;
+        }
     }
 }

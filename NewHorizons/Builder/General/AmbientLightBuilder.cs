@@ -8,10 +8,10 @@ namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
-        public static void Make(GameObject body, Sector sector, float scale)
+        public static void Make(GameObject planetGO, Sector sector, float scale)
         {
-            GameObject lightGO = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? body.transform);
-            lightGO.transform.localPosition = Vector3.zero;
+            GameObject lightGO = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? planetGO.transform);
+            lightGO.transform.position = planetGO.transform.position;
             lightGO.name = "Light";
 
             var light = lightGO.GetComponent<Light>();

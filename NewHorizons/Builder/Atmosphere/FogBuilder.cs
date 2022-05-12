@@ -12,11 +12,11 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class FogBuilder
     {
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
         {
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
-            fogGO.transform.parent = sector?.transform ?? body.transform;
+            fogGO.transform.parent = sector?.transform ?? planetGO.transform;
             fogGO.transform.localScale = Vector3.one;
 
             // Going to copy from dark bramble
@@ -59,8 +59,8 @@ namespace NewHorizons.Builder.Atmosphere
             lodFogSectorProxy.SetSector(sector);
             */
 
-            fogGO.transform.localPosition = Vector3.zero;
-            lodFogGO.transform.localPosition = Vector3.zero;
+            fogGO.transform.position = planetGO.transform.position;
+            lodFogGO.transform.position = planetGO.transform.position;
 
             fogGO.SetActive(true);
             lodFogGO.SetActive(true);

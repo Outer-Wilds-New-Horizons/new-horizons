@@ -21,16 +21,16 @@ namespace NewHorizons.Builder.Body
             STAR
         }
 
-        public static void Make(GameObject go, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
+        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
             var funnelType = FunnelType.SAND;
             if (module.Type.ToUpper().Equals("WATER")) funnelType = FunnelType.WATER;
             else if (module.Type.ToUpper().Equals("LAVA")) funnelType = FunnelType.LAVA;
             else if (module.Type.ToUpper().Equals("STAR")) funnelType = FunnelType.STAR;
 
-            var funnelGO = new GameObject($"{go.name.Replace("_Body", "")}Funnel_Body");
+            var funnelGO = new GameObject($"{planetGO.name.Replace("_Body", "")}Funnel_Body");
             funnelGO.SetActive(false);
-            funnelGO.transform.parent = go.transform;
+            funnelGO.transform.parent = planetGO.transform;
 
             var owrb = funnelGO.AddComponent<OWRigidbody>();
 
@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Body
                     break;
             }
 
-            var sector = go.GetComponent<AstroObject>().GetPrimaryBody().GetRootSector();
+            var sector = planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetRootSector();
             proxyGO.GetComponent<SectorProxy>().SetSector(sector);
             geoGO.GetComponent<SectorCullGroup>().SetSector(sector);
             volumesGO.GetComponent<SectorCollisionGroup>().SetSector(sector);
@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Body
                 }
                 funnelSizeController.scaleCurve = curve;
             }
-            funnelSizeController.anchor = go.transform;
+            funnelSizeController.anchor = planetGO.transform;
 
             // Finish up next tick
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
