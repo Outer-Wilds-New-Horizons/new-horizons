@@ -51,6 +51,20 @@ namespace NewHorizons.Builder.Props
                     else Logger.LogWarning($"Couldn't find {childPath}");
                 }
             }
+
+            if(detailGO != null && detail.removeComponents)
+            {
+                // Just swap all the children to a new game object
+                var newDetailGO = new GameObject(detailGO.name);
+                newDetailGO.transform.position = detailGO.transform.position;
+                newDetailGO.transform.parent = detailGO.transform.parent;
+                foreach(Transform child in detailGO.transform.GetComponentsInChildren<Transform>())
+                {
+                    child.parent = newDetailGO.transform;
+                }
+                GameObject.Destroy(detailGO);
+                detailGO = newDetailGO;
+            }
         }
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
@@ -153,12 +167,11 @@ namespace NewHorizons.Builder.Props
             prop.transform.position = position == null ? planetGO.transform.position : planetGO.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
-            prop.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
             if (alignWithNormal)
             {
                 // Apply the rotation after aligning it with normal
                 var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
+                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 prop.transform.rotation *= rot;
             }
             else
