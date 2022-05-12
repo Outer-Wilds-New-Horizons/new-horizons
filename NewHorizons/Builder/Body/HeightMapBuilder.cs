@@ -37,10 +37,9 @@ namespace NewHorizons.Builder.Body
             cubeSphere.SetActive(false);
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
-            if (module.Stretch != null) cubeSphere.transform.localScale = module.Stretch;
-            else cubeSphere.transform.localScale = Vector3.one;
 
-            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight);
+            Vector3 stretch = module.Stretch != null ? (Vector3)module.Stretch : Vector3.one;
+            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;

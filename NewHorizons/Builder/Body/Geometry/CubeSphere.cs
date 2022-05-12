@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Body.Geometry
 {
     static class CubeSphere
     {
-        public static Mesh Build(int resolution, Texture2D heightMap, float minHeight, float maxHeight)
+        public static Mesh Build(int resolution, Texture2D heightMap, float minHeight, float maxHeight, Vector3 stretch)
         {
             // It breaks if resolution is greater than 100 I don't know why
             if(resolution > 100)
@@ -23,7 +23,24 @@ namespace NewHorizons.Builder.Body.Geometry
             Mesh mesh = new Mesh();
             mesh.name = "CubeSphere";
 
+            float max = 1;
+            if (stretch.x > stretch.y && stretch.x > stretch.z)
+                max = stretch.x;
+            else if (stretch.y > stretch.x && stretch.y > stretch.z)
+                max = stretch.y;
+            else if (stretch.z > stretch.x && stretch.z > stretch.y)
+                max = stretch.z;
+            else if (stretch.y == stretch.z && stretch.x > stretch.y)
+                max = stretch.x;
+            else if (stretch.x == stretch.z && stretch.y > stretch.x)
+                max = stretch.y;
+            else if (stretch.x == stretch.y && stretch.z > stretch.x)
+                max = stretch.z;
+            minHeight /= max;
+            maxHeight /= max;
+
             CreateVertices(mesh, resolution, heightMap, minHeight, maxHeight);
+            StretchVertices(mesh, stretch);
             CreateTriangles(mesh, resolution);
 
             mesh.RecalculateNormals();
@@ -31,6 +48,24 @@ namespace NewHorizons.Builder.Body.Geometry
             mesh.RecalculateTangents();
 
             return mesh;
+        }
+
+        private static void StretchVertices(Mesh mesh, Vector3 scale)
+        {
+            var baseVertices = mesh.vertices;
+
+            var vertices = new Vector3[baseVertices.Length];
+
+            for (var i = 0; i < vertices.Length; i++)
+            {
+                var vertex = baseVertices[i];
+                vertex.x = vertex.x * scale.x;
+                vertex.y = vertex.y * scale.y;
+                vertex.z = vertex.z * scale.z;
+                vertices[i] = vertex;
+            }
+
+            mesh.vertices = vertices;
         }
 
         // Thank you Catlikecoding
