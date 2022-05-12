@@ -47,6 +47,8 @@ namespace NewHorizons.Builder.Body
             bool isWormHole = config.Singularity?.TargetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
+            bool makeZeroGVolume = config.Singularity == null ? true : config.Singularity.MakeZeroGVolume;
+
             Vector3 localPosition = config.Singularity?.Position == null ? Vector3.zero : (Vector3)config.Singularity.Position;
 
             GameObject newSingularity = null;
@@ -56,7 +58,7 @@ namespace NewHorizons.Builder.Body
                     newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.TargetStarSystem);
                     break;
                 case Polarity.WhiteHole:
-                    newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size);
+                    newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, makeZeroGVolume);
                     break;
             }
 

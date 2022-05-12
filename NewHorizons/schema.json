@@ -1166,6 +1166,11 @@
         },
         "position": {
           "$ref": "#/$defs/vector3"
+        },
+        "makeZeroGVolume": {
+          "type": "boolean",
+          "default": true,
+          "description": "Only for White Holes. Should this white hole repel the player from it."
         }
       }
     },
