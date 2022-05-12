@@ -14,5 +14,6 @@ namespace NewHorizons.External.VariableSize
         public string TargetStarSystem;
         public string Type; //BlackHole or WhiteHole
         public MVector3 Position;
+        public bool MakeZeroGVolume = true;
     }
 }

@@ -12,7 +12,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class SingularityBuilder
+    public static class SingularityBuilder
     {
         enum Polarity
         {
@@ -23,14 +23,14 @@ namespace NewHorizons.Builder.Body
         private static Shader blackHoleShader = null;
         private static Shader whiteHoleShader = null;
 
-        public static void Make(GameObject body, Sector sector, OWRigidbody OWRB, IPlanetConfig config)
+        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, IPlanetConfig config)
         {
             // Backwards compatibility
             if(config.Singularity == null)
             {
                 if(config.Base.BlackHoleSize != 0)
                 {
-                    MakeBlackHole(body, sector, Vector3.zero, config.Base.BlackHoleSize, true, null);
+                    MakeBlackHole(go, sector, Vector3.zero, config.Base.BlackHoleSize, true, null);
                 }
                 return;
             }
@@ -47,16 +47,18 @@ namespace NewHorizons.Builder.Body
             bool isWormHole = config.Singularity?.TargetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
+            bool makeZeroGVolume = config.Singularity == null ? true : config.Singularity.MakeZeroGVolume;
+
             Vector3 localPosition = config.Singularity?.Position == null ? Vector3.zero : (Vector3)config.Singularity.Position;
 
             GameObject newSingularity = null;
             switch (polarity)
             {
                 case Polarity.BlackHole:
-                    newSingularity = MakeBlackHole(body, sector, localPosition, size, hasHazardVolume, config.Singularity.TargetStarSystem);
+                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.TargetStarSystem);
                     break;
                 case Polarity.WhiteHole:
-                    newSingularity = MakeWhiteHole(body, sector, OWRB, localPosition, size);
+                    newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, makeZeroGVolume);
                     break;
             }
 
@@ -92,11 +94,11 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        public static GameObject MakeBlackHole(GameObject body, Sector sector, Vector3 localPosition, float size, bool hasDestructionVolume, string targetSolarSystem, bool makeAudio = true)
+        public static GameObject MakeBlackHole(GameObject go, Sector sector, Vector3 localPosition, float size, bool hasDestructionVolume, string targetSolarSystem, bool makeAudio = true)
         {
             var blackHole = new GameObject("BlackHole");
             blackHole.SetActive(false);
-            blackHole.transform.parent = body.transform;
+            blackHole.transform.parent = sector?.transform ?? go.transform;
             blackHole.transform.localPosition = localPosition;
 
             var blackHoleRender = new GameObject("BlackHoleRender");
@@ -167,7 +169,7 @@ namespace NewHorizons.Builder.Body
         {
             var whiteHole = new GameObject("WhiteHole");
             whiteHole.SetActive(false);
-            whiteHole.transform.parent = body.transform;
+            whiteHole.transform.parent = sector?.transform ?? body.transform;
             whiteHole.transform.localPosition = localPosition;
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");

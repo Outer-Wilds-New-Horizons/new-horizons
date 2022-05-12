@@ -10,9 +10,9 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class LavaBuilder
+    public static class LavaBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, LavaModule module) 
+        public static void Make(GameObject go, Sector sector, OWRigidbody rb, LavaModule module) 
         {
             var heightScale = module.Size;
             if(module.Curve != null)
@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.Body
 
             var moltenCore = new GameObject("MoltenCore");
             moltenCore.SetActive(false);
-            moltenCore.transform.parent = body.transform;
+            moltenCore.transform.parent = sector?.transform ?? go.transform;
             moltenCore.transform.localPosition = Vector3.zero;
             moltenCore.transform.localScale = Vector3.one * module.Size;
 

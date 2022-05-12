@@ -85,29 +85,6 @@ namespace NewHorizons.Builder.Props
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                // If it's not a moving anglerfish make sure the anim controller is regular
-                if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
-                    Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
-                    {
-                        Logger.Log("Enabling anglerfish animation");
-                        var angler = (component as AnglerfishAnimController);
-                        // Remove any reference to its angler
-                        if(angler._anglerfishController)
-                        {
-                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
-                        }
-                        angler.enabled = true;
-                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                    });
-
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
-                if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
-
-                if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
-
                 if(component is DarkMatterVolume)
                 {
                     var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
@@ -146,16 +123,47 @@ namespace NewHorizons.Builder.Props
                 {
                     (component as OWItemSocket)._sector = sector;
                 }
+
+                // Fix a bunch of stuff when done loading
+                Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
+                {
+                    if (component is Animator) (component as Animator).enabled = true;
+                    else if (component is Collider) (component as Collider).enabled = true;
+                    else if (component is Renderer) (component as Renderer).enabled = true;
+                    else if (component is Shape) (component as Shape).enabled = true;
+                    // If it's not a moving anglerfish make sure the anim controller is regular
+                    else if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                    {
+                        Logger.Log("Enabling anglerfish animation");
+                        var angler = (component as AnglerfishAnimController);
+                        // Remove any reference to its angler
+                        if (angler._anglerfishController)
+                        {
+                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                        }
+                        angler.enabled = true;
+                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    }
+                });
             }
 
             prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
-            prop.transform.localRotation = rot;
+            prop.transform.localRotation = Quaternion.identity;
             if (alignWithNormal)
             {
+                // Apply the rotation after aligning it with normal
                 var up = prop.transform.localPosition.normalized;
                 prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
+                prop.transform.rotation *= rot;
+            }
+            else
+            {
+                prop.transform.localRotation = rot;
             }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;

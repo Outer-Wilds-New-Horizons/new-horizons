@@ -2,7 +2,7 @@
 
 namespace NewHorizons.Utility
 {
-    static class AddDebugShape
+    public static class AddDebugShape
     {
         public static GameObject AddSphere(GameObject obj, float radius, Color color)
         {

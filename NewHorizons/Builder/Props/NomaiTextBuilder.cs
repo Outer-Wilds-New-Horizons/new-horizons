@@ -92,7 +92,7 @@ namespace NewHorizons.Builder.Props
                     nomaiWallTextObj.transform.up = up;
                     nomaiWallTextObj.transform.forward = forward;
                 }
-                if(info.rotation != null)
+                if (info.rotation != null)
                 {
                     nomaiWallTextObj.transform.localRotation = Quaternion.Euler(info.rotation);
                 }
@@ -161,6 +161,7 @@ namespace NewHorizons.Builder.Props
                 computerObject.transform.localPosition = info?.position ?? Vector3.zero;
 
                 var up = computerObject.transform.position - go.transform.position;
+                if (info.normal != null) up = go.transform.TransformDirection(info.normal);
                 computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
                 var computer = computerObject.GetComponent<NomaiComputer>();
@@ -312,7 +313,7 @@ namespace NewHorizons.Builder.Props
                 {
                     arc = _childArcPrefabs[Random.Range(0, _childArcPrefabs.Count())].InstantiateInactive();
                 }
-                else if(type == "stranger" && _ghostArcPrefabs.Count() > 0) // It could be empty if they dont have the DLC
+                else if (type == "stranger" && _ghostArcPrefabs.Count() > 0) // It could be empty if they dont have the DLC
                 {
                     arc = _ghostArcPrefabs[Random.Range(0, _ghostArcPrefabs.Count())].InstantiateInactive();
                 }

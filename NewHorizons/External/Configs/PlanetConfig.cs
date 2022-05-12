@@ -14,6 +14,7 @@ namespace NewHorizons.External.Configs
         public string[] ChildrenToDestroy { get; set; }
         public int BuildPriority { get; set; } = -1;
         public bool CanShowOnTitle { get; set; } = true;
+        public bool IsQuantumState { get; set; }
         public BaseModule Base { get; set; }
         public AtmosphereModule Atmosphere { get; set; }
         public OrbitModule Orbit { get; set; }

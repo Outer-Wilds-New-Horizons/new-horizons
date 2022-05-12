@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.General
+namespace NewHorizons.Handlers
 {
-    static class PlanetDestroyer
+    public static class PlanetDestructionHandler
     {
         private static readonly string[] _solarSystemBodies = new string[]
         {

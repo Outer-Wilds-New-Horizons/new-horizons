@@ -2,7 +2,7 @@
 
 namespace NewHorizons.Utility
 {
-    class MakeMeshDoubleFaced : MonoBehaviour
+    public class MakeMeshDoubleFaced : MonoBehaviour
     {
         private void Start()
         {

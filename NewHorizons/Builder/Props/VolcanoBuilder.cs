@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Props
 
             var launcherGO = prefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
-            launcherGO.transform.localPosition = info.position == null ? Vector3.zero : (Vector3) info.position;
+            launcherGO.transform.localPosition = info.position == null ? Vector3.zero : (Vector3)info.position;
             launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
 
@@ -37,7 +37,8 @@ namespace NewHorizons.Builder.Props
             launcherGO.SetActive(true);
 
             // Have to null check else it breaks on reload configs
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () => {
+            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
+            {
                 foreach (var meteor in meteorLauncher._meteorPool)
                 {
                     FixMeteor(meteor, info);

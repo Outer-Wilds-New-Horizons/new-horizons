@@ -25,5 +25,13 @@ namespace NewHorizons.External
         public bool HasOxygen { get; set; }
         public bool HasAtmosphere { get; set; }
         public MColor AtmosphereTint { get; set; }
+
+        public class AirInfo
+        {
+            public float Scale { get; set; }
+            public bool HasOxygen { get; set; }
+            public bool IsRaining { get; set; }
+            public bool IsSnowing { get; set; }
+        }
     }
 }

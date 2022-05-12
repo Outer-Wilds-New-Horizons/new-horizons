@@ -12,9 +12,9 @@ namespace NewHorizons.Builder.Body
 {
     public static class CometTailBuilder
     {
-        public static void Make(GameObject go, IPlanetConfig config, AstroObject primary)
+        public static void Make(GameObject go, Sector sector, IPlanetConfig config, AstroObject primary)
         {
-            var cometTail = GameObject.Instantiate(GameObject.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes"), go.transform);
+            var cometTail = GameObject.Instantiate(GameObject.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes"), sector?.transform ?? go.transform);
             cometTail.transform.localPosition = Vector3.zero;
             cometTail.name = "CometTail";
             cometTail.transform.localScale = Vector3.one * config.Base.SurfaceSize / 110;

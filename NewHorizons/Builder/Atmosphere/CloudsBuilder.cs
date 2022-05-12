@@ -8,7 +8,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class CloudsBuilder
+    public static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
-            cloudsMainGO.transform.parent = body.transform;
+            cloudsMainGO.transform.parent = sector?.transform ?? body.transform;
 
             GameObject cloudsTopGO = new GameObject("TopClouds");
             cloudsTopGO.SetActive(false);

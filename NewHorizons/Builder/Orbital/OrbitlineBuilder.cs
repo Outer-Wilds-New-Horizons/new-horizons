@@ -9,7 +9,7 @@ using System;
 
 namespace NewHorizons.Builder.Orbital
 {
-    static class OrbitlineBuilder
+    public static class OrbitlineBuilder
     {
         public static OrbitLine Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
         {

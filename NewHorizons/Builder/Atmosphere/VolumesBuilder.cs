@@ -6,9 +6,9 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class VolumesBuilder
+    public static class VolumesBuilder
     {
-        public static void Make(GameObject body, float innerRadius, float outerRadius, IPlanetConfig config)
+        public static void Make(GameObject body, float innerRadius, float outerRadius, bool useMiniMap)
         {
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -30,8 +30,8 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = outerRadius;
-            PR._useMinimap = !config.Base.IsSatellite;
-            PR._useAltimeter = !config.Base.IsSatellite;
+            PR._useMinimap = useMiniMap;
+            PR._useAltimeter = useMiniMap;
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;

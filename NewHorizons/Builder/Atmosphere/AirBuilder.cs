@@ -1,21 +1,22 @@
-﻿using OWML.Utils;
+﻿using NewHorizons.External;
+using OWML.Utils;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class AirBuilder
+    public static class AirBuilder
     {
-        public static void Make(GameObject body, float airScale, bool isRaining, bool hasOxygen)
+        public static void Make(GameObject body, Sector sector, AtmosphereModule.AirInfo info)
         {
             GameObject airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
-            airGO.transform.parent = body.transform;
+            airGO.transform.parent = sector?.transform ?? body.transform;
 
             SphereCollider SC = airGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
-            SC.radius = airScale;
+            SC.radius = info.Scale;
 
             SimpleFluidVolume SFV = airGO.AddComponent<SimpleFluidVolume>();
             SFV._layer = 5;
@@ -25,12 +26,12 @@ namespace NewHorizons.Builder.Atmosphere
             SFV._allowShipAutoroll = true;
             SFV._disableOnStart = false;
 
-            if(hasOxygen)
+            if(info.HasOxygen)
             {
                 airGO.AddComponent<OxygenVolume>();
             }
 
-            if (isRaining)
+            if (info.IsRaining)
             {
                 VisorRainEffectVolume VREF = airGO.AddComponent<VisorRainEffectVolume>();
                 VREF._rainDirection = VisorRainEffectVolume.RainDirection.Radial;

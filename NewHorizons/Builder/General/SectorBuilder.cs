@@ -6,7 +6,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
-    static class MakeSector
+    public static class MakeSector
     {
         public static Sector Make(GameObject body, OWRigidbody rigidbody, float sphereOfInfluence)
         {

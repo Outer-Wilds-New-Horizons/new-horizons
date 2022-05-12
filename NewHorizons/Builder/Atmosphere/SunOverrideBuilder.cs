@@ -5,13 +5,13 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class SunOverrideBuilder
+    public static class SunOverrideBuilder
     {
-        public static void Make(GameObject body, Sector sector, float surfaceSize, AtmosphereModule atmo)
+        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, float surfaceSize)
         {
             GameObject overrideGO = new GameObject("SunOverride");
             overrideGO.SetActive(false);
-            overrideGO.transform.parent = body.transform;
+            overrideGO.transform.parent = sector?.transform ?? body.transform;
 
             GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
             GDSOV._sector = sector;
