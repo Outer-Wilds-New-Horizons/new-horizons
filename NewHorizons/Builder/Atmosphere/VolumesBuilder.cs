@@ -8,11 +8,11 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class VolumesBuilder
     {
-        public static void Make(GameObject body, float innerRadius, float outerRadius, bool useMiniMap)
+        public static void Make(GameObject planetGO, float innerRadius, float outerRadius, bool useMiniMap)
         {
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
-            volumesGO.transform.parent = body.transform;
+            volumesGO.transform.parent = planetGO.transform;
 
             GameObject rulesetGO = new GameObject("Ruleset");
             rulesetGO.SetActive(false);
@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.Atmosphere
             ER._material = GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_material");
             ER._cloudMaterial = GameObject.Find("RulesetVolumes_GD").GetComponent<RulesetVolume>().GetValue<Material>("_cloudMaterial");
 
-            volumesGO.transform.localPosition = Vector3.zero;
+            volumesGO.transform.position = planetGO.transform.position;
             rulesetGO.SetActive(true);
             volumesGO.SetActive(true);
         }

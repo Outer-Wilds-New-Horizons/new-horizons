@@ -19,15 +19,15 @@ namespace NewHorizons.Builder.Body
         public const float OuterRadiusRatio = 1.5f;
         private static Texture2D _colorOverTime;
 
-        public static StarController Make(GameObject go, Sector sector, StarModule starModule)
+        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
         {
             if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
-            starGO.transform.parent = sector?.transform ?? go.transform;
+            starGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             var sunSurface = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface"), starGO.transform);
-            sunSurface.transform.localPosition = Vector3.zero;
+            sunSurface.transform.position = planetGO.transform.position;
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
 
@@ -67,8 +67,8 @@ namespace NewHorizons.Builder.Body
 
             if(starModule.HasAtmosphere)
             {
-                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), go.transform);
-                sunAtmosphere.transform.localPosition = Vector3.zero;
+                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
+                sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one;
                 sunAtmosphere.name = "Atmosphere_Star";
                 PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
@@ -151,13 +151,13 @@ namespace NewHorizons.Builder.Body
             if(starModule.SolarFlareTint != null)
                 solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor();
 
-            starGO.transform.localPosition = Vector3.zero;
+            starGO.transform.position = planetGO.transform.position;
             starGO.transform.localScale = starModule.Size * Vector3.one;
 
             StarController starController = null;
             if (starModule.SolarLuminosity != 0)
             {
-                starController = go.AddComponent<StarController>();
+                starController = planetGO.AddComponent<StarController>();
                 starController.Light = light;
                 starController.AmbientLight = ambientLight;
                 starController.FaceActiveCamera = faceActiveCamera;

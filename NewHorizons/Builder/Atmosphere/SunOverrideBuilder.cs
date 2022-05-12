@@ -7,11 +7,11 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class SunOverrideBuilder
     {
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, float surfaceSize)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, float surfaceSize)
         {
             GameObject overrideGO = new GameObject("SunOverride");
             overrideGO.SetActive(false);
-            overrideGO.transform.parent = sector?.transform ?? body.transform;
+            overrideGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
             GDSOV._sector = sector;
@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Atmosphere
             GDSOV._waterOuterRadius = surfaceSize;
             GDSOV._waterInnerRadius = 0f;
 
-            overrideGO.transform.localPosition = Vector3.zero;
+            overrideGO.transform.position = planetGO.transform.position;
             overrideGO.SetActive(true);
         }
     }

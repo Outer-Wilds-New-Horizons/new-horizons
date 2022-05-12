@@ -181,7 +181,7 @@ namespace NewHorizons.Handlers
                         var rb = existingPlanet.GetComponent<OWRigidbody>();
 
                         var sector = MakeSector.Make(existingPlanet, rb, GetSphereOfInfluence(body));
-                        sector.name = $"Sector-{existingPlanet.GetComponents<Sector>().Count()}";
+                        sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
 
                         SharedGenerateBody(body, existingPlanet, sector, rb);
 

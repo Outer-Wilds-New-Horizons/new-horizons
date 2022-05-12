@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
     {
-        public static GravityVolume Make(GameObject body, AstroObject ao, IPlanetConfig config)
+        public static GravityVolume Make(GameObject planetGO, AstroObject ao, IPlanetConfig config)
         {
             var exponent = config.Base.GravityFallOff.Equals("linear") ? 1f : 2f;
             var GM = config.Base.SurfaceGravity * Mathf.Pow(config.Base.SurfaceSize, exponent);
@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.General
             if (config.Base.SphereOfInfluence != 0f) gravityRadius = config.Base.SphereOfInfluence;
 
             GameObject gravityGO = new GameObject("GravityWell");
-            gravityGO.transform.parent = body.transform;
+            gravityGO.transform.parent = planetGO.transform;
             gravityGO.transform.localPosition = Vector3.zero;
             gravityGO.layer = 17;
             gravityGO.SetActive(false);

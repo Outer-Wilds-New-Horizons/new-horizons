@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Props
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
+        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             if (prefab == null) return null;
 
@@ -105,7 +105,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(go.GetAttachedOWRigidbody(), go.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
+                        (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
                     }
                     catch (Exception e)
                     {
@@ -150,20 +150,20 @@ namespace NewHorizons.Builder.Props
                 });
             }
 
-            prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
+            prop.transform.position = position == null ? planetGO.transform.position : planetGO.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
-            prop.transform.localRotation = Quaternion.identity;
+            prop.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
             if (alignWithNormal)
             {
                 // Apply the rotation after aligning it with normal
-                var up = prop.transform.localPosition.normalized;
+                var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
                 prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
                 prop.transform.rotation *= rot;
             }
             else
             {
-                prop.transform.localRotation = rot;
+                prop.transform.rotation = planetGO.transform.TransformRotation(rot);
             }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;

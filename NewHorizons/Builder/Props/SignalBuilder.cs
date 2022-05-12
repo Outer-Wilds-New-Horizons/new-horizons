@@ -142,7 +142,7 @@ namespace NewHorizons.Builder.Props
             var signalGO = new GameObject($"Signal_{info.Name}");
             signalGO.SetActive(false);
             signalGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalGO.transform.localPosition = info.Position != null ? (Vector3)info.Position : Vector3.zero;
+            signalGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();
@@ -211,7 +211,7 @@ namespace NewHorizons.Builder.Props
             var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.Name}");
             signalDetectionGO.SetActive(false);
             signalDetectionGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalDetectionGO.transform.localPosition = info.Position != null ? (Vector3)info.Position : Vector3.zero;
+            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
             signalDetectionGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var sphereShape = signalDetectionGO.AddComponent<SphereShape>();

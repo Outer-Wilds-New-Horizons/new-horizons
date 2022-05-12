@@ -11,10 +11,10 @@ namespace NewHorizons.Builder.Orbital
 {
     public static class OrbitlineBuilder
     {
-        public static OrbitLine Make(GameObject body, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
+        public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
-            orbitGO.transform.parent = body.transform;
+            orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();

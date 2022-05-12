@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props
             else Logger.LogError($"Invalid projection type {info.type}");
         }
 
-        private static void MakeSlideReel(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             if (_slideReelPrefab == null)
             {
@@ -51,9 +51,9 @@ namespace NewHorizons.Builder.Props
                 renderer.enabled = true;
             }
 
-            slideReelObj.transform.parent = sector?.transform ?? go.transform;
-            slideReelObj.transform.localPosition = (Vector3)(info.position ?? Vector3.zero);
-            slideReelObj.transform.localRotation = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
+            slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
+            slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -102,7 +102,7 @@ namespace NewHorizons.Builder.Props
             slideReelObj.SetActive(true);
         }
 
-        public static void MakeAutoProjector(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             if (_autoPrefab == null)
             {
@@ -123,9 +123,9 @@ namespace NewHorizons.Builder.Props
 
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
 
-            autoProjector.transform.parent = sector?.transform ?? go.transform;
-            autoProjector.transform.localPosition = (Vector3)(info.position ?? Vector3.zero);
-            autoProjector.transform.localRotation = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
+            autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
+            autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;

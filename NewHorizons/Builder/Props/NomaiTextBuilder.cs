@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
             _recorderPrefab.transform.rotation = Quaternion.identity;
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
         {
             if (_scrollPrefab == null) InitPrefabs();
 
@@ -79,22 +79,22 @@ namespace NewHorizons.Builder.Props
 
             if (info.type == "wall")
             {
-                var nomaiWallTextObj = MakeWallText(go, sector, info, xmlPath).gameObject;
+                var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
-                nomaiWallTextObj.transform.parent = sector?.transform ?? go.transform;
-                nomaiWallTextObj.transform.localPosition = info.position;
+                nomaiWallTextObj.transform.parent = sector?.transform ?? planetGO.transform;
+                nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
                 if (info.normal != null)
                 {
                     // In global coordinates (normal was in local coordinates)
-                    var up = (nomaiWallTextObj.transform.position - go.transform.position).normalized;
-                    var forward = go.transform.TransformDirection(info.normal).normalized;
+                    var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
+                    var forward = planetGO.transform.TransformDirection(info.normal).normalized;
 
                     nomaiWallTextObj.transform.up = up;
                     nomaiWallTextObj.transform.forward = forward;
                 }
                 if (info.rotation != null)
                 {
-                    nomaiWallTextObj.transform.localRotation = Quaternion.Euler(info.rotation);
+                    nomaiWallTextObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
                 }
 
                 nomaiWallTextObj.SetActive(true);
@@ -103,7 +103,7 @@ namespace NewHorizons.Builder.Props
             {
                 var customScroll = _scrollPrefab.InstantiateInactive();
 
-                var nomaiWallText = MakeWallText(go, sector, info, xmlPath);
+                var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath);
                 nomaiWallText.transform.parent = customScroll.transform;
                 nomaiWallText.transform.localPosition = Vector3.zero;
                 nomaiWallText.transform.localRotation = Quaternion.identity;
@@ -130,10 +130,10 @@ namespace NewHorizons.Builder.Props
                 customScroll.GetComponent<OWCollider>()._physicsRemoved = false;
 
                 // Place scroll
-                customScroll.transform.parent = sector?.transform ?? go.transform;
-                customScroll.transform.localPosition = info.position ?? Vector3.zero;
+                customScroll.transform.parent = sector?.transform ?? planetGO.transform;
+                customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
 
-                var up = customScroll.transform.localPosition.normalized;
+                var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
                 customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
 
                 customScroll.SetActive(true);
@@ -157,11 +157,11 @@ namespace NewHorizons.Builder.Props
             {
                 var computerObject = _computerPrefab.InstantiateInactive();
 
-                computerObject.transform.parent = sector?.transform ?? go.transform;
-                computerObject.transform.localPosition = info?.position ?? Vector3.zero;
+                computerObject.transform.parent = sector?.transform ?? planetGO.transform;
+                computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
-                var up = computerObject.transform.position - go.transform.position;
-                if (info.normal != null) up = go.transform.TransformDirection(info.normal);
+                var up = computerObject.transform.position - planetGO.transform.position;
+                if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
                 computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
                 var computer = computerObject.GetComponent<NomaiComputer>();
@@ -181,17 +181,17 @@ namespace NewHorizons.Builder.Props
             {
                 var cairnObject = _cairnPrefab.InstantiateInactive();
 
-                cairnObject.transform.parent = sector?.transform ?? go.transform;
-                cairnObject.transform.localPosition = info?.position ?? Vector3.zero;
+                cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
+                cairnObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                 if (info.rotation != null)
                 {
-                    cairnObject.transform.localRotation = Quaternion.Euler(info.rotation);
+                    cairnObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
                 }
                 else
                 {
                     // By default align it to normal
-                    var up = (cairnObject.transform.position - go.transform.position).normalized;
+                    var up = (cairnObject.transform.position - planetGO.transform.position).normalized;
                     cairnObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * cairnObject.transform.rotation;
                 }
 
@@ -224,16 +224,16 @@ namespace NewHorizons.Builder.Props
             {
                 var recorderObject = _recorderPrefab.InstantiateInactive();
 
-                recorderObject.transform.parent = sector?.transform ?? go.transform;
-                recorderObject.transform.localPosition = info?.position ?? Vector3.zero;
+                recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
+                recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                 if (info.rotation != null)
                 {
-                    recorderObject.transform.localRotation = Quaternion.Euler(info.rotation);
+                    recorderObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
                 }
                 else
                 {
-                    var up = recorderObject.transform.position - go.transform.position;
+                    var up = recorderObject.transform.position - planetGO.transform.position;
                     recorderObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * recorderObject.transform.rotation;
                 }
 

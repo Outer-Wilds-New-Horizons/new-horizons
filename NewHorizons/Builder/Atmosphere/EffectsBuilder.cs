@@ -8,12 +8,12 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class EffectsBuilder
     {
-        public static void Make(GameObject body, Sector sector, AtmosphereModule.AirInfo info, float surfaceSize)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule.AirInfo info, float surfaceSize)
         {
             GameObject effectsGO = new GameObject("Effects");
             effectsGO.SetActive(false);
-            effectsGO.transform.parent = sector?.transform ?? body.transform;
-            effectsGO.transform.localPosition = Vector3.zero;
+            effectsGO.transform.parent = sector?.transform ?? planetGO.transform;
+            effectsGO.transform.position = planetGO.transform.position;
 
             SectorCullGroup SCG = effectsGO.AddComponent<SectorCullGroup>();
             SCG._sector = sector;
@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Atmosphere
             if(info.IsRaining)
             {
                 var rainGO = GameObject.Instantiate(SearchUtilities.CachedFind("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
-                rainGO.transform.localPosition = Vector3.zero;
+                rainGO.transform.position = planetGO.transform.position;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
                 pvc._densityByHeight = new AnimationCurve(new Keyframe[] 
@@ -44,12 +44,12 @@ namespace NewHorizons.Builder.Atmosphere
             {
                 var snowGO = new GameObject("SnowEffects");
                 snowGO.transform.parent = effectsGO.transform;
-                snowGO.transform.localPosition = Vector3.zero;
+                snowGO.transform.position = planetGO.transform.position;
                 for(int i = 0; i < 5; i++)
                 {
                     var snowEmitter = GameObject.Instantiate(SearchUtilities.CachedFind("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
                     snowEmitter.name = "SnowEmitter";
-                    snowEmitter.transform.localPosition = Vector3.zero;
+                    snowEmitter.transform.position = planetGO.transform.position;
 
                     var pvc = snowEmitter.GetComponent<PlanetaryVectionController>();
                     pvc._densityByHeight = new AnimationCurve(new Keyframe[]
@@ -65,7 +65,7 @@ namespace NewHorizons.Builder.Atmosphere
                 }
             }
 
-            effectsGO.transform.localPosition = Vector3.zero;
+            effectsGO.transform.position = planetGO.transform.position;
             effectsGO.SetActive(true);
         }
     }
