@@ -1,6 +1,8 @@
+---
 Title: Dialogue
 Description: Guide to making dialogue in New Horizons
 Sort_Priority: 50
+---
 
 # Dialogue
 
