@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Body
             cloakFieldController._innerCloakRadius = radius * 900 / 3000f;
             cloakFieldController._nearCloakRadius = radius * 800 / 3000f;
 
-            cloakFieldController._referenceFrameVolume = planetGO.GetAttachedOWRigidbody()._attachedRFVolume;
+            cloakFieldController._referenceFrameVolume = planetGO.GetAttachedOWRigidbody()?._attachedRFVolume;
             cloakFieldController._exclusionSector = null;
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
