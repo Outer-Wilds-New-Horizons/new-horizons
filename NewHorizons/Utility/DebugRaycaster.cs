@@ -18,10 +18,19 @@ namespace NewHorizons.Utility
         private GameObject _normalSphere1;
         private GameObject _normalSphere2;
 
+        public string temp_placepath = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
+
         private void Awake()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
         }
+
+        //private void OnGui()
+        //{
+        //    //TODO: add gui for stuff https://github.com/Bwc9876/OW-SaveEditor/blob/master/SaveEditor/SaveEditor.cs
+        //    // https://docs.unity3d.com/ScriptReference/GUI.TextField.html
+        //    GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
+        //}
 
         private void Update()
         {
@@ -35,6 +44,7 @@ namespace NewHorizons.Utility
 
             if (Keyboard.current[Key.L].wasReleasedThisFrame)
             {
+                DebugPropPlacer.currentObject = temp_placepath;
                 PlaceObject();
             }
 

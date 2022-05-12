@@ -46,6 +46,10 @@ namespace NewHorizons.Utility
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
                 propData.initial_pos = data.pos;
                 propData.initial_rotation = data.norm;
+
+                string origEul = prop.transform.localEulerAngles.ToString();
+                prop.transform.localRotation = Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward);
+                Logger.Log($"{data.norm.ToString()}   -=-    {prop.transform.localEulerAngles.ToString()}  =>  {prop.transform.localEulerAngles.ToString()}");
             } 
             catch (Exception e)
             {
@@ -60,6 +64,11 @@ namespace NewHorizons.Utility
 
         private static PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop)
         {
+            if (Main.Debug)
+            {
+                // TOOD: make this prop an item
+            }
+
             string bodyName = bodyGameObjectName.Substring(0, bodyGameObjectName.Length-"_Body".Length);
             PropPlacementData data = new PropPlacementData
             {
