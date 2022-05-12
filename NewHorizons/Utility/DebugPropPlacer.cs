@@ -29,6 +29,7 @@ namespace NewHorizons.Utility
         private static List<PropPlacementData> props = new List<PropPlacementData>();
 
         // TODO: RegisterProp function, call it in DetailBuilder.MakeDetail
+        // TODO: Add default rotation and position offsets
 
         public static void PlaceObject(DebugRaycastData data)
         {
@@ -42,21 +43,33 @@ namespace NewHorizons.Utility
                 // TODO: if currentObject == "" or null, spawn some generic placeholder instead
 
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
-
-                string bodyName = data.hitObject.name.Substring(0, data.bodyName.Length-"_Body".Length);
-                props.Add(new PropPlacementData
-                    {
-                        pos = data.pos,
-                        rotation = data.norm,
-                        body = bodyName,
-                        propPath = currentObject
-                    }
-                );
+                PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
+                propData.initial_pos = data.pos;
+                propData.initial_rotation = data.norm;
             } 
             catch (Exception e)
             {
                 Logger.Log($"Failed to place object {currentObject} on body ${data.hitObject} at location ${data.pos}.");
             }
+        }
+
+        public static void RegisterProp(string bodyGameObjectName, GameObject prop)
+        {
+            RegisterProp_WithReturn(bodyGameObjectName, prop);
+        }
+
+        private static PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop)
+        {
+            string bodyName = bodyGameObjectName.Substring(0, bodyGameObjectName.Length-"_Body".Length);
+            PropPlacementData data = new PropPlacementData
+            {
+                body = bodyName,
+                propPath = currentObject,
+                gameObject = prop
+            };
+
+            props.Add(data);
+            return data;
         }
 
         public static void PrintConfig()
