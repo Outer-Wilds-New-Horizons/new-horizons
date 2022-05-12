@@ -161,6 +161,7 @@ namespace NewHorizons.Builder.Props
                 computerObject.transform.localPosition = info?.position ?? Vector3.zero;
 
                 var up = computerObject.transform.position - go.transform.position;
+                if (info.normal != null) up = go.transform.TransformDirection(info.normal);
                 computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
                 var computer = computerObject.GetComponent<NomaiComputer>();

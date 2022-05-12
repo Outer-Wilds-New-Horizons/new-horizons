@@ -936,7 +936,7 @@
               },
               "normal": {
                 "$ref": "#/$defs/vector3",
-                "description": "The normal vector for this object. Only used for writing on walls to orient it properly."
+                "description": "The normal vector for this object. Used for writing on walls and positioning computers."
               },
               "rotation": {
                 "$ref": "#/$defs/vector3",
