@@ -67,6 +67,7 @@ New Horizons was made with help from:
 - [jtsalomo](https://github.com/jtsalomo)
 - [Raicuparta](https://github.com/Raicuparta)
 - [MegaPiggy](https://github.com/MegaPiggy)
+- [Trifid](https://github.com/TerrificTrifid)
 
 Translation credits:
 - Russian: GrayFix and Tlya
