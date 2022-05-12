@@ -44,6 +44,8 @@ namespace NewHorizons
         public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
+        public static float SecondsLeftInLoop = -1;
+
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
 
@@ -178,6 +180,28 @@ namespace NewHorizons
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
+
+            // Set time loop stuff if its enabled and if we're warping to a new place
+            if(_isChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
+            {
+                TimeLoop.SetSecondsRemaining(SecondsLeftInLoop);
+                // Prevent the OPC from firing
+                var launchController = GameObject.FindObjectOfType<OrbitalProbeLaunchController>();
+                if(launchController != null)
+                {
+                    GlobalMessenger<int>.RemoveListener("StartOfTimeLoop", launchController.OnStartOfTimeLoop);
+                    foreach(var fakeDebris in launchController._fakeDebrisBodies)
+                    {
+                        fakeDebris.gameObject.SetActive(false);
+                    }
+                    launchController.enabled = false;
+                }
+                var nomaiProbe = GameObject.Find("NomaiProbe_Body");
+                if(nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
+            }
+
+            // Reset this
+            SecondsLeftInLoop = -1;
 
             _isChangingStarSystem = false;
 
@@ -407,11 +431,12 @@ namespace NewHorizons
 
             if(newStarSystem == "EyeOfTheUniverse")
             {
-                PlayerData.SaveWarpedToTheEye(60);
+                PlayerData.SaveWarpedToTheEye(TimeLoop.GetSecondsRemaining());
                 LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, true, LoadManager.FadeType.ToBlack, 0.1f, true);
             }
             else
             {
+                SecondsLeftInLoop = TimeLoop.GetSecondsRemaining();
                 LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
             }
         }

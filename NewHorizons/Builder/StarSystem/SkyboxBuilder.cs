@@ -8,7 +8,7 @@ using Object = System.Object;
 
 namespace NewHorizons.Builder.StarSystem
 {
-    internal class SkyboxBuilder
+    public class SkyboxBuilder
     {
         public static Material LoadMaterial(string assetBundle, string path, string uniqueModName, IModBehaviour mod)
         {

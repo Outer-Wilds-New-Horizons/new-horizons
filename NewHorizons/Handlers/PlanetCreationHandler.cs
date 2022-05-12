@@ -586,6 +586,7 @@ namespace NewHorizons.Handlers
                         {
                             foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
                             {
+                                if (childChild == null) continue;
                                 var dPos = childChild.transform.position - child.transform.position;
                                 childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
                             }
