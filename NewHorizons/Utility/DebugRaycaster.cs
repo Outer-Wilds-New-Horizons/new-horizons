@@ -18,7 +18,7 @@ namespace NewHorizons.Utility
         private GameObject _normalSphere1;
         private GameObject _normalSphere2;
 
-        public string temp_placepath = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
+        public string PropToPlace = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
 
         private void Awake()
         {
@@ -44,13 +44,23 @@ namespace NewHorizons.Utility
 
             if (Keyboard.current[Key.L].wasReleasedThisFrame)
             {
-                DebugPropPlacer.currentObject = temp_placepath;
+                DebugPropPlacer.currentObject = PropToPlace;
                 PlaceObject();
             }
 
             if (Keyboard.current[Key.Semicolon].wasReleasedThisFrame)
             {
                 DebugPropPlacer.PrintConfig();
+            }
+            
+            if (Keyboard.current[Key.Minus].wasReleasedThisFrame)
+            {
+                DebugPropPlacer.DeleteLast();
+            }
+            
+            if (Keyboard.current[Key.Equals].wasReleasedThisFrame)
+            {
+                DebugPropPlacer.UndoDelete();
             }
         }
 

@@ -27,6 +27,7 @@ namespace NewHorizons.Utility
         // placeholder currentObject
         public static string currentObject = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
         private static List<PropPlacementData> props = new List<PropPlacementData>();
+        private static List<PropPlacementData> deletedProps = new List<PropPlacementData>();
 
         // TODO: RegisterProp function, call it in DetailBuilder.MakeDetail
         // TODO: Add default rotation and position offsets
@@ -117,6 +118,30 @@ namespace NewHorizons.Utility
             
                 Logger.Log(configFile);
             }
+        }
+
+        public static void DeleteLast()
+        {
+            if (props.Count <= 0) return;
+
+            PropPlacementData last = props[props.Count-1];
+            props.RemoveAt(props.Count-1);
+            
+            last.gameObject.SetActive(false);
+
+            deletedProps.Add(last);
+        }
+
+        public static void UndoDelete()
+        {
+            if (deletedProps.Count <= 0) return;
+
+            PropPlacementData last = deletedProps[deletedProps.Count-1];
+            deletedProps.RemoveAt(deletedProps.Count-1);
+            
+            last.gameObject.SetActive(true);
+
+            props.Add(last);
         }
     }
 }
