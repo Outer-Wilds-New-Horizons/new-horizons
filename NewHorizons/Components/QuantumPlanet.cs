@@ -89,6 +89,7 @@ namespace NewHorizons.Components
             DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
 
+            currentOrbit.TrueAnomaly = Random.Range(0, 360);
             PlanetCreationHandler.UpdatePosition(gameObject, currentOrbit, primaryBody, _astroObject);
 
             var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
