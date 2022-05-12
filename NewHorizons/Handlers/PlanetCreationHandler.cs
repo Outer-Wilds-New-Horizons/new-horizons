@@ -119,7 +119,7 @@ namespace NewHorizons.Handlers
             Logger.Log("Done loading bodies");
 
             // I don't know what these do but they look really weird from a distance
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
+            // Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestroyer.RemoveSolarSystem();
         }
@@ -398,6 +398,11 @@ namespace NewHorizons.Handlers
             // Has to go last probably
             if (body.Config.Base.CloakRadius != 0f)
                 CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
+            
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                ProxyBuilder.Make(go, body);
+            });
 
             return go;
         }

@@ -49,15 +49,10 @@ namespace NewHorizons.Builder.StarSystem
             Logger.Log("Building Skybox");
             Material skyBoxMaterial = LoadMaterial(info.assetBundle, info.path, mod.ModHelper.Manifest.UniqueName, mod);
             RenderSettings.skybox = skyBoxMaterial;
-            DynamicGI.UpdateEnvironment();
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            foreach (var camera in Resources.FindObjectsOfTypeAll<OWCamera>())
             {
-                foreach (var camera in Resources.FindObjectsOfTypeAll<OWCamera>())
-                {
-                    camera.clearFlags = CameraClearFlags.Skybox;
-                }
-            });
+                camera.clearFlags = CameraClearFlags.Skybox;
+            }
         }
-        
     }
 }

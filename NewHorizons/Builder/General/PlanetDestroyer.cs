@@ -202,16 +202,16 @@ namespace NewHorizons.Builder.General
 
         private static void RemoveProxy(string name)
         {
-            if (name.Equals("TowerTwin")) name = "AshTwin";
-            if (name.Equals("CaveTwin")) name = "EmberTwin";
-            var distantProxy = GameObject.Find(name + "_DistantProxy");
-            var distantProxyClone = GameObject.Find(name + "_DistantProxy(Clone)");
-
-            if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
-            if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
-
-            if (distantProxy == null && distantProxyClone == null)
-                Logger.Log($"Couldn't find proxy for {name}");
+            // if (name.Equals("TowerTwin")) name = "AshTwin";
+            // if (name.Equals("CaveTwin")) name = "EmberTwin";
+            // var distantProxy = GameObject.Find(name + "_DistantProxy");
+            // var distantProxyClone = GameObject.Find(name + "_DistantProxy(Clone)");
+            //
+            // if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
+            // if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
+            //
+            // if (distantProxy == null && distantProxyClone == null)
+            //     Logger.Log($"Couldn't find proxy for {name}");
         }
     }
 }
