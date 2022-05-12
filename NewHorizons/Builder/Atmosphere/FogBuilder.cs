@@ -10,7 +10,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class FogBuilder
+    public static class FogBuilder
     {
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo)
         {

@@ -7,7 +7,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
-    static class SpawnPointBuilder
+    public static class SpawnPointBuilder
     {
         private static bool suitUpQueued = false;
         public static SpawnPoint Make(GameObject body, SpawnModule module, OWRigidbody rb)

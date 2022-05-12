@@ -5,7 +5,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class SunOverrideBuilder
+    public static class SunOverrideBuilder
     {
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, float surfaceSize)
         {

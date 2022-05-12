@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
-    static class ProcGenBuilder
+    public static class ProcGenBuilder
     {
         public static void Make(GameObject go, Sector sector, ProcGenModule module)
         {

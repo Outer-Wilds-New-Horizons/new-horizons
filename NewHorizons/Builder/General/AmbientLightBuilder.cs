@@ -6,7 +6,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
-    static class AmbientLightBuilder
+    public static class AmbientLightBuilder
     {
         public static void Make(GameObject body, Sector sector, float scale)
         {

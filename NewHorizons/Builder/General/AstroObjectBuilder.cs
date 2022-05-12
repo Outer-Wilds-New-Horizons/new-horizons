@@ -9,7 +9,7 @@ using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.General
 {
-    static class AstroObjectBuilder
+    public static class AstroObjectBuilder
     {
         public static NHAstroObject Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
         {

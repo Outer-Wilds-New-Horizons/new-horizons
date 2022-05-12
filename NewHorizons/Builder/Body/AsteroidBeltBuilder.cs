@@ -14,7 +14,7 @@ using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.Body
 {
-    static class AsteroidBeltBuilder
+    public static class AsteroidBeltBuilder
     {
         public static void Make(string bodyName, IPlanetConfig parentConfig, IModBehaviour mod)
         {

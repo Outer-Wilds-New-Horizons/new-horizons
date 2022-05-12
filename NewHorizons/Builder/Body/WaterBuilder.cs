@@ -9,7 +9,7 @@ using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
-    static class WaterBuilder
+    public static class WaterBuilder
     {
         public static void Make(GameObject go, Sector sector, OWRigidbody rb, WaterModule module)
         {

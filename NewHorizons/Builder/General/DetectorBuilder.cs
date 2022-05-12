@@ -12,7 +12,7 @@ using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.General
 {
-    static class DetectorBuilder
+    public static class DetectorBuilder
     {
         public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, IPlanetConfig config)
         {

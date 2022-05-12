@@ -12,7 +12,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class SingularityBuilder
+    public static class SingularityBuilder
     {
         enum Polarity
         {

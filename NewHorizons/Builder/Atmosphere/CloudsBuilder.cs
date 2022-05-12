@@ -8,7 +8,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class CloudsBuilder
+    public static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModBehaviour mod)

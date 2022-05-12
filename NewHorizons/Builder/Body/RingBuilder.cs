@@ -14,7 +14,7 @@ using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
-    static class RingBuilder
+    public static class RingBuilder
     {
         public static Shader RingShader;
         public static Shader RingShader1Pixel;

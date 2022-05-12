@@ -9,7 +9,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
-    static class GravityBuilder
+    public static class GravityBuilder
     {
         public static GravityVolume Make(GameObject body, AstroObject ao, IPlanetConfig config)
         {

@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
-    static class CloakBuilder
+    public static class CloakBuilder
     {
         public static void Make(GameObject body, Sector sector, float radius)
         {

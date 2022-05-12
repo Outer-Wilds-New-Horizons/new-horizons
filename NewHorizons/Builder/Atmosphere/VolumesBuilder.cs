@@ -6,7 +6,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class VolumesBuilder
+    public static class VolumesBuilder
     {
         public static void Make(GameObject body, float innerRadius, float outerRadius, bool useMiniMap)
         {

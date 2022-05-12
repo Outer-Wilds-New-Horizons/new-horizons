@@ -4,7 +4,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class AtmosphereBuilder
+    public static class AtmosphereBuilder
     {
         public static void Make(GameObject body, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize)
         {

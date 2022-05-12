@@ -14,7 +14,7 @@ using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
-    static class StarBuilder
+    public static class StarBuilder
     {
         public const float OuterRadiusRatio = 1.5f;
         private static Texture2D _colorOverTime;

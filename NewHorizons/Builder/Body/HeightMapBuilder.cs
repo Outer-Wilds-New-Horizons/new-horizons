@@ -13,7 +13,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class HeightMapBuilder
+    public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
 

@@ -3,7 +3,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class GeometryBuilder
+    public static class GeometryBuilder
     {
         public static void Make(GameObject body, Sector sector, float groundScale)
         {

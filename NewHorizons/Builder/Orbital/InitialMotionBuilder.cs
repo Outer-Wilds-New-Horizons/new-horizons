@@ -13,7 +13,7 @@ using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Orbital
 {
-    static class InitialMotionBuilder
+    public static class InitialMotionBuilder
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {

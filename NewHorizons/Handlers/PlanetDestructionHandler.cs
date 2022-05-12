@@ -11,7 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
-    static class PlanetDestructionHandler
+    public static class PlanetDestructionHandler
     {
         private static readonly string[] _solarSystemBodies = new string[]
         {

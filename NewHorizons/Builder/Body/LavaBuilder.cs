@@ -10,7 +10,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class LavaBuilder
+    public static class LavaBuilder
     {
         public static void Make(GameObject go, Sector sector, OWRigidbody rb, LavaModule module) 
         {

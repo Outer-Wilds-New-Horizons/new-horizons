@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace NewHorizons.Builder.Body
 {
-    static class SandBuilder
+    public static class SandBuilder
     {
         public static void Make(GameObject go, Sector sector, OWRigidbody rb, SandModule module)
         {

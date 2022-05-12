@@ -5,7 +5,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General
 {
-    static class RFVolumeBuilder
+    public static class RFVolumeBuilder
     {
         public static void Make(GameObject body, OWRigidbody rigidbody, float sphereOfInfluence)
         {
