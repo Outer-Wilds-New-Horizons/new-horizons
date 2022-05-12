@@ -30,7 +30,7 @@ show in explorer" in the pop-up.
 
 ![Create a new folder named "planets"]({{ "images/home/create_planets.webp"|static }})
 
-Planets can also be placed in a folder called planets within a separate mod, if you plan on releasing your planets on the mod database. The [Config Template](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } is available if you want to release your own planet mod using configs. If you don't know how GitHub works, you can use the [Addon Creation Tool](https://outerwildsmods.com/custom-worlds/create/) although you will still need a GitHub account.
+Planets can also be placed in a folder called planets within a separate mod, if you plan on releasing your planets on the mod database. The [Config Template](https://github.com/xen-42/ow-new-horizons-config-template){ target="_blank" } is available if you want to release your own planet mod using configs.
 
 Now that you have created your planets folder, this is where you will put your planet config files. A config file will
 look something like this:
