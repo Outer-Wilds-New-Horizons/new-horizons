@@ -1,7 +1,9 @@
+---
 Title: Audio Values
 Description: Numbers for audio values for slide reels
 Hide_In_Nav: True
 Render_TOC: False
+---
 
 # The List
 
