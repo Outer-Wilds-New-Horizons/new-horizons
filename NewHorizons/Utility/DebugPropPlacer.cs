@@ -13,15 +13,22 @@ namespace NewHorizons.Utility
     {
         private struct PropPlacementData
         {
-            public Vector3 pos;
-            public Vector3 rotation;
+            public Vector3 initial_pos;
+            public Vector3 initial_rotation;
             public string body;
 
+            public string propPath;
+
+            public GameObject gameObject;
+            public Vector3 pos { get { return gameObject.transform.localPosition; } }
+            public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
         }
 
         // placeholder currentObject
         public static string currentObject = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
         private static List<PropPlacementData> props = new List<PropPlacementData>();
+
+        // TODO: RegisterProp function, call it in DetailBuilder.MakeDetail
 
         public static void PlaceObject(DebugRaycastData data)
         {
@@ -32,6 +39,8 @@ namespace NewHorizons.Utility
 
             try 
             { 
+                // TODO: if currentObject == "" or null, spawn some generic placeholder instead
+
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
 
                 string bodyName = data.hitObject.name.Substring(0, data.bodyName.Length-"_Body".Length);
@@ -39,7 +48,8 @@ namespace NewHorizons.Utility
                     {
                         pos = data.pos,
                         rotation = data.norm,
-                        body = bodyName
+                        body = bodyName,
+                        propPath = currentObject
                     }
                 );
             } 
@@ -74,7 +84,7 @@ namespace NewHorizons.Utility
                     string rotationString = $"\"x\":{prop.rotation.x},\"y\":{prop.rotation.y},\"z\":{prop.rotation.z}";
                     string endingString = i == bodyProps.Count-1 ? "" : ",";
 
-                    configFile += "			{\"path\" : \"" + "\", \"position\": {"+positionString+"}, \"rotation\": {"+rotationString+"}, \"scale\": 1}" + endingString + Environment.NewLine;
+                    configFile += "			{\"path\" : \"" +prop.propPath+ "\", \"position\": {"+positionString+"}, \"rotation\": {"+rotationString+"}, \"scale\": 1}" + endingString + Environment.NewLine;
                 }
 
                 configFile += 
