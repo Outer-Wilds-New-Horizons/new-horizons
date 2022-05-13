@@ -44,7 +44,7 @@ namespace NewHorizons.Utility
             if (!menuOpen) return;
             if (!Main.Debug) return;
 
-            Vector2 menuPosition = Vector2.zero; // new Vector2(Screen.width - EditorMenuSize.x - 10, 10);
+            Vector2 menuPosition =  new Vector2(10, 40);
             
             //TODO: add gui for stuff https://github.com/Bwc9876/OW-SaveEditor/blob/master/SaveEditor/SaveEditor.cs
             // https://docs.unity3d.com/ScriptReference/GUI.TextField.html
@@ -73,17 +73,12 @@ namespace NewHorizons.Utility
             GUILayout.EndScrollView();
 
             
-
-            // TODO: maintain list of recently placed objects here
             // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
             // TODO: add a warning that the button cannot be pushed more than once
 
             // TODO: put a text field here to print all the configs in
             // TODO: put a button here to save configs to file
 
-            GUILayout.Label("*: Restart Required");
-            GUILayout.Space(20);
-            GUILayout.Label("*: Restart Required");
             GUILayout.EndArea();
         }
 
