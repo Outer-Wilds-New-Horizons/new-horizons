@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility
 {
-
-    class DebugPropPlacer
+    
+    [RequireComponent(typeof(DebugRaycaster))]
+    class DebugPropPlacer : MonoBehaviour
     {
         private struct PropPlacementData
         {
@@ -22,16 +24,50 @@ namespace NewHorizons.Utility
             public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
         }
 
-        public static readonly string DEFAULT_OBJECT = currentObject = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
+        public static readonly string DEFAULT_OBJECT = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
 
-        public static string currentObject = DEFAULT_OBJECT;
-        private static List<PropPlacementData> props = new List<PropPlacementData>();
-        private static List<PropPlacementData> deletedProps = new List<PropPlacementData>();
+        public string currentObject = DEFAULT_OBJECT;
+        private List<PropPlacementData> props = new List<PropPlacementData>();
+        private List<PropPlacementData> deletedProps = new List<PropPlacementData>();
+        private DebugRaycaster _rc;
 
-        // TODO: RegisterProp function, call it in DetailBuilder.MakeDetail
-        // TODO: Add default rotation and position offsets
+        private void Awake()
+        {
+            _rc = this.GetRequiredComponent<DebugRaycaster>();
+        }
 
-        public static void PlaceObject(DebugRaycastData data, Vector3 playerAbsolutePosition)
+        private void Update()
+        {
+            if (!Main.Debug) return;
+
+            if (Keyboard.current[Key.Q].wasReleasedThisFrame)
+            {
+                PlaceObject();
+            }
+
+            if (Keyboard.current[Key.Semicolon].wasReleasedThisFrame)
+            {
+                PrintConfig();
+            }
+            
+            if (Keyboard.current[Key.Minus].wasReleasedThisFrame)
+            {
+                DeleteLast();
+            }
+            
+            if (Keyboard.current[Key.Equals].wasReleasedThisFrame)
+            {
+                UndoDelete();
+            }
+        }
+
+        internal void PlaceObject()
+        {
+            DebugRaycastData data = _rc.Raycast();
+            PlaceObject(data, this.gameObject.transform.position);
+        }
+        
+        public void PlaceObject(DebugRaycastData data, Vector3 playerAbsolutePosition)
         {
             if (!data.hitObject.name.EndsWith("_Body"))
             {
@@ -74,19 +110,6 @@ namespace NewHorizons.Utility
                 
                 prop.transform.parent = g.transform.parent;
                 GameObject.Destroy(g);
-
-                //// rotate to face player
-                //var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
-                //dirTowardsPlayer.z = 0;
-                //float rotation = Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.z;
-                
-                //Logger.Log("===");
-                //Logger.Log(dirTowardsPlayer.ToString());
-                //Logger.Log(Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.ToString());
-                //Logger.Log(alignToSurface.ToString());
-                //prop.transform.localEulerAngles = new Vector3(0, alignToSurface.y, alignToSurface.z);
-
-
             } 
             catch (Exception e)
             {
@@ -94,12 +117,12 @@ namespace NewHorizons.Utility
             }
         }
 
-        public static void RegisterProp(string bodyGameObjectName, GameObject prop)
+        public void RegisterProp(string bodyGameObjectName, GameObject prop)
         {
             RegisterProp_WithReturn(bodyGameObjectName, prop);
         }
 
-        private static PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop)
+        private PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop)
         {
             if (Main.Debug)
             {
@@ -118,7 +141,7 @@ namespace NewHorizons.Utility
             return data;
         }
 
-        public static void PrintConfig()
+        public void PrintConfig()
         {
             var groupedProps = props
                 .GroupBy(p => p.body)
@@ -156,7 +179,7 @@ namespace NewHorizons.Utility
             }
         }
 
-        public static void DeleteLast()
+        public void DeleteLast()
         {
             if (props.Count <= 0) return;
 
@@ -168,7 +191,7 @@ namespace NewHorizons.Utility
             deletedProps.Add(last);
         }
 
-        public static void UndoDelete()
+        public void UndoDelete()
         {
             if (deletedProps.Count <= 0) return;
 
