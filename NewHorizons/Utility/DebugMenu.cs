@@ -21,11 +21,30 @@ namespace NewHorizons.Utility
 
         // menu params
         private Vector2 recentPropsScrollPosition = Vector2.zero;
+        private HashSet<string> favoriteProps = new HashSet<string>();
+        private char separatorCharacter = '☧'; // since no chars are illegal in game object names, I picked one that's extremely unlikely to be used to be a separator
+        private string favoritePropsPlayerPrefKey = "FavoriteProps";
 
         private void Awake()
         {  
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
+
+            LoadFavoriteProps();
+        }
+
+        private void LoadFavoriteProps()
+        {
+            string favoritePropsPlayerPref = PlayerPrefs.GetString(favoritePropsPlayerPrefKey);
+
+            if (favoritePropsPlayerPref == null || favoritePropsPlayerPref == "") return;
+
+            var favoritePropPaths = favoritePropsPlayerPref.Split(separatorCharacter);
+            foreach (string favoriteProp in favoritePropPaths)
+            {
+                _dpp.RecentlyPlacedProps.Add(favoriteProp);
+                this.favoriteProps.Add(favoriteProp);
+            }
         }
 
         private void Update()
@@ -64,14 +83,35 @@ namespace NewHorizons.Utility
             recentPropsScrollPosition  = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(EditorMenuSize.x), GUILayout.Height(100));
             foreach (string propPath in _dpp.RecentlyPlacedProps)
             {
+                GUILayout.BeginHorizontal();
+
                 var propPathElements = propPath.Split('/');
-                if (GUILayout.Button(propPathElements[propPathElements.Length-1]))
+                string propName = propPathElements[propPathElements.Length-1];
+
+                string favoriteButtonIcon = favoriteProps.Contains(propPath) ? "★" : "☆";
+                if (GUILayout.Button(favoriteButtonIcon, GUILayout.ExpandWidth(false)))
+                {
+                    if (favoriteProps.Contains(propPath))
+                    {
+                        favoriteProps.Remove(propPath);
+                    }
+                    else
+                    {
+                        favoriteProps.Add(propPath);
+                    }
+
+                    string[] favoritePropsArray = favoriteProps.ToArray<string>();
+                    PlayerPrefs.SetString(favoritePropsPlayerPrefKey, string.Join(separatorCharacter+"", favoritePropsArray));
+                }
+                
+                if (GUILayout.Button(propName))
                 {
                     _dpp.SetCurrentObject(propPath);
                 }
+
+                GUILayout.EndHorizontal();
             }
             GUILayout.EndScrollView();
-
             
             // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
             // TODO: add a warning that the button cannot be pushed more than once

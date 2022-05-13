@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.Props;
+using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -52,7 +53,7 @@ namespace NewHorizons.Utility
 
             if (Keyboard.current[Key.Semicolon].wasReleasedThisFrame)
             {
-                PrintConfig();
+                PrintConfigs();
             }
             
             if (Keyboard.current[Key.Minus].wasReleasedThisFrame)
@@ -138,6 +139,24 @@ namespace NewHorizons.Utility
             }
         }
 
+        public void FindAndRegisterPropsFromConfig(IPlanetConfig config)
+        {
+            AstroObject planet = AstroObjectLocator.GetAstroObject(config.Name);
+
+            foreach (var detail in config.Props.Details)
+            {
+                foreach (Transform child in planet.GetRootSector().transform)
+                {
+                    bool childMatchesDetail = false; // TODO: this
+                    
+                    if (childMatchesDetail)
+                    {
+                        RegisterProp(detail.path, child.gameObject);
+                    }
+                }        
+            }
+        }
+
         public void RegisterProp(string bodyGameObjectName, GameObject prop)
         {
             RegisterProp_WithReturn(bodyGameObjectName, prop);
@@ -162,12 +181,22 @@ namespace NewHorizons.Utility
             return data;
         }
 
-        public void PrintConfig()
+        public void PrintConfigs()
+        {
+            foreach(string configFile in GenerateConfigs())
+            {
+                Logger.Log(configFile);
+            }
+        }
+
+        public List<String> GenerateConfigs()
         {
             var groupedProps = props
                 .GroupBy(p => p.body)
                 .Select(grp => grp.ToList())
                 .ToList();
+            
+            List<string> configFiles = new List<string>();
 
             foreach (List<PropPlacementData> bodyProps in groupedProps)
             {
@@ -195,9 +224,10 @@ namespace NewHorizons.Utility
                     "    }" + Environment.NewLine +
                     "}";
 
-            
-                Logger.Log(configFile);
+                configFiles.Add(configFile);
             }
+
+            return configFiles;
         }
 
         public void DeleteLast()
