@@ -318,7 +318,7 @@ namespace NewHorizons.Handlers
                 MarkerBuilder.Make(go, body.Config.Name, body.Config);
             }
 
-            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, !body.Config.Base.IsSatellite);
+            VolumesBuilder.Make(go, body.Config, sphereOfInfluence);
 
             if (body.Config.FocalPoint != null)
             {
