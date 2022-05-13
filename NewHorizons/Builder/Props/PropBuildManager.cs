@@ -177,7 +177,7 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModBehaviour mod)
         {
-            string key = uniqueModName + "." + assetBundle;
+            string key = assetBundle;
             AssetBundle bundle;
             GameObject prefab;
 
@@ -186,7 +186,14 @@ namespace NewHorizons.Builder.Props
                 if (Main.AssetBundles.ContainsKey(key)) bundle = Main.AssetBundles[key];
                 else
                 {
-                    bundle = mod.ModHelper.Assets.LoadBundle(assetBundle);
+                    var completePath = mod.ModHelper.Manifest.ModFolderPath + assetBundle;
+                    bundle = AssetBundle.LoadFromFile(completePath);
+                    if(bundle == null)
+                    {
+                        Logger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
+                        return null;
+                    }
+
                     Main.AssetBundles[key] = bundle;
                 }
             }
@@ -203,7 +210,7 @@ namespace NewHorizons.Builder.Props
             }
             catch (Exception e)
             {
-                Logger.Log($"Couldn't load asset {path} from AssetBundle {assetBundle} : {e.Message}");
+                Logger.LogError($"Couldn't load asset {path} from AssetBundle {assetBundle} : {e.Message}");
                 return null;
             }
 
