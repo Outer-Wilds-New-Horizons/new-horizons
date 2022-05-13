@@ -42,7 +42,7 @@ namespace NewHorizons.Builder.Body
             ringGO.transform.position = planetGO.transform.position;
             ringGO.transform.rotation = planetGO.transform.rotation;
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
-            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.right), ring.Inclination);
+            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.Inclination);
 
             var ringMF = ringGO.AddComponent<MeshFilter>();
             var ringMesh = ringMF.mesh;

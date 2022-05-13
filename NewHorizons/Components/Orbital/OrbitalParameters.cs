@@ -107,10 +107,11 @@ namespace NewHorizons.Components.Orbital
 
         public static Vector3 Rotate(Vector3 vector, float longitudeOfAscendingNode, float inclination, float argumentOfPeriapsis)
         {
-            var R1 = Quaternion.AngleAxis(longitudeOfAscendingNode + argumentOfPeriapsis, Vector3.up);
-            var R2 = Quaternion.AngleAxis(inclination, R1 * Vector3.left);
+            var R1 = Quaternion.AngleAxis(longitudeOfAscendingNode, Vector3.up);
+            var R2 = Quaternion.AngleAxis(argumentOfPeriapsis, Vector3.up);
+            var R3 = Quaternion.AngleAxis(inclination, R1 * Vector3.left);
 
-            return R1 * R2 * vector;
+            return R3 * R2 * R1 * vector;
         }
 
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
