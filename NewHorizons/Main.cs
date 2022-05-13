@@ -433,7 +433,6 @@ namespace NewHorizons
 
             Logger.Log($"Warping to {newStarSystem}");
             if (warp && _shipWarpController) _shipWarpController.WarpOut();
-            _currentStarSystem = newStarSystem;
             _isChangingStarSystem = true;
             IsWarping = warp;
             WearingSuit = PlayerState.IsWearingSuit();
@@ -441,16 +440,24 @@ namespace NewHorizons
             // We kill them so they don't move as much
             Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
 
+            OWScene sceneToLoad;
+
             if (newStarSystem == "EyeOfTheUniverse")
             {
                 PlayerData.SaveWarpedToTheEye(TimeLoop.GetSecondsRemaining());
-                LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+                sceneToLoad = OWScene.EyeOfTheUniverse;
             }
             else
             {
-                SecondsLeftInLoop = TimeLoop.GetSecondsRemaining();
-                LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+                if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsLeftInLoop = TimeLoop.GetSecondsRemaining();
+                else SecondsLeftInLoop = -1;
+
+                sceneToLoad = OWScene.SolarSystem;
             }
+
+            _currentStarSystem = newStarSystem;
+
+            LoadManager.LoadSceneAsync(sceneToLoad, true, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 
         void OnDeath(DeathType _)
