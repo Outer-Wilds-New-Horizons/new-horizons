@@ -11,6 +11,7 @@ namespace NewHorizons.Builder.Atmosphere
     public static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
+        private static Material[] _gdCloudMaterials;
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             Texture2D image, cap, ramp;
@@ -45,25 +46,30 @@ namespace NewHorizons.Builder.Atmosphere
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
-            if (!atmo.UseBasicCloudShader)
+
+            if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            var tempArray = new Material[2];
+
+            if (atmo.UseBasicCloudShader)
             {
-                var tempArray = new Material[2];
-                for (int i = 0; i < 2; i++)
-                {
-                    var mat = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
-                    if (!atmo.ShadowsOnClouds) mat.renderQueue = 2550;
-                    mat.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
-                    tempArray[i] = mat;
-                }
-                topMR.sharedMaterials = tempArray;
+                var material = new Material(_sphereShader);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
+
+                tempArray[0] = material;
             }
             else
             {
-                if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
-                topMR.material = new Material(_sphereShader);
-                if (!atmo.ShadowsOnClouds) topMR.material.renderQueue = 2550;
-                topMR.material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
+                var material = new Material(_gdCloudMaterials[0]);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
+                tempArray[0] = material;
             }
+
+            // This is the stencil material for the fog under the clouds
+            tempArray[1] = new Material(_gdCloudMaterials[1]);
+            topMR.sharedMaterials = tempArray;
 
             foreach (var material in topMR.sharedMaterials)
             {
@@ -79,7 +85,6 @@ namespace NewHorizons.Builder.Atmosphere
             {
                 cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
-
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             // Idk why but the axis is weird
