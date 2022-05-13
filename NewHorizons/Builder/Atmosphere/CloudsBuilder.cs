@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
 
-            if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
             var tempArray = new Material[2];
 

@@ -31,7 +31,7 @@ namespace NewHorizons
 {
     public class Main : ModBehaviour
     {
-        public static AssetBundle ShaderBundle;
+        public static AssetBundle NHAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -133,7 +133,7 @@ namespace NewHorizons
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
             GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
-            ShaderBundle = Main.Instance.ModHelper.Assets.LoadBundle("AssetBundle/shader");
+            NHAssetBundle = ModHelper.Assets.LoadBundle("AssetBundle/xen.newhorizons");
 
             ResetConfigs(resetTranslation: false);
 
