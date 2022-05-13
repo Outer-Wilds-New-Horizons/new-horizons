@@ -318,7 +318,7 @@ namespace NewHorizons.Handlers
                 MarkerBuilder.Make(go, body.Config.Name, body.Config);
             }
 
-            VolumesBuilder.Make(go, body.Config.Base.SurfaceSize, sphereOfInfluence, !body.Config.Base.IsSatellite);
+            VolumesBuilder.Make(go, body.Config, sphereOfInfluence);
 
             if (body.Config.FocalPoint != null)
             {
@@ -498,7 +498,7 @@ namespace NewHorizons.Handlers
             // Has to go last probably
             if (body.Config.Base.CloakRadius != 0f)
             {
-                CloakBuilder.Make(go, sector, body.Config.Base.CloakRadius);
+                CloakBuilder.Make(go, sector, rb, body.Config.Base.CloakRadius);
             }
 
             return go;
@@ -586,6 +586,7 @@ namespace NewHorizons.Handlers
                         {
                             foreach (var childChild in AstroObjectLocator.GetChildren(childAO))
                             {
+                                if (childChild == null) continue;
                                 var dPos = childChild.transform.position - child.transform.position;
                                 childChild.transform.position = go.transform.position + relativeMoonPositions[i] + dPos;
                             }

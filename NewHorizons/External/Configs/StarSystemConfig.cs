@@ -13,6 +13,7 @@ namespace NewHorizons.External.Configs
         public bool startHere = false;
         public bool destroyStockPlanets = true;
         public string factRequiredForWarp;
+        public bool enableTimeLoop = true;
         public NomaiCoordinates coords;
         public SkyboxConfig skybox;
 

@@ -12,8 +12,15 @@ namespace NewHorizons.Builder.Body
 {
     public static class ProcGenBuilder
     {
+        private static Material quantumMaterial;
+        private static Material iceMaterial;
+
         public static void Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
+            if(quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
+            if(iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+
+
             GameObject icosphere = new GameObject("Icosphere");
             icosphere.transform.parent = sector?.transform ?? planetGO.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);

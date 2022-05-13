@@ -49,10 +49,10 @@ namespace NewHorizons.Builder.Body
             var ringMR = ringGO.AddComponent<MeshRenderer>();
             var texture = ringTexture;
 
-            if (RingShader == null) RingShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
-            if (UnlitRingShader == null) UnlitRingShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
-            if (RingShader1Pixel == null) RingShader1Pixel = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
-            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
+            if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
+            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
+            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
+            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
 
             var mat = new Material(ring.Unlit ? UnlitRingShader : RingShader);
             if (texture.width == 1)

@@ -666,6 +666,11 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "removeComponents": {
+                "type": "boolean",
+                "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to them.",
+                "default": false
               }
             }
           }
