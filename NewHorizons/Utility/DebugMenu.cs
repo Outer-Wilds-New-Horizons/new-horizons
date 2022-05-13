@@ -19,6 +19,9 @@ namespace NewHorizons.Utility
         DebugPropPlacer _dpp;
         DebugRaycaster _drc;
 
+        // menu params
+        private Vector2 recentPropsScrollPosition = Vector2.zero;
+
         private void Awake()
         {  
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
@@ -47,9 +50,31 @@ namespace NewHorizons.Utility
             // https://docs.unity3d.com/ScriptReference/GUI.TextField.html
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
-            _dpp.currentObject = GUILayout.TextArea(_dpp.currentObject);
+            
+            //
+            // DebugPropPlacer
+            // 
+            GUILayout.Label("Recently placed objects");
+            _dpp.SetCurrentObject(GUILayout.TextArea(_dpp.currentObject));
+            
+            GUILayout.Space(5);
 
-            // TODO: maintain list of objects here
+            // List of recently placed objects
+            GUILayout.Label("Recently placed objects");
+            recentPropsScrollPosition  = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(EditorMenuSize.x), GUILayout.Height(100));
+            foreach (string propPath in _dpp.RecentlyPlacedProps)
+            {
+                var propPathElements = propPath.Split('/');
+                if (GUILayout.Button(propPathElements[propPathElements.Length-1]))
+                {
+                    _dpp.SetCurrentObject(propPath);
+                }
+            }
+            GUILayout.EndScrollView();
+
+            
+
+            // TODO: maintain list of recently placed objects here
             // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
             // TODO: add a warning that the button cannot be pushed more than once
 

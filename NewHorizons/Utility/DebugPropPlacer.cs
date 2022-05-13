@@ -24,16 +24,21 @@ namespace NewHorizons.Utility
             public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
         }
 
+        // DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var
         public static readonly string DEFAULT_OBJECT = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
 
-        public string currentObject = DEFAULT_OBJECT;
+        public string currentObject { get; private set; }
+        private bool hasAddedCurrentObjectToRecentsList = false;
         private List<PropPlacementData> props = new List<PropPlacementData>();
         private List<PropPlacementData> deletedProps = new List<PropPlacementData>();
         private DebugRaycaster _rc;
 
+        public List<string> RecentlyPlacedProps = new List<string>();
+
         private void Awake()
         {
             _rc = this.GetRequiredComponent<DebugRaycaster>();
+            currentObject = DEFAULT_OBJECT;
         }
 
         private void Update()
@@ -61,10 +66,26 @@ namespace NewHorizons.Utility
             }
         }
 
+        public void SetCurrentObject(string s)
+        {
+            currentObject = s;
+            hasAddedCurrentObjectToRecentsList = false;
+        }
+
         internal void PlaceObject()
         {
             DebugRaycastData data = _rc.Raycast();
             PlaceObject(data, this.gameObject.transform.position);
+
+            if (!hasAddedCurrentObjectToRecentsList)
+            {
+                hasAddedCurrentObjectToRecentsList = true;
+
+                if (!RecentlyPlacedProps.Contains(currentObject))
+                {
+                    RecentlyPlacedProps.Add(currentObject);
+                }
+            }
         }
         
         public void PlaceObject(DebugRaycastData data, Vector3 playerAbsolutePosition)
@@ -80,7 +101,7 @@ namespace NewHorizons.Utility
 
                 if (currentObject == "" || currentObject == null)
                 {
-                    currentObject = DEFAULT_OBJECT;   
+                    SetCurrentObject(DEFAULT_OBJECT);
                 }
 
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
