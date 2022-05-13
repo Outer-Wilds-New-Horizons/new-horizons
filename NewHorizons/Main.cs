@@ -215,8 +215,10 @@ namespace NewHorizons
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
-
+        
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>());
                 Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
+                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>());
 
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
