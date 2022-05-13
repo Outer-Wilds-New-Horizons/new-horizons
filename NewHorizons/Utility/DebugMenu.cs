@@ -50,7 +50,11 @@ namespace NewHorizons.Utility
             _dpp.currentObject = GUILayout.TextArea(_dpp.currentObject);
 
             // TODO: maintain list of objects here
-            // TODO: field to provide name of mod to load configs from
+            // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
+            // TODO: add a warning that the button cannot be pushed more than once
+
+            // TODO: put a text field here to print all the configs in
+            // TODO: put a button here to save configs to file
 
             GUILayout.Label("*: Restart Required");
             GUILayout.Space(20);
