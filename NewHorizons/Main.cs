@@ -42,7 +42,6 @@ namespace NewHorizons
 
         public static Dictionary<string, NewHorizonsSystem> SystemDict = new Dictionary<string, NewHorizonsSystem>();
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
-        public static Dictionary<string, AssetBundle> AssetBundles = new Dictionary<string, AssetBundle>();
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
         public static float SecondsLeftInLoop = -1;
@@ -115,13 +114,6 @@ namespace NewHorizons
                 }
             };
 
-            foreach (var pair in AssetBundles)
-            {
-                if (pair.Value == null) Logger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
-                else pair.Value.Unload(true);
-            }
-            AssetBundles.Clear();
-
             if (!resetTranslation) return;
             TranslationHandler.ClearTables();
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
@@ -180,6 +172,7 @@ namespace NewHorizons
             SearchUtilities.ClearCache();
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
+            AssetBundleUtilities.ClearCache();
             IsSystemReady = false;
         }
 
