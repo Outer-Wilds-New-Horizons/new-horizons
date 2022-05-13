@@ -58,7 +58,13 @@ namespace NewHorizons.Builder.Props
                 var newDetailGO = new GameObject(detailGO.name);
                 newDetailGO.transform.position = detailGO.transform.position;
                 newDetailGO.transform.parent = detailGO.transform.parent;
-                foreach(Transform child in detailGO.transform.GetComponentsInChildren<Transform>())
+                // Can't modify parents while looping through children bc idk
+                var children = new List<Transform>();
+                foreach(Transform child in detailGO.transform)
+                {
+                    children.Add(child);
+                }
+                foreach(var child in children)
                 {
                     child.parent = newDetailGO.transform;
                 }
