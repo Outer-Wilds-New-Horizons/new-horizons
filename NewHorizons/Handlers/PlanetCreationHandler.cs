@@ -237,6 +237,7 @@ namespace NewHorizons.Handlers
             return true;
         }
 
+        // Called when updating an existing planet
         public static GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
             Logger.Log($"Updating existing Object {go.name}");
@@ -264,6 +265,7 @@ namespace NewHorizons.Handlers
             return go;
         }
 
+        // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
@@ -357,6 +359,11 @@ namespace NewHorizons.Handlers
                 AstroObjectLocator.RegisterCustomAstroObject(ao);
             }
 
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                ProxyBuilder.Make(go, body);
+            });
+
             return go;
         }
 
@@ -369,6 +376,7 @@ namespace NewHorizons.Handlers
             return sphereOfInfluence;
         }
 
+        // What is called both on existing planets and new planets
         private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
@@ -499,11 +507,6 @@ namespace NewHorizons.Handlers
             {
                 CloakBuilder.Make(go, sector, rb, body.Config.Base.CloakRadius);
             }
-			
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
-            {
-                ProxyBuilder.Make(go, body);
-            });
 
             return go;
         }

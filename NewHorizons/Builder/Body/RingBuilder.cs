@@ -23,59 +23,7 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
-            // Properly lit shader doesnt work yet
-            ring.Unlit = true;
-
-            Texture2D ringTexture;
-            try
-            {
-                ringTexture = ImageUtilities.GetTexture(mod, ring.Texture);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
-                return null;
-            }
-
-            var ringGO = new GameObject("Ring");
-            ringGO.transform.parent = sector?.transform ?? planetGO.transform;
-            ringGO.transform.position = planetGO.transform.position;
-            ringGO.transform.rotation = planetGO.transform.rotation;
-            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
-            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.Inclination);
-
-            var ringMF = ringGO.AddComponent<MeshFilter>();
-            var ringMesh = ringMF.mesh;
-            var ringMR = ringGO.AddComponent<MeshRenderer>();
-            var texture = ringTexture;
-
-            if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
-            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
-            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
-            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
-
-            var mat = new Material(ring.Unlit ? UnlitRingShader : RingShader);
-            if (texture.width == 1)
-            {
-                mat = new Material(ring.Unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
-                mat.SetFloat("_InnerRadius", 0);
-            }
-            ringMR.receiveShadows = !ring.Unlit;
-
-            mat.mainTexture = texture;
-            mat.renderQueue = 3000;
-            ringMR.material = mat;
-
-            // Make mesh
-            var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000);
-            BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
-
-            if (ring.RotationSpeed != 0)
-            {
-                var rot = ringGO.AddComponent<RotateTransform>();
-                rot._degreesPerSecond = ring.RotationSpeed;
-                rot._localAxis = Vector3.down;
-            }
+            var ringGO = MakeRingGraphics(planetGO, sector, ring, mod);
 
             // Funny collider thing
             var ringVolume = new GameObject("RingVolume");
@@ -118,6 +66,67 @@ namespace NewHorizons.Builder.Body
             sfv._density = 1f;
 
             ringVolume.SetActive(true);
+
+
+
+            return ringGO;
+        }
+
+        public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
+        {
+            // Properly lit shader doesnt work yet
+            ring.Unlit = true;
+
+            Texture2D ringTexture;
+            try
+            {
+                ringTexture = ImageUtilities.GetTexture(mod, ring.Texture);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
+                return null;
+            }
+
+            var ringGO = new GameObject("Ring");
+            ringGO.transform.parent = sector?.transform ?? rootObject.transform;
+            ringGO.transform.position = rootObject.transform.position;
+            ringGO.transform.rotation = rootObject.transform.rotation;
+            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
+            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.Inclination);
+
+            var ringMF = ringGO.AddComponent<MeshFilter>();
+            var ringMesh = ringMF.mesh;
+            var ringMR = ringGO.AddComponent<MeshRenderer>();
+            var texture = ringTexture;
+
+            if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
+            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
+            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
+            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
+
+            var mat = new Material(ring.Unlit ? UnlitRingShader : RingShader);
+            if (texture.width == 1)
+            {
+                mat = new Material(ring.Unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
+                mat.SetFloat("_InnerRadius", 0);
+            }
+            ringMR.receiveShadows = !ring.Unlit;
+
+            mat.mainTexture = texture;
+            mat.renderQueue = 3000;
+            ringMR.material = mat;
+
+            // Make mesh
+            var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000);
+            BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
+
+            if (ring.RotationSpeed != 0)
+            {
+                var rot = ringGO.AddComponent<RotateTransform>();
+                rot._degreesPerSecond = ring.RotationSpeed;
+                rot._localAxis = Vector3.down;
+            }
 
             if (ring.Curve != null)
             {

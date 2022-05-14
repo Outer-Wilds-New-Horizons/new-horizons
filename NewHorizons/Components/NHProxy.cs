@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Utility;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NewHorizons.Components
@@ -6,8 +7,9 @@ namespace NewHorizons.Components
     public class NHProxy : ProxyPlanet
     {
         public string astroName;
-        public Renderer renderer;
-        
+        public Renderer[] renderers;
+        public TessellatedRenderer[] tessellatedRenderers;
+
         public override void Initialize()
         {
             AstroObject astroObject = AstroObjectLocator.GetAstroObject(astroName);
@@ -32,7 +34,10 @@ namespace NewHorizons.Components
         public override void ToggleRendering(bool on)
         {
             base.ToggleRendering(on);
-            renderer.enabled = on;
+            foreach (Transform child in transform)
+            {
+                child.gameObject.SetActive(on);
+            }
         }
     }
 }
