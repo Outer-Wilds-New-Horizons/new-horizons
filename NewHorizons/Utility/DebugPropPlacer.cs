@@ -20,14 +20,16 @@ namespace NewHorizons.Utility
             public string body;
             public string system;
 
-            public string propPath;
+            //public string propPath;
 
             public GameObject gameObject;
-            public Vector3 pos { get { return gameObject.transform.localPosition; } }
-            public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
+            //public Vector3 pos { get { return gameObject.transform.localPosition; } }
+            //public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
 
-            public string assetBundle;
-            public string[] removeChildren;
+            //public string assetBundle;
+            //public string[] removeChildren;
+
+            public DetailInfo detailInfo;
         }
 
         // DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var
@@ -172,14 +174,12 @@ namespace NewHorizons.Utility
                 }
 
                 Transform spawnedProp = potentialProps[0];
-                PropPlacementData data = RegisterProp_WithReturn(config.Name, spawnedProp.gameObject, detail.path);
-                data.assetBundle = detail.assetBundle;
-                data.removeChildren = detail.removeChildren;
+                PropPlacementData data = RegisterProp_WithReturn(config.Name, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
                 potentialProps.Remove(spawnedProp);
 
-                if (!RecentlyPlacedProps.Contains(data.propPath))
+                if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
-                    RecentlyPlacedProps.Add(data.propPath);
+                    RecentlyPlacedProps.Add(data.detailInfo.path);
                 }
             }
         }
@@ -189,22 +189,28 @@ namespace NewHorizons.Utility
             RegisterProp_WithReturn(bodyGameObjectName, prop);
         }
 
-        private PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop, string propPath = null, string systemName = null)
+        private PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop, string propPath = null, string systemName = null, DetailInfo detailInfo = null)
         {
             if (Main.Debug)
             {
                 // TOOD: make this prop an item
             }
 
+            // TODO: add a DetailInfo param to this function and PropPlacementData, and use that as a base in GetPropsConfigByBody
+            // eg data.DetailInfo.position = data.gameObject.transform.localPosition; return data.DetailInfo;
             string bodyName = bodyGameObjectName.EndsWith("_Body")
                 ? bodyGameObjectName.Substring(0, bodyGameObjectName.Length-"_Body".Length)
                 : bodyGameObjectName;
+            
+            detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
+            detailInfo.path = propPath == null ? currentObject : propPath;
+
             PropPlacementData data = new PropPlacementData
             {
                 body = bodyName,
-                propPath = propPath == null ? currentObject : propPath,
                 gameObject = prop,
-                system = systemName
+                system = systemName == null ? "SolarSystem" : systemName,
+                detailInfo = detailInfo
             };
 
             props.Add(data);
@@ -282,22 +288,18 @@ namespace NewHorizons.Utility
                 if (bodyProps == null || bodyProps.Count == 0) continue; 
                 if ( AstroObjectLocator.GetAstroObject(bodyProps[0].body) == null ) continue;
                 string bodyName = useAstroObjectName ? AstroObjectLocator.GetAstroObject(bodyProps[0].body).name : bodyProps[0].body;
-                
+                if (bodyName.EndsWith("_Body")) bodyName = bodyName.Substring(0, bodyName.Length-"_Body".Length);
+
                 DetailInfo[] infoArray = new DetailInfo[bodyProps.Count];
                 propConfigs[bodyProps[0].system + DebugMenu.separatorCharacter + bodyName] = infoArray;
         
                 for(int i = 0; i < bodyProps.Count; i++)
                 {
-                    infoArray[i] = new DetailInfo()
-                    {
-                        path = bodyProps[i].propPath,
-                        assetBundle = bodyProps[i].assetBundle,
-                        position = bodyProps[i].gameObject.transform.localPosition,
-                        rotation = bodyProps[i].gameObject.transform.localEulerAngles,
-                        scale = bodyProps[i].gameObject.transform.localScale.x,
-                        //public bool alignToNormal; // TODO: figure out how to recover this (or actually, rotation should cover it)
-                        removeChildren = bodyProps[i].removeChildren
-                    };
+                    bodyProps[i].detailInfo.position = bodyProps[i].gameObject.transform.localPosition;
+                    bodyProps[i].detailInfo.rotation = bodyProps[i].gameObject.transform.localEulerAngles;
+                    bodyProps[i].detailInfo.scale = bodyProps[i].gameObject.transform.localScale.x;
+
+                    infoArray[i] = bodyProps[i].detailInfo;
                 }
             }
 

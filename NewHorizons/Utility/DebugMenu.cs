@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Configs;
+﻿using NewHorizons.External;
+using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace NewHorizons.Utility
 
         //private string workingModName = "";
         private IModBehaviour loadedMod = null;
-        private Dictionary<string, IPlanetConfig> loadedConfigFiles = new Dictionary<string, IPlanetConfig>();
+        private Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
         private bool propsHaveBeenLoaded = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
@@ -136,6 +137,21 @@ namespace NewHorizons.Utility
                     if (GUILayout.Button(mod.ModHelper.Manifest.UniqueName))
                     {
                         loadedMod = mod;
+
+                        propsHaveBeenLoaded = true;
+                        var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
+                
+                        if (System.IO.Directory.Exists(folder + "planets"))
+                        {
+                            foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
+                            {
+                                Logger.Log("READING FROM CONFIG @ " + file);
+                                var relativeDirectory = file.Replace(folder, "");
+                                var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                                loadedConfigFiles[file] = bodyConfig;
+                                _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
+                            }
+                        }
                     }
                 }
 
@@ -149,25 +165,25 @@ namespace NewHorizons.Utility
             
             
 
-            GUI.enabled = !propsHaveBeenLoaded && loadedMod != null;
-            if (GUILayout.Button("Load Detail Props from Configs", GUILayout.ExpandWidth(false)))
-            {
-                propsHaveBeenLoaded = true;
-                var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
+            //GUI.enabled = !propsHaveBeenLoaded && loadedMod != null;
+            //if (GUILayout.Button("Load Detail Props from Configs", GUILayout.ExpandWidth(false)))
+            //{
+            //    propsHaveBeenLoaded = true;
+            //    var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
                 
-                if (System.IO.Directory.Exists(folder + "planets"))
-                {
-                    foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
-                    {
-                        Logger.Log("READING FROM CONFIG @ " + file);
-                        var relativeDirectory = file.Replace(folder, "");
-                        var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                        loadedConfigFiles[file] = bodyConfig;
-                        _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
-                    }
-                }
-            }
-            GUI.enabled = true;
+            //    if (System.IO.Directory.Exists(folder + "planets"))
+            //    {
+            //        foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
+            //        {
+            //            Logger.Log("READING FROM CONFIG @ " + file);
+            //            var relativeDirectory = file.Replace(folder, "");
+            //            var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+            //            loadedConfigFiles[file] = bodyConfig;
+            //            _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
+            //        }
+            //    }
+            //}
+            //GUI.enabled = true;
 
             GUILayout.Space(5);
 
@@ -182,10 +198,12 @@ namespace NewHorizons.Utility
                 {
                     UpdateLoadedConfigs();
                     
+                    Logger.Log($"(count) Saving {loadedConfigFiles.Keys.Count} files");
                     foreach (var filePath in loadedConfigFiles.Keys)
                     {
-                        Logger.Log("Saving... " + filePath);
-                        Main.Instance.ModHelper.Storage.Save<IPlanetConfig>(loadedConfigFiles[filePath], filePath);
+                        var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
+                        Logger.Log("Saving... " + relativePath + " to " + filePath);
+                        loadedMod.ModHelper.Storage.Save(loadedConfigFiles[filePath], relativePath);
                     }
                     saveButtonUnlocked = false;
                 }
@@ -199,7 +217,7 @@ namespace NewHorizons.Utility
                 
                 foreach (var filePath in loadedConfigFiles.Keys)
                 {
-                    Logger.Log("Updated copy of " + filePath);
+                    Logger.Log("The updated copy of " + filePath);
                     Logger.Log(Newtonsoft.Json.JsonConvert.SerializeObject(loadedConfigFiles[filePath], Newtonsoft.Json.Formatting.Indented));
                 }
                 //_dpp.PrintConfigs();
@@ -226,25 +244,57 @@ namespace NewHorizons.Utility
             //var allConfigsForMod = Main.Instance.BodyDict[Main.CurrentStarSystem].Where(x => x.Mod == mod).Select(x => x.Config)
 
             //var allConfigs = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).Select(x => x.Config);
+        
+            Logger.Log("updating configs");
+
+            Logger.Log("New Details keys: " + string.Join(", ", newDetails.Keys));
+
+            Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
 
             // Get all configs
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                if (loadedConfigFiles[filePath].Name == null || AstroObjectLocator.GetAstroObject(loadedConfigFiles[filePath].Name) == null) continue;        
+                Logger.Log("potentially updating copy of config at " + filePath);
+
+                if (loadedConfigFiles[filePath].Name == null || AstroObjectLocator.GetAstroObject(loadedConfigFiles[filePath].Name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }      
 
                 var bodyName = loadedConfigFiles[filePath].Name;
                 var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
+                if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
                 var systemName = loadedConfigFiles[filePath].StarSystem;
                 var composedName = systemName + separatorCharacter + astroObjectName;
-        
+
+                planetToConfigPath[composedName] = filePath;
+
+                Logger.Log("made composed name from copy of config file for " + composedName + " " + newDetails.ContainsKey(composedName));
+
                 if (!newDetails.ContainsKey(composedName)) continue;
+
                 
                 if (loadedConfigFiles[filePath].Props == null)
                 {
-                    (loadedConfigFiles[filePath] as PlanetConfig).Props = new External.PropModule();
+                    loadedConfigFiles[filePath].Props = new External.PropModule();
                 }
                 
                 loadedConfigFiles[filePath].Props.Details = newDetails[composedName];
+
+                Logger.Log("successfully updated copy of config file for " + composedName);
+            }
+
+            // find all new planets that do not yet have config paths
+            var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
+            foreach (var planetAndSystem in planetsThatDoNotHaveConfigFiles)
+            {
+                Logger.Log("Fabricating new config file for " + planetAndSystem);
+                
+                var filepath = "planets/" + planetAndSystem + ".json";
+                PlanetConfig c = new PlanetConfig(null);
+                c.StarSystem = planetAndSystem.Split(separatorCharacter)[0];
+                c.Name = planetAndSystem.Split(separatorCharacter)[1];
+                c.Props = new PropModule();
+                c.Props.Details = newDetails[planetAndSystem];
+
+                // loadedConfigFiles[filepath] = c;
             }
         }
 
