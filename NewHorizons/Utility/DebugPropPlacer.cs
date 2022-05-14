@@ -209,7 +209,7 @@ namespace NewHorizons.Utility
             {
                 body = bodyName,
                 gameObject = prop,
-                system = systemName == null ? "SolarSystem" : systemName,
+                system = systemName == null ? Main.Instance.CurrentStarSystem : systemName,
                 detailInfo = detailInfo
             };
 
