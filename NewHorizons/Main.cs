@@ -58,6 +58,7 @@ namespace NewHorizons
         private string _defaultStarSystem = "SolarSystem";
         private string _currentStarSystem = "SolarSystem";
         private bool _isChangingStarSystem = false;
+        private bool _refreshCacheOnLoad = false; // Will refresh when changing systems
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
@@ -169,10 +170,20 @@ namespace NewHorizons
 
         private void OnSceneUnloaded(Scene scene)
         {
+            // Always clear this one because the game objects will be null now
             SearchUtilities.ClearCache();
-            ImageUtilities.ClearCache();
-            AudioUtilities.ClearCache();
-            AssetBundleUtilities.ClearCache();
+
+            // Clear caches if we've left the actual game scene or if we've specified to do it
+            // Refresh cache of load should only be true if the new system isnt the same as the last one
+            if (_refreshCacheOnLoad || !_isChangingStarSystem)
+            {
+                ImageUtilities.ClearCache();
+                AudioUtilities.ClearCache();
+                AssetBundleUtilities.ClearCache();
+            }
+
+            _refreshCacheOnLoad = false;
+
             IsSystemReady = false;
         }
 
@@ -454,6 +465,8 @@ namespace NewHorizons
 
                 sceneToLoad = OWScene.SolarSystem;
             }
+
+            _refreshCacheOnLoad = _currentStarSystem != newStarSystem;
 
             _currentStarSystem = newStarSystem;
 
