@@ -1,5 +1,7 @@
 ﻿using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
+using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -51,6 +53,31 @@ namespace NewHorizons.Builder.Body
                     ProcGenBuilder.Make(newProxy, null, body.Config.ProcGen);
                     if (realSize < body.Config.ProcGen.Scale) realSize = body.Config.ProcGen.Scale;
                 }
+                if (body.Config.Lava != null)
+                {
+                    var colour = body.Config.Lava.Tint?.ToColor() ?? Color.red;
+                    AddColouredSphere(newProxy, body.Config.Lava.Size, body.Config.Lava.Curve, colour);
+                    if (realSize < body.Config.Lava.Size) realSize = body.Config.Lava.Size;
+                }
+                if (body.Config.Water != null)
+                {
+                    var colour = body.Config.Water.Tint?.ToColor() ?? Color.blue;
+                    AddColouredSphere(newProxy, body.Config.Water.Size, body.Config.Water.Curve, colour);
+                    if (realSize < body.Config.Water.Size) realSize = body.Config.Water.Size;
+                }
+                if (body.Config.Sand != null)
+                {
+                    var colour = body.Config.Sand.Tint?.ToColor() ?? Color.yellow;
+                    AddColouredSphere(newProxy, body.Config.Sand.Size, body.Config.Sand.Curve, colour);
+                    if (realSize < body.Config.Sand.Size) realSize = body.Config.Sand.Size;
+                }
+                // Could improve this to actually use the proper renders and materials
+                if (body.Config.Singularity != null)
+                {
+                    var colour = body.Config.Singularity.Type == "BlackHole" ? Color.black : Color.white;
+                    AddColouredSphere(newProxy, body.Config.Singularity.Size, body.Config.Singularity.Curve, colour);
+                    if (realSize < body.Config.Singularity.Size) realSize = body.Config.Singularity.Size;
+                }
 
                 // Remove all collisions if there are any
                 foreach (var col in newProxy.GetComponentsInChildren<Collider>())
@@ -79,6 +106,30 @@ namespace NewHorizons.Builder.Body
             {
                 Logger.Log($"Exception thrown when generating proxy for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
                 GameObject.Destroy(newProxy);
+            }
+        }
+
+        private static void AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
+        {
+            GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphereGO.transform.parent = rootObj.transform;
+            sphereGO.transform.localScale = Vector3.one * size;
+            sphereGO.transform.position = rootObj.transform.position;
+
+            GameObject.Destroy(sphereGO.GetComponent<Collider>());
+
+            sphereGO.GetComponent<MeshRenderer>().material.color = color;
+
+            if (curve != null)
+            {
+                var sizeController = sphereGO.AddComponent<SizeController>();
+                var animCurve = new AnimationCurve();
+                foreach (var pair in curve)
+                {
+                    animCurve.AddKey(new Keyframe(pair.Time, pair.Value));
+                }
+                sizeController.scaleCurve = animCurve;
+                sizeController.size = size;
             }
         }
     }
