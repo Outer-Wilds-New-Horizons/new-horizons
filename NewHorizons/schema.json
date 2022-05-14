@@ -153,6 +153,11 @@
       "description": "Should this planet ever be shown on the title screen",
       "default": "true"
     },
+    "isQuantumState": {
+      "type": "boolean",
+      "description": "Does this config describe a quantum state of a custom planet defined in another file?",
+      "default": "false"
+    },
     "Base": {
       "type": "object",
       "additionalProperties": false,
@@ -661,6 +666,11 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "removeComponents": {
+                "type": "boolean",
+                "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to them.",
+                "default": false
               }
             }
           }

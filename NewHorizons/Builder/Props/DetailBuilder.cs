@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.Props
 
             if (detail.assetBundle != null)
             {
-                var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, mod);
+                var prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
-                    PropBuildManager.ReplaceShaders(prefab);
+                    AssetBundleUtilities.ReplaceShaders(prefab);
                     prefab.SetActive(false);
                     detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }
@@ -58,6 +58,26 @@ namespace NewHorizons.Builder.Props
                     if (childObj != null) childObj.gameObject.SetActive(false);
                     else Logger.LogWarning($"Couldn't find {childPath}");
                 }
+            }
+
+            if(detailGO != null && detail.removeComponents)
+            {
+                // Just swap all the children to a new game object
+                var newDetailGO = new GameObject(detailGO.name);
+                newDetailGO.transform.position = detailGO.transform.position;
+                newDetailGO.transform.parent = detailGO.transform.parent;
+                // Can't modify parents while looping through children bc idk
+                var children = new List<Transform>();
+                foreach(Transform child in detailGO.transform)
+                {
+                    children.Add(child);
+                }
+                foreach(var child in children)
+                {
+                    child.parent = newDetailGO.transform;
+                }
+                GameObject.Destroy(detailGO);
+                detailGO = newDetailGO;
             }
 
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
@@ -163,12 +183,11 @@ namespace NewHorizons.Builder.Props
             prop.transform.position = position == null ? planetGO.transform.position : planetGO.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
-            prop.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
             if (alignWithNormal)
             {
                 // Apply the rotation after aligning it with normal
                 var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
+                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 prop.transform.rotation *= rot;
             }
             else

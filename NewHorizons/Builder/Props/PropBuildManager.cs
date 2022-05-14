@@ -13,6 +13,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
+using System.IO;
 
 namespace NewHorizons.Builder.Props
 {
@@ -171,60 +172,6 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make slide reel for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
-        }
-
-        public static GameObject LoadPrefab(string assetBundle, string path, string uniqueModName, IModBehaviour mod)
-        {
-            string key = uniqueModName + "." + assetBundle;
-            AssetBundle bundle;
-            GameObject prefab;
-
-            try
-            {
-                if (Main.AssetBundles.ContainsKey(key)) bundle = Main.AssetBundles[key];
-                else
-                {
-                    bundle = mod.ModHelper.Assets.LoadBundle(assetBundle);
-                    Main.AssetBundles[key] = bundle;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Couldn't load AssetBundle {assetBundle} : {e.Message}");
-                return null;
-            }
-
-            try
-            {
-                prefab = bundle.LoadAsset<GameObject>(path);
-                prefab.SetActive(false);
-            }
-            catch (Exception e)
-            {
-                Logger.Log($"Couldn't load asset {path} from AssetBundle {assetBundle} : {e.Message}");
-                return null;
-            }
-
-            ReplaceShaders(prefab);
-
-            return prefab;
-        }
-
-        public static void ReplaceShaders(GameObject prefab)
-        {
-            foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
-            {
-                foreach (var material in renderer.sharedMaterials)
-                {
-                    if (material == null)
-                    {
-                        continue;
-                    }
-
-                    var replacementShader = Shader.Find(material.shader.name);
-                    if (replacementShader != null) material.shader = replacementShader;
                 }
             }
         }

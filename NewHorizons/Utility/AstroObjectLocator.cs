@@ -111,9 +111,6 @@ namespace NewHorizons.Utility
                     otherChildren.Add(GameObject.Find("FakeCannonBarrel_Body (1)"));
                     otherChildren.Add(GameObject.Find("Debris_Body (1)"));
                     break;
-                case AstroObject.Name.SunStation:
-                    otherChildren.Add(GameObject.Find("SS_Debris_Body"));
-                    break;
                 case AstroObject.Name.GiantsDeep:
                     otherChildren.Add(GameObject.Find("BrambleIsland_Body"));
                     otherChildren.Add(GameObject.Find("GabbroIsland_Body"));
@@ -133,6 +130,10 @@ namespace NewHorizons.Utility
                 case AstroObject.Name.DreamWorld:
                     otherChildren.Add(GameObject.Find("BackRaft_Body"));
                     otherChildren.Add(GameObject.Find("SealRaft_Body"));
+                    break;
+                // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
+                case AstroObject.Name.CustomString:
+                    if(primary._customName.Equals("Sun Station")) otherChildren.Add(GameObject.Find("SS_Debris_Body"));
                     break;
                 default:
                     break;

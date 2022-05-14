@@ -9,6 +9,7 @@ using NewHorizons.Builder.StarSystem;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
+using NewHorizons.Components;
 
 namespace NewHorizons.Handlers
 {
@@ -16,8 +17,6 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-
-
             var skybox = GameObject.Find("Skybox/Starfield");
 
             if (system.Config.skybox?.destroyStarField ?? false)
@@ -30,6 +29,11 @@ namespace NewHorizons.Handlers
                 SkyboxBuilder.Make(system.Config.skybox, system.Mod);
             }
 
+            if(system.Config.enableTimeLoop)
+            {
+                var timeLoopController = new GameObject("TimeLoopController");
+                timeLoopController.AddComponent<TimeLoopController>();
+            }
         }
     }
 }
