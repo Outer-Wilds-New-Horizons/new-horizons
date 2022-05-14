@@ -39,10 +39,13 @@ namespace NewHorizons.Utility
         {  
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
+            LoadFavoriteProps();
 
+        }
+        private void Start() 
+        { 
             Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
             Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
-            LoadFavoriteProps();
         }
 
         private void PauseMenuInitHook()
@@ -226,12 +229,16 @@ namespace NewHorizons.Utility
                 {
                     UpdateLoadedConfigs();
                     
+                    string backupFolderName = "configBackups/" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "/";
                     Logger.Log($"(count) Saving {loadedConfigFiles.Keys.Count} files");
+
                     foreach (var filePath in loadedConfigFiles.Keys)
                     {
                         var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
                         Logger.Log("Saving... " + relativePath + " to " + filePath);
                         loadedMod.ModHelper.Storage.Save(loadedConfigFiles[filePath], relativePath);
+
+                        Main.Instance.ModHelper.Storage.Save(loadedConfigFiles[filePath], backupFolderName+relativePath);
                     }
                     saveButtonUnlocked = false;
                 }
