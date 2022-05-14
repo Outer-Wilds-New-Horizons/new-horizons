@@ -79,7 +79,6 @@ namespace NewHorizons.Builder.Body
                 renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 renderer.receiveShadows = false;
                 renderer.lightProbeUsage = UnityEngine.Rendering.LightProbeUsage.BlendProbes;
-                renderer.enabled = false;
             }
 
             var proxyController = newProxy.AddComponent<NHProxy>();
