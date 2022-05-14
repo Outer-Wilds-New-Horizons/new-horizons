@@ -49,7 +49,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Let custom stars go supernova
 
 ## Development
-If you want to help (please dear god help us) then check out the [contact](#contact) info below.
+If you want to help (please dear god help us) then check out the [contact](#contact) info below or the [contributing](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/CONTRIBUTING.md) page.
 
 The Unity project we use to make asset bundles for this mod is [here](https://github.com/xen-42/new-horizons-unity).
 
