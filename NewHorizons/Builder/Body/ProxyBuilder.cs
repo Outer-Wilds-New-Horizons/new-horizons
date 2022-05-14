@@ -12,8 +12,12 @@ namespace NewHorizons.Builder.Body
 {
     public class ProxyBuilder
     {
+        private static Material lavaMaterial;
+
         public static void Make(GameObject gameObject, NewHorizonsBody body)
         {
+            if(lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
+
             var proxyName = $"{body.Config.Name}_Proxy";
 
             var newProxy = new GameObject(proxyName);
@@ -55,9 +59,12 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Lava != null)
                 {
-                    var colour = body.Config.Lava.Tint?.ToColor() ?? Color.red;
-                    AddColouredSphere(newProxy, body.Config.Lava.Size, body.Config.Lava.Curve, colour);
+                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.Size, body.Config.Lava.Curve, Color.black);
                     if (realSize < body.Config.Lava.Size) realSize = body.Config.Lava.Size;
+
+                    var material = new Material(lavaMaterial);
+                    if (body.Config.Lava.Tint != null) material.color = body.Config.Lava.Tint.ToColor();
+                    sphere.GetComponent<MeshRenderer>().material = material;
                 }
                 if (body.Config.Water != null)
                 {
@@ -109,7 +116,7 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        private static void AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
+        private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
         {
             GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphereGO.transform.parent = rootObj.transform;
@@ -131,6 +138,8 @@ namespace NewHorizons.Builder.Body
                 sizeController.scaleCurve = animCurve;
                 sizeController.size = size;
             }
+
+            return sphereGO;
         }
     }
 }
