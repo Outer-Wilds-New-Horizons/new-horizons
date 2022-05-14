@@ -19,20 +19,10 @@ namespace NewHorizons.Utility
         {
             public string body;
             public string system;
-
-            //public string propPath;
-
             public GameObject gameObject;
-            //public Vector3 pos { get { return gameObject.transform.localPosition; } }
-            //public Vector3 rotation { get { return gameObject.transform.localEulerAngles; } }
-
-            //public string assetBundle;
-            //public string[] removeChildren;
-
             public DetailInfo detailInfo;
         }
 
-        // DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var
         public static readonly string DEFAULT_OBJECT = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
 
         public string currentObject { get; private set; }
@@ -60,11 +50,6 @@ namespace NewHorizons.Utility
             {
                 PlaceObject();
             }
-
-            //if (Keyboard.current[Key.Semicolon].wasReleasedThisFrame)
-            //{
-            //    PrintConfigs();
-            //}
             
             if (Keyboard.current[Key.Minus].wasReleasedThisFrame)
             {
@@ -111,8 +96,6 @@ namespace NewHorizons.Utility
 
             try 
             { 
-                // TODO: if currentObject == "" or null, spawn some generic placeholder instead
-
                 if (currentObject == "" || currentObject == null)
                 {
                     SetCurrentObject(DEFAULT_OBJECT);
@@ -120,16 +103,12 @@ namespace NewHorizons.Utility
 
                 GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
-
-                // TODO: rotate around vertical axis to face player
-                //var dirTowardsPlayer = playerAbsolutePosition - prop.transform.position;
-                //dirTowardsPlayer.y = 0;
                 
                 // align with surface normal
                 Vector3 alignToSurface = (Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward)).eulerAngles;
                 prop.transform.localEulerAngles = alignToSurface;     
         
-                // rotate facing dir
+                // rotate facing dir towards player
                 GameObject g = new GameObject();
                 g.transform.parent = prop.transform.parent;
                 g.transform.localPosition = prop.transform.localPosition;
@@ -156,13 +135,8 @@ namespace NewHorizons.Utility
         {
             AstroObject planet = AstroObjectLocator.GetAstroObject(config.Name);
 
-            //if (planet == null || planet.GetRootSector() == null) return;
             if (planet == null) return;
             if (config.Props == null || config.Props.Details == null) return;
-
-            //List<Transform> potentialProps = new List<Transform>();
-            //foreach (Transform child in planet.GetRootSector().transform) potentialProps.Add(child);
-            //potentialProps.Where(potentialProp => potentialProp.gameObject.name.EndsWith("(Clone)")).ToList();
 
             var bodyName = config.Name;
             var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
@@ -184,41 +158,6 @@ namespace NewHorizons.Utility
                 {
                     RecentlyPlacedProps.Add(data.detailInfo.path);
                 }
-
-                //var propPathElements = detail.path.Split('/');
-                //string propName = propPathElements[propPathElements.Length-1];
-
-                //potentialProps
-                //    .Where(potentialProp => potentialProp.gameObject.name == propName+"(Clone)")
-                //    .OrderBy(potentialProp => Vector3.Distance(potentialProp.localPosition, detail.position))
-                //    .ToList();
-
-                //if (potentialProps.Count <= 0)
-                //{
-                //    Logger.LogError($"No candidate found for prop {detail.path} on planet ${config.Name}.");
-                //    continue;
-                //}
-
-
-                //TODO: this probably doesn't work
-                //when saving props loaded from a config to a file (aka, load a config, then place a prop, then save)
-                //all positions of loaded props are 0,0,0
-
-
-                //Transform spawnedProp = potentialProps[0];
-
-                //Logger.Log("Found potential prop " + transform.gameObject.name + " @ " + transform.localPosition + " for " + detail.path);
-                
-                //var bodyName = config.Name;
-                //var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
-                //if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
-                //PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
-                //potentialProps.Remove(spawnedProp);
-
-                //if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
-                //{
-                //    RecentlyPlacedProps.Add(data.detailInfo.path);
-                //}
             }
         }
 
@@ -253,67 +192,6 @@ namespace NewHorizons.Utility
 
             props.Add(data);
             return data;
-        }
-
-        //public void PrintConfigs()
-        //{
-        //    foreach(string configFile in GenerateConfigs())
-        //    {
-        //        Logger.Log(configFile);
-        //    }
-        //}
-
-        //public List<String> GenerateConfigs()
-        //{
-        //    var groupedProps = props
-        //        .GroupBy(p => AstroObjectLocator.GetAstroObject(p.body).name)
-        //        .Select(grp => grp.ToList())
-        //        .ToList();
-            
-        //    List<string> configFiles = new List<string>();
-
-        //    foreach (List<PropPlacementData> bodyProps in groupedProps)
-        //    {
-        //        string configFile = 
-        //            "{" + Environment.NewLine +
-        //            "	\"$schema\": \"https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json\"," + Environment.NewLine +
-        //            $"	\"name\" : \"{bodyProps[0].body}\"," + Environment.NewLine +
-        //            "	\"Props\" :" + Environment.NewLine +
-        //            "	{" + Environment.NewLine +
-        //            "		\"details\": [" + Environment.NewLine;
-                    
-        //        for(int i = 0; i < bodyProps.Count; i++)
-        //        {
-        //            PropPlacementData prop = bodyProps[i];
-
-        //            string positionString = $"\"x\":{prop.pos.x},\"y\":{prop.pos.y},\"z\":{prop.pos.z}";
-        //            string rotationString = $"\"x\":{prop.rotation.x},\"y\":{prop.rotation.y},\"z\":{prop.rotation.z}";
-        //            string endingString = i == bodyProps.Count-1 ? "" : ",";
-
-        //            configFile += "			{" +
-        //                "\"path\" : \"" +prop.propPath+ "\", " +
-        //                "\"position\": {"+positionString+"}, " +
-        //                "\"rotation\": {"+rotationString+"}, " +
-        //                "\"scale\": 1"+
-        //                (prop.assetBundle == null    ? "" : $", \"assetBundle\": \"{prop.assetBundle}\"") +
-        //                (prop.removeChildren == null ? "" : $", \"removeChildren\": \"[{string.Join(",",prop.removeChildren)}]\"") +
-        //                "}" + endingString + Environment.NewLine;
-        //        }
-
-        //        configFile += 
-        //            "		]" + Environment.NewLine +
-        //            "    }" + Environment.NewLine +
-        //            "}";
-
-        //        configFiles.Add(configFile);
-        //    }
-
-        //    return configFiles;
-        //}
-
-        public string DEBUG_PrintAllPropLocations()
-        {
-            return string.Join(", ", props.Select(x => x.system + DebugMenu.separatorCharacter + x.body).ToList());
         }
 
         public Dictionary<string, DetailInfo[]> GetPropsConfigByBody(bool useAstroObjectName = false)

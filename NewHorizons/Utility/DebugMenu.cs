@@ -33,7 +33,6 @@ namespace NewHorizons.Utility
         private IModBehaviour loadedMod = null;
         private Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
-        private bool propsHaveBeenLoaded = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
 
         private void Awake()
@@ -66,8 +65,6 @@ namespace NewHorizons.Utility
 
         private void CloseMenu() { menuOpen = false; }
 
-
-
         private void LoadFavoriteProps()
         {
             string favoritePropsPlayerPref = PlayerPrefs.GetString(favoritePropsPlayerPrefKey);
@@ -81,17 +78,6 @@ namespace NewHorizons.Utility
                 this.favoriteProps.Add(favoriteProp);
             }
         }
-
-        private void Update()
-        {
-            if (!Main.Debug) return;
-
-            /*if (Keyboard.current[Key.Escape].wasPressedThisFrame)
-            {
-                menuOpen = !menuOpen;
-                if (menuOpen) InitMenu();
-            }*/
-        }
         
         private void OnGUI()
         {
@@ -99,9 +85,6 @@ namespace NewHorizons.Utility
             if (!Main.Debug) return;
 
             Vector2 menuPosition =  new Vector2(10, 40);
-            
-            //TODO: add gui for stuff https://github.com/Bwc9876/OW-SaveEditor/blob/master/SaveEditor/SaveEditor.cs
-            // https://docs.unity3d.com/ScriptReference/GUI.TextField.html
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
             
@@ -164,7 +147,6 @@ namespace NewHorizons.Utility
                         loadedMod = mod;
                         _dpp.active = true;
 
-                        propsHaveBeenLoaded = true;
                         var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
                 
                         List<NewHorizonsBody> bodiesForThisMod = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).ToList();
@@ -178,18 +160,6 @@ namespace NewHorizons.Utility
                             loadedConfigFiles[folder + body.RelativePath] = (body.Config as PlanetConfig);
                             _dpp.FindAndRegisterPropsFromConfig(body.Config);
                         }
-
-                        //if (System.IO.Directory.Exists(folder + "planets"))
-                        //{
-                        //    foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
-                        //    {
-                        //        Logger.Log("READING FROM CONFIG @ " + file);
-                        //        var relativeDirectory = file.Replace(folder, "");
-                        //        var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                        //        loadedConfigFiles[file] = bodyConfig;
-                        //        _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
-                        //    }
-                        //}
                     }
                 }
 
@@ -199,31 +169,10 @@ namespace NewHorizons.Utility
             {
                 GUILayout.Label(loadedMod.ModHelper.Manifest.UniqueName);
             }
-            // workingModName = GUILayout.TextField(workingModName);
-            
-            
-
-            //GUI.enabled = !propsHaveBeenLoaded && loadedMod != null;
-            //if (GUILayout.Button("Load Detail Props from Configs", GUILayout.ExpandWidth(false)))
-            //{
-            //    propsHaveBeenLoaded = true;
-            //    var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
-                
-            //    if (System.IO.Directory.Exists(folder + "planets"))
-            //    {
-            //        foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
-            //        {
-            //            Logger.Log("READING FROM CONFIG @ " + file);
-            //            var relativeDirectory = file.Replace(folder, "");
-            //            var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-            //            loadedConfigFiles[file] = bodyConfig;
-            //            _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
-            //        }
-            //    }
-            //}
-            //GUI.enabled = true;
 
             GUILayout.Space(5);
+
+            // save your work
 
             { 
                 GUILayout.BeginHorizontal();
@@ -258,23 +207,17 @@ namespace NewHorizons.Utility
                 GUILayout.EndHorizontal();
             }
 
-            if (GUILayout.Button("Print your mod's updated configs"))
-            {
-                UpdateLoadedConfigs();
+            //if (GUILayout.Button("Print your mod's updated configs"))
+            //{
+            //    UpdateLoadedConfigs();
                 
-                foreach (var filePath in loadedConfigFiles.Keys)
-                {
-                    Logger.Log("The updated copy of " + filePath);
-                    Logger.Log(Newtonsoft.Json.JsonConvert.SerializeObject(loadedConfigFiles[filePath], Newtonsoft.Json.Formatting.Indented));
-                }
-                // _dpp.PrintConfigs();
-            }
-
-            // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
-            // TODO: add a warning that the button cannot be pushed more than once
-
-            // TODO: put a text field here to print all the configs in
-            // TODO: put a button here to save configs to file
+            //    foreach (var filePath in loadedConfigFiles.Keys)
+            //    {
+            //        Logger.Log("The updated copy of " + filePath);
+            //        Logger.Log(Newtonsoft.Json.JsonConvert.SerializeObject(loadedConfigFiles[filePath], Newtonsoft.Json.Formatting.Indented));
+            //    }
+            //    // _dpp.PrintConfigs();
+            //}
 
             GUILayout.EndArea();
         }
@@ -282,20 +225,14 @@ namespace NewHorizons.Utility
         private void UpdateLoadedConfigs()
         {
             // for each keyvalue in _dpp.GetPropsConfigByBody()
-            // find the matching entry loadedConfigFiles
-            // entry matches if the value of AstroOBjectLocator.FindBody(key) matches
+            //    find the matching entry loadedConfigFiles
+            //    entry matches if the value of AstroOBjectLocator.FindBody(key) matches
 
             var newDetails = _dpp.GetPropsConfigByBody(true);
-            
-        
-            //var allConfigsForMod = Main.Instance.BodyDict[Main.CurrentStarSystem].Where(x => x.Mod == mod).Select(x => x.Config)
-
-            //var allConfigs = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).Select(x => x.Config);
         
             Logger.Log("updating configs");
 
             Logger.Log("New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
-            Logger.Log("All props: " + _dpp.DEBUG_PrintAllPropLocations());
 
             // TODO: looks like placing the first prop on a given planet in a given session clears out all existing props on that planet
             Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
