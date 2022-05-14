@@ -18,6 +18,7 @@ namespace NewHorizons.Utility
         GUIStyle _editorMenuStyle;
         Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
+        bool openMenuOnPause = false;
 
         DebugPropPlacer _dpp;
         DebugRaycaster _drc;
@@ -44,18 +45,24 @@ namespace NewHorizons.Utility
         }
         private void Start() 
         { 
-            Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
-            Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
+            if (Main.Debug)
+            {
+                Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
+                Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
+                Main.Instance.ModHelper.Menus.PauseMenu.OnOpened += RestoreMenuOpennessState;
+            
+                PauseMenuInitHook();
+            }
         }
 
         private void PauseMenuInitHook()
         {
             InitMenu();
-            var editorButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Open Prop Placer Menu".ToUpper());
+            var editorButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Toggle Prop Placer Menu".ToUpper());
             editorButton.OnClick += ToggleMenu;
         }
-
-        private void ToggleMenu() { menuOpen = !menuOpen; }
+        private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
+        private void ToggleMenu() { menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
 
         private void CloseMenu() { menuOpen = false; }
 
@@ -229,7 +236,7 @@ namespace NewHorizons.Utility
                 {
                     UpdateLoadedConfigs();
                     
-                    string backupFolderName = "configBackups/" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "/";
+                    string backupFolderName = "configBackups\\" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "\\";
                     Logger.Log($"(count) Saving {loadedConfigFiles.Keys.Count} files");
 
                     foreach (var filePath in loadedConfigFiles.Keys)
@@ -238,7 +245,12 @@ namespace NewHorizons.Utility
                         Logger.Log("Saving... " + relativePath + " to " + filePath);
                         loadedMod.ModHelper.Storage.Save(loadedConfigFiles[filePath], relativePath);
 
-                        Main.Instance.ModHelper.Storage.Save(loadedConfigFiles[filePath], backupFolderName+relativePath);
+                        try 
+                        { 
+                            System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Main.Instance.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath));
+                            Main.Instance.ModHelper.Storage.Save(loadedConfigFiles[filePath], backupFolderName+relativePath); 
+                        } 
+                        catch (Exception e) { Logger.LogError("Failed to save backup file " + backupFolderName+relativePath); Logger.LogError(e.Message + "\n" + e.StackTrace); }
                     }
                     saveButtonUnlocked = false;
                 }
