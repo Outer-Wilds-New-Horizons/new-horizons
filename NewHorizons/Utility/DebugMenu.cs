@@ -141,17 +141,29 @@ namespace NewHorizons.Utility
                         propsHaveBeenLoaded = true;
                         var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
                 
-                        if (System.IO.Directory.Exists(folder + "planets"))
+                        List<NewHorizonsBody> bodiesForThisMod = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).ToList();
+                        foreach (NewHorizonsBody body in bodiesForThisMod)
                         {
-                            foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
+                            if (body.RelativePath == null)
                             {
-                                Logger.Log("READING FROM CONFIG @ " + file);
-                                var relativeDirectory = file.Replace(folder, "");
-                                var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                                loadedConfigFiles[file] = bodyConfig;
-                                _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
+                                Logger.Log("Error loading config for " + body.Config.Name + " in " + body.Config.StarSystem);
                             }
+
+                            loadedConfigFiles[folder + body.RelativePath] = (body.Config as PlanetConfig);
+                            _dpp.FindAndRegisterPropsFromConfig(body.Config);
                         }
+
+                        //if (System.IO.Directory.Exists(folder + "planets"))
+                        //{
+                        //    foreach (var file in System.IO.Directory.GetFiles(folder + @"planets\", "*.json", System.IO.SearchOption.AllDirectories))
+                        //    {
+                        //        Logger.Log("READING FROM CONFIG @ " + file);
+                        //        var relativeDirectory = file.Replace(folder, "");
+                        //        var bodyConfig = loadedMod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                        //        loadedConfigFiles[file] = bodyConfig;
+                        //        _dpp.FindAndRegisterPropsFromConfig(bodyConfig);
+                        //    }
+                        //}
                     }
                 }
 
@@ -220,7 +232,7 @@ namespace NewHorizons.Utility
                     Logger.Log("The updated copy of " + filePath);
                     Logger.Log(Newtonsoft.Json.JsonConvert.SerializeObject(loadedConfigFiles[filePath], Newtonsoft.Json.Formatting.Indented));
                 }
-                //_dpp.PrintConfigs();
+                // _dpp.PrintConfigs();
             }
 
             // TODO: field to provide name of mod to load configs from, plus button to load those into the PropPlaecr (make sure not to load more than once, once the button has been pushed, disable it)
@@ -296,7 +308,7 @@ namespace NewHorizons.Utility
                 c.Props = new PropModule();
                 c.Props.Details = newDetails[planetAndSystem];
 
-                // loadedConfigFiles[filepath] = c;
+                loadedConfigFiles[filepath] = c;
             }
         }
 

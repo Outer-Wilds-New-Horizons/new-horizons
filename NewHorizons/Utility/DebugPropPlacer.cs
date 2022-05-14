@@ -98,6 +98,9 @@ namespace NewHorizons.Utility
         
         public void PlaceObject(DebugRaycastData data, Vector3 playerAbsolutePosition)
         {
+            // TODO: implement sectors
+            // if this hits a sector, store that sector and add a config file option for it
+
             if (!data.hitObject.name.EndsWith("_Body"))
             {
                 Logger.Log("Cannot place object on non-body object: " + data.hitObject.name);
@@ -150,28 +153,48 @@ namespace NewHorizons.Utility
         {
             AstroObject planet = AstroObjectLocator.GetAstroObject(config.Name);
 
-            if (planet == null || planet.GetRootSector() == null) return;
+            //if (planet == null || planet.GetRootSector() == null) return;
+            if (planet == null) return;
             if (config.Props == null || config.Props.Details == null) return;
 
-            List<Transform> potentialProps = new List<Transform>();
-            foreach (Transform child in planet.GetRootSector().transform) potentialProps.Add(child);
-            potentialProps.Where(potentialProp => potentialProp.gameObject.name.EndsWith("(Clone)")).ToList();
+            //List<Transform> potentialProps = new List<Transform>();
+            //foreach (Transform child in planet.GetRootSector().transform) potentialProps.Add(child);
+            //potentialProps.Where(potentialProp => potentialProp.gameObject.name.EndsWith("(Clone)")).ToList();
+
+            var bodyName = config.Name;
+            var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
+            if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
 
             foreach (var detail in config.Props.Details)
             {
-                var propPathElements = detail.path.Split('/');
-                string propName = propPathElements[propPathElements.Length-1];
+                GameObject spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
 
-                potentialProps
-                    .Where(potentialProp => potentialProp.gameObject.name == propName+"(Clone)")
-                    .OrderBy(potentialProp => Vector3.Distance(potentialProp.localPosition, detail.position))
-                    .ToList();
-
-                if (potentialProps.Count <= 0)
+                if (spawnedProp == null)
                 {
-                    Logger.LogError($"No candidate found for prop {detail.path} on planet ${config.Name}.");
+                    Logger.LogError("No spawned prop found for " + detail.path);
                     continue;
                 }
+
+                PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp, detail.path, config.StarSystem, detail);
+
+                if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
+                {
+                    RecentlyPlacedProps.Add(data.detailInfo.path);
+                }
+
+                //var propPathElements = detail.path.Split('/');
+                //string propName = propPathElements[propPathElements.Length-1];
+
+                //potentialProps
+                //    .Where(potentialProp => potentialProp.gameObject.name == propName+"(Clone)")
+                //    .OrderBy(potentialProp => Vector3.Distance(potentialProp.localPosition, detail.position))
+                //    .ToList();
+
+                //if (potentialProps.Count <= 0)
+                //{
+                //    Logger.LogError($"No candidate found for prop {detail.path} on planet ${config.Name}.");
+                //    continue;
+                //}
 
 
                 //TODO: this probably doesn't work
@@ -179,18 +202,20 @@ namespace NewHorizons.Utility
                 //all positions of loaded props are 0,0,0
 
 
-                Transform spawnedProp = potentialProps[0];
-                
-                var bodyName = config.Name;
-                var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
-                if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
-                PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
-                potentialProps.Remove(spawnedProp);
+                //Transform spawnedProp = potentialProps[0];
 
-                if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
-                {
-                    RecentlyPlacedProps.Add(data.detailInfo.path);
-                }
+                //Logger.Log("Found potential prop " + transform.gameObject.name + " @ " + transform.localPosition + " for " + detail.path);
+                
+                //var bodyName = config.Name;
+                //var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
+                //if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
+                //PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
+                //potentialProps.Remove(spawnedProp);
+
+                //if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
+                //{
+                //    RecentlyPlacedProps.Add(data.detailInfo.path);
+                //}
             }
         }
 

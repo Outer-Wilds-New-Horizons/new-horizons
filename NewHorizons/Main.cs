@@ -372,7 +372,7 @@ namespace NewHorizons
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
 
-                body = new NewHorizonsBody(config, mod);
+                body = new NewHorizonsBody(config, mod, relativeDirectory);
             }
             catch (Exception e)
             {
