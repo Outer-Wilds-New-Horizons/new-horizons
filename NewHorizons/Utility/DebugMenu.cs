@@ -40,8 +40,23 @@ namespace NewHorizons.Utility
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
 
+            Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
+            Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
             LoadFavoriteProps();
         }
+
+        private void PauseMenuInitHook()
+        {
+            InitMenu();
+            var editorButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Open Prop Placer Menu".ToUpper());
+            editorButton.OnClick += ToggleMenu;
+        }
+
+        private void ToggleMenu() { menuOpen = !menuOpen; }
+
+        private void CloseMenu() { menuOpen = false; }
+
+
 
         private void LoadFavoriteProps()
         {
@@ -61,11 +76,11 @@ namespace NewHorizons.Utility
         {
             if (!Main.Debug) return;
 
-            if (Keyboard.current[Key.Escape].wasPressedThisFrame)
+            /*if (Keyboard.current[Key.Escape].wasPressedThisFrame)
             {
                 menuOpen = !menuOpen;
                 if (menuOpen) InitMenu();
-            }
+            }*/
         }
         
         private void OnGUI()
@@ -137,6 +152,7 @@ namespace NewHorizons.Utility
                     if (GUILayout.Button(mod.ModHelper.Manifest.UniqueName))
                     {
                         loadedMod = mod;
+                        _dpp.active = true;
 
                         propsHaveBeenLoaded = true;
                         var folder = loadedMod.ModHelper.Manifest.ModFolderPath;

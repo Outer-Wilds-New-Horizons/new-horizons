@@ -43,6 +43,8 @@ namespace NewHorizons.Utility
 
         public HashSet<string> RecentlyPlacedProps = new HashSet<string>();
 
+        public bool active = false;
+
         private void Awake()
         {
             _rc = this.GetRequiredComponent<DebugRaycaster>();
@@ -52,8 +54,9 @@ namespace NewHorizons.Utility
         private void Update()
         {
             if (!Main.Debug) return;
+            if (!active) return;
 
-            if (Keyboard.current[Key.Q].wasReleasedThisFrame)
+            if (Keyboard.current[Key.X].wasReleasedThisFrame)
             {
                 PlaceObject();
             }
