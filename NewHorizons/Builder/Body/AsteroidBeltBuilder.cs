@@ -31,41 +31,42 @@ namespace NewHorizons.Builder.Body
             for (int i = 0; i < count; i++)
             {
                 var size = Random.Range(minSize, maxSize);
-                var config = new Dictionary<string, object>()
+
+                var config = new PlanetConfig(null);
+                config.Name = $"{bodyName} Asteroid {i}";
+                config.StarSystem = parentConfig.StarSystem;
+
+                config.Base = new BaseModule()
                 {
-                    {"Name", $"{bodyName} Asteroid {i}"},
-                    {"StarSystem", parentConfig.StarSystem },
-                    {"Base", new Dictionary<string, object>()
-                        {
-                            {"HasMapMarker", false },
-                            {"SurfaceGravity", 1 },
-                            {"SurfaceSize", size },
-                            {"HasReferenceFrame", false },
-                            {"GravityFallOff", "inverseSquared" }
-                        }
-                    },
-                    {"Orbit", new Dictionary<string, object>()
-                        {
-                            {"IsMoon", true },
-                            {"Inclination", belt.Inclination + Random.Range(-2f, 2f) },
-                            {"LongitudeOfAscendingNode", belt.LongitudeOfAscendingNode },
-                            {"TrueAnomaly", 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count },
-                            {"PrimaryBody", bodyName },
-                            {"SemiMajorAxis", Random.Range(belt.InnerRadius, belt.OuterRadius) },
-                            {"ShowOrbitLine", false }
-                        }
-                    },
-                    {"ProcGen", new Dictionary<string, object>()
-                        {
-                            {"Scale", size },
-                            {"Color", new MColor(126, 94, 73, 255) }
-                        }
-                    }
+                    HasMapMarker = false,
+                    SurfaceGravity = 1,
+                    SurfaceSize = size,
+                    HasReferenceFrame = false,
+                    GravityFallOff = "inverseSquared"
                 };
 
-                var asteroidConfig = new PlanetConfig(config);
-                if (belt.ProcGen != null) asteroidConfig.ProcGen = belt.ProcGen;
-                var asteroid = new NewHorizonsBody(new PlanetConfig(config), mod);
+                config.Orbit = new OrbitModule()
+                {
+                    IsMoon = true,
+                    Inclination = belt.Inclination + Random.Range(-2f, 2f),
+                    LongitudeOfAscendingNode = belt.LongitudeOfAscendingNode,
+                    TrueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
+                    PrimaryBody = bodyName,
+                    SemiMajorAxis = Random.Range(belt.InnerRadius, belt.OuterRadius),
+                    ShowOrbitLine = false
+                };
+
+                config.ProcGen = belt.ProcGen;
+                if(config.ProcGen == null)
+                {
+                    config.ProcGen = new ProcGenModule()
+                    {
+                        Scale = size,
+                        Color = new MColor(126, 94, 73, 255)
+                    };
+                }
+
+                var asteroid = new NewHorizonsBody(config, mod);
                 PlanetCreationHandler.NextPassBodies.Add(asteroid);
             }
         }
