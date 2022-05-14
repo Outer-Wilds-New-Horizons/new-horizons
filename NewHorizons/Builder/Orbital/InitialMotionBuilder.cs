@@ -13,7 +13,7 @@ using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Orbital
 {
-    static class InitialMotionBuilder
+    public static class InitialMotionBuilder
     {
         public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
@@ -73,12 +73,12 @@ namespace NewHorizons.Builder.Orbital
                 {
                     // It's a circumbinary moon/planet
                     var fakePrimaryBody = focalPoint.FakeMassBody.GetComponent<AstroObject>();
-                    SetMotionFromPrimary(fakePrimaryBody, secondaryBody as NHAstroObject, initialMotion);
+                    SetMotionFromPrimary(fakePrimaryBody, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
                 }
             }
             else if (primaryBody.GetGravityVolume())
             {
-                SetMotionFromPrimary(primaryBody, secondaryBody as NHAstroObject, initialMotion);
+                SetMotionFromPrimary(primaryBody, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
             }
             else
             {
@@ -86,13 +86,13 @@ namespace NewHorizons.Builder.Orbital
             }
         }
 
-        private static void SetMotionFromPrimary(AstroObject primaryBody, NHAstroObject secondaryBody, InitialMotion initialMotion)
+        public static void SetMotionFromPrimary(AstroObject primaryBody, AstroObject secondaryBody, IOrbitalParameters orbit, InitialMotion initialMotion)
         {
             initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
 
             var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
             var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
-            var velocity = secondaryBody.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity;
+            var velocity = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialVelocity;
 
             var parentVelocity = primaryBody?.GetComponent<InitialMotion>()?.GetInitVelocity() ?? Vector3.zero;
             initialMotion._cachedInitVelocity = velocity + parentVelocity;

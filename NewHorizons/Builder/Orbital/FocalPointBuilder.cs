@@ -15,7 +15,7 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Orbital
 {
-    static class FocalPointBuilder
+    public static class FocalPointBuilder
     {
         public static void Make(GameObject go, AstroObject ao, IPlanetConfig config, IModBehaviour mod)
         {

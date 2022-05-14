@@ -8,7 +8,7 @@ using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Body.Geometry
 {
-    static class Icosphere
+    public static class Icosphere
     {
         private static readonly float t = (1f + Mathf.Sqrt(5f)) / 2f;
         // By subdivisions, will add to this to memoize computation of icospheres

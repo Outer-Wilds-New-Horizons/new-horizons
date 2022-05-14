@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace NewHorizons.Utility
 {
-    static class ImageUtilities
+    public static class ImageUtilities
     {
         private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
         private static List<Texture2D> _generatedTextures = new List<Texture2D>();

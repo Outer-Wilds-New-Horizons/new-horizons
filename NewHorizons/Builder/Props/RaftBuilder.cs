@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
         {
-            if(_prefab == null)
+            if (_prefab == null)
             {
                 _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
                 if (_prefab == null)
@@ -33,9 +33,9 @@ namespace NewHorizons.Builder.Props
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
-            raftObject.transform.parent = sector.transform;
-            raftObject.transform.localPosition = info.position;
-            raftObject.transform.localRotation = Quaternion.identity;
+            raftObject.transform.parent = sector?.transform ?? planetGO.transform;
+            raftObject.transform.position = planetGO.transform.TransformPoint(info.position);
+            raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
 
             sector.OnOccupantEnterSector += (sd) => OWAssetHandler.OnOccupantEnterSector(raftObject, sd, sector);
             OWAssetHandler.LoadObject(raftObject);
@@ -62,15 +62,6 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
-
-            /*
-            // Debug
-            foreach (var point in fluidDetector._localAlignmentCheckPoints)
-            {
-                var sphere = AddDebugShape.AddSphere(fluidDetector.gameObject, 0.5f, Color.green);
-                sphere.transform.localPosition = point;
-            }
-            */
 
             raftObject.SetActive(true);
         }

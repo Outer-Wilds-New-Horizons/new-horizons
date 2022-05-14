@@ -218,9 +218,9 @@ namespace NewHorizons.Builder.ShipLog
                 Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
                 return Sprite.Create(newTexture, rect, pivot);
             }
-            catch(Exception)
+            catch (Exception)
             {
-                if(logError) Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
+                if (logError) Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
                 return null;
             }
         }

@@ -1,5 +1,7 @@
+---
 Title: API
 Sort_Priority: 40
+---
 
 ## How to use the API
 
@@ -21,6 +23,8 @@ public interface INewHorizons
     UnityEvent<string> GetChangeStarSystemEvent();
 
     UnityEvent<string> GetStarSystemLoadedEvent();
+    
+    GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal)
 
     string[] GetInstalledAddons();
 }
@@ -43,3 +47,5 @@ You can then use the APIs `LoadConfigs()` method to load from a "planets" folder
 The `GetChangeStarSystemEvent` and `GetStarSystemLoadedEvent` events let you listen in for when the player starts changing to a new system (called when entering a black hole or using the warp drive) and when the system is fully loaded in, respectively.
 
 You can also use the `GetInstalledAddons` method to get a list of addons that are installed and enabled.
+
+You can also use `SpawnObject` to directly copy a base-game GameObject to the specified position and rotation.

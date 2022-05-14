@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
-                b => (b.Config.ShipLog?.mapMode?.remove ?? false) == false
+                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.IsQuantumState
             ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;

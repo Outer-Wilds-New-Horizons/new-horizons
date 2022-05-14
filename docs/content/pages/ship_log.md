@@ -1,6 +1,8 @@
+---
 Title: Ship Log
 Description: A guide to editing the ship log in New Horizons
 Sort_Priority: 70
+---
 
 # Intro
 

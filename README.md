@@ -28,6 +28,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 ## Incompatible mods
 - Autoresume.
 - Quantum Space Buddies.
+- OW Randomizer.
 
 ## Features
 - Load planet meshes or details from asset bundles 
@@ -35,7 +36,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove or edit existing planets, including what they orbit around
 - Create custom planets from heightmaps/texturemaps
-- Create stars, comets, asteroid belts, and satellites too.
+- Create stars, comets, asteroid belts, satellites, and quantum planets/moons.
 - Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, and tornados.
 - Binary orbits
 - Signalscope signals and custom frequencies
@@ -45,7 +46,6 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Funnels and variable surface height (can be made of sand/water/lava/star)
 
 ## Roadmap
-- "Quantum" planet parameters
 - Let custom stars go supernova
 
 ## Development
@@ -67,6 +67,7 @@ New Horizons was made with help from:
 - [jtsalomo](https://github.com/jtsalomo)
 - [Raicuparta](https://github.com/Raicuparta)
 - [MegaPiggy](https://github.com/MegaPiggy)
+- [Trifid](https://github.com/TerrificTrifid)
 
 Translation credits:
 - Russian: GrayFix and Tlya

@@ -6,17 +6,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using NewHorizons.Utility;
 
 namespace NewHorizons.Builder.Body
 {
-    static class ProcGenBuilder
+    public static class ProcGenBuilder
     {
-        public static void Make(GameObject go, ProcGenModule module)
+        private static Material quantumMaterial;
+        private static Material iceMaterial;
+
+        public static void Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
+            if(quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
+            if(iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+
+
             GameObject icosphere = new GameObject("Icosphere");
-            icosphere.transform.parent = go.transform;
+            icosphere.transform.parent = sector?.transform ?? planetGO.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
-            icosphere.transform.localPosition = Vector3.zero;
+            icosphere.transform.position = planetGO.transform.position;
 
             Mesh mesh = Icosphere.Build(4, module.Scale, module.Scale * 1.2f);
 
@@ -29,7 +37,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
-            icosphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            icosphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             icosphere.AddComponent<ProxyShadowCaster>();
         }

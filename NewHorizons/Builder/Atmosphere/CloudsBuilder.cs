@@ -8,10 +8,11 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Atmosphere
 {
-    static class CloudsBuilder
+    public static class CloudsBuilder
     {
         private static Shader _sphereShader = null;
-        public static void Make(GameObject body, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
+        private static Material[] _gdCloudMaterials;
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             Texture2D image, cap, ramp;
 
@@ -34,7 +35,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
-            cloudsMainGO.transform.parent = body.transform;
+            cloudsMainGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             GameObject cloudsTopGO = new GameObject("TopClouds");
             cloudsTopGO.SetActive(false);
@@ -45,25 +46,30 @@ namespace NewHorizons.Builder.Atmosphere
             topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
-            if (!atmo.UseBasicCloudShader)
+
+            if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            var tempArray = new Material[2];
+
+            if (atmo.UseBasicCloudShader)
             {
-                var tempArray = new Material[2];
-                for (int i = 0; i < 2; i++)
-                {
-                    var mat = new Material(GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials[i]);
-                    if (!atmo.ShadowsOnClouds) mat.renderQueue = 2550;
-                    mat.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
-                    tempArray[i] = mat;
-                }
-                topMR.sharedMaterials = tempArray;
+                var material = new Material(_sphereShader);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
+
+                tempArray[0] = material;
             }
             else
             {
-                if (_sphereShader == null) _sphereShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
-                topMR.material = new Material(_sphereShader);
-                if (!atmo.ShadowsOnClouds) topMR.material.renderQueue = 2550;
-                topMR.material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
+                var material = new Material(_gdCloudMaterials[0]);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
+                tempArray[0] = material;
             }
+
+            // This is the stencil material for the fog under the clouds
+            tempArray[1] = new Material(_gdCloudMaterials[1]);
+            topMR.sharedMaterials = tempArray;
 
             foreach (var material in topMR.sharedMaterials)
             {
@@ -79,7 +85,6 @@ namespace NewHorizons.Builder.Atmosphere
             {
                 cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
-
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             // Idk why but the axis is weird
@@ -158,14 +163,14 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._disableOnStart = false;
 
             // Fix the rotations once the rest is done
-            cloudsMainGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+            cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.localRotation = Quaternion.Euler(90, 0, 0);
+            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
-            cloudsMainGO.transform.localPosition = Vector3.zero;
-            cloudsBottomGO.transform.localPosition = Vector3.zero;
-            cloudsFluidGO.transform.localPosition = Vector3.zero;
-            cloudsTopGO.transform.localPosition = Vector3.zero;
+            cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsBottomGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsFluidGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+            cloudsTopGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
 
             cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);

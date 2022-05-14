@@ -24,8 +24,8 @@ namespace NewHorizons.Builder.Props
             else Logger.LogError($"Invalid projection type {info.type}");
         }
 
-        private static void MakeSlideReel(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
-        { 
+        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        {
             if (_slideReelPrefab == null)
             {
                 _slideReelPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
@@ -46,14 +46,14 @@ namespace NewHorizons.Builder.Props
 
             var slideCollectionContainer = slideReelObj.GetRequiredComponent<SlideCollectionContainer>();
 
-            foreach(var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
+            foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
                 renderer.enabled = true;
             }
 
-            slideReelObj.transform.parent = sector?.transform ?? go.transform;
-            slideReelObj.transform.localPosition = (Vector3)(info.position ?? Vector3.zero);
-            slideReelObj.transform.localRotation = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
+            slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
+            slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Props
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
-            for(int i = 0; i < slidesCount; i++)
+            for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
                 slide.textureOverride = ImageUtilities.Invert(texture);
 
                 // Track the first 15 to put on the slide reel object
-                if(i < 15) textures[i] = texture;
+                if (i < 15) textures[i] = texture;
 
                 AddModules(slideInfo, ref slide);
 
@@ -102,7 +102,7 @@ namespace NewHorizons.Builder.Props
             slideReelObj.SetActive(true);
         }
 
-        public static void MakeAutoProjector(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             if (_autoPrefab == null)
             {
@@ -123,9 +123,9 @@ namespace NewHorizons.Builder.Props
 
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
 
-            autoProjector.transform.parent = sector?.transform ?? go.transform;
-            autoProjector.transform.localPosition = (Vector3)(info.position ?? Vector3.zero);
-            autoProjector.transform.localRotation = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
+            autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
+            autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;

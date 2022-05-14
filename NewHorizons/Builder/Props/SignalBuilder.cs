@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.Props
         {
             Logger.Log($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
-            _availableSignalNames = new Stack<SignalName> (new SignalName[]
+            _availableSignalNames = new Stack<SignalName>(new SignalName[]
             {
                 (SignalName)17,
                 (SignalName)18,
@@ -68,9 +68,9 @@ namespace NewHorizons.Builder.Props
                 SignalName.WhiteHole_GD_Receiver,
             });
             _customFrequencyNames = new Dictionary<SignalFrequency, string>() {
-                { SignalFrequency.Statue, "FREQ_STATUE" }, 
-                { SignalFrequency.Default, "FREQ_UNKNOWN" }, 
-                { SignalFrequency.WarpCore, "FREQ_WARP_CORE" } 
+                { SignalFrequency.Statue, "FREQ_STATUE" },
+                { SignalFrequency.Default, "FREQ_UNKNOWN" },
+                { SignalFrequency.WarpCore, "FREQ_WARP_CORE" }
             };
             _nextCustomSignalName = 200;
             _nextCustomFrequencyName = 256;
@@ -100,7 +100,7 @@ namespace NewHorizons.Builder.Props
             NumberOfFrequencies++;
 
             // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies+1];
+            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
 
             return freq;
         }
@@ -131,18 +131,18 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)
         {
-            foreach(var info in module.Signals)
+            foreach (var info in module.Signals)
             {
                 Make(body, sector, info, mod);
             }
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = new GameObject($"Signal_{info.Name}");
             signalGO.SetActive(false);
-            signalGO.transform.parent = body.transform;
-            signalGO.transform.localPosition = info.Position != null ? (Vector3)info.Position : Vector3.zero;
+            signalGO.transform.parent = sector?.transform ?? planetGO.transform;
+            signalGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();
@@ -156,14 +156,14 @@ namespace NewHorizons.Builder.Props
             var name = StringToSignalName(info.Name);
 
             AudioClip clip = null;
-            if(info.AudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.AudioClip);
+            if (info.AudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.AudioClip);
             else if (info.AudioFilePath != null)
             {
                 try
                 {
                     clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Logger.LogError($"Couldn't load audio file {info.AudioFilePath} : {e.Message}");
                 }
@@ -177,7 +177,7 @@ namespace NewHorizons.Builder.Props
 
             audioSignal.SetSector(sector);
 
-            if(name == SignalName.Default) audioSignal._preventIdentification = true;
+            if (name == SignalName.Default) audioSignal._preventIdentification = true;
 
             audioSignal._frequency = frequency;
             audioSignal._name = name;
@@ -194,7 +194,7 @@ namespace NewHorizons.Builder.Props
             source.velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
             source.rolloffMode = AudioRolloffMode.Custom;
 
-            if(_customCurve == null)
+            if (_customCurve == null)
                 _customCurve = GameObject.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
@@ -210,8 +210,8 @@ namespace NewHorizons.Builder.Props
 
             var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.Name}");
             signalDetectionGO.SetActive(false);
-            signalDetectionGO.transform.parent = body.transform;
-            signalDetectionGO.transform.localPosition = info.Position != null ? (Vector3)info.Position : Vector3.zero;
+            signalDetectionGO.transform.parent = sector?.transform ?? planetGO.transform;
+            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
             signalDetectionGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var sphereShape = signalDetectionGO.AddComponent<SphereShape>();
@@ -223,12 +223,12 @@ namespace NewHorizons.Builder.Props
             audioSignalDetectionTrigger._trigger = owTriggerVolume;
 
             signalGO.SetActive(true);
-            signalDetectionGO.SetActive(true);                                         
+            signalDetectionGO.SetActive(true);
         }
 
         private static SignalFrequency StringToFrequency(string str)
         {
-            foreach(SignalFrequency freq in Enum.GetValues(typeof(SignalFrequency)))
+            foreach (SignalFrequency freq in Enum.GetValues(typeof(SignalFrequency)))
             {
                 if (str.Equals(freq.ToString())) return freq;
             }
@@ -249,6 +249,6 @@ namespace NewHorizons.Builder.Props
             if (customName == default) customName = AddSignalName(str);
 
             return customName;
-        } 
+        }
     }
 }

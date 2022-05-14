@@ -9,16 +9,16 @@ using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
-    static class WaterBuilder
+    public static class WaterBuilder
     {
-        public static void Make(GameObject body, Sector sector, OWRigidbody rb, WaterModule module)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             var waterSize = module.Size;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
             waterGO.layer = 15;
-            waterGO.transform.parent = body.transform;
+            waterGO.transform.parent = sector?.transform ?? planetGO.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
 
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
@@ -113,7 +113,7 @@ namespace NewHorizons.Builder.Body
 
             // TODO: fix ruleset making the sand bubble pop up
 
-            waterGO.transform.localPosition = Vector3.zero;
+            waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);
         }
     }

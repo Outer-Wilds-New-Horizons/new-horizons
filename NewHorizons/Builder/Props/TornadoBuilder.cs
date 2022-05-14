@@ -19,19 +19,19 @@ namespace NewHorizons.Builder.Props
         private static GameObject downPrefab;
         private static GameObject soundPrefab;
 
-        public static void Make(GameObject go, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
             if (upPrefab == null)
             {
                 upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
                 upPrefab.name = "Tornado_Up_Prefab";
             }
-            if(downPrefab == null)
+            if (downPrefab == null)
             {
                 downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
                 downPrefab.name = "Tornado_Down_Prefab";
             }
-            if(soundPrefab == null)
+            if (soundPrefab == null)
             {
                 soundPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
                 soundPrefab.name = "AudioRail_Prefab";
@@ -39,12 +39,12 @@ namespace NewHorizons.Builder.Props
 
             float elevation;
             Vector3 position;
-            if(info.position != null)
+            if (info.position != null)
             {
                 position = info.position ?? Random.onUnitSphere * info.elevation;
                 elevation = position.magnitude;
             }
-            else if(info.elevation != 0)
+            else if (info.elevation != 0)
             {
                 position = Random.onUnitSphere * info.elevation;
                 elevation = info.elevation;
@@ -57,7 +57,7 @@ namespace NewHorizons.Builder.Props
 
             var tornadoGO = info.downwards ? downPrefab.InstantiateInactive() : upPrefab.InstantiateInactive();
             tornadoGO.transform.parent = sector.transform;
-            tornadoGO.transform.localPosition = position;
+            tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
             // Add the sound thing before changing the scale
@@ -102,16 +102,16 @@ namespace NewHorizons.Builder.Props
             controller._bottomBone.localPosition = controller._bottomStartPos;
             controller._midBone.localPosition = controller._midStartPos;
             controller._topBone.localPosition = controller._topStartPos;
-            
+
             OWAssetHandler.LoadObject(tornadoGO);
             sector.OnOccupantEnterSector += (sd) => OWAssetHandler.LoadObject(tornadoGO);
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
-            if(info.tint != null)
+            if (info.tint != null)
             {
                 var colour = info.tint.ToColor();
-                foreach(var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
+                foreach (var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
                 {
                     renderer.material.color = colour;
                     renderer.material.SetColor("_DetailColor", colour);
@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if(info.wanderRate != 0)
+            if (info.wanderRate != 0)
             {
                 var wanderer = tornadoGO.AddComponent<NHTornadoWanderController>();
                 wanderer.wanderRate = info.wanderRate;

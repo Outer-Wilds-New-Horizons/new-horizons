@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Props
 
             if (detail.assetBundle != null)
             {
-                var prefab = PropBuildManager.LoadPrefab(detail.assetBundle, detail.path, uniqueModName, mod);
+                var prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
-                    PropBuildManager.ReplaceShaders(prefab);
+                    AssetBundleUtilities.ReplaceShaders(prefab);
                     prefab.SetActive(false);
                     detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
                 }
@@ -51,6 +51,26 @@ namespace NewHorizons.Builder.Props
                     else Logger.LogWarning($"Couldn't find {childPath}");
                 }
             }
+
+            if(detailGO != null && detail.removeComponents)
+            {
+                // Just swap all the children to a new game object
+                var newDetailGO = new GameObject(detailGO.name);
+                newDetailGO.transform.position = detailGO.transform.position;
+                newDetailGO.transform.parent = detailGO.transform.parent;
+                // Can't modify parents while looping through children bc idk
+                var children = new List<Transform>();
+                foreach(Transform child in detailGO.transform)
+                {
+                    children.Add(child);
+                }
+                foreach(var child in children)
+                {
+                    child.parent = newDetailGO.transform;
+                }
+                GameObject.Destroy(detailGO);
+                detailGO = newDetailGO;
+            }
         }
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
@@ -60,7 +80,7 @@ namespace NewHorizons.Builder.Props
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
+        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             if (prefab == null) return null;
 
@@ -85,29 +105,6 @@ namespace NewHorizons.Builder.Props
                 if (component is GhostIK) (component as GhostIK).enabled = false;
                 if (component is GhostEffects) (component as GhostEffects).enabled = false;
 
-                // If it's not a moving anglerfish make sure the anim controller is regular
-                if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
-                    Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
-                    {
-                        Logger.Log("Enabling anglerfish animation");
-                        var angler = (component as AnglerfishAnimController);
-                        // Remove any reference to its angler
-                        if(angler._anglerfishController)
-                        {
-                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
-                        }
-                        angler.enabled = true;
-                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                    });
-
-                if (component is Animator) Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => (component as Animator).enabled = true);
-                if (component is Collider) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Collider).enabled = true);
-
-                if(component is Shape) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => (component as Shape).enabled = true);
-
                 if(component is DarkMatterVolume)
                 {
                     var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
@@ -128,7 +125,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(go.GetAttachedOWRigidbody(), go.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
+                        (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
                     }
                     catch (Exception e)
                     {
@@ -146,16 +143,46 @@ namespace NewHorizons.Builder.Props
                 {
                     (component as OWItemSocket)._sector = sector;
                 }
+
+                // Fix a bunch of stuff when done loading
+                Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
+                {
+                    if (component is Animator) (component as Animator).enabled = true;
+                    else if (component is Collider) (component as Collider).enabled = true;
+                    else if (component is Renderer) (component as Renderer).enabled = true;
+                    else if (component is Shape) (component as Shape).enabled = true;
+                    // If it's not a moving anglerfish make sure the anim controller is regular
+                    else if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                    {
+                        Logger.Log("Enabling anglerfish animation");
+                        var angler = (component as AnglerfishAnimController);
+                        // Remove any reference to its angler
+                        if (angler._anglerfishController)
+                        {
+                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                        }
+                        angler.enabled = true;
+                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    }
+                });
             }
 
-            prop.transform.position = position == null ? go.transform.position : go.transform.TransformPoint((Vector3)position);
+            prop.transform.position = position == null ? planetGO.transform.position : planetGO.transform.TransformPoint((Vector3)position);
 
             Quaternion rot = rotation == null ? Quaternion.identity : Quaternion.Euler((Vector3)rotation);
-            prop.transform.localRotation = rot;
             if (alignWithNormal)
             {
-                var up = prop.transform.localPosition.normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(prop.transform.up, up) * prop.transform.rotation;
+                // Apply the rotation after aligning it with normal
+                var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
+                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                prop.transform.rotation *= rot;
+            }
+            else
+            {
+                prop.transform.rotation = planetGO.transform.TransformRotation(rot);
             }
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;

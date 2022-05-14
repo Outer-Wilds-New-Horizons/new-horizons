@@ -153,6 +153,11 @@
       "description": "Should this planet ever be shown on the title screen",
       "default": "true"
     },
+    "isQuantumState": {
+      "type": "boolean",
+      "description": "Does this config describe a quantum state of a custom planet defined in another file?",
+      "default": "false"
+    },
     "Base": {
       "type": "object",
       "additionalProperties": false,
@@ -661,6 +666,11 @@
                 "items": {
                   "type": "string"
                 }
+              },
+              "removeComponents": {
+                "type": "boolean",
+                "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to them.",
+                "default": false
               }
             }
           }
@@ -936,7 +946,7 @@
               },
               "normal": {
                 "$ref": "#/$defs/vector3",
-                "description": "The normal vector for this object. Only used for writing on walls to orient it properly."
+                "description": "The normal vector for this object. Used for writing on walls and positioning computers."
               },
               "rotation": {
                 "$ref": "#/$defs/vector3",
@@ -1166,6 +1176,11 @@
         },
         "position": {
           "$ref": "#/$defs/vector3"
+        },
+        "makeZeroGVolume": {
+          "type": "boolean",
+          "default": true,
+          "description": "Only for White Holes. Should this white hole repel the player from it."
         }
       }
     },

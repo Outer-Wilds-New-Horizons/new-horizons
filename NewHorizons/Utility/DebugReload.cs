@@ -50,6 +50,8 @@ namespace NewHorizons.Utility
             GameObject.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
             
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
+
+            Main.SecondsLeftInLoop = -1f;
         }
     }
 }

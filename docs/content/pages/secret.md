@@ -1,6 +1,8 @@
+---
 Title: Hidden Page
 Description: Hehe funny secret
 Hide_In_Nav: True
+---
 
 # Hello!!
 ___

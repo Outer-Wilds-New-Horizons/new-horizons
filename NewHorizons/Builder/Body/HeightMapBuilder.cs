@@ -13,11 +13,11 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    static class HeightMapBuilder
+    public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject go, HeightMapModule module, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod)
         {
             Texture2D heightMap, textureMap;
             try
@@ -35,16 +35,17 @@ namespace NewHorizons.Builder.Body
 
             GameObject cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
-            cubeSphere.transform.parent = go.transform;
+            cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, module.Stretch);
+            Vector3 stretch = module.Stretch != null ? (Vector3)module.Stretch : Vector3.one;
+            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
             // TODO: fix UVs so we can switch to the default shader
-            if (PlanetShader == null) PlanetShader = Main.ShaderBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
@@ -55,11 +56,11 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
-            if(go.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
+            if(planetGO.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
 
             // Fix rotation in the end
-            cubeSphere.transform.localRotation = Quaternion.Euler(90, 0, 0);
-            cubeSphere.transform.localPosition = Vector3.zero;
+            cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            cubeSphere.transform.position = planetGO.transform.position;
 
             cubeSphere.SetActive(true);
         }

@@ -12,13 +12,13 @@ using NewHorizons.External.Configs;
 
 namespace NewHorizons.Builder.General
 {
-    static class DetectorBuilder
+    public static class DetectorBuilder
     {
-        public static GameObject Make(GameObject body, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, IPlanetConfig config)
+        public static GameObject Make(GameObject planetGO, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, IPlanetConfig config)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
-            detectorGO.transform.parent = body.transform;
+            detectorGO.transform.parent = planetGO.transform;
             detectorGO.transform.localPosition = Vector3.zero;
             detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
 

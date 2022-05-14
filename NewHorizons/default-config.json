@@ -2,6 +2,7 @@
 	"enabled": true,
 	"settings": {
 		"Debug": false,
-		"Custom title screen": true
+		"Custom title screen": true,
+		"Default System Override": ""
 	}
 }

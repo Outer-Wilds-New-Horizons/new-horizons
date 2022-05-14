@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.General
+namespace NewHorizons.Handlers
 {
-    static class PlanetDestroyer
+    public static class PlanetDestructionHandler
     {
         private static readonly string[] _solarSystemBodies = new string[]
         {
@@ -80,6 +80,7 @@ namespace NewHorizons.Builder.General
                 else if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
                 {
                     DisableBody(GameObject.Find("FocalBody"), delete);
+                    DisableBody(GameObject.Find("SandFunnel_Body"), delete);
                 }
                 else if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
                 {
@@ -132,6 +133,9 @@ namespace NewHorizons.Builder.General
                         Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
                         GameObject.Destroy(sunProxy.gameObject);
                     }
+
+                    // Stop the sun from breaking stuff when the supernova gets triggered
+                    GlobalMessenger.RemoveListener("TriggerSupernova", ao.GetComponent<SunController>().OnTriggerSupernova);
                 }
 
                 // Just delete the children

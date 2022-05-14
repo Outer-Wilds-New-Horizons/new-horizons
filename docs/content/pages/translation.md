@@ -1,5 +1,7 @@
+---
 Title: Translations
 Sort_Priority: 60
+---
 
 ## Translations
 ___

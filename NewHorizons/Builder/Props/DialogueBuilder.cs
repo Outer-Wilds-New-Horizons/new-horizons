@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
             if (!string.IsNullOrEmpty(info.pathToAnimController)) MakePlayerTrackingZone(go, dialogue, info);
         }
 
-        public static void MakeRemoteDialogueTrigger(GameObject go, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        public static void MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
             GameObject conversationTrigger = new GameObject("ConversationTrigger");
             conversationTrigger.SetActive(false);
@@ -53,12 +53,12 @@ namespace NewHorizons.Builder.Props
 
             sphereCollider.radius = info.remoteTriggerRadius == 0 ? info.radius : info.remoteTriggerRadius;
 
-            conversationTrigger.transform.parent = sector?.transform ?? go.transform;
-            conversationTrigger.transform.localPosition = info.remoteTriggerPosition ?? info.position;
+            conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
+            conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
         }
 
-        public static CharacterDialogueTree MakeConversationZone(GameObject go, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        public static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
@@ -87,8 +87,8 @@ namespace NewHorizons.Builder.Props
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
-            conversationZone.transform.parent = sector?.transform ?? go.transform;
-            conversationZone.transform.localPosition = info.position;
+            conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
+            conversationZone.transform.position = planetGO.transform.TransformPoint(info.position);
             conversationZone.SetActive(true);
 
             return dialogueTree;
