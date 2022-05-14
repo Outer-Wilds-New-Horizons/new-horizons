@@ -248,6 +248,7 @@ namespace NewHorizons.Utility
             Logger.Log("updating configs");
 
             Logger.Log("New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
+            Logger.Log("All props: " + _dpp.DEBUG_PrintAllPropLocations());
 
             // TODO: looks like placing the first prop on a given planet in a given session clears out all existing props on that planet
             Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();

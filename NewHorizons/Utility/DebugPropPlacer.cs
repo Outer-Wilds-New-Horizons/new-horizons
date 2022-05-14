@@ -173,8 +173,18 @@ namespace NewHorizons.Utility
                     continue;
                 }
 
+
+                //TODO: this probably doesn't work
+                //when saving props loaded from a config to a file (aka, load a config, then place a prop, then save)
+                //all positions of loaded props are 0,0,0
+
+
                 Transform spawnedProp = potentialProps[0];
-                PropPlacementData data = RegisterProp_WithReturn(config.Name, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
+                
+                var bodyName = config.Name;
+                var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
+                if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
+                PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp.gameObject, detail.path, config.StarSystem, detail);
                 potentialProps.Remove(spawnedProp);
 
                 if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
@@ -272,6 +282,11 @@ namespace NewHorizons.Utility
 
         //    return configFiles;
         //}
+
+        public string DEBUG_PrintAllPropLocations()
+        {
+            return string.Join(", ", props.Select(x => x.system + DebugMenu.separatorCharacter + x.body).ToList());
+        }
 
         public Dictionary<string, DetailInfo[]> GetPropsConfigByBody(bool useAstroObjectName = false)
         {
