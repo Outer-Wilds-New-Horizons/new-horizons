@@ -33,9 +33,10 @@ namespace NewHorizons.Builder.Body
 
             sunAudio.name = "Audio_Star";
 
+            GameObject sunAtmosphere = null;
             if (starModule.HasAtmosphere)
             {
-                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
+                sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one;
                 sunAtmosphere.name = "Atmosphere_Star";
@@ -54,12 +55,6 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.Size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
-                if (starModule.Curve != null)
-                {
-                    var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
-                    controller.scaleCurve = starModule.ToAnimationCurve();
-                    controller.initialSize = starModule.Size;
-                }
             }
 
             var ambientLightGO = GameObject.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -130,18 +125,29 @@ namespace NewHorizons.Builder.Body
                 starController.SunColor = lightColour;
             }
 
-            if (starModule.Curve != null)
-            {
-                var levelController = starGO.AddComponent<SandLevelController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in starModule.Curve)
-                {
-                    curve.AddKey(new Keyframe(pair.Time, starModule.Size * pair.Value));
-                }
-                levelController._scaleCurve = curve;
-            }
+            var supernova = MakeSupernova(starGO);
+
+            var controller = starGO.AddComponent<StarEvolutionController>();
+            if(starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            controller.size = starModule.Size;
+            controller.atmosphere = sunAtmosphere;
+            controller.supernova = supernova;
 
             return starController;
+        }
+
+        public static GameObject MakeStarProxy(GameObject planetGO, StarModule starModule)
+        {
+            MakeStarGraphics(planetGO, null, starModule);
+
+            if (starModule.Curve != null)
+            {
+                var controller = planetGO.AddComponent<StarEvolutionController>();
+                controller.scaleCurve = starModule.ToAnimationCurve();
+                controller.size = starModule.Size;
+            }
+
+            return planetGO;
         }
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
@@ -190,6 +196,20 @@ namespace NewHorizons.Builder.Body
             }
 
             return starGO;
+        }
+
+        public static SupernovaEffectController MakeSupernova(GameObject starGO)
+        {
+            var supernovaGO = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
+            supernovaGO.transform.SetParent(starGO.transform);
+            supernovaGO.transform.localPosition = Vector3.zero;
+
+            var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
+            supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+
+            supernovaGO.SetActive(true);
+
+            return supernova;
         }
     }
 }

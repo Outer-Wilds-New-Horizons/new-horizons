@@ -20,9 +20,12 @@ namespace NewHorizons.External.VariableSize
         public AnimationCurve ToAnimationCurve(float size = 1f)
         {
             var curve = new AnimationCurve();
-            foreach (var pair in this.Curve)
+            if(Curve != null)
             {
-                curve.AddKey(new Keyframe(pair.Time, size * pair.Value));
+                foreach (var pair in this.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, size * pair.Value));
+                }
             }
             return curve;
         }
