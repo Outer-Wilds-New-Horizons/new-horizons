@@ -112,6 +112,48 @@
           "description": "Colour of the terrain."
         }
       }
+    },
+    "detail": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Relative filepath to an asset-bundle"
+        },
+        "position": {
+          "$ref": "#/$defs/vector3"
+        },
+        "rotation": {
+          "$ref": "#/$defs/vector3",
+          "description": "Euler angle degrees"
+        },
+        "scale": {
+          "type": "number",
+          "default": 1
+        },
+        "alignToNormal": {
+          "type": "boolean",
+          "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
+          "default": false
+        },
+        "removeChildren": {
+          "type": "array",
+          "description": "A list of children to remove from this detail",
+          "items": {
+            "type": "string"
+          }
+        },
+        "removeComponents": {
+          "type": "boolean",
+          "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to them.",
+          "default": false
+        }
+      }
     }
   },
   "title": "Body",
@@ -633,46 +675,7 @@
         "details": {
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "path": {
-                "type": "string",
-                "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
-              },
-              "assetBundle": {
-                "type": "string",
-                "description": "Relative filepath to an asset-bundle"
-              },
-              "position": {
-                "$ref": "#/$defs/vector3"
-              },
-              "rotation": {
-                "$ref": "#/$defs/vector3",
-                "description": "Euler angle degrees"
-              },
-              "scale": {
-                "type": "number",
-                "default": 1
-              },
-              "alignToNormal": {
-                "type": "boolean",
-                "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?",
-                "default": false
-              },
-              "removeChildren": {
-                "type": "array",
-                "description": "A list of children to remove from this detail",
-                "items": {
-                  "type": "string"
-                }
-              },
-              "removeComponents": {
-                "type": "boolean",
-                "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to them.",
-                "default": false
-              }
-            }
+            "$ref": "#/$defs/detail"
           }
         },
         "dialogue": {
@@ -1064,6 +1067,13 @@
                 "description": "The position of this raft."
               }
             }
+          }
+        },
+        "proxyDetails": {
+          "type": "array",
+          "description": "Details which will be shown from 50km away. Meant to be lower resolution.",
+          "items": {
+            "$ref": "#/$defs/detail"
           }
         }
       }

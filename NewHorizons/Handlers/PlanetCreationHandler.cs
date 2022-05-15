@@ -124,8 +124,7 @@ namespace NewHorizons.Handlers
 
             Logger.Log("Done loading bodies");
 
-            // I don't know what these do but they look really weird from a distance
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestructionHandler.RemoveAllProxies);
+            // Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveSolarSystem();
         }
@@ -238,6 +237,7 @@ namespace NewHorizons.Handlers
             return true;
         }
 
+        // Called when updating an existing planet
         public static GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
             Logger.Log($"Updating existing Object {go.name}");
@@ -265,6 +265,7 @@ namespace NewHorizons.Handlers
             return go;
         }
 
+        // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
@@ -358,6 +359,11 @@ namespace NewHorizons.Handlers
                 AstroObjectLocator.RegisterCustomAstroObject(ao);
             }
 
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                ProxyBuilder.Make(go, body);
+            });
+
             return go;
         }
 
@@ -370,6 +376,7 @@ namespace NewHorizons.Handlers
             return sphereOfInfluence;
         }
 
+        // What is called both on existing planets and new planets
         private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
@@ -411,7 +418,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Base.HasCometTail)
             {
-                CometTailBuilder.Make(go, sector, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
+                CometTailBuilder.Make(go, sector, body.Config);
             }
 
             // Backwards compatability
@@ -460,7 +467,7 @@ namespace NewHorizons.Handlers
 
                 AirBuilder.Make(go, sector, airInfo);
 
-                if (body.Config.Atmosphere.Cloud != null)
+                if (!string.IsNullOrEmpty(body.Config.Atmosphere.Cloud))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                     SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);

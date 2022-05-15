@@ -17,7 +17,7 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution = 51)
         {
             Texture2D heightMap, textureMap;
             try
@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Body
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             Vector3 stretch = module.Stretch != null ? (Vector3)module.Stretch : Vector3.one;
-            Mesh mesh = CubeSphere.Build(51, heightMap, module.MinHeight, module.MaxHeight, stretch);
+            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.MinHeight, module.MaxHeight, stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;

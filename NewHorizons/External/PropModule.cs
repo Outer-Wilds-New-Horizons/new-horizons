@@ -20,6 +20,7 @@ namespace NewHorizons.External
         public EntryLocationInfo[] EntryLocation;
         public NomaiTextInfo[] NomaiText;
         public ProjectionInfo[] SlideShows;
+        public DetailInfo[] ProxyDetails;
 
         public class ScatterInfo
         {

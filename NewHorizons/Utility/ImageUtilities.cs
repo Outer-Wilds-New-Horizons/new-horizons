@@ -20,13 +20,23 @@ namespace NewHorizons.Utility
                 Logger.Log($"Already loaded image at path: {path}");
                 return _loadedTextures[path];
             }
+
             Logger.Log($"Loading image at path: {path}");
-            var data = File.ReadAllBytes(path);
-            var texture = new Texture2D(2, 2);
-            texture.name = Path.GetFileNameWithoutExtension(path);
-            texture.LoadImage(data);
-            _loadedTextures.Add(path, texture);
-            return texture;
+            try
+            {
+                var data = File.ReadAllBytes(path);
+                var texture = new Texture2D(2, 2);
+                texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.LoadImage(data);
+                _loadedTextures.Add(path, texture);
+
+                return texture;
+            }
+            catch (Exception ex)
+            {
+                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                return null;
+            }
         }
 
         public static void ClearCache()
@@ -40,7 +50,7 @@ namespace NewHorizons.Utility
             }
             _loadedTextures.Clear();
 
-            foreach(var texture in _generatedTextures)
+            foreach (var texture in _generatedTextures)
             {
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
@@ -57,7 +67,7 @@ namespace NewHorizons.Utility
                 var y = (int)Mathf.Floor(i / texture.height);
 
                 // Needs a black border
-                if(x == 0 || y == 0 || x == texture.width-1 || y == texture.height-1)
+                if (x == 0 || y == 0 || x == texture.width - 1 || y == texture.height - 1)
                 {
                     pixels[i].r = 1;
                     pixels[i].g = 1;
@@ -92,20 +102,20 @@ namespace NewHorizons.Utility
             texture.name = "SlideReelAtlas";
 
             Color[] fillPixels = new Color[size * size * 4 * 4];
-            for(int xIndex = 0; xIndex < 4; xIndex++)
+            for (int xIndex = 0; xIndex < 4; xIndex++)
             {
-                for(int yIndex = 0; yIndex < 4; yIndex++)
+                for (int yIndex = 0; yIndex < 4; yIndex++)
                 {
                     int index = yIndex * 4 + xIndex;
                     var srcTexture = index < textures.Length ? textures[index] : null;
 
-                    for(int i = 0; i < size; i++)
+                    for (int i = 0; i < size; i++)
                     {
-                        for(int j = 0; j < size; j++)
+                        for (int j = 0; j < size; j++)
                         {
                             var colour = Color.black;
 
-                            if(srcTexture)
+                            if (srcTexture)
                             {
                                 var srcX = i * srcTexture.width / (float)size;
                                 var srcY = j * srcTexture.height / (float)size;
@@ -118,11 +128,11 @@ namespace NewHorizons.Utility
                             var x = xIndex * size + i;
                             // Want it to start from the first row from the bottom then go down then modulo around idk
                             // 5 because no pos mod idk
-                            var y = ((5 - yIndex)%4) * size + j;
+                            var y = ((5 - yIndex) % 4) * size + j;
 
                             var pixelIndex = x + y * (size * 4);
 
-                            if(pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
+                            if (pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
                         }
                     }
                 }
@@ -149,7 +159,7 @@ namespace NewHorizons.Utility
                 {
                     var fillColor = new Color(0, 0, 0, 0);
 
-                    if(pixels[x + y * texture.width].a == 1 && CloseToTransparent(pixels, texture.width, texture.height, x, y, thickness))
+                    if (pixels[x + y * texture.width].a == 1 && CloseToTransparent(pixels, texture.width, texture.height, x, y, thickness))
                     {
                         fillColor = color;
                     }
@@ -168,10 +178,10 @@ namespace NewHorizons.Utility
         private static bool CloseToTransparent(Color[] pixels, int width, int height, int x, int y, int thickness)
         {
             // Check nearby
-            var minX = Math.Max(0, x - thickness/2);
-            var minY = Math.Max(0, y - thickness/2);
-            var maxX = Math.Min(width, x + thickness/2);
-            var maxY = Math.Min(height, y + thickness/2);
+            var minX = Math.Max(0, x - thickness / 2);
+            var minY = Math.Max(0, y - thickness / 2);
+            var maxX = Math.Min(width, x + thickness / 2);
+            var maxY = Math.Min(height, y + thickness / 2);
 
             for (int i = minX; i < maxX; i++)
             {
@@ -229,7 +239,7 @@ namespace NewHorizons.Utility
             tex.name = "Clear";
             Color fillColor = Color.clear;
             Color[] fillPixels = new Color[tex.width * tex.height];
-            for(int i = 0; i < fillPixels.Length; i++)
+            for (int i = 0; i < fillPixels.Length; i++)
             {
                 fillPixels[i] = fillColor;
             }
@@ -248,7 +258,7 @@ namespace NewHorizons.Utility
             Color[] fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
-                for(int j = 0; j < tex.height; j++)
+                for (int j = 0; j < tex.height; j++)
                 {
                     var x = i + (src.width - width) / 2;
                     var y = j + (src.height - height) / 2;
@@ -274,7 +284,7 @@ namespace NewHorizons.Utility
             var g = 0f;
             var b = 0f;
             var length = pixels.Length;
-            for(int i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 var color = pixels[i];
                 r += (float)color.r / length;
