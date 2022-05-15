@@ -65,6 +65,11 @@ namespace NewHorizons.Builder.Body
                         Color = new MColor(126, 94, 73, 255)
                     };
                 }
+                else
+                {
+                    // Still update the size
+                    config.ProcGen.Scale = size;
+                }
 
                 var asteroid = new NewHorizonsBody(config, mod);
                 PlanetCreationHandler.NextPassBodies.Add(asteroid);
