@@ -21,8 +21,6 @@ namespace NewHorizons.Builder.Body
 
         public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
         {
-            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
-
             var starGO = MakeStarGraphics(planetGO, sector, starModule);
 
             var sunAudio = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
@@ -132,11 +130,24 @@ namespace NewHorizons.Builder.Body
                 starController.SunColor = lightColour;
             }
 
+            if (starModule.Curve != null)
+            {
+                var levelController = starGO.AddComponent<SandLevelController>();
+                var curve = new AnimationCurve();
+                foreach (var pair in starModule.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, starModule.Size * pair.Value));
+                }
+                levelController._scaleCurve = curve;
+            }
+
             return starController;
         }
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
         {
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
+
             var starGO = new GameObject("Star");
             starGO.transform.parent = sector?.transform ?? rootObject.transform;
 
@@ -157,17 +168,6 @@ namespace NewHorizons.Builder.Body
 
             starGO.transform.position = rootObject.transform.position;
             starGO.transform.localScale = starModule.Size * Vector3.one;
-
-            if (starModule.Curve != null)
-            {
-                var levelController = starGO.AddComponent<SandLevelController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in starModule.Curve)
-                {
-                    curve.AddKey(new Keyframe(pair.Time, starModule.Size * pair.Value));
-                }
-                levelController._scaleCurve = curve;
-            }
 
             if (starModule.Tint != null)
             {

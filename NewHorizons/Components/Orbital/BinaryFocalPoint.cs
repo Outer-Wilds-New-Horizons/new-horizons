@@ -25,6 +25,8 @@ namespace NewHorizons.Components.Orbital
 
         void Update()
         {
+            if (Primary == null || Secondary == null) return;
+
             // Secondary and primary must have been engulfed by a star
             if(!Primary.isActiveAndEnabled && !Secondary.isActiveAndEnabled)
             {

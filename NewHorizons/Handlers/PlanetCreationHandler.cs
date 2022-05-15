@@ -418,7 +418,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Base.HasCometTail)
             {
-                CometTailBuilder.Make(go, sector, body.Config, go.GetComponent<AstroObject>().GetPrimaryBody());
+                CometTailBuilder.Make(go, sector, body.Config);
             }
 
             // Backwards compatability
@@ -467,7 +467,7 @@ namespace NewHorizons.Handlers
 
                 AirBuilder.Make(go, sector, airInfo);
 
-                if (body.Config.Atmosphere.Cloud != null)
+                if (!string.IsNullOrEmpty(body.Config.Atmosphere.Cloud))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
                     SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);

@@ -10,9 +10,16 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    public class ProxyBuilder
+    public static class ProxyBuilder
     {
         private static Material lavaMaterial;
+        
+        private static GameObject _blackHolePrefab;
+        private static GameObject _whiteHolePrefab;
+
+        private static readonly string _blackHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
+        private static readonly string _whiteHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
+
 
         public static void Make(GameObject gameObject, NewHorizonsBody body)
         {
@@ -37,7 +44,7 @@ namespace NewHorizons.Builder.Body
                     GeometryBuilder.Make(newProxy, null, body.Config.Base.GroundSize);
                     if (realSize < body.Config.Base.GroundSize) realSize = body.Config.Base.GroundSize;
                 }
-                if (body.Config.Atmosphere != null)
+                if (body.Config.Atmosphere?.Cloud != null)
                 {
                     CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod);
                     if (realSize < body.Config.Atmosphere.Size) realSize = body.Config.Atmosphere.Size;
@@ -49,7 +56,10 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Star != null)
                 {
-                    StarBuilder.MakeStarGraphics(newProxy, null, body.Config.Star);
+                    var starGO = StarBuilder.MakeStarGraphics(newProxy, null, body.Config.Star);
+
+                    if (body.Config.Star.Curve != null) AddSizeController(starGO, body.Config.Star.Curve, body.Config.Star.Size);
+
                     if (realSize < body.Config.Star.Size) realSize = body.Config.Star.Size;
                 }
                 if (body.Config.ProcGen != null)
@@ -63,7 +73,7 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Lava.Size) realSize = body.Config.Lava.Size;
 
                     var material = new Material(lavaMaterial);
-                    if (body.Config.Lava.Tint != null) material.color = body.Config.Lava.Tint.ToColor();
+                    if (body.Config.Lava.Tint != null) material.SetColor("_EmissionColor", body.Config.Lava.Tint.ToColor());
                     sphere.GetComponent<MeshRenderer>().material = material;
                 }
                 if (body.Config.Water != null)
@@ -81,9 +91,20 @@ namespace NewHorizons.Builder.Body
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Singularity != null)
                 {
-                    var colour = body.Config.Singularity.Type == "BlackHole" ? Color.black : Color.white;
-                    AddColouredSphere(newProxy, body.Config.Singularity.Size, body.Config.Singularity.Curve, colour);
+                    if(body.Config.Singularity.Type == "BlackHole")
+                    {
+                        MakeBlackHole(newProxy, body.Config.Singularity.Size);
+                    }
+                    else
+                    {
+                        MakeWhiteHole(newProxy, body.Config.Singularity.Size);
+                    }
+
                     if (realSize < body.Config.Singularity.Size) realSize = body.Config.Singularity.Size;
+                }
+                if (body.Config.Base.HasCometTail)
+                {
+                    CometTailBuilder.Make(newProxy, null, body.Config);
                 }
 
                 // Remove all collisions if there are any
@@ -111,7 +132,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.Log($"Exception thrown when generating proxy for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
                 GameObject.Destroy(newProxy);
             }
         }
@@ -127,19 +148,71 @@ namespace NewHorizons.Builder.Body
 
             sphereGO.GetComponent<MeshRenderer>().material.color = color;
 
-            if (curve != null)
-            {
-                var sizeController = sphereGO.AddComponent<SizeController>();
-                var animCurve = new AnimationCurve();
-                foreach (var pair in curve)
-                {
-                    animCurve.AddKey(new Keyframe(pair.Time, pair.Value));
-                }
-                sizeController.scaleCurve = animCurve;
-                sizeController.size = size;
-            }
+            if (curve != null) AddSizeController(sphereGO, curve, size);
 
             return sphereGO;
+        }
+
+        private static void AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        {
+            var sizeController = go.AddComponent<SizeController>();
+            var animCurve = new AnimationCurve();
+            foreach (var pair in curve)
+            {
+                animCurve.AddKey(new Keyframe(pair.Time, pair.Value));
+            }
+            sizeController.scaleCurve = animCurve;
+            sizeController.size = size;
+        }
+
+        private static void MakeBlackHole(GameObject rootObject, float size)
+        {
+            if (_blackHolePrefab == null) _blackHolePrefab = GameObject.Find(_blackHolePath);
+
+            var blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().material.shader;
+            if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+
+            var blackHoleRender = new GameObject("BlackHoleRender");
+            blackHoleRender.transform.parent = rootObject.transform;
+            blackHoleRender.transform.localPosition = new Vector3(0, 1, 0);
+            blackHoleRender.transform.localScale = Vector3.one * size;
+
+            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
+            meshFilter.mesh = _blackHolePrefab.GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(blackHoleShader);
+            meshRenderer.material.SetFloat("_Radius", size * 0.4f);
+            meshRenderer.material.SetFloat("_MaxDistortRadius", size * 0.95f);
+            meshRenderer.material.SetFloat("_MassScale", 1);
+            meshRenderer.material.SetFloat("_DistortFadeDist", size * 0.55f);
+
+            blackHoleRender.SetActive(true);
+        }
+
+        private static void MakeWhiteHole(GameObject rootObject, float size)
+        {
+            if (_whiteHolePrefab == null) _whiteHolePrefab = GameObject.Find(_whiteHolePath);
+
+            var whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().material.shader;
+            if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+
+            var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
+            whiteHoleRenderer.transform.parent = rootObject.transform;
+            whiteHoleRenderer.transform.localPosition = new Vector3(0, 1, 0);
+            whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
+
+            var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
+            meshFilter.mesh = _whiteHolePrefab.GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(whiteHoleShader);
+            meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
+            meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);
+            meshRenderer.sharedMaterial.SetFloat("_MaxDistortRadius", size * 2.8f);
+            meshRenderer.sharedMaterial.SetColor("_Color", new Color(1.88f, 1.88f, 1.88f, 1f));
+
+            whiteHoleRenderer.SetActive(true);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
                 return null;
             }
         }
