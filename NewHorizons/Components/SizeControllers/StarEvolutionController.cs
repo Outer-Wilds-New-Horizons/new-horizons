@@ -50,11 +50,11 @@ namespace NewHorizons.Components.SizeControllers
 
         protected new void FixedUpdate()
         {
-            // If we've gone supernova and its been 30 seconds that means it has faded out and is gone
+            // If we've gone supernova and its been 60 seconds that means it has faded out and is gone
             if (_isSupernova)
             {
                 transform.localScale = Vector3.one;
-                if (Time.time > _supernovaStartTime + 30f)
+                if (Time.time > _supernovaStartTime + 60f)
                 {
                     base.gameObject.SetActive(false);
                 }
