@@ -15,8 +15,16 @@ namespace NewHorizons.Components.SizeControllers
 
         protected void FixedUpdate()
         {
-            CurrentScale = scaleCurve.Evaluate(TimeLoop.GetMinutesElapsed()) * size;
-            base.transform.localScale = new Vector3(CurrentScale, CurrentScale, CurrentScale);
+            if(scaleCurve != null)
+            {
+                CurrentScale = scaleCurve.Evaluate(TimeLoop.GetMinutesElapsed()) * size;
+            }
+            else
+            {
+                CurrentScale = size;
+            }
+
+            base.transform.localScale = Vector3.one * CurrentScale;
         }
     }
 }
