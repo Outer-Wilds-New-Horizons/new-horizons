@@ -31,9 +31,9 @@ namespace NewHorizons.Utility
         private List<PropPlacementData> deletedProps = new List<PropPlacementData>();
         private DebugRaycaster _rc;
 
-        public HashSet<string> RecentlyPlacedProps = new HashSet<string>();
+        public static HashSet<string> RecentlyPlacedProps = new HashSet<string>();
 
-        public bool active = false;
+        public static bool active = false;
 
         private void Awake()
         {
@@ -114,7 +114,6 @@ namespace NewHorizons.Utility
                 g.transform.localPosition = prop.transform.localPosition;
                 g.transform.localRotation = prop.transform.localRotation;
                 
-                System.Random r = new System.Random();
                 prop.transform.parent = g.transform;
 
                 var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
@@ -131,16 +130,29 @@ namespace NewHorizons.Utility
             }
         }
 
+        public static string GetAstroObjectName(string bodyName)
+        {
+            if (bodyName.EndsWith("_Body")) bodyName = bodyName.Substring(0, bodyName.Length-"_Body".Length);
+
+            var astroObject = AstroObjectLocator.GetAstroObject(bodyName);
+            if (astroObject == null) return null;
+
+            var astroObjectName = astroObject.name;
+            if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
+
+            return astroObjectName;
+        }
+
         public void FindAndRegisterPropsFromConfig(IPlanetConfig config)
         {
+            if (config.StarSystem != Main.Instance.CurrentStarSystem) return;
+
             AstroObject planet = AstroObjectLocator.GetAstroObject(config.Name);
 
             if (planet == null) return;
             if (config.Props == null || config.Props.Details == null) return;
 
-            var bodyName = config.Name;
-            var astroObjectName = AstroObjectLocator.GetAstroObject(bodyName).name;
-            if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
+            var astroObjectName = GetAstroObjectName(config.Name);
 
             foreach (var detail in config.Props.Details)
             {
@@ -152,7 +164,7 @@ namespace NewHorizons.Utility
                     continue;
                 }
 
-                PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp, detail.path, config.StarSystem, detail);
+                PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp, detail.path, detail);
 
                 if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
@@ -166,19 +178,19 @@ namespace NewHorizons.Utility
             RegisterProp_WithReturn(bodyGameObjectName, prop);
         }
 
-        private PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop, string propPath = null, string systemName = null, DetailInfo detailInfo = null)
+        private PropPlacementData RegisterProp_WithReturn(string bodyGameObjectName, GameObject prop, string propPath = null, DetailInfo detailInfo = null)
         {
             if (Main.Debug)
             {
                 // TOOD: make this prop an item
             }
 
-            // TODO: add a DetailInfo param to this function and PropPlacementData, and use that as a base in GetPropsConfigByBody
-            // eg data.DetailInfo.position = data.gameObject.transform.localPosition; return data.DetailInfo;
-            string bodyName = bodyGameObjectName.EndsWith("_Body")
-                ? bodyGameObjectName.Substring(0, bodyGameObjectName.Length-"_Body".Length)
-                : bodyGameObjectName;
+
+            string bodyName = GetAstroObjectName(bodyGameObjectName);
             
+            Logger.Log("Adding prop to " + Main.Instance.CurrentStarSystem + "::" + bodyName);
+            
+
             detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
             detailInfo.path = propPath == null ? currentObject : propPath;
 
@@ -186,7 +198,7 @@ namespace NewHorizons.Utility
             {
                 body = bodyName,
                 gameObject = prop,
-                system = systemName == null ? Main.Instance.CurrentStarSystem : systemName,
+                system = Main.Instance.CurrentStarSystem,
                 detailInfo = detailInfo
             };
 
@@ -194,7 +206,7 @@ namespace NewHorizons.Utility
             return data;
         }
 
-        public Dictionary<string, DetailInfo[]> GetPropsConfigByBody(bool useAstroObjectName = false)
+        public Dictionary<string, DetailInfo[]> GetPropsConfigByBody()
         {
             var groupedProps = props
                 .GroupBy(p => p.system + "." + p.body)
@@ -205,14 +217,13 @@ namespace NewHorizons.Utility
 
             foreach (List<PropPlacementData> bodyProps in groupedProps)
             {
-                
                 if (bodyProps == null || bodyProps.Count == 0) continue; 
-                if ( AstroObjectLocator.GetAstroObject(bodyProps[0].body) == null ) continue;
-                string bodyName = useAstroObjectName ? AstroObjectLocator.GetAstroObject(bodyProps[0].body).name : bodyProps[0].body;
-                if (bodyName.EndsWith("_Body")) bodyName = bodyName.Substring(0, bodyName.Length-"_Body".Length);
+                Logger.Log("getting prop group for body " + bodyProps[0].body);
+                if (AstroObjectLocator.GetAstroObject(bodyProps[0].body) == null) continue;
+                string bodyName = GetAstroObjectName(bodyProps[0].body);
 
                 DetailInfo[] infoArray = new DetailInfo[bodyProps.Count];
-                propConfigs[bodyProps[0].system + DebugMenu.separatorCharacter + bodyName] = infoArray;
+                propConfigs[bodyName] = infoArray;
         
                 for(int i = 0; i < bodyProps.Count; i++)
                 {
