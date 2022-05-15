@@ -84,7 +84,8 @@ namespace NewHorizons.Builder.Props
         {
             if (prefab == null) return null;
 
-            GameObject prop = GameObject.Instantiate(prefab, sector.transform);
+            GameObject prop = prefab.InstantiateInactive();
+            prop.transform.parent = sector?.transform ?? planetGO.transform;
             prop.SetActive(false);
 
             if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
@@ -147,29 +148,46 @@ namespace NewHorizons.Builder.Props
                         (component as OWItemSocket)._sector = sector;
                     }
                 }
+                else
+                {
+                    // Remove things that require sectors. Will just keep extending this as things pop up
+
+                    if (component is FogLight || component is SectoredMonoBehaviour)
+                    {
+                        GameObject.DestroyImmediate(component);
+                        continue;
+                    }
+                }
 
                 // Fix a bunch of stuff when done loading
                 Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
                 {
-                    if (component is Animator) (component as Animator).enabled = true;
-                    else if (component is Collider) (component as Collider).enabled = true;
-                    else if (component is Renderer) (component as Renderer).enabled = true;
-                    else if (component is Shape) (component as Shape).enabled = true;
-                    // If it's not a moving anglerfish make sure the anim controller is regular
-                    else if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                    try
                     {
-                        Logger.Log("Enabling anglerfish animation");
-                        var angler = (component as AnglerfishAnimController);
-                        // Remove any reference to its angler
-                        if (angler._anglerfishController)
+                        if (component is Animator) (component as Animator).enabled = true;
+                        else if (component is Collider) (component as Collider).enabled = true;
+                        else if (component is Renderer) (component as Renderer).enabled = true;
+                        else if (component is Shape) (component as Shape).enabled = true;
+                        // If it's not a moving anglerfish make sure the anim controller is regular
+                        else if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
                         {
-                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                            Logger.Log("Enabling anglerfish animation");
+                            var angler = (component as AnglerfishAnimController);
+                            // Remove any reference to its angler
+                            if (angler._anglerfishController)
+                            {
+                                angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                                angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                                angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                                angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                            }
+                            angler.enabled = true;
+                            angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                         }
-                        angler.enabled = true;
-                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    }
+                    catch(Exception e)
+                    {
+                        Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] : {e.Message}, {e.StackTrace}");
                     }
                 });
             }
