@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Body
 
             sunAudio.name = "Audio_Star";
 
-            if(starModule.HasAtmosphere)
+            if (starModule.HasAtmosphere)
             {
                 var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
@@ -70,8 +70,8 @@ namespace NewHorizons.Builder.Body
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
             heatVolume.GetComponent<SphereShape>().radius = 1f;
-            heatVolume.name = "HeatVolume"; 
-            
+            heatVolume.name = "HeatVolume";
+
             var deathVolume = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/ScaledVolumesRoot/DestructionFluidVolume"), starGO.transform);
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;

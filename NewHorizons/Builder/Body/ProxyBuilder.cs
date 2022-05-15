@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.Atmosphere;
+using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External.VariableSize;
@@ -13,7 +14,7 @@ namespace NewHorizons.Builder.Body
     public static class ProxyBuilder
     {
         private static Material lavaMaterial;
-        
+
         private static GameObject _blackHolePrefab;
         private static GameObject _whiteHolePrefab;
 
@@ -23,7 +24,7 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject gameObject, NewHorizonsBody body)
         {
-            if(lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
+            if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
             var proxyName = $"{body.Config.Name}_Proxy";
 
@@ -91,7 +92,7 @@ namespace NewHorizons.Builder.Body
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Singularity != null)
                 {
-                    if(body.Config.Singularity.Type == "BlackHole")
+                    if (body.Config.Singularity.Type == "BlackHole")
                     {
                         MakeBlackHole(newProxy, body.Config.Singularity.Size);
                     }
@@ -105,6 +106,13 @@ namespace NewHorizons.Builder.Body
                 if (body.Config.Base.HasCometTail)
                 {
                     CometTailBuilder.Make(newProxy, null, body.Config);
+                }
+                if (body.Config.Props?.ProxyDetails != null)
+                {
+                    foreach (var detailInfo in body.Config.Props.ProxyDetails)
+                    {
+                        DetailBuilder.Make(newProxy, null, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName, detailInfo);
+                    }
                 }
 
                 // Remove all collisions if there are any
