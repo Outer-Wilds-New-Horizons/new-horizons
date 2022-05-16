@@ -1,6 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- Dialogue Tree -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Empty Type -->
+    <xs:complexType name="empty"/>
+    
     <!-- Dialogue Tree Info -->
     <xs:element name="DialogueTree">
         <xs:complexType>
@@ -42,7 +45,14 @@
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Dialogue" type="Dialogue">
+            <xs:element name="Randomize" type="empty" minOccurs="0">
+                <xs:annotation>
+                    <xs:documentation>
+                        When used with multiple Dialogues, the node will choose a random one to show
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:element>
+            <xs:element name="Dialogue" type="Dialogue" maxOccurs="unbounded">
                 <xs:annotation>
                     <xs:documentation>
                         The dialogue to show to the player
