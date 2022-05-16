@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.Body
             GameObject sunAtmosphere = null;
             if (starModule.HasAtmosphere)
             {
-                sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
+                sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one;
                 sunAtmosphere.name = "Atmosphere_Star";
@@ -132,22 +132,30 @@ namespace NewHorizons.Builder.Body
             controller.size = starModule.Size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
+            controller.startColour = starModule.Tint;
+            controller.startColour = starModule.EndTint;
 
             return starController;
         }
 
-        public static GameObject MakeStarProxy(GameObject planetGO, StarModule starModule)
+        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule)
         {
-            MakeStarGraphics(planetGO, null, starModule);
+            var starGO = new GameObject("Star");
+            starGO.transform.parent = proxyGO.transform;
+            starGO.transform.localPosition = Vector3.zero;
 
-            if (starModule.Curve != null)
-            {
-                var controller = planetGO.AddComponent<StarEvolutionController>();
-                controller.scaleCurve = starModule.ToAnimationCurve();
-                controller.size = starModule.Size;
-            }
+            MakeStarGraphics(proxyGO, null, starModule);
 
-            return planetGO;
+            var supernova = MakeSupernova(starGO);
+
+            var controller = starGO.AddComponent<StarEvolutionController>();
+            if (starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            controller.size = starModule.Size;
+            controller.supernova = supernova;
+
+            planet.GetComponentInChildren<StarEvolutionController>().SetProxy(controller);
+
+            return proxyGO;
         }
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
@@ -206,6 +214,7 @@ namespace NewHorizons.Builder.Body
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+            supernova._supernovaVolume = null;
 
             supernovaGO.SetActive(true);
 
