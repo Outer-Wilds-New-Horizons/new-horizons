@@ -1,7 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:complexType name="empty"/>
 <!-- Dialogue Tree -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <!-- Empty Type -->
+    <xs:complexType name="empty"/>
+    
     <!-- Dialogue Tree Info -->
     <xs:element name="DialogueTree">
         <xs:complexType>
