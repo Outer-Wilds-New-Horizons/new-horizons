@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Atmosphere
         public static void Make(GameObject planetGO, IPlanetConfig config, float sphereOfInfluence)
         {
             var innerRadius = config.Base.SurfaceSize;
-            var useMiniMap = config.Base.IsSatellite;
+            var useMiniMap = !config.Base.IsSatellite;
 
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);

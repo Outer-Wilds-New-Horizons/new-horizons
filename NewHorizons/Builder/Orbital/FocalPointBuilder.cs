@@ -73,7 +73,7 @@ namespace NewHorizons.Builder.Orbital
 
             binary.FakeMassBody = PlanetCreationHandler.GenerateBody(new NewHorizonsBody(fakeMassConfig, mod));
         }
-
+        
         private static float GetGravitationalMass(IPlanetConfig config)
         {
             var surfaceAcceleration = config.Base.SurfaceGravity;

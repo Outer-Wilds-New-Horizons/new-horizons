@@ -596,6 +596,10 @@
           "$ref": "#/$defs/color",
           "description": "Colour of the star."
         },
+        "endTint": {
+          "$ref": "#/$defs/color",
+          "description": "Colour of the star at the end of its life."
+        },
         "solarFlareTint": {
           "$ref": "#/$defs/color",
           "description": "Colour of the solar flares. The shader is a bit weird so the value you put won't exactly reflect what you see. Try experimenting with different colours to see what works."
@@ -618,6 +622,11 @@
         "curve": {
           "$ref": "#/$defs/curve",
           "description": "Allows the star to shrink/grow over time."
+        },
+        "goSupernova": {
+          "type": "boolean",
+          "default": true,
+          "description": "Should this star explode after 22 minutes?"
         }
       }
     },
