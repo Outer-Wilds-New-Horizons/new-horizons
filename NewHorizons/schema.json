@@ -622,6 +622,11 @@
         "curve": {
           "$ref": "#/$defs/curve",
           "description": "Allows the star to shrink/grow over time."
+        },
+        "goSupernova": {
+          "type": "boolean",
+          "default": true,
+          "description": "Should this star explode after 22 minutes?"
         }
       }
     },

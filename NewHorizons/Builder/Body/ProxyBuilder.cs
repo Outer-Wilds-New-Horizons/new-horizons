@@ -59,8 +59,6 @@ namespace NewHorizons.Builder.Body
                 {
                     var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star);
 
-                    if (body.Config.Star.Curve != null) AddSizeController(starGO, body.Config.Star.Curve, body.Config.Star.Size);
-
                     if (realSize < body.Config.Star.Size) realSize = body.Config.Star.Size;
                 }
                 if (body.Config.ProcGen != null)
@@ -135,8 +133,6 @@ namespace NewHorizons.Builder.Body
                 var proxyController = newProxy.AddComponent<NHProxy>();
                 proxyController.astroName = body.Config.Name;
                 proxyController._realObjectDiameter = realSize;
-                proxyController.renderers = newProxy.GetComponentsInChildren<Renderer>();
-                proxyController.tessellatedRenderers = newProxy.GetComponentsInChildren<TessellatedRenderer>();
             }
             catch (Exception ex)
             {

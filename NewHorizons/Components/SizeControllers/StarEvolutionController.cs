@@ -13,9 +13,10 @@ namespace NewHorizons.Components.SizeControllers
     {
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
+        public bool willExplode;
 
-        public MColor startColour;
-        public MColor endColour;
+        public MColor startColour { get; set; }
+        public MColor endColour { get; set; }
 
         private Color _startColour;
         private Color _endColour;
@@ -69,7 +70,8 @@ namespace NewHorizons.Components.SizeControllers
 
             if (endColour == null)
             {
-                _endColour = _endSurfaceMaterial.color;
+                _endColour = _startColour;
+                _endSurfaceMaterial.color = _startColour;
             }
             else
             {
@@ -77,22 +79,21 @@ namespace NewHorizons.Components.SizeControllers
                 _endSurfaceMaterial.color = _endColour;
             }
 
-
             _heatVolume = GetComponentInChildren<HeatHazardVolume>();
             _destructionVolume = GetComponentInChildren<DestructionVolume>();
 
             if (atmosphere != null)
             {
-                _fog = atmosphere.GetComponentInChildren<PlanetaryFogController>();
-                _atmosphereRenderers = atmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>();
+                _fog = atmosphere?.GetComponentInChildren<PlanetaryFogController>();
+                _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
         }
 
         public void OnDestroy()
         {
-            GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (willExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -124,8 +125,8 @@ namespace NewHorizons.Components.SizeControllers
                 transform.localScale = Vector3.one;
 
                 // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-                if(_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
-                if(_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+                if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+                if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
 
                 if (Time.time > _supernovaStartTime + 45f)
                 {
@@ -173,17 +174,24 @@ namespace NewHorizons.Components.SizeControllers
             if (_fog != null)
             {
                 _fog.fogRadius = CurrentScale * StarBuilder.OuterRadiusRatio;
-                _fog.lodFadeDistance = CurrentScale * (StarBuilder.OuterRadiusRatio - 1f);
+                _fog.lodFadeDistance = CurrentScale * StarBuilder.OuterRadiusRatio / 3f;
 
-                _fog.fogTint = currentColour;
+                // The colour thing goes over one
+                var max = Math.Max(currentColour.g, Math.Max(currentColour.b, currentColour.r));
+                var fogColour = currentColour / max / 1.5f;
+                fogColour.a = 1f;
+                _fog.fogTint = fogColour;
+                _fog._fogTint = fogColour;
             }
 
-            if (_atmosphereRenderers.Count() > 0)
+            if (_atmosphereRenderers != null && _atmosphereRenderers.Count() > 0)
             {
                 foreach (var lod in _atmosphereRenderers)
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
+                    lod.material.SetColor("_AtmosFar", currentColour);
+                    lod.material.SetColor("_AtmosNear", currentColour);
                     lod.material.SetColor("_SkyColor", currentColour);
                 }
             }
