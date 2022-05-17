@@ -1,9 +1,6 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using OWML.Utils;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class EffectsBuilder
@@ -22,30 +19,30 @@ namespace NewHorizons.Builder.Atmosphere
             SCG._dynamicCullingBounds = false;
             SCG._waitForStreaming = false;
 
-            if(info.IsRaining)
+            if (info.IsRaining)
             {
                 var rainGO = GameObject.Instantiate(SearchUtilities.CachedFind("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
                 rainGO.transform.position = planetGO.transform.position;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
-                pvc._densityByHeight = new AnimationCurve(new Keyframe[] 
-                { 
+                pvc._densityByHeight = new AnimationCurve(new Keyframe[]
+                {
                     new Keyframe(surfaceSize - 0.5f, 0),
-                    new Keyframe(surfaceSize, 10f), 
-                    new Keyframe(info.Scale, 0f) 
+                    new Keyframe(surfaceSize, 10f),
+                    new Keyframe(info.Scale, 0f)
                 });
 
                 rainGO.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
                 rainGO.GetComponent<PlanetaryVectionController>()._exclusionSectors = new Sector[] { };
                 rainGO.SetActive(true);
             }
-            
-            if(info.IsSnowing)
+
+            if (info.IsSnowing)
             {
                 var snowGO = new GameObject("SnowEffects");
                 snowGO.transform.parent = effectsGO.transform;
                 snowGO.transform.position = planetGO.transform.position;
-                for(int i = 0; i < 5; i++)
+                for (int i = 0; i < 5; i++)
                 {
                     var snowEmitter = GameObject.Instantiate(SearchUtilities.CachedFind("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
                     snowEmitter.name = "SnowEmitter";

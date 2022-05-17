@@ -1,13 +1,5 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class FogBuilder

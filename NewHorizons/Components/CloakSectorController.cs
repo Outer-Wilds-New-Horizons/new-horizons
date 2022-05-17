@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-
 namespace NewHorizons.Components
 {
     public class CloakSectorController : MonoBehaviour
@@ -33,7 +29,7 @@ namespace NewHorizons.Components
 
         void OnDestroy()
         {
-            if(_isInitialized)
+            if (_isInitialized)
             {
                 _cloak.OnPlayerEnter -= OnPlayerEnter;
                 _cloak.OnPlayerExit -= OnPlayerExit;

@@ -2,7 +2,6 @@
 using System;
 using System.ComponentModel;
 using UnityEngine;
-
 namespace NewHorizons.Utility
 {
     public static class Logger
@@ -25,11 +24,11 @@ namespace NewHorizons.Utility
                 {
                     value = descriptor.GetValue(obj);
                 }
-                catch(Exception)
+                catch (Exception)
                 {
                     value = null;
                 }
-                
+
                 Log($"{obj.name} {name}={value}");
             }
         }
@@ -42,7 +41,7 @@ namespace NewHorizons.Utility
 
         public static void Log(string text, LogType type)
         {
-            if ((int) type < (int) _logLevel) return;
+            if ((int)type < (int)_logLevel) return;
             Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
         }
 
@@ -65,9 +64,9 @@ namespace NewHorizons.Utility
             Warning,
             Error,
         }
-        private static MessageType LogTypeToMessageType(LogType t) 
+        private static MessageType LogTypeToMessageType(LogType t)
         {
-            switch(t)
+            switch (t)
             {
                 case LogType.Error:
                     return MessageType.Error;

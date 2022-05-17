@@ -1,10 +1,7 @@
-﻿using System;
-using NewHorizons.External;
-using OWML.Common;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Components
 {
     public class ShipLogDetail : MonoBehaviour
@@ -13,7 +10,7 @@ namespace NewHorizons.Components
         private Image _outlineImage;
         private Material _greyScaleMaterial;
         private ShipLogModule.ShipLogDetailInfo _detailInfo;
-        
+
         public void Init(ShipLogModule.ShipLogDetailInfo info, Image revealed, Image outline, Material greyScale)
         {
             _detailInfo = info;

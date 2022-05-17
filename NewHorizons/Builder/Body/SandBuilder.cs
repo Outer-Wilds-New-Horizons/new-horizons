@@ -1,11 +1,6 @@
-﻿using NewHorizons.External.VariableSize;
-using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NewHorizons.Utility;
 using UnityEngine;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {

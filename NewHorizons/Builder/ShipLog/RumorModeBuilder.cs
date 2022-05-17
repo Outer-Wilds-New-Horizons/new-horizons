@@ -1,17 +1,11 @@
-﻿using System;
-using NewHorizons.Components;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Common;
-using UnityEngine;
-using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-
+using NewHorizons.Utility;
+using System;
+using System.Collections.Generic;
+using System.Xml.Linq;
+using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RumorModeBuilder

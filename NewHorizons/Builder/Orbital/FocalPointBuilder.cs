@@ -1,23 +1,16 @@
-﻿using NewHorizons.Builder.General;
-using NewHorizons.Components.Orbital;
-using NewHorizons.External;
+﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Orbital
 {
     public static class FocalPointBuilder
     {
-        public static void Make(GameObject go, AstroObject ao, IPlanetConfig config, IModBehaviour mod)
+        public static void Make(GameObject go, AstroObject ao, PlanetConfig config, IModBehaviour mod)
         {
             var module = config.FocalPoint;
 
@@ -30,23 +23,23 @@ namespace NewHorizons.Builder.Orbital
             // Grab the bodies from the main dictionary
             NewHorizonsBody primary = null;
             NewHorizonsBody secondary = null;
-            foreach(var body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            foreach (var body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
-                if(body.Config.Name == module.Primary)
+                if (body.Config.Name == module.Primary)
                 {
                     primary = body;
                 }
-                else if(body.Config.Name == module.Secondary)
+                else if (body.Config.Name == module.Secondary)
                 {
                     secondary = body;
                 }
-                if(primary != null && secondary != null)
+                if (primary != null && secondary != null)
                 {
                     break;
                 }
             }
 
-            if(primary == null || secondary == null)
+            if (primary == null || secondary == null)
             {
                 Logger.LogError($"Couldn't make focal point between [{module.Primary} = {primary}] and [{module.Secondary} = {secondary}]");
                 return;
@@ -74,7 +67,7 @@ namespace NewHorizons.Builder.Orbital
             binary.FakeMassBody = PlanetCreationHandler.GenerateBody(new NewHorizonsBody(fakeMassConfig, mod));
         }
 
-        private static float GetGravitationalMass(IPlanetConfig config)
+        private static float GetGravitationalMass(PlanetConfig config)
         {
             var surfaceAcceleration = config.Base.SurfaceGravity;
             var upperSurfaceRadius = config.Base.SurfaceSize;

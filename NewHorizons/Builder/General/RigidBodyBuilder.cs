@@ -1,16 +1,10 @@
 ﻿using NewHorizons.External.Configs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-
 namespace NewHorizons.Builder.General
 {
     public static class RigidBodyBuilder
     {
-        public static OWRigidbody Make(GameObject body, IPlanetConfig config)
+        public static OWRigidbody Make(GameObject body, PlanetConfig config)
         {
             body.AddComponent<ProxyShadowCasterSuperGroup>();
 

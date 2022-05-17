@@ -1,17 +1,13 @@
 ﻿using NewHorizons.Components;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using NewHorizons.External;
+using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using OWML.Common;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-using System;
-using NewHorizons.Handlers;
-
 namespace NewHorizons.Builder.ShipLog
 {
     public static class MapModeBuilder
@@ -44,7 +40,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            if(flagManualPositionUsed)
+            if (flagManualPositionUsed)
             {
                 if (flagAutoPositionUsed && flagManualPositionUsed)
                     Logger.LogWarning("Can't mix manual and automatic layout of ship log map mode, defaulting to manual");
@@ -101,15 +97,15 @@ namespace NewHorizons.Builder.ShipLog
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
             const float unviewedIconOffset = 15;
-            
+
             GameObject unviewedReference = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
-            
+
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
 
             Texture2D image;
             Texture2D outline;
-            
+
             string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite;
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
@@ -138,8 +134,8 @@ namespace NewHorizons.Builder.ShipLog
             return astroObject;
         }
         #endregion
-        
-        # region Details
+
+        #region Details
         private static void MakeDetail(ShipLogModule.ShipLogDetailInfo info, Transform parent, NewHorizonsBody body, Material greyScaleMaterial)
         {
             GameObject detailGameObject = new GameObject("Detail");
@@ -207,18 +203,18 @@ namespace NewHorizons.Builder.ShipLog
 
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
             {
-                
+
                 for (int y = 0; y < currentNav.Length; y++)
                 {
                     for (int x = 0; x < currentNav[y].Length; x++)
                     {
                         navMatrix[y][x] = currentNav[y][x];
-                        astroIdToNavIndex.Add(currentNav[y][x].GetID(), new [] {y, x});
+                        astroIdToNavIndex.Add(currentNav[y][x].GetID(), new[] { y, x });
                     }
-                }                        
+                }
             }
 
-            foreach(NewHorizonsBody body in bodies)
+            foreach (NewHorizonsBody body in bodies)
             {
                 if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
 
@@ -291,7 +287,7 @@ namespace NewHorizons.Builder.ShipLog
             return navMatrix;
         }
         #endregion
-        
+
         #region Automatic Map Mode
         private class MapModeObject
         {
@@ -316,7 +312,7 @@ namespace NewHorizons.Builder.ShipLog
                 parent?.IncrementHeight();
             }
         }
-        
+
         private static ShipLogAstroObject[][] ConstructMapModeAuto(List<NewHorizonsBody> bodies, GameObject transformParent, Material greyScaleMaterial, int layer)
         {
             MapModeObject rootObject = ConstructPrimaryNode(bodies);
@@ -328,7 +324,7 @@ namespace NewHorizons.Builder.ShipLog
             int maxAmount = bodies.Count;
             ShipLogAstroObject[][] navMatrix = new ShipLogAstroObject[maxAmount][];
             for (int i = 0; i < maxAmount; i++)
-            {                                                                          
+            {
                 navMatrix[i] = new ShipLogAstroObject[maxAmount];
             }
 
@@ -363,7 +359,7 @@ namespace NewHorizons.Builder.ShipLog
                 parentNode.children[i] = child;
             }
         }
-        
+
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.CenterOfSolarSystem))
@@ -390,7 +386,7 @@ namespace NewHorizons.Builder.ShipLog
             int newY = parent.y;
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
-            
+
             foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name || b.Config.Name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
@@ -429,7 +425,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             return children;
         }
-        
+
         private static void ConnectNodeToLastSibling(MapModeObject node, Material greyScaleMaterial)
         {
             Vector2 fromPosition = node.astroObject.transform.localPosition;
@@ -494,13 +490,13 @@ namespace NewHorizons.Builder.ShipLog
             MakeDetails(node.mainBody, newNodeGO.transform, greyScaleMaterial);
         }
         #endregion
-    
+
         private static Texture2D AutoGenerateMapModePicture(NewHorizonsBody body)
         {
             Texture2D texture;
 
-            if(body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModeStar.png");
-            else if(body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModNoAtmo.png");
+            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModeStar.png");
+            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModNoAtmo.png");
             else texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModePlanet.png");
 
             var color = GetDominantPlanetColor(body);
@@ -544,7 +540,7 @@ namespace NewHorizons.Builder.ShipLog
                 var sandColor = body.Config.Sand?.Tint;
                 if (sandColor != null) return sandColor.ToColor();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 Logger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.Name} but I'm too lazy to fix it.");
             }

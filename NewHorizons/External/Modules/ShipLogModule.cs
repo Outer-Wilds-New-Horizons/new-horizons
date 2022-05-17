@@ -1,6 +1,5 @@
 ﻿using NewHorizons.Utility;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
     public class ShipLogModule : Module
     {

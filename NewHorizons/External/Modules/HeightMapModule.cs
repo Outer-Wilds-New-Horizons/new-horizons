@@ -1,7 +1,5 @@
 ﻿using NewHorizons.Utility;
-using UnityEngine;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
     public class HeightMapModule : Module
     {

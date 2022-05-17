@@ -1,16 +1,9 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.VariableSize;
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.Utility;
+using OWML.Utils;
+using UnityEngine;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {

@@ -1,26 +1,20 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using NewHorizons.Utility;
+using OWML.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External;
-using OWML.Common;
-using NewHorizons.External.Configs;
-
 namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
             MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, mod, uniqueModName, config);
         }
 
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, string uniqueModName, IPlanetConfig config)
+        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, string uniqueModName, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
 

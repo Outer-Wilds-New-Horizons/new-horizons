@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Components.Orbital
 {
     public class OrbitalParameters : IOrbitalParameters
@@ -25,14 +19,14 @@ namespace NewHorizons.Components.Orbital
         public static OrbitalParameters FromTrueAnomaly(Gravity primaryGravity, Gravity secondaryGravity, float eccentricity, float semiMajorAxis, float inclination, float argumentOfPeriapsis, float longitudeOfAscendingNode, float trueAnomaly)
         {
             var orbitalParameters = new OrbitalParameters();
-            orbitalParameters.Inclination = inclination;   
+            orbitalParameters.Inclination = inclination;
             orbitalParameters.SemiMajorAxis = semiMajorAxis;
             orbitalParameters.LongitudeOfAscendingNode = longitudeOfAscendingNode;
             orbitalParameters.Eccentricity = eccentricity;
-            orbitalParameters.ArgumentOfPeriapsis = argumentOfPeriapsis;    
+            orbitalParameters.ArgumentOfPeriapsis = argumentOfPeriapsis;
 
             // If primary gravity is linear and the orbit is eccentric its not even an ellipse so theres no true anomaly
-            if(primaryGravity.Power == 1 && eccentricity != 0)
+            if (primaryGravity.Power == 1 && eccentricity != 0)
             {
                 trueAnomaly = 0;
             }
@@ -45,7 +39,7 @@ namespace NewHorizons.Components.Orbital
             var secondaryMass = secondaryGravity.Mass;
 
             var power = primaryGravity.Power;
-            var period = (float) (GravityVolume.GRAVITATIONAL_CONSTANT * (primaryMass + secondaryMass) / (4 * Math.PI * Math.PI * Math.Pow(semiMajorAxis, power)));
+            var period = (float)(GravityVolume.GRAVITATIONAL_CONSTANT * (primaryMass + secondaryMass) / (4 * Math.PI * Math.PI * Math.Pow(semiMajorAxis, power)));
 
             orbitalParameters.Period = period;
 
@@ -63,10 +57,10 @@ namespace NewHorizons.Components.Orbital
             float v;
 
             // For linear
-            if(primaryGravity.Power == 1)
+            if (primaryGravity.Power == 1)
             {
                 // Have to deal with a limit
-                if(eccentricity == 0)
+                if (eccentricity == 0)
                 {
                     var v2 = 2 * mu * (Mathf.Log(r_a / r) + (1 / 2f));
                     v = Mathf.Sqrt(v2);

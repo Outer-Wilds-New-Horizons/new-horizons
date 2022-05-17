@@ -1,17 +1,12 @@
-﻿using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Utils;
-using System;
-using UnityEngine;
+﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.Orbital;
-
 namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, IPlanetConfig config)
+        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.HasMapMarker;
@@ -42,7 +37,7 @@ namespace NewHorizons.Builder.General
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._usePhysicsToRotate = true;
-                if(config.Orbit.AlignmentAxis == null)
+                if (config.Orbit.AlignmentAxis == null)
                 {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
                 }

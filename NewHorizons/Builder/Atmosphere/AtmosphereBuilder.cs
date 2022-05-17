@@ -1,7 +1,5 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AtmosphereBuilder
@@ -18,11 +16,11 @@ namespace NewHorizons.Builder.Atmosphere
                 atmo.transform.parent = atmoGO.transform;
                 atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
                 atmo.transform.localScale = Vector3.one * atmosphereModule.Size * 1.2f;
-                foreach(var meshRenderer in atmo.GetComponentsInChildren<MeshRenderer>())
+                foreach (var meshRenderer in atmo.GetComponentsInChildren<MeshRenderer>())
                 {
                     meshRenderer.material.SetFloat("_InnerRadius", atmosphereModule.Cloud != null ? atmosphereModule.Size : surfaceSize);
                     meshRenderer.material.SetFloat("_OuterRadius", atmosphereModule.Size * 1.2f);
-                    if(atmosphereModule.AtmosphereTint != null)
+                    if (atmosphereModule.AtmosphereTint != null)
                         meshRenderer.material.SetColor("_SkyColor", atmosphereModule.AtmosphereTint.ToColor());
                 }
 

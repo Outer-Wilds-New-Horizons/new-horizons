@@ -1,22 +1,15 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.External.Configs;
-using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
-using NewHorizons.Handlers;
-
 namespace NewHorizons.Builder.Body
 {
     public static class AsteroidBeltBuilder
     {
-        public static void Make(string bodyName, IPlanetConfig parentConfig, IModBehaviour mod)
+        public static void Make(string bodyName, PlanetConfig parentConfig, IModBehaviour mod)
         {
             var belt = parentConfig.AsteroidBelt;
 
@@ -57,7 +50,7 @@ namespace NewHorizons.Builder.Body
                 };
 
                 config.ProcGen = belt.ProcGen;
-                if(config.ProcGen == null)
+                if (config.ProcGen == null)
                 {
                     config.ProcGen = new ProcGenModule()
                     {

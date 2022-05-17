@@ -1,8 +1,4 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
+﻿using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
@@ -26,7 +22,7 @@ namespace NewHorizons.Builder.General
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
             RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
-            
+
             RV._hideLandingModePrompt = false;
             RV._matchAngularVelocity = true;
             RV._minMatchAngularVelocityDistance = 70;

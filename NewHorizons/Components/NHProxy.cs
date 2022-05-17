@@ -1,7 +1,5 @@
 ﻿using NewHorizons.Utility;
-using System.Collections.Generic;
 using UnityEngine;
-
 namespace NewHorizons.Components
 {
     public class NHProxy : ProxyPlanet

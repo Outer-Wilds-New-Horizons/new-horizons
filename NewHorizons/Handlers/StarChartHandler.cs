@@ -1,14 +1,8 @@
 ﻿using NewHorizons.Components;
-using NewHorizons.External.Configs;
 using NewHorizons.Utility;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Handlers
 {
     public static class StarChartHandler
@@ -72,7 +66,7 @@ namespace NewHorizons.Handlers
 
         public static bool CanWarp()
         {
-            foreach(var system in _systems)
+            foreach (var system in _systems)
             {
                 if (system.Config.canEnterViaWarpDrive && system.Spawn?.ShipSpawnPoint != null && HasUnlockedSystem(system.Name))
                 {
@@ -101,7 +95,7 @@ namespace NewHorizons.Handlers
 
         public static void OnRevealFact(string factID)
         {
-            if(_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
+            if (_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
             {
                 Logger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
                 if (!Main.HasWarpDrive) Main.Instance.EnableWarpDrive();

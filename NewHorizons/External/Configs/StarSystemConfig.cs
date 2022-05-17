@@ -1,10 +1,4 @@
-﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Collections.Generic;
 namespace NewHorizons.External.Configs
 {
     public class StarSystemConfig : Config
@@ -32,6 +26,6 @@ namespace NewHorizons.External.Configs
         }
 
         public StarSystemConfig(Dictionary<string, object> dict) : base(dict) { }
-        
+
     }
 }

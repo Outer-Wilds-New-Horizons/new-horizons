@@ -1,19 +1,17 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Configs;
 using OWML.Common;
 using UnityEngine;
-using NewHorizons.External.Configs;
-
 namespace NewHorizons.Utility
 {
     public class NewHorizonsBody
     {
-        public NewHorizonsBody(IPlanetConfig config, IModBehaviour mod)
+        public NewHorizonsBody(PlanetConfig config, IModBehaviour mod)
         {
             Config = config;
             Mod = mod;
         }
 
-        public IPlanetConfig Config;
+        public PlanetConfig Config;
         public IModBehaviour Mod;
 
         public GameObject Object;
