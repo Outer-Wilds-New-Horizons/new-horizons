@@ -248,9 +248,9 @@ namespace NewHorizons.Handlers
                 UpdateBodyOrbit(body, go);
             }
 
-            if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
+            if (body.Config.RemoveChildren != null && body.Config.RemoveChildren.Length > 0)
             {
-                foreach (var child in body.Config.ChildrenToDestroy)
+                foreach (var child in body.Config.RemoveChildren)
                 {
                     Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }

@@ -9,7 +9,7 @@ namespace NewHorizons.External.Configs
         public string Version { get; set; }
         public string StarSystem { get; set; } = "SolarSystem";
         public bool Destroy { get; set; }
-        public string[] ChildrenToDestroy { get; set; }
+        public string[] RemoveChildren { get; set; }
         public int BuildPriority { get; set; } = -1;
         public bool CanShowOnTitle { get; set; } = true;
         public bool IsQuantumState { get; set; }
@@ -31,6 +31,10 @@ namespace NewHorizons.External.Configs
         public WaterModule Water { get; set; }
         public SandModule Sand { get; set; }
         public FunnelModule Funnel { get; set; }
+
+        // Obsolete
+        public string[] ChildrenToDestroy { get; set; }
+
 
         public PlanetConfig()
         {
@@ -57,16 +61,21 @@ namespace NewHorizons.External.Configs
                 Lava.Size = Base.LavaSize;
             }
 
-            if(Base.BlackHoleSize != 0)
+            if (Base.BlackHoleSize != 0)
             {
                 Singularity = new SingularityModule();
                 Singularity.Type = "BlackHole";
                 Singularity.Size = Base.BlackHoleSize;
             }
 
-            if(Base.IsSatellite)
+            if (Base.IsSatellite)
             {
                 Base.ShowMinimap = false;
+            }
+
+            if (ChildrenToDestroy != null)
+            {
+                RemoveChildren = ChildrenToDestroy;
             }
         }
     }
