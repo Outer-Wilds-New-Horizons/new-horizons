@@ -59,13 +59,7 @@ jobs:
           command: install --dev
           
       - name: Copy Schemas
-        run: |
-          mkdir content/pages/schemas/
-          cp NewHorizons/Schemas/schema.json content/pages/schemas/
-          cp NewHorizons/Schemas/star_system_schema.json content/pages/schemas/
-          cp NewHorizons/Schemas/translation_schema.json content/pages/schemas/
-          cp NewHorizons/Schemas/shiplog_schema.xsd content/pages/schemas/
-          cp NewHorizons/Schemas/dialogue_schema.xsd content/pages/schemas/
+        run: cp -rf NewHorizons/Schemas docs/content/pages/
 
       - name: Cache Site
         uses: actions/cache@v2
