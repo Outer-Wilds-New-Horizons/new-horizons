@@ -1,11 +1,13 @@
 ---
-Title: Audio Values
+Title: AudioClip Values
 Description: Numbers for audio values for slide reels
-Hide_In_Nav: True
+Hide_In_Nav: False
 Render_TOC: False
 ---
 
-# The List
+# AudioClip Values
+
+These values can be used to set the sound for slide reels. In the future other modules will be updated to use them as well.
 
 None = 0,  
 Menu_RebindKey = 1,  
