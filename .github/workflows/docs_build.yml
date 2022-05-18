@@ -61,11 +61,11 @@ jobs:
       - name: Copy Schemas
         run: |
           mkdir content/pages/schemas/
-          cp NewHorizons/schema.json content/pages/schemas/
-          cp NewHorizons/star_system_schema.json content/pages/schemas/
-          cp NewHorizons/translation_schema.json content/pages/schemas/
-          cp NewHorizons/shiplog_schema.xsd content/pages/schemas/
-          cp NewHorizons/dialogue_schema.xsd content/pages/schemas/
+          cp NewHorizons/Schemas/schema.json content/pages/schemas/
+          cp NewHorizons/Schemas/star_system_schema.json content/pages/schemas/
+          cp NewHorizons/Schemas/translation_schema.json content/pages/schemas/
+          cp NewHorizons/Schemas/shiplog_schema.xsd content/pages/schemas/
+          cp NewHorizons/Schemas/dialogue_schema.xsd content/pages/schemas/
 
       - name: Cache Site
         uses: actions/cache@v2
