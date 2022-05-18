@@ -44,6 +44,8 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
+        private float maxScale;
+
         void Awake()
         {
             var sun = GameObject.FindObjectOfType<SunController>();
@@ -89,6 +91,11 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+
+            if(scaleCurve != null)
+            {
+                maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+            }
         }
 
         public void OnDestroy()
@@ -142,9 +149,12 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
 
-                currentColour = Color.Lerp(_startColour, _endColour, ageValue);
+                // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
+                var t = ageValue;
+                if(maxScale > 0) t = CurrentScale / maxScale;
+                currentColour = Color.Lerp(_startColour, _endColour, t);
 
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, ageValue);
+                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
             }
             else
             {

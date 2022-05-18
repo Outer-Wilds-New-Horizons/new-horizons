@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -122,11 +123,13 @@ namespace NewHorizons.Components
 
         private void SetNewOrbit(AstroObject primaryBody, OrbitalParameters orbitalParameters)
         {
-
-
             _astroObject._primaryBody = primaryBody;
             DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
+            _detector._activeInheritedDetector = primaryBody.GetComponentInChildren<ForceDetector>();
+            _detector._activeVolumes = new List<EffectVolume>() { primaryBody.GetGravityVolume() };
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
+
+            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.Eccentricity, orbitalParameters.SemiMajorAxis, orbitalParameters.Inclination, orbitalParameters.ArgumentOfPeriapsis, orbitalParameters.LongitudeOfAscendingNode, orbitalParameters.TrueAnomaly);
 
             PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
 
@@ -135,7 +138,7 @@ namespace NewHorizons.Components
                 Physics.SyncTransforms();
             }
 
-            _rb.SetVelocity(orbitalParameters.InitialVelocity);
+            _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
         }
 
         private void OnPlayerBlink()

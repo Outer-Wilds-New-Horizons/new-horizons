@@ -193,12 +193,12 @@
     "canShowOnTitle": {
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen",
-      "default": "true"
+      "default": true
     },
     "isQuantumState": {
       "type": "boolean",
       "description": "Does this config describe a quantum state of a custom planet defined in another file?",
-      "default": "false"
+      "default": false
     },
     "Base": {
       "type": "object",
@@ -950,7 +950,7 @@
           "description": "For creating different objects containing translatable text.",
           "items": {
             "type": "object",
-            "additionalProperties": "false",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
@@ -989,7 +989,7 @@
                 "description": "Additional information about each arc in the text",
                 "items": {
                   "type": "object",
-                  "additionalProperties": "false",
+                  "additionalProperties": false,
                   "properties": {
                     "position": {
                       "$ref": "#/$defs/vector2",
@@ -1023,7 +1023,7 @@
           "description": "Like those on Giant's Deep",
           "items": {
             "type": "object",
-            "additionalProperties": "false",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
@@ -1069,7 +1069,7 @@
           "description": "Like those in the DLC",
           "items": {
             "type": "object",
-            "additionalProperties": "false",
+            "additionalProperties": false,
             "properties": {
               "position": {
                 "$ref": "#/$defs/vector3",
