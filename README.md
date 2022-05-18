@@ -36,7 +36,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove or edit existing planets, including what they orbit around
 - Create custom planets from heightmaps/texturemaps
-- Create stars, comets, asteroid belts, satellites, and quantum planets/moons.
+- Create stars (and supernovae), comets, asteroid belts, satellites, and quantum planets/moons.
 - Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, and tornados.
 - Binary orbits
 - Signalscope signals and custom frequencies
@@ -44,9 +44,6 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Black hole / white hole pairs 
 - Custom dialogue, slide-reel projections, translatable text, and custom ship log entries for rumour mode and map mode
 - Funnels and variable surface height (can be made of sand/water/lava/star)
-
-## Roadmap
-- Let custom stars go supernova
 
 ## Development
 If you want to help (please dear god help us) then check out the [contact](#contact) info below or the [contributing](https://github.com/xen-42/outer-wilds-new-horizons/blob/master/CONTRIBUTING.md) page.
