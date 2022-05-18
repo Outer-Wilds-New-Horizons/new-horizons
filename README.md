@@ -64,6 +64,8 @@ New Horizons was made with help from:
 - [Raicuparta](https://github.com/Raicuparta)
 - [MegaPiggy](https://github.com/MegaPiggy)
 - [Trifid](https://github.com/TerrificTrifid)
+- [JohnCorby](https://github.com/JohnCorby) 
+- And the Outer Wilds modding server.
 
 Translation credits:
 - Russian: GrayFix and Tlya
