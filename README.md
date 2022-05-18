@@ -18,7 +18,6 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- TOC -->
 
 - [Incompatible mods](#incompatible-mods)
-- [Roadmap](#roadmap)
 - [Development](#development)
 - [Contact](#contact)
 - [Credits](#credits)
