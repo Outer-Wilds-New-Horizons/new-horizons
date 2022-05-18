@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class SignalModule : Module
+    public class SignalModule 
     {
         public SignalInfo[] Signals;
 

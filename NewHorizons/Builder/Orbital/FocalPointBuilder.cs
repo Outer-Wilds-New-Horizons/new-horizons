@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Orbital
             var gravitationalMass = GetGravitationalMass(primary.Config) + GetGravitationalMass(secondary.Config);
 
             // Copying it because I don't want to modify the actual config
-            var fakeMassConfig = new PlanetConfig(null);
+            var fakeMassConfig = new PlanetConfig();
 
             // Now need to fake the 3 values to make it return this mass
             fakeMassConfig.Base.SurfaceSize = 1;

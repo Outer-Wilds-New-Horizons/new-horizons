@@ -2,7 +2,7 @@
 using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class OrbitModule : Module, IOrbitalParameters
+    public class OrbitModule : IOrbitalParameters
     {
         public float SemiMajorAxis { get; set; }
         public float Inclination { get; set; }

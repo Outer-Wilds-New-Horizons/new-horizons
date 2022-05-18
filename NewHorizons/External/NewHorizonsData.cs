@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Logger = NewHorizons.Utility.Logger;
-namespace NewHorizons.External.Modules
+
+namespace NewHorizons.External
 {
     public static class NewHorizonsData
     {

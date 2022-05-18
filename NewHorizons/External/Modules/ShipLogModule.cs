@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class ShipLogModule : Module
+    public class ShipLogModule 
     {
         public string xmlFile;
         public string spriteFolder;

@@ -36,11 +36,9 @@ namespace NewHorizons.Handlers
             {
                 if (centers.Length == 0 && Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
-                    var SunConfig = new Dictionary<string, object>
-                    {
-                        {"name", "Sun"}
-                    };
-                    _rootNode = ConstructGraph(new NewHorizonsBody(new PlanetConfig(SunConfig), Main.Instance), bodies);
+                    var SunConfig = new PlanetConfig();
+                    SunConfig.Name = "Sun";
+                    _rootNode = ConstructGraph(new NewHorizonsBody(SunConfig, Main.Instance), bodies);
                 }
                 else
                 {

@@ -1,10 +1,9 @@
 ﻿using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
-using System.Collections.Generic;
 
 namespace NewHorizons.External.Configs
 {
-    public class PlanetConfig : Config
+    public class PlanetConfig
     {
         public string Name { get; set; }
         public string Version { get; set; }
@@ -33,7 +32,7 @@ namespace NewHorizons.External.Configs
         public SandModule Sand { get; set; }
         public FunnelModule Funnel { get; set; }
 
-        public PlanetConfig(Dictionary<string, object> dict) : base(dict)
+        public PlanetConfig()
         {
             // Always have to have a base module
             if (Base == null) Base = new BaseModule();

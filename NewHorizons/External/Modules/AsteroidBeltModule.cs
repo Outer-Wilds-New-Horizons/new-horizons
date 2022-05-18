@@ -1,6 +1,6 @@
 ﻿namespace NewHorizons.External.Modules
 {
-    public class AsteroidBeltModule : Module
+    public class AsteroidBeltModule
     {
         public float InnerRadius { get; set; }
         public float OuterRadius { get; set; }

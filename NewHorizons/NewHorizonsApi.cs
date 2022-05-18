@@ -1,9 +1,10 @@
 ﻿using NewHorizons.Builder.Props;
-using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -12,21 +13,43 @@ namespace NewHorizons
 {
     public class NewHorizonsApi
     {
-        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use Create(Dictionary<string, object> config, IModBehaviour mod) instead")]
+        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config)
         {
             Create(config, null);
         }
 
+        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config, IModBehaviour mod)
         {
-            Logger.Log("Recieved API request to create planet " + (string)config["Name"], Logger.LogType.Log);
-            var planetConfig = new PlanetConfig(config);
+            try
+            {
+                var name = (string)config["Name"];
 
-            var body = new NewHorizonsBody(planetConfig, mod ?? Main.Instance);
+                Logger.LogWarning($"Recieved API request to create planet [{name}]");
 
-            if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
-            Main.BodyDict[body.Config.StarSystem].Add(body);
+                if (name == null) return;
+
+                var relativePath = $"temp/{name}.json";
+                var fullPath = Main.Instance.ModHelper.Manifest.ModFolderPath + relativePath;
+                if (!Directory.Exists(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp"))
+                {
+                    Directory.CreateDirectory(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp");
+                }
+                JsonHelper.SaveJsonObject(fullPath, config);
+                var body = Main.Instance.LoadConfig(Main.Instance, relativePath);
+                File.Delete(fullPath);
+
+                // Update it to point to their mod for textures and stuff
+                body.Mod = mod ?? Main.Instance;
+
+                if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[body.Config.StarSystem].Add(body);
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError($"Error in Create API: {ex.Message} {ex.StackTrace}");
+            }
         }
 
         public void LoadConfigs(IModBehaviour mod)

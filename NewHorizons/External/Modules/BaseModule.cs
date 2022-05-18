@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class BaseModule : Module
+    public class BaseModule
     {
         public bool HasMapMarker { get; set; }
         public bool HasAmbientLight { get; set; }

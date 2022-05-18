@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class AtmosphereModule : Module
+    public class AtmosphereModule
     {
         public float Size { get; set; }
         public MColor CloudTint { get; set; }

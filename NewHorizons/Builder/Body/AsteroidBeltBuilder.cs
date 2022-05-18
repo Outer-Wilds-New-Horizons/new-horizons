@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Body
             {
                 var size = Random.Range(minSize, maxSize);
 
-                var config = new PlanetConfig(null);
+                var config = new PlanetConfig();
                 config.Name = $"{bodyName} Asteroid {i}";
                 config.StarSystem = parentConfig.StarSystem;
 

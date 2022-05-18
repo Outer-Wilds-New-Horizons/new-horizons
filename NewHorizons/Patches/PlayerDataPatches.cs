@@ -1,6 +1,6 @@
 ﻿using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using System.Collections.Generic;
 using System.Linq;

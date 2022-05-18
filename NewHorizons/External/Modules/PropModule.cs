@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Utility;
 namespace NewHorizons.External.Modules
 {
-    public class PropModule : Module
+    public class PropModule 
     {
         public ScatterInfo[] Scatter;
         public DetailInfo[] Details;

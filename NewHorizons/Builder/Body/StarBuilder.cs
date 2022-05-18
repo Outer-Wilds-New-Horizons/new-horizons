@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Body
                 if (starModule.Curve != null)
                 {
                     var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
-                    controller.scaleCurve = starModule.ToAnimationCurve();
+                    controller.scaleCurve = starModule.GetAnimationCurve();
                     controller.initialSize = starModule.Size;
                 }
             }

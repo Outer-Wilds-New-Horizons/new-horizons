@@ -2,7 +2,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -95,7 +95,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
@@ -387,7 +387,7 @@ namespace NewHorizons
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
-                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
+                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.StarSystem}. Why wasn't this loaded earlier?");
 
                     var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);

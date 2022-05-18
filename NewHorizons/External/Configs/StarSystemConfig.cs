@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-namespace NewHorizons.External.Configs
+﻿namespace NewHorizons.External.Configs
 {
-    public class StarSystemConfig : Config
+    public class StarSystemConfig
     {
         public bool canEnterViaWarpDrive = true;
         public bool startHere = false;
@@ -24,8 +23,5 @@ namespace NewHorizons.External.Configs
             public string path = null;
             public bool destroyStarField = false;
         }
-
-        public StarSystemConfig(Dictionary<string, object> dict) : base(dict) { }
-
     }
 }

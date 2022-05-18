@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
-using NewHorizons.External.Modules;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using System;
 using UnityEngine;

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 namespace NewHorizons.External.Modules.VariableSize
 {
-    public class VariableSizeModule : Module
+    public class VariableSizeModule 
     {
         public TimeValuePair[] Curve { get; set; }
 
@@ -11,7 +11,7 @@ namespace NewHorizons.External.Modules.VariableSize
             public float Value { get; set; }
         }
 
-        public AnimationCurve ToAnimationCurve(float size = 1f)
+        public AnimationCurve GetAnimationCurve(float size = 1f)
         {
             var curve = new AnimationCurve();
             foreach (var pair in this.Curve)

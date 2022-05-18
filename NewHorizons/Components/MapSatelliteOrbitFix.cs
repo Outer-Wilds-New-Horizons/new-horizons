@@ -7,8 +7,7 @@ namespace NewHorizons.Components
     {
         public void Awake()
         {
-            // TODO: eventually all bodies should have configs
-            var config = new PlanetConfig(null);
+            var config = new PlanetConfig();
             config.Base.SurfaceSize = 10f;
 
             var detector = base.transform.GetComponentInChildren<DynamicForceDetector>();
