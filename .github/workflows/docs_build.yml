@@ -59,7 +59,7 @@ jobs:
           command: install --dev
           
       - name: Copy Schemas
-        run: cp -rf NewHorizons/Schemas docs/content/pages/
+        run: cp -rf NewHorizons/Schemas content/pages/
 
       - name: Cache Site
         uses: actions/cache@v2
