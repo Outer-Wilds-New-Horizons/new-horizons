@@ -21,11 +21,11 @@ jobs:
         
     # Set to Release if we're in master, otherwise keep us in Debug
     - name: Set Release
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/main'
       run: echo "BUILD_TYPE=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
       
     - name: Set Debug
-      if: github.ref != 'refs/heads/master'
+      if: github.ref != 'refs/heads/main'
       run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
     
     - uses: actions/setup-dotnet@v1
