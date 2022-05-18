@@ -50,13 +50,6 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.Size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
-
-                if (starModule.Curve != null)
-                {
-                    var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
-                    controller.scaleCurve = starModule.GetAnimationCurve();
-                    controller.initialSize = starModule.Size;
-                }
             }
 
             var ambientLightGO = GameObject.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -130,7 +123,7 @@ namespace NewHorizons.Builder.Body
             var supernova = MakeSupernova(starGO, starModule);
 
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if(starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            if(starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.Size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
@@ -156,7 +149,7 @@ namespace NewHorizons.Builder.Body
             var supernova = MakeSupernova(starGO, starModule);
 
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            if (starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.Size;
             controller.supernova = supernova;
             controller.startColour = starModule.Tint;
