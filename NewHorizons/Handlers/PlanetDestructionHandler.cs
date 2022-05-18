@@ -161,7 +161,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogWarning($"Exception thrown when trying to delete bodies related to [{ao.name}]: {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]: {e.Message}, {e.StackTrace}");
             }
 
             // Deal with proxies
