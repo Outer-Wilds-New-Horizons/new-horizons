@@ -69,81 +69,93 @@ namespace NewHorizons.Handlers
 
             try
             {
-                if (ao.GetAstroObjectName() == AstroObject.Name.BrittleHollow)
+                switch(ao._name)
                 {
-                    RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
+                    case AstroObject.Name.BrittleHollow:
+                        RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
+                        break;
+                    case AstroObject.Name.CaveTwin:
+                    case AstroObject.Name.TowerTwin:
+                        DisableBody(GameObject.Find("FocalBody"), delete);
+                        DisableBody(GameObject.Find("SandFunnel_Body"), delete);
+                        break;
+                    case AstroObject.Name.MapSatellite:
+                        DisableBody(GameObject.Find("MapSatellite_Body"), delete);
+                        break;
+                    case AstroObject.Name.GiantsDeep:
+                        foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
+                        {
+                            DisableBody(jelly.gameObject, delete);
+                        }
+                        // Else it will re-eanble the pieces
+                        // ao.GetComponent<OrbitalProbeLaunchController>()._realDebrisSectorProxies = null;
+                        break;
+                    case AstroObject.Name.TimberHearth:
+                        // Always just fucking kill this one to stop THE WARP BUG!!!
+                        DisableBody(GameObject.Find("StreamingGroup_TH"), true);
+
+                        foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
+                        {
+                            DisableBody(obj.gameObject, true);
+                        }
+                        foreach (var obj in GameObject.FindObjectsOfType<VillageMusicVolume>())
+                        {
+                            DisableBody(obj.gameObject, true);
+                        }
+                        break;
+                    case AstroObject.Name.Sun:
+                        var starController = ao.gameObject.GetComponent<StarController>();
+                        StarLightController.RemoveStar(starController);
+                        GameObject.Destroy(starController);
+
+                        var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
+                        GameObject.Destroy(audio);
+
+                        foreach (var owAudioSource in ao.GetComponentsInChildren<OWAudioSource>())
+                        {
+                            owAudioSource.Stop();
+                            GameObject.Destroy(owAudioSource);
+                        }
+
+                        foreach (var audioSource in ao.GetComponentsInChildren<AudioSource>())
+                        {
+                            audioSource.Stop();
+                            GameObject.Destroy(audioSource);
+                        }
+
+                        foreach (var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
+                        {
+                            Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
+                            GameObject.Destroy(sunProxy.gameObject);
+                        }
+
+                        // Stop the sun from breaking stuff when the supernova gets triggered
+                        GlobalMessenger.RemoveListener("TriggerSupernova", ao.GetComponent<SunController>().OnTriggerSupernova);
+                        break;
                 }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.CaveTwin || ao.GetAstroObjectName() == AstroObject.Name.TowerTwin)
-                {
-                    DisableBody(GameObject.Find("FocalBody"), delete);
-                    DisableBody(GameObject.Find("SandFunnel_Body"), delete);
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.MapSatellite)
-                {
-                    DisableBody(GameObject.Find("MapSatellite_Body"), delete);
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.GiantsDeep)
-                {
-                    foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
-                    {
-                        DisableBody(jelly.gameObject, delete);
-                    }
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.TimberHearth)
-                {
-                    // Always just fucking kill this one to stop THE WARP BUG!!!
-                    DisableBody(GameObject.Find("StreamingGroup_TH"), true);
 
-                    foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
-                    {
-                        DisableBody(obj.gameObject, true);
-                    }
-                    foreach (var obj in GameObject.FindObjectsOfType<VillageMusicVolume>())
-                    {
-                        DisableBody(obj.gameObject, true);
-                    }
-                }
-                else if (ao.GetAstroObjectName() == AstroObject.Name.Sun)
-                {
-                    var starController = ao.gameObject.GetComponent<StarController>();
-                    StarLightController.RemoveStar(starController);
-                    GameObject.Destroy(starController);
-
-                    var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
-                    GameObject.Destroy(audio);
-
-                    foreach (var owAudioSource in ao.GetComponentsInChildren<OWAudioSource>())
-                    {
-                        owAudioSource.Stop();
-                        GameObject.Destroy(owAudioSource);
-                    }
-
-                    foreach (var audioSource in ao.GetComponentsInChildren<AudioSource>())
-                    {
-                        audioSource.Stop();
-                        GameObject.Destroy(audioSource);
-                    }
-
-                    foreach (var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
-                    {
-                        Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
-                        GameObject.Destroy(sunProxy.gameObject);
-                    }
-
-                    // Stop the sun from breaking stuff when the supernova gets triggered
-                    GlobalMessenger.RemoveListener("TriggerSupernova", ao.GetComponent<SunController>().OnTriggerSupernova);
-                }
-
-                // Just delete the children
+                // Always delete the children
+                Logger.Log($"Removing Children of [{ao._name}], [{ao._customName}]");
                 foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
+                    if (child == null) continue;
+
+                    Logger.Log($"Removing child [{child.name}] of [{ao._name}]");
+
+                    // Ship starts as a child of TH but obvious we want to keep that
                     if (child.name == "Ship_Body") continue;
-                    DisableBody(child, true);
+
+                    // Some children might be astro objects and as such can have children of their own
+                    var childAO = child.GetComponent<AstroObject>();
+                    if (childAO != null) RemoveBody(childAO, false, toDestroy);
+                    else DisableBody(child, true);
                 }
 
-                // Delete moons
+                // Always delete moons
                 foreach (var obj in AstroObjectLocator.GetMoons(ao))
                 {
+                    if (obj == null) continue;
+
                     RemoveBody(obj.GetComponent<AstroObject>(), false, toDestroy);
                 }
             }
@@ -188,7 +200,12 @@ namespace NewHorizons.Handlers
         {
             if (go == null) return;
 
-            if (delete) GameObject.Destroy(go);
+            Logger.Log($"Removing [{go.name}]");
+
+            if (delete)
+            {
+                GameObject.Destroy(go);
+            }
             else
             {
                 go.SetActive(false);
