@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [dev, master]
+    branches: [dev, main]
     paths-ignore:
       - docs/**
       - "**schema**"

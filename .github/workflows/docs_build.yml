@@ -2,7 +2,7 @@ name: Build Docs
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - docs/**
       - NewHorizons/*schema*.json
