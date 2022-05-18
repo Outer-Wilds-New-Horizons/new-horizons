@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Body
             var ringShape = ringVolume.AddComponent<RingShape>();
             ringShape.innerRadius = ring.InnerRadius;
             ringShape.outerRadius = ring.OuterRadius;
-            ringShape.height = 2f;
+            ringShape.height = 6f;
             ringShape.center = Vector3.zero;
             ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
             ringShape.SetLayer(Shape.Layer.Default);
