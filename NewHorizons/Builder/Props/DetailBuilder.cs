@@ -1,22 +1,18 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External;
-using OWML.Common;
-using NewHorizons.External.Configs;
-using NewHorizons.Handlers;
-
 namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        public static void Make(GameObject go, Sector sector, IPlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
 
@@ -185,7 +181,7 @@ namespace NewHorizons.Builder.Props
                             angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                         }
                     }
-                    catch(Exception e)
+                    catch (Exception e)
                     {
                         Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] : {e.Message}, {e.StackTrace}");
                     }

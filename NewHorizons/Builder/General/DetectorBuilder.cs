@@ -1,20 +1,12 @@
-﻿using NewHorizons.Builder.Orbital;
-using NewHorizons.External;
-using NewHorizons.Components.Orbital;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using UnityEngine;
-using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
+﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
-
+using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
 {
     public static class DetectorBuilder
     {
-        public static GameObject Make(GameObject planetGO, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, IPlanetConfig config)
+        public static GameObject Make(GameObject planetGO, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, PlanetConfig config)
         {
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
@@ -27,7 +19,7 @@ namespace NewHorizons.Builder.General
             OWRB.RegisterAttachedForceDetector(forceDetector);
 
             // For falling into sun
-            if(!config.Base.InvulnerableToSun && config.Star == null && config.FocalPoint == null)
+            if (!config.Base.InvulnerableToSun && config.Star == null && config.FocalPoint == null)
             {
                 detectorGO.layer = LayerMask.NameToLayer("AdvancedDetector");
 
@@ -36,7 +28,7 @@ namespace NewHorizons.Builder.General
                 sphereCollider.radius = config.Base.SurfaceSize;
 
                 var owCollider = detectorGO.AddComponent<OWCollider>();
-                
+
                 fluidDetector._collider = sphereCollider;
 
                 // Could copy the splash from the interloper as well some day

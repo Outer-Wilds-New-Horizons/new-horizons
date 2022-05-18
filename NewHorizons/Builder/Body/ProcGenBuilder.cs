@@ -1,13 +1,7 @@
 ﻿using NewHorizons.Builder.Body.Geometry;
-using NewHorizons.External;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-
+using UnityEngine;
 namespace NewHorizons.Builder.Body
 {
     public static class ProcGenBuilder
@@ -17,8 +11,8 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
-            if(quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
-            if(iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+            if (quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
+            if (iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
 
 
             GameObject icosphere = new GameObject("Icosphere");

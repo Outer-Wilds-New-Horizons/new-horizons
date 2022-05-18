@@ -2,12 +2,11 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.External.VariableSize;
 using NewHorizons.Utility;
-using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {

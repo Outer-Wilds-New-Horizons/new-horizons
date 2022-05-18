@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Random = UnityEngine.Random;
-
 namespace NewHorizons.Builder.Body.Geometry
 {
     public static class Icosphere
@@ -75,13 +71,13 @@ namespace NewHorizons.Builder.Body.Geometry
 
             var randomOffset = new Vector3(Random.Range(0, 10f), Random.Range(0, 10f), Random.Range(0, 10f));
 
-            for(int i = 0; i < verticesToCopy.Length; i++)
+            for (int i = 0; i < verticesToCopy.Length; i++)
             {
                 var v = verticesToCopy[i];
 
                 float latitude = Mathf.Repeat(Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)), 180f);
                 float longitude = Mathf.Repeat(Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f, 360f);
-                                           
+
                 float height = Perlin.Noise(v + randomOffset) * (maxHeight - minHeight) + minHeight;
 
                 newVertices[i] = verticesToCopy[i] * height;
@@ -104,8 +100,8 @@ namespace NewHorizons.Builder.Body.Geometry
         private static void RefineFaces(int level)
         {
             if (level < vertices.Count) return;
-            
-            for(int i = vertices.Count - 1; i < level; i++)
+
+            for (int i = vertices.Count - 1; i < level; i++)
             {
                 // Each triangle will be subdivided into 4 new ones
                 int[] oldTriangles = triangles[i];
@@ -118,7 +114,7 @@ namespace NewHorizons.Builder.Body.Geometry
 
                 int v = oldVertices.Length;
                 int newTrianglesIndex = 0;
-                for(int j = 0; j < oldTriangles.Length; j+=3, v+=3)
+                for (int j = 0; j < oldTriangles.Length; j += 3, v += 3)
                 {
                     // Old vertex indices
                     var v0Ind = oldTriangles[j];

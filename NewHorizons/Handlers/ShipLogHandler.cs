@@ -1,15 +1,8 @@
-﻿using NewHorizons.Components;
+﻿using NewHorizons.Utility;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Xml.Linq;
-using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Common;
 using UnityEngine;
-using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Handlers
 {
     public static class ShipLogHandler

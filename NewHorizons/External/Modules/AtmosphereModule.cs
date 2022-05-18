@@ -1,13 +1,7 @@
 ﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
-    public class AtmosphereModule : Module
+    public class AtmosphereModule
     {
         public float Size { get; set; }
         public MColor CloudTint { get; set; }

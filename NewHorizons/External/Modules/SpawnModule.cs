@@ -1,13 +1,7 @@
 ﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
-    public class SpawnModule : Module
+    public class SpawnModule
     {
         public MVector3 PlayerSpawnPoint { get; set; }
         public MVector3 ShipSpawnPoint { get; set; }

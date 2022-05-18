@@ -1,14 +1,8 @@
 ﻿using NewHorizons.Components.Orbital;
 using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
-    public class OrbitModule : Module, IOrbitalParameters
+    public class OrbitModule : IOrbitalParameters
     {
         public float SemiMajorAxis { get; set; }
         public float Inclination { get; set; }

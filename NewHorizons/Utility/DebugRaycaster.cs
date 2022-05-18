@@ -1,13 +1,5 @@
-﻿using NewHorizons;
-using NewHorizons.Builder.Body;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.InputSystem;
-
 namespace NewHorizons.Utility
 {
     [RequireComponent(typeof(OWRigidbody))]
@@ -41,9 +33,9 @@ namespace NewHorizons.Utility
                     var posText = $"{{\"x\": {pos.x}, \"y\": {pos.y}, \"z\": {pos.z}}}";
                     var normText = $"{{\"x\": {norm.x}, \"y\": {norm.y}, \"z\": {norm.z}}}";
 
-                    if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
-                    if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
-                    if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
+                    if (_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
+                    if (_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
+                    if (_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
 
                     _surfaceSphere = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.1f, Color.green);
                     _normalSphere1 = AddDebugShape.AddSphere(hitInfo.transform.gameObject, 0.01f, Color.red);

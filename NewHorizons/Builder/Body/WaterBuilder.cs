@@ -1,11 +1,8 @@
-﻿using NewHorizons.External;
-using NewHorizons.External.VariableSize;
-using OWML.Utils;
-using UnityEngine;
-using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.Utility;
+using UnityEngine;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -34,7 +31,7 @@ namespace NewHorizons.Builder.Body
 
             var GDSharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
             var tempArray = new Material[GDSharedMaterials.Length];
-            for(int i = 0; i < GDSharedMaterials.Length; i++)
+            for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
                 if (module.Tint != null)
@@ -104,7 +101,7 @@ namespace NewHorizons.Builder.Body
             else
             {
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.Size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", module.Size/2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", module.Size / 2f);
             }
 
             // TODO: make LOD work 

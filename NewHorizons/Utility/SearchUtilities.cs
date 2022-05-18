@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
 namespace NewHorizons.Utility
 {
     public static class SearchUtilities
@@ -29,7 +26,7 @@ namespace NewHorizons.Utility
                 GameObject foundObject = GameObject.Find(path);
                 if (foundObject != null)
                 {
-                    CachedGameObjects.Add(path, foundObject); 
+                    CachedGameObjects.Add(path, foundObject);
                 }
                 return foundObject;
             }
@@ -191,7 +188,7 @@ namespace NewHorizons.Utility
 
                 return go;
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return null;
             }

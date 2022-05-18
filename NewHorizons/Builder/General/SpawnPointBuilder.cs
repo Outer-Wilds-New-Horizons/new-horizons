@@ -1,10 +1,6 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
-using System;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
-using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.General
 {
     public static class SpawnPointBuilder
@@ -13,7 +9,7 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
-            if(!Main.Instance.IsWarping && module.PlayerSpawnPoint != null)
+            if (!Main.Instance.IsWarping && module.PlayerSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("PlayerSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
@@ -25,7 +21,7 @@ namespace NewHorizons.Builder.General
                 spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - planetGO.transform.position).normalized);
                 spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
             }
-            if(module.ShipSpawnPoint != null)
+            if (module.ShipSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("ShipSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
@@ -41,10 +37,10 @@ namespace NewHorizons.Builder.General
                 ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
                 // Move it up a bit more
                 ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
-                
+
                 ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
 
-                if(Main.Instance.IsWarping)
+                if (Main.Instance.IsWarping)
                 {
                     Logger.Log("Overriding player spawn to be inside ship");
                     GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
@@ -54,10 +50,10 @@ namespace NewHorizons.Builder.General
                     playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
-                    playerSpawnGO.transform.localRotation = Quaternion.Euler(0,0,0);
+                    playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
             }
-            if(!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
+            if (!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
@@ -90,18 +86,18 @@ namespace NewHorizons.Builder.General
             {
                 spv._interactVolume.EnableSingleInteraction(false, spv._pickupSuitCommandIndex);
             }
-                
+
             spv._timer = 0f;
             spv._index = 0;
 
             spv.OnSuitUp();
-            
+
             GameObject suitGeometry = spv._suitGeometry;
             if (suitGeometry != null) suitGeometry.SetActive(false);
-                
+
             OWCollider suitOWCollider = spv._suitOWCollider;
             if (suitOWCollider != null) suitOWCollider.SetActivation(false);
-                
+
             spv.enabled = true;
         }
     }

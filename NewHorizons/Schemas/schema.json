@@ -182,7 +182,7 @@
       "description": "`true` if you want to delete this planet",
       "default": false
     },
-    "childrenToDestroy": {
+    "removeChildren": {
       "type": "array",
       "description": "A list of paths to child GameObjects to destroy on this planet",
       "items": {
@@ -262,10 +262,10 @@
           "default": false,
           "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever have this set to true."
         },
-        "isSatellite": {
+        "showMinimap": {
           "type": "boolean",
-          "default": false,
-          "description": "Is this body an artificial satellite of a planet/moon/star?"
+          "default": true,
+          "description": "Do we show the minimap when walking around this planet?"
         },
         "cloakRadius": {
           "type": "number",

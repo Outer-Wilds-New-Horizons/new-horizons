@@ -1,25 +1,14 @@
-﻿using NewHorizons.External;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using Random = UnityEngine.Random;
-using Logger = NewHorizons.Utility.Logger;
-using System.Reflection;
-using NewHorizons.Builder.General;
-using NewHorizons.Utility;
-using OWML.Common;
-using NewHorizons.Builder.ShipLog;
+﻿using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
-using System.IO;
-
+using OWML.Common;
+using System;
+using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, IPlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
             if (config.Props.Scatter != null)
             {

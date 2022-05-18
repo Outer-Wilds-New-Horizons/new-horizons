@@ -1,9 +1,7 @@
 ﻿using NewHorizons.Utility;
-using UnityEngine;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
-    public class HeightMapModule : Module
+    public class HeightMapModule
     {
         public string HeightMap { get; set; }
         public string TextureMap { get; set; }

@@ -1,11 +1,9 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
-using OWML.Utils;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class CloudsBuilder
@@ -95,7 +93,7 @@ namespace NewHorizons.Builder.Atmosphere
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            if (atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             cloudsBottomGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);

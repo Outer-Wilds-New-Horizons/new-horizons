@@ -1,8 +1,6 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Props
 {
     public static class VolcanoBuilder

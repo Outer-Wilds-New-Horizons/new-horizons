@@ -1,13 +1,7 @@
 ﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.External
+namespace NewHorizons.External.Modules
 {
-    public class PropModule : Module
+    public class PropModule 
     {
         public ScatterInfo[] Scatter;
         public DetailInfo[] Details;
@@ -108,7 +102,7 @@ namespace NewHorizons.External
             public bool cloaked;
             public MVector3 position;
         }
-		
+
         public class NomaiTextInfo
         {
             public MVector3 position;
@@ -118,7 +112,7 @@ namespace NewHorizons.External
             public string xmlFile;
             public int seed; // For randomizing arcs
             public NomaiTextArcInfo[] arcInfo;
-		}
+        }
 
         public class NomaiTextArcInfo
         {

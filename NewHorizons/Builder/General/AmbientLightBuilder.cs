@@ -1,9 +1,4 @@
-﻿using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Utils;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
+﻿using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
