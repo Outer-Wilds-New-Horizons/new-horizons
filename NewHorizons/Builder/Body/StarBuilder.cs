@@ -26,20 +26,23 @@ namespace NewHorizons.Builder.Body
 
             sunAudio.name = "Audio_Star";
 
+            GameObject sunAtmosphere = null;
             if (starModule.HasAtmosphere)
             {
-                var sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), planetGO.transform);
+                sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
-                sunAtmosphere.transform.localScale = Vector3.one;
+                sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
                 PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.Tint != null)
                 {
                     fog.fogTint = starModule.Tint.ToColor();
-                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one * (starModule.Size * OuterRadiusRatio);
+                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
                         lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
+                        lod.material.SetColor("_AtmosFar", starModule.Tint.ToColor());
+                        lod.material.SetColor("_AtmosNear", starModule.Tint.ToColor());
                         lod.material.SetFloat("_InnerRadius", starModule.Size);
                         lod.material.SetFloat("_OuterRadius", starModule.Size * OuterRadiusRatio);
                     }
@@ -47,6 +50,7 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.Size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+
                 if (starModule.Curve != null)
                 {
                     var controller = sunAtmosphere.AddComponent<StarAtmosphereSizeController>();
@@ -70,7 +74,7 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.localScale = Vector3.one;
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
             deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
-            deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = false;
+            deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             deathVolume.name = "DestructionVolume";
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
@@ -123,18 +127,45 @@ namespace NewHorizons.Builder.Body
                 starController.SunColor = lightColour;
             }
 
-            if (starModule.Curve != null)
-            {
-                var levelController = starGO.AddComponent<SandLevelController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in starModule.Curve)
-                {
-                    curve.AddKey(new Keyframe(pair.Time, starModule.Size * pair.Value));
-                }
-                levelController._scaleCurve = curve;
-            }
+            var supernova = MakeSupernova(starGO, starModule);
+
+            var controller = starGO.AddComponent<StarEvolutionController>();
+            if(starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            controller.size = starModule.Size;
+            controller.atmosphere = sunAtmosphere;
+            controller.supernova = supernova;
+            controller.startColour = starModule.Tint;
+            controller.endColour = starModule.EndTint;
+            controller.willExplode = starModule.GoSupernova;
+
+            // It fucking insists on this existing and its really annoying
+            var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
+            supernovaVolume.transform.SetParent(starGO.transform);
+            supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
+            var sphere = supernovaVolume.AddComponent<SphereShape>();
+            sphere.radius = 0f;
+            supernovaVolume.AddComponent<OWCollider>();
 
             return starController;
+        }
+
+        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule)
+        {
+            var starGO = MakeStarGraphics(proxyGO, null, starModule);
+
+            var supernova = MakeSupernova(starGO, starModule);
+
+            var controller = starGO.AddComponent<StarEvolutionController>();
+            if (starModule.Curve != null) controller.scaleCurve = starModule.ToAnimationCurve();
+            controller.size = starModule.Size;
+            controller.supernova = supernova;
+            controller.startColour = starModule.Tint;
+            controller.endColour = starModule.EndTint;
+            controller.enabled = true;
+
+            planet.GetComponentInChildren<StarEvolutionController>().SetProxy(controller);
+
+            return proxyGO;
         }
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
@@ -183,6 +214,35 @@ namespace NewHorizons.Builder.Body
             }
 
             return starGO;
+        }
+
+        private static SupernovaEffectController MakeSupernova(GameObject starGO, StarModule starModule)
+        {
+            var supernovaGO = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
+            supernovaGO.transform.SetParent(starGO.transform);
+            supernovaGO.transform.localPosition = Vector3.zero;
+
+            var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
+            supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+            supernova._supernovaVolume = null;
+
+            if(starModule.SupernovaTint != null)
+            {
+                var colour = starModule.SupernovaTint.ToColor();
+
+                var supernovaMaterial = new Material(supernova._supernovaMaterial);
+                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white, colour);
+                supernovaMaterial.SetTexture("_ColorRamp", ramp);
+                supernova._supernovaMaterial = supernovaMaterial;
+
+                // Motes
+                var moteMaterial = supernova.GetComponentInChildren<ParticleSystemRenderer>().material;
+                moteMaterial.color = new Color(colour.r * 3f, colour.g * 3f, colour.b * 3f, moteMaterial.color.a);
+            }
+
+            supernovaGO.SetActive(true);
+
+            return supernova;
         }
     }
 }

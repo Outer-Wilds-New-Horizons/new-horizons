@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
         private static readonly string _whiteHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
 
 
-        public static void Make(GameObject gameObject, NewHorizonsBody body)
+        public static void Make(GameObject planetGO, NewHorizonsBody body)
         {
             if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
@@ -56,9 +56,7 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Star != null)
                 {
-                    var starGO = StarBuilder.MakeStarGraphics(newProxy, null, body.Config.Star);
-
-                    if (body.Config.Star.Curve != null) AddSizeController(starGO, body.Config.Star.Curve, body.Config.Star.Size);
+                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star);
 
                     if (realSize < body.Config.Star.Size) realSize = body.Config.Star.Size;
                 }
@@ -134,8 +132,6 @@ namespace NewHorizons.Builder.Body
                 var proxyController = newProxy.AddComponent<NHProxy>();
                 proxyController.astroName = body.Config.Name;
                 proxyController._realObjectDiameter = realSize;
-                proxyController.renderers = newProxy.GetComponentsInChildren<Renderer>();
-                proxyController.tessellatedRenderers = newProxy.GetComponentsInChildren<TessellatedRenderer>();
             }
             catch (Exception ex)
             {

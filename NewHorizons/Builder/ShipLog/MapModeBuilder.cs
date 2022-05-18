@@ -103,17 +103,17 @@ namespace NewHorizons.Builder.ShipLog
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
 
-            Texture2D image;
-            Texture2D outline;
-
+            Texture2D image = null;
+            Texture2D outline = null;
+            
             string imagePath = body.Config.ShipLog?.mapMode?.revealedSprite;
             string outlinePath = body.Config.ShipLog?.mapMode?.outlineSprite;
 
             if (imagePath != null) image = ImageUtilities.GetTexture(body.Mod, imagePath);
-            else image = AutoGenerateMapModePicture(body);
+            if (image == null) image = AutoGenerateMapModePicture(body);
 
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
-            else outline = ImageUtilities.MakeOutline(image, Color.white, 10);
+            if (outline == null) outline = ImageUtilities.MakeOutline(image, Color.white, 10);
 
             astroObject._imageObj = CreateImage(gameObject, image, body.Config.Name + " Revealed", layer);
             astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.Name + " Outline", layer);
