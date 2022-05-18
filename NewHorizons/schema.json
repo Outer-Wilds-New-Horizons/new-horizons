@@ -262,10 +262,10 @@
           "default": false,
           "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever have this set to true."
         },
-        "isSatellite": {
+        "showMiniMap": {
           "type": "boolean",
-          "default": false,
-          "description": "Is this body an artificial satellite of a planet/moon/star?"
+          "default": true,
+          "description": "Do we show the minimap when walking around this planet?"
         },
         "cloakRadius": {
           "type": "number",
