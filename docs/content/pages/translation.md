@@ -4,7 +4,6 @@ Sort_Priority: 60
 ---
 
 ## Translations
-___
 
 There are 12 supported languages in Outer Wilds: english, spanish_la, german, french, italian, polish, portuguese_br, japanese, russian, chinese_simple, korean, and turkish.
 
@@ -16,6 +15,7 @@ Here's an example, for `russian.json`:
 
 ```json
 {
+    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
     "DialogueDictionary" :
     {
         "Fred" : "Фред",

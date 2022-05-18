@@ -6,47 +6,31 @@ Sort_Priority: 50
 
 # Dialogue
 
-___
-
 This page goes over how to use dialogue in New Horizons.
 
 # Understanding Dialogue
 
-___
-
 ## Dialogue Tree
-
-___
 
 A dialogue tree is an entire conversation, it's made up of dialogue nodes.
 
 ## Dialogue Node
 
-___
-
 A node is a set of pages shown to the player followed by options the player can choose from to change the flow of the conversation.
 
 ## Condition
-
-___
 
 A condition is a yes/no value stored **for this loop and this loop only**.  It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
 
 ## Persistent Condition
 
-___
-
 A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the player's save file.
 
 ## Remote Trigger
 
-___
-
 A remote trigger is used to have an NPC talk to you from a distance; ex: Slate stopping you for the umpteenth time to tell you information you already knew.
 
 # Example XML
-
-___
 
 Here's an example dialogue XML:
 
@@ -54,7 +38,7 @@ Here's an example dialogue XML:
 <!-- Example Dialogue -->
 <!-- All files must have `DialogueTree` as the root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but provides improved error checking if your editor supports it -->
 <DialogueTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/dialogue_schema.xsd">
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/dialogue_schema.xsd">
  <NameField>EXAMPLE NPC</NameField> <!-- The name of this character -->
 
  <DialogueNode> <!-- A dialogue node is a set of pages displayed to the player optionally followed by options -->
@@ -131,8 +115,6 @@ Here's an example dialogue XML:
 
 # Using the XML
 
-___
-
 To use the dialogue XML you have created, you simply need to reference it in the `dialogue` prop
 
 ```json
@@ -150,13 +132,9 @@ To use the dialogue XML you have created, you simply need to reference it in the
 
 # Dialogue Config
 
-___
-
 To view the options for the dialogue prop, check [the schema]({{ "Celestial Body Schema"|route }}#Props_dialogue)
 
 # Controlling Conditions
-
-___
 
 You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentCondition>` tags
 
@@ -171,24 +149,16 @@ You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentC
 
 # Dialogue Options
 
-___
-
 There are many control structures for dialogue options to hide/reveal them if conditions are met. Take a look at [the DialogueOption schema]({{ "Dialogue Schema"|route }}#DialogueTree-DialogueNode-DialogueOptionsList-DialogueOption-DialogueTarget) for more info.
 
 # Controlling Flow
-
-___
 
 In addition to `<DialogueOptions>`, there are other ways to control the flow of the conversation.
 
 ## DialogueTarget
 
-___
-
 Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueOption>` will make the conversation go directly to that target after the character is done talking.
 
 ## DialogueTargetShipLogCondition
-
-___
 
 Used in tandum with `DialogueTarget`, makes it so you must have a [ship log fact]({{ "Ship Log"|route }}#explore-facts) to go to the next node.
