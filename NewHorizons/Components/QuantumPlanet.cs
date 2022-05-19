@@ -107,6 +107,8 @@ namespace NewHorizons.Components
                 if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
 
                 _currentIndex = newIndex;
+
+                GlobalMessenger<OWRigidbody>.FireEvent("QuantumMoonChangeState", _rb);
             }
 
             // Be completely sure we move the visibility tracker back to our planet

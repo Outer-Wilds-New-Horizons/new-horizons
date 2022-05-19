@@ -1,19 +1,26 @@
 ﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Orbital
 {
     public static class OrbitlineBuilder
     {
+        private static Material _dottedLineMaterial;
+        private static Material _lineMaterial;
+
         public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
         {
+            if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
+            if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
+
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.material = new Material(config.Orbit.DottedOrbitLine ? _dottedLineMaterial : _lineMaterial);
             lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
 
             var width = config.Orbit.DottedOrbitLine ? 100 : 50;
@@ -53,12 +60,14 @@ namespace NewHorizons.Builder.Orbital
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
             else if (config.Star != null) color = config.Star.Tint.ToColor32();
             else if (config.Atmosphere != null && config.Atmosphere.CloudTint != null) color = config.Atmosphere.CloudTint.ToColor32();
-            else if (config.Base.BlackHoleSize != 0 || config.Singularity != null) color = new Color(1f, 0.5f, 1f);
-            else if (config.Base.WaterSize != 0) color = new Color(0.5f, 0.5f, 1f);
-            else if (config.Base.LavaSize != 0) color = new Color(1f, 0.5f, 0.5f);
+            else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
+            else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
+            else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);
             else if (config.Atmosphere != null && config.Atmosphere.FogTint != null) color = config.Atmosphere.FogTint.ToColor32();
 
             var fade = isMoon;
+
+            /*
             if (config.Base.IsSatellite)
             {
                 if (config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
@@ -66,6 +75,7 @@ namespace NewHorizons.Builder.Orbital
                 orbitLine._fadeEndDist = 5000;
                 orbitLine._fadeStartDist = 3000;
             }
+            */
 
             orbitLine._color = color;
 

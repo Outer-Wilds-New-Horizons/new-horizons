@@ -4,7 +4,7 @@ namespace NewHorizons.External.Modules
     public class BaseModule
     {
         public bool HasMapMarker { get; set; }
-        public bool HasAmbientLight { get; set; }
+        public float AmbientLight { get; set; }
         public float SurfaceGravity { get; set; }
         public string GravityFallOff { get; set; } = "linear";
         public float SurfaceSize { get; set; }
@@ -18,12 +18,13 @@ namespace NewHorizons.External.Modules
         public bool InvulnerableToSun { get; set; }
         public bool ShowMinimap { get; set; } = true;
 
-
-        // Obsolete
-        public bool IsSatellite { get; set; }
-        public float BlackHoleSize { get; set; } 
-        public float LavaSize { get; set; } 
-        public float WaterSize { get; set; } 
-        public MColor WaterTint { get; set; } 
+        #region Obsolete
+        [System.Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")] public bool IsSatellite { get; set; }
+        [System.Obsolete("BlackHoleSize is deprecated, please use SingularityModule instead")] public float BlackHoleSize { get; set; }
+        [System.Obsolete("LavaSize is deprecated, please use LavaModule instead")] public float LavaSize { get; set; }
+        [System.Obsolete("WaterTint is deprecated, please use WaterModule instead")] public float WaterSize { get; set; }
+        [System.Obsolete("WaterTint is deprecated, please use WaterModule instead")] public MColor WaterTint { get; set; }
+        [System.Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")] public bool HasAmbientLight { get; set; }
+        #endregion Obsolete
     }
 }

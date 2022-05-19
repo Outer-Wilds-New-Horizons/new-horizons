@@ -18,7 +18,16 @@ namespace NewHorizons.Builder.General
                 spawnGO.transform.localPosition = module.PlayerSpawnPoint;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
-                spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - planetGO.transform.position).normalized);
+                
+                if(module.PlayerSpawnRotation != null)
+                {
+                    spawnGO.transform.rotation = Quaternion.Euler(module.PlayerSpawnRotation);
+                }
+                else
+                {
+                    spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - planetGO.transform.position).normalized);
+                }
+
                 spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
             }
             if (module.ShipSpawnPoint != null)
@@ -34,9 +43,17 @@ namespace NewHorizons.Builder.General
 
                 var ship = GameObject.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;
-                ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
-                // Move it up a bit more
-                ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
+                
+                if(module.ShipSpawnRotation != null)
+                {
+                    ship.transform.rotation = Quaternion.Euler(module.ShipSpawnRotation);
+                }
+                else
+                {
+                    ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
+                    // Move it up a bit more when aligning to surface
+                    ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
+                }
 
                 ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
 

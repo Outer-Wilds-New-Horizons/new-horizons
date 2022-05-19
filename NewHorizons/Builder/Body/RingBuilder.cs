@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Body
             var ringShape = ringVolume.AddComponent<RingShape>();
             ringShape.innerRadius = ring.InnerRadius;
             ringShape.outerRadius = ring.OuterRadius;
-            ringShape.height = 2f;
+            ringShape.height = 20f;
             ringShape.center = Vector3.zero;
             ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
             ringShape.SetLayer(Shape.Layer.Default);
@@ -59,7 +59,7 @@ namespace NewHorizons.Builder.Body
             }
 
             sfv._fluidType = fluidType;
-            sfv._density = 1f;
+            sfv._density = 5f;
 
             ringVolume.SetActive(true);
 
