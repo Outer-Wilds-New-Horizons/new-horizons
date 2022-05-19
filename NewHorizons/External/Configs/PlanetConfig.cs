@@ -32,9 +32,9 @@ namespace NewHorizons.External.Configs
         public SandModule Sand { get; set; }
         public FunnelModule Funnel { get; set; }
 
-        // Obsolete
-        public string[] ChildrenToDestroy { get; set; }
-
+        #region Obsolete
+        [System.Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")] public string[] ChildrenToDestroy { get; set; }
+        #endregion Obsolete
 
         public PlanetConfig()
         {
@@ -48,6 +48,9 @@ namespace NewHorizons.External.Configs
         {
             if (Base.CenterOfSolarSystem) Orbit.IsStatic = true;
 
+            // Backwards compatability
+            // Should be the only place that obsolete things are referenced
+            #pragma warning disable 612, 618
             if (Base.WaterSize != 0)
             {
                 Water = new WaterModule();
@@ -77,6 +80,12 @@ namespace NewHorizons.External.Configs
             {
                 RemoveChildren = ChildrenToDestroy;
             }
+
+            if (Base.HasAmbientLight)
+            {
+                Base.AmbientLight = 0.5f;
+            }
+            #pragma warning restore 612, 618
         }
     }
 }

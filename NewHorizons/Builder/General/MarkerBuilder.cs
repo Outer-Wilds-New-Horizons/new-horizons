@@ -24,10 +24,12 @@ namespace NewHorizons.Builder.General
             {
                 markerType = MapMarker.MarkerType.HourglassTwins;
             }
+            /*
             else if (config.Base.IsSatellite)
             {
                 markerType = MapMarker.MarkerType.Probe;
             }
+            */
 
             mapMarker._markerType = markerType;
         }

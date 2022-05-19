@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.General
 
             var type = AstroObject.Type.Planet;
             if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
-            else if (config.Base.IsSatellite) type = AstroObject.Type.Satellite;
+            // else if (config.Base.IsSatellite) type = AstroObject.Type.Satellite;
             else if (config.Base.HasCometTail) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
             else if (config.FocalPoint != null) type = AstroObject.Type.None;
