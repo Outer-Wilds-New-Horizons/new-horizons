@@ -25,6 +25,11 @@
       "description": "Should the player be sent back in time after 22 minutes?",
       "default": true
     },
+    "mapRestricted": {
+      "type": "bool",
+      "description": "Should the player be unable to use their map in this system?",
+      "default": false
+    },
     "skybox": {
       "type": "object",
       "description": "Options for the skybox of your system",

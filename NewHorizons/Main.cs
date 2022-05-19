@@ -228,8 +228,6 @@ namespace NewHorizons
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
 
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
-
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
                 HasWarpDrive = StarChartHandler.CanWarp();
@@ -237,20 +235,9 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
-                if (IsWarping && _shipWarpController)
-                {
-                    Instance.ModHelper.Events.Unity.RunWhen(
-                        () => IsSystemReady,
-                        () => _shipWarpController.WarpIn(WearingSuit)
-                    );
-                }
-                else
-                {
-                    Instance.ModHelper.Events.Unity.RunWhen(
-                        () => IsSystemReady,
-                        () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint)
-                    );
-                }
+                var shouldWarpIn = IsWarping && _shipWarpController != null;
+                Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpIn));
+
                 IsWarping = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
@@ -273,6 +260,15 @@ namespace NewHorizons
                     _currentStarSystem = _defaultStarSystem;
                 }
             }
+        }
+
+        // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
+        private void OnSystemReady(bool shouldWarpIn)
+        {
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+
+            if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
+            else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
         }
 
         public void EnableWarpDrive()

@@ -7,6 +7,7 @@
         public bool destroyStockPlanets = true;
         public string factRequiredForWarp;
         public bool enableTimeLoop = true;
+        public bool mapRestricted;
         public NomaiCoordinates coords;
         public SkyboxConfig skybox;
 

@@ -21,5 +21,19 @@ namespace NewHorizons.Patches
         {
             __instance._isLockedOntoMapSatellite = true;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MapController), nameof(MapController.MapInoperable))]
+        public static bool MapController_MapInoperable(MapController __instance, ref bool __result)
+        {
+            if(Main.SystemDict[Main.Instance.CurrentStarSystem]?.Config?.mapRestricted ?? false)
+            {
+                __instance._playerMapRestricted = true;
+                __result = true;
+                return false;
+            }
+
+            return true;
+        }
     }
 }
