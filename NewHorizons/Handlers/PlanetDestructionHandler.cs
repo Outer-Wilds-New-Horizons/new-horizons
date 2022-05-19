@@ -73,6 +73,12 @@ namespace NewHorizons.Handlers
                 {
                     case AstroObject.Name.BrittleHollow:
                         RemoveBody(AstroObjectLocator.GetAstroObject(AstroObject.Name.WhiteHole.ToString()), delete, toDestroy);
+                        // Might prevent leftover fragments from existing
+                        // Might also prevent people from using their own detachable fragments however
+                        foreach(var fragment in GameObject.FindObjectsOfType<DetachableFragment>())
+                        {
+                            DisableBody(fragment.gameObject, delete);
+                        }
                         break;
                     case AstroObject.Name.CaveTwin:
                     case AstroObject.Name.TowerTwin:
@@ -83,6 +89,8 @@ namespace NewHorizons.Handlers
                         DisableBody(GameObject.Find("MapSatellite_Body"), delete);
                         break;
                     case AstroObject.Name.GiantsDeep:
+                        // Might prevent leftover jellyfish from existing
+                        // Might also prevent people from using their own jellyfish however
                         foreach (var jelly in GameObject.FindObjectsOfType<JellyfishController>())
                         {
                             DisableBody(jelly.gameObject, delete);
