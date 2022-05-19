@@ -13,7 +13,7 @@ You can also delete parts of an existing planet. Here's part of an example confi
 ```json
 {
   "name": "Ember Twin",
-  "childrenToDestroy": [
+  "removeChildren": [
     "SandSphere_Rising"
   ]
 }
