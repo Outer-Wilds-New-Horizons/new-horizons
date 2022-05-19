@@ -1099,8 +1099,17 @@
           "$ref": "#/$defs/vector3",
           "description": "If you want the player to spawn on the new body, set a value for this. Press \"P\" in game with Debug mode on to have the game log the position you're looking at to find a good value for this."
         },
+        "playerSpawnRotation": {
+          "$ref": "#/$defs/vector3",
+          "description": "Euler angles by which the player will be oriented."
+        },
         "shipSpawnPoint": {
-          "$ref": "#/$defs/vector3"
+          "$ref": "#/$defs/vector3",
+          "description": "Required for the system to be accessible by warp drive."
+        },
+        "shipSpawnRotation": {
+          "$ref": "#/$defs/vector3",
+          "description": "Euler angles by which the ship will be oriented."
         },
         "startWithSuit": {
           "type": "boolean",
