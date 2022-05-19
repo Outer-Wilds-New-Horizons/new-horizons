@@ -1,12 +1,6 @@
 ﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Body.Geometry
 {
     static class CubeSphere
@@ -14,7 +8,7 @@ namespace NewHorizons.Builder.Body.Geometry
         public static Mesh Build(int resolution, Texture2D heightMap, float minHeight, float maxHeight, Vector3 stretch)
         {
             // It breaks if resolution is greater than 100 I don't know why
-            if(resolution > 100)
+            if (resolution > 100)
             {
                 Logger.LogWarning($"Can't make CubeSphere's with resolution higher than 100 for some reason");
                 resolution = 100;

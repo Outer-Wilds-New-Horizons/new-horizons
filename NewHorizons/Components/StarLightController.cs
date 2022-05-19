@@ -1,12 +1,6 @@
-﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Components
 {
     [RequireComponent(typeof(SunLightController))]
@@ -46,7 +40,7 @@ namespace NewHorizons.Components
                 if (Instance._activeStar != null && Instance._activeStar.Equals(star))
                 {
                     Instance._stars.Remove(star);
-                    if(Instance._stars.Count > 0) Instance.ChangeActiveStar(Instance._stars[0]);
+                    if (Instance._stars.Count > 0) Instance.ChangeActiveStar(Instance._stars[0]);
                 }
                 else
                 {
@@ -66,7 +60,7 @@ namespace NewHorizons.Components
                 return;
             }
 
-            foreach(var star in _stars)
+            foreach (var star in _stars)
             {
                 if (star == null) continue;
 
@@ -89,7 +83,7 @@ namespace NewHorizons.Components
         {
             if (_sunLightController == null || _sunLightParamUpdater == null) return;
 
-            if(_activeStar != null) _activeStar.Disable();
+            if (_activeStar != null) _activeStar.Disable();
 
             Logger.Log($"Switching active star: {star.gameObject.name}");
 
@@ -101,7 +95,7 @@ namespace NewHorizons.Components
             _sunLightController._sunBaseIntensity = star.Intensity;
             _sunLightController._sunLight = star.Light;
             _sunLightController._ambientLight = star.AmbientLight;
-            
+
             _sunLightParamUpdater.sunLight = star.Light;
             _sunLightParamUpdater._sunController = star.transform.GetComponent<SunController>();
             _sunLightParamUpdater._propID_SunPosition = Shader.PropertyToID("_SunPosition");

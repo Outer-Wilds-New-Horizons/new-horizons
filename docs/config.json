@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/Bwc9876/menagerie/master/menagerie/schemas/config_schema.json",
-  "cache_enabled": false,
+  "cache_enabled": true,
   "base_url": "https://nh.outerwildsmods.com/",
   "themes": {
     "bootstrap": "https://bootswatch.com/5/darkly/bootstrap.min.css",
@@ -41,6 +41,7 @@
       }
     ],
     "meta": {
+      "search_console_code": "SafYg2zgXPfpW4MZbkBTpAtuNs5W7N-upr08Kv6tyMo",
       "description": "Documentation on how to use the New Horizons planet creation tool for Outer Wilds.",
       "keywords": [
         "New Horizons",

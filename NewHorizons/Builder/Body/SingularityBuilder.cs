@@ -1,15 +1,9 @@
 ﻿using NewHorizons.Components;
-using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Body
 {
     public static class SingularityBuilder
@@ -23,18 +17,8 @@ namespace NewHorizons.Builder.Body
         private static Shader blackHoleShader = null;
         private static Shader whiteHoleShader = null;
 
-        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, IPlanetConfig config)
+        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config)
         {
-            // Backwards compatibility
-            if(config.Singularity == null)
-            {
-                if(config.Base.BlackHoleSize != 0)
-                {
-                    MakeBlackHole(go, sector, Vector3.zero, config.Base.BlackHoleSize, true, null);
-                }
-                return;
-            }
-
             var size = config.Singularity.Size;
             var pairedSingularity = config.Singularity.PairedSingularity;
 
@@ -63,10 +47,10 @@ namespace NewHorizons.Builder.Body
             }
 
             // Try to pair them
-            if(pairedSingularity != null && newSingularity != null)
+            if (pairedSingularity != null && newSingularity != null)
             {
                 var pairedSingularityAO = AstroObjectLocator.GetAstroObject(pairedSingularity);
-                if(pairedSingularityAO != null)
+                if (pairedSingularityAO != null)
                 {
                     switch (polarity)
                     {
@@ -117,7 +101,7 @@ namespace NewHorizons.Builder.Body
             meshRenderer.material.SetFloat("_MassScale", 1);
             meshRenderer.material.SetFloat("_DistortFadeDist", size * 0.55f);
 
-            if(makeAudio)
+            if (makeAudio)
             {
                 var blackHoleAmbience = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleAmbience"), blackHole.transform);
                 blackHoleAmbience.name = "BlackHoleAmbience";
@@ -196,7 +180,7 @@ namespace NewHorizons.Builder.Body
             ambientLight.name = "AmbientLight";
             ambientLight.GetComponent<Light>().range = size * 7f;
 
-            GameObject whiteHoleVolumeGO  = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVolume"));
+            GameObject whiteHoleVolumeGO = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVolume"));
             whiteHoleVolumeGO.transform.parent = whiteHole.transform;
             whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
             whiteHoleVolumeGO.transform.localScale = Vector3.one;
@@ -207,7 +191,7 @@ namespace NewHorizons.Builder.Body
             whiteHoleFluidVolume._innerRadius = size * 0.5f;
             whiteHoleFluidVolume._outerRadius = size;
             whiteHoleFluidVolume._attachedBody = OWRB;
-           
+
             var whiteHoleVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleVolume>();
             whiteHoleVolume._debrisDistMax = size * 6.5f;
             whiteHoleVolume._debrisDistMin = size * 2f;
@@ -216,13 +200,13 @@ namespace NewHorizons.Builder.Body
             whiteHoleVolume._whiteHoleBody = OWRB;
             whiteHoleVolume._whiteHoleProxyShadowSuperGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             whiteHoleVolume._radius = size * 0.5f;
-            
+
             whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = size;
 
             whiteHoleVolume.enabled = true;
             whiteHoleFluidVolume.enabled = true;
 
-            if(makeZeroGVolume)
+            if (makeZeroGVolume)
             {
                 var zeroGVolume = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/ZeroGVolume"), whiteHole.transform);
                 zeroGVolume.name = "ZeroGVolume";

@@ -1,16 +1,10 @@
 ﻿using NewHorizons.Builder.Body.Geometry;
-using NewHorizons.Builder.Props;
-using NewHorizons.External;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
@@ -27,7 +21,7 @@ namespace NewHorizons.Builder.Body
                 if (module.TextureMap == null) textureMap = Texture2D.whiteTexture;
                 else textureMap = ImageUtilities.GetTexture(mod, module.TextureMap);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Logger.LogError($"Couldn't load HeightMap textures, {e.Message}, {e.StackTrace}");
                 return;
@@ -56,7 +50,7 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
-            if(planetGO.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
+            if (planetGO.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
 
             // Fix rotation in the end
             cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));

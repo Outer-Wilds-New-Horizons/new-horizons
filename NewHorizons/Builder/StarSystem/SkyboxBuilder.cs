@@ -1,11 +1,8 @@
-﻿using System;
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using Object = System.Object;
-
 namespace NewHorizons.Builder.StarSystem
 {
     public class SkyboxBuilder

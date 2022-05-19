@@ -5,14 +5,11 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
-using NewHorizons.External;
-using NewHorizons.External.VariableSize;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -65,7 +62,7 @@ namespace NewHorizons.Handlers
             // Load all planets
             var toLoad = bodies.ToList();
             var newPlanetGraph = new PlanetGraphHandler(toLoad);
-            
+
             foreach (var node in newPlanetGraph)
             {
                 LoadBody(node.body);
@@ -80,11 +77,11 @@ namespace NewHorizons.Handlers
                     toLoad.Remove(focal.secondary.body);
                 }
             }
-            
+
             // Remaining planets are orphaned and either are stock bodies or just incorrectly set up
             var planetGraphs = PlanetGraphHandler.ConstructStockGraph(toLoad.ToArray());
 
-            foreach(var planetGraph in planetGraphs)
+            foreach (var planetGraph in planetGraphs)
             {
                 foreach (var node in planetGraph)
                 {
@@ -103,7 +100,7 @@ namespace NewHorizons.Handlers
             }
 
             // Are there more?
-            foreach(var body in toLoad)
+            foreach (var body in toLoad)
             {
                 LoadBody(body);
             }
@@ -132,7 +129,7 @@ namespace NewHorizons.Handlers
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             // I don't remember doing this why is it exceptions what am I doing
-            GameObject existingPlanet = null; 
+            GameObject existingPlanet = null;
             try
             {
                 existingPlanet = AstroObjectLocator.GetAstroObject(body.Config.Name).gameObject;
@@ -194,7 +191,7 @@ namespace NewHorizons.Handlers
 
                             quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
                         }
-                        catch(Exception ex)
+                        catch (Exception ex)
                         {
                             Logger.LogError($"Couldn't make quantum state for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
                             return false;
@@ -213,7 +210,7 @@ namespace NewHorizons.Handlers
             }
             else
             {
-                if(body.Config.IsQuantumState)
+                if (body.Config.IsQuantumState)
                 {
                     // If the ground state object isn't made yet do it later
                     NextPassBodies.Add(body);
@@ -251,9 +248,9 @@ namespace NewHorizons.Handlers
                 UpdateBodyOrbit(body, go);
             }
 
-            if (body.Config.ChildrenToDestroy != null && body.Config.ChildrenToDestroy.Length > 0)
+            if (body.Config.RemoveChildren != null && body.Config.RemoveChildren.Length > 0)
             {
-                foreach (var child in body.Config.ChildrenToDestroy)
+                foreach (var child in body.Config.RemoveChildren)
                 {
                     Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
@@ -421,26 +418,9 @@ namespace NewHorizons.Handlers
                 CometTailBuilder.Make(go, sector, body.Config);
             }
 
-            // Backwards compatability
-            if (body.Config.Base.LavaSize != 0)
-            {
-                var lava = new LavaModule();
-                lava.Size = body.Config.Base.LavaSize;
-                LavaBuilder.Make(go, sector, rb, lava);
-            }
-
             if (body.Config.Lava != null)
             {
                 LavaBuilder.Make(go, sector, rb, body.Config.Lava);
-            }
-
-            // Backwards compatability
-            if (body.Config.Base.WaterSize != 0)
-            {
-                var water = new WaterModule();
-                water.Size = body.Config.Base.WaterSize;
-                water.Tint = body.Config.Base.WaterTint;
-                WaterBuilder.Make(go, sector, rb, water);
             }
 
             if (body.Config.Water != null)
@@ -492,7 +472,7 @@ namespace NewHorizons.Handlers
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
             }
 
-            if (body.Config.Base.BlackHoleSize != 0 || body.Config.Singularity != null)
+            if (body.Config.Singularity != null)
             {
                 SingularityBuilder.Make(go, sector, rb, body.Config);
             }
@@ -559,7 +539,7 @@ namespace NewHorizons.Handlers
 
                 GameObject.Destroy(go.GetComponentInChildren<OrbitLine>().gameObject);
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
-                if(body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if (body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 
@@ -631,7 +611,7 @@ namespace NewHorizons.Handlers
             if (primaryBody != null)
             {
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
-                var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());;
+                var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
                 go.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
             }

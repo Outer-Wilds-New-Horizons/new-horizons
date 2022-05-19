@@ -1,17 +1,13 @@
-using NewHorizons.External;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
-
 namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextBuilder

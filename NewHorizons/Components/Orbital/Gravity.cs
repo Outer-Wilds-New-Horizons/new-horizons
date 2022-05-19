@@ -1,11 +1,5 @@
-﻿using NewHorizons.External;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
-
 namespace NewHorizons.Components.Orbital
 {
     public class Gravity
@@ -19,7 +13,7 @@ namespace NewHorizons.Components.Orbital
             Mass = mass;
         }
 
-        public Gravity(BaseModule module) 
+        public Gravity(BaseModule module)
         {
             var surfaceAcceleration = module.SurfaceGravity;
             var upperSurfaceRadius = module.SurfaceSize;
@@ -31,7 +25,7 @@ namespace NewHorizons.Components.Orbital
 
         public Gravity(GravityVolume gv)
         {
-            if(gv == null)
+            if (gv == null)
             {
                 Mass = 0;
                 Power = 2;

@@ -1,18 +1,13 @@
 ﻿using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
-using NewHorizons.External;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Random = UnityEngine.Random;
 using Logger = NewHorizons.Utility.Logger;
-
+using Random = UnityEngine.Random;
 namespace NewHorizons.Components
 {
     public class QuantumPlanet : QuantumObject
@@ -64,7 +59,7 @@ namespace NewHorizons.Components
             var canChange = false;
 
             var oldState = states[_currentIndex];
-            
+
             // This will all get set in the for loop
             State newState = oldState;
             int newIndex = _currentIndex;
@@ -106,7 +101,7 @@ namespace NewHorizons.Components
                 }
             }
 
-            if(canChange)
+            if (canChange)
             {
                 if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
                 if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
@@ -128,11 +123,13 @@ namespace NewHorizons.Components
 
         private void SetNewOrbit(AstroObject primaryBody, OrbitalParameters orbitalParameters)
         {
-
-
             _astroObject._primaryBody = primaryBody;
             DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
+            _detector._activeInheritedDetector = primaryBody.GetComponentInChildren<ForceDetector>();
+            _detector._activeVolumes = new List<EffectVolume>() { primaryBody.GetGravityVolume() };
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
+
+            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.Eccentricity, orbitalParameters.SemiMajorAxis, orbitalParameters.Inclination, orbitalParameters.ArgumentOfPeriapsis, orbitalParameters.LongitudeOfAscendingNode, orbitalParameters.TrueAnomaly);
 
             PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
 
@@ -141,7 +138,7 @@ namespace NewHorizons.Components
                 Physics.SyncTransforms();
             }
 
-            _rb.SetVelocity(orbitalParameters.InitialVelocity);
+            _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
         }
 
         private void OnPlayerBlink()

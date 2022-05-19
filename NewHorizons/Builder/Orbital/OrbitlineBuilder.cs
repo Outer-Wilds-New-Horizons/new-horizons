@@ -1,17 +1,11 @@
-﻿using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Utils;
-using UnityEngine;
+﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.Orbital;
-using System;
-
+using UnityEngine;
 namespace NewHorizons.Builder.Orbital
 {
     public static class OrbitlineBuilder
     {
-        public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, IPlanetConfig config)
+        public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
         {
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
@@ -21,7 +15,7 @@ namespace NewHorizons.Builder.Orbital
 
             lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
             lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
-            
+
             var width = config.Orbit.DottedOrbitLine ? 100 : 50;
             lineRenderer.startWidth = width;
             lineRenderer.endWidth = width;
@@ -36,7 +30,7 @@ namespace NewHorizons.Builder.Orbital
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-            if(config.Orbit.TrackingOrbitLine || (new Gravity(parentGravity).Power == 1 && ecc != 0))
+            if (config.Orbit.TrackingOrbitLine || (new Gravity(parentGravity).Power == 1 && ecc != 0))
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }
@@ -67,12 +61,12 @@ namespace NewHorizons.Builder.Orbital
             var fade = isMoon;
             if (config.Base.IsSatellite)
             {
-                if(config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
+                if (config.Orbit.Tint != null) color = new Color(0.4082f, 0.516f, 0.4469f, 1f);
                 fade = true;
                 orbitLine._fadeEndDist = 5000;
                 orbitLine._fadeStartDist = 3000;
             }
-            
+
             orbitLine._color = color;
 
             orbitLine._astroObject = astroObject;

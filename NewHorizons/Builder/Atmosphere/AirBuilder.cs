@@ -1,8 +1,5 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
+﻿using NewHorizons.External.Modules;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AirBuilder
@@ -26,7 +23,7 @@ namespace NewHorizons.Builder.Atmosphere
             SFV._allowShipAutoroll = true;
             SFV._disableOnStart = false;
 
-            if(info.HasOxygen)
+            if (info.HasOxygen)
             {
                 airGO.AddComponent<OxygenVolume>();
             }

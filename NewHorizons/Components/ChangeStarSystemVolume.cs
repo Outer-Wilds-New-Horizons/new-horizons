@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.Components
+﻿namespace NewHorizons.Components
 {
     public class ChangeStarSystemVolume : BlackHoleDestructionVolume
     {
@@ -18,7 +12,7 @@ namespace NewHorizons.Components
 
         public override void VanishShip(OWRigidbody shipBody, RelativeLocationData entryLocation)
         {
-            if(PlayerState.IsInsideShip()) Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, true);
+            if (PlayerState.IsInsideShip()) Main.Instance.ChangeCurrentStarSystem(TargetSolarSystem, true);
         }
 
         public override void VanishPlayer(OWRigidbody playerBody, RelativeLocationData entryLocation)

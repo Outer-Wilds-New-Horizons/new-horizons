@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace NewHorizons.Utility
 {
     public class MColor

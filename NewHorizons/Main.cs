@@ -1,32 +1,21 @@
-﻿using NewHorizons.Builder.Body;
-using NewHorizons.Builder.General;
-using NewHorizons.Builder.Orbital;
+﻿using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
-using NewHorizons.External;
 using NewHorizons.External.Configs;
-using NewHorizons.External.VariableSize;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
-using OWML.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OWML.Common.Menus;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Atmosphere;
-using UnityEngine.Events;
-using HarmonyLib;
-using System.Reflection;
-
 namespace NewHorizons
 {
     public class Main : ModBehaviour
@@ -106,7 +95,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
@@ -390,13 +379,15 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                config.Validate();
+
                 Logger.Log($"Loaded {config.Name}");
-                if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
+
                 if (!SystemDict.ContainsKey(config.StarSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
-                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
+                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.StarSystem}. Why wasn't this loaded earlier?");
 
                     var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);

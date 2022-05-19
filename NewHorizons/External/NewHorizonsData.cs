@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NewHorizons.Handlers;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External
@@ -30,7 +26,7 @@ namespace NewHorizons.External
                 _activeProfile = _saveFile.Profiles[_activeProfileName];
                 Logger.Log($"Loaded save data for {_activeProfileName}");
             }
-            catch(Exception)
+            catch (Exception)
             {
                 try
                 {
@@ -41,7 +37,7 @@ namespace NewHorizons.External
                     Main.Instance.ModHelper.Storage.Save(_saveFile, _fileName);
                     Logger.Log($"Loaded save data for {_activeProfileName}");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     Logger.LogError($"Couldn't create save data {e.Message}, {e.StackTrace}");
                 }
@@ -66,8 +62,8 @@ namespace NewHorizons.External
 
             Save();
         }
-        
-        # region Frequencies
+
+        #region Frequencies
 
         public static bool KnowsFrequency(string frequency)
         {
@@ -84,16 +80,16 @@ namespace NewHorizons.External
                 Save();
             }
         }
-        
+
         public static bool KnowsMultipleFrequencies()
         {
             return (_activeProfile != null && _activeProfile.KnownFrequencies.Count > 0);
         }
-        
-        # endregion
 
-        # region Signals
-        
+        #endregion
+
+        #region Signals
+
         public static bool KnowsSignal(string signal)
         {
             if (_activeProfile == null) return true;
@@ -109,10 +105,10 @@ namespace NewHorizons.External
                 Save();
             }
         }
-        
-        # endregion
-        
-        # region Newly Revealed Facts
+
+        #endregion
+
+        #region Newly Revealed Facts
 
         public static void AddNewlyRevealedFactID(string id)
         {
@@ -130,8 +126,8 @@ namespace NewHorizons.External
             _activeProfile?.NewlyRevealedFactIDs.Clear();
             Save();
         }
-        
-        # endregion
+
+        #endregion
 
         private class NewHorizonsSaveFile
         {
@@ -154,7 +150,7 @@ namespace NewHorizons.External
 
             public List<string> KnownFrequencies { get; set; }
             public List<string> KnownSignals { get; set; }
-            
+
             public List<string> NewlyRevealedFactIDs { get; set; }
         }
     }

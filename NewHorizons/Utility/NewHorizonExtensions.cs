@@ -4,7 +4,6 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-
 namespace NewHorizons.Utility
 {
     public static class NewHorizonsExtensions
@@ -85,7 +84,8 @@ namespace NewHorizons.Utility
                 try
                 {
                     targetProperty.SetValue(destination, srcProp.GetValue(source, null), null);
-                }  catch(Exception)
+                }
+                catch (Exception)
                 {
                     Logger.LogWarning($"Couldn't copy property {targetProperty.Name} from {source} to {destination}");
                 }

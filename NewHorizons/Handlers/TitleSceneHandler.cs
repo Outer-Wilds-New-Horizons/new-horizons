@@ -1,14 +1,11 @@
 ﻿using NewHorizons.Builder.Body;
-using NewHorizons.External;
-using NewHorizons.External.VariableSize;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {

@@ -1,15 +1,10 @@
-﻿using System;
+﻿using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
-using UnityEngine.UI;
-using OWML.Common;
-using NewHorizons.Handlers;
-
 namespace NewHorizons.Components
 {
     public class ShipLogStarChartMode : ShipLogMode
@@ -112,7 +107,7 @@ namespace NewHorizons.Components
         private void OnEnterFlightConsole(OWRigidbody _)
         {
             _isAtFlightConsole = true;
-            if(_target != null)
+            if (_target != null)
             {
                 _warpPrompt.SetVisibility(true);
             }
@@ -131,7 +126,7 @@ namespace NewHorizons.Components
 
         private void OnGameUnpaused()
         {
-            if(_target != null && _isAtFlightConsole)
+            if (_target != null && _isAtFlightConsole)
             {
                 _warpPrompt.SetVisibility(true);
             }
@@ -175,7 +170,7 @@ namespace NewHorizons.Components
             }
             catch (Exception) { }
 
-            if(texture != null)
+            if (texture != null)
             {
                 shipLogEntryCard._photo.sprite = MakeSprite((Texture2D)texture);
                 newCard.transform.Find("EntryCardRoot/EntryCardBackground/PhotoImage").gameObject.SetActive(true);
@@ -321,9 +316,9 @@ namespace NewHorizons.Components
 
         private void RemoveWarpTarget(bool playSound = false)
         {
-            if(_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
+            if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
             if (_target == null) return;
-            if(playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
+            if (playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
             _target.SetMarkedOnHUD(false);
             _target = null;
 

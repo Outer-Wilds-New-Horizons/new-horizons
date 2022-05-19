@@ -3,12 +3,8 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Handlers
 {
     public static class PlanetDestructionHandler
@@ -213,9 +209,9 @@ namespace NewHorizons.Handlers
 
             if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
             if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
-            
+
             if (distantProxy == null && distantProxyClone == null)
-                    Logger.Log($"Couldn't find proxy for {name}");
+                Logger.Log($"Couldn't find proxy for {name}");
         }
     }
 }

@@ -1,16 +1,11 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.Utility;
-using OWML.ModHelper;
-using OWML.Common;
-using NewHorizons.Handlers;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder

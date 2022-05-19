@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
+﻿using UnityEngine;
 namespace NewHorizons.Components
 {
     public class StarController : MonoBehaviour
@@ -15,7 +9,7 @@ namespace NewHorizons.Components
         public CSMTextureCacher CSMTextureCacher;
         public ProxyShadowLight ProxyShadowLight;
         public float Intensity;
-        public Color SunColor;       
+        public Color SunColor;
 
         public void Awake()
         {

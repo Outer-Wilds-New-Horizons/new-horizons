@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace NewHorizons.Components
+﻿namespace NewHorizons.Components
 {
     public class TornadoFix : SectoredMonoBehaviour
     {
@@ -19,7 +12,7 @@ namespace NewHorizons.Components
 
             tornadoController._formationDuration = 1f;
             tornadoController._collapseDuration = 1f;
-            if(_sector != null)
+            if (_sector != null)
             {
                 _sector.OnOccupantEnterSector += OnOccupantEnterSector;
                 _sector.OnOccupantExitSector += OnOccupantExitSector;
@@ -28,7 +21,7 @@ namespace NewHorizons.Components
 
         public new void SetSector(Sector sector)
         {
-            if(_sector != null)
+            if (_sector != null)
             {
                 _sector.OnOccupantEnterSector -= OnOccupantEnterSector;
                 _sector.OnOccupantExitSector -= OnOccupantExitSector;
