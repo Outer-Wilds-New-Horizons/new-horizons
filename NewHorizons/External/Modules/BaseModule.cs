@@ -4,7 +4,9 @@ namespace NewHorizons.External.Modules
     public class BaseModule
     {
         public bool HasMapMarker { get; set; }
+        [System.Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
         public bool HasAmbientLight { get; set; }
+        public float AmbientLight { get; set; }
         public float SurfaceGravity { get; set; }
         public string GravityFallOff { get; set; } = "linear";
         public float SurfaceSize { get; set; }

@@ -209,10 +209,10 @@
           "default": false,
           "description": "If the body should have a marker on the map screen."
         },
-        "hasAmbientLight": {
-          "type": "boolean",
-          "default": false,
-          "description": "If the dark side of the body should have some slight amount of light"
+        "ambientLight": {
+          "type": "number",
+          "default": 0,
+          "description": "The intensity of light the dark side of the body should have. Timber Hearth has 1.4 for reference"
         },
         "surfaceGravity": {
           "type": "number",
