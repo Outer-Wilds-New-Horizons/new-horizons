@@ -1,19 +1,26 @@
 ﻿using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Orbital
 {
     public static class OrbitlineBuilder
     {
+        private static Material _dottedLineMaterial;
+        private static Material _lineMaterial;
+
         public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
         {
+            if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
+            if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
+
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = config.Orbit.DottedOrbitLine ? GameObject.Find("HearthianMapSatellite_Body/OrbitLine").GetComponent<LineRenderer>().material : GameObject.Find("OrbitLine_CO").GetComponent<LineRenderer>().material;
+            lineRenderer.material = new Material(config.Orbit.DottedOrbitLine ? _dottedLineMaterial : _lineMaterial);
             lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
 
             var width = config.Orbit.DottedOrbitLine ? 100 : 50;
