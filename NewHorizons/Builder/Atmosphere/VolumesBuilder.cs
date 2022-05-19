@@ -36,6 +36,8 @@ namespace NewHorizons.Builder.Atmosphere
             PR._useMinimap = useMiniMap;
             PR._useAltimeter = useMiniMap;
 
+            rulesetGO.AddComponent<AntiTravelMusicRuleset>();
+
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
             var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
