@@ -14,7 +14,6 @@ namespace NewHorizons.Components.SizeControllers
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
         public bool willExplode;
-
         public MColor startColour { get; set; }
         public MColor endColour { get; set; }
 
@@ -148,13 +147,20 @@ namespace NewHorizons.Components.SizeControllers
             if (!_isCollapsing)
             {
                 base.FixedUpdate();
-
-                // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
-                var t = ageValue;
-                if(maxScale > 0) t = CurrentScale / maxScale;
-                currentColour = Color.Lerp(_startColour, _endColour, t);
-
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                
+                // Only do colour transition stuff if they set an end colour
+                if (endColour != null)
+                {
+                    // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
+                    var t = ageValue;
+                    if (maxScale > 0) t = CurrentScale / maxScale;
+                    currentColour = Color.Lerp(_startColour, _endColour, t);
+                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                }
+                else
+                {
+                    currentColour = _startColour;
+                }
             }
             else
             {

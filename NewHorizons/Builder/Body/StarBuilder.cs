@@ -197,12 +197,19 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(0.5f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
+                var mod = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
                 var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
                 surface.sharedMaterial.color = adjustedColour;
 
                 Color.RGBToHSV(adjustedColour, out float H, out float S, out float V);
-                var darkenedColor = Color.HSVToRGB(H, S, V * 0.05f);
+                var darkenedColor = Color.HSVToRGB(H, S * 1.2f, V * 0.05f);
+
+                if (starModule.EndTint != null)
+                {
+                    var endColour = starModule.EndTint.ToColor();
+                    darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
+                }
+
                 surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
