@@ -5,8 +5,6 @@ Sort_Priority: 90
 
 ## Details/Scatterer
 
-___
-
 For physical objects there are currently two ways of setting them up: specify an asset bundle and path to load a custom asset you created, or specify the path to the item you want to copy from the game in the scene hierarchy. Use the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer){ target="_blank" } mod to find an object you want to copy onto your new body. Some objects work better than others for this. Good luck. Some pointers:
 
 - Use "Object Explorer" to search
@@ -14,8 +12,6 @@ For physical objects there are currently two ways of setting them up: specify an
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
 
 ## Asset Bundles
-
-___
 
 Here is a template project: [Outer Wilds Unity Template](https://github.com/xen-42/outer-wilds-unity-template){ target="_blank" }
 
@@ -55,13 +51,9 @@ public class CreateAssetBundles
 
 ## Importing a planet's surface from Unity
 
-___
-
 Making a planet's entire surface from a Unity prefab is the exact same thing as adding one single big detail at position (0, 0, 0).  
 
 ## Examples
-
-___
 
 To add a Mars rover to the red planet in [RSS](https://github.com/xen-42/outer-wilds-real-solar-system), its model was put in an asset bundle as explained above, and then the following was put into the `Props` module:
 

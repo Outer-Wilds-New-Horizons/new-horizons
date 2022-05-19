@@ -497,7 +497,7 @@
         },
         "curve": {
           "$ref": "#/$defs/curve",
-          "description": "Allows the rings to grow/shrink with time."
+          "description": "Allows the rings to grow/shrink with time. Time is in minutes. Value is a scale multiplier."
         }
       }
     },
@@ -621,7 +621,7 @@
         },
         "curve": {
           "$ref": "#/$defs/curve",
-          "description": "Allows the star to shrink/grow over time."
+          "description": "Allows the star to shrink/grow over time. Time is in minutes. Value is a scale multiplier."
         },
         "goSupernova": {
           "type": "boolean",
@@ -1215,7 +1215,8 @@
           "$ref": "#/$defs/color"
         },
         "curve": {
-          "$ref": "#/$defs/curve"
+          "$ref": "#/$defs/curve",
+          "description": "Allows the water volume to shrink/grow over time. Time is in minutes. Value is a scale multiplier."
         }
       }
     },
@@ -1231,7 +1232,8 @@
           "$ref": "#/$defs/color"
         },
         "curve": {
-          "$ref": "#/$defs/curve"
+          "$ref": "#/$defs/curve",
+          "description": "Allows the lava volume to shrink/grow over time. Time is in minutes. Value is a scale multiplier."
         }
       }
     },
@@ -1247,7 +1249,8 @@
           "$ref": "#/$defs/color"
         },
         "curve": {
-          "$ref": "#/$defs/curve"
+          "$ref": "#/$defs/curve",
+          "description": "Allows the sand volume to shrink/grow over time. Time is in minutes. Value is a scale multiplier."
         }
       }
     },
@@ -1273,7 +1276,8 @@
           "$ref": "#/$defs/color"
         },
         "curve": {
-          "$ref": "#/$defs/curve"
+          "$ref": "#/$defs/curve",
+          "description": "Allows the funnel width to shrink/grow over time. Time is in minutes. Value is a scale multiplier."
         }
       }
     },

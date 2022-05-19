@@ -7,19 +7,18 @@ Sort_Priority: 100
 ![New Horizons Logo]({{ 'images/home/home_logo.webp'|static }})
 
 # Outer Wilds New Horizons
-___
         
 This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
 
 ## Getting Started
-___
 
 Before starting, go into your in-game mod settings for New Horizons and switch Debug mode on. This allows you to:
 
 - Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place details.
 - Use the "Reload Configs" button in the pause menu. This will restart the current solar system and update all the planets. Much faster than quitting and relaunching the game.
 
-Please get [VSCode](https://code.visualstudio.com/){ target="_blank" } or some other advanced text editor, as it will help highlight common errors.
+!!! alert-danger "Get VSCode"
+    Please get [VSCode](https://code.visualstudio.com/){ target="_blank" } or some other advanced text editor, as it will help highlight common errors.
 
 Planets are created using a JSON file format structure, and placed in a folder called planets (or in any subdirectory of it) in the location where New Horizons is installed (by default this folder doesn't exist, you have to create it within the xen.NewHorizons directory). You can learn how the configs work by picking apart the [Real Solar System](https://github.com/xen-42/outer-wilds-real-solar-system){ target="_blank" } mod or the [New Horizons Examples](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" } mod.
 
@@ -38,7 +37,7 @@ look something like this:
 ```json
 {
   "name": "Wetrock",
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json",
+  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
   "starSystem": "SolarSystem",
   "Base": {
     "groundSize": 100,
@@ -118,12 +117,10 @@ To see all the different things you can put into a config file check out the [Ce
 Check out the rest of the site for how to format [star system]({{ 'Star System Schema'|route}}), [dialogue]({{ 'Dialogue Schema'|route}}), [ship log]({{ 'Shiplog Schema'|route}}), and [translation]({{ 'Translation Schema'|route}}) files!
 
 ## Publishing Your Mod
-___
 
 Once your mod is complete, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme){ target="_blank" } GitHub template.
 
 ## Helpful Resources
-___
 
 The texturemap/heightmap feature was inspired by the Kerbal Space Program mod Kopernicus. A lot of the same techniques that apply to
 planet creation there apply to New Horizons. If you need help with planetary texturing, check out [The KSP texturing guide](https://forum.kerbalspaceprogram.com/index.php?/topic/165285-planetary-texturing-guide-repository/){ target="_blank" }.
@@ -132,7 +129,6 @@ planet creation there apply to New Horizons. If you need help with planetary tex
 rectangular-to-polar coordinate transformation, useful for fixing abnormalities at the poles of your planets. 
 
 ### Helpful Mods
-___
 
 These mods are useful when developing your addon
 
@@ -141,7 +137,6 @@ These mods are useful when developing your addon
 - [Save Editor](https://outerwildsmods.com/mods/saveeditor){ target="_blank" } - Useful when creating a custom [ship log]({{ "Ship Log"|route }}), can be used to reveal all custom facts so you can see them in the ship's computer
 
 ### Helpful Tools
-___
 
 These tools/references are highly recommended
 
