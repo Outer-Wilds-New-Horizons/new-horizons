@@ -88,7 +88,7 @@
         "additionalProperties": false,
         "properties": {
           "time": {
-            "type": "integer",
+            "type": "number",
             "default": 0
           },
           "value": {
