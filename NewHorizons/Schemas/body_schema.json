@@ -608,6 +608,10 @@
           "$ref": "#/$defs/color",
           "description": "Colour of the light given off."
         },
+        "supernovaTint": {
+          "$ref": "#/$defs/color",
+          "description": "The tint of the supernova"
+        },
         "solarLuminosity": {
           "type": "number",
           "minimum": 0,
