@@ -123,7 +123,7 @@ namespace NewHorizons.Builder.Body
             var supernova = MakeSupernova(starGO, starModule);
 
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if(starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.Size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
@@ -178,9 +178,17 @@ namespace NewHorizons.Builder.Body
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
 
-            if (starModule.SolarFlareTint != null)
+            if (starModule.Tint != null)
             {
-                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor();
+                var flareTint = starModule.Tint.ToColor();
+                var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
+                emitter.tint = flareTint;
+                foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
+                {
+                    // It multiplies color by tint but wants something very bright idk
+                    controller._color = new Color(20, 20, 20);
+                    controller._tint = flareTint;
+                }
             }
 
             starGO.transform.position = rootObject.transform.position;
@@ -226,7 +234,7 @@ namespace NewHorizons.Builder.Body
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
             supernova._supernovaVolume = null;
 
-            if(starModule.SupernovaTint != null)
+            if (starModule.SupernovaTint != null)
             {
                 var colour = starModule.SupernovaTint.ToColor();
 

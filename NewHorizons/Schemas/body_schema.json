@@ -600,10 +600,6 @@
           "$ref": "#/$defs/color",
           "description": "Colour of the star at the end of its life."
         },
-        "solarFlareTint": {
-          "$ref": "#/$defs/color",
-          "description": "Colour of the solar flares. The shader is a bit weird so the value you put won't exactly reflect what you see. Try experimenting with different colours to see what works."
-        },
         "lightTint": {
           "$ref": "#/$defs/color",
           "description": "Colour of the light given off."

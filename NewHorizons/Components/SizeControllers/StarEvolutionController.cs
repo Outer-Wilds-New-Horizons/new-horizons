@@ -24,6 +24,7 @@ namespace NewHorizons.Components.SizeControllers
         private MeshRenderer[] _atmosphereRenderers;
         private HeatHazardVolume _heatVolume;
         private DestructionVolume _destructionVolume;
+        private SolarFlareEmitter _flareEmitter;
 
         private bool _isCollapsing;
         private float _collapseStartSize;
@@ -91,10 +92,12 @@ namespace NewHorizons.Components.SizeControllers
 
             if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
-            if(scaleCurve != null)
+            if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
             }
+
+            _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
         }
 
         public void OnDestroy()
@@ -147,7 +150,7 @@ namespace NewHorizons.Components.SizeControllers
             if (!_isCollapsing)
             {
                 base.FixedUpdate();
-                
+
                 // Only do colour transition stuff if they set an end colour
                 if (endColour != null)
                 {
@@ -161,6 +164,8 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     currentColour = _startColour;
                 }
+
+                if (_flareEmitter != null) _flareEmitter._tint = currentColour;
             }
             else
             {
