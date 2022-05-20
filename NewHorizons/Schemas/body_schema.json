@@ -822,6 +822,11 @@
                 "$ref": "#/$defs/vector3",
                 "description": "The position of this volcano."
               },
+              "scale": {
+                "type": "number",
+                "description": "The scale of the meteors.",
+                "default": 1
+              },
               "stoneTint": {
                 "$ref": "#/$defs/color",
                 "description": "The colour of the meteor's stone."
