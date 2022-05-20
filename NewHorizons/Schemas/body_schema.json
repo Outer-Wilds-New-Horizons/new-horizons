@@ -666,6 +666,11 @@
           "type": "boolean",
           "default": true,
           "description": "Should this star explode after 22 minutes?"
+        },
+        "hasStarController": {
+          "type": "boolean",
+          "default": true,
+          "description": "Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false."
         }
       }
     },

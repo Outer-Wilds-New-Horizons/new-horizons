@@ -105,7 +105,7 @@ namespace NewHorizons.Builder.Body
             proxyShadowLight._light = light;
 
             StarController starController = null;
-            if (starModule.SolarLuminosity != 0)
+            if (starModule.SolarLuminosity != 0 && starModule.HasStarController)
             {
                 starController = planetGO.AddComponent<StarController>();
                 starController.Light = light;

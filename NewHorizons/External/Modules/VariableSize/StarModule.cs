@@ -24,5 +24,6 @@ namespace NewHorizons.External.Modules.VariableSize
 
         [DefaultValue(true)] 
         public bool GoSupernova { get; set; } = true;
+        public bool HasStarController { get; set; } = true;
     }
 }
