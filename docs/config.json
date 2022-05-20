@@ -8,8 +8,7 @@
     "theme": "dark"
   },
   "styles": {
-    "base": "styles/base.css",
-    "schema": "styles/schema.css"
+    "base": "styles/nh_base.css"
   },
   "search": {
     "enabled": true,
