@@ -72,7 +72,7 @@ namespace NewHorizons.Builder.Body
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
-            fluidVolume._layer = LayerMask.NameToLayer("BassicEffectVolume");
+            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
