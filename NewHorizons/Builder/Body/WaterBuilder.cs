@@ -3,6 +3,7 @@ using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
+using Tessellation;
 
 namespace NewHorizons.Builder.Body
 {
@@ -21,7 +22,7 @@ namespace NewHorizons.Builder.Body
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
-            TSR.tessellationMeshGroup = new Tessellation.MeshGroup();
+            TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
             for (int i = 0; i < 16; i++)
             {
                 var mesh = new Mesh();
