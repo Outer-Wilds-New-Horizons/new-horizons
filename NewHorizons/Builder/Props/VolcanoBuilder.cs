@@ -45,6 +45,8 @@ namespace NewHorizons.Builder.Props
         }
         private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
         {
+            meteor.transform.localScale = Vector3.one * info.scale;
+
             var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
             mat.SetColor("_Color", info.stoneTint == null ? defaultStoneTint : info.stoneTint.ToColor());
             mat.SetColor("_EmissionColor", info.lavaTint == null ? defaultLavaTint : info.lavaTint.ToColor());

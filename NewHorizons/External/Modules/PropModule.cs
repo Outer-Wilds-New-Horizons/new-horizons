@@ -66,6 +66,7 @@ namespace NewHorizons.External.Modules
         public class VolcanoInfo
         {
             public MVector3 position = null;
+            public float scale = 1;
             public MColor stoneTint = null;
             public MColor lavaTint = null;
             public float minLaunchSpeed = 50f;
