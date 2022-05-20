@@ -1,23 +1,24 @@
-﻿using UnityEngine;
+﻿using NewHorizons.External.Configs;
+using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
         public static void Make(GameObject planetGO, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
-            GameObject rfGO = new GameObject("RFVolume");
+            var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
             rfGO.layer = 19;
             rfGO.SetActive(false);
 
-            SphereCollider SC = rfGO.AddComponent<SphereCollider>();
+            var SC = rfGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
             SC.radius = sphereOfInfluence * 2;
 
-            ReferenceFrameVolume RFV = rfGO.AddComponent<ReferenceFrameVolume>();
+            var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
-            ReferenceFrame RV = new ReferenceFrame(owRigidBody);
+            var RV = new ReferenceFrame(owRigidBody);
             RV._minSuitTargetDistance = sphereOfInfluence;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
