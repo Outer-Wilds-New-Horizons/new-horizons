@@ -411,7 +411,7 @@ NewHorizons/Properties/**
 # Docs
 docs/out/**
 docs/content/schemas/**
-docs/schemas/**
+docs/content/pages/[Ss]chemas/**
 docs/.m_cache/**
 
 # Unity project
