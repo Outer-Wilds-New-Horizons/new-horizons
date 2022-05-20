@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Body
                     GeometryBuilder.Make(newProxy, null, body.Config.Base.GroundSize);
                     if (realSize < body.Config.Base.GroundSize) realSize = body.Config.Base.GroundSize;
                 }
-                if (body.Config.Atmosphere?.Cloud != null)
+                if (body.Config.Atmosphere?.Clouds != null)
                 {
                     CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod);
                     if (realSize < body.Config.Atmosphere.Size) realSize = body.Config.Atmosphere.Size;

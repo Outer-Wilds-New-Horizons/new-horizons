@@ -375,7 +375,7 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                config.Validate();
+                config.MigrateAndValidate();
 
                 Logger.Log($"Loaded {config.Name}");
 
@@ -397,7 +397,7 @@ namespace NewHorizons
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message}, is your Json formatted correctly?");
+                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message} {e.StackTrace}, is your Json formatted correctly?");
             }
 
             return body;

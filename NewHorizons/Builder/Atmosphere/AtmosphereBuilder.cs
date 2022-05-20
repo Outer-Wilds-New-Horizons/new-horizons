@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.Atmosphere
             atmoGO.SetActive(false);
             atmoGO.transform.parent = sector?.transform ?? planetGO.transform;
 
-            if (atmosphereModule.HasAtmosphere)
+            if (atmosphereModule.UseAtmosphereShader)
             {
                 GameObject atmo = GameObject.Instantiate(GameObject.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"));
                 atmo.transform.parent = atmoGO.transform;
@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Atmosphere
                 atmo.transform.localScale = Vector3.one * atmosphereModule.Size * 1.2f;
                 foreach (var meshRenderer in atmo.GetComponentsInChildren<MeshRenderer>())
                 {
-                    meshRenderer.material.SetFloat("_InnerRadius", atmosphereModule.Cloud != null ? atmosphereModule.Size : surfaceSize);
+                    meshRenderer.material.SetFloat("_InnerRadius", atmosphereModule.Clouds != null ? atmosphereModule.Size : surfaceSize);
                     meshRenderer.material.SetFloat("_OuterRadius", atmosphereModule.Size * 1.2f);
                     if (atmosphereModule.AtmosphereTint != null)
                         meshRenderer.material.SetColor("_SkyColor", atmosphereModule.AtmosphereTint.ToColor());
