@@ -863,7 +863,7 @@
               },
               "scale": {
                 "type": "number",
-                "description": "The scale of the meteors",
+                "description": "The scale of the meteors.",
                 "default": 1
               },
               "stoneTint": {
