@@ -102,6 +102,9 @@ namespace NewHorizons.Builder.Props
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
+            // Resize it so the force volume goes all the way up
+            tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 1.5f, 1);
+
             if (info.tint != null)
             {
                 var colour = info.tint.ToColor();
