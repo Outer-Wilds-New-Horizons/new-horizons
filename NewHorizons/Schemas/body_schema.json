@@ -1097,12 +1097,12 @@
               },
               "wanderDegreesX": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the azimuthal angle (angle of rotation around the polar axis).",
                 "default": 45
               },
               "wanderDegreesZ": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the polar angle (angle between the radial vector and the polar axis).",
                 "default": 45
               }
             }
