@@ -220,11 +220,11 @@
         },
         "menagerie-docs": {
             "hashes": [
-                "sha256:3c077dad0d6adab98de908d7ce8df3b8ea1a0616d4d2fb9fea53199605cb1385",
-                "sha256:e2922420f1fea70f6f0521a18a1cca3f6679cdd1bdeeaab426afa45c71fbe3b6"
+                "sha256:5f02204f4c8a6a3eee947ee4c91266159b567fd8e22d69be43531ef2e4a99f6a",
+                "sha256:ad69a97a65a73ad3f2be0f28638b74d1a6af68a5ce00c7b9726a9e0e89bb3d82"
             ],
             "index": "pypi",
-            "version": "==0.1.7"
+            "version": "==0.1.8"
         },
         "mypy-extensions": {
             "hashes": [
