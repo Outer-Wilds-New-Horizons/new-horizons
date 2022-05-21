@@ -14,7 +14,7 @@ namespace NewHorizons.Utility
         public int R { get; }
         public int G { get; }
         public int B { get; }
-        public int A { get; }
+        public int A { get; } = 255;
 
         public Color32 ToColor32() => new Color32((byte)R, (byte)G, (byte)B, (byte)A);
 
