@@ -79,7 +79,6 @@ namespace NewHorizons.Builder.Props
             audioSource.playOnAwake = true;
 
             var scale = info.height == 0 ? 1 : info.height / 10f;
-
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
@@ -103,7 +102,15 @@ namespace NewHorizons.Builder.Props
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
             // Resize it so the force volume goes all the way up
-            tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 1.5f, 1);
+            switch (info.downwards)
+            {
+                case true:
+                    tornadoGO.transform.Find("MockDownTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
+                    break;
+                default:
+                    tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
+                    break;
+            }
 
             if (info.tint != null)
             {
