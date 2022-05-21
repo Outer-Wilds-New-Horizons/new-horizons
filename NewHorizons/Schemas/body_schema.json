@@ -1086,9 +1086,14 @@
                 "$ref": "#/$defs/color",
                 "description": "The colour of the tornado."
               },
-              "downwards": {
-                "type": "boolean",
-                "description": "Should it pull things downwards? Will push them upwards by default."
+              "type": {
+                "type": "string",
+                "enum": [
+                  "downwards",
+                  "upwards",
+                  "hurricane"
+                ],
+                "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction."
               },
               "wanderRate": {
                 "type": "number",
