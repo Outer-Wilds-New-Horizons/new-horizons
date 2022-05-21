@@ -145,3 +145,13 @@ These tools/references are highly recommended
 - [XML Basics Tutorial](https://www.w3schools.com/xml/xml_whatis.asp){ target="_blank" }
 - [JSON Basics Tutorial](https://www.tutorialspoint.com/json/index.htm){ target="_blank" }
 - [The Examples Mod](https://github.com/xen-42/ow-new-horizons-examples){ target="_blank" }
+
+## Disclaimer
+
+This work is unofficial fan content created under permission from the [Mobius Digital Fan Content Policy](https://www.mobiusdigitalgames.com/fan-content-policy.html). It includes materials which are the property of Mobius Digital, and it is neither approved nor endorsed by Mobius Digital.  
+
+We are not responsible for any mods created using the New Horizons modding framework and assume no responsibility in the event an addon violates the terms.
+
+## License
+
+The license for this project is available [on the GitHub repository](https://github.com/xen-42/outer-wilds-new-horizons/blob/main/LICENSE).
