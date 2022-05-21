@@ -1,14 +1,48 @@
-﻿namespace NewHorizons.External.Modules.VariableSize
+﻿using Newtonsoft.Json;
+
+namespace NewHorizons.External.Modules.VariableSize
 {
+    [JsonObject]
     public class RingModule : VariableSizeModule
     {
-        public float InnerRadius { get; set; }
-        public float OuterRadius { get; set; }
-        public float Inclination { get; set; }
-        public float LongitudeOfAscendingNode { get; set; }
-        public string Texture { get; set; }
-        public bool Unlit { get; set; } = false;
-        public float RotationSpeed { get; set; } = 0f;
-        public string FluidType { get; set; }
+        /// <summary>
+        /// Inner radius of the disk
+        /// </summary>
+        public float InnerRadius;
+        
+        /// <summary>
+        /// Outer radius of the disk
+        /// </summary>
+        public float OuterRadius;
+        
+        /// <summary>
+        /// Angle between the rings and the equatorial plane of the planet.
+        /// </summary>
+        public float Inclination;
+        
+        /// <summary>
+        /// Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.
+        /// </summary>
+        public float LongitudeOfAscendingNode;
+        
+        /// <summary>
+        /// Relative filepath to the texture used for the rings.
+        /// </summary>
+        public string Texture;
+        
+        /// <summary>
+        /// Should this ring be unlit?
+        /// </summary>
+        public bool Unlit;
+        
+        /// <summary>
+        /// Allows the rings to rotate.
+        /// </summary>
+        public float RotationSpeed;
+
+        /// <summary>
+        /// Fluid type for sounds/effects when colliding with this ring.
+        /// </summary>
+        public CloudFluidType? FluidType = CloudFluidType.None;
     }
 }

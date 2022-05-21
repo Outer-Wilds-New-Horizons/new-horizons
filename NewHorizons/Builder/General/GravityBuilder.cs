@@ -1,4 +1,5 @@
 ﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -7,7 +8,7 @@ namespace NewHorizons.Builder.General
     {
         public static GravityVolume Make(GameObject planetGO, AstroObject ao, PlanetConfig config)
         {
-            var exponent = config.Base.GravityFallOff.Equals("linear") ? 1f : 2f;
+            var exponent = config.Base.GravityFallOff == GravityFallOff.Linear ? 1f : 2f;
             var GM = config.Base.SurfaceGravity * Mathf.Pow(config.Base.SurfaceSize, exponent);
 
             // Gravity limit will be when the acceleration it would cause is less than 0.1 m/s^2
@@ -37,10 +38,8 @@ namespace NewHorizons.Builder.General
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
             gravityVolume._cutoffAcceleration = 0.1f;
 
-            GravityVolume.FalloffType falloff = GravityVolume.FalloffType.linear;
-            if (config.Base.GravityFallOff.ToUpper().Equals("LINEAR")) falloff = GravityVolume.FalloffType.linear;
-            else if (config.Base.GravityFallOff.ToUpper().Equals("INVERSESQUARED")) falloff = GravityVolume.FalloffType.inverseSquared;
-            else Logger.LogError($"Couldn't set gravity type {config.Base.GravityFallOff}. Must be either \"linear\" or \"inverseSquared\". Defaulting to linear.");
+            var falloff = config.Base.GravityFallOff == GravityFallOff.Linear? GravityVolume.FalloffType.linear : GravityVolume.FalloffType.inverseSquared;
+            
             gravityVolume._falloffType = falloff;
 
             // Radius where your feet turn to the planet

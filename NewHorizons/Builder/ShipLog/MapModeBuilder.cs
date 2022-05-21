@@ -5,6 +5,7 @@ using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
@@ -511,8 +512,13 @@ namespace NewHorizons.Builder.ShipLog
         {
             try
             {
-                if (body.Config?.Singularity?.Type == "BlackHole") return Color.black;
-                if (body.Config?.Singularity?.Type == "WhiteHole") return Color.white;
+                switch (body.Config?.Singularity?.Type)
+                {
+                    case SingularityModule.SingularityType.BlackHole:
+                        return Color.black;
+                    case SingularityModule.SingularityType.WhiteHole:
+                        return Color.white;
+                }
 
                 var starColor = body.Config?.Star?.Tint;
                 if (starColor != null) return starColor.ToColor();

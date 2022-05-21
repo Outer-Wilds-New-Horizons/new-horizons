@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Body
                     SurfaceGravity = 1,
                     SurfaceSize = size,
                     HasReferenceFrame = false,
-                    GravityFallOff = "inverseSquared"
+                    GravityFallOff = GravityFallOff.InverseSquared
                 };
 
                 config.Orbit = new OrbitModule()

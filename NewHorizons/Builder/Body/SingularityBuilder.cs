@@ -2,17 +2,13 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
+using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body
 {
     public static class SingularityBuilder
     {
-        enum Polarity
-        {
-            BlackHole,
-            WhiteHole
-        }
 
         private static Shader blackHoleShader = null;
         private static Shader whiteHoleShader = null;
@@ -22,11 +18,7 @@ namespace NewHorizons.Builder.Body
             var size = config.Singularity.Size;
             var pairedSingularity = config.Singularity.PairedSingularity;
 
-            var polarity = Polarity.BlackHole;
-            if (config.Singularity.Type != null && config.Singularity.Type.ToUpper().Equals("WHITEHOLE"))
-            {
-                polarity = Polarity.WhiteHole;
-            }
+            var polarity = config.Singularity.Type;
 
             bool isWormHole = config.Singularity?.TargetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
@@ -38,10 +30,10 @@ namespace NewHorizons.Builder.Body
             GameObject newSingularity = null;
             switch (polarity)
             {
-                case Polarity.BlackHole:
+                case SingularityModule.SingularityType.BlackHole:
                     newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.TargetStarSystem);
                     break;
-                case Polarity.WhiteHole:
+                case SingularityModule.SingularityType.WhiteHole:
                     newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, makeZeroGVolume);
                     break;
             }
@@ -54,10 +46,10 @@ namespace NewHorizons.Builder.Body
                 {
                     switch (polarity)
                     {
-                        case Polarity.BlackHole:
+                        case SingularityModule.SingularityType.BlackHole:
                             PairSingularities(newSingularity, pairedSingularityAO.gameObject);
                             break;
-                        case Polarity.WhiteHole:
+                        case SingularityModule.SingularityType.WhiteHole:
                             PairSingularities(pairedSingularityAO.gameObject, newSingularity);
                             break;
                     }

@@ -1,8 +1,13 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json;
+using UnityEngine;
 namespace NewHorizons.External.Modules.VariableSize
 {
+    [JsonObject]
     public class VariableSizeModule 
     {
+        /// <summary>
+        /// Scale this module over time
+        /// </summary>
         public TimeValuePair[] Curve { get; set; }
 
         public class TimeValuePair

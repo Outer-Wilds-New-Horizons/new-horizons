@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
@@ -46,11 +47,11 @@ namespace NewHorizons.Builder.Body
             var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
             var fluidType = FluidVolume.Type.NONE;
 
-            if (!string.IsNullOrEmpty(ring.FluidType))
+            if (ring.FluidType != null)
             {
                 try
                 {
-                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), ring.FluidType.ToUpper());
+                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.FluidType).ToUpper());
                 }
                 catch (Exception ex)
                 {

@@ -89,7 +89,7 @@ namespace NewHorizons.Builder.Body
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Singularity != null)
                 {
-                    if (body.Config.Singularity.Type == "BlackHole")
+                    if (body.Config.Singularity.Type == SingularityModule.SingularityType.BlackHole)
                     {
                         MakeBlackHole(newProxy, body.Config.Singularity.Size);
                     }

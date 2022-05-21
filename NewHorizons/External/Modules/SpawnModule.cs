@@ -1,12 +1,34 @@
 ﻿using NewHorizons.Utility;
+using Newtonsoft.Json;
+
 namespace NewHorizons.External.Modules
 {
+    [JsonObject]
     public class SpawnModule
     {
-        public MVector3 PlayerSpawnPoint { get; set; }
-        public MVector3 PlayerSpawnRotation { get; set; }
-        public MVector3 ShipSpawnPoint { get; set; }
-        public MVector3 ShipSpawnRotation { get; set; }
-        public bool StartWithSuit { get; set; }
+        /// <summary>
+        /// If you want the player to spawn on the new body, set a value for this. Press `P` in game with Debug mode on to have the game log the position you're looking at to find a good value for this.
+        /// </summary>
+        public MVector3 PlayerSpawnPoint;
+        
+        /// <summary>
+        /// Euler angles by which the player will be oriented.
+        /// </summary>
+        public MVector3 PlayerSpawnRotation;
+        
+        /// <summary>
+        /// Required for the system to be accessible by warp drive.
+        /// </summary>
+        public MVector3 ShipSpawnPoint;
+        
+        /// <summary>
+        /// Euler angles by which the ship will be oriented.
+        /// </summary>
+        public MVector3 ShipSpawnRotation;
+        
+        /// <summary>
+        /// If you spawn on a planet with no oxygen, you probably want to set this to true ;;)
+        /// </summary>
+        public bool StartWithSuit;
     }
 }

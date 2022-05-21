@@ -1,4 +1,5 @@
-﻿using NewHorizons.Components;
+﻿using System.Runtime.Serialization;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -8,26 +9,16 @@ namespace NewHorizons.Builder.Body
 {
     public static class FunnelBuilder
     {
-        private enum FunnelType
-        {
-            SAND,
-            WATER,
-            LAVA,
-            STAR
-        }
 
         public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
-            var funnelType = FunnelType.SAND;
-            if (module.Type.ToUpper().Equals("WATER")) funnelType = FunnelType.WATER;
-            else if (module.Type.ToUpper().Equals("LAVA")) funnelType = FunnelType.LAVA;
-            else if (module.Type.ToUpper().Equals("STAR")) funnelType = FunnelType.STAR;
+            var funnelType = module.Type;
 
             var funnelGO = new GameObject($"{planetGO.name.Replace("_Body", "")}Funnel_Body");
             funnelGO.SetActive(false);
             funnelGO.transform.parent = planetGO.transform;
 
-            var owrb = funnelGO.AddComponent<OWRigidbody>();
+            funnelGO.AddComponent<OWRigidbody>();
 
             var matchMotion = funnelGO.AddComponent<MatchInitialMotion>();
             matchMotion.SetBodyToMatch(rigidbody);
@@ -61,10 +52,10 @@ namespace NewHorizons.Builder.Body
             var fluidVolume = sfv.gameObject;
             switch (funnelType)
             {
-                case FunnelType.SAND:
+                case FunnelType.Sand:
                     sfv._fluidType = FluidVolume.Type.SAND;
                     break;
-                case FunnelType.WATER:
+                case FunnelType.Water:
                     sfv._fluidType = FluidVolume.Type.WATER;
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
@@ -111,8 +102,8 @@ namespace NewHorizons.Builder.Body
                     */
 
                     break;
-                case FunnelType.LAVA:
-                case FunnelType.STAR:
+                case FunnelType.Lava:
+                case FunnelType.Star:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
@@ -129,12 +120,12 @@ namespace NewHorizons.Builder.Body
                     proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
                     geoGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
 
-                    if (funnelType == FunnelType.LAVA)
+                    if (funnelType == FunnelType.Lava)
                     {
                         lavaMaterial.SetFloat("_HeightScale", 0);
                         AddDestructionVolumes(fluidVolume, DeathType.Lava);
                     }
-                    else if (funnelType == FunnelType.STAR)
+                    else if (funnelType == FunnelType.Star)
                     {
                         lavaMaterial.renderQueue = 2999;
                         lavaMaterial.SetFloat("_HeightScale", 100000);

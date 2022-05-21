@@ -8,23 +8,22 @@ namespace NewHorizons.Builder.ShipLog
     {
         public static void Make(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
-            GameObject newRevealGO = MakeGameObject(go, sector, info, mod);
-            switch (info.revealOn.ToLower())
+            var newRevealGO = MakeGameObject(go, sector, info, mod);
+            switch (info.revealOn)
             {
-                case "enter":
+                case PropModule.RevealInfo.RevealVolumeType.Enter:
                     MakeTrigger(newRevealGO, sector, info, mod);
                     break;
-                case "observe":
+                case PropModule.RevealInfo.RevealVolumeType.Observe:
                     MakeObservable(newRevealGO, sector, info, mod);
                     break;
-                case "snapshot":
+                case PropModule.RevealInfo.RevealVolumeType.Snapshot:
                     MakeSnapshot(newRevealGO, sector, info, mod);
                     break;
                 default:
                     Logger.LogError("Invalid revealOn: " + info.revealOn);
                     break;
             }
-
             newRevealGO.SetActive(true);
         }
 

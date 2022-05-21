@@ -1,41 +1,150 @@
 ﻿using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.Utility;
-using UnityEngine;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Configs
 {
+    /// <summary>
+    /// A planet or body to generate
+    /// </summary>
+    [JsonObject]
     public class PlanetConfig
     {
-        public string Name { get; set; }
-        public string Version { get; set; }
-        public string StarSystem { get; set; } = "SolarSystem";
-        public bool Destroy { get; set; }
-        public string[] RemoveChildren { get; set; }
-        public int BuildPriority { get; set; } = -1;
-        public bool CanShowOnTitle { get; set; } = true;
-        public bool IsQuantumState { get; set; }
-        public BaseModule Base { get; set; }
-        public AtmosphereModule Atmosphere { get; set; }
-        public OrbitModule Orbit { get; set; }
-        public RingModule Ring { get; set; }
-        public HeightMapModule HeightMap { get; set; }
-        public ProcGenModule ProcGen { get; set; }
-        public AsteroidBeltModule AsteroidBelt { get; set; }
-        public StarModule Star { get; set; }
-        public FocalPointModule FocalPoint { get; set; }
-        public PropModule Props { get; set; }
-        public ShipLogModule ShipLog { get; set; }
-        public SpawnModule Spawn { get; set; }
-        public SignalModule Signal { get; set; }
-        public SingularityModule Singularity { get; set; }
-        public LavaModule Lava { get; set; }
-        public WaterModule Water { get; set; }
-        public SandModule Sand { get; set; }
-        public FunnelModule Funnel { get; set; }
+        /// <summary>
+        /// Unique name of your planet
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        /// Version of New Horizons this config is using (Doesn't do anything)
+        /// </summary>
+        public string Version;
+
+        /// <summary>
+        /// Unique star system containing your planet
+        /// </summary>
+        public string StarSystem = "SolarSystem";
+
+        /// <summary>
+        /// `true` if you want to delete this planet
+        /// </summary>
+        public bool Destroy;
+        
+        /// <summary>
+        /// A list of paths to child GameObjects to destroy on this planet
+        /// </summary>
+        public string[] RemoveChildren;
+        
+        /// <summary>
+        /// Set to a higher number if you wish for this body to be built sooner
+        /// </summary>
+        public int BuildPriority = -1;
+        
+        /// <summary>
+        /// Should this planet ever be shown on the title screen?
+        /// </summary>
+        public bool CanShowOnTitle = true;
+        
+        /// <summary>
+        /// Does this config describe a quantum state of a custom planet defined in another file?
+        /// </summary>
+        public bool IsQuantumState;
+        
+        /// <summary>
+        /// Base Properties of this Body
+        /// </summary>
+        public BaseModule Base;
+        
+        /// <summary>
+        /// Describes this Body's atmosphere
+        /// </summary>
+        public AtmosphereModule Atmosphere;
+        
+        /// <summary>
+        /// Describes this Body's orbit (or lack there of)
+        /// </summary>
+        public OrbitModule Orbit;
+        
+        /// <summary>
+        /// Creates a ring around the planet
+        /// </summary>
+        public RingModule Ring;
+        
+        /// <summary>
+        /// Generate the surface of this planet using a heightmap
+        /// </summary>
+        public HeightMapModule HeightMap;
+        
+        /// <summary>
+        /// Procedural Generation
+        /// </summary>
+        public ProcGenModule ProcGen;
+        
+        /// <summary>
+        /// Generate asteroids around this body
+        /// </summary>
+        public AsteroidBeltModule AsteroidBelt;
+        
+        /// <summary>
+        /// Make this body a star
+        /// </summary>
+        public StarModule Star;
+        
+        /// <summary>
+        /// Make this body into a focal point (barycenter)
+        /// </summary>
+        public FocalPointModule FocalPoint;
+        
+        /// <summary>
+        /// Spawn various objects on this body
+        /// </summary>
+        public PropModule Props;
+        
+        /// <summary>
+        /// Add ship log entries to this planet and describe how it looks in map mode
+        /// </summary>
+        public ShipLogModule ShipLog;
+        
+        /// <summary>
+        /// Spawn the player at this planet
+        /// </summary>
+        public SpawnModule Spawn;
+        
+        /// <summary>
+        /// Add signals that can be heard via the signal-scope to this planet
+        /// </summary>
+        public SignalModule Signal;
+        
+        /// <summary>
+        /// Add a black or white hole to this planet
+        /// </summary>
+        public SingularityModule Singularity;
+        
+        /// <summary>
+        /// Add lava to this planet
+        /// </summary>
+        public LavaModule Lava;
+        
+        /// <summary>
+        /// Add water to this planet
+        /// </summary>
+        public WaterModule Water;
+        
+        /// <summary>
+        /// Add sand to this planet
+        /// </summary>
+        public SandModule Sand;
+        
+        /// <summary>
+        /// Add funnel from this planet to another
+        /// </summary>
+        public FunnelModule Funnel;
 
         #region Obsolete
-        [System.Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")] public string[] ChildrenToDestroy { get; set; }
+
+        [System.Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
+        public string[] ChildrenToDestroy;
+
         #endregion Obsolete
 
         public PlanetConfig()
@@ -57,22 +166,28 @@ namespace NewHorizons.External.Configs
 #pragma warning disable 612, 618
             if (Base.WaterSize != 0)
             {
-                Water = new WaterModule();
-                Water.Size = Base.WaterSize;
-                Water.Tint = Base.WaterTint;
+                Water = new WaterModule
+                {
+                    Size = Base.WaterSize,
+                    Tint = Base.WaterTint
+                };
             }
 
             if (Base.LavaSize != 0)
             {
-                Lava = new LavaModule();
-                Lava.Size = Base.LavaSize;
+                Lava = new LavaModule
+                {
+                    Size = Base.LavaSize
+                };
             }
 
             if (Base.BlackHoleSize != 0)
             {
-                Singularity = new SingularityModule();
-                Singularity.Type = "BlackHole";
-                Singularity.Size = Base.BlackHoleSize;
+                Singularity = new SingularityModule
+                {
+                    Type = SingularityModule.SingularityType.BlackHole,
+                    Size = Base.BlackHoleSize
+                };
             }
 
             if (Base.IsSatellite)
@@ -102,7 +217,7 @@ namespace NewHorizons.External.Configs
                         TexturePath = Atmosphere.Cloud,
                         CapPath = Atmosphere.CloudCap,
                         RampPath = Atmosphere.CloudRamp,
-                        FluidType = Atmosphere.CloudFluidType,
+                        FluidType = Atmosphere.FluidType,
                         UseBasicCloudShader = Atmosphere.UseBasicCloudShader,
                         Unlit = !Atmosphere.ShadowsOnClouds,
                     };

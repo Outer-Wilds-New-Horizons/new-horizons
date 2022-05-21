@@ -14,9 +14,18 @@ namespace NewHorizons.Builder.Props
         private static GameObject _autoPrefab;
         public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (info.type == "autoProjector") MakeAutoProjector(go, sector, info, mod);
-            else if (info.type == "slideReel") MakeSlideReel(go, sector, info, mod);
-            else Logger.LogError($"Invalid projection type {info.type}");
+            switch (info.type)
+            {
+                case PropModule.ProjectionInfo.SlideShowType.AutoProjector:
+                    MakeAutoProjector(go, sector, info, mod);
+                    break;
+                case PropModule.ProjectionInfo.SlideShowType.SlideReel:
+                    MakeSlideReel(go, sector, info, mod);
+                    break;
+                default:
+                    Logger.LogError($"Invalid projection type {info.type}");
+                    break;
+            }
         }
 
         private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)

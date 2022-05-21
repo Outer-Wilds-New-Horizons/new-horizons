@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Orbital
         {
             var surfaceAcceleration = config.Base.SurfaceGravity;
             var upperSurfaceRadius = config.Base.SurfaceSize;
-            int falloffExponent = config.Base.GravityFallOff.ToUpper().Equals("LINEAR") ? 1 : 2;
+            int falloffExponent = config.Base.GravityFallOff == GravityFallOff.Linear ? 1 : 2;
 
             return surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT;
         }
