@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Props
         private static GameObject upPrefab;
         private static GameObject downPrefab;
         private static GameObject soundPrefab;
+        private static readonly int DetailColor = Shader.PropertyToID("_DetailColor");
+        private static readonly int TintColor = Shader.PropertyToID("_TintColor");
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
@@ -108,8 +110,8 @@ namespace NewHorizons.Builder.Props
                 foreach (var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
                 {
                     renderer.material.color = colour;
-                    renderer.material.SetColor("_DetailColor", colour);
-                    renderer.material.SetColor("_TintColor", colour);
+                    renderer.material.SetColor(DetailColor, colour);
+                    renderer.material.SetColor(TintColor, colour);
                 }
             }
 

@@ -12,7 +12,7 @@ namespace NewHorizons.Components
             // Temporary solution that i will never get rid of
             transform.position = anchor.position;
 
-            float num = scaleCurve == null ? 1f : scaleCurve.Evaluate(TimeLoop.GetMinutesElapsed());
+            float num = scaleCurve?.Evaluate(TimeLoop.GetMinutesElapsed()) ?? 1f;
 
             var dist = (transform.position - target.position).magnitude;
             transform.localScale = new Vector3(num, num, dist / 500f);

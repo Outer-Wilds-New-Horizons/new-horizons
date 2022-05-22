@@ -9,6 +9,9 @@ namespace NewHorizons.Builder.Body
 {
     public static class WaterBuilder
     {
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
+        private static readonly int Radius2 = Shader.PropertyToID("_Radius2");
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             var waterSize = module.Size;
@@ -101,8 +104,8 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.Size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", module.Size / 2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius, module.Size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius2, module.Size / 2f);
             }
 
             // TODO: make LOD work 

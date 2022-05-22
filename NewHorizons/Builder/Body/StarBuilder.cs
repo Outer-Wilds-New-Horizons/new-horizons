@@ -11,6 +11,12 @@ namespace NewHorizons.Builder.Body
     {
         public const float OuterRadiusRatio = 1.5f;
         private static Texture2D _colorOverTime;
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
+        private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
+        private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
+        private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
         public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
         {
@@ -40,11 +46,11 @@ namespace NewHorizons.Builder.Body
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
-                        lod.material.SetColor("_AtmosFar", starModule.Tint.ToColor());
-                        lod.material.SetColor("_AtmosNear", starModule.Tint.ToColor());
-                        lod.material.SetFloat("_InnerRadius", starModule.Size);
-                        lod.material.SetFloat("_OuterRadius", starModule.Size * OuterRadiusRatio);
+                        lod.material.SetColor(SkyColor, starModule.Tint.ToColor());
+                        lod.material.SetColor(AtmosFar, starModule.Tint.ToColor());
+                        lod.material.SetColor(AtmosNear, starModule.Tint.ToColor());
+                        lod.material.SetFloat(InnerRadius, starModule.Size);
+                        lod.material.SetFloat(OuterRadius, starModule.Size * OuterRadiusRatio);
                     }
                 }
                 fog.transform.localScale = Vector3.one;
@@ -85,15 +91,6 @@ namespace NewHorizons.Builder.Body
 
             Color lightColour = light.color;
             if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor();
-            if (lightColour == null && starModule.Tint != null)
-            {
-                // Lighten it a bit
-                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f);
-                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f);
-                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f);
-                lightColour = new Color(r, g, b);
-            }
-            if (lightColour != null) light.color = (Color)lightColour;
 
             light.color = lightColour;
             ambientLight.color = lightColour;
@@ -218,7 +215,7 @@ namespace NewHorizons.Builder.Body
                     darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
                 }
 
-                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
             return starGO;
@@ -240,7 +237,7 @@ namespace NewHorizons.Builder.Body
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
                 var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white, colour);
-                supernovaMaterial.SetTexture("_ColorRamp", ramp);
+                supernovaMaterial.SetTexture(ColorRamp, ramp);
                 supernova._supernovaMaterial = supernovaMaterial;
 
                 // Motes

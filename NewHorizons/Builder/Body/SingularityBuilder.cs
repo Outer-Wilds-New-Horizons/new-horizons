@@ -16,6 +16,11 @@ namespace NewHorizons.Builder.Body
 
         private static Shader blackHoleShader = null;
         private static Shader whiteHoleShader = null;
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
+        private static readonly int MaxDistortRadius = Shader.PropertyToID("_MaxDistortRadius");
+        private static readonly int MassScale = Shader.PropertyToID("_MassScale");
+        private static readonly int DistortFadeDist = Shader.PropertyToID("_DistortFadeDist");
+        private static readonly int Color1 = Shader.PropertyToID("_Color");
 
         public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config)
         {
@@ -96,10 +101,10 @@ namespace NewHorizons.Builder.Body
             var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
             if (blackHoleShader == null) blackHoleShader = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(blackHoleShader);
-            meshRenderer.material.SetFloat("_Radius", size * 0.4f);
-            meshRenderer.material.SetFloat("_MaxDistortRadius", size * 0.95f);
-            meshRenderer.material.SetFloat("_MassScale", 1);
-            meshRenderer.material.SetFloat("_DistortFadeDist", size * 0.55f);
+            meshRenderer.material.SetFloat(Radius, size * 0.4f);
+            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
+            meshRenderer.material.SetFloat(MassScale, 1);
+            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
 
             if (makeAudio)
             {
@@ -167,11 +172,11 @@ namespace NewHorizons.Builder.Body
             var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
             if (whiteHoleShader == null) whiteHoleShader = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(whiteHoleShader);
-            meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
-            meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);
-            meshRenderer.sharedMaterial.SetFloat("_MaxDistortRadius", size * 2.8f);
-            meshRenderer.sharedMaterial.SetFloat("_MassScale", -1);
-            meshRenderer.sharedMaterial.SetColor("_Color", new Color(1.88f, 1.88f, 1.88f, 1f));
+            meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
+            meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
+            meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
+            meshRenderer.sharedMaterial.SetFloat(MassScale, -1);
+            meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
 
             var ambientLight = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/AmbientLight_WH"));
             ambientLight.transform.parent = whiteHole.transform;

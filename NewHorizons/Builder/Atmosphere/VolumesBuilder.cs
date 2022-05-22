@@ -4,6 +4,8 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class VolumesBuilder
     {
+        private static readonly int FogColor = Shader.PropertyToID("_FogColor");
+
         public static void Make(GameObject planetGO, PlanetConfig config, float sphereOfInfluence)
         {
             var innerRadius = config.Base.SurfaceSize;
@@ -42,7 +44,7 @@ namespace NewHorizons.Builder.Atmosphere
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);
             if (config.Atmosphere?.Clouds?.Tint != null)
             {
-                cloudMaterial.SetColor("_FogColor", config.Atmosphere.Clouds.Tint.ToColor32());
+                cloudMaterial.SetColor(FogColor, config.Atmosphere.Clouds.Tint.ToColor32());
             }
             ER._cloudMaterial = cloudMaterial;
 

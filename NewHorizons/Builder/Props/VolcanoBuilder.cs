@@ -7,6 +7,8 @@ namespace NewHorizons.Builder.Props
     {
         private static Color defaultStoneTint = new Color(0.07450981f, 0.07450981f, 0.07450981f);
         private static Color defaultLavaTint = new Color(4.594794f, 0.3419145f, 0f, 1f);
+        private static readonly int Color1 = Shader.PropertyToID("_Color");
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
         {
@@ -48,8 +50,8 @@ namespace NewHorizons.Builder.Props
             meteor.transform.localScale = Vector3.one * info.scale;
 
             var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
-            mat.SetColor("_Color", info.stoneTint == null ? defaultStoneTint : info.stoneTint.ToColor());
-            mat.SetColor("_EmissionColor", info.lavaTint == null ? defaultLavaTint : info.lavaTint.ToColor());
+            mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
+            mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
 
             var detectors = meteor.transform.Find("ConstantDetectors").gameObject;
             GameObject.Destroy(detectors.GetComponent<ConstantForceDetector>());

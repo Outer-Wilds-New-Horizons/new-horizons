@@ -43,9 +43,11 @@ namespace NewHorizons.Builder.Body
             //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
-            cubeSphereMR.material = new Material(PlanetShader);
-            cubeSphereMR.material.name = textureMap.name;
-            cubeSphereMR.material.mainTexture = textureMap;
+            var material = cubeSphereMR.material;
+            material = new Material(PlanetShader);
+            cubeSphereMR.material = material;
+            material.name = textureMap.name;
+            material.mainTexture = textureMap;
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
