@@ -518,7 +518,7 @@ namespace NewHorizons.Builder.ShipLog
                 if (starColor != null) return starColor.ToColor();
 
                 var atmoColor = body.Config.Atmosphere?.AtmosphereTint;
-                if (body.Config.Atmosphere?.Cloud != null && atmoColor != null) return atmoColor.ToColor();
+                if (body.Config.Atmosphere?.Clouds != null && atmoColor != null) return atmoColor.ToColor();
 
                 if (body.Config?.HeightMap?.TextureMap != null)
                 {

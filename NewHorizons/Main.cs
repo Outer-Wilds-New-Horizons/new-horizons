@@ -5,7 +5,6 @@ using NewHorizons.External.Configs;
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.DebugUtilities;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -228,6 +227,7 @@ namespace NewHorizons
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
+
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
                 HasWarpDrive = StarChartHandler.CanWarp();
@@ -266,9 +266,6 @@ namespace NewHorizons
         private void OnSystemReady(bool shouldWarpIn)
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
-            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
-
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
@@ -378,7 +375,7 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                config.Validate();
+                config.MigrateAndValidate();
 
                 Logger.Log($"Loaded {config.Name}");
 
@@ -396,11 +393,11 @@ namespace NewHorizons
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
 
-                body = new NewHorizonsBody(config, mod, relativeDirectory);
+                body = new NewHorizonsBody(config, mod);
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message}, is your Json formatted correctly?");
+                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message} {e.StackTrace}, is your Json formatted correctly?");
             }
 
             return body;

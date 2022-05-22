@@ -1,5 +1,7 @@
 ﻿using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
+using UnityEngine;
 
 namespace NewHorizons.External.Configs
 {
@@ -44,13 +46,15 @@ namespace NewHorizons.External.Configs
             if (ShipLog == null) ShipLog = new ShipLogModule();
         }
 
-        public void Validate()
+        public void MigrateAndValidate()
         {
+            // Validate
             if (Base.CenterOfSolarSystem) Orbit.IsStatic = true;
+            if (Atmosphere?.Clouds?.LightningGradient != null) Atmosphere.Clouds.HasLightning = true;
 
             // Backwards compatability
             // Should be the only place that obsolete things are referenced
-            #pragma warning disable 612, 618
+#pragma warning disable 612, 618
             if (Base.WaterSize != 0)
             {
                 Water = new WaterModule();
@@ -85,7 +89,46 @@ namespace NewHorizons.External.Configs
             {
                 Base.AmbientLight = 0.5f;
             }
-            #pragma warning restore 612, 618
+
+            if (Atmosphere != null)
+            {
+                if (!string.IsNullOrEmpty(Atmosphere.Cloud))
+                {
+                    Atmosphere.Clouds = new AtmosphereModule.CloudInfo()
+                    {
+                        OuterCloudRadius = Atmosphere.Size,
+                        InnerCloudRadius = Atmosphere.Size * 0.9f,
+                        Tint = Atmosphere.CloudTint,
+                        TexturePath = Atmosphere.Cloud,
+                        CapPath = Atmosphere.CloudCap,
+                        RampPath = Atmosphere.CloudRamp,
+                        FluidType = Atmosphere.CloudFluidType,
+                        UseBasicCloudShader = Atmosphere.UseBasicCloudShader,
+                        Unlit = !Atmosphere.ShadowsOnClouds,
+                    };
+                }
+
+                // Validate
+                if (Atmosphere.Clouds?.LightningGradient != null)
+                {
+                    Atmosphere.Clouds.HasLightning = true;
+                }
+
+                // Former is obsolete, latter is to validate
+                if (Atmosphere.HasAtmosphere || Atmosphere.AtmosphereTint != null)
+                {
+                    Atmosphere.UseAtmosphereShader = true;
+                }
+            }
+
+            if(Props?.Tornados != null)
+            {
+                foreach(var tornado in Props.Tornados)
+                {
+                    if (tornado.downwards) tornado.type = "downwards";
+                }
+            }
+#pragma warning restore 612, 618
         }
     }
 }

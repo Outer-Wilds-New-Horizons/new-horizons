@@ -11,6 +11,12 @@ namespace NewHorizons.Builder.Body
     {
         public const float OuterRadiusRatio = 1.5f;
         private static Texture2D _colorOverTime;
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
+        private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
+        private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
+        private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
         public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
         {
@@ -40,11 +46,11 @@ namespace NewHorizons.Builder.Body
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor("_SkyColor", starModule.Tint.ToColor());
-                        lod.material.SetColor("_AtmosFar", starModule.Tint.ToColor());
-                        lod.material.SetColor("_AtmosNear", starModule.Tint.ToColor());
-                        lod.material.SetFloat("_InnerRadius", starModule.Size);
-                        lod.material.SetFloat("_OuterRadius", starModule.Size * OuterRadiusRatio);
+                        lod.material.SetColor(SkyColor, starModule.Tint.ToColor());
+                        lod.material.SetColor(AtmosFar, starModule.Tint.ToColor());
+                        lod.material.SetColor(AtmosNear, starModule.Tint.ToColor());
+                        lod.material.SetFloat(InnerRadius, starModule.Size);
+                        lod.material.SetFloat(OuterRadius, starModule.Size * OuterRadiusRatio);
                     }
                 }
                 fog.transform.localScale = Vector3.one;
@@ -85,15 +91,6 @@ namespace NewHorizons.Builder.Body
 
             Color lightColour = light.color;
             if (starModule.LightTint != null) lightColour = starModule.LightTint.ToColor();
-            if (lightColour == null && starModule.Tint != null)
-            {
-                // Lighten it a bit
-                var r = Mathf.Clamp01(starModule.Tint.R * 1.5f);
-                var g = Mathf.Clamp01(starModule.Tint.G * 1.5f);
-                var b = Mathf.Clamp01(starModule.Tint.B * 1.5f);
-                lightColour = new Color(r, g, b);
-            }
-            if (lightColour != null) light.color = (Color)lightColour;
 
             light.color = lightColour;
             ambientLight.color = lightColour;
@@ -123,7 +120,7 @@ namespace NewHorizons.Builder.Body
             var supernova = MakeSupernova(starGO, starModule);
 
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if(starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.Size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
@@ -178,9 +175,17 @@ namespace NewHorizons.Builder.Body
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
 
-            if (starModule.SolarFlareTint != null)
+            if (starModule.Tint != null)
             {
-                solarFlareEmitter.GetComponent<SolarFlareEmitter>().tint = starModule.SolarFlareTint.ToColor();
+                var flareTint = starModule.Tint.ToColor();
+                var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
+                emitter.tint = flareTint;
+                foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
+                {
+                    // It multiplies color by tint but wants something very bright idk
+                    controller._color = new Color(20, 20, 20);
+                    controller._tint = flareTint;
+                }
             }
 
             starGO.transform.position = rootObject.transform.position;
@@ -197,13 +202,20 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.Size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(0.5f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
+                var mod = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.SolarLuminosity));
                 var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
                 surface.sharedMaterial.color = adjustedColour;
 
                 Color.RGBToHSV(adjustedColour, out float H, out float S, out float V);
-                var darkenedColor = Color.HSVToRGB(H, S, V * 0.05f);
-                surface.sharedMaterial.SetTexture("_ColorRamp", ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                var darkenedColor = Color.HSVToRGB(H, S * 1.2f, V * 0.05f);
+
+                if (starModule.EndTint != null)
+                {
+                    var endColour = starModule.EndTint.ToColor();
+                    darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
+                }
+
+                surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
             return starGO;
@@ -219,13 +231,13 @@ namespace NewHorizons.Builder.Body
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
             supernova._supernovaVolume = null;
 
-            if(starModule.SupernovaTint != null)
+            if (starModule.SupernovaTint != null)
             {
                 var colour = starModule.SupernovaTint.ToColor();
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
                 var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white, colour);
-                supernovaMaterial.SetTexture("_ColorRamp", ramp);
+                supernovaMaterial.SetTexture(ColorRamp, ramp);
                 supernova._supernovaMaterial = supernovaMaterial;
 
                 // Motes

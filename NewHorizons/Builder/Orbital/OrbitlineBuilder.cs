@@ -59,7 +59,7 @@ namespace NewHorizons.Builder.Orbital
             var color = Color.white;
             if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
             else if (config.Star != null) color = config.Star.Tint.ToColor32();
-            else if (config.Atmosphere != null && config.Atmosphere.CloudTint != null) color = config.Atmosphere.CloudTint.ToColor32();
+            else if (config.Atmosphere?.Clouds?.Tint != null) color = config.Atmosphere.Clouds.Tint.ToColor32();
             else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);

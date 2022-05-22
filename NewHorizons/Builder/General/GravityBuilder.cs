@@ -19,46 +19,50 @@ namespace NewHorizons.Builder.General
             else gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.SurfaceSize);
             if (config.Base.SphereOfInfluence != 0f) gravityRadius = config.Base.SphereOfInfluence;
 
-            GameObject gravityGO = new GameObject("GravityWell");
+            var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
             gravityGO.transform.localPosition = Vector3.zero;
             gravityGO.layer = 17;
             gravityGO.SetActive(false);
 
-            SphereCollider SC = gravityGO.AddComponent<SphereCollider>();
+            var SC = gravityGO.AddComponent<SphereCollider>();
             SC.isTrigger = true;
             SC.radius = gravityRadius;
 
-            OWCollider OWC = gravityGO.AddComponent<OWCollider>();
-            OWC.SetLODActivationMask(DynamicOccupant.Player);
+            var owCollider = gravityGO.AddComponent<OWCollider>();
+            owCollider.SetLODActivationMask(DynamicOccupant.Player);
 
-            OWTriggerVolume OWTV = gravityGO.AddComponent<OWTriggerVolume>();
+            var owTriggerVolume = gravityGO.AddComponent<OWTriggerVolume>();
 
-            GravityVolume GV = gravityGO.AddComponent<GravityVolume>();
-            GV._cutoffAcceleration = 0.1f;
+            var gravityVolume = gravityGO.AddComponent<GravityVolume>();
+            gravityVolume._cutoffAcceleration = 0.1f;
 
             GravityVolume.FalloffType falloff = GravityVolume.FalloffType.linear;
             if (config.Base.GravityFallOff.ToUpper().Equals("LINEAR")) falloff = GravityVolume.FalloffType.linear;
             else if (config.Base.GravityFallOff.ToUpper().Equals("INVERSESQUARED")) falloff = GravityVolume.FalloffType.inverseSquared;
             else Logger.LogError($"Couldn't set gravity type {config.Base.GravityFallOff}. Must be either \"linear\" or \"inverseSquared\". Defaulting to linear.");
-            GV._falloffType = falloff;
+            gravityVolume._falloffType = falloff;
 
-            GV._alignmentRadius = config.Base.SurfaceGravity != 0 ? 1.5f * config.Base.SurfaceSize : 0f;
-            GV._upperSurfaceRadius = config.Base.SurfaceSize;
-            GV._lowerSurfaceRadius = 0;
-            GV._layer = 3;
-            GV._priority = 0;
-            GV._alignmentPriority = 0;
-            GV._surfaceAcceleration = config.Base.SurfaceGravity;
-            GV._inheritable = false;
-            GV._isPlanetGravityVolume = true;
-            GV._cutoffRadius = 0f;
+            // Radius where your feet turn to the planet
+            var alignmentRadius = config.Atmosphere?.Clouds?.OuterCloudRadius ?? 1.5f * config.Base.SurfaceSize;
+            if (config.Base.SurfaceGravity == 0) alignmentRadius = 0;
+
+            gravityVolume._alignmentRadius = alignmentRadius;
+            gravityVolume._upperSurfaceRadius = config.Base.SurfaceSize;
+            gravityVolume._lowerSurfaceRadius = 0;
+            gravityVolume._layer = 3;
+            gravityVolume._priority = 0;
+            gravityVolume._alignmentPriority = 0;
+            gravityVolume._surfaceAcceleration = config.Base.SurfaceGravity;
+            gravityVolume._inheritable = false;
+            gravityVolume._isPlanetGravityVolume = true;
+            gravityVolume._cutoffRadius = 0f;
 
             gravityGO.SetActive(true);
 
-            ao._gravityVolume = GV;
+            ao._gravityVolume = gravityVolume;
 
-            return GV;
+            return gravityVolume;
         }
     }
 }

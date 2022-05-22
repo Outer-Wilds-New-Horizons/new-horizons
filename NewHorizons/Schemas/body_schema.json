@@ -60,18 +60,34 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "R": {
+        "r": {
           "$ref": "#/$defs/colorPart"
         },
-        "G": {
+        "g": {
           "$ref": "#/$defs/colorPart"
         },
-        "B": {
+        "b": {
           "$ref": "#/$defs/colorPart"
         },
-        "A": {
+        "a": {
           "$ref": "#/$defs/colorPart",
           "default": 255
+        }
+      }
+    },
+    "gradient": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "time": {
+            "type": "number",
+            "default": 0
+          },
+          "tint": {
+            "$ref": "#/$defs/color"
+          }
         }
       }
     },
@@ -288,44 +304,6 @@
           "default": 0,
           "description": "Scale height of the atmosphere"
         },
-        "cloudTint": {
-          "$ref": "#/$defs/color",
-          "description": "Colour of the cloud layer. Only relevant if \"cloud\" has a value"
-        },
-        "cloud": {
-          "type": "string",
-          "description": "Relative filepath to the cloud texture, if the planet has clouds."
-        },
-        "cloudCap": {
-          "type": "string",
-          "description": "Relative filepath to the cloud cap texture, if the planet has clouds."
-        },
-        "cloudRamp": {
-          "type": "string",
-          "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. If you don't put anything here it will be auto-generated."
-        },
-        "cloudFluidType": {
-          "type": "string",
-          "default": "CLOUD",
-          "description": "Fluid type for sounds/effects when colliding with this cloud.",
-          "enum": [
-            "NONE",
-            "WATER",
-            "CLOUD",
-            "SAND",
-            "PLASMA"
-          ]
-        },
-        "useBasicCloudShader": {
-          "type": "boolean",
-          "default": false,
-          "description": "Set to `false` in order to use Giant's deep shader. Set to `true` to just apply the cloud texture as is."
-        },
-        "shadowsOnClouds": {
-          "type": "boolean",
-          "default": true,
-          "description": "If the top layer should have shadows. Set to false if you're making a brown dwarf."
-        },
         "fogTint": {
           "$ref": "#/$defs/color",
           "description": "Colour of fog on the planet, if you put fog."
@@ -354,7 +332,7 @@
           "default": false,
           "description": "Lets you survive on the planet without a suit."
         },
-        "hasAtmosphere": {
+        "useAtmosphereShader": {
           "type": "boolean",
           "default": false,
           "description": "Whether we use an atmospheric shader on the planet. Doesn't affect clouds, fog, rain, snow, oxygen, etc. Purely visual."
@@ -362,6 +340,67 @@
         "atmosphereTint": {
           "$ref": "#/$defs/color",
           "description": "Colour of atmospheric shader on the planet."
+        },
+        "clouds": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "outerCloudRadius": {
+              "type": "number",
+              "description": "Radius from the center to the outer layer of the clouds."
+            },
+            "innerCloudRadius": {
+              "type": "number",
+              "description": "Radius from the center to the inner layer of the clouds."
+            },
+            "tint": {
+              "$ref": "#/$defs/color",
+              "description": "Colour of the inner cloud layer."
+            },
+            "texturePath": {
+              "type": "string",
+              "description": "Relative filepath to the cloud texture, if the planet has clouds."
+            },
+            "capPath": {
+              "type": "string",
+              "description": "Relative filepath to the cloud cap texture, if the planet has clouds."
+            },
+            "rampPath": {
+              "type": "string",
+              "description": "Relative filepath to the cloud ramp texture, if the planet has clouds. If you don't put anything here it will be auto-generated."
+            },
+            "fluidType": {
+              "type": "string",
+              "default": "CLOUD",
+              "description": "Fluid type for sounds/effects when colliding with this cloud.",
+              "enum": [
+                "NONE",
+                "WATER",
+                "CLOUD",
+                "SAND",
+                "PLASMA"
+              ]
+            },
+            "useBasicCloudShader": {
+              "type": "boolean",
+              "default": false,
+              "description": "Set to `false` in order to use Giant's deep shader. Set to `true` to just apply the cloud texture as is."
+            },
+            "unlit": {
+              "type": "boolean",
+              "default": false,
+              "description": "If the top layer shouldn't have shadows. Set to true if you're making a brown dwarf for example."
+            },
+            "hasLightning": {
+              "type": "boolean",
+              "default": false,
+              "description": "Add lightning to this planet like on Giant's Deep."
+            },
+            "lightningGradient": {
+              "$ref": "#/$defs/gradient",
+              "description": "Colour gradient of the lightning, time is in seconds."
+            }
+          }
         }
       }
     },
@@ -600,10 +639,6 @@
           "$ref": "#/$defs/color",
           "description": "Colour of the star at the end of its life."
         },
-        "solarFlareTint": {
-          "$ref": "#/$defs/color",
-          "description": "Colour of the solar flares. The shader is a bit weird so the value you put won't exactly reflect what you see. Try experimenting with different colours to see what works."
-        },
         "lightTint": {
           "$ref": "#/$defs/color",
           "description": "Colour of the light given off."
@@ -826,6 +861,11 @@
                 "$ref": "#/$defs/vector3",
                 "description": "The position of this volcano."
               },
+              "scale": {
+                "type": "number",
+                "description": "The scale of the meteors.",
+                "default": 1
+              },
               "stoneTint": {
                 "$ref": "#/$defs/color",
                 "description": "The colour of the meteor's stone."
@@ -1046,9 +1086,14 @@
                 "$ref": "#/$defs/color",
                 "description": "The colour of the tornado."
               },
-              "downwards": {
-                "type": "boolean",
-                "description": "Should it pull things downwards? Will push them upwards by default."
+              "type": {
+                "type": "string",
+                "enum": [
+                  "downwards",
+                  "upwards",
+                  "hurricane"
+                ],
+                "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction."
               },
               "wanderRate": {
                 "type": "number",
@@ -1057,12 +1102,12 @@
               },
               "wanderDegreesX": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the azimuthal angle (angle of rotation around the polar axis).",
                 "default": 45
               },
               "wanderDegreesZ": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the polar angle (angle between the radial vector and the polar axis).",
                 "default": 45
               }
             }

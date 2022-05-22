@@ -14,7 +14,6 @@ namespace NewHorizons.Components.SizeControllers
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
         public bool willExplode;
-
         public MColor startColour { get; set; }
         public MColor endColour { get; set; }
 
@@ -25,6 +24,7 @@ namespace NewHorizons.Components.SizeControllers
         private MeshRenderer[] _atmosphereRenderers;
         private HeatHazardVolume _heatVolume;
         private DestructionVolume _destructionVolume;
+        private SolarFlareEmitter _flareEmitter;
 
         private bool _isCollapsing;
         private float _collapseStartSize;
@@ -92,10 +92,12 @@ namespace NewHorizons.Components.SizeControllers
 
             if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
-            if(scaleCurve != null)
+            if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
             }
+
+            _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
         }
 
         public void OnDestroy()
@@ -149,12 +151,21 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
 
-                // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
-                var t = ageValue;
-                if(maxScale > 0) t = CurrentScale / maxScale;
-                currentColour = Color.Lerp(_startColour, _endColour, t);
+                // Only do colour transition stuff if they set an end colour
+                if (endColour != null)
+                {
+                    // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
+                    var t = ageValue;
+                    if (maxScale > 0) t = CurrentScale / maxScale;
+                    currentColour = Color.Lerp(_startColour, _endColour, t);
+                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                }
+                else
+                {
+                    currentColour = _startColour;
+                }
 
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                if (_flareEmitter != null) _flareEmitter._tint = currentColour;
             }
             else
             {

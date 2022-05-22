@@ -19,6 +19,12 @@ namespace NewHorizons.Builder.Body
 
         private static readonly string _blackHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
         private static readonly string _whiteHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
+        private static readonly int MaxDistortRadius = Shader.PropertyToID("_MaxDistortRadius");
+        private static readonly int MassScale = Shader.PropertyToID("_MassScale");
+        private static readonly int DistortFadeDist = Shader.PropertyToID("_DistortFadeDist");
+        private static readonly int Color1 = Shader.PropertyToID("_Color");
 
 
         public static void Make(GameObject planetGO, NewHorizonsBody body)
@@ -44,7 +50,7 @@ namespace NewHorizons.Builder.Body
                     GeometryBuilder.Make(newProxy, null, body.Config.Base.GroundSize);
                     if (realSize < body.Config.Base.GroundSize) realSize = body.Config.Base.GroundSize;
                 }
-                if (body.Config.Atmosphere?.Cloud != null)
+                if (body.Config.Atmosphere?.Clouds != null)
                 {
                     CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod);
                     if (realSize < body.Config.Atmosphere.Size) realSize = body.Config.Atmosphere.Size;
@@ -71,7 +77,7 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Lava.Size) realSize = body.Config.Lava.Size;
 
                     var material = new Material(lavaMaterial);
-                    if (body.Config.Lava.Tint != null) material.SetColor("_EmissionColor", body.Config.Lava.Tint.ToColor());
+                    if (body.Config.Lava.Tint != null) material.SetColor(EmissionColor, body.Config.Lava.Tint.ToColor());
                     sphere.GetComponent<MeshRenderer>().material = material;
                 }
                 if (body.Config.Water != null)
@@ -185,10 +191,10 @@ namespace NewHorizons.Builder.Body
 
             var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
             meshRenderer.material = new Material(blackHoleShader);
-            meshRenderer.material.SetFloat("_Radius", size * 0.4f);
-            meshRenderer.material.SetFloat("_MaxDistortRadius", size * 0.95f);
-            meshRenderer.material.SetFloat("_MassScale", 1);
-            meshRenderer.material.SetFloat("_DistortFadeDist", size * 0.55f);
+            meshRenderer.material.SetFloat(Radius, size * 0.4f);
+            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
+            meshRenderer.material.SetFloat(MassScale, 1);
+            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
 
             blackHoleRender.SetActive(true);
         }
@@ -210,10 +216,10 @@ namespace NewHorizons.Builder.Body
 
             var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
             meshRenderer.material = new Material(whiteHoleShader);
-            meshRenderer.sharedMaterial.SetFloat("_Radius", size * 0.4f);
-            meshRenderer.sharedMaterial.SetFloat("_DistortFadeDist", size);
-            meshRenderer.sharedMaterial.SetFloat("_MaxDistortRadius", size * 2.8f);
-            meshRenderer.sharedMaterial.SetColor("_Color", new Color(1.88f, 1.88f, 1.88f, 1f));
+            meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
+            meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
+            meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
+            meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
 
             whiteHoleRenderer.SetActive(true);
         }

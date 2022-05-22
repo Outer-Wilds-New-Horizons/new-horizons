@@ -69,7 +69,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Cloud != null);
+                        TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Clouds != null);
                     }
                     catch (Exception ex)
                     {

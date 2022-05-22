@@ -15,7 +15,7 @@ namespace NewHorizons.Handlers
         {
             //Try loading one planet why not
             //var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
-            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null && b.Config.CanShowOnTitle).ToArray();
+            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Clouds != null) && b.Config.Star == null && b.Config.CanShowOnTitle).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -74,12 +74,12 @@ namespace NewHorizons.Handlers
                 heightMap.MaxHeight = size;
                 heightMap.MinHeight = body.Config.HeightMap.MinHeight * size / body.Config.HeightMap.MaxHeight;
             }
-            if (body.Config.Atmosphere != null && body.Config.Atmosphere.Cloud != null)
+            if (body.Config.Atmosphere?.Clouds?.TexturePath != null)
             {
                 // Hacky but whatever I just want a sphere
                 size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
                 heightMap.MaxHeight = heightMap.MinHeight = size + 1;
-                heightMap.TextureMap = body.Config.Atmosphere.Cloud;
+                heightMap.TextureMap = body.Config.Atmosphere.Clouds.TexturePath;
             }
 
             HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
