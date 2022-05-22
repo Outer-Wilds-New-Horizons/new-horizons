@@ -117,41 +117,6 @@ To see all the different things you can put into a config file check out the [Ce
 
 Check out the rest of the site for how to format [star system]({{ 'Star System Schema'|route}}), [dialogue]({{ 'Dialogue Schema'|route}}), [ship log]({{ 'Shiplog Schema'|route}}), and [translation]({{ 'Translation Schema'|route}}) files!
 
-### Using the Prop Placer
-
-The Prop Placer is a tool that lets you manually place details from inside the game. Once enabled, press "G" and your currently selected prop will be placed wherever your crosshair is pointing.
-
-How to Enable:
-1. Pause the game. You will see an extra menu option titled "Toggle Prop Placer Menu". Click it
-1. The prop placer menu should now be open. At the bottom of the menu, you will see a list of mods. Click yours.
-  1. This menu scrolls. If you do not see your mod, it may be further down the list.
-1. The Prop Placer is now active! Unpause the game and you can now place Nomai vases using "G"
-
-How to Save:
-1. In the Prop Placer Menu, you will see a greyed out button titled "Update your mod's configs". 
-1. Click the small button to the left of it.
-1. Click "Update your mod's configs" to save!
-1. **IMPORTANT:** your updated configs will save *only* to your mod's build folder, eg `AppData\Roaming\OuterWildsModManager\OWML\Mods\you.yourModName`
-1. **WARNING:** dying in-game will cause you to lose all work since you last saved. Make sure to save often.
-
-What's that? You want to place something other than just vases? Well I can't say I agree with your choices, but here's how you would do that.
-
-How to Select Props:
-1. Pause the game again. The prop placer menu should still be visible.
-1. At the top of the menu, you'll see a text box contianing the path for the vase. Replace this with the path for the prop you want to place. For example: `DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var`
-  1. Tip: use the Unity Explorer mod to find the path for the object you want to place. You only have to do this once.
-1. Unpause the game and press "G". Say hello to your new tree!
-1. Pause the game again. You will now see the prop you just placed on the list of recently placed props just below the "path" text box.
-1. Click on the button titled "Prefab_NOM_VaseThin". You can now place vases again.
-
-Extra features:
-1. Made a mistake? **Press the "-" key to undo.** Press the "+" key to redo.
-1. If you have the Unity Explorer mod enabled, you can use this to tweak the position, rotation, and scale of your props. Your changes will be saved.
-1. Want to save some recently placed props between game launches? On the recently placed props list, click the star next to the prop's name to favorite it.
-1. Found a bug that ruined your configs? Check `AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\configBackups` for backup saves of your work. Folders are titled "\[date\]T\[time\]".
-1. Want to add props to Ember Twin but don't feel like making a config file for it? We got you! Place that prop and the config file will be created automatically on your next save.
-  1. This even works for planets that were created by other mods!
-
 ## Publishing Your Mod
 
 Once your mod is complete, you can use the [planet creation template](https://github.com/xen-42/ow-new-horizons-config-template#readme){ target="_blank" } GitHub template.
