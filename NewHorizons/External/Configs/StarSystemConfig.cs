@@ -4,7 +4,7 @@ namespace NewHorizons.External.Configs
 {
     public class StarSystemConfig
     {
-        public string subtitleFilepath;
+        public string subtitle;
 
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
         [DefaultValue(true)] public bool enableTimeLoop = true;

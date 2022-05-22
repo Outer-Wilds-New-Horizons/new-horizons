@@ -1,16 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using UnityEngine;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -44,6 +33,7 @@ namespace NewHorizons.Handlers
 
             if (!eoteSubtitleHasBeenInserted)
             {
+                // TODO: only insert if hasDLC
                 possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
                 eoteSubtitleHasBeenInserted = true;
             }
@@ -104,7 +94,8 @@ namespace NewHorizons.Handlers
             // note, this makes the code more confusing, but Random.Next(min, max) generates a random number on the range [min, max)
             // that is, the below code will generate numbers up to and including Count-1, not Count.
             var newIndexOffset = randomizer.Next(1, possibleSubtitles.Count);
-            subtitleIndex = (subtitleIndex % newIndexOffset) % possibleSubtitles.Count;
+            subtitleIndex = (subtitleIndex + newIndexOffset) % possibleSubtitles.Count;
+            NewHorizons.Utility.Logger.Log("NEW SPRITE INDEX OFFSET " + newIndexOffset + " NEW SPRITE INDEX " + subtitleIndex);
             
             image.sprite = possibleSubtitles[subtitleIndex];
         }

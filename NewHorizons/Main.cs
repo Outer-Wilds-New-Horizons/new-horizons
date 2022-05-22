@@ -314,9 +314,9 @@ namespace NewHorizons
                             if (name != "SolarSystem") SetDefaultSystem(name);
                         }
 
-                        if (starSystemConfig.subtitleFilepath != null)
+                        if (starSystemConfig.subtitle != null)
                         {
-                            SubtitlesHandler.AddSubtitle(mod, starSystemConfig.subtitleFilepath);
+                            SubtitlesHandler.AddSubtitle(mod, starSystemConfig.subtitle);
                         }
 
                         var system = new NewHorizonsSystem(name, starSystemConfig, mod);
