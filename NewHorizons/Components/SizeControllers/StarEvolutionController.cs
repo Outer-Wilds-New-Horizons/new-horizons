@@ -46,7 +46,7 @@ namespace NewHorizons.Components.SizeControllers
 
         private float maxScale;
 
-        void Awake()
+        void Start()
         {
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
@@ -54,11 +54,13 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
+            var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture("_ColorRamp");
+
             // Copy over the material that was set in star builder
-            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _startSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _endSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
+            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
+            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
+            _startSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
+            _endSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
 
             if (startColour == null)
             {
