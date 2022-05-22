@@ -24,6 +24,7 @@ namespace NewHorizons.Builder.Body
 
             cloakFieldController._referenceFrameVolume = OWRB._attachedRFVolume;
             cloakFieldController._exclusionSector = null;
+            cloakFieldController._cloakSphereVolume = (sector?.transform ?? planetGO.transform).GetComponentInChildren<OWTriggerVolume>();
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
             cloakSectorController.Init(newCloak.GetComponent<CloakFieldController>(), planetGO);
