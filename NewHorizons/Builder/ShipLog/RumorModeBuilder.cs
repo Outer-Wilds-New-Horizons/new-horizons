@@ -31,8 +31,8 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     CuriosityName newName = (CuriosityName)8 + _rawNameToCuriosityName.Count;
                     _rawNameToCuriosityName.Add(newColor.id, newName);
-                    _curiosityColors.Add(newName, newColor.color.ToColor());
-                    _curiosityHighlightColors.Add(newName, newColor.highlightColor.ToColor());
+                    _curiosityColors.Add(newName, newColor.color);
+                    _curiosityHighlightColors.Add(newName, newColor.highlightColor);
                 }
             }
         }

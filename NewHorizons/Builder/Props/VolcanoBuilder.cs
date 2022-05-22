@@ -50,8 +50,8 @@ namespace NewHorizons.Builder.Props
             meteor.transform.localScale = Vector3.one * info.scale;
 
             var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
-            mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
-            mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
+            mat.SetColor(Color1, info.stoneTint ?? defaultStoneTint);
+            mat.SetColor(EmissionColor, info.lavaTint ?? defaultLavaTint);
 
             var detectors = meteor.transform.Find("ConstantDetectors").gameObject;
             GameObject.Destroy(detectors.GetComponent<ConstantForceDetector>());
