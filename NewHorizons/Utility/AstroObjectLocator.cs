@@ -131,7 +131,8 @@ namespace NewHorizons.Utility
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
                     {
-                        otherChildren.Add(GameObject.Find("SS_Debris_Body"));
+                        // there are multiple debris with the same name
+                        otherChildren.AddRange(GameObject.FindObjectsOfType<GameObject>().Where(x => x.name == "SS_Debris_Body"));
                     }
                     break;
                 default:
