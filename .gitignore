@@ -417,3 +417,4 @@ docs/.m_cache/**
 # Unity project
 new-horizons-unity
 new-horizons-unity/**
+docs/.env
