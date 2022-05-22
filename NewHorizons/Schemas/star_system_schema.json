@@ -30,6 +30,10 @@
       "description": "Should the player be unable to use their map in this system?",
       "default": false
     },
+    "subtitle": {
+      "type": "string",
+      "description": "Relative path to a subtitle image to be displayed on the main menu scene. The image should be 669x97 resolution."
+    },
     "skybox": {
       "type": "object",
       "description": "Options for the skybox of your system",
