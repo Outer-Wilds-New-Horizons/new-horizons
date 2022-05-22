@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using NJsonSchema;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
@@ -12,12 +13,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons
 {
+
     public class Main : ModBehaviour
     {
         public static AssetBundle NHAssetBundle { get; private set; }
@@ -34,6 +38,8 @@ namespace NewHorizons
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
         public static float SecondsLeftInLoop = -1;
+
+        private static JsonSchema _bodySchema;
 
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
@@ -108,6 +114,14 @@ namespace NewHorizons
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
         }
 
+        // TODO: Test class, delete later
+        [JsonObject]
+        public class Test
+        {
+            [JsonProperty]
+            public string Name;
+        }
+
         public void Start()
         {
             // Patches
@@ -121,12 +135,23 @@ namespace NewHorizons
 
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
-            GlobalMessenger.AddListener("WakeUp", new Callback(OnWakeUp));
+            GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("AssetBundle/xen.newhorizons");
 
             ResetConfigs(resetTranslation: false);
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
+
+            try
+            {
+                _bodySchema = JsonSchema.FromType<Test>();
+            }
+            catch (TypeLoadException te)
+            {
+                Logger.LogError(te.ToString());
+                Application.Quit();
+            }
+            
 
             try
             {

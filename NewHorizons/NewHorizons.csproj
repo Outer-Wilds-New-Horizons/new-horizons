@@ -10,12 +10,13 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>portable</DebugType>
+    <DebugType>portable</DebugType> 
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
+    <DebugType>none</DebugType> 
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="..\NJsonSchema\*.dll" />
     <PackageReference Include="HarmonyX" Version="2.10.0" />
     <PackageReference Include="OWML" Version="2.3.3" />
     <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" />
