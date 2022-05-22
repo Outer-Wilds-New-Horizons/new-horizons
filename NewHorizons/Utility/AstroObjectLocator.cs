@@ -132,7 +132,9 @@ namespace NewHorizons.Utility
                     if (primary._customName.Equals("Sun Station"))
                     {
                         // there are multiple debris with the same name
-                        otherChildren.AddRange(GameObject.FindObjectsOfType<GameObject>().Where(x => x.name == "SS_Debris_Body"));
+                        otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
+                            .Select(x => x.gameObject)
+                            .Where(x => x.name == "SS_Debris_Body"));
                     }
                     break;
                 default:
