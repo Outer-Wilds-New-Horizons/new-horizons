@@ -1,12 +1,17 @@
-﻿namespace NewHorizons.External.Configs
+﻿using System.ComponentModel;
+
+namespace NewHorizons.External.Configs
 {
     public class StarSystemConfig
     {
-        public bool canEnterViaWarpDrive = true;
-        public bool startHere = false;
-        public bool destroyStockPlanets = true;
+        public string subtitle;
+
+        [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
+        [DefaultValue(true)] public bool enableTimeLoop = true;
+        [DefaultValue(true)] public bool destroyStockPlanets = true;
+
+        public bool startHere;
         public string factRequiredForWarp;
-        public bool enableTimeLoop = true;
         public bool mapRestricted;
         public NomaiCoordinates coords;
         public SkyboxConfig skybox;

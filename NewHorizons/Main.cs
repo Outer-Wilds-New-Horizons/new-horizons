@@ -16,6 +16,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.DebugUtilities;
+
 namespace NewHorizons
 {
     public class Main : ModBehaviour
@@ -71,6 +73,7 @@ namespace NewHorizons
 
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
+            DebugMenu.UpdatePauseMenuButton();
             Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
@@ -196,6 +199,7 @@ namespace NewHorizons
             if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                TitleSceneHandler.InitSubtitles();
             }
 
             if (scene.name == "EyeOfTheUniverse" && IsWarping)
@@ -266,6 +270,8 @@ namespace NewHorizons
         private void OnSystemReady(bool shouldWarpIn)
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
@@ -306,6 +312,11 @@ namespace NewHorizons
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
                             if (name != "SolarSystem") SetDefaultSystem(name);
+                        }
+
+                        if (starSystemConfig.subtitle != null)
+                        {
+                            SubtitlesHandler.AddSubtitle(mod, starSystemConfig.subtitle);
                         }
 
                         var system = new NewHorizonsSystem(name, starSystemConfig, mod);
@@ -393,7 +404,7 @@ namespace NewHorizons
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
 
-                body = new NewHorizonsBody(config, mod);
+                body = new NewHorizonsBody(config, mod, relativeDirectory);
             }
             catch (Exception e)
             {

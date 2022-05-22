@@ -1,4 +1,6 @@
 ﻿using NewHorizons.Utility;
+using System.ComponentModel;
+
 namespace NewHorizons.External.Modules
 {
     public class BaseModule
@@ -6,16 +8,24 @@ namespace NewHorizons.External.Modules
         public bool HasMapMarker { get; set; }
         public float AmbientLight { get; set; }
         public float SurfaceGravity { get; set; }
+
+        [DefaultValue("linear")] 
         public string GravityFallOff { get; set; } = "linear";
+
         public float SurfaceSize { get; set; }
         public float SphereOfInfluence { get; set; }
         public float GroundSize { get; set; }
         public bool HasCometTail { get; set; }
         public MVector3 CometTailRotation { get; set; }
+
+        [DefaultValue(true)] 
         public bool HasReferenceFrame { get; set; } = true;
-        public bool CenterOfSolarSystem { get; set; } = false;
-        public float CloakRadius { get; set; } = 0f;
+
+        public bool CenterOfSolarSystem { get; set; } 
+        public float CloakRadius { get; set; } 
         public bool InvulnerableToSun { get; set; }
+
+        [DefaultValue(true)] 
         public bool ShowMinimap { get; set; } = true;
 
         #region Obsolete

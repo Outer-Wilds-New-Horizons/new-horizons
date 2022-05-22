@@ -1,4 +1,6 @@
 ﻿using NewHorizons.Utility;
+using System.ComponentModel;
+
 namespace NewHorizons.External.Modules
 {
     public class ShipLogModule 
@@ -14,12 +16,15 @@ namespace NewHorizons.External.Modules
         {
             public string revealedSprite;
             public string outlineSprite;
+
+            [DefaultValue(1f)]
             public float scale = 1f;
+
             public bool invisibleWhenHidden;
-            public float offset = 0f;
+            public float offset;
             public MVector2 manualPosition;
             public MVector2 manualNavigationPosition;
-            public bool remove = false;
+            public bool remove;
             public ShipLogDetailInfo[] details;
         }
 
@@ -27,7 +32,7 @@ namespace NewHorizons.External.Modules
         {
             public string revealedSprite;
             public string outlineSprite;
-            public float rotation = 0f;
+            public float rotation;
             public bool invisibleWhenHidden;
             public MVector2 position;
             public MVector2 scale;

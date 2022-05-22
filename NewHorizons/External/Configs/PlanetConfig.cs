@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
+using System.ComponentModel;
 using UnityEngine;
 
 namespace NewHorizons.External.Configs
@@ -9,9 +10,11 @@ namespace NewHorizons.External.Configs
     {
         public string Name { get; set; }
         public string Version { get; set; }
-        public string StarSystem { get; set; } = "SolarSystem";
+        [DefaultValue("SolarSystem")] public string StarSystem { get; set; } = "SolarSystem";
         public bool Destroy { get; set; }
         public string[] RemoveChildren { get; set; }
+
+        [DefaultValue(-1)]
         public int BuildPriority { get; set; } = -1;
         public bool CanShowOnTitle { get; set; } = true;
         public bool IsQuantumState { get; set; }

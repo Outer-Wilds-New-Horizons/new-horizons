@@ -1,4 +1,6 @@
 ﻿using NewHorizons.Utility;
+using System.ComponentModel;
+
 namespace NewHorizons.External.Modules
 {
     public class PropModule 
@@ -35,6 +37,8 @@ namespace NewHorizons.External.Modules
             public string assetBundle;
             public MVector3 position;
             public MVector3 rotation;
+
+            [DefaultValue(1f)]
             public float scale { get; set; } = 1f;
             public bool alignToNormal;
             public string[] removeChildren;
@@ -55,11 +59,20 @@ namespace NewHorizons.External.Modules
         {
             public MVector3 position;
             public float elevation;
+
+            [DefaultValue(30)] 
             public float height = 30;
+
             public MColor tint;
             public float wanderRate;
+
+            [DefaultValue(45)]
             public float wanderDegreesX = 45;
+
+            [DefaultValue(45)]
             public float wanderDegreesZ = 45;
+
+            [DefaultValue("upwards")]
             public string type = "upwards";
 
             [System.Obsolete("downwards is deprecated, please use type instead")] public bool downwards;
