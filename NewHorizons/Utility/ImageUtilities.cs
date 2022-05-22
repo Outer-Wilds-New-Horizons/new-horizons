@@ -293,5 +293,19 @@ namespace NewHorizons.Utility
 
             return new Color(r / 255, g / 255, b / 255);
         }
+        public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
+        {
+            Color[] pixels = new Color[width*height];
+ 
+            for(int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = color;
+            }
+ 
+            Texture2D newTexture = new Texture2D(width, height);
+            newTexture.SetPixels(pixels);
+            newTexture.Apply();
+            return newTexture;
+        }
     }
 }
