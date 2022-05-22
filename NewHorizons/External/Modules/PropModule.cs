@@ -184,6 +184,18 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class TornadoInfo
         {
+            public enum TornadoType
+            {
+                [EnumMember(Value = @"downwards")]
+                Downwards = 0,
+                
+                [EnumMember(Value = @"upwards")]
+                Upwards = 1,
+                
+                [EnumMember(Value = @"hurricane")]
+                Hurricane = 2
+            }
+            
             /// <summary>
             /// Position of the tornado
             /// </summary>
@@ -204,9 +216,15 @@ namespace NewHorizons.External.Modules
             /// The colour of the tornado.
             /// </summary>
             public MColor tint;
-            
+
             /// <summary>
-            /// Should it pull things downwards? Will push them upwards by default.
+            /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
+            /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
+            public TornadoType type = TornadoType.Downwards;
+
+            /// <summary>
+            /// [DEPRECATED] Should this tornado shoot you down instead of up?
             /// </summary>
             public bool downwards;
             

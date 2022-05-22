@@ -67,7 +67,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Allows the object to be targeted on the map.
         /// </summary>
-        [DefaultValue(true)]
+        [System.ComponentModel.DefaultValue(true)]
         public bool HasReferenceFrame = true;
         
         /// <summary>
@@ -88,7 +88,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Do we show the minimap when walking around this planet?
         /// </summary>
-        [DefaultValue(true)]
+        [System.ComponentModel.DefaultValue(true)]
         public bool ShowMinimap = true;
 
         #region Obsolete

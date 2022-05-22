@@ -1,6 +1,4 @@
 ﻿using Newtonsoft.Json;
-using UnityEngine.Internal;
-using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
 {
@@ -20,19 +18,19 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Minimum size of the asteroids.
         /// </summary>
-        [DefaultValue(20)]
+        [System.ComponentModel.DefaultValue(20)]
         public float MinSize = 20;
         
         /// <summary>
         /// Maximum size of the asteroids.
         /// </summary>
-        [DefaultValue(50)]
+        [System.ComponentModel.DefaultValue(50)]
         public float MaxSize = 50f;
         
         /// <summary>
         /// Amount of asteroids to create.
         /// </summary>
-        [DefaultValue(-1)]
+        [System.ComponentModel.DefaultValue(-1)]
         public int Amount = -1;
         
         /// <summary>

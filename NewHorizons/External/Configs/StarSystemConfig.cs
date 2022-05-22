@@ -28,11 +28,21 @@ namespace NewHorizons.External.Configs
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
         /// </summary>
         public bool destroyStockPlanets = true;
+
+        /// <summary>
+        /// Should the time loop be enabled in this system?
+        /// </summary>
+        [DefaultValue(true)]
+        public bool enableTimeLoop = true;
         
         /// <summary>
         /// Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if you're using this, that would make no sense.
         /// </summary>
         public string factRequiredForWarp;
+        
+        /// <summary>
+        /// Should the player not be able to view the map in this system?
+        /// </summary>
         public bool mapRestricted;
         
         /// <summary>

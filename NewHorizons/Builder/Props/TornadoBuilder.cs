@@ -77,8 +77,8 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
-            if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position, hasClouds);
-            else MakeTornado(planetGO, sector, info, position, info.type.ToLower() == "downwards");
+            if (info.type == PropModule.TornadoInfo.TornadoType.Hurricane) MakeHurricane(planetGO, sector, info, position, hasClouds);
+            else MakeTornado(planetGO, sector, info, position, info.type == PropModule.TornadoInfo.TornadoType.Downwards);
         }
 
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)

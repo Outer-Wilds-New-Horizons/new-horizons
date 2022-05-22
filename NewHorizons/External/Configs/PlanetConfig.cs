@@ -27,7 +27,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Unique star system containing your planet
         /// </summary>
-        [DefaultValue("SolarSystem")]
+        [System.ComponentModel.DefaultValue("SolarSystem")]
         public string StarSystem = "SolarSystem";
 
         /// <summary>
@@ -43,7 +43,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Set to a higher number if you wish for this body to be built sooner
         /// </summary>
-        [DefaultValue(-1)]
+        [System.ComponentModel.DefaultValue(-1)]
         public int BuildPriority = -1;
         
         /// <summary>
@@ -246,10 +246,9 @@ namespace NewHorizons.External.Configs
             {
                 foreach(var tornado in Props.Tornados)
                 {
-                    if (tornado.downwards) tornado.type = "downwards";
+                    if (tornado.downwards) tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
                 }
             }
-#pragma warning restore 612, 618
         }
     }
 }

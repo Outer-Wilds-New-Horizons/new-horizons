@@ -11,7 +11,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Radius of the star.
         /// </summary>
-        [DefaultValue(2000f)]
+        [System.ComponentModel.DefaultValue(2000f)]
         public float Size = 2000f;
         
         /// <summary>
@@ -37,19 +37,19 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Relative strength of the light compared to the sun.
         /// </summary>
-        [DefaultValue(1f)]
+        [System.ComponentModel.DefaultValue(1f)]
         public float SolarLuminosity = 1f;
         
         /// <summary>
         /// The default sun has its own atmosphere that is different from regular planets. If you want that, set this to `true`.
         /// </summary>
-        [DefaultValue(true)]
+        [System.ComponentModel.DefaultValue(true)]
         public bool HasAtmosphere = true;
         
         /// <summary>
         /// Should this star explode after 22 minutes?
         /// </summary>
-        [DefaultValue(true)]
+        [System.ComponentModel.DefaultValue(true)]
         public bool GoSupernova = true;
     }
 }

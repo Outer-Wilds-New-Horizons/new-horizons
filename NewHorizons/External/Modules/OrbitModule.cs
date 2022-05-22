@@ -73,7 +73,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Referring to the orbit line in the map screen.
         /// </summary>
-        [DefaultValue(true)]
+        [System.ComponentModel.DefaultValue(true)]
         public bool ShowOrbitLine { get; set; } = true;
         
         /// <summary>

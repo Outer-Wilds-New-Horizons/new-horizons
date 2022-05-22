@@ -13,14 +13,6 @@ namespace NewHorizons.Builder.Body
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
         private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
 
-        private enum FunnelType
-        {
-            SAND,
-            WATER,
-            LAVA,
-            STAR
-        }
-
         public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
             var funnelType = module.Type;
