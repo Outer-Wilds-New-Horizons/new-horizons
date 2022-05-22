@@ -234,11 +234,18 @@ namespace NewHorizons.Utility.DebugUtilities
         
                 for(int i = 0; i < bodyProps.Count; i++)
                 {
-                    bodyProps[i].detailInfo.position = bodyProps[i].gameObject.transform.localPosition;
-                    bodyProps[i].detailInfo.scale = bodyProps[i].gameObject.transform.localScale.x;
-                    if (!bodyProps[i].detailInfo.alignToNormal) bodyProps[i].detailInfo.rotation = bodyProps[i].gameObject.transform.localEulerAngles;
+                    var prop = bodyProps[i];
+                    var rootTransform = prop.gameObject.transform.root;
 
-                    infoArray[i] = bodyProps[i].detailInfo;
+                    // Objects are parented to the sector and not to the planet
+                    // However, raycasted positions are reported relative to the root game object
+                    // Normally these two are the same, but there are some notable exceptions (ex, floating islands)
+                    // So we can't use local position/rotation here, we have to inverse transform the global position/rotation relative to root object
+                    prop.detailInfo.position = rootTransform.InverseTransformPoint(prop.gameObject.transform.position);
+                    prop.detailInfo.scale = prop.gameObject.transform.localScale.x;
+                    if (!prop.detailInfo.alignToNormal) prop.detailInfo.rotation = rootTransform.InverseTransformRotation(prop.gameObject.transform.rotation).eulerAngles;
+
+                    infoArray[i] = prop.detailInfo;
                 }
             }
 
