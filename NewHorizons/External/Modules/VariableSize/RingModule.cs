@@ -7,8 +7,8 @@
         public float Inclination { get; set; }
         public float LongitudeOfAscendingNode { get; set; }
         public string Texture { get; set; }
-        public bool Unlit { get; set; } = false;
-        public float RotationSpeed { get; set; } = 0f;
+        public bool Unlit { get; set; }
+        public float RotationSpeed { get; set; } 
         public string FluidType { get; set; }
     }
 }

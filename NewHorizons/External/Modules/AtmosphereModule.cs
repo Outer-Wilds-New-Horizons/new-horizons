@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Utility;
+using System.ComponentModel;
 using UnityEngine;
 
 namespace NewHorizons.External.Modules
@@ -24,7 +25,7 @@ namespace NewHorizons.External.Modules
         [System.Obsolete("CloudRamp is deprecated, please use CloudInfo instead")] public string CloudRamp { get; set; }
         [System.Obsolete("CloudFluidType is deprecated, please use CloudInfo instead")] public string CloudFluidType { get; set; }
         [System.Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")] public bool UseBasicCloudShader { get; set; }
-        [System.Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")] public bool ShadowsOnClouds { get; set; } = true;
+        [DefaultValue(true)] [System.Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")] public bool ShadowsOnClouds { get; set; } = true;
         [System.Obsolete("HasAtmosphere is deprecated, please use UseAtmosphereShader instead")] public bool HasAtmosphere { get; set; }
         #endregion Obsolete
 

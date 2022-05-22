@@ -1,4 +1,6 @@
 ﻿using NewHorizons.Utility;
+using System.ComponentModel;
+
 namespace NewHorizons.External.Modules.VariableSize
 {
     public class SingularityModule : VariableSizeModule
@@ -8,6 +10,6 @@ namespace NewHorizons.External.Modules.VariableSize
         public string TargetStarSystem;
         public string Type; //BlackHole or WhiteHole
         public MVector3 Position;
-        public bool MakeZeroGVolume = true;
+        [DefaultValue(true)] public bool MakeZeroGVolume = true;
     }
 }

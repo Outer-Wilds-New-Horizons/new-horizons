@@ -200,8 +200,6 @@ namespace NewHorizons.Builder.Props
                 streamingRenderMeshHandle.enabled = false;
             }
 
-
-
             // Height of the hurricane is 405 by default
             if (info.height != 0) hurricaneGO.transform.localScale = Vector3.one * info.height / 405f;
 

@@ -19,6 +19,7 @@ namespace NewHorizons.Builder.Props
             if (!detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail)) return null;
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
+
         public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
