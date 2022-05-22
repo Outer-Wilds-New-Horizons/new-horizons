@@ -21,6 +21,14 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
 {
+    
+    // TODO: Test class, delete later
+    [JsonObject]
+    public class Test
+    {
+        [JsonProperty]
+        public string Name;
+    }
 
     public class Main : ModBehaviour
     {
@@ -114,16 +122,25 @@ namespace NewHorizons
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
         }
 
-        // TODO: Test class, delete later
-        [JsonObject]
-        public class Test
+        #region Assembly Stuff
+
+        public static Assembly ResolveAssembly(object sender, ResolveEventArgs e) 
         {
-            [JsonProperty]
-            public string Name;
+            Logger.LogError($"Couldn't resolve assembly: {e.Name} from {e.RequestingAssembly.FullName}... Trying to fix it.");
+            if (e.Name.Contains("Namotion.Reflection"))
+                return Assembly.LoadFrom("Namotion.Reflection.dll");
+            else if (e.Name.Contains("Microsoft.CSharp"))
+                return Assembly.LoadFrom("Microsoft.CSharp.dll");
+            else 
+                return null;
         }
+        
+        #endregion
 
         public void Start()
         {
+            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
+            
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
@@ -141,17 +158,10 @@ namespace NewHorizons
             ResetConfigs(resetTranslation: false);
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
-
-            try
-            {
-                _bodySchema = JsonSchema.FromType<Test>();
-            }
-            catch (TypeLoadException te)
-            {
-                Logger.LogError(te.ToString());
-                Application.Quit();
-            }
             
+            _bodySchema = JsonSchema.FromType<Test>();
+            Logger.LogWarning(_bodySchema.ToString());
+
 
             try
             {
