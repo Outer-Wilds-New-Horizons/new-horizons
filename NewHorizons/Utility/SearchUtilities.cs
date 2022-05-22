@@ -135,7 +135,7 @@ namespace NewHorizons.Utility
 
                     // Get the root object and hope its the right one
                     var root = GameObject.Find(names[0]);
-                    if (root == null) root = FindObjectOfTypeAndName<GameObject>(names[0]);
+                    if (root == null) root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.Equals(names[0])).FirstOrDefault();
 
                     var t = root?.transform;
                     if (t == null)
