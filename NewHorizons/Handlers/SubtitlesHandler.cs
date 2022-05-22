@@ -14,7 +14,7 @@ namespace NewHorizons.Handlers
         Graphic graphic;
         Image image;
 
-        public float fadeSpeed = 0.01f;
+        public float fadeSpeed = 0.005f;
         float fade = 1;
         bool fadingAway = true;
 
@@ -23,6 +23,9 @@ namespace NewHorizons.Handlers
         int subtitleIndex;
 
         System.Random randomizer;
+
+        static readonly int PAUSE_TIMER_MAX = 50;
+        int pauseTimer = PAUSE_TIMER_MAX;
 
         public void Start()
         {
@@ -60,6 +63,12 @@ namespace NewHorizons.Handlers
             // don't fade transition subtitles if there's only one subtitle
             if (possibleSubtitles.Count <= 1) return;
 
+            if (pauseTimer > 0)
+            {
+                pauseTimer--;
+                return;
+            }
+
             if (fadingAway)
             {
                 fade -= fadeSpeed;
@@ -79,6 +88,7 @@ namespace NewHorizons.Handlers
                 {
                     fade = 1;
                     fadingAway = true;
+                    pauseTimer = PAUSE_TIMER_MAX;
                 }
             }
 
@@ -95,7 +105,6 @@ namespace NewHorizons.Handlers
             // that is, the below code will generate numbers up to and including Count-1, not Count.
             var newIndexOffset = randomizer.Next(1, possibleSubtitles.Count);
             subtitleIndex = (subtitleIndex + newIndexOffset) % possibleSubtitles.Count;
-            NewHorizons.Utility.Logger.Log("NEW SPRITE INDEX OFFSET " + newIndexOffset + " NEW SPRITE INDEX " + subtitleIndex);
             
             image.sprite = possibleSubtitles[subtitleIndex];
         }
