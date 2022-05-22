@@ -166,7 +166,9 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 PropPlacementData data = RegisterProp_WithReturn(astroObjectName, spawnedProp, detail.path, detail);
 
-                if (!RecentlyPlacedProps.Contains(data.detailInfo.path))
+                // note: we do not support placing props from assetbundles, so they will not be added to the
+                // selectable list of placed props
+                if (detail.assetBundle == null && !RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
                     RecentlyPlacedProps.Add(data.detailInfo.path);
                 }

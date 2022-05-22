@@ -138,7 +138,9 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 GUILayout.BeginHorizontal();
 
-                var propPathElements = propPath.Split('/');
+                var propPathElements = propPath[propPath.Length-1] == '/'
+                    ? propPath.Substring(0, propPath.Length-1).Split('/')
+                    : propPath.Split('/');
                 string propName = propPathElements[propPathElements.Length - 1];
 
                 string favoriteButtonIcon = favoriteProps.Contains(propPath) ? "★" : "☆";
