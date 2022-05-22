@@ -67,6 +67,9 @@ namespace NewHorizons.Handlers
 
         public void Update()
         {
+            // don't fade transition subtitles if there's only one subtitle
+            if (possibleSubtitles.Count <= 1) return;
+
             if (fadingAway)
             {
                 fade -= fadeSpeed;
