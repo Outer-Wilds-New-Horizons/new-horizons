@@ -199,6 +199,7 @@ namespace NewHorizons
             if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                TitleSceneHandler.InitSubtitles();
             }
 
             if (scene.name == "EyeOfTheUniverse" && IsWarping)
@@ -311,6 +312,11 @@ namespace NewHorizons
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
                             if (name != "SolarSystem") SetDefaultSystem(name);
+                        }
+
+                        if (starSystemConfig.subtitle != null)
+                        {
+                            SubtitlesHandler.AddSubtitle(mod, starSystemConfig.subtitle);
                         }
 
                         var system = new NewHorizonsSystem(name, starSystemConfig, mod);
