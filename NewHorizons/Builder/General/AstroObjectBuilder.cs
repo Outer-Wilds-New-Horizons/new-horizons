@@ -28,8 +28,8 @@ namespace NewHorizons.Builder.General
             if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
             {
                 var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
-                if (primarySphereOfInfluence.radius < config.Orbit.SemiMajorAxis)
-                    primarySphereOfInfluence.radius = config.Orbit.SemiMajorAxis * 1.5f;
+                if (primarySphereOfInfluence.radius < config.Orbit.semiMajorAxis)
+                    primarySphereOfInfluence.radius = config.Orbit.semiMajorAxis * 1.5f;
             }
 
             if (config.Orbit.IsTidallyLocked)

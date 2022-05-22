@@ -187,7 +187,7 @@ namespace NewHorizons.Handlers
                             if (sector.transform.childCount == 0) sector = quantumPlanet.groundState.sector;
 
                             // If semimajor axis is 0 then forget the orbit
-                            var orbit = body.Config.Orbit.SemiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
+                            var orbit = body.Config.Orbit.semiMajorAxis == 0 ? quantumPlanet.groundState.orbit : body.Config.Orbit;
 
                             quantumPlanet.states.Add(new QuantumPlanet.State(sector, orbit));
                         }
@@ -243,7 +243,7 @@ namespace NewHorizons.Handlers
             var rb = go.GetAttachedOWRigidbody();
 
             // Since orbits are always there just check if they set a semi major axis
-            if (body.Config.Orbit != null && body.Config.Orbit.SemiMajorAxis != 0f)
+            if (body.Config.Orbit != null && body.Config.Orbit.semiMajorAxis != 0f)
             {
                 UpdateBodyOrbit(body, go);
             }

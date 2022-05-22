@@ -66,40 +66,40 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
         /// </summary>
-        public float SemiMajorAxis { get; set; }
+        public float semiMajorAxis { get; set; }
 
         /// <summary>
         /// The angle (in degrees) between the body's orbit and the plane of the star system
         /// </summary>
-        public float Inclination { get; set; }
+        public float inclination { get; set; }
 
         /// <summary>
         /// An angle (in degrees) defining the point where the orbit of the body rises above the orbital plane if it has
         /// nonzero inclination.
         /// </summary>
-        public float LongitudeOfAscendingNode { get; set; }
+        public float longitudeOfAscendingNode { get; set; }
 
         /// <summary>
         /// At 0 the orbit is a circle. The closer to 1 it is, the more oval-shaped the orbit is.
         /// </summary>
         // FIXME: Needs Min & Max!
-        public float Eccentricity { get; set; }
+        public float eccentricity { get; set; }
 
         /// <summary>
         /// An angle (in degrees) defining the location of the periapsis (the closest distance to it's primary body) if it has
         /// nonzero eccentricity.
         /// </summary>
-        public float ArgumentOfPeriapsis { get; set; }
+        public float argumentOfPeriapsis { get; set; }
 
         /// <summary>
         /// Where the planet should start off in its orbit in terms of the central angle.
         /// </summary>
-        public float TrueAnomaly { get; set; }
+        public float trueAnomaly { get; set; }
 
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {
-            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, Eccentricity, SemiMajorAxis,
-                Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
+            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis,
+                inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
         }
     }
 }

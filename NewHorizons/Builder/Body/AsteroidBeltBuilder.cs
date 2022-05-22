@@ -41,11 +41,11 @@ namespace NewHorizons.Builder.Body
                 config.Orbit = new OrbitModule()
                 {
                     IsMoon = true,
-                    Inclination = belt.inclination + Random.Range(-2f, 2f),
-                    LongitudeOfAscendingNode = belt.longitudeOfAscendingNode,
-                    TrueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
+                    inclination = belt.inclination + Random.Range(-2f, 2f),
+                    longitudeOfAscendingNode = belt.longitudeOfAscendingNode,
+                    trueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
                     PrimaryBody = bodyName,
-                    SemiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
+                    semiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
                     ShowOrbitLine = false
                 };
 

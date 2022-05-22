@@ -365,7 +365,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
-                bodies.Sort((b, o) => b.Config.Orbit.SemiMajorAxis.CompareTo(o.Config.Orbit.SemiMajorAxis));
+                bodies.Sort((b, o) => b.Config.Orbit.semiMajorAxis.CompareTo(o.Config.Orbit.semiMajorAxis));
                 MapModeObject newNode = new MapModeObject
                 {
                     mainBody = body,
