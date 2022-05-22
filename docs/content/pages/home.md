@@ -14,7 +14,8 @@ This is the official documentation for [New Horizons](https://github.com/xen-42/
 
 Before starting, go into your in-game mod settings for New Horizons and switch Debug mode on. This allows you to:
 
-- Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place details.
+- Use the Prop Placer tool. This convienence tool allows you to place details in game and save your work to your config files.
+- Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place props the Prop Placer is unable to, such as signal scope points or dialogue triggers.
 - Use the "Reload Configs" button in the pause menu. This will restart the current solar system and update all the planets. Much faster than quitting and relaunching the game.
 
 !!! alert-danger "Get VSCode"
@@ -115,6 +116,31 @@ it).
 To see all the different things you can put into a config file check out the [Celestial Body schema]({{ 'Celestial Body Schema'|route}}).
 
 Check out the rest of the site for how to format [star system]({{ 'Star System Schema'|route}}), [dialogue]({{ 'Dialogue Schema'|route}}), [ship log]({{ 'Shiplog Schema'|route}}), and [translation]({{ 'Translation Schema'|route}}) files!
+
+### Using the Prop Placer
+
+The Prop Placer is a tool that lets you manually place details from inside the game. Once enabled, press "G" and your currently selected prop will be placed wherever your crosshair is pointing.
+
+How to Enable:
+1. Pause the game. You will see an extra menu option titled "Toggle Prop Placer Menu". Click it
+1. The prop placer menu should now be open. At the bottom of the menu, you will see a list of mods. Click yours.
+  1. This menu scrolls. If you do not see your mod, it may be further down the list.
+1. The Prop Placer is now active! Unpause the game and you can now place Nomai vases using "G"
+
+What's that? You want to place something other than just vases? Well I can't say I agree with your choices, but here's how you would do that.
+
+How to Select Props:
+1. Pause the game again. The prop placer menu should still be visible.
+1. At the top of the menu, you'll see a text box contianing the path for the vase. Replace this with the path for the prop you want to place. For example: `DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var`
+  1. Tip: use the Unity Explorer mod to find the path for the object you want to place. You only have to do this once.
+1. Unpause the game and press "G". Say hello to your new tree!
+1. Pause the game again. You will now see the prop you just placed on the list of recently placed props just below the "path" text box.
+1. Click on the button titled "Prefab_NOM_VaseThin". You can now place vases again.
+
+Extra features:
+1. Made a mistake? **Press the "-" key to undo.** Press the "+" key to redo.
+1. If you have the Unity Explorer mod enabled, you can use this to tweak the position, rotation, and scale of your props. Your changes will be saved.
+1. Want to save some recently placed props between game launches? On the recently placed props list, click the star next to the prop's name to favorite it.
 
 ## Publishing Your Mod
 
