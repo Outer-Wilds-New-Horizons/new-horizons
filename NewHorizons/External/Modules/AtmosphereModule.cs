@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -36,12 +37,13 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How dense the fog is, if you put fog.
         /// </summary>
-        // FIXME: Min & Max Needed!
+        [Range(0f, 1f)]
         public float fogDensity;
 
         /// <summary>
         /// Radius of fog sphere, independent of the atmosphere. This has to be set for there to be fog.
         /// </summary>
+        [Range(0f, float.MaxValue)]
         public float fogSize;
 
         /// <summary>
