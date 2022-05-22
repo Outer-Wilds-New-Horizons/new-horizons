@@ -2,6 +2,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
+using OWML.Common.Menus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,8 @@ namespace NewHorizons.Utility
     [RequireComponent(typeof(DebugPropPlacer))]
     class DebugMenu : MonoBehaviour
     {
+        private static IModButton pauseMenuButton;
+
         GUIStyle _editorMenuStyle;
         Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
@@ -45,13 +48,6 @@ namespace NewHorizons.Utility
         private Vector2 recentModListScrollPosition = Vector2.zero;
 
 
-        
-        private double debugcountA = 0;
-        private double debugcountB = 0;
-        private double debugcountC = 0;
-        private double debugcountD = 0;
-
-
         private void Awake()
         {  
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
@@ -65,8 +61,6 @@ namespace NewHorizons.Utility
             {
                 staticInitialized = true;
 
-                Logger.Log("STATIC INITILIZATION IN DEBUG MENU");
-                
                 Main.Instance.ModHelper.Menus.PauseMenu.OnInit += PauseMenuInitHook;
                 Main.Instance.ModHelper.Menus.PauseMenu.OnClosed += CloseMenu;
                 Main.Instance.ModHelper.Menus.PauseMenu.OnOpened += RestoreMenuOpennessState;
@@ -82,20 +76,17 @@ namespace NewHorizons.Utility
 
             if (loadedMod != null)
             {
-                Logger.Log("THERE WAS A MOD ALREADY LOADED");
                 LoadMod(loadedMod);
             }
         }
 
         private void PauseMenuInitHook()
         {
-            Logger.Log("PAUSE MENU INIT HOOK");
+            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Toggle Prop Placer Menu".ToUpper());
             InitMenu();
-            var editorButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Toggle Prop Placer Menu".ToUpper());
-            editorButton.OnClick += ToggleMenu;
         }
-        private void RestoreMenuOpennessState() {  Logger.Log("RESTORING MENU OPENNESS STATE: " + openMenuOnPause); menuOpen = openMenuOnPause; }
-        private void ToggleMenu() { Logger.Log($"oMY MENU BUTTON WAS CLICKED! debug counts: {debugcountA}, {debugcountB}, {debugcountC}, {debugcountD}"); menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
+        private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
+        private void ToggleMenu() { menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
 
         private void CloseMenu() { menuOpen = false; }
 
@@ -115,18 +106,12 @@ namespace NewHorizons.Utility
         
         private void OnGUI()
         {
-            debugcountA ++;
-
             if (!menuOpen) return;
             if (!Main.Debug) return;
-
-            debugcountB ++;
 
             Vector2 menuPosition =  new Vector2(10, 40);
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
-            
-            debugcountC++;
 
             //
             // DebugPropPlacer
@@ -216,8 +201,6 @@ namespace NewHorizons.Utility
             }
 
             GUILayout.EndArea();
-
-            debugcountD++;
         }
 
         private void LoadMod(IModBehaviour mod)
@@ -245,7 +228,7 @@ namespace NewHorizons.Utility
             UpdateLoadedConfigsForRecentSystem();
                     
             string backupFolderName = "configBackups\\" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "\\";
-            Logger.Log($"(count) Saving {loadedConfigFiles.Keys.Count} files");
+            Logger.Log($"Potentially saving {loadedConfigFiles.Keys.Count} files");
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
@@ -279,8 +262,7 @@ namespace NewHorizons.Utility
         {
             var newDetails = _dpp.GetPropsConfigByBody();
         
-            Logger.Log("updating configs");
-            Logger.Log("New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
+            Logger.Log("Updating config files. New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
 
             Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
 
@@ -322,11 +304,10 @@ namespace NewHorizons.Utility
 
         private void InitMenu()
         {
-            Logger.Log("Maybe Initing menu");
-
             if (_editorMenuStyle != null) return;
             
-            Logger.Log("Initing menu");
+            // TODO: figure out how to clear this event list so that we don't pile up useless instances of the DebugMenu that can't get garbage collected
+            pauseMenuButton.OnClick += ToggleMenu;
 
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
