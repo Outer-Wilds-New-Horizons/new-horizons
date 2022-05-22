@@ -14,9 +14,15 @@ namespace NewHorizons.Handlers
         public static void InitSubtitles()
         {
             GameObject subtitleContainer = GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
-            subtitleContainer.AddComponent<SubtitlesHandler>();
+            
+            if (subtitleContainer == null)
+            {
+                Logger.LogError("No subtitle container found! Failed to load subtitles.");
+                return;
+            }
 
-            // TODO: if no subtitleContainer found, make one
+            subtitleContainer.SetActive(true);
+            subtitleContainer.AddComponent<SubtitlesHandler>();
         }
 
         public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)

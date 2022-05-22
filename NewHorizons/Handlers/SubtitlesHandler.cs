@@ -31,20 +31,24 @@ namespace NewHorizons.Handlers
         {
             randomizer = new System.Random();
 
+            GetComponent<CanvasGroup>().alpha = 1;
             graphic = GetComponent<Graphic>();
             image =   GetComponent<UnityEngine.UI.Image>();
 
+            graphic.enabled = true;
+            image.enabled = true;
+
+            if (!Main.HasDLC) image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+
             if (!eoteSubtitleHasBeenInserted)
             {
-                // TODO: only insert if hasDLC
-                possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
+                if (image.sprite != null) possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
                 eoteSubtitleHasBeenInserted = true;
             }
         }
 
         public static void AddSubtitle(IModBehaviour mod, string filepath)
         {
-            
             var tex = ImageUtilities.GetTexture(mod, filepath);
             if (tex == null) return;
 
@@ -60,6 +64,8 @@ namespace NewHorizons.Handlers
 
         public void Update()
         {
+            if (image.sprite == null) image.sprite = possibleSubtitles[0];
+
             // don't fade transition subtitles if there's only one subtitle
             if (possibleSubtitles.Count <= 1) return;
 
