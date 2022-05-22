@@ -64,6 +64,8 @@ namespace NewHorizons.Handlers
 
         public void Update()
         {
+            if (possibleSubtitles.Count == 0) return;
+
             if (image.sprite == null) image.sprite = possibleSubtitles[0];
 
             // don't fade transition subtitles if there's only one subtitle
