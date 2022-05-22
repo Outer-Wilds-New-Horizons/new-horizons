@@ -1,13 +1,6 @@
 ﻿using NewHorizons.Builder.General;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Components
 {
     public class ShipWarpController : MonoBehaviour
@@ -124,7 +117,7 @@ namespace NewHorizons.Components
 
         public void Update()
         {
-            if(_isWarpingIn && LateInitializerManager.isDoneInitializing)
+            if (_isWarpingIn && LateInitializerManager.isDoneInitializing)
             {
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => StartWarpInEffect(), 1);
                 _isWarpingIn = false;
@@ -188,7 +181,7 @@ namespace NewHorizons.Components
             Locator.GetDeathManager()._invincible = false;
 
             // For some reason warping into the ship makes you suffocate while in the ship
-            if(_wearingSuit) resources.OnSuitUp();
+            if (_wearingSuit) resources.OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
             var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 

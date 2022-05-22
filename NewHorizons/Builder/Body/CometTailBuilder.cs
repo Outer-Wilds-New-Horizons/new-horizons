@@ -1,18 +1,10 @@
-﻿using NewHorizons.External;
-using NewHorizons.External.Configs;
-using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NewHorizons.External.Configs;
 using UnityEngine;
-
 namespace NewHorizons.Builder.Body
 {
     public static class CometTailBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, IPlanetConfig config, AstroObject primary)
+        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
         {
             var cometTail = GameObject.Instantiate(GameObject.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes"), sector?.transform ?? planetGO.transform);
             cometTail.transform.position = planetGO.transform.position;

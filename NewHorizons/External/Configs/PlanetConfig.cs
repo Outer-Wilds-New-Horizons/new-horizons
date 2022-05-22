@@ -1,17 +1,15 @@
-﻿using NewHorizons.External.VariableSize;
-using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.External.Configs
 {
-    public class PlanetConfig : Config, IPlanetConfig
+    public class PlanetConfig
     {
         public string Name { get; set; }
+        public string Version { get; set; }
         public string StarSystem { get; set; } = "SolarSystem";
         public bool Destroy { get; set; }
-        public string[] ChildrenToDestroy { get; set; }
+        public string[] RemoveChildren { get; set; }
         public int BuildPriority { get; set; } = -1;
         public bool CanShowOnTitle { get; set; } = true;
         public bool IsQuantumState { get; set; }
@@ -34,12 +32,60 @@ namespace NewHorizons.External.Configs
         public SandModule Sand { get; set; }
         public FunnelModule Funnel { get; set; }
 
-        public PlanetConfig(Dictionary<string, object> dict) : base(dict)
+        #region Obsolete
+        [System.Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")] public string[] ChildrenToDestroy { get; set; }
+        #endregion Obsolete
+
+        public PlanetConfig()
         {
             // Always have to have a base module
-            if(Base == null) Base = new BaseModule();
-            if(Orbit == null) Orbit = new OrbitModule();
+            if (Base == null) Base = new BaseModule();
+            if (Orbit == null) Orbit = new OrbitModule();
             if (ShipLog == null) ShipLog = new ShipLogModule();
+        }
+
+        public void Validate()
+        {
+            if (Base.CenterOfSolarSystem) Orbit.IsStatic = true;
+
+            // Backwards compatability
+            // Should be the only place that obsolete things are referenced
+            #pragma warning disable 612, 618
+            if (Base.WaterSize != 0)
+            {
+                Water = new WaterModule();
+                Water.Size = Base.WaterSize;
+                Water.Tint = Base.WaterTint;
+            }
+
+            if (Base.LavaSize != 0)
+            {
+                Lava = new LavaModule();
+                Lava.Size = Base.LavaSize;
+            }
+
+            if (Base.BlackHoleSize != 0)
+            {
+                Singularity = new SingularityModule();
+                Singularity.Type = "BlackHole";
+                Singularity.Size = Base.BlackHoleSize;
+            }
+
+            if (Base.IsSatellite)
+            {
+                Base.ShowMinimap = false;
+            }
+
+            if (ChildrenToDestroy != null)
+            {
+                RemoveChildren = ChildrenToDestroy;
+            }
+
+            if (Base.HasAmbientLight)
+            {
+                Base.AmbientLight = 0.5f;
+            }
+            #pragma warning restore 612, 618
         }
     }
 }

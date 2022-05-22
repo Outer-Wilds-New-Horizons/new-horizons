@@ -1,17 +1,12 @@
-﻿using NewHorizons.External;
-using NewHorizons.External.Configs;
-using OWML.Utils;
+﻿using NewHorizons.External.Configs;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class VolumesBuilder
     {
-        public static void Make(GameObject planetGO, IPlanetConfig config, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, PlanetConfig config, float sphereOfInfluence)
         {
             var innerRadius = config.Base.SurfaceSize;
-            var useMiniMap = config.Base.IsSatellite;
 
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -33,13 +28,15 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
-            PR._useMinimap = useMiniMap;
-            PR._useAltimeter = useMiniMap;
+            PR._useMinimap = config.Base.ShowMinimap;
+            PR._useAltimeter = config.Base.ShowMinimap;
+
+            rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
             var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
-            
+
             ER._material = gdRuleset._material;
 
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);

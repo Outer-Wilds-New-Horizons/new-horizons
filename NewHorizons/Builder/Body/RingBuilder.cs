@@ -1,16 +1,12 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
+using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.VariableSize;
-using NewHorizons.Components;
-using NewHorizons.Components.SizeControllers;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -22,6 +18,57 @@ namespace NewHorizons.Builder.Body
         public static Shader UnlitRingShader1Pixel;
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
+        {
+            var ringGO = MakeRingGraphics(planetGO, sector, ring, mod);
+
+            // Funny collider thing
+            var ringVolume = new GameObject("RingVolume");
+            ringVolume.SetActive(false);
+            ringVolume.transform.parent = ringGO.transform;
+            ringVolume.transform.localPosition = Vector3.zero;
+            ringVolume.transform.localScale = Vector3.one;
+            ringVolume.transform.localRotation = Quaternion.identity;
+            ringVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+            var ringShape = ringVolume.AddComponent<RingShape>();
+            ringShape.innerRadius = ring.InnerRadius;
+            ringShape.outerRadius = ring.OuterRadius;
+            ringShape.height = 20f;
+            ringShape.center = Vector3.zero;
+            ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
+            ringShape.SetLayer(Shape.Layer.Default);
+            ringShape.layerMask = -1;
+            ringShape.pointChecksOnly = true;
+
+            var trigger = ringVolume.AddComponent<OWTriggerVolume>();
+            trigger._shape = ringShape;
+
+            var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
+            var fluidType = FluidVolume.Type.NONE;
+
+            if (!string.IsNullOrEmpty(ring.FluidType))
+            {
+                try
+                {
+                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), ring.FluidType.ToUpper());
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Couldn't parse fluid volume type [{ring.FluidType}]: {ex.Message}, {ex.StackTrace}");
+                }
+            }
+
+            sfv._fluidType = fluidType;
+            sfv._density = 5f;
+
+            ringVolume.SetActive(true);
+
+
+
+            return ringGO;
+        }
+
+        public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
             // Properly lit shader doesnt work yet
             ring.Unlit = true;
@@ -38,9 +85,9 @@ namespace NewHorizons.Builder.Body
             }
 
             var ringGO = new GameObject("Ring");
-            ringGO.transform.parent = sector?.transform ?? planetGO.transform;
-            ringGO.transform.position = planetGO.transform.position;
-            ringGO.transform.rotation = planetGO.transform.rotation;
+            ringGO.transform.parent = sector?.transform ?? rootObject.transform;
+            ringGO.transform.position = rootObject.transform.position;
+            ringGO.transform.rotation = rootObject.transform.rotation;
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
             ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.Inclination);
 
@@ -76,48 +123,6 @@ namespace NewHorizons.Builder.Body
                 rot._degreesPerSecond = ring.RotationSpeed;
                 rot._localAxis = Vector3.down;
             }
-
-            // Funny collider thing
-            var ringVolume = new GameObject("RingVolume");
-            ringVolume.SetActive(false);
-            ringVolume.transform.parent = ringGO.transform;
-            ringVolume.transform.localPosition = Vector3.zero;
-            ringVolume.transform.localScale = Vector3.one;
-            ringVolume.transform.localRotation = Quaternion.identity;
-            ringVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
-
-            var ringShape = ringVolume.AddComponent<RingShape>();
-            ringShape.innerRadius = ring.InnerRadius;
-            ringShape.outerRadius = ring.OuterRadius;
-            ringShape.height = 2f;
-            ringShape.center = Vector3.zero;
-            ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
-            ringShape.SetLayer(Shape.Layer.Default);
-            ringShape.layerMask = -1;
-            ringShape.pointChecksOnly = true;
-
-            var trigger = ringVolume.AddComponent<OWTriggerVolume>();
-            trigger._shape = ringShape;
-
-            var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
-            var fluidType = FluidVolume.Type.NONE;
-
-            if (!string.IsNullOrEmpty(ring.FluidType))
-            {
-                try
-                {
-                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), ring.FluidType.ToUpper());
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Couldn't parse fluid volume type [{ring.FluidType}]: {ex.Message}, {ex.StackTrace}");
-                }
-            }
-
-            sfv._fluidType = fluidType;
-            sfv._density = 1f;
-
-            ringVolume.SetActive(true);
 
             if (ring.Curve != null)
             {

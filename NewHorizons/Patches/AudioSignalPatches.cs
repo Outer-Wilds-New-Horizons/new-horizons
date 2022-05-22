@@ -4,12 +4,7 @@ using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -129,6 +124,13 @@ namespace NewHorizons.Patches
                 return false;
             }
             return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(TravelerAudioManager), nameof(TravelerAudioManager.Update))]
+        public static void TravelerAudioManager_Update(TravelerAudioManager __instance)
+        {
+            __instance._signals.RemoveAll(signal => signal == null || signal.gameObject == null || signal._owAudioSource == null || signal._owAudioSource._audioSource == null);
         }
     }
 }

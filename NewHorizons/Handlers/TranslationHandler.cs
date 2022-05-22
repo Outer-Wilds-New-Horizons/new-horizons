@@ -2,11 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
@@ -29,7 +24,7 @@ namespace NewHorizons.Handlers
 
             switch (type)
             {
-                case TextType.SHIPLOG: 
+                case TextType.SHIPLOG:
                     dictionary = _shipLogTranslationDictionary;
                     break;
                 case TextType.DIALOGUE:
@@ -42,16 +37,16 @@ namespace NewHorizons.Handlers
                     return text;
             }
 
-            if(dictionary.TryGetValue(language, out var table))
+            if (dictionary.TryGetValue(language, out var table))
             {
-                if(table.TryGetValue(text, out var translatedText))
+                if (table.TryGetValue(text, out var translatedText))
                 {
                     return translatedText;
                 }
             }
 
             // Try to default to English
-            if(dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
+            if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
             {
 
                 if (englishTable.TryGetValue(text, out var englishText))

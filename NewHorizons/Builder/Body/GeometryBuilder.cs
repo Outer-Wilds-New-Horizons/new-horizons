@@ -1,6 +1,4 @@
 ﻿using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Body
 {
     public static class GeometryBuilder

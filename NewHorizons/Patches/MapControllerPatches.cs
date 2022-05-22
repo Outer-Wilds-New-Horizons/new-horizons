@@ -1,11 +1,4 @@
 ﻿using HarmonyLib;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -27,6 +20,20 @@ namespace NewHorizons.Patches
         public static void MapController_OnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
         {
             __instance._isLockedOntoMapSatellite = true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MapController), nameof(MapController.MapInoperable))]
+        public static bool MapController_MapInoperable(MapController __instance, ref bool __result)
+        {
+            if(Main.SystemDict[Main.Instance.CurrentStarSystem]?.Config?.mapRestricted ?? false)
+            {
+                __instance._playerMapRestricted = true;
+                __result = true;
+                return false;
+            }
+
+            return true;
         }
     }
 }

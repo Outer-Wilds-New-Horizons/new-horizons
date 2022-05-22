@@ -1,15 +1,14 @@
-﻿using NewHorizons.Components;
+﻿using HarmonyLib;
+using NewHorizons.Builder.ShipLog;
+using NewHorizons.Components;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
-using NewHorizons.Builder.ShipLog;
-using NewHorizons.Handlers;
-using HarmonyLib;
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

@@ -1,17 +1,11 @@
-﻿using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Utils;
-using System;
-using System.Reflection;
+﻿using NewHorizons.External.Configs;
 using UnityEngine;
-using NewHorizons.External.Configs;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
     {
-        public static GravityVolume Make(GameObject planetGO, AstroObject ao, IPlanetConfig config)
+        public static GravityVolume Make(GameObject planetGO, AstroObject ao, PlanetConfig config)
         {
             var exponent = config.Base.GravityFallOff.Equals("linear") ? 1f : 2f;
             var GM = config.Base.SurfaceGravity * Mathf.Pow(config.Base.SurfaceSize, exponent);

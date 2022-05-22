@@ -1,11 +1,9 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
-using OWML.Utils;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class CloudsBuilder
@@ -14,83 +12,13 @@ namespace NewHorizons.Builder.Atmosphere
         private static Material[] _gdCloudMaterials;
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Texture2D image, cap, ramp;
-
-            try
-            {
-                image = ImageUtilities.GetTexture(mod, atmo.Cloud);
-
-                if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = ImageUtilities.GetTexture(mod, atmo.CloudCap);
-                if (atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
-                else ramp = ImageUtilities.GetTexture(mod, atmo.CloudRamp);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Couldn't load Cloud textures, {e.Message}, {e.StackTrace}");
-                return;
-            }
-
             Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor32();
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
             cloudsMainGO.transform.parent = sector?.transform ?? planetGO.transform;
 
-            GameObject cloudsTopGO = new GameObject("TopClouds");
-            cloudsTopGO.SetActive(false);
-            cloudsTopGO.transform.parent = cloudsMainGO.transform;
-            cloudsTopGO.transform.localScale = Vector3.one * atmo.Size;
-
-            MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
-            topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
-
-            MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
-
-            if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
-            if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
-            var tempArray = new Material[2];
-
-            if (atmo.UseBasicCloudShader)
-            {
-                var material = new Material(_sphereShader);
-                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
-                material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
-
-                tempArray[0] = material;
-            }
-            else
-            {
-                var material = new Material(_gdCloudMaterials[0]);
-                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
-                material.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
-                tempArray[0] = material;
-            }
-
-            // This is the stencil material for the fog under the clouds
-            tempArray[1] = new Material(_gdCloudMaterials[1]);
-            topMR.sharedMaterials = tempArray;
-
-            foreach (var material in topMR.sharedMaterials)
-            {
-                material.SetColor("_Color", cloudTint);
-                material.SetColor("_TintColor", cloudTint);
-
-                material.SetTexture("_MainTex", image);
-                material.SetTexture("_RampTex", ramp);
-                material.SetTexture("_CapTex", cap);
-            }
-
-            if(!atmo.ShadowsOnClouds)
-            {
-                cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
-            }
-
-            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            // Idk why but the axis is weird
-            topRT._localAxis = atmo.UseBasicCloudShader ? Vector3.forward : Vector3.up;
-            topRT._degreesPerSecond = 10;
-            topRT._randomizeRotationRate = false;
+            MakeTopClouds(cloudsMainGO, atmo, mod);
 
             GameObject cloudsBottomGO = new GameObject("BottomClouds");
             cloudsBottomGO.SetActive(false);
@@ -104,7 +32,7 @@ namespace NewHorizons.Builder.Atmosphere
             // If they set a colour apply it to all the materials else keep the default QM one
             if (atmo.CloudTint != null)
             {
-                var bottomColor = atmo.CloudTint.ToColor32();
+                var bottomColor = cloudTint;
 
                 var bottomTSRTempArray = new Material[2];
 
@@ -165,17 +93,98 @@ namespace NewHorizons.Builder.Atmosphere
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if(atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            if (atmo.UseBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             cloudsBottomGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             cloudsFluidGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
-            cloudsTopGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
 
-            cloudsTopGO.SetActive(true);
             cloudsBottomGO.SetActive(true);
             cloudsFluidGO.SetActive(true);
             cloudsMainGO.SetActive(true);
+        }
+
+        public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
+        {
+            Color cloudTint = atmo.CloudTint == null ? Color.white : (Color)atmo.CloudTint.ToColor32();
+
+            Texture2D image, cap, ramp;
+
+            try
+            {
+                image = ImageUtilities.GetTexture(mod, atmo.Cloud);
+
+                if (atmo.CloudCap == null) cap = ImageUtilities.ClearTexture(128, 128);
+                else cap = ImageUtilities.GetTexture(mod, atmo.CloudCap);
+                if (atmo.CloudRamp == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
+                else ramp = ImageUtilities.GetTexture(mod, atmo.CloudRamp);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Couldn't load Cloud textures for [{rootObject.name}], {e.Message}, {e.StackTrace}");
+                return null;
+            }
+
+            GameObject cloudsTopGO = new GameObject("TopClouds");
+            cloudsTopGO.SetActive(false);
+            cloudsTopGO.transform.parent = rootObject.transform;
+            cloudsTopGO.transform.localScale = Vector3.one * atmo.Size;
+
+            MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
+            topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+
+            MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
+
+            if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            var tempArray = new Material[2];
+
+            if (atmo.UseBasicCloudShader)
+            {
+                var material = new Material(_sphereShader);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "BasicShadowCloud" : "BasicCloud";
+
+                tempArray[0] = material;
+            }
+            else
+            {
+                var material = new Material(_gdCloudMaterials[0]);
+                if (!atmo.ShadowsOnClouds) material.renderQueue = 2550;
+                material.name = atmo.ShadowsOnClouds ? "AdvancedShadowCloud" : "AdvancedCloud";
+                tempArray[0] = material;
+            }
+
+            // This is the stencil material for the fog under the clouds
+            tempArray[1] = new Material(_gdCloudMaterials[1]);
+            topMR.sharedMaterials = tempArray;
+
+            foreach (var material in topMR.sharedMaterials)
+            {
+                material.SetColor("_Color", cloudTint);
+                material.SetColor("_TintColor", cloudTint);
+
+                material.SetTexture("_MainTex", image);
+                material.SetTexture("_RampTex", ramp);
+                material.SetTexture("_CapTex", cap);
+            }
+
+            if (!atmo.ShadowsOnClouds)
+            {
+                cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
+            }
+
+            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+            // Idk why but the axis is weird
+            topRT._localAxis = atmo.UseBasicCloudShader ? Vector3.forward : Vector3.up;
+            topRT._degreesPerSecond = 10;
+            topRT._randomizeRotationRate = false;
+
+            cloudsTopGO.transform.localPosition = Vector3.zero;
+
+            cloudsTopGO.SetActive(true);
+
+            return cloudsTopGO;
         }
     }
 }

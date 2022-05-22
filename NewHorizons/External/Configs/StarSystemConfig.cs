@@ -1,19 +1,13 @@
-﻿using NewHorizons.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NewHorizons.External.Configs
+﻿namespace NewHorizons.External.Configs
 {
-    public class StarSystemConfig : Config
+    public class StarSystemConfig
     {
         public bool canEnterViaWarpDrive = true;
         public bool startHere = false;
         public bool destroyStockPlanets = true;
         public string factRequiredForWarp;
         public bool enableTimeLoop = true;
+        public bool mapRestricted;
         public NomaiCoordinates coords;
         public SkyboxConfig skybox;
 
@@ -30,8 +24,5 @@ namespace NewHorizons.External.Configs
             public string path = null;
             public bool destroyStarField = false;
         }
-
-        public StarSystemConfig(Dictionary<string, object> dict) : base(dict) { }
-        
     }
 }

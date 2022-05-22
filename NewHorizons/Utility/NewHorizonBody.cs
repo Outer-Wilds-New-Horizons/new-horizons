@@ -1,20 +1,18 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Configs;
 using OWML.Common;
 using UnityEngine;
-using NewHorizons.External.Configs;
-
 namespace NewHorizons.Utility
 {
     public class NewHorizonsBody
     {
-        public NewHorizonsBody(IPlanetConfig config, IModBehaviour mod, string relativePath = null)
+        public NewHorizonsBody(PlanetConfig config, IModBehaviour mod, string relativePath = null)
         {
             Config = config;
             Mod = mod;
             RelativePath = relativePath;
         }
 
-        public IPlanetConfig Config;
+        public PlanetConfig Config;
         public IModBehaviour Mod;
         public string RelativePath;
 

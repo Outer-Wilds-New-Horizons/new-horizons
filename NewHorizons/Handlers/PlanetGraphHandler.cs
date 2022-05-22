@@ -1,13 +1,10 @@
-﻿using System;
+﻿using NewHorizons.External.Configs;
+using NewHorizons.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using JetBrains.Annotations;
-using NewHorizons.External.Configs;
-using NewHorizons.Utility;
-using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Handlers
 {
     public class PlanetGraphHandler : IEnumerable<PlanetGraphHandler.PlanetNode>
@@ -39,11 +36,9 @@ namespace NewHorizons.Handlers
             {
                 if (centers.Length == 0 && Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
-                    var SunConfig = new Dictionary<string, object>
-                    {
-                        {"name", "Sun"}
-                    };
-                    _rootNode = ConstructGraph(new NewHorizonsBody(new PlanetConfig(SunConfig), Main.Instance), bodies);
+                    var SunConfig = new PlanetConfig();
+                    SunConfig.Name = "Sun";
+                    _rootNode = ConstructGraph(new NewHorizonsBody(SunConfig, Main.Instance), bodies);
                 }
                 else
                 {

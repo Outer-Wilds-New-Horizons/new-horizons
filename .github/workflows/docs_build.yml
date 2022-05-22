@@ -2,7 +2,7 @@ name: Build Docs
 
 on:
   push:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - docs/**
       - NewHorizons/*schema*.json
@@ -40,7 +40,7 @@ jobs:
       
       - run: cp -r docs/** .
       
-      - if: github.ref == 'refs/heads/master'
+      - if: github.ref == 'refs/heads/main'
         run: |
           echo "URL_PREFIX=/" >> $GITHUB_ENV
           
@@ -59,19 +59,7 @@ jobs:
           command: install --dev
           
       - name: Copy Schemas
-        run: |
-          mkdir content/pages/schemas/
-          cp NewHorizons/schema.json content/pages/schemas/
-          cp NewHorizons/star_system_schema.json content/pages/schemas/
-          cp NewHorizons/translation_schema.json content/pages/schemas/
-          cp NewHorizons/shiplog_schema.xsd content/pages/schemas/
-          cp NewHorizons/dialogue_schema.xsd content/pages/schemas/
-
-      - name: Cache Site
-        uses: actions/cache@v2
-        with:
-          path: .m_cache
-          key: docs-cache
+        run: cp -rf NewHorizons/Schemas content/pages/
           
       - name: Build Site
         uses: VaultVulp/action-pipenv@v2.0.1
@@ -85,7 +73,7 @@ jobs:
           path: out/
           
       - name: Deploy To Pages
-        if: success() && github.ref == 'refs/heads/master'
+        if: success() && github.ref == 'refs/heads/main'
         uses: JamesIves/github-pages-deploy-action@4.1.5
         with:
           branch: gh-pages 

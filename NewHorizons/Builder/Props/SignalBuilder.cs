@@ -1,16 +1,11 @@
 ﻿using NewHorizons.Components;
-using NewHorizons.External;
-using NewHorizons.Handlers;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Props
 {
     public static class SignalBuilder
@@ -147,10 +142,12 @@ namespace NewHorizons.Builder.Props
 
             var source = signalGO.AddComponent<AudioSource>();
             var owAudioSource = signalGO.AddComponent<OWAudioSource>();
+            owAudioSource._audioSource = source;
 
             AudioSignal audioSignal;
             if (info.InsideCloak) audioSignal = signalGO.AddComponent<CloakedAudioSignal>();
             else audioSignal = signalGO.AddComponent<AudioSignal>();
+            audioSignal._owAudioSource = owAudioSource;
 
             var frequency = StringToFrequency(info.Frequency);
             var name = StringToSignalName(info.Name);

@@ -1,16 +1,11 @@
-﻿using NewHorizons.External;
-using OWML.Utils;
-using System.Reflection;
-using UnityEngine;
-using NewHorizons.External.Configs;
-using Logger = NewHorizons.Utility.Logger;
+﻿using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
-
+using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     static class MarkerBuilder
     {
-        public static void Make(GameObject body, string name, IPlanetConfig config)
+        public static void Make(GameObject body, string name, PlanetConfig config)
         {
             MapMarker mapMarker = body.AddComponent<MapMarker>();
             mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.Name);
@@ -29,10 +24,12 @@ namespace NewHorizons.Builder.General
             {
                 markerType = MapMarker.MarkerType.HourglassTwins;
             }
-            else if(config.Base.IsSatellite)
+            /*
+            else if (config.Base.IsSatellite)
             {
                 markerType = MapMarker.MarkerType.Probe;
             }
+            */
 
             mapMarker._markerType = markerType;
         }

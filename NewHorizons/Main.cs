@@ -1,32 +1,21 @@
-﻿using NewHorizons.Builder.Body;
-using NewHorizons.Builder.General;
-using NewHorizons.Builder.Orbital;
+﻿using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
-using NewHorizons.External;
 using NewHorizons.External.Configs;
-using NewHorizons.External.VariableSize;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.ModHelper;
-using OWML.Utils;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OWML.Common.Menus;
+using System.Reflection;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Builder.Atmosphere;
-using UnityEngine.Events;
-using HarmonyLib;
-using System.Reflection;
-
 namespace NewHorizons
 {
     public class Main : ModBehaviour
@@ -106,7 +95,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(null), Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
@@ -238,11 +227,6 @@ namespace NewHorizons
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
-        
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>());
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>());
-                Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>());
-
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
                 HasWarpDrive = StarChartHandler.CanWarp();
@@ -250,20 +234,9 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
-                if (IsWarping && _shipWarpController)
-                {
-                    Instance.ModHelper.Events.Unity.RunWhen(
-                        () => IsSystemReady,
-                        () => _shipWarpController.WarpIn(WearingSuit)
-                    );
-                }
-                else
-                {
-                    Instance.ModHelper.Events.Unity.RunWhen(
-                        () => IsSystemReady,
-                        () => FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint)
-                    );
-                }
+                var shouldWarpIn = IsWarping && _shipWarpController != null;
+                Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpIn));
+
                 IsWarping = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
@@ -286,6 +259,18 @@ namespace NewHorizons
                     _currentStarSystem = _defaultStarSystem;
                 }
             }
+        }
+
+        // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
+        private void OnSystemReady(bool shouldWarpIn)
+        {
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+
+
+            if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
+            else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
         }
 
         public void EnableWarpDrive()
@@ -392,13 +377,15 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                config.Validate();
+
                 Logger.Log($"Loaded {config.Name}");
-                if (config.Base.CenterOfSolarSystem) config.Orbit.IsStatic = true;
+
                 if (!SystemDict.ContainsKey(config.StarSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
-                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig(null);
+                    if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.StarSystem}. Why wasn't this loaded earlier?");
 
                     var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);

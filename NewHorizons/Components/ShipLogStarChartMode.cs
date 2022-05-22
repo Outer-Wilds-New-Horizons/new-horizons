@@ -1,15 +1,10 @@
-﻿using System;
+﻿using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
-using UnityEngine.UI;
-using OWML.Common;
-using NewHorizons.Handlers;
-
 namespace NewHorizons.Components
 {
     public class ShipLogStarChartMode : ShipLogMode
@@ -92,9 +87,9 @@ namespace NewHorizons.Components
             */
         }
 
-        public void AddSystemCard(string starSystem)
+        public void AddSystemCard(string uniqueID)
         {
-            var card = CreateCard(starSystem, root.transform, new Vector2(_nextCardIndex++ * 200, 0));
+            var card = CreateCard(uniqueID, root.transform, new Vector2(_nextCardIndex++ * 200, 0));
             _starSystemCards.Add(card);
         }
 
@@ -112,7 +107,7 @@ namespace NewHorizons.Components
         private void OnEnterFlightConsole(OWRigidbody _)
         {
             _isAtFlightConsole = true;
-            if(_target != null)
+            if (_target != null)
             {
                 _warpPrompt.SetVisibility(true);
             }
@@ -131,13 +126,13 @@ namespace NewHorizons.Components
 
         private void OnGameUnpaused()
         {
-            if(_target != null && _isAtFlightConsole)
+            if (_target != null && _isAtFlightConsole)
             {
                 _warpPrompt.SetVisibility(true);
             }
         }
 
-        public GameObject CreateCard(string uniqueName, Transform parent, Vector2 position)
+        public GameObject CreateCard(string uniqueID, Transform parent, Vector2 position)
         {
             if (_cardTemplate == null)
             {
@@ -148,12 +143,14 @@ namespace NewHorizons.Components
 
             var newCard = GameObject.Instantiate(_cardTemplate, parent);
             var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>();
-            var name = UniqueNameToString(uniqueName);
+
+            var name = UniqueIDToName(uniqueID);
+
             textComponent.text = name;
             if (name.Length > 17) textComponent.fontSize = 10;
 
             newCard.SetActive(true);
-            newCard.transform.name = uniqueName;
+            newCard.transform.name = uniqueID;
             newCard.transform.localPosition = new Vector3(position.x, position.y, 40);
             newCard.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
@@ -162,20 +159,20 @@ namespace NewHorizons.Components
             Texture texture = null;
             try
             {
-                if (uniqueName.Equals("SolarSystem"))
+                if (uniqueID.Equals("SolarSystem"))
                 {
                     texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/hearthian system.png");
                 }
                 else
                 {
-                    var path = $"planets/{uniqueName}.png";
+                    var path = $"planets/{uniqueID}.png";
                     Logger.Log($"Trying to load {path}");
-                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueName].Mod, path);
+                    texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
             }
             catch (Exception) { }
 
-            if(texture != null)
+            if (texture != null)
             {
                 shipLogEntryCard._photo.sprite = MakeSprite((Texture2D)texture);
                 newCard.transform.Find("EntryCardRoot/EntryCardBackground/PhotoImage").gameObject.SetActive(true);
@@ -277,13 +274,19 @@ namespace NewHorizons.Components
             }
         }
 
-        public string UniqueNameToString(string uniqueName)
+        public string UniqueIDToName(string uniqueID)
         {
-            if (uniqueName.Equals("SolarSystem")) return "Hearthian System";
+            var name = TranslationHandler.GetTranslation(uniqueID, TranslationHandler.TextType.UI);
 
-            var splitString = uniqueName.Split('.');
+            // If it can't find a translation it just returns the key
+            if (!name.Equals(uniqueID)) return name;
+
+            // Else we return a default name
+            if (uniqueID.Equals("SolarSystem")) return "Hearthian System";
+
+            var splitString = uniqueID.Split('.');
             if (splitString.Length > 1) splitString = splitString.Skip(1).ToArray();
-            var name = string.Join("", splitString).SplitCamelCase();
+            name = string.Join("", splitString).SplitCamelCase();
             return name;
         }
 
@@ -313,17 +316,17 @@ namespace NewHorizons.Components
             Locator._rfTracker.UntargetReferenceFrame();
 
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
-            _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueNameToString(shipLogEntryCard.name).ToUpper()}");
+            _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueIDToName(shipLogEntryCard.name).ToUpper()}");
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 
-            _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueNameToString(shipLogEntryCard.name)}");
+            _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueIDToName(shipLogEntryCard.name)}");
         }
 
         private void RemoveWarpTarget(bool playSound = false)
         {
-            if(_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
+            if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
             if (_target == null) return;
-            if(playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
+            if (playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
             _target.SetMarkedOnHUD(false);
             _target = null;
 

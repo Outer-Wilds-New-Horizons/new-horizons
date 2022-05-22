@@ -1,15 +1,8 @@
-﻿using NewHorizons.External;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
@@ -46,7 +39,7 @@ namespace NewHorizons.Builder.Props
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
                     prereqConditions = new string[]{ },
                     onTriggerEnterConditions = new string[]{ }
-                }  
+                }
             };
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
@@ -72,7 +65,7 @@ namespace NewHorizons.Builder.Props
             var owCollider = conversationZone.AddComponent<OWCollider>();
             var interact = conversationZone.AddComponent<InteractReceiver>();
 
-            if(info.radius <= 0)
+            if (info.radius <= 0)
             {
                 sphere.enabled = false;
                 owCollider.enabled = false;
@@ -110,7 +103,7 @@ namespace NewHorizons.Builder.Props
                 controller._dialogueTree = dialogue;
                 controller.lookOnlyWhenTalking = lookOnlyWhenTalking;
             }
-            else if(nomaiController != null)
+            else if (nomaiController != null)
             {
                 if (lookOnlyWhenTalking)
                 {
@@ -153,7 +146,7 @@ namespace NewHorizons.Builder.Props
                     triggerVolume.OnExit += controller.OnZoneExit;
                 }
                 // Simpler for the Nomai
-                else if(nomaiController)
+                else if (nomaiController)
                 {
                     triggerVolume.OnEntry += (_) => nomaiController.StartWatchingPlayer();
                     triggerVolume.OnExit += (_) => nomaiController.StopWatchingPlayer();

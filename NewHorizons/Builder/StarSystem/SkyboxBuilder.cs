@@ -1,11 +1,8 @@
-﻿using System;
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using Object = System.Object;
-
 namespace NewHorizons.Builder.StarSystem
 {
     public class SkyboxBuilder
@@ -15,15 +12,10 @@ namespace NewHorizons.Builder.StarSystem
             Logger.Log("Building Skybox");
             var skyBoxMaterial = AssetBundleUtilities.Load<Material>(info.assetBundle, info.path, mod);
             RenderSettings.skybox = skyBoxMaterial;
-            DynamicGI.UpdateEnvironment();
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            foreach (var camera in Resources.FindObjectsOfTypeAll<OWCamera>())
             {
-                foreach (var camera in Resources.FindObjectsOfTypeAll<OWCamera>())
-                {
-                    camera.clearFlags = CameraClearFlags.Skybox;
-                }
-            });
+                camera.clearFlags = CameraClearFlags.Skybox;
+            }
         }
-        
     }
 }

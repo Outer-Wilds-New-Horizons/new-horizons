@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-
 namespace NewHorizons.Utility
 {
     public static class AstroObjectLocator
@@ -98,7 +94,7 @@ namespace NewHorizons.Utility
             if (primary == null) return new GameObject[0];
 
             var otherChildren = new List<GameObject>();
-            switch (primary.GetAstroObjectName())
+            switch (primary._name)
             {
                 case AstroObject.Name.TowerTwin:
                     otherChildren.Add(GameObject.Find("TimeLoopRing_Body"));
@@ -133,7 +129,10 @@ namespace NewHorizons.Utility
                     break;
                 // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
                 case AstroObject.Name.CustomString:
-                    if(primary._customName.Equals("Sun Station")) otherChildren.Add(GameObject.Find("SS_Debris_Body"));
+                    if (primary._customName.Equals("Sun Station"))
+                    {
+                        otherChildren.Add(GameObject.Find("SS_Debris_Body"));
+                    }
                     break;
                 default:
                     break;

@@ -1,6 +1,6 @@
 {
 	"name" : "Ship",
-	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/schema.json",
+	"$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/body_schema.json",
 	"Props" :
 	{
 		"dialogue": [

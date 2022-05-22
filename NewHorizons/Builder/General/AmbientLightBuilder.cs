@@ -1,14 +1,9 @@
-﻿using NewHorizons.External;
-using NewHorizons.Utility;
-using OWML.Utils;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-
+﻿using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, float scale)
+        public static void Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
             GameObject lightGO = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
@@ -24,7 +19,7 @@ namespace NewHorizons.Builder.General
 
             light.color = new Color(0.0f, 0.0f, 0.8f, 0.0225f);
             light.range = scale;
-            light.intensity = 0.5f;
+            light.intensity = intensity;
         }
     }
 }

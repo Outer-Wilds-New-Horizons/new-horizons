@@ -1,15 +1,7 @@
-﻿using NewHorizons.Components;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using NewHorizons.External;
-using NewHorizons.Utility;
+﻿using NewHorizons.External.Modules;
 using OWML.Common;
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.ShipLog
 {
     public static class EntryLocationBuilder

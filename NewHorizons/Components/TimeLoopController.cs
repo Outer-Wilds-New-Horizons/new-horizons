@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
+﻿using UnityEngine;
 namespace NewHorizons.Components
 {
     public class TimeLoopController : MonoBehaviour
@@ -21,7 +15,7 @@ namespace NewHorizons.Components
         {
             // Stock gives like 33 seconds after the sun collapses
             // Gonna assume it takes like 7 seconds to collapse after the supernova trigger
-            if(_supernovaHappened && Time.time > _supernovaTime + 40f)
+            if (_supernovaHappened && Time.time > _supernovaTime + 40f)
             {
                 Locator.GetDeathManager().KillPlayer(DeathType.TimeLoop);
             }
