@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.Props
                 Logger.LogError($"Need either a position or an elevation for tornados");
                 return;
             }
-            info.type = "hurricane";
+
             if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position, hasClouds);
             else MakeTornado(planetGO, sector, info, position, info.type.ToLower() == "downwards");
         }
