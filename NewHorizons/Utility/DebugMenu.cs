@@ -1,5 +1,6 @@
 ﻿using NewHorizons.External;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,13 @@ using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility
 {
+
+    //
+    //
+    //  TODO: split this into two separate classes "DebugMenu" and "DebugPropPlacerMenu"
+    //
+    //
+
     [RequireComponent(typeof(DebugRaycaster))]
     [RequireComponent(typeof(DebugPropPlacer))]
     class DebugMenu : MonoBehaviour
@@ -18,8 +26,8 @@ namespace NewHorizons.Utility
         GUIStyle _editorMenuStyle;
         Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
-        static bool openMenuOnPause = false;
-        static bool staticInitialized = false;
+        static bool openMenuOnPause;
+        static bool staticInitialized;
 
         DebugPropPlacer _dpp;
         DebugRaycaster _drc;
@@ -36,12 +44,19 @@ namespace NewHorizons.Utility
         private bool saveButtonUnlocked = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
 
+
+        
+        private double debugcountA = 0;
+        private double debugcountB = 0;
+        private double debugcountC = 0;
+        private double debugcountD = 0;
+
+
         private void Awake()
         {  
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
             LoadFavoriteProps();
-
         }
         private void Start() 
         { 
@@ -59,6 +74,10 @@ namespace NewHorizons.Utility
                 PauseMenuInitHook();
 
                 Main.Instance.OnChangeStarSystem.AddListener((string s) => SaveLoadedConfigsForRecentSystem());
+            } 
+            else
+            {
+                InitMenu();
             }
 
             if (loadedMod != null)
@@ -70,12 +89,13 @@ namespace NewHorizons.Utility
 
         private void PauseMenuInitHook()
         {
+            Logger.Log("PAUSE MENU INIT HOOK");
             InitMenu();
             var editorButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Toggle Prop Placer Menu".ToUpper());
             editorButton.OnClick += ToggleMenu;
         }
-        private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
-        private void ToggleMenu() { menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
+        private void RestoreMenuOpennessState() {  Logger.Log("RESTORING MENU OPENNESS STATE: " + openMenuOnPause); menuOpen = openMenuOnPause; }
+        private void ToggleMenu() { Logger.Log($"oMY MENU BUTTON WAS CLICKED! debug counts: {debugcountA}, {debugcountB}, {debugcountC}, {debugcountD}"); menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
 
         private void CloseMenu() { menuOpen = false; }
 
@@ -95,13 +115,19 @@ namespace NewHorizons.Utility
         
         private void OnGUI()
         {
+            debugcountA ++;
+
             if (!menuOpen) return;
             if (!Main.Debug) return;
+
+            debugcountB ++;
 
             Vector2 menuPosition =  new Vector2(10, 40);
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
             
+            debugcountC++;
+
             //
             // DebugPropPlacer
             // 
@@ -190,6 +216,8 @@ namespace NewHorizons.Utility
             }
 
             GUILayout.EndArea();
+
+            debugcountD++;
         }
 
         private void LoadMod(IModBehaviour mod)
@@ -269,7 +297,7 @@ namespace NewHorizons.Utility
 
                 if (!newDetails.ContainsKey(astroObjectName)) continue;
 
-                if (loadedConfigFiles[filePath].Props == null) loadedConfigFiles[filePath].Props = new External.PropModule();
+                if (loadedConfigFiles[filePath].Props == null) loadedConfigFiles[filePath].Props = new External.Modules.PropModule();
                 loadedConfigFiles[filePath].Props.Details = newDetails[astroObjectName];
 
                 Logger.Log("successfully updated copy of config file for " + astroObjectName);
@@ -282,7 +310,7 @@ namespace NewHorizons.Utility
                 Logger.Log("Fabricating new config file for " + astroObjectName);
                 
                 var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObjectName + ".json";
-                PlanetConfig c = new PlanetConfig(null);
+                PlanetConfig c = new PlanetConfig();
                 c.StarSystem = Main.Instance.CurrentStarSystem;
                 c.Name = astroObjectName;
                 c.Props = new PropModule();
@@ -294,8 +322,12 @@ namespace NewHorizons.Utility
 
         private void InitMenu()
         {
+            Logger.Log("Maybe Initing menu");
+
             if (_editorMenuStyle != null) return;
             
+            Logger.Log("Initing menu");
+
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
 

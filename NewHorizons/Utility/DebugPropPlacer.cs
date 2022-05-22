@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static NewHorizons.External.PropModule;
+using static NewHorizons.External.Modules.PropModule;
 
 namespace NewHorizons.Utility
 {
@@ -46,7 +46,7 @@ namespace NewHorizons.Utility
             if (!Main.Debug) return;
             if (!active) return;
 
-            if (Keyboard.current[Key.X].wasReleasedThisFrame)
+            if (Keyboard.current[Key.G].wasReleasedThisFrame)
             {
                 PlaceObject();
             }
@@ -143,7 +143,7 @@ namespace NewHorizons.Utility
             return astroObjectName;
         }
 
-        public void FindAndRegisterPropsFromConfig(IPlanetConfig config)
+        public void FindAndRegisterPropsFromConfig(PlanetConfig config)
         {
             if (config.StarSystem != Main.Instance.CurrentStarSystem) return;
 
