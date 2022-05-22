@@ -9,11 +9,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Size of the lava sphere
         /// </summary>
-        public float Size;
+        public float size;
 
         /// <summary>
         /// Tint of the lava
         /// </summary>
-        public MColor Tint;
+        public MColor tint;
     }
 }

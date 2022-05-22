@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, LavaModule module)
         {
-            var heightScale = module.Size;
+            var heightScale = module.size;
             if (module.Curve != null)
             {
                 var modifier = 1f;
@@ -26,13 +26,13 @@ namespace NewHorizons.Builder.Body
             moltenCore.SetActive(false);
             moltenCore.transform.parent = sector?.transform ?? planetGO.transform;
             moltenCore.transform.position = planetGO.transform.position;
-            moltenCore.transform.localScale = Vector3.one * module.Size;
+            moltenCore.transform.localScale = Vector3.one * module.size;
 
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
             lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
-            if (module.Tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.Tint.ToColor());
+            if (module.tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.tint.ToColor());
 
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Body
             proxyLavaSphere.transform.localScale = Vector3.one;
             proxyLavaSphere.name = "LavaSphere_Proxy";
             proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
-            if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.Tint.ToColor());
+            if (module.tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.tint.ToColor());
 
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
             sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Body
                 var curve = new AnimationCurve();
                 foreach (var pair in module.Curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, module.Size * pair.Value));
+                    curve.AddKey(new Keyframe(pair.Time, module.size * pair.Value));
                 }
                 levelController._scaleCurve = curve;
             }

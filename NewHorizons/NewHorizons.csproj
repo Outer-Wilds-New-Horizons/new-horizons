@@ -10,10 +10,14 @@
     <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>portable</DebugType> 
+    <DebugType>portable</DebugType>
+    <DocumentationFile>C:\Users\bwc67\AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\NewHorizons.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn> 
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType> 
+    <DebugType>none</DebugType>
+    <DocumentationFile>C:\Users\bwc67\AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\NewHorizons.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn> 
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="..\NJsonSchema\*.dll" />

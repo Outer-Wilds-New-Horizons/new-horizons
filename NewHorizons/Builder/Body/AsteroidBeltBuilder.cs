@@ -13,55 +13,55 @@ namespace NewHorizons.Builder.Body
         {
             var belt = parentConfig.AsteroidBelt;
 
-            float minSize = belt.MinSize;
-            float maxSize = belt.MaxSize;
-            int count = (int)(2f * Mathf.PI * belt.InnerRadius / (10f * maxSize));
-            if (belt.Amount >= 0) count = belt.Amount;
+            float minSize = belt.minSize;
+            float maxSize = belt.maxSize;
+            int count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
+            if (belt.amount >= 0) count = belt.amount;
             if (count > 200) count = 200;
 
-            Random.InitState(belt.RandomSeed);
+            Random.InitState(belt.randomSeed);
 
             for (int i = 0; i < count; i++)
             {
                 var size = Random.Range(minSize, maxSize);
 
                 var config = new PlanetConfig();
-                config.Name = $"{bodyName} Asteroid {i}";
-                config.StarSystem = parentConfig.StarSystem;
+                config.name = $"{bodyName} Asteroid {i}";
+                config.starSystem = parentConfig.starSystem;
 
                 config.Base = new BaseModule()
                 {
-                    HasMapMarker = false,
-                    SurfaceGravity = 1,
-                    SurfaceSize = size,
-                    HasReferenceFrame = false,
-                    GravityFallOff = GravityFallOff.InverseSquared
+                    hasMapMarker = false,
+                    surfaceGravity = 1,
+                    surfaceSize = size,
+                    hasReferenceFrame = false,
+                    gravityFallOff = GravityFallOff.InverseSquared
                 };
 
                 config.Orbit = new OrbitModule()
                 {
                     IsMoon = true,
-                    Inclination = belt.Inclination + Random.Range(-2f, 2f),
-                    LongitudeOfAscendingNode = belt.LongitudeOfAscendingNode,
+                    Inclination = belt.inclination + Random.Range(-2f, 2f),
+                    LongitudeOfAscendingNode = belt.longitudeOfAscendingNode,
                     TrueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
                     PrimaryBody = bodyName,
-                    SemiMajorAxis = Random.Range(belt.InnerRadius, belt.OuterRadius),
+                    SemiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
                     ShowOrbitLine = false
                 };
 
-                config.ProcGen = belt.ProcGen;
+                config.ProcGen = belt.procGen;
                 if (config.ProcGen == null)
                 {
                     config.ProcGen = new ProcGenModule()
                     {
-                        Scale = size,
-                        Color = new MColor(126, 94, 73, 255)
+                        scale = size,
+                        color = new MColor(126, 94, 73, 255)
                     };
                 }
                 else
                 {
                     // Still update the size
-                    config.ProcGen.Scale = size;
+                    config.ProcGen.scale = size;
                 }
 
                 var asteroid = new NewHorizonsBody(config, mod);

@@ -25,24 +25,24 @@ namespace NewHorizons.Builder.Atmosphere
 
             PlanetaryFogController PFC = fogGO.AddComponent<PlanetaryFogController>();
             PFC.fogLookupTexture = dbPlanetaryFogController.fogLookupTexture;
-            PFC.fogRadius = atmo.FogSize;
-            PFC.fogDensity = atmo.FogDensity;
+            PFC.fogRadius = atmo.fogSize;
+            PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
             PFC.fogColorRampTexture = dbPlanetaryFogController.fogColorRampTexture;
             PFC.fogColorRampIntensity = 1f;
-            PFC.fogTint = atmo.FogTint.ToColor();
+            PFC.fogTint = atmo.fogTint.ToColor();
 
             GameObject lodFogGO = new GameObject("LODFogSphere");
             lodFogGO.SetActive(false);
             lodFogGO.transform.parent = fogGO.transform;
-            lodFogGO.transform.localScale = Vector3.one * atmo.Size / 320f;
+            lodFogGO.transform.localScale = Vector3.one * atmo.size / 320f;
 
             MeshFilter lodMF = lodFogGO.AddComponent<MeshFilter>();
             lodMF.mesh = brambleLODFog.GetComponent<MeshFilter>().mesh;
 
             MeshRenderer lodMR = lodFogGO.AddComponent<MeshRenderer>();
             lodMR.material = new Material(brambleLODFog.GetComponent<MeshRenderer>().material);
-            lodMR.material.color = atmo.FogTint.ToColor();
+            lodMR.material.color = atmo.fogTint.ToColor();
             lodMR.material.renderQueue = 1000;
 
             /*

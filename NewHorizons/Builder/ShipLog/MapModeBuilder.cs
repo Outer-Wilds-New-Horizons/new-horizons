@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
-                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.IsQuantumState
+                b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
             ).ToList();
             bool flagManualPositionUsed = systemName == "SolarSystem";
             bool flagAutoPositionUsed = false;
@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.ShipLog
                     flagManualPositionUsed = true;
                     if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null)
                     {
-                        Logger.LogError("Navigation position is missing for: " + body.Config.Name);
+                        Logger.LogError("Navigation position is missing for: " + body.Config.name);
                         return null;
                     }
                 }
@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static GameObject CreateMapModeGameObject(NewHorizonsBody body, GameObject parent, int layer, Vector2 position)
         {
-            GameObject newGameObject = new GameObject(body.Config.Name + "_ShipLog");
+            GameObject newGameObject = new GameObject(body.Config.name + "_ShipLog");
             newGameObject.layer = layer;
             newGameObject.transform.SetParent(parent.transform);
 
@@ -116,8 +116,8 @@ namespace NewHorizons.Builder.ShipLog
             if (outlinePath != null) outline = ImageUtilities.GetTexture(body.Mod, outlinePath);
             if (outline == null) outline = ImageUtilities.MakeOutline(image, Color.white, 10);
 
-            astroObject._imageObj = CreateImage(gameObject, image, body.Config.Name + " Revealed", layer);
-            astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.Name + " Outline", layer);
+            astroObject._imageObj = CreateImage(gameObject, image, body.Config.name + " Revealed", layer);
+            astroObject._outlineObj = CreateImage(gameObject, outline, body.Config.name + " Outline", layer);
             if (ShipLogHandler.BodyHasEntries(body))
             {
                 Image revealedImage = astroObject._imageObj.GetComponent<Image>();
@@ -220,8 +220,8 @@ namespace NewHorizons.Builder.ShipLog
                 if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
 
                 // Sometimes they got other names idk
-                var name = body.Config.Name.Replace(" ", "");
-                var existingBody = AstroObjectLocator.GetAstroObject(body.Config.Name);
+                var name = body.Config.name.Replace(" ", "");
+                var existingBody = AstroObjectLocator.GetAstroObject(body.Config.name);
                 if (existingBody != null)
                 {
                     var astroName = existingBody.GetAstroObjectName();
@@ -242,7 +242,7 @@ namespace NewHorizons.Builder.ShipLog
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
                     GameObject gameObject = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
-                    if (body.Config.Destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
+                    if (body.Config.destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
                     {
                         ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();
                         if (astroObject != null)
@@ -363,7 +363,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static MapModeObject ConstructPrimaryNode(List<NewHorizonsBody> bodies)
         {
-            foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.CenterOfSolarSystem))
+            foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
                 bodies.Sort((b, o) => b.Config.Orbit.SemiMajorAxis.CompareTo(o.Config.Orbit.SemiMajorAxis));
                 MapModeObject newNode = new MapModeObject
@@ -388,7 +388,7 @@ namespace NewHorizons.Builder.ShipLog
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
 
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.Name || b.Config.Name == secondaryName))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
                 newX = even ? newX : newX + 1;
@@ -405,8 +405,8 @@ namespace NewHorizons.Builder.ShipLog
                 string newSecondaryName = "";
                 if (body.Config.FocalPoint != null)
                 {
-                    newNode.mainBody = searchList.Find(b => b.Config.Name == body.Config.FocalPoint.Primary);
-                    newSecondaryName = searchList.Find(b => b.Config.Name == body.Config.FocalPoint.Secondary).Config.Name;
+                    newNode.mainBody = searchList.Find(b => b.Config.name == body.Config.FocalPoint.primary);
+                    newSecondaryName = searchList.Find(b => b.Config.name == body.Config.FocalPoint.secondary).Config.name;
                 }
 
                 newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
@@ -512,7 +512,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             try
             {
-                switch (body.Config?.Singularity?.Type)
+                switch (body.Config?.Singularity?.type)
                 {
                     case SingularityModule.SingularityType.BlackHole:
                         return Color.black;
@@ -520,27 +520,27 @@ namespace NewHorizons.Builder.ShipLog
                         return Color.white;
                 }
 
-                var starColor = body.Config?.Star?.Tint;
+                var starColor = body.Config?.Star?.tint;
                 if (starColor != null) return starColor.ToColor();
 
-                var atmoColor = body.Config.Atmosphere?.AtmosphereTint;
-                if (body.Config.Atmosphere?.Clouds != null && atmoColor != null) return atmoColor.ToColor();
+                var atmoColor = body.Config.Atmosphere?.atmosphereTint;
+                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor.ToColor();
 
-                if (body.Config?.HeightMap?.TextureMap != null)
+                if (body.Config?.HeightMap?.textureMap != null)
                 {
                     try
                     {
-                        var texture = ImageUtilities.GetTexture(body.Mod, body.Config.HeightMap.TextureMap);
+                        var texture = ImageUtilities.GetTexture(body.Mod, body.Config.HeightMap.textureMap);
                         var landColor = ImageUtilities.GetAverageColor(texture);
                         if (landColor != null) return landColor;
                     }
                     catch (Exception) { }
                 }
 
-                var waterColor = body.Config.Water?.Tint;
+                var waterColor = body.Config.Water?.tint;
                 if (waterColor != null) return waterColor.ToColor();
 
-                var lavaColor = body.Config.Lava?.Tint;
+                var lavaColor = body.Config.Lava?.tint;
                 if (lavaColor != null) return lavaColor.ToColor();
 
                 var sandColor = body.Config.Sand?.Tint;
@@ -548,7 +548,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             catch (Exception)
             {
-                Logger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.Name} but I'm too lazy to fix it.");
+                Logger.LogWarning($"Something went wrong trying to pick the colour for {body.Config.name} but I'm too lazy to fix it.");
             }
 
             return Color.white;

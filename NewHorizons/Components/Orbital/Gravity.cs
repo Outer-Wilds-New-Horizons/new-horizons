@@ -15,9 +15,9 @@ namespace NewHorizons.Components.Orbital
 
         public Gravity(BaseModule module)
         {
-            var surfaceAcceleration = module.SurfaceGravity;
-            var upperSurfaceRadius = module.SurfaceSize;
-            int falloffExponent = module.GravityFallOff == GravityFallOff.Linear ? 1 : 2;
+            var surfaceAcceleration = module.surfaceGravity;
+            var upperSurfaceRadius = module.surfaceSize;
+            int falloffExponent = module.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
 
             Mass = surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT;
             Power = falloffExponent;

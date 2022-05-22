@@ -6,43 +6,43 @@ namespace NewHorizons.External.Modules.VariableSize
     public class RingModule : VariableSizeModule
     {
         /// <summary>
-        /// Inner radius of the disk
+        /// Fluid type for sounds/effects when colliding with this ring.
         /// </summary>
-        public float InnerRadius;
-        
-        /// <summary>
-        /// Outer radius of the disk
-        /// </summary>
-        public float OuterRadius;
-        
+        public CloudFluidType? fluidType = CloudFluidType.None;
+
         /// <summary>
         /// Angle between the rings and the equatorial plane of the planet.
         /// </summary>
-        public float Inclination;
-        
+        public float inclination;
+
+        /// <summary>
+        /// Inner radius of the disk
+        /// </summary>
+        public float innerRadius;
+
         /// <summary>
         /// Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.
         /// </summary>
-        public float LongitudeOfAscendingNode;
-        
+        public float longitudeOfAscendingNode;
+
         /// <summary>
-        /// Relative filepath to the texture used for the rings.
+        /// Outer radius of the disk
         /// </summary>
-        public string Texture;
-        
-        /// <summary>
-        /// Should this ring be unlit?
-        /// </summary>
-        public bool Unlit;
-        
+        public float outerRadius;
+
         /// <summary>
         /// Allows the rings to rotate.
         /// </summary>
-        public float RotationSpeed;
+        public float rotationSpeed;
 
         /// <summary>
-        /// Fluid type for sounds/effects when colliding with this ring.
+        /// Relative filepath to the texture used for the rings.
         /// </summary>
-        public CloudFluidType? FluidType = CloudFluidType.None;
+        public string texture;
+
+        /// <summary>
+        /// Should this ring be unlit?
+        /// </summary>
+        public bool unlit;
     }
 }

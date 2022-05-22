@@ -1,0 +1,64 @@
+﻿using System;
+using System.IO;
+using NewHorizons.External.Configs;
+using NJsonSchema;
+using NJsonSchema.Generation;
+
+
+namespace SchemaExporter;
+
+public static class SchemaExporter
+{
+    private struct Schema<T>
+    {
+        private readonly JsonSchemaGeneratorSettings _generatorSettings;
+        private string _title;
+        private readonly string _outFileName;
+
+        public Schema(string schemaTitle, string fileName, JsonSchemaGeneratorSettings settings)
+        {
+            _title = schemaTitle;
+            _outFileName = fileName;
+            _generatorSettings = settings;
+        }
+        
+        public void Output()
+        {
+            File.WriteAllText($"{_outFileName}.json", ToString());
+        }
+
+        public override string ToString()
+        {
+            return GetJsonSchema().ToJson();
+        }
+        
+        public JsonSchema GetJsonSchema()
+        {
+            var schema = JsonSchema.FromType<T>(_generatorSettings);
+            schema.Title = _title;
+            return schema;
+        }
+    }
+
+    public static void Main(string[] args)
+    {
+        const string folderName = "Schemas";
+
+        Directory.CreateDirectory(folderName);
+        Console.WriteLine("Schema Generator: We're winning!");
+        var settings = new JsonSchemaGeneratorSettings
+        {
+            IgnoreObsoleteProperties = true,
+        };
+        Console.WriteLine("Outputting Body Schema");
+        var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", "body_schema", settings);
+        bodySchema.Output();
+        Console.WriteLine("Outputting Star System Schema");
+        var systemSchema = new Schema<StarSystemConfig>("Star System Schema", "star_system_schema", settings);
+        systemSchema.Output();
+        Console.WriteLine("Outputting Translation Schema");
+        var translationSchema = new Schema<TranslationConfig>("Translation Schema", "translation_schema", settings);
+        translationSchema.Output();
+        Console.WriteLine("Done!");
+    }
+}

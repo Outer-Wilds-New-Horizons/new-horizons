@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Utility;
+
 namespace NewHorizons.External.Modules
 {
     public class HeightMapModule
@@ -6,26 +7,26 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Relative filepath to the texture used for the terrain height.
         /// </summary>
-        public string HeightMap;
-        
-        /// <summary>
-        /// Relative filepath to the texture used for the terrain.
-        /// </summary>
-        public string TextureMap;
-        
-        /// <summary>
-        /// The lowest points on your planet will be at this height.
-        /// </summary>
-        public float MinHeight;
-        
+        public string heightMap;
+
         /// <summary>
         /// The highest points on your planet will be at this height.
         /// </summary>
-        public float MaxHeight;
-        
+        public float maxHeight;
+
+        /// <summary>
+        /// The lowest points on your planet will be at this height.
+        /// </summary>
+        public float minHeight;
+
         /// <summary>
         /// The scale of the terrain.
         /// </summary>
-        public MVector3 Stretch;
+        public MVector3 stretch;
+
+        /// <summary>
+        /// Relative filepath to the texture used for the terrain.
+        /// </summary>
+        public string textureMap;
     }
 }

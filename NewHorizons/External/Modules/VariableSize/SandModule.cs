@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Utility;
+
 namespace NewHorizons.External.Modules.VariableSize
 {
     public class SandModule : VariableSizeModule
@@ -7,7 +8,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Size of the sand
         /// </summary>
         public float Size { get; set; }
-        
+
         /// <summary>
         /// Tint of the sand
         /// </summary>

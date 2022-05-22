@@ -43,8 +43,8 @@ namespace NewHorizons
                 // Update it to point to their mod for textures and stuff
                 body.Mod = mod ?? Main.Instance;
 
-                if (!Main.BodyDict.ContainsKey(body.Config.StarSystem)) Main.BodyDict.Add(body.Config.StarSystem, new List<NewHorizonsBody>());
-                Main.BodyDict[body.Config.StarSystem].Add(body);
+                if (!Main.BodyDict.ContainsKey(body.Config.starSystem)) Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
+                Main.BodyDict[body.Config.starSystem].Add(body);
             }
             catch(Exception ex)
             {
@@ -59,7 +59,7 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.Name == name)?.Object;
+            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
         public string GetCurrentStarSystem()

@@ -9,11 +9,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Size of the water sphere
         /// </summary>
-        public float Size;
+        public float size;
 
         /// <summary>
         /// Tint of the water
         /// </summary>
-        public MColor Tint;
+        public MColor tint;
     }
 }

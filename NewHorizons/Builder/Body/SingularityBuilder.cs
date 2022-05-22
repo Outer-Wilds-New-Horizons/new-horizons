@@ -20,23 +20,23 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config)
         {
-            var size = config.Singularity.Size;
-            var pairedSingularity = config.Singularity.PairedSingularity;
+            var size = config.Singularity.size;
+            var pairedSingularity = config.Singularity.pairedSingularity;
 
-            var polarity = config.Singularity.Type;
+            var polarity = config.Singularity.type;
 
-            bool isWormHole = config.Singularity?.TargetStarSystem != null;
+            bool isWormHole = config.Singularity?.targetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
-            bool makeZeroGVolume = config.Singularity == null ? true : config.Singularity.MakeZeroGVolume;
+            bool makeZeroGVolume = config.Singularity == null ? true : config.Singularity.makeZeroGVolume;
 
-            Vector3 localPosition = config.Singularity?.Position == null ? Vector3.zero : (Vector3)config.Singularity.Position;
+            Vector3 localPosition = config.Singularity?.position == null ? Vector3.zero : (Vector3)config.Singularity.position;
 
             GameObject newSingularity = null;
             switch (polarity)
             {
                 case SingularityModule.SingularityType.BlackHole:
-                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.TargetStarSystem);
+                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.targetStarSystem);
                     break;
                 case SingularityModule.SingularityType.WhiteHole:
                     newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, makeZeroGVolume);

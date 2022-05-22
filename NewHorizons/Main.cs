@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using NJsonSchema;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
@@ -13,23 +12,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Utility.DebugUtilities;
+using Newtonsoft.Json.Schema;
 
 namespace NewHorizons
 {
-    
-    // TODO: Test class, delete later
-    [JsonObject]
-    public class Test
-    {
-        [JsonProperty]
-        public string Name;
-    }
 
     public class Main : ModBehaviour
     {
@@ -47,8 +38,6 @@ namespace NewHorizons
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
         public static float SecondsLeftInLoop = -1;
-
-        private static JsonSchema _bodySchema;
 
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
@@ -160,10 +149,6 @@ namespace NewHorizons
             ResetConfigs(resetTranslation: false);
 
             Logger.Log("Begin load of config files...", Logger.LogType.Log);
-            
-            _bodySchema = JsonSchema.FromType<Test>();
-            Logger.LogWarning(_bodySchema.ToString());
-
 
             try
             {
@@ -367,11 +352,11 @@ namespace NewHorizons
                         if (body != null)
                         {
                             // Wanna track the spawn point of each system
-                            if (body.Config.Spawn != null) SystemDict[body.Config.StarSystem].Spawn = body.Config.Spawn;
+                            if (body.Config.Spawn != null) SystemDict[body.Config.starSystem].Spawn = body.Config.Spawn;
 
                             // Add the new planet to the planet dictionary
-                            if (!BodyDict.ContainsKey(body.Config.StarSystem)) BodyDict[body.Config.StarSystem] = new List<NewHorizonsBody>();
-                            BodyDict[body.Config.StarSystem].Add(body);
+                            if (!BodyDict.ContainsKey(body.Config.starSystem)) BodyDict[body.Config.starSystem] = new List<NewHorizonsBody>();
+                            BodyDict[body.Config.starSystem].Add(body);
                         }
                     }
                 }
@@ -422,20 +407,20 @@ namespace NewHorizons
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
                 config.MigrateAndValidate();
 
-                Logger.Log($"Loaded {config.Name}");
+                Logger.Log($"Loaded {config.name}");
 
-                if (!SystemDict.ContainsKey(config.StarSystem))
+                if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.StarSystem}.json");
+                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                    else Logger.LogWarning($"Loaded system config for {config.StarSystem}. Why wasn't this loaded earlier?");
+                    else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
-                    var system = new NewHorizonsSystem(config.StarSystem, starSystemConfig, mod);
+                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
 
-                    SystemDict.Add(config.StarSystem, system);
+                    SystemDict.Add(config.starSystem, system);
 
-                    BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
+                    BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
                 }
 
                 body = new NewHorizonsBody(config, mod, relativeDirectory);

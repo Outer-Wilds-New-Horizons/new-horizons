@@ -8,11 +8,11 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Name of the primary planet in this binary system
         /// </summary>
-        public string Primary;
-        
+        public string primary;
+
         /// <summary>
         /// Name of the secondary planet in this binary system
         /// </summary>
-        public string Secondary;
+        public string secondary;
     }
 }

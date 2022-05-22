@@ -12,8 +12,8 @@ namespace NewHorizons.Builder.Atmosphere
 
             GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
             GDSOV._sector = sector;
-            GDSOV._cloudsOuterRadius = atmo.Size;
-            GDSOV._cloudsInnerRadius = atmo.Size * 0.9f;
+            GDSOV._cloudsOuterRadius = atmo.size;
+            GDSOV._cloudsInnerRadius = atmo.size * 0.9f;
             GDSOV._waterOuterRadius = surfaceSize;
             GDSOV._waterInnerRadius = 0f;
 

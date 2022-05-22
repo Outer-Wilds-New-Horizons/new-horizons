@@ -6,7 +6,7 @@ namespace NewHorizons.External.Modules
     [JsonObject]
     public class ProcGenModule
     {
-        public float Scale;
-        public MColor Color;
+        public MColor color;
+        public float scale;
     }
 }

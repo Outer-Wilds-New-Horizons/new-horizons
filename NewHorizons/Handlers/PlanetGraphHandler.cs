@@ -27,7 +27,7 @@ namespace NewHorizons.Handlers
         public PlanetGraphHandler(IEnumerable<NewHorizonsBody> iBodies)
         {
             var bodies = iBodies.ToArray();
-            var centers = bodies.Where(b => b.Config.Base.CenterOfSolarSystem).ToArray();
+            var centers = bodies.Where(b => b.Config.Base.centerOfSolarSystem).ToArray();
             if (centers.Length == 1)
             {
                 _rootNode = ConstructGraph(centers[0], bodies);
@@ -37,7 +37,7 @@ namespace NewHorizons.Handlers
                 if (centers.Length == 0 && Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
                     var SunConfig = new PlanetConfig();
-                    SunConfig.Name = "Sun";
+                    SunConfig.name = "Sun";
                     _rootNode = ConstructGraph(new NewHorizonsBody(SunConfig, Main.Instance), bodies);
                 }
                 else
@@ -51,7 +51,7 @@ namespace NewHorizons.Handlers
 
         public static List<PlanetGraphHandler> ConstructStockGraph(NewHorizonsBody[] bodies)
         {
-            var astroObjects = bodies.Select(x => AstroObjectLocator.GetAstroObject(x.Config.Name)).ToArray();
+            var astroObjects = bodies.Select(x => AstroObjectLocator.GetAstroObject(x.Config.name)).ToArray();
             var children = astroObjects.Select(x => AstroObjectLocator.GetChildren(x)).ToArray();
             var nodeDict = new Dictionary<NewHorizonsBody, PlanetNode>();
 
@@ -74,7 +74,7 @@ namespace NewHorizons.Handlers
                         childBodies.Add(bodies[j]);
                     }
                     // If uh the primary body straight up matches the name
-                    else if (bodies[j].Config.Orbit.PrimaryBody == bodies[i].Config.Name)
+                    else if (bodies[j].Config.Orbit.PrimaryBody == bodies[i].Config.name)
                     {
                         childBodies.Add(bodies[j]);
                     }
@@ -108,8 +108,8 @@ namespace NewHorizons.Handlers
             // Verifying it worked
             foreach (var node in nodeDict.Values.ToList())
             {
-                var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.Name).ToList());
-                Logger.Log($"NODE: [{node?.body?.Config?.Name}], [{node?.parent?.body?.Config?.Name}], [{childrenString}]");
+                var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.name).ToList());
+                Logger.Log($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
             }
 
             // Return all tree roots (no parents)
@@ -118,11 +118,11 @@ namespace NewHorizons.Handlers
 
         private static bool DetermineIfChildOfFocal(NewHorizonsBody body, FocalPointNode node)
         {
-            var name = body.Config.Name.ToLower();
+            var name = body.Config.name.ToLower();
             var primary = (body.Config.Orbit?.PrimaryBody ?? "").ToLower();
-            var primaryName = node.primary.body.Config.Name.ToLower();
-            var secondaryName = node.secondary.body.Config.Name.ToLower();
-            return name != primaryName && name != secondaryName && (primary == node.body.Config.Name.ToLower() || primary == primaryName || primary == secondaryName);
+            var primaryName = node.primary.body.Config.name.ToLower();
+            var secondaryName = node.secondary.body.Config.name.ToLower();
+            return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLower() || primary == primaryName || primary == secondaryName);
         }
 
 
@@ -134,7 +134,7 @@ namespace NewHorizons.Handlers
                 {
                     body = body,
                     children = bodies
-                        .Where(b => string.Equals(b.Config.Orbit.PrimaryBody, body.Config.Name, StringComparison.CurrentCultureIgnoreCase))
+                        .Where(b => string.Equals(b.Config.Orbit.PrimaryBody, body.Config.name, StringComparison.CurrentCultureIgnoreCase))
                         .Select(b => ConstructGraph(b, bodies))
                 };
             }
@@ -146,7 +146,7 @@ namespace NewHorizons.Handlers
                 };
                 foreach (var child in bodies)
                 {
-                    if (string.Equals(child.Config.Name, body.Config.FocalPoint.Primary, StringComparison.CurrentCultureIgnoreCase))
+                    if (string.Equals(child.Config.name, body.Config.FocalPoint.primary, StringComparison.CurrentCultureIgnoreCase))
                     {
                         newNode.primary = new PlanetNode
                         {
@@ -154,7 +154,7 @@ namespace NewHorizons.Handlers
                             children = new List<PlanetNode>()
                         };
                     }
-                    else if (string.Equals(child.Config.Name, body.Config.FocalPoint.Secondary, StringComparison.CurrentCultureIgnoreCase))
+                    else if (string.Equals(child.Config.name, body.Config.FocalPoint.secondary, StringComparison.CurrentCultureIgnoreCase))
                     {
                         newNode.secondary = new PlanetNode
                         {
