@@ -16,6 +16,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.DebugUtilities;
+
 namespace NewHorizons
 {
     public class Main : ModBehaviour
@@ -266,6 +268,8 @@ namespace NewHorizons
         private void OnSystemReady(bool shouldWarpIn)
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
@@ -393,7 +397,7 @@ namespace NewHorizons
                     BodyDict.Add(config.StarSystem, new List<NewHorizonsBody>());
                 }
 
-                body = new NewHorizonsBody(config, mod);
+                body = new NewHorizonsBody(config, mod, relativeDirectory);
             }
             catch (Exception e)
             {
