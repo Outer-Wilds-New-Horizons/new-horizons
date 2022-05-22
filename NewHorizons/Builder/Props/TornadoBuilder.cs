@@ -38,19 +38,7 @@ namespace NewHorizons.Builder.Props
                 {
                     child.localPosition += new Vector3(0, 40 - 450, 0);
                 }
-                foreach (Transform child in _hurricanePrefab.transform.Find("Effects_GD_Hurricane"))
-                {
-                    if (child.name.Contains("HurricaneCloudBlend"))
-                    {
-                        child.localPosition = new Vector3(0, 60, 0);
-                        child.localScale = Vector3.one * 1.1f;
-                    }
-                    if (child.name.Equals("Effects_GD_HurricaneCycloneExterior"))
-                    {
-                        child.localScale = new Vector3(0.88f, 1f, 0.88f);
-                    }
-                }
-                foreach(var renderer in _hurricanePrefab.GetComponentsInChildren<Renderer>())
+                foreach (var renderer in _hurricanePrefab.GetComponentsInChildren<Renderer>())
                 {
                     renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 }
@@ -83,8 +71,8 @@ namespace NewHorizons.Builder.Props
                 Logger.LogError($"Need either a position or an elevation for tornados");
                 return;
             }
-
-            if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position);
+            info.type = "hurricane";
+            if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position, hasClouds);
             else MakeTornado(planetGO, sector, info, position, info.type.ToLower() == "downwards");
         }
 
@@ -167,14 +155,47 @@ namespace NewHorizons.Builder.Props
             tornadoGO.SetActive(true);
         }
 
-        private static void MakeHurricane(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position)
+        private static void MakeHurricane(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool hasClouds)
         {
             var hurricaneGO = _hurricanePrefab.InstantiateInactive();
             hurricaneGO.transform.parent = sector.transform;
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
             hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
-            hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>()._density = 8;
+            var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
+            fluidVolume._density = 8;
+
+            var effects = hurricaneGO.transform.Find("Effects_GD_Hurricane").gameObject;
+
+            if (!hasClouds)
+            {
+                foreach (Transform child in effects.transform)
+                {
+                    if (child.name.Contains("HurricaneCloudBlend"))
+                    {
+                        child.localPosition = new Vector3(0, 60, 0);
+                        child.localScale = Vector3.one * 1.1f;
+                    }
+                    if (child.name.Equals("Effects_GD_HurricaneCycloneExterior"))
+                    {
+                        child.localScale = new Vector3(0.88f, 1f, 0.88f);
+                    }
+                }
+            }
+
+            // Rotation is off by default for some reason
+            foreach (var rotate in hurricaneGO.GetComponentsInChildren<RotateTransform>())
+            {
+                rotate._sector = sector;
+            }
+
+            // Streaming render mesh handles scare me
+            foreach(var streamingRenderMeshHandle in hurricaneGO.GetComponentsInChildren<StreamingRenderMeshHandle>())
+            {
+                streamingRenderMeshHandle.enabled = false;
+            }
+
+
 
             // Height of the hurricane is 405 by default
             if (info.height != 0) hurricaneGO.transform.localScale = Vector3.one * info.height / 405f;
