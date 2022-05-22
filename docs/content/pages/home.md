@@ -149,6 +149,8 @@ Extra features:
 1. If you have the Unity Explorer mod enabled, you can use this to tweak the position, rotation, and scale of your props. Your changes will be saved.
 1. Want to save some recently placed props between game launches? On the recently placed props list, click the star next to the prop's name to favorite it.
 1. Found a bug that ruined your configs? Check `AppData\Roaming\OuterWildsModManager\OWML\Mods\xen.NewHorizons\configBackups` for backup saves of your work. Folders are titled "\[date\]T\[time\]".
+1. Want to add props to Ember Twin but don't feel like making a config file for it? We got you! Place that prop and the config file will be created automatically on your next save.
+  1. This even works for planets that were created by other mods!
 
 ## Publishing Your Mod
 
