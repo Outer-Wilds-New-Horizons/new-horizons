@@ -12,6 +12,8 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _slideReelPrefab;
         private static GameObject _autoPrefab;
+        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+
         public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             if (info.type == "autoProjector") MakeAutoProjector(go, sector, info, mod);
@@ -90,9 +92,9 @@ namespace NewHorizons.Builder.Props
             // Now put together the textures into a 4x4 thing for the materials
             var reelTexture = ImageUtilities.MakeReelTexture(textures);
             slidesBack.material.mainTexture = reelTexture;
-            slidesBack.material.SetTexture("_EmissionMap", reelTexture);
+            slidesBack.material.SetTexture(EmissionMap, reelTexture);
             slidesFront.material.mainTexture = reelTexture;
-            slidesFront.material.SetTexture("_EmissionMap", reelTexture);
+            slidesFront.material.SetTexture(EmissionMap, reelTexture);
 
             slideReelObj.SetActive(true);
         }
@@ -147,7 +149,7 @@ namespace NewHorizons.Builder.Props
             // Change the picture on the lens
             var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();
             lens.materials[1].mainTexture = slideCollection.slides[0]._textureOverride;
-            lens.materials[1].SetTexture("_EmissionMap", slideCollection.slides[0]._textureOverride);
+            lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._textureOverride);
 
             projectorObj.SetActive(true);
         }

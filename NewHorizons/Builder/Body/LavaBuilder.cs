@@ -6,6 +6,9 @@ namespace NewHorizons.Builder.Body
 {
     public static class LavaBuilder
     {
+        private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, LavaModule module)
         {
             var heightScale = module.Size;
@@ -28,8 +31,8 @@ namespace NewHorizons.Builder.Body
             var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
-            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", heightScale);
-            if (module.Tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
+            if (module.Tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.Tint.ToColor());
 
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
@@ -40,8 +43,8 @@ namespace NewHorizons.Builder.Body
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
             proxyLavaSphere.transform.localScale = Vector3.one;
             proxyLavaSphere.name = "LavaSphere_Proxy";
-            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat("_HeightScale", heightScale);
-            if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor("_EmissionColor", module.Tint.ToColor());
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
+            if (module.Tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.Tint.ToColor());
 
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
             sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };

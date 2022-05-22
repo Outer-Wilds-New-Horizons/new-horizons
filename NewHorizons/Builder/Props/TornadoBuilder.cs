@@ -16,6 +16,11 @@ namespace NewHorizons.Builder.Props
 
         private static Texture2D _mainTexture;
         private static Texture2D _detailTexture;
+        private static readonly int DetailColor = Shader.PropertyToID("_DetailColor");
+        private static readonly int TintColor = Shader.PropertyToID("_TintColor");
+        private static readonly int DetailTex = Shader.PropertyToID("_DetailTex");
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int FresnelColor = Shader.PropertyToID("_FresnelColor");
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
@@ -226,14 +231,14 @@ namespace NewHorizons.Builder.Props
 
             foreach (var renderer in go.GetComponentsInChildren<Renderer>())
             {
-                renderer.material.SetColor("_DetailColor", colour);
-                renderer.material.SetColor("_TintColor", colour);
+                renderer.material.SetColor(DetailColor, colour);
+                renderer.material.SetColor(TintColor, colour);
 
                 if (renderer.material.name.Contains(materialName))
                 {
-                    renderer.material.SetTexture("_DetailTex", detailTexture);
-                    renderer.material.SetTexture("_MainTex", mainTexture);
-                    renderer.material.SetColor("_FresnelColor", colour);
+                    renderer.material.SetTexture(DetailTex, detailTexture);
+                    renderer.material.SetTexture(MainTex, mainTexture);
+                    renderer.material.SetColor(FresnelColor, colour);
                 }
                 else
                 {
