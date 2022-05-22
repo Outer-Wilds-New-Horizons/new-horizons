@@ -19,24 +19,37 @@ namespace NewHorizons.Components.Orbital
 
         void Update()
         {
-            if (Primary == null || Secondary == null) return;
-
-            // Secondary and primary must have been engulfed by a star
-            if (!Primary.isActiveAndEnabled && !Secondary.isActiveAndEnabled)
+            if (Primary == null || Secondary == null)
             {
-                ReferenceFrameTracker component = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
-                if (component.GetReferenceFrame(true) != null && component.GetReferenceFrame(true).GetOWRigidBody() == gameObject)
-                {
-                    component.UntargetReferenceFrame();
-                }
-                MapMarker component2 = gameObject.GetComponent<MapMarker>();
-                if (component2 != null)
-                {
-                    component2.DisableMarker();
-                }
+                CleanUp();
                 gameObject.SetActive(false);
-                FakeMassBody.SetActive(false);
             }
+            else
+            {
+                // Secondary and primary must have been engulfed by a star
+                if (!Primary.isActiveAndEnabled && !Secondary.isActiveAndEnabled)
+                {
+                    CleanUp();
+                    gameObject.SetActive(false);
+                }
+            }
+        }
+
+        private void CleanUp()
+        {
+            ReferenceFrameTracker component = Locator.GetPlayerBody()?.GetComponent<ReferenceFrameTracker>();
+            if (component?.GetReferenceFrame(true)?.GetOWRigidBody() == gameObject)
+            {
+                component.UntargetReferenceFrame();
+            }
+
+            MapMarker component2 = gameObject.GetComponent<MapMarker>();
+            if (component2 != null)
+            {
+                component2.DisableMarker();
+            }
+
+            FakeMassBody.SetActive(false);
         }
     }
 }
