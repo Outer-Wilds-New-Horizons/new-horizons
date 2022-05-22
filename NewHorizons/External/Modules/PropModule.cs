@@ -57,10 +57,12 @@ namespace NewHorizons.External.Modules
             public float elevation;
             public float height = 30;
             public MColor tint;
-            public bool downwards;
             public float wanderRate;
             public float wanderDegreesX = 45;
             public float wanderDegreesZ = 45;
+            public string type = "upwards";
+
+            [System.Obsolete("downwards is deprecated, please use type instead")] public bool downwards;
         }
 
         public class VolcanoInfo

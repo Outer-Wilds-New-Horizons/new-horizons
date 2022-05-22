@@ -120,6 +120,14 @@ namespace NewHorizons.External.Configs
                     Atmosphere.UseAtmosphereShader = true;
                 }
             }
+
+            if(Props?.Tornados != null)
+            {
+                foreach(var tornado in Props.Tornados)
+                {
+                    if (tornado.downwards) tornado.type = "downwards";
+                }
+            }
 #pragma warning restore 612, 618
         }
     }
