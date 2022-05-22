@@ -20,12 +20,25 @@ namespace NewHorizons.Handlers
 
         public static List<Sprite> possibleSubtitles = new List<Sprite>();
         public static bool eoteSubtitleHasBeenInserted = false;
+        public static Sprite eoteSprite;
         public int subtitleIndex;
 
         public System.Random randomizer;
 
         public static readonly int PAUSE_TIMER_MAX = 50;
         public int pauseTimer = PAUSE_TIMER_MAX;
+
+        public static void CheckForEOTE()
+        {
+            if (!eoteSubtitleHasBeenInserted)
+            {
+                if (Main.HasDLC)
+                {
+                    if (eoteSprite != null) possibleSubtitles.Insert(0, eoteSprite); // ensure that the Echoes of the Eye subtitle always appears first
+                    eoteSubtitleHasBeenInserted = true;
+                }
+            }
+        }
 
         public void Start()
         {
@@ -38,13 +51,11 @@ namespace NewHorizons.Handlers
             graphic.enabled = true;
             image.enabled = true;
 
-            if (!Main.HasDLC) image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+            eoteSprite = image.sprite;
 
-            if (!eoteSubtitleHasBeenInserted)
-            {
-                if (image.sprite != null) possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
-                eoteSubtitleHasBeenInserted = true;
-            }
+            CheckForEOTE();
+
+            image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
         }
 
         public static void AddSubtitle(IModBehaviour mod, string filepath)
@@ -64,6 +75,8 @@ namespace NewHorizons.Handlers
 
         public void Update()
         {
+            CheckForEOTE();
+
             if (possibleSubtitles.Count == 0) return;
 
             if (image.sprite == null) image.sprite = possibleSubtitles[0];
