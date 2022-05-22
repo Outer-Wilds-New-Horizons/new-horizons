@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Utility;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
 {
@@ -42,11 +43,13 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// A ship log fact to reveal when the signal is identified.
             /// </summary>
+            [DefaultValue("")]
             public string Reveals = "";
             
             /// <summary>
             /// Radius of the sphere giving off the signal.
             /// </summary>
+            [DefaultValue(1f)]
             public float SourceRadius = 1f;
             
             /// <summary>
@@ -57,11 +60,13 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// How close the player must get to the signal to identify it. This is when you learn its name.
             /// </summary>
+            [DefaultValue(10f)]
             public float IdentificationRadius = 10f;
             
             /// <summary>
             /// `false` if the player can hear the signal without equipping the signal-scope.
             /// </summary>
+            [DefaultValue(true)]
             public bool OnlyAudibleToScope = true;
             
             /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using NewHorizons.Utility;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -87,7 +88,7 @@ namespace NewHorizons.External.Modules
         [JsonConverter(typeof(StringEnumConverter))]
         public CloudFluidType? FluidType;
         [System.Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")] public bool UseBasicCloudShader;
-        [System.Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")] public bool ShadowsOnClouds = true;
+        [DefaultValue(true)] [System.Obsolete("ShadowsOnClouds is deprecated, please use CloudInfo instead")] public bool ShadowsOnClouds = true;
         [System.Obsolete("HasAtmosphere is deprecated, please use UseAtmosphereShader instead")] public bool HasAtmosphere;
         #endregion Obsolete
 

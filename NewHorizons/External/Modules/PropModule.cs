@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using NewHorizons.Utility;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -143,6 +144,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Scale the prop
             /// </summary>
+            [DefaultValue(1f)]
             public float scale = 1f;
             
             /// <summary>
@@ -195,6 +197,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The height of this tornado.
             /// </summary>
+            [DefaultValue(30f)]
             public float height = 30f;
             
             /// <summary>
@@ -211,15 +214,17 @@ namespace NewHorizons.External.Modules
             /// The rate at which the tornado will wander around the planet. Set to 0 for it to be stationary. Should be around 0.1.
             /// </summary>
             public float wanderRate;
-            
+
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.
             /// </summary>
+            [DefaultValue(45f)]
             public float wanderDegreesX = 45f;
             
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.
             /// </summary>
+            [DefaultValue(45f)]
             public float wanderDegreesZ = 45f;
         }
 

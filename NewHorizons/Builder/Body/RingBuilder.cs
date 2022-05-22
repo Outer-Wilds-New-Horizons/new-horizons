@@ -17,6 +17,7 @@ namespace NewHorizons.Builder.Body
         public static Shader RingShader1Pixel;
         public static Shader UnlitRingShader;
         public static Shader UnlitRingShader1Pixel;
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
@@ -106,7 +107,7 @@ namespace NewHorizons.Builder.Body
             if (texture.width == 1)
             {
                 mat = new Material(ring.Unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
-                mat.SetFloat("_InnerRadius", 0);
+                mat.SetFloat(InnerRadius, 0);
             }
             ringMR.receiveShadows = !ring.Unlit;
 

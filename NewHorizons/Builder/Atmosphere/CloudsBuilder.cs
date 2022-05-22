@@ -11,6 +11,11 @@ namespace NewHorizons.Builder.Atmosphere
         private static Shader _sphereShader = null;
         private static Material[] _gdCloudMaterials;
         private static GameObject _lightningPrefab;
+        private static readonly int Color1 = Shader.PropertyToID("_Color");
+        private static readonly int TintColor = Shader.PropertyToID("_TintColor");
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int RampTex = Shader.PropertyToID("_RampTex");
+        private static readonly int CapTex = Shader.PropertyToID("_CapTex");
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
@@ -39,8 +44,8 @@ namespace NewHorizons.Builder.Atmosphere
                 var bottomTSRTempArray = new Material[2];
 
                 bottomTSRTempArray[0] = new Material(bottomTSRMaterials[0]);
-                bottomTSRTempArray[0].SetColor("_Color", bottomColor);
-                bottomTSRTempArray[0].SetColor("_TintColor", bottomColor);
+                bottomTSRTempArray[0].SetColor(Color1, bottomColor);
+                bottomTSRTempArray[0].SetColor(TintColor, bottomColor);
 
                 bottomTSRTempArray[1] = new Material(bottomTSRMaterials[1]);
 
@@ -133,7 +138,7 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.Clouds.Tint == null ? Color.white : atmo.Clouds.Tint.ToColor();
+            Color cloudTint = atmo.Clouds.Tint?.ToColor() ?? Color.white;
 
             Texture2D image, cap, ramp;
 
@@ -188,12 +193,12 @@ namespace NewHorizons.Builder.Atmosphere
 
             foreach (var material in topMR.sharedMaterials)
             {
-                material.SetColor("_Color", cloudTint);
-                material.SetColor("_TintColor", cloudTint);
+                material.SetColor(Color1, cloudTint);
+                material.SetColor(TintColor, cloudTint);
 
-                material.SetTexture("_MainTex", image);
-                material.SetTexture("_RampTex", ramp);
-                material.SetTexture("_CapTex", cap);
+                material.SetTexture(MainTex, image);
+                material.SetTexture(RampTex, ramp);
+                material.SetTexture(CapTex, cap);
             }
 
             if (atmo.Clouds.Unlit)

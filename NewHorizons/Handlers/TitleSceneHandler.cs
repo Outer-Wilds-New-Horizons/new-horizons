@@ -11,6 +11,20 @@ namespace NewHorizons.Handlers
 {
     public static class TitleSceneHandler
     {
+        public static void InitSubtitles()
+        {
+            GameObject subtitleContainer = GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
+            
+            if (subtitleContainer == null)
+            {
+                Logger.LogError("No subtitle container found! Failed to load subtitles.");
+                return;
+            }
+
+            subtitleContainer.SetActive(true);
+            subtitleContainer.AddComponent<SubtitlesHandler>();
+        }
+
         public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)
         {
             //Try loading one planet why not

@@ -9,6 +9,17 @@ namespace NewHorizons.Builder.Body
 {
     public static class FunnelBuilder
     {
+        private static readonly int FogColor = Shader.PropertyToID("_FogColor");
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
+        private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
+
+        private enum FunnelType
+        {
+            SAND,
+            WATER,
+            LAVA,
+            STAR
+        }
 
         public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
@@ -67,7 +78,7 @@ namespace NewHorizons.Builder.Body
                         materials[i] = new Material(waterMaterials[i]);
                         if (module.Tint != null)
                         {
-                            materials[i].SetColor("_FogColor", module.Tint.ToColor());
+                            materials[i].SetColor(FogColor, module.Tint.ToColor());
                         }
                     }
 
@@ -114,7 +125,7 @@ namespace NewHorizons.Builder.Body
 
                     if (module.Tint != null)
                     {
-                        lavaMaterial.SetColor("_EmissionColor", module.Tint.ToColor());
+                        lavaMaterial.SetColor(EmissionColor, module.Tint.ToColor());
                     }
 
                     proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
@@ -122,13 +133,13 @@ namespace NewHorizons.Builder.Body
 
                     if (funnelType == FunnelType.Lava)
                     {
-                        lavaMaterial.SetFloat("_HeightScale", 0);
+                        lavaMaterial.SetFloat(HeightScale, 0);
                         AddDestructionVolumes(fluidVolume, DeathType.Lava);
                     }
                     else if (funnelType == FunnelType.Star)
                     {
                         lavaMaterial.renderQueue = 2999;
-                        lavaMaterial.SetFloat("_HeightScale", 100000);
+                        lavaMaterial.SetFloat(HeightScale, 100000);
                         AddDestructionVolumes(fluidVolume, DeathType.Energy);
                     }
 

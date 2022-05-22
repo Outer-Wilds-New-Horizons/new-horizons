@@ -1086,9 +1086,14 @@
                 "$ref": "#/$defs/color",
                 "description": "The colour of the tornado."
               },
-              "downwards": {
-                "type": "boolean",
-                "description": "Should it pull things downwards? Will push them upwards by default."
+              "type": {
+                "type": "string",
+                "enum": [
+                  "downwards",
+                  "upwards",
+                  "hurricane"
+                ],
+                "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction."
               },
               "wanderRate": {
                 "type": "number",
@@ -1097,12 +1102,12 @@
               },
               "wanderDegreesX": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the azimuthal angle (angle of rotation around the polar axis).",
                 "default": 45
               },
               "wanderDegreesZ": {
                 "type": "number",
-                "description": "Angular distance from the starting position that it will wander, in terms of the angle around the z-axis.",
+                "description": "Angular distance from the starting position that it will wander, in terms of the polar angle (angle between the radial vector and the polar axis).",
                 "default": 45
               }
             }

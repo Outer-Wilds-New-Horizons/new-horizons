@@ -1,6 +1,10 @@
 ﻿using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
+using NewHorizons.Utility;
+using System.ComponentModel;
+using UnityEngine;
+using UnityEngine.Internal;
 
 namespace NewHorizons.External.Configs
 {
@@ -23,6 +27,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Unique star system containing your planet
         /// </summary>
+        [DefaultValue("SolarSystem")]
         public string StarSystem = "SolarSystem";
 
         /// <summary>
@@ -38,6 +43,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Set to a higher number if you wish for this body to be built sooner
         /// </summary>
+        [DefaultValue(-1)]
         public int BuildPriority = -1;
         
         /// <summary>
@@ -233,6 +239,14 @@ namespace NewHorizons.External.Configs
                 if (Atmosphere.HasAtmosphere || Atmosphere.AtmosphereTint != null)
                 {
                     Atmosphere.UseAtmosphereShader = true;
+                }
+            }
+
+            if(Props?.Tornados != null)
+            {
+                foreach(var tornado in Props.Tornados)
+                {
+                    if (tornado.downwards) tornado.type = "downwards";
                 }
             }
 #pragma warning restore 612, 618

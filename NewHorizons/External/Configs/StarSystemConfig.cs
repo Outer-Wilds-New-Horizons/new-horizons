@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Configs
 {
@@ -8,6 +9,11 @@ namespace NewHorizons.External.Configs
     [JsonObject]
     public class StarSystemConfig
     {
+        /// <summary>
+        /// Relative path to the image file to use as the subtitle image (replaces the eote banner)
+        /// </summary>
+        public string subtitle;
+        
         /// <summary>
         /// Whether this system can be warped to via the warp drive
         /// </summary>
@@ -27,15 +33,6 @@ namespace NewHorizons.External.Configs
         /// Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if you're using this, that would make no sense.
         /// </summary>
         public string factRequiredForWarp;
-        
-        /// <summary>
-        /// Should the player be sent back in time after 22 minutes?
-        /// </summary>
-        public bool enableTimeLoop = true;
-        
-        /// <summary>
-        /// Should the player be unable to use their map in this system?
-        /// </summary>
         public bool mapRestricted;
         
         /// <summary>

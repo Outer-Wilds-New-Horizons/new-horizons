@@ -60,12 +60,6 @@ jobs:
           
       - name: Copy Schemas
         run: cp -rf NewHorizons/Schemas content/pages/
-
-      - name: Cache Site
-        uses: actions/cache@v2
-        with:
-          path: .m_cache
-          key: docs-cache
           
       - name: Build Site
         uses: VaultVulp/action-pipenv@v2.0.1

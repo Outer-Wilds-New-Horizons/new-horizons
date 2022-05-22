@@ -9,19 +9,19 @@ namespace NewHorizons.Builder.Atmosphere
             GameObject airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
-            airGO.transform.parent = sector?.transform ?? planetGO.transform;
+            airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
 
-            SphereCollider SC = airGO.AddComponent<SphereCollider>();
-            SC.isTrigger = true;
-            SC.radius = info.Scale;
+            SphereCollider sc = airGO.AddComponent<SphereCollider>();
+            sc.isTrigger = true;
+            sc.radius = info.Scale;
 
-            SimpleFluidVolume SFV = airGO.AddComponent<SimpleFluidVolume>();
-            SFV._layer = 5;
-            SFV._priority = 1;
-            SFV._density = 1.2f;
-            SFV._fluidType = FluidVolume.Type.AIR;
-            SFV._allowShipAutoroll = true;
-            SFV._disableOnStart = false;
+            SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
+            sfv._layer = 5;
+            sfv._priority = 1;
+            sfv._density = 1.2f;
+            sfv._fluidType = FluidVolume.Type.AIR;
+            sfv._allowShipAutoroll = true;
+            sfv._disableOnStart = false;
 
             if (info.HasOxygen)
             {
@@ -30,10 +30,10 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (info.IsRaining)
             {
-                VisorRainEffectVolume VREF = airGO.AddComponent<VisorRainEffectVolume>();
-                VREF._rainDirection = VisorRainEffectVolume.RainDirection.Radial;
-                VREF._layer = 0;
-                VREF._priority = 0;
+                var vref = airGO.AddComponent<VisorRainEffectVolume>();
+                vref._rainDirection = VisorRainEffectVolume.RainDirection.Radial;
+                vref._layer = 0;
+                vref._priority = 0;
 
                 AudioSource AS = airGO.AddComponent<AudioSource>();
                 AS.mute = false;
@@ -49,10 +49,10 @@ namespace NewHorizons.Builder.Atmosphere
                 AS.spatialBlend = 0f;
                 AS.reverbZoneMix = 1f;
 
-                OWAudioSource OWAS = airGO.AddComponent<OWAudioSource>();
-                OWAS._audioLibraryClip = AudioType.GD_RainAmbient_LP;
-                OWAS.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
-                OWAS.SetTrack(OWAudioMixer.TrackName.Environment);
+                var owAudioSource = airGO.AddComponent<OWAudioSource>();
+                owAudioSource._audioLibraryClip = AudioType.GD_RainAmbient_LP;
+                owAudioSource.SetClipSelectionType(OWAudioSource.ClipSelectionOnPlay.RANDOM);
+                owAudioSource.SetTrack(OWAudioMixer.TrackName.Environment);
 
                 airGO.AddComponent<AudioVolume>();
             }

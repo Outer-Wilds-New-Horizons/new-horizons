@@ -2,6 +2,8 @@
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using UnityEngine;
+using System.ComponentModel;
+using UnityEngine.Internal;
 
 namespace NewHorizons.External.Modules
 {
@@ -71,6 +73,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Referring to the orbit line in the map screen.
         /// </summary>
+        [DefaultValue(true)]
         public bool ShowOrbitLine { get; set; } = true;
         
         /// <summary>
@@ -91,7 +94,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Should we just draw a line behind its orbit instead of the entire circle/ellipse?
         /// </summary>
-        public bool TrackingOrbitLine { get; set; } = false;
+        public bool TrackingOrbitLine { get; set; }
 
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {

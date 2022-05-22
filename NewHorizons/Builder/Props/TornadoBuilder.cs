@@ -9,39 +9,67 @@ namespace NewHorizons.Builder.Props
 {
     public static class TornadoBuilder
     {
-        private static GameObject upPrefab;
-        private static GameObject downPrefab;
-        private static GameObject soundPrefab;
+        private static GameObject _upPrefab;
+        private static GameObject _downPrefab;
+        private static GameObject _hurricanePrefab;
+        private static GameObject _soundPrefab;
+
+        private static Texture2D _mainTexture;
+        private static Texture2D _detailTexture;
+        private static readonly int DetailColor = Shader.PropertyToID("_DetailColor");
+        private static readonly int TintColor = Shader.PropertyToID("_TintColor");
+        private static readonly int DetailTex = Shader.PropertyToID("_DetailTex");
+        private static readonly int MainTex = Shader.PropertyToID("_MainTex");
+        private static readonly int FresnelColor = Shader.PropertyToID("_FresnelColor");
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
         {
-            if (upPrefab == null)
+            if (_upPrefab == null)
             {
-                upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
-                upPrefab.name = "Tornado_Up_Prefab";
+                _upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
+                _upPrefab.name = "Tornado_Up_Prefab";
             }
-            if (downPrefab == null)
+            if (_downPrefab == null)
             {
-                downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
-                downPrefab.name = "Tornado_Down_Prefab";
+                _downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
+                _downPrefab.name = "Tornado_Down_Prefab";
             }
-            if (soundPrefab == null)
+            if (_hurricanePrefab == null)
             {
-                soundPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
-                soundPrefab.name = "AudioRail_Prefab";
+                _hurricanePrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane/").InstantiateInactive();
+                // For some reason they put the hurricane at the origin and offset all its children (450)
+                // Increasing by 40 will keep the bottom above the ground
+                foreach (Transform child in _hurricanePrefab.transform)
+                {
+                    child.localPosition += new Vector3(0, 40 - 450, 0);
+                }
+                foreach (var renderer in _hurricanePrefab.GetComponentsInChildren<Renderer>())
+                {
+                    renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                }
+            }
+            if (_soundPrefab == null)
+            {
+                _soundPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
+                _soundPrefab.name = "AudioRail_Prefab";
+            }
+            if (_mainTexture == null)
+            {
+                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Tornado_BH_Cyclone_02_d.png");
+            }
+            if (_detailTexture == null)
+            {
+                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Tornado_BH_CycloneDetail_d.png");
             }
 
-            float elevation;
             Vector3 position;
             if (info.position != null)
             {
                 position = info.position ?? Random.onUnitSphere * info.elevation;
-                elevation = position.magnitude;
             }
             else if (info.elevation != 0)
             {
                 position = Random.onUnitSphere * info.elevation;
-                elevation = info.elevation;
             }
             else
             {
@@ -49,13 +77,19 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
-            var tornadoGO = info.downwards ? downPrefab.InstantiateInactive() : upPrefab.InstantiateInactive();
+            if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position, hasClouds);
+            else MakeTornado(planetGO, sector, info, position, info.type.ToLower() == "downwards");
+        }
+
+        private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
+        {
+            var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
             tornadoGO.transform.parent = sector.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
             // Add the sound thing before changing the scale
-            var soundGO = soundPrefab.InstantiateInactive();
+            var soundGO = _soundPrefab.InstantiateInactive();
             soundGO.name = "AudioRail";
             soundGO.transform.parent = tornadoGO.transform;
             soundGO.transform.localPosition = Vector3.zero;
@@ -79,7 +113,6 @@ namespace NewHorizons.Builder.Props
             audioSource.playOnAwake = true;
 
             var scale = info.height == 0 ? 1 : info.height / 10f;
-
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
@@ -102,28 +135,124 @@ namespace NewHorizons.Builder.Props
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
+            // Resize it so the force volume goes all the way up
+            switch (downwards)
+            {
+                case true:
+                    tornadoGO.transform.Find("MockDownTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
+                    break;
+                default:
+                    tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
+                    break;
+            }
+
             if (info.tint != null)
             {
-                var colour = info.tint.ToColor();
-                foreach (var renderer in tornadoGO.GetComponentsInChildren<Renderer>())
-                {
-                    renderer.material.color = colour;
-                    renderer.material.SetColor("_DetailColor", colour);
-                    renderer.material.SetColor("_TintColor", colour);
-                }
+                ApplyTint(tornadoGO, info.tint.ToColor(), false, downwards);
             }
 
             if (info.wanderRate != 0)
             {
-                var wanderer = tornadoGO.AddComponent<NHTornadoWanderController>();
-                wanderer.wanderRate = info.wanderRate;
-                wanderer.wanderDegreesX = info.wanderDegreesX;
-                wanderer.wanderDegreesZ = info.wanderDegreesZ;
-                wanderer.sector = sector;
+                ApplyWanderer(tornadoGO, sector, info);
             }
 
             soundGO.SetActive(true);
             tornadoGO.SetActive(true);
+        }
+
+        private static void MakeHurricane(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool hasClouds)
+        {
+            var hurricaneGO = _hurricanePrefab.InstantiateInactive();
+            hurricaneGO.transform.parent = sector.transform;
+            hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
+            hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
+
+            var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
+            fluidVolume._density = 8;
+
+            var effects = hurricaneGO.transform.Find("Effects_GD_Hurricane").gameObject;
+
+            if (!hasClouds)
+            {
+                foreach (Transform child in effects.transform)
+                {
+                    if (child.name.Contains("HurricaneCloudBlend"))
+                    {
+                        child.localPosition = new Vector3(0, 60, 0);
+                        child.localScale = Vector3.one * 1.1f;
+                    }
+                    if (child.name.Equals("Effects_GD_HurricaneCycloneExterior"))
+                    {
+                        child.localScale = new Vector3(0.88f, 1f, 0.88f);
+                    }
+                }
+            }
+
+            // Rotation is off by default for some reason
+            foreach (var rotate in hurricaneGO.GetComponentsInChildren<RotateTransform>())
+            {
+                rotate._sector = sector;
+            }
+
+            // Streaming render mesh handles scare me
+            foreach(var streamingRenderMeshHandle in hurricaneGO.GetComponentsInChildren<StreamingRenderMeshHandle>())
+            {
+                streamingRenderMeshHandle.enabled = false;
+            }
+
+            // Height of the hurricane is 405 by default
+            if (info.height != 0) hurricaneGO.transform.localScale = Vector3.one * info.height / 405f;
+
+            if (info.tint != null)
+            {
+                ApplyTint(hurricaneGO, info.tint.ToColor(), true, false);
+            }
+
+            if (info.wanderRate != 0)
+            {
+                ApplyWanderer(hurricaneGO, sector, info);
+            }
+
+            hurricaneGO.SetActive(true);
+        }
+
+        private static void ApplyTint(GameObject go, Color colour, bool hurricane, bool downwards)
+        {
+            colour.a = 1f;
+
+            var detailTexture = ImageUtilities.TintImage(_detailTexture, colour);
+            var mainTexture = ImageUtilities.TintImage(_mainTexture, colour);
+
+            string materialName;
+            if (hurricane) materialName = "Hurricane_GD_Cyclone_mat";
+            else materialName = $"Tornado_BH_Cyclone_{(downwards ? "Down" : "Up")}_mat";
+
+            foreach (var renderer in go.GetComponentsInChildren<Renderer>())
+            {
+                renderer.material.SetColor(DetailColor, colour);
+                renderer.material.SetColor(TintColor, colour);
+
+                if (renderer.material.name.Contains(materialName))
+                {
+                    renderer.material.SetTexture(DetailTex, detailTexture);
+                    renderer.material.SetTexture(MainTex, mainTexture);
+                    renderer.material.SetColor(FresnelColor, colour);
+                }
+                else
+                {
+                    // If we set the colour on the ones with the material from before, it makes the gradient look bad
+                    renderer.material.color = colour;
+                }
+            }
+        }
+
+        private static void ApplyWanderer(GameObject go, Sector sector, PropModule.TornadoInfo info)
+        {
+            var wanderer = go.AddComponent<NHTornadoWanderController>();
+            wanderer.wanderRate = info.wanderRate;
+            wanderer.wanderDegreesX = info.wanderDegreesX;
+            wanderer.wanderDegreesZ = info.wanderDegreesZ;
+            wanderer.sector = sector;
         }
     }
 }

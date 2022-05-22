@@ -12,6 +12,14 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
+        private static Dictionary<PropModule.DetailInfo, GameObject> detailInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.DetailInfo, GameObject>();
+
+        public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
+        {
+            if (!detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail)) return null;
+            return detailInfoToCorrespondingSpawnedGameObject[detail];
+        }
+
         public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
@@ -67,6 +75,8 @@ namespace NewHorizons.Builder.Props
                 GameObject.Destroy(detailGO);
                 detailGO = newDetailGO;
             }
+
+            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)

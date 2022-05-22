@@ -2,6 +2,7 @@
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Modules.VariableSize
 {
@@ -46,6 +47,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Only for White Holes. Should this white hole repel the player from it.
         /// </summary>
+        [DefaultValue(true)]
         public bool MakeZeroGVolume = true;
     }
 }

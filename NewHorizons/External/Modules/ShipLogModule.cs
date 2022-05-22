@@ -1,5 +1,6 @@
 ﻿using NewHorizons.Utility;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
 {
@@ -52,6 +53,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Scale to apply to the planet in map mode.
             /// </summary>
+            [DefaultValue(1f)]
             public float scale = 1f;
             
             /// <summary>

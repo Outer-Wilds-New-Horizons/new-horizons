@@ -7,14 +7,19 @@ namespace NewHorizons.Components
     {
         public void Awake()
         {
-            var config = new PlanetConfig();
-            config.Base.SurfaceSize = 10f;
+            var config = new PlanetConfig
+            {
+                Base =
+                {
+                    SurfaceSize = 10f
+                }
+            };
 
-            var detector = base.transform.GetComponentInChildren<DynamicForceDetector>();
-            var ao = base.GetComponent<AstroObject>();
-            var newDetector = DetectorBuilder.Make(base.gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao, config);
+            var detector = transform.GetComponentInChildren<DynamicForceDetector>();
+            var ao = GetComponent<AstroObject>();
+            var newDetector = DetectorBuilder.Make(gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao, config);
             newDetector.transform.parent = detector.transform.parent;
-            GameObject.Destroy(detector);
+            Destroy(detector);
         }
     }
 }

@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: "Need Help with Creating an Addon?"
+    url: "https://discord.gg/wusTQYbYTc"
+    about: "Join our discord and look for #nh-addon-discussion"
