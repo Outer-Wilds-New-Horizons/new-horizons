@@ -11,21 +11,21 @@ namespace NewHorizons.Handlers
         public static int SUBTITLE_HEIGHT = 97;
         public static int SUBTITLE_WIDTH = 669; // nice
 
-        Graphic graphic;
-        Image image;
+        public Graphic graphic;
+        public Image image;
 
         public float fadeSpeed = 0.005f;
-        float fade = 1;
-        bool fadingAway = true;
+        public float fade = 1;
+        public bool fadingAway = true;
 
-        static List<Sprite> possibleSubtitles = new List<Sprite>();
-        static bool eoteSubtitleHasBeenInserted = false;
-        int subtitleIndex;
+        public static List<Sprite> possibleSubtitles = new List<Sprite>();
+        public static bool eoteSubtitleHasBeenInserted = false;
+        public int subtitleIndex;
 
-        System.Random randomizer;
+        public System.Random randomizer;
 
-        static readonly int PAUSE_TIMER_MAX = 50;
-        int pauseTimer = PAUSE_TIMER_MAX;
+        public static readonly int PAUSE_TIMER_MAX = 50;
+        public int pauseTimer = PAUSE_TIMER_MAX;
 
         public void Start()
         {
