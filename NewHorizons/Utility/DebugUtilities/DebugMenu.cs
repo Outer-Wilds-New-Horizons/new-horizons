@@ -1,6 +1,7 @@
 ﻿using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using Newtonsoft.Json;
 using OWML.Common;
 using OWML.Common.Menus;
@@ -43,7 +44,6 @@ namespace NewHorizons.Utility.DebugUtilities
         public static readonly char separatorCharacter = '☧'; // since no chars are illegal in game object names, I picked one that's extremely unlikely to be used to be a separator
         private static readonly string favoritePropsPlayerPrefKey = "FavoriteProps";
 
-        //private string workingModName = "";
         private static IModBehaviour loadedMod = null;
         private Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
@@ -65,7 +65,6 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private void Start()
         {
-            if (!Main.Debug) return;
             if (!staticInitialized)
             {
                 staticInitialized = true;
@@ -91,8 +90,16 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private void PauseMenuInitHook()
         {
-            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate("Toggle Prop Placer Menu".ToUpper());
+            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Prop Placer Menu", TranslationHandler.TextType.UI).ToUpper());
             InitMenu();
+        }
+        public static void UpdatePauseMenuButton()
+        {
+            if (pauseMenuButton != null)
+            {
+                if (Main.Debug) pauseMenuButton.Show();
+                else pauseMenuButton.Hide();
+            }
         }
 
         private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
@@ -323,6 +330,8 @@ namespace NewHorizons.Utility.DebugUtilities
         private void InitMenu()
         {
             if (_editorMenuStyle != null) return;
+
+            UpdatePauseMenuButton();
 
             // TODO: figure out how to clear this event list so that we don't pile up useless instances of the DebugMenu that can't get garbage collected
             pauseMenuButton.OnClick += ToggleMenu;

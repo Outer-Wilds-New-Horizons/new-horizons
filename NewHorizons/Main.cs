@@ -73,6 +73,7 @@ namespace NewHorizons
 
             Debug = config.GetSettingsValue<bool>("Debug");
             DebugReload.UpdateReloadButton();
+            DebugMenu.UpdatePauseMenuButton();
             Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");

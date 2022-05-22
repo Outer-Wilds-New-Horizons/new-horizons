@@ -12,6 +12,10 @@ using static NewHorizons.External.Modules.PropModule;
 namespace NewHorizons.Utility.DebugUtilities
 {
     
+    //
+    // The prop placer. Doesn't interact with any files, just places and tracks props.
+    //
+
     [RequireComponent(typeof(DebugRaycaster))]
     class DebugPropPlacer : MonoBehaviour
     {
@@ -23,9 +27,10 @@ namespace NewHorizons.Utility.DebugUtilities
             public DetailInfo detailInfo;
         }
 
+        // VASE
         public static readonly string DEFAULT_OBJECT = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District1/Props_HangingCity_District1/OtherComponentsGroup/Props_HangingCity_Building_10/Prefab_NOM_VaseThin";
 
-        public string currentObject { get; private set; }
+        public string currentObject { get; private set; } // path of the prop to be placed
         private bool hasAddedCurrentObjectToRecentsList = false;
         private List<PropPlacementData> props = new List<PropPlacementData>();
         private List<PropPlacementData> deletedProps = new List<PropPlacementData>();
@@ -230,8 +235,8 @@ namespace NewHorizons.Utility.DebugUtilities
                 for(int i = 0; i < bodyProps.Count; i++)
                 {
                     bodyProps[i].detailInfo.position = bodyProps[i].gameObject.transform.localPosition;
-                    bodyProps[i].detailInfo.rotation = bodyProps[i].gameObject.transform.localEulerAngles;
                     bodyProps[i].detailInfo.scale = bodyProps[i].gameObject.transform.localScale.x;
+                    if (!bodyProps[i].detailInfo.alignToNormal) bodyProps[i].detailInfo.rotation = bodyProps[i].gameObject.transform.localEulerAngles;
 
                     infoArray[i] = bodyProps[i].detailInfo;
                 }
