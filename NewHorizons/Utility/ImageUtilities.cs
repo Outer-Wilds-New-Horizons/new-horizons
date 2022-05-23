@@ -1,4 +1,4 @@
-﻿using OWML.Common;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -194,6 +194,12 @@ namespace NewHorizons.Utility
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
+            if(image == null)
+            {
+                Logger.LogError($"Tried to tint null image");
+                return null;
+            }
+
             var pixels = image.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {

@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using OWML.Utils;
@@ -160,7 +160,7 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
         {
-            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
             starGO.transform.parent = sector?.transform ?? rootObject.transform;
@@ -236,7 +236,7 @@ namespace NewHorizons.Builder.Body
                 var colour = starModule.supernovaTint;
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
-                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white, colour);
+                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);
                 supernovaMaterial.SetTexture(ColorRamp, ramp);
                 supernova._supernovaMaterial = supernovaMaterial;
 
