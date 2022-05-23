@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
-
 namespace NewHorizons.Utility
 {
     public static class SearchUtilities
@@ -22,55 +21,76 @@ namespace NewHorizons.Utility
             {
                 return CachedGameObjects[path];
             }
-
-            var foundObject = GameObject.Find(path);
-            if (foundObject != null) CachedGameObjects.Add(path, foundObject);
-            return foundObject;
+            else
+            {
+                GameObject foundObject = GameObject.Find(path);
+                if (foundObject != null)
+                {
+                    CachedGameObjects.Add(path, foundObject);
+                }
+                return foundObject;
+            }
         }
 
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
         {
-            var firstList = Object.FindObjectsOfType<T>();
-            var finalList = new List<T>();
+            T[] firstList = GameObject.FindObjectsOfType<T>();
+            List<T> finalList = new List<T>();
 
             for (var i = 0; i < firstList.Length; i++)
+            {
                 if (firstList[i].name == name)
+                {
                     finalList.Add(firstList[i]);
+                }
+            }
 
             return finalList;
         }
 
         public static T FindObjectOfTypeAndName<T>(string name) where T : Object
         {
-            var firstList = Object.FindObjectsOfType<T>();
-            var finalList = new List<T>();
+            T[] firstList = GameObject.FindObjectsOfType<T>();
+            List<T> finalList = new List<T>();
 
             for (var i = 0; i < firstList.Length; i++)
+            {
                 if (firstList[i].name == name)
+                {
                     return firstList[i];
+                }
+            }
 
             return null;
         }
 
         public static List<T> FindResourcesOfTypeAndName<T>(string name) where T : Object
         {
-            var firstList = Resources.FindObjectsOfTypeAll<T>();
-            var finalList = new List<T>();
+            T[] firstList = Resources.FindObjectsOfTypeAll<T>();
+            List<T> finalList = new List<T>();
 
             for (var i = 0; i < firstList.Length; i++)
+            {
                 if (firstList[i].name == name)
+                {
                     finalList.Add(firstList[i]);
+                }
+            }
 
             return finalList;
         }
 
         public static T FindResourceOfTypeAndName<T>(string name) where T : Object
         {
-            var firstList = Resources.FindObjectsOfTypeAll<T>();
+            T[] firstList = Resources.FindObjectsOfTypeAll<T>();
 
             for (var i = 0; i < firstList.Length; i++)
+            {
                 if (firstList[i].name == name)
+                {
                     return firstList[i];
+                }
+            }
 
             return null;
         }
@@ -101,35 +121,44 @@ namespace NewHorizons.Utility
 
         public static GameObject Find(string path)
         {
-            if (CachedGameObjects.ContainsKey(path)) return CachedGameObjects[path];
+            if (CachedGameObjects.ContainsKey(path))
+            {
+                return CachedGameObjects[path];
+            }
             try
             {
                 var go = GameObject.Find(path);
 
-                var names = path.Split('\\', '/');
+                var names = path.Split(new char[] { '\\', '/' });
                 if (go == null)
                 {
+
                     // Get the root object and hope its the right one
                     var root = GameObject.Find(names[0]);
-                    if (root == null)
-                        root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects()
-                            .Where(x => x.name.Equals(names[0])).FirstOrDefault();
+                    if (root == null) root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.Equals(names[0])).FirstOrDefault();
 
                     var t = root?.transform;
                     if (t == null)
+                    {
                         Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
+                    }
                     else
-                        for (var i = 1; i < names.Length; i++)
+                    {
+                        for (int i = 1; i < names.Length; i++)
                         {
                             var child = t.transform.Find(names[i]);
 
                             if (child == null)
-                                foreach (var c in t.GetComponentsInChildren<Transform>(true))
+                            {
+                                foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
+                                {
                                     if (t.name.Equals(names[i]))
                                     {
                                         child = c;
                                         break;
                                     }
+                                }
+                            }
 
                             if (child == null)
                             {
@@ -140,6 +169,7 @@ namespace NewHorizons.Utility
 
                             t = child;
                         }
+                    }
 
                     go = t?.gameObject;
                 }
@@ -151,7 +181,10 @@ namespace NewHorizons.Utility
                     go = FindObjectOfTypeAndName<GameObject>(name);
                 }
 
-                if (go != null) CachedGameObjects.Add(path, go);
+                if (go != null)
+                {
+                    CachedGameObjects.Add(path, go);
+                }
 
                 return go;
             }
@@ -163,8 +196,11 @@ namespace NewHorizons.Utility
 
         public static List<GameObject> GetAllChildren(GameObject parent)
         {
-            var children = new List<GameObject>();
-            foreach (Transform child in parent.transform) children.Add(child.gameObject);
+            List<GameObject> children = new List<GameObject>();
+            foreach (Transform child in parent.transform)
+            {
+                children.Add(child.gameObject);
+            }
             return children;
         }
     }

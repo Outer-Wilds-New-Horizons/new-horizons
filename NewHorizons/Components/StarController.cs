@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace NewHorizons.Components
 {
     public class StarController : MonoBehaviour

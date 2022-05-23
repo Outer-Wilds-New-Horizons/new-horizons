@@ -3,13 +3,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-
 namespace NewHorizons.Utility
 {
     public static class ImageUtilities
     {
-        private static readonly Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
-        private static readonly List<Texture2D> _generatedTextures = new List<Texture2D>();
+        private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
+        private static List<Texture2D> _generatedTextures = new List<Texture2D>();
 
         public static Texture2D GetTexture(IModBehaviour mod, string filename)
         {
@@ -34,8 +33,7 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(
-                    $"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
                 return null;
             }
         }
@@ -49,7 +47,6 @@ namespace NewHorizons.Utility
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
             }
-
             _loadedTextures.Clear();
 
             foreach (var texture in _generatedTextures)
@@ -57,14 +54,13 @@ namespace NewHorizons.Utility
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
             }
-
             _generatedTextures.Clear();
         }
 
         public static Texture2D Invert(Texture2D texture)
         {
             var pixels = texture.GetPixels();
-            for (var i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 var x = i % texture.width;
                 var y = (int)Mathf.Floor(i / texture.height);
@@ -101,37 +97,43 @@ namespace NewHorizons.Utility
         {
             var size = 256;
 
-            var texture = new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false);
+            var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
             texture.name = "SlideReelAtlas";
 
-            var fillPixels = new Color[size * size * 4 * 4];
-            for (var xIndex = 0; xIndex < 4; xIndex++)
-            for (var yIndex = 0; yIndex < 4; yIndex++)
+            Color[] fillPixels = new Color[size * size * 4 * 4];
+            for (int xIndex = 0; xIndex < 4; xIndex++)
             {
-                var index = yIndex * 4 + xIndex;
-                var srcTexture = index < textures.Length ? textures[index] : null;
-
-                for (var i = 0; i < size; i++)
-                for (var j = 0; j < size; j++)
+                for (int yIndex = 0; yIndex < 4; yIndex++)
                 {
-                    var colour = Color.black;
+                    int index = yIndex * 4 + xIndex;
+                    var srcTexture = index < textures.Length ? textures[index] : null;
 
-                    if (srcTexture)
+                    for (int i = 0; i < size; i++)
                     {
-                        var srcX = i * srcTexture.width / (float)size;
-                        var srcY = j * srcTexture.height / (float)size;
-                        if (srcX >= 0 && srcX < srcTexture.width && srcY >= 0 && srcY < srcTexture.height)
-                            colour = srcTexture.GetPixel((int)srcX, (int)srcY);
+                        for (int j = 0; j < size; j++)
+                        {
+                            var colour = Color.black;
+
+                            if (srcTexture)
+                            {
+                                var srcX = i * srcTexture.width / (float)size;
+                                var srcY = j * srcTexture.height / (float)size;
+                                if (srcX >= 0 && srcX < srcTexture.width && srcY >= 0 && srcY < srcTexture.height)
+                                {
+                                    colour = srcTexture.GetPixel((int)srcX, (int)srcY);
+                                }
+                            }
+
+                            var x = xIndex * size + i;
+                            // Want it to start from the first row from the bottom then go down then modulo around idk
+                            // 5 because no pos mod idk
+                            var y = ((5 - yIndex) % 4) * size + j;
+
+                            var pixelIndex = x + y * (size * 4);
+
+                            if (pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
+                        }
                     }
-
-                    var x = xIndex * size + i;
-                    // Want it to start from the first row from the bottom then go down then modulo around idk
-                    // 5 because no pos mod idk
-                    var y = (5 - yIndex) % 4 * size + j;
-
-                    var pixelIndex = x + y * size * 4;
-
-                    if (pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
                 }
             }
 
@@ -150,14 +152,18 @@ namespace NewHorizons.Utility
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
 
-            for (var x = 0; x < texture.width; x++)
-            for (var y = 0; y < texture.height; y++)
+            for (int x = 0; x < texture.width; x++)
             {
-                var fillColor = new Color(0, 0, 0, 0);
+                for (int y = 0; y < texture.height; y++)
+                {
+                    var fillColor = new Color(0, 0, 0, 0);
 
-                if (pixels[x + y * texture.width].a == 1 &&
-                    CloseToTransparent(pixels, texture.width, texture.height, x, y, thickness)) fillColor = color;
-                outlinePixels[x + y * texture.width] = fillColor;
+                    if (pixels[x + y * texture.width].a == 1 && CloseToTransparent(pixels, texture.width, texture.height, x, y, thickness))
+                    {
+                        fillColor = color;
+                    }
+                    outlinePixels[x + y * texture.width] = fillColor;
+                }
             }
 
             outline.SetPixels(outlinePixels);
@@ -176,17 +182,20 @@ namespace NewHorizons.Utility
             var maxX = Math.Min(width, x + thickness / 2);
             var maxY = Math.Min(height, y + thickness / 2);
 
-            for (var i = minX; i < maxX; i++)
-            for (var j = minY; j < maxY; j++)
-                if (pixels[i + j * width].a < 1)
-                    return true;
+            for (int i = minX; i < maxX; i++)
+            {
+                for (int j = minY; j < maxY; j++)
+                {
+                    if (pixels[i + j * width].a < 1) return true;
+                }
+            }
             return false;
         }
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
             var pixels = image.GetPixels();
-            for (var i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i].r *= tint.r;
                 pixels[i].g *= tint.g;
@@ -206,7 +215,7 @@ namespace NewHorizons.Utility
         public static Texture2D LerpGreyscaleImage(Texture2D image, Color lightTint, Color darkTint)
         {
             var pixels = image.GetPixels();
-            for (var i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i].r = Mathf.Lerp(darkTint.r, lightTint.r, pixels[i].r);
                 pixels[i].g = Mathf.Lerp(darkTint.g, lightTint.g, pixels[i].g);
@@ -225,11 +234,14 @@ namespace NewHorizons.Utility
 
         public static Texture2D ClearTexture(int width, int height)
         {
-            var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+            var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
             tex.name = "Clear";
-            var fillColor = Color.clear;
-            var fillPixels = new Color[tex.width * tex.height];
-            for (var i = 0; i < fillPixels.Length; i++) fillPixels[i] = fillColor;
+            Color fillColor = Color.clear;
+            Color[] fillPixels = new Color[tex.width * tex.height];
+            for (int i = 0; i < fillPixels.Length; i++)
+            {
+                fillPixels[i] = fillColor;
+            }
             tex.SetPixels(fillPixels);
             tex.Apply();
 
@@ -240,21 +252,22 @@ namespace NewHorizons.Utility
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
-            var tex = new Texture2D(width, height, TextureFormat.ARGB32, false);
+            var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
             tex.name = src.name + "CanvasScaled";
-            var fillPixels = new Color[tex.width * tex.height];
-            for (var i = 0; i < tex.width; i++)
-            for (var j = 0; j < tex.height; j++)
+            Color[] fillPixels = new Color[tex.width * tex.height];
+            for (int i = 0; i < tex.width; i++)
             {
-                var x = i + (src.width - width) / 2;
-                var y = j + (src.height - height) / 2;
+                for (int j = 0; j < tex.height; j++)
+                {
+                    var x = i + (src.width - width) / 2;
+                    var y = j + (src.height - height) / 2;
 
-                var colour = Color.black;
-                if (x < src.width && y < src.height) colour = src.GetPixel(i, j);
+                    var colour = Color.black;
+                    if (x < src.width && y < src.height) colour = src.GetPixel(i, j);
 
-                fillPixels[i + j * tex.width] = colour;
+                    fillPixels[i + j * tex.width] = colour;
+                }
             }
-
             tex.SetPixels(fillPixels);
             tex.Apply();
 
@@ -270,7 +283,7 @@ namespace NewHorizons.Utility
             var g = 0f;
             var b = 0f;
             var length = pixels.Length;
-            for (var i = 0; i < pixels.Length; i++)
+            for (int i = 0; i < pixels.Length; i++)
             {
                 var color = pixels[i];
                 r += (float)color.r / length;
@@ -280,14 +293,16 @@ namespace NewHorizons.Utility
 
             return new Color(r / 255, g / 255, b / 255);
         }
-
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
-            var pixels = new Color[width * height];
-
-            for (var i = 0; i < pixels.Length; i++) pixels[i] = color;
-
-            var newTexture = new Texture2D(width, height);
+            Color[] pixels = new Color[width*height];
+ 
+            for(int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = color;
+            }
+ 
+            Texture2D newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
             return newTexture;

@@ -9,20 +9,17 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons
 {
     public class NewHorizonsApi
     {
-        [Obsolete(
-            "Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
+        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config)
         {
             Create(config, null);
         }
 
-        [Obsolete(
-            "Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
+        [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config, IModBehaviour mod)
         {
             try
@@ -36,7 +33,9 @@ namespace NewHorizons
                 var relativePath = $"temp/{name}.json";
                 var fullPath = Main.Instance.ModHelper.Manifest.ModFolderPath + relativePath;
                 if (!Directory.Exists(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp"))
+                {
                     Directory.CreateDirectory(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp");
+                }
                 JsonHelper.SaveJsonObject(fullPath, config);
                 var body = Main.Instance.LoadConfig(Main.Instance, relativePath);
                 File.Delete(fullPath);
@@ -44,11 +43,10 @@ namespace NewHorizons
                 // Update it to point to their mod for textures and stuff
                 body.Mod = mod ?? Main.Instance;
 
-                if (!Main.BodyDict.ContainsKey(body.Config.starSystem))
-                    Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
+                if (!Main.BodyDict.ContainsKey(body.Config.starSystem)) Main.BodyDict.Add(body.Config.starSystem, new List<NewHorizonsBody>());
                 Main.BodyDict[body.Config.starSystem].Add(body);
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 Logger.LogError($"Error in Create API: {ex.Message} {ex.StackTrace}");
             }
@@ -61,15 +59,23 @@ namespace NewHorizons
 
         public GameObject GetPlanet(string name)
         {
-            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)
-                ?.Object;
+            return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
-        public string GetCurrentStarSystem() => Main.Instance.CurrentStarSystem;
+        public string GetCurrentStarSystem()
+        {
+            return Main.Instance.CurrentStarSystem;
+        }
 
-        public UnityEvent<string> GetChangeStarSystemEvent() => Main.Instance.OnChangeStarSystem;
+        public UnityEvent<string> GetChangeStarSystemEvent()
+        {
+            return Main.Instance.OnChangeStarSystem;
+        }
 
-        public UnityEvent<string> GetStarSystemLoadedEvent() => Main.Instance.OnStarSystemLoaded;
+        public UnityEvent<string> GetStarSystemLoadedEvent()
+        {
+            return Main.Instance.OnStarSystemLoaded;
+        }
 
         public bool ChangeCurrentStarSystem(string name)
         {
@@ -92,8 +98,9 @@ namespace NewHorizons
             }
         }
 
-        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position,
-            Vector3 eulerAngles, float scale, bool alignWithNormal) => DetailBuilder.MakeDetail(planet, sector,
-            propToCopyPath, position, eulerAngles, scale, alignWithNormal);
+        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal)
+        {
+            return DetailBuilder.MakeDetail(planet, sector, propToCopyPath, position, eulerAngles, scale, alignWithNormal);
+        }
     }
 }

@@ -2,28 +2,24 @@
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Orbital
 {
     public static class InitialMotionBuilder
     {
-        public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody,
-            OWRigidbody OWRB, OrbitModule orbit)
+        public static InitialMotion Make(GameObject body, AstroObject primaryBody, AstroObject secondaryBody, OWRigidbody OWRB, OrbitModule orbit)
         {
             // Doing it like this so the planet orbit updater can just use an existing initial motion with the other method
-            var initialMotion = body.AddComponent<InitialMotion>();
+            InitialMotion initialMotion = body.AddComponent<InitialMotion>();
             return SetInitialMotionFromConfig(initialMotion, primaryBody, secondaryBody, orbit);
         }
 
-        public static InitialMotion SetInitialMotionFromConfig(InitialMotion initialMotion, AstroObject primaryBody,
-            AstroObject secondaryBody, OrbitModule orbit)
+        public static InitialMotion SetInitialMotionFromConfig(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OrbitModule orbit)
         {
             // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
             initialMotion._orbitImpulseScalar = 0f;
 
             // Rotation
-            initialMotion._initAngularSpeed =
-                orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
+            initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
             var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt, Vector3.right) * Vector3.up;
             secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 
@@ -40,8 +36,7 @@ namespace NewHorizons.Builder.Orbital
             return initialMotion;
         }
 
-        public static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody,
-            AstroObject secondaryBody)
+        public static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
         {
             var focalPoint = primaryBody.GetComponent<BinaryFocalPoint>();
             if (focalPoint)
@@ -56,11 +51,13 @@ namespace NewHorizons.Builder.Orbital
                     {
                         // We set the positions and velocities of both right now
                         if (name == focalPoint.PrimaryName)
-                            SetBinaryInitialMotion(primaryBody, secondaryBody as NHAstroObject,
-                                otherBody as NHAstroObject);
+                        {
+                            SetBinaryInitialMotion(primaryBody, secondaryBody as NHAstroObject, otherBody as NHAstroObject);
+                        }
                         else
-                            SetBinaryInitialMotion(primaryBody, otherBody as NHAstroObject,
-                                secondaryBody as NHAstroObject);
+                        {
+                            SetBinaryInitialMotion(primaryBody, otherBody as NHAstroObject, secondaryBody as NHAstroObject);
+                        }
                     }
                 }
                 else
@@ -80,8 +77,7 @@ namespace NewHorizons.Builder.Orbital
             }
         }
 
-        public static void SetMotionFromPrimary(AstroObject primaryBody, AstroObject secondaryBody,
-            IOrbitalParameters orbit, InitialMotion initialMotion)
+        public static void SetMotionFromPrimary(AstroObject primaryBody, AstroObject secondaryBody, IOrbitalParameters orbit, InitialMotion initialMotion)
         {
             initialMotion.SetPrimaryBody(primaryBody.GetAttachedOWRigidbody());
 
@@ -94,8 +90,7 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._isInitVelocityDirty = false;
         }
 
-        private static void SetBinaryInitialMotion(AstroObject baryCenter, NHAstroObject primaryBody,
-            NHAstroObject secondaryBody)
+        private static void SetBinaryInitialMotion(AstroObject baryCenter, NHAstroObject primaryBody, NHAstroObject secondaryBody)
         {
             Logger.Log($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
 
@@ -104,11 +99,13 @@ namespace NewHorizons.Builder.Orbital
 
             // Might make binaries with binaries with binaries work 
             if (primaryBody.GetGravityVolume() == null)
-                primaryGravity = new Gravity(primaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody
-                    ?.GetComponent<AstroObject>()?.GetGravityVolume());
+            {
+                primaryGravity = new Gravity(primaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+            }
             if (secondaryBody.GetGravityVolume() == null)
-                secondaryGravity = new Gravity(secondaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody
-                    ?.GetComponent<AstroObject>()?.GetGravityVolume());
+            {
+                secondaryGravity = new Gravity(secondaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+            }
 
             // Update the positions
             var distance = secondaryBody.semiMajorAxis + primaryBody.semiMajorAxis;
@@ -128,17 +125,13 @@ namespace NewHorizons.Builder.Orbital
             primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg, lon, tru - 180);
             secondaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r2, inc, arg, lon, tru);
 
-            primaryBody.transform.position = baryCenter.transform.position +
-                                             primaryBody.GetOrbitalParameters(primaryGravity, secondaryGravity)
-                                                 .InitialPosition;
-            secondaryBody.transform.position = baryCenter.transform.position +
-                                               secondaryBody.GetOrbitalParameters(secondaryGravity, primaryGravity)
-                                                   .InitialPosition;
+            primaryBody.transform.position = baryCenter.transform.position + primaryBody.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
+            secondaryBody.transform.position = baryCenter.transform.position + secondaryBody.GetOrbitalParameters(secondaryGravity, primaryGravity).InitialPosition;
 
             // Update the velocities
 
             // Two-body is equivalent to reduced mass orbiting the combined mass
-            var reducedMass = 1f / (1f / m1 + 1f / m2);
+            var reducedMass = 1f / ((1f / m1) + (1f / m2));
             var combinedMass = m1 + m2;
 
             var reducedMassGravity = new Gravity(reducedMass, primaryGravity.Power);

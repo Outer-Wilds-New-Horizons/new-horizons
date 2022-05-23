@@ -1,4 +1,5 @@
 ﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -6,7 +7,7 @@ using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
+using Random = UnityEngine.Random;
 namespace NewHorizons.Components
 {
     public class QuantumPlanet : QuantumObject
@@ -29,7 +30,7 @@ namespace NewHorizons.Components
             _alignment = GetComponent<AlignWithTargetBody>();
             _rb = GetComponent<OWRigidbody>();
 
-            GlobalMessenger.AddListener("PlayerBlink", OnPlayerBlink);
+            GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
 
             _maxSnapshotLockRange = 300000f;
         }
@@ -38,14 +39,17 @@ namespace NewHorizons.Components
         {
             base.Start();
 
-            foreach (var state in states) state.sector?.gameObject?.SetActive(false);
+            foreach (var state in states)
+            {
+                state.sector?.gameObject?.SetActive(false);
+            }
 
             ChangeQuantumState(true);
         }
 
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
-            Logger.Log("Trying to change quantum state");
+            Logger.Log($"Trying to change quantum state");
 
             if (states.Count <= 1) return false;
 
@@ -57,16 +61,19 @@ namespace NewHorizons.Components
             var oldState = states[_currentIndex];
 
             // This will all get set in the for loop
-            var newState = oldState;
-            var newIndex = _currentIndex;
+            State newState = oldState;
+            int newIndex = _currentIndex;
             AstroObject primaryBody = null;
             OrbitalParameters orbitalParams = null;
 
             // The QM tries to switch 10 times so we'll do that too
-            for (var i = 0; i < 10; i++)
+            for (int i = 0; i < 10; i++)
             {
                 newIndex = _currentIndex;
-                while (newIndex == _currentIndex) newIndex = Random.Range(0, states.Count);
+                while (newIndex == _currentIndex)
+                {
+                    newIndex = Random.Range(0, states.Count);
+                }
 
                 newState = states[newIndex];
 
@@ -121,27 +128,33 @@ namespace NewHorizons.Components
             _astroObject._primaryBody = primaryBody;
             DetectorBuilder.SetDetector(primaryBody, _astroObject, _detector);
             _detector._activeInheritedDetector = primaryBody.GetComponentInChildren<ForceDetector>();
-            _detector._activeVolumes = new List<EffectVolume> { primaryBody.GetGravityVolume() };
+            _detector._activeVolumes = new List<EffectVolume>() { primaryBody.GetGravityVolume() };
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
 
-            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity,
-                orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis,
-                orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
+            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity, orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis, orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
 
             PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
 
-            if (!Physics.autoSyncTransforms) Physics.SyncTransforms();
+            if (!Physics.autoSyncTransforms)
+            {
+                Physics.SyncTransforms();
+            }
 
             _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
         }
 
         private void OnPlayerBlink()
         {
-            if (IsVisible()) Collapse(true);
+            if (base.IsVisible())
+            {
+                base.Collapse(true);
+            }
         }
 
-        public override bool IsPlayerEntangled() =>
-            states[_currentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
+        public override bool IsPlayerEntangled()
+        {
+            return states[_currentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
+        }
 
         public class State
         {

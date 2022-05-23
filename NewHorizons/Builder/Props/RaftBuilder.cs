@@ -4,7 +4,6 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Builder.Props
 {
     public static class RaftBuilder
@@ -15,23 +14,22 @@ namespace NewHorizons.Builder.Props
         {
             if (_prefab == null)
             {
-                _prefab = Object.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
+                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
                 if (_prefab == null)
                 {
-                    Logger.LogWarning("Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
-
                 _prefab.name = "Raft_Body_Prefab";
             }
 
-            var raftObject = _prefab.InstantiateInactive();
+            GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
             raftObject.transform.parent = sector?.transform ?? planetGO.transform;
             raftObject.transform.position = planetGO.transform.TransformPoint(info.position);
             raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
 
-            sector.OnOccupantEnterSector += sd => OWAssetHandler.OnOccupantEnterSector(raftObject, sd, sector);
+            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.OnOccupantEnterSector(raftObject, sd, sector);
             OWAssetHandler.LoadObject(raftObject);
 
             var raftController = raftObject.GetComponent<RaftController>();

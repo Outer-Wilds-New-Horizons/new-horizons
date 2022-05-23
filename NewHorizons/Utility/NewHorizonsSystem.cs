@@ -1,7 +1,6 @@
 ﻿using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
-
 namespace NewHorizons.Utility
 {
     public class NewHorizonsSystem

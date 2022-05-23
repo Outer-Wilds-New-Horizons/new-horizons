@@ -2,7 +2,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using UnityEngine;
-
 namespace NewHorizons.Builder.Orbital
 {
     public static class OrbitlineBuilder
@@ -12,22 +11,17 @@ namespace NewHorizons.Builder.Orbital
 
         public static OrbitLine Make(GameObject planetGO, NHAstroObject astroObject, bool isMoon, PlanetConfig config)
         {
-            if (_dottedLineMaterial == null)
-                _dottedLineMaterial =
-                    SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
-            if (_lineMaterial == null)
-                _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
+            if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
+            if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
 
-            var orbitGO = new GameObject("Orbit");
+            GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
             lineRenderer.material = new Material(config.Orbit.DottedOrbitLine ? _dottedLineMaterial : _lineMaterial);
-            lineRenderer.textureMode = config.Orbit.DottedOrbitLine
-                ? LineTextureMode.RepeatPerSegment
-                : LineTextureMode.Stretch;
+            lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
 
             var width = config.Orbit.DottedOrbitLine ? 100 : 50;
             lineRenderer.startWidth = width;
@@ -53,7 +47,7 @@ namespace NewHorizons.Builder.Orbital
 
                 var a = astroObject.semiMajorAxis;
                 var e = astroObject.eccentricity;
-                var b = a * Mathf.Sqrt(1f - e * e);
+                var b = a * Mathf.Sqrt(1f - (e * e));
                 var l = astroObject.longitudeOfAscendingNode;
                 var p = astroObject.argumentOfPeriapsis;
                 var i = astroObject.inclination;

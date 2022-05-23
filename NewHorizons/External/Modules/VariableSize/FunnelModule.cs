@@ -1,7 +1,7 @@
-﻿using NewHorizons.Utility;
+﻿using System.Runtime.Serialization;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules.VariableSize
 {

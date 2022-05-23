@@ -1,7 +1,7 @@
-﻿using NewHorizons.Components.Orbital;
-using NewHorizons.Utility;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Utility;
 
 namespace NewHorizons.External.Modules
 {
@@ -99,8 +99,10 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public float trueAnomaly { get; set; }
 
-        public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity) =>
-            OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis,
+        public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
+        {
+            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis,
                 inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
+        }
     }
 }
