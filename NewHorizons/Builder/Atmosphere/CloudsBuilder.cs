@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -11,15 +11,18 @@ namespace NewHorizons.Builder.Atmosphere
         private static Shader _sphereShader = null;
         private static Material[] _gdCloudMaterials;
         private static GameObject _lightningPrefab;
+        private static Texture2D _colorRamp;
         private static readonly int Color1 = Shader.PropertyToID("_Color");
         private static readonly int TintColor = Shader.PropertyToID("_TintColor");
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int RampTex = Shader.PropertyToID("_RampTex");
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             if (_lightningPrefab == null) _lightningPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
+            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Clouds_Bottom_ramp.png");
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
@@ -46,6 +49,7 @@ namespace NewHorizons.Builder.Atmosphere
                 bottomTSRTempArray[0] = new Material(bottomTSRMaterials[0]);
                 bottomTSRTempArray[0].SetColor(Color1, bottomColor);
                 bottomTSRTempArray[0].SetColor(TintColor, bottomColor);
+                bottomTSRTempArray[0].SetTexture(ColorRamp, ImageUtilities.TintImage(_colorRamp, bottomColor));
 
                 bottomTSRTempArray[1] = new Material(bottomTSRMaterials[1]);
 

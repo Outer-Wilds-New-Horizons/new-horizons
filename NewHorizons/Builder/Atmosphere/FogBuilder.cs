@@ -1,11 +1,16 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class FogBuilder
     {
+        private static Texture2D _ramp;
+
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
         {
+            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/FogColorRamp.png");
+
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
             fogGO.transform.parent = sector?.transform ?? planetGO.transform;
@@ -28,7 +33,7 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogRadius = atmo.FogSize;
             PFC.fogDensity = atmo.FogDensity;
             PFC.fogExponent = 1f;
-            PFC.fogColorRampTexture = dbPlanetaryFogController.fogColorRampTexture;
+            PFC.fogColorRampTexture = atmo.FogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.FogTint.ToColor());
             PFC.fogColorRampIntensity = 1f;
             PFC.fogTint = atmo.FogTint.ToColor();
 
