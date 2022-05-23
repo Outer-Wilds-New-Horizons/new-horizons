@@ -59,7 +59,7 @@ jobs:
       
     # Only want to commit schemas if they've actually changed
     - name: Verify Changed Schemas
-      uses: tj-actions/verify-changed-files@v6
+      uses: tj-actions/verify-changed-files@v9.1
       id: changed_files
       with:
         files: NewHorizons\Schemas\**
