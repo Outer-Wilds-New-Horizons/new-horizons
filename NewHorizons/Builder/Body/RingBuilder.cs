@@ -48,16 +48,13 @@ namespace NewHorizons.Builder.Body
             var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
             var fluidType = FluidVolume.Type.NONE;
 
-            if (ring.fluidType != null)
+            try
             {
-                try
-                {
-                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
-                }
+                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
             }
 
             sfv._fluidType = fluidType;

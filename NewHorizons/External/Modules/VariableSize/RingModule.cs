@@ -9,7 +9,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Fluid type for sounds/effects when colliding with this ring.
         /// </summary>
-        public CloudFluidType? fluidType = CloudFluidType.None;
+        public CloudFluidType fluidType = CloudFluidType.None;
 
         /// <summary>
         /// Angle between the rings and the equatorial plane of the planet.
