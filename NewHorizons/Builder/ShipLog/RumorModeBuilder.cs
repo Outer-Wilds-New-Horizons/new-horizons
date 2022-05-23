@@ -1,11 +1,16 @@
-﻿using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
-using NewHorizons.Utility;
+﻿#region
+
 using System;
 using System.Collections.Generic;
 using System.Xml.Linq;
+using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RumorModeBuilder
@@ -25,35 +30,30 @@ namespace NewHorizons.Builder.ShipLog
 
         public static void AddCuriosityColors(ShipLogModule.CuriosityColorInfo[] newColors)
         {
-            foreach (ShipLogModule.CuriosityColorInfo newColor in newColors)
-            {
+            foreach (var newColor in newColors)
                 if (_rawNameToCuriosityName.ContainsKey(newColor.id) == false)
                 {
-                    CuriosityName newName = (CuriosityName)8 + _rawNameToCuriosityName.Count;
+                    var newName = (CuriosityName) 8 + _rawNameToCuriosityName.Count;
                     _rawNameToCuriosityName.Add(newColor.id, newName);
                     _curiosityColors.Add(newName, newColor.color);
                     _curiosityHighlightColors.Add(newName, newColor.highlightColor);
                 }
-            }
         }
 
-        public static Color GetCuriosityColor(CuriosityName curiosityName, bool highlighted, Color defaultColor, Color defaultHighlight)
+        public static Color GetCuriosityColor(CuriosityName curiosityName, bool highlighted, Color defaultColor,
+            Color defaultHighlight)
         {
             if (_curiosityColors.ContainsKey(curiosityName) && _curiosityHighlightColors.ContainsKey(curiosityName))
-            {
                 return (highlighted ? _curiosityHighlightColors : _curiosityColors)[curiosityName];
-            }
-            else
-            {
-                return highlighted ? defaultHighlight : defaultColor;
-            }
+            return highlighted ? defaultHighlight : defaultColor;
         }
 
         public static void AddBodyToShipLog(ShipLogManager manager, NewHorizonsBody body)
         {
-            string systemName = body.Config.starSystem;
-            XElement astroBodyFile = XElement.Load(body.Mod.ModHelper.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
-            XElement astroBodyId = astroBodyFile.Element("ID");
+            var systemName = body.Config.starSystem;
+            var astroBodyFile =
+                XElement.Load(body.Mod.ModHelper.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
+            var astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {
                 Logger.LogError("Failed to load ship logs for " + systemName + "!");
@@ -61,43 +61,41 @@ namespace NewHorizons.Builder.ShipLog
             else
             {
                 var entryIDs = new List<string>();
-                foreach (XElement entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
+                foreach (var entryElement in astroBodyFile.DescendantsAndSelf("Entry"))
                 {
-                    XElement curiosityName = entryElement.Element("Curiosity");
-                    XElement id = entryElement.Element("ID");
+                    var curiosityName = entryElement.Element("Curiosity");
+                    var id = entryElement.Element("ID");
                     if (id != null)
                     {
                         entryIDs.Add(id.Value);
                         if (curiosityName != null && _entryIdToRawName.ContainsKey(id.Value) == false)
-                        {
                             _entryIdToRawName.Add(id.Value, curiosityName.Value);
-                        }
                     }
-                    foreach (XElement childEntryElement in entryElement.Elements("Entry"))
+
+                    foreach (var childEntryElement in entryElement.Elements("Entry"))
                     {
-                        XElement childCuriosityName = childEntryElement.Element("Curiosity");
-                        XElement childId = childEntryElement.Element("ID");
+                        var childCuriosityName = childEntryElement.Element("Curiosity");
+                        var childId = childEntryElement.Element("ID");
                         if (childId != null)
                         {
                             entryIDs.Add(childId.Value);
                             if (_entryIdToRawName.ContainsKey(childId.Value))
                             {
                                 if (childCuriosityName == null && curiosityName != null)
-                                {
                                     _entryIdToRawName.Add(childId.Value, curiosityName.Value);
-                                }
                                 else if (childCuriosityName != null)
-                                {
                                     _entryIdToRawName.Add(childId.Value, childCuriosityName.Value);
-                                }
                             }
                         }
+
                         AddTranslation(childEntryElement);
                     }
+
                     AddTranslation(entryElement);
                 }
-                TextAsset newAsset = new TextAsset(astroBodyFile.ToString());
-                List<TextAsset> newBodies = new List<TextAsset>(manager._shipLogXmlAssets) { newAsset };
+
+                var newAsset = new TextAsset(astroBodyFile.ToString());
+                var newBodies = new List<TextAsset>(manager._shipLogXmlAssets) {newAsset};
                 manager._shipLogXmlAssets = newBodies.ToArray();
                 ShipLogHandler.AddConfig(astroBodyId.Value, entryIDs, body);
             }
@@ -106,35 +104,37 @@ namespace NewHorizons.Builder.ShipLog
         public static void GenerateEntryData(ShipLogManager manager)
         {
             const int step = 400;
-            int colAccumulator = 0;
-            int rowAccumulator = 0;
-            foreach (ShipLogEntry entry in manager._entryList)
-            {
+            var colAccumulator = 0;
+            var rowAccumulator = 0;
+            foreach (var entry in manager._entryList)
                 if (manager._entryDataDict.ContainsKey(entry._id) == false)
                 {
-                    NewHorizonsBody body = ShipLogHandler.GetConfigFromEntryID(entry._id);
-                    Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config.ShipLog);
+                    var body = ShipLogHandler.GetConfigFromEntryID(entry._id);
+                    var manualEntryPosition = GetManualEntryPosition(entry._id, body.Config.ShipLog);
                     Vector2 entryPosition;
                     if (manualEntryPosition == null)
-                    {
                         entryPosition = new Vector2(colAccumulator, rowAccumulator);
-                    }
                     else
-                    {
-                        entryPosition = (Vector2)manualEntryPosition;
-                    }
-                    EntryData newData = new EntryData
+                        entryPosition = (Vector2) manualEntryPosition;
+                    var newData = new EntryData
                     {
                         id = entry._id,
                         cardPosition = entryPosition,
-                        sprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body, true),
-                        altSprite = body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id + "_ALT", body, false)
+                        sprite =
+                            body.Config.ShipLog.spriteFolder == null ? null : GetEntrySprite(entry._id, body, true),
+                        altSprite = body.Config.ShipLog.spriteFolder == null
+                            ? null
+                            : GetEntrySprite(entry._id + "_ALT", body, false)
                     };
-                    entry.SetSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.sprite);
-                    entry.SetAltSprite(newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.altSprite);
+                    entry.SetSprite(
+                        newData.sprite == null ? manager._shipLogLibrary.defaultEntrySprite : newData.sprite);
+                    entry.SetAltSprite(newData.sprite == null
+                        ? manager._shipLogLibrary.defaultEntrySprite
+                        : newData.altSprite);
                     manager._entryDataDict.Add(entry._id, newData);
-                    int index = manager._entryList.IndexOf(entry);
-                    if (index < manager._entryList.Count - 2 && manager._entryList[index + 1]._astroObjectID != entry._astroObjectID)
+                    var index = manager._entryList.IndexOf(entry);
+                    if (index < manager._entryList.Count - 2 &&
+                        manager._entryList[index + 1]._astroObjectID != entry._astroObjectID)
                     {
                         rowAccumulator += step;
                         colAccumulator = 0;
@@ -144,23 +144,23 @@ namespace NewHorizons.Builder.ShipLog
                         colAccumulator += step;
                     }
                 }
-            }
         }
 
         private static void AddTranslation(XElement entry)
         {
-            XElement nameElement = entry.Element("Name");
+            var nameElement = entry.Element("Name");
             if (nameElement != null)
             {
-                string name = nameElement.Value;
+                var name = nameElement.Value;
                 TranslationHandler.AddShipLog(name);
-                foreach (XElement rumorFact in entry.Elements("RumorFact"))
+                foreach (var rumorFact in entry.Elements("RumorFact"))
                 {
                     AddTranslationForElement(rumorFact, "RumorName", string.Empty);
                     AddTranslationForElement(rumorFact, "Text", name);
                     AddTranslationForAltText(rumorFact, name);
                 }
-                foreach (XElement exploreFact in entry.Elements("ExploreFact"))
+
+                foreach (var exploreFact in entry.Elements("ExploreFact"))
                 {
                     AddTranslationForElement(exploreFact, "Text", name);
                     AddTranslationForAltText(exploreFact, name);
@@ -170,20 +170,14 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void AddTranslationForElement(XElement parent, string elementName, string keyName)
         {
-            XElement element = parent.Element(elementName);
-            if (element != null)
-            {
-                TranslationHandler.AddShipLog(element.Value, keyName);
-            }
+            var element = parent.Element(elementName);
+            if (element != null) TranslationHandler.AddShipLog(element.Value, keyName);
         }
 
         private static void AddTranslationForAltText(XElement fact, string keyName)
         {
-            XElement altText = fact.Element("AltText");
-            if (altText != null)
-            {
-                AddTranslationForElement(altText, "Text", keyName);
-            }
+            var altText = fact.Element("AltText");
+            if (altText != null) AddTranslationForElement(altText, "Text", keyName);
         }
 
         public static void UpdateEntryCuriosity(ref ShipLogEntry entry)
@@ -192,24 +186,21 @@ namespace NewHorizons.Builder.ShipLog
             {
                 var raw = _entryIdToRawName[entry._id];
                 if (_rawNameToCuriosityName.ContainsKey(raw))
-                {
                     entry._curiosity = _rawNameToCuriosityName[raw];
-                }
                 else
-                {
-                    Logger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
-                }
+                    Logger.LogError(
+                        $"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
             }
         }
 
         private static Sprite GetEntrySprite(string entryId, NewHorizonsBody body, bool logError)
         {
-            string relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
+            var relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
             try
             {
-                Texture2D newTexture = ImageUtilities.GetTexture(body.Mod, relativePath);
-                Rect rect = new Rect(0, 0, newTexture.width, newTexture.height);
-                Vector2 pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
+                var newTexture = ImageUtilities.GetTexture(body.Mod, relativePath);
+                var rect = new Rect(0, 0, newTexture.width, newTexture.height);
+                var pivot = new Vector2(newTexture.width / 2, newTexture.height / 2);
                 return Sprite.Create(newTexture, rect, pivot);
             }
             catch (Exception)
@@ -222,13 +213,9 @@ namespace NewHorizons.Builder.ShipLog
         private static Vector2? GetManualEntryPosition(string entryId, ShipLogModule config)
         {
             if (config.entryPositions == null) return null;
-            foreach (ShipLogModule.EntryPositionInfo position in config.entryPositions)
-            {
+            foreach (var position in config.entryPositions)
                 if (position.id == entryId)
-                {
                     return position.position;
-                }
-            }
             return null;
         }
     }

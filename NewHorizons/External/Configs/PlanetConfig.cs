@@ -1,8 +1,12 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.ComponentModel;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
+
+#endregion
 
 namespace NewHorizons.External.Configs
 {

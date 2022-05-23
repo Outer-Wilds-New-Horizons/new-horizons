@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
+using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Components.SizeControllers
 {
     public class WaterSizeController : SizeController

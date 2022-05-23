@@ -1,9 +1,13 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.IO;
 using System.Linq;
 using NewHorizons.External.Configs;
 using NJsonSchema;
 using NJsonSchema.Generation;
+
+#endregion
 
 namespace SchemaExporter;
 

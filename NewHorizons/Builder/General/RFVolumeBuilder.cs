@@ -1,5 +1,9 @@
-﻿using NewHorizons.External.Configs;
+﻿#region
+
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder

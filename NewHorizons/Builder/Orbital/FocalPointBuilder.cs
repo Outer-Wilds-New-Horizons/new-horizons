@@ -1,4 +1,6 @@
-﻿using NewHorizons.Components.Orbital;
+﻿#region
+
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -6,6 +8,9 @@ using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Builder.Orbital
 {
     public static class FocalPointBuilder
@@ -26,22 +31,15 @@ namespace NewHorizons.Builder.Orbital
             foreach (var body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
                 if (body.Config.name == module.primary)
-                {
                     primary = body;
-                }
-                else if (body.Config.name == module.secondary)
-                {
-                    secondary = body;
-                }
-                if (primary != null && secondary != null)
-                {
-                    break;
-                }
+                else if (body.Config.name == module.secondary) secondary = body;
+                if (primary != null && secondary != null) break;
             }
 
             if (primary == null || secondary == null)
             {
-                Logger.LogError($"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
+                Logger.LogError(
+                    $"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
                 return;
             }
 
@@ -71,9 +69,10 @@ namespace NewHorizons.Builder.Orbital
         {
             var surfaceAcceleration = config.Base.surfaceGravity;
             var upperSurfaceRadius = config.Base.surfaceSize;
-            int falloffExponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
+            var falloffExponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
 
-            return surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT;
+            return surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) /
+                   GravityVolume.GRAVITATIONAL_CONSTANT;
         }
     }
 }

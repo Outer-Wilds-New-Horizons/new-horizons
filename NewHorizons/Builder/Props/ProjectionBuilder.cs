@@ -1,11 +1,16 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using System;
+using System.Collections.Generic;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
@@ -30,16 +35,21 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info,
+            IModBehaviour mod)
         {
             if (_slideReelPrefab == null)
             {
-                _slideReelPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
+                _slideReelPrefab = GameObject
+                    .Find(
+                        "RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")
+                    ?.gameObject?.InstantiateInactive();
                 if (_slideReelPrefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a slide reel but couldn't. Do you have the DLC installed?");
+                    Logger.LogWarning("Tried to make a slide reel but couldn't. Do you have the DLC installed?");
                     return;
                 }
+
                 _slideReelPrefab.name = "Prefab_IP_Reel";
             }
 
@@ -52,23 +62,22 @@ namespace NewHorizons.Builder.Props
 
             var slideCollectionContainer = slideReelObj.GetRequiredComponent<SlideCollectionContainer>();
 
-            foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
-            {
-                renderer.enabled = true;
-            }
+            foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>()) renderer.enabled = true;
 
             slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
-            slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            slideReelObj.transform.position =
+                planetGO.transform.TransformPoint((Vector3) (info.position ?? Vector3.zero));
+            slideReelObj.transform.rotation =
+                planetGO.transform.TransformRotation(Quaternion.Euler((Vector3) (info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
-            int slidesCount = info.slides.Length;
+            var slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
-            for (int i = 0; i < slidesCount; i++)
+            for (var i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
@@ -93,10 +102,12 @@ namespace NewHorizons.Builder.Props
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
             OWAssetHandler.LoadObject(slideReelObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(slideReelObj));
+            sector.OnOccupantEnterSector.AddListener(x => OWAssetHandler.LoadObject(slideReelObj));
 
-            var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back").GetComponent<MeshRenderer>();
-            var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front").GetComponent<MeshRenderer>();
+            var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back")
+                .GetComponent<MeshRenderer>();
+            var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front")
+                .GetComponent<MeshRenderer>();
 
             // Now put together the textures into a 4x4 thing for the materials
             var reelTexture = ImageUtilities.MakeReelTexture(textures);
@@ -108,16 +119,21 @@ namespace NewHorizons.Builder.Props
             slideReelObj.SetActive(true);
         }
 
-        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info,
+            IModBehaviour mod)
         {
             if (_autoPrefab == null)
             {
-                _autoPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive();
+                _autoPrefab = GameObject
+                    .Find(
+                        "RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")
+                    ?.gameObject?.InstantiateInactive();
                 if (_autoPrefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a auto projector but couldn't. Do you have the DLC installed?");
+                    Logger.LogWarning("Tried to make a auto projector but couldn't. Do you have the DLC installed?");
                     return;
                 }
+
                 _autoPrefab.name = "Prefab_IP_AutoProjector";
             }
 
@@ -130,14 +146,16 @@ namespace NewHorizons.Builder.Props
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
 
             autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
-            autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            autoProjector.transform.position =
+                planetGO.transform.TransformPoint((Vector3) (info.position ?? Vector3.zero));
+            autoProjector.transform.rotation =
+                planetGO.transform.TransformRotation(Quaternion.Euler((Vector3) (info.rotation ?? Vector3.zero)));
 
             // Now we replace the slides
-            int slidesCount = info.slides.Length;
+            var slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
-            for (int i = 0; i < slidesCount; i++)
+            for (var i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
@@ -153,10 +171,11 @@ namespace NewHorizons.Builder.Props
             slideCollectionContainer.slideCollection = slideCollection;
 
             OWAssetHandler.LoadObject(projectorObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(projectorObj));
+            sector.OnOccupantEnterSector.AddListener(x => OWAssetHandler.LoadObject(projectorObj));
 
             // Change the picture on the lens
-            var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();
+            var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens")
+                .GetComponent<MeshRenderer>();
             lens.materials[1].mainTexture = slideCollection.slides[0]._textureOverride;
             lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._textureOverride);
 
@@ -166,20 +185,22 @@ namespace NewHorizons.Builder.Props
         private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide)
         {
             var modules = new List<SlideFunctionModule>();
-            if (!String.IsNullOrEmpty(slideInfo.beatAudio))
+            if (!string.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule();
-                audioBeat._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.beatAudio);
+                audioBeat._audioType = (AudioType) Enum.Parse(typeof(AudioType), slideInfo.beatAudio);
                 audioBeat._delay = slideInfo.beatDelay;
                 modules.Add(audioBeat);
             }
-            if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
+
+            if (!string.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule();
-                audioBackdrop._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.backdropAudio);
+                audioBackdrop._audioType = (AudioType) Enum.Parse(typeof(AudioType), slideInfo.backdropAudio);
                 audioBackdrop._fadeTime = slideInfo.backdropFadeTime;
                 modules.Add(audioBackdrop);
             }
+
             if (slideInfo.ambientLightIntensity > 0)
             {
                 var ambientLight = new SlideAmbientLightModule();
@@ -189,19 +210,22 @@ namespace NewHorizons.Builder.Props
                 ambientLight._spotIntensityMod = slideInfo.spotIntensityMod;
                 modules.Add(ambientLight);
             }
+
             if (slideInfo.playTimeDuration != 0)
             {
                 var playTime = new SlidePlayTimeModule();
                 playTime._duration = slideInfo.playTimeDuration;
                 modules.Add(playTime);
             }
+
             if (slideInfo.blackFrameDuration != 0)
             {
                 var blackFrame = new SlideBlackFrameModule();
                 blackFrame._duration = slideInfo.blackFrameDuration;
                 modules.Add(blackFrame);
             }
-            if (!String.IsNullOrEmpty(slideInfo.reveal))
+
+            if (!string.IsNullOrEmpty(slideInfo.reveal))
             {
                 var shipLogEntry = new SlideShipLogEntryModule();
                 shipLogEntry._entryKey = slideInfo.reveal;

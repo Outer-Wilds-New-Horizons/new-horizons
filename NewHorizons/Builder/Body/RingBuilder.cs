@@ -1,13 +1,17 @@
-﻿using NewHorizons.Components;
-using NewHorizons.Components.SizeControllers;
-using NewHorizons.Utility;
-using OWML.Common;
+﻿#region
+
 using System;
 using System.Collections.Generic;
+using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
+using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
+
+#endregion
 
 namespace NewHorizons.Builder.Body
 {
@@ -49,16 +53,16 @@ namespace NewHorizons.Builder.Body
             var fluidType = FluidVolume.Type.NONE;
 
             if (ring.fluidType != null)
-            {
                 try
                 {
-                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
+                    fluidType = (FluidVolume.Type) Enum.Parse(typeof(FluidVolume.Type),
+                        Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
+                    Logger.LogError(
+                        $"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
                 }
-            }
 
             sfv._fluidType = fluidType;
             sfv._density = 5f;
@@ -66,11 +70,11 @@ namespace NewHorizons.Builder.Body
             ringVolume.SetActive(true);
 
 
-
             return ringGO;
         }
 
-        public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
+        public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring,
+            IModBehaviour mod)
         {
             // Properly lit shader doesnt work yet
             ring.unlit = true;
@@ -99,9 +103,12 @@ namespace NewHorizons.Builder.Body
             var texture = ringTexture;
 
             if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
-            if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
-            if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
-            if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
+            if (UnlitRingShader == null)
+                UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
+            if (RingShader1Pixel == null)
+                RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
+            if (UnlitRingShader1Pixel == null)
+                UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
 
             var mat = new Material(ring.unlit ? UnlitRingShader : RingShader);
             if (texture.width == 1)
@@ -109,6 +116,7 @@ namespace NewHorizons.Builder.Body
                 mat = new Material(ring.unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
                 mat.SetFloat(InnerRadius, 0);
             }
+
             ringMR.receiveShadows = !ring.unlit;
 
             mat.mainTexture = texture;
@@ -116,7 +124,7 @@ namespace NewHorizons.Builder.Body
             ringMR.material = mat;
 
             // Make mesh
-            var segments = (int)Mathf.Clamp(ring.outerRadius, 20, 2000);
+            var segments = (int) Mathf.Clamp(ring.outerRadius, 20, 2000);
             BuildRingMesh(ringMesh, segments, ring.innerRadius, ring.outerRadius);
 
             if (ring.rotationSpeed != 0)
@@ -130,10 +138,7 @@ namespace NewHorizons.Builder.Body
             {
                 var levelController = ringGO.AddComponent<SizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in ring.Curve)
-                {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
-                }
+                foreach (var pair in ring.Curve) curve.AddKey(new Keyframe(pair.Time, pair.Value));
                 levelController.scaleCurve = curve;
             }
 
@@ -184,23 +189,23 @@ namespace NewHorizons.Builder.Body
         // Thank you https://github.com/boardtobits/planet-ring-mesh/blob/master/PlanetRing.cs
         public static void BuildRingMesh(Mesh ringMesh, int segments, float innerRadius, float outerRadius)
         {
-            Vector3[] vertices = new Vector3[(segments + 1) * 2 * 2];
-            int[] triangles = new int[segments * 6 * 2];
-            Vector2[] uv = new Vector2[(segments + 1) * 2 * 2];
-            int halfway = (segments + 1) * 2;
+            var vertices = new Vector3[(segments + 1) * 2 * 2];
+            var triangles = new int[segments * 6 * 2];
+            var uv = new Vector2[(segments + 1) * 2 * 2];
+            var halfway = (segments + 1) * 2;
 
-            for (int i = 0; i < segments + 1; i++)
+            for (var i = 0; i < segments + 1; i++)
             {
-                float progress = (float)i / (float)segments;
-                float angle = progress * 2 * Mathf.PI;
-                float x = Mathf.Sin(angle);
-                float z = Mathf.Cos(angle);
+                var progress = i / (float) segments;
+                var angle = progress * 2 * Mathf.PI;
+                var x = Mathf.Sin(angle);
+                var z = Mathf.Cos(angle);
 
                 vertices[i * 2] = vertices[i * 2 + halfway] = new Vector3(x, 0f, z) * outerRadius;
                 vertices[i * 2 + 1] = vertices[i * 2 + 1 + halfway] = new Vector3(x, 0f, z) * innerRadius;
                 //uv[i * 2] = uv[i * 2 + halfway] = new Vector2(progress, 0f);
                 //uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(progress, 1f);	  				
-                uv[i * 2] = uv[i * 2 + halfway] = (new Vector2(x, z) / 2f) + Vector2.one * 0.5f;
+                uv[i * 2] = uv[i * 2 + halfway] = new Vector2(x, z) / 2f + Vector2.one * 0.5f;
                 uv[i * 2 + 1] = uv[i * 2 + 1 + halfway] = new Vector2(0.5f, 0.5f);
 
                 if (i != segments)
@@ -215,7 +220,6 @@ namespace NewHorizons.Builder.Body
                     triangles[i * 12 + 8] = triangles[i * 12 + 9] = (i + 1) * 2 + halfway;
                     triangles[i * 12 + 11] = (i + 1) * 2 + 1 + halfway;
                 }
-
             }
 
             ringMesh.vertices = vertices;
@@ -226,16 +230,16 @@ namespace NewHorizons.Builder.Body
 
         public static void BuildCircleMesh(Mesh mesh, int segments, float outerRadius)
         {
-            float angleStep = 360.0f / (float)segments;
-            List<Vector3> vertexList = new List<Vector3>();
-            List<int> triangleList = new List<int>();
-            List<Vector2> uv = new List<Vector2>();
-            Quaternion quaternion = Quaternion.Euler(0.0f, angleStep, 0f);
+            var angleStep = 360.0f / segments;
+            var vertexList = new List<Vector3>();
+            var triangleList = new List<int>();
+            var uv = new List<Vector2>();
+            var quaternion = Quaternion.Euler(0.0f, angleStep, 0f);
             // Make first triangle.
-            vertexList.Add(new Vector3(0.0f, 0.0f, 0.0f));  // 1. Circle center.
-            vertexList.Add(new Vector3(0.0f, 0f, outerRadius));  // 2. First vertex on circle outline (radius = 0.5f)
-            vertexList.Add(quaternion * vertexList[1]);     // 3. First vertex on circle outline rotated by angle)
-                                                            // Add triangle indices.
+            vertexList.Add(new Vector3(0.0f, 0.0f, 0.0f)); // 1. Circle center.
+            vertexList.Add(new Vector3(0.0f, 0f, outerRadius)); // 2. First vertex on circle outline (radius = 0.5f)
+            vertexList.Add(quaternion * vertexList[1]); // 3. First vertex on circle outline rotated by angle)
+            // Add triangle indices.
             uv.Add(new Vector2(0.5f, 0.5f));
             uv.Add(new Vector2(0.5f, 1f));
             uv.Add(quaternion * uv[1]);
@@ -243,9 +247,9 @@ namespace NewHorizons.Builder.Body
             triangleList.Add(0);
             triangleList.Add(1);
             triangleList.Add(2);
-            for (int i = 0; i < segments - 1; i++)
+            for (var i = 0; i < segments - 1; i++)
             {
-                triangleList.Add(0);                      // Index of circle center.
+                triangleList.Add(0); // Index of circle center.
                 triangleList.Add(vertexList.Count - 1);
                 triangleList.Add(vertexList.Count);
                 vertexList.Add(quaternion * vertexList[vertexList.Count - 1]);
@@ -256,7 +260,6 @@ namespace NewHorizons.Builder.Body
             mesh.triangles = triangleList.ToArray();
             mesh.uv = uv.ToArray();
             mesh.RecalculateNormals();
-
         }
     }
 }

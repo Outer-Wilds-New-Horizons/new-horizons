@@ -1,6 +1,10 @@
-﻿using System.ComponentModel;
+﻿#region
+
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+
+#endregion
 
 namespace NewHorizons.External.Modules
 {

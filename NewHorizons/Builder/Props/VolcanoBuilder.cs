@@ -1,12 +1,17 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.Props
 {
     public static class VolcanoBuilder
     {
-        private static Color defaultStoneTint = new Color(0.07450981f, 0.07450981f, 0.07450981f);
-        private static Color defaultLavaTint = new Color(4.594794f, 0.3419145f, 0f, 1f);
+        private static readonly Color defaultStoneTint = new Color(0.07450981f, 0.07450981f, 0.07450981f);
+        private static readonly Color defaultLavaTint = new Color(4.594794f, 0.3419145f, 0f, 1f);
         private static readonly int Color1 = Shader.PropertyToID("_Color");
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
@@ -16,8 +21,11 @@ namespace NewHorizons.Builder.Props
 
             var launcherGO = prefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
-            launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
-            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
+            launcherGO.transform.position =
+                planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3) info.position);
+            launcherGO.transform.rotation = Quaternion
+                .FromToRotation(launcherGO.transform.TransformDirection(Vector3.up),
+                    ((Vector3) info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
@@ -37,14 +45,13 @@ namespace NewHorizons.Builder.Props
             launcherGO.SetActive(true);
 
             // Have to null check else it breaks on reload configs
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
-            {
-                foreach (var meteor in meteorLauncher._meteorPool)
+            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null,
+                () =>
                 {
-                    FixMeteor(meteor, info);
-                }
-            });
+                    foreach (var meteor in meteorLauncher._meteorPool) FixMeteor(meteor, info);
+                });
         }
+
         private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
         {
             meteor.transform.localScale = Vector3.one * info.scale;
@@ -54,8 +61,8 @@ namespace NewHorizons.Builder.Props
             mat.SetColor(EmissionColor, info.lavaTint ?? defaultLavaTint);
 
             var detectors = meteor.transform.Find("ConstantDetectors").gameObject;
-            GameObject.Destroy(detectors.GetComponent<ConstantForceDetector>());
-            GameObject.Destroy(detectors.GetComponent<ConstantFluidDetector>());
+            Object.Destroy(detectors.GetComponent<ConstantForceDetector>());
+            Object.Destroy(detectors.GetComponent<ConstantFluidDetector>());
 
             var forceDetector = detectors.gameObject.AddComponent<DynamicForceDetector>();
             detectors.gameObject.AddComponent<DynamicFluidDetector>();

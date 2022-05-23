@@ -1,48 +1,57 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿#region
+
+using System.Collections.Generic;
 using NewHorizons.Utility;
 using OWML.Common;
+using UnityEngine;
+using UnityEngine.UI;
+using Random = System.Random;
+
+#endregion
 
 namespace NewHorizons.Handlers
 {
-    class SubtitlesHandler : MonoBehaviour
+    internal class SubtitlesHandler : MonoBehaviour
     {
         public static int SUBTITLE_HEIGHT = 97;
         public static int SUBTITLE_WIDTH = 669; // nice
 
-        Graphic graphic;
-        Image image;
+        private Graphic graphic;
+        private Image image;
 
         public float fadeSpeed = 0.005f;
-        float fade = 1;
-        bool fadingAway = true;
+        private float fade = 1;
+        private bool fadingAway = true;
 
-        static List<Sprite> possibleSubtitles = new List<Sprite>();
-        static bool eoteSubtitleHasBeenInserted = false;
-        int subtitleIndex;
+        private static readonly List<Sprite> possibleSubtitles = new List<Sprite>();
+        private static bool eoteSubtitleHasBeenInserted;
+        private int subtitleIndex;
 
-        System.Random randomizer;
+        private Random randomizer;
 
-        static readonly int PAUSE_TIMER_MAX = 50;
-        int pauseTimer = PAUSE_TIMER_MAX;
+        private static readonly int PAUSE_TIMER_MAX = 50;
+        private int pauseTimer = PAUSE_TIMER_MAX;
 
         public void Start()
         {
-            randomizer = new System.Random();
+            randomizer = new Random();
 
             GetComponent<CanvasGroup>().alpha = 1;
             graphic = GetComponent<Graphic>();
-            image =   GetComponent<UnityEngine.UI.Image>();
+            image = GetComponent<Image>();
 
             graphic.enabled = true;
             image.enabled = true;
 
-            if (!Main.HasDLC) image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+            if (!Main.HasDLC)
+                image.sprite =
+                    null; // Just in case. I don't know how not having the dlc changes the subtitle game object
 
             if (!eoteSubtitleHasBeenInserted)
             {
-                if (image.sprite != null) possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
+                if (image.sprite != null)
+                    possibleSubtitles.Insert(0,
+                        image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
                 eoteSubtitleHasBeenInserted = true;
             }
         }
@@ -53,7 +62,8 @@ namespace NewHorizons.Handlers
             if (tex == null) return;
 
             // var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
-            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, SUBTITLE_HEIGHT), new Vector2(0.5f, 0.5f), 100.0f);
+            var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, SUBTITLE_HEIGHT), new Vector2(0.5f, 0.5f),
+                100.0f);
             AddSubtitle(sprite);
         }
 
@@ -78,7 +88,7 @@ namespace NewHorizons.Handlers
             if (fadingAway)
             {
                 fade -= fadeSpeed;
-            
+
                 if (fade <= 0)
                 {
                     fade = 0;
@@ -89,7 +99,7 @@ namespace NewHorizons.Handlers
             else
             {
                 fade += fadeSpeed;
-            
+
                 if (fade >= 1)
                 {
                     fade = 1;
@@ -111,7 +121,7 @@ namespace NewHorizons.Handlers
             // that is, the below code will generate numbers up to and including Count-1, not Count.
             var newIndexOffset = randomizer.Next(1, possibleSubtitles.Count);
             subtitleIndex = (subtitleIndex + newIndexOffset) % possibleSubtitles.Count;
-            
+
             image.sprite = possibleSubtitles[subtitleIndex];
         }
     }

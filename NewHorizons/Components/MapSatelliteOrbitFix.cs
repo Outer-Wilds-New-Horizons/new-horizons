@@ -1,6 +1,11 @@
-﻿using NewHorizons.Builder.General;
+﻿#region
+
+using NewHorizons.Builder.General;
 using NewHorizons.External.Configs;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Components
 {
     public class MapSatelliteOrbitFix : MonoBehaviour
@@ -17,7 +22,8 @@ namespace NewHorizons.Components
 
             var detector = transform.GetComponentInChildren<DynamicForceDetector>();
             var ao = GetComponent<AstroObject>();
-            var newDetector = DetectorBuilder.Make(gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao, config);
+            var newDetector =
+                DetectorBuilder.Make(gameObject, ao.GetAttachedOWRigidbody(), ao.GetPrimaryBody(), ao, config);
             newDetector.transform.parent = detector.transform.parent;
             Destroy(detector);
         }

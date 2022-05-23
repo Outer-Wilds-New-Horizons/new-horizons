@@ -1,7 +1,12 @@
-﻿using NewHorizons.Builder.Body.Geometry;
+﻿#region
+
+using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.Body
 {
     public static class ProcGenBuilder
@@ -11,16 +16,18 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
-            if (quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
-            if (iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
+            if (quantumMaterial == null)
+                quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
+            if (iceMaterial == null)
+                iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
 
 
-            GameObject icosphere = new GameObject("Icosphere");
+            var icosphere = new GameObject("Icosphere");
             icosphere.transform.parent = sector?.transform ?? planetGO.transform;
             icosphere.transform.rotation = Quaternion.Euler(90, 0, 0);
             icosphere.transform.position = planetGO.transform.position;
 
-            Mesh mesh = Icosphere.Build(4, module.scale, module.scale * 1.2f);
+            var mesh = Icosphere.Build(4, module.scale, module.scale * 1.2f);
 
             icosphere.AddComponent<MeshFilter>();
             icosphere.GetComponent<MeshFilter>().mesh = mesh;

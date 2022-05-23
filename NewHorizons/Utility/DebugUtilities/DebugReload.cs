@@ -1,19 +1,22 @@
-﻿using NewHorizons.Handlers;
-using OWML.Common;
-using OWML.Common.Menus;
+﻿#region
+
 using System;
+using NewHorizons.Handlers;
+using OWML.Common.Menus;
 using UnityEngine;
+
+#endregion
 
 namespace NewHorizons.Utility.DebugUtilities
 {
     public static class DebugReload
     {
-
         private static IModButton _reloadButton;
 
         public static void InitializePauseMenu()
         {
-            _reloadButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
+            _reloadButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler
+                .GetTranslation("Reload Configs", TranslationHandler.TextType.UI).ToUpper());
             _reloadButton.OnClick += ReloadConfigs;
             UpdateReloadButton();
         }
@@ -35,10 +38,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             try
             {
-                foreach (IModBehaviour mountedAddon in Main.MountedAddons)
-                {
-                    Main.Instance.LoadConfigs(mountedAddon);
-                }
+                foreach (var mountedAddon in Main.MountedAddons) Main.Instance.LoadConfigs(mountedAddon);
             }
             catch (Exception)
             {

@@ -1,5 +1,10 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using NewHorizons.External.Modules;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AtmosphereBuilder
@@ -8,20 +13,23 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
 
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule,
+            float surfaceSize)
         {
-            GameObject atmoGO = new GameObject("Atmosphere");
+            var atmoGO = new GameObject("Atmosphere");
             atmoGO.SetActive(false);
             atmoGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                GameObject atmo = GameObject.Instantiate(GameObject.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"), atmoGO.transform, true);
+                var atmo = Object.Instantiate(GameObject.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"),
+                    atmoGO.transform, true);
                 atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
                 atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
                 foreach (var meshRenderer in atmo.GetComponentsInChildren<MeshRenderer>())
                 {
-                    meshRenderer.material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                    meshRenderer.material.SetFloat(InnerRadius,
+                        atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
                     meshRenderer.material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
                     if (atmosphereModule.atmosphereTint != null)
                         meshRenderer.material.SetColor(SkyColor, atmosphereModule.atmosphereTint);

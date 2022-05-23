@@ -1,5 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿#region
+
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
+
+#endregion
 
 namespace NewHorizons.External.Modules.VariableSize
 {

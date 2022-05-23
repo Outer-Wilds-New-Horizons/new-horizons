@@ -1,7 +1,12 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using NewHorizons.External.Modules;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Components
 {
     public class ShipLogDetail : MonoBehaviour
@@ -44,14 +49,15 @@ namespace NewHorizons.Components
                     _outlineImage.enabled = false;
                     break;
                 default:
-                    Logger.LogError("Invalid ShipLogEntryState for " + _revealedImage.transform.parent.parent.gameObject.name);
+                    Logger.LogError("Invalid ShipLogEntryState for " +
+                                    _revealedImage.transform.parent.parent.gameObject.name);
                     break;
             }
         }
 
         private void SetGreyScale(bool greyScale)
         {
-            _revealedImage.material = (greyScale ? _greyScaleMaterial : null);
+            _revealedImage.material = greyScale ? _greyScaleMaterial : null;
         }
     }
 }

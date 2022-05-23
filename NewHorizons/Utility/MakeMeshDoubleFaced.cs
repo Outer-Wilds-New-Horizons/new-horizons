@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
+using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Utility
 {
     public class MakeMeshDoubleFaced : MonoBehaviour
@@ -23,6 +28,7 @@ namespace NewHorizons.Utility
                 // and revert the new ones
                 newNorms[j + szV] = -normals[j];
             }
+
             var triangles = mesh.triangles;
             var szT = triangles.Length;
             var newTris = new int[szT * 2]; // double the triangles
@@ -38,6 +44,7 @@ namespace NewHorizons.Utility
                 newTris[j + 2] = triangles[i + 1] + szV;
                 newTris[j + 1] = triangles[i + 2] + szV;
             }
+
             mesh.vertices = newVerts;
             mesh.uv = newUv;
             mesh.normals = newNorms;

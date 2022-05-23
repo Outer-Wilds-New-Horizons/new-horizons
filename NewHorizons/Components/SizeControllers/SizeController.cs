@@ -1,4 +1,9 @@
-﻿using UnityEngine;
+﻿#region
+
+using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Components.SizeControllers
 {
     public class SizeController : MonoBehaviour
@@ -9,16 +14,12 @@ namespace NewHorizons.Components.SizeControllers
 
         protected void FixedUpdate()
         {
-            if(scaleCurve != null)
-            {
+            if (scaleCurve != null)
                 CurrentScale = scaleCurve.Evaluate(TimeLoop.GetMinutesElapsed()) * size;
-            }
             else
-            {
                 CurrentScale = size;
-            }
 
-            base.transform.localScale = Vector3.one * CurrentScale;
+            transform.localScale = Vector3.one * CurrentScale;
         }
     }
 }

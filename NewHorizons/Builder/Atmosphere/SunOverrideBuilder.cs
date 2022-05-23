@@ -1,16 +1,21 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using NewHorizons.External.Modules;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class SunOverrideBuilder
     {
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, float surfaceSize)
         {
-            GameObject overrideGO = new GameObject("SunOverride");
+            var overrideGO = new GameObject("SunOverride");
             overrideGO.SetActive(false);
             overrideGO.transform.parent = sector?.transform ?? planetGO.transform;
 
-            GiantsDeepSunOverrideVolume GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
+            var GDSOV = overrideGO.AddComponent<GiantsDeepSunOverrideVolume>();
             GDSOV._sector = sector;
             GDSOV._cloudsOuterRadius = atmo.size;
             GDSOV._cloudsInnerRadius = atmo.size * 0.9f;

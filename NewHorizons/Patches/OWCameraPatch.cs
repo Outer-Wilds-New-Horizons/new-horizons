@@ -1,4 +1,9 @@
-﻿using HarmonyLib;
+﻿#region
+
+using HarmonyLib;
+
+#endregion
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

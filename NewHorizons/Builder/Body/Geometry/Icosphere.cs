@@ -1,34 +1,41 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
+
+#endregion
+
 namespace NewHorizons.Builder.Body.Geometry
 {
     public static class Icosphere
     {
         private static readonly float t = (1f + Mathf.Sqrt(5f)) / 2f;
+
         // By subdivisions, will add to this to memoize computation of icospheres
-        private static List<Vector3[]> vertices = new List<Vector3[]>()
+        private static readonly List<Vector3[]> vertices = new List<Vector3[]>
         {
-            new Vector3[]
+            new[]
             {
                 new Vector3(-1, t, 0).normalized,
-                new Vector3( 1,  t,  0).normalized,
-                new Vector3(-1, -t,  0).normalized,
-                new Vector3( 1, -t,  0).normalized,
-                new Vector3( 0, -1,  t).normalized,
-                new Vector3( 0,  1,  t).normalized,
-                new Vector3( 0, -1, -t).normalized,
-                new Vector3( 0,  1, -t).normalized,
-                new Vector3( t,  0, -1).normalized,
-                new Vector3( t,  0,  1).normalized,
-                new Vector3(-t,  0, -1).normalized,
-                new Vector3(-t,  0,  1).normalized,
+                new Vector3(1, t, 0).normalized,
+                new Vector3(-1, -t, 0).normalized,
+                new Vector3(1, -t, 0).normalized,
+                new Vector3(0, -1, t).normalized,
+                new Vector3(0, 1, t).normalized,
+                new Vector3(0, -1, -t).normalized,
+                new Vector3(0, 1, -t).normalized,
+                new Vector3(t, 0, -1).normalized,
+                new Vector3(t, 0, 1).normalized,
+                new Vector3(-t, 0, -1).normalized,
+                new Vector3(-t, 0, 1).normalized
             }
         };
-        private static List<int[]> triangles = new List<int[]>()
+
+        private static readonly List<int[]> triangles = new List<int[]>
         {
-            new int[]
+            new[]
             {
                 0, 11, 5,
                 0, 5, 1,
@@ -58,27 +65,31 @@ namespace NewHorizons.Builder.Body.Geometry
 
         public static Mesh Build(int subdivisions, float minHeight, float maxHeight)
         {
-            Mesh mesh = new Mesh();
+            var mesh = new Mesh();
 
             if (vertices.Count <= subdivisions)
                 RefineFaces(subdivisions);
 
             var verticesToCopy = vertices[subdivisions];
 
-            Vector3[] newVertices = new Vector3[verticesToCopy.Length];
-            Vector3[] normals = new Vector3[verticesToCopy.Length];
-            Vector2[] uvs = new Vector2[verticesToCopy.Length];
+            var newVertices = new Vector3[verticesToCopy.Length];
+            var normals = new Vector3[verticesToCopy.Length];
+            var uvs = new Vector2[verticesToCopy.Length];
 
             var randomOffset = new Vector3(Random.Range(0, 10f), Random.Range(0, 10f), Random.Range(0, 10f));
 
-            for (int i = 0; i < verticesToCopy.Length; i++)
+            for (var i = 0; i < verticesToCopy.Length; i++)
             {
                 var v = verticesToCopy[i];
 
-                float latitude = Mathf.Repeat(Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)), 180f);
-                float longitude = Mathf.Repeat(Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f, 360f);
+                var latitude =
+                    Mathf.Repeat(Mathf.Rad2Deg * Mathf.Acos(v.z / Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z)), 180f);
+                var longitude =
+                    Mathf.Repeat(
+                        Mathf.Rad2Deg * (v.x > 0 ? Mathf.Atan(v.y / v.x) : Mathf.Atan(v.y / v.x) + Mathf.PI) + 90f,
+                        360f);
 
-                float height = Perlin.Noise(v + randomOffset) * (maxHeight - minHeight) + minHeight;
+                var height = Perlin.Noise(v + randomOffset) * (maxHeight - minHeight) + minHeight;
 
                 newVertices[i] = verticesToCopy[i] * height;
                 normals[i] = v.normalized;
@@ -101,20 +112,20 @@ namespace NewHorizons.Builder.Body.Geometry
         {
             if (level < vertices.Count) return;
 
-            for (int i = vertices.Count - 1; i < level; i++)
+            for (var i = vertices.Count - 1; i < level; i++)
             {
                 // Each triangle will be subdivided into 4 new ones
-                int[] oldTriangles = triangles[i];
-                int[] newTriangles = new int[oldTriangles.Length * 4];
+                var oldTriangles = triangles[i];
+                var newTriangles = new int[oldTriangles.Length * 4];
 
                 // Making too many vertices but its fine I guess. Three per old triangle.
-                Vector3[] oldVertices = vertices[i];
-                Vector3[] newVertices = new Vector3[oldVertices.Length + oldTriangles.Length];
+                var oldVertices = vertices[i];
+                var newVertices = new Vector3[oldVertices.Length + oldTriangles.Length];
                 Array.Copy(oldVertices, newVertices, oldVertices.Length);
 
-                int v = oldVertices.Length;
-                int newTrianglesIndex = 0;
-                for (int j = 0; j < oldTriangles.Length; j += 3, v += 3)
+                var v = oldVertices.Length;
+                var newTrianglesIndex = 0;
+                for (var j = 0; j < oldTriangles.Length; j += 3, v += 3)
                 {
                     // Old vertex indices
                     var v0Ind = oldTriangles[j];

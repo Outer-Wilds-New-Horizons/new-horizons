@@ -1,11 +1,16 @@
-﻿using NewHorizons.External.Modules;
+﻿#region
+
+using NewHorizons.External.Modules;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Components.Orbital
 {
     public class Gravity
     {
-        public int Power { get; private set; }
-        public float Mass { get; private set; }
+        public int Power { get; }
+        public float Mass { get; }
 
         public Gravity(float mass, int power)
         {
@@ -17,9 +22,10 @@ namespace NewHorizons.Components.Orbital
         {
             var surfaceAcceleration = module.surfaceGravity;
             var upperSurfaceRadius = module.surfaceSize;
-            int falloffExponent = module.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
+            var falloffExponent = module.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
 
-            Mass = surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT;
+            Mass = surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) /
+                   GravityVolume.GRAVITATIONAL_CONSTANT;
             Power = falloffExponent;
         }
 
@@ -33,7 +39,8 @@ namespace NewHorizons.Components.Orbital
             else
             {
                 Power = gv._falloffType == GravityVolume.FalloffType.linear ? 1 : 2;
-                Mass = gv._surfaceAcceleration * Mathf.Pow(gv._upperSurfaceRadius, Power) / GravityVolume.GRAVITATIONAL_CONSTANT;
+                Mass = gv._surfaceAcceleration * Mathf.Pow(gv._upperSurfaceRadius, Power) /
+                       GravityVolume.GRAVITATIONAL_CONSTANT;
             }
         }
     }

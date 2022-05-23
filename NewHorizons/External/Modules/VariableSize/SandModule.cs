@@ -1,4 +1,8 @@
-﻿using NewHorizons.Utility;
+﻿#region
+
+using NewHorizons.Utility;
+
+#endregion
 
 namespace NewHorizons.External.Modules.VariableSize
 {

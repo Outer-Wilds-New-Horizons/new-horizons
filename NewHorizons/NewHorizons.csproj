@@ -1,55 +1,55 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup>
-    <ProjectGuid>{8A39F9E7-1A89-430C-9C3E-BDFB3B7E17DF}</ProjectGuid>
-    <TargetFramework>net48</TargetFramework>
-    <OutputPath>Build</OutputPath>
-    <AssemblyTitle>NewHorizons</AssemblyTitle>
-    <Product>NewHorizons</Product>
-    <Copyright>Copyright ©  2020</Copyright>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-    <GenerateDocumentationFile>true</GenerateDocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugType>portable</DebugType>
-    <NoWarn>1701;1702;1591</NoWarn> 
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <NoWarn>1701;1702;1591</NoWarn> 
-  </PropertyGroup>
-  <ItemGroup>
-    <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
-    <Reference Include="..\NJsonSchema\*.dll" />
-    <PackageReference Include="HarmonyX" Version="2.10.0" />
-    <PackageReference Include="OWML" Version="2.3.3" />
-    <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="default-config.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="manifest.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-	<None Include="AssetBundle\**">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="NewHorizons.csproj.user" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Properties\Settings.Designer.cs">
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Update="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
+    <PropertyGroup>
+        <ProjectGuid>{8A39F9E7-1A89-430C-9C3E-BDFB3B7E17DF}</ProjectGuid>
+        <TargetFramework>net48</TargetFramework>
+        <OutputPath>Build</OutputPath>
+        <AssemblyTitle>NewHorizons</AssemblyTitle>
+        <Product>NewHorizons</Product>
+        <Copyright>Copyright © 2020</Copyright>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <DebugType>portable</DebugType>
+        <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <DebugType>none</DebugType>
+        <NoWarn>1701;1702;1591</NoWarn>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0"/>
+        <Reference Include="..\NJsonSchema\*.dll"/>
+        <PackageReference Include="HarmonyX" Version="2.10.0"/>
+        <PackageReference Include="OWML" Version="2.3.3"/>
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168"/>
+    </ItemGroup>
+    <ItemGroup>
+        <None Include="default-config.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="manifest.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="AssetBundle\**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+    <ItemGroup>
+        <Content Include="NewHorizons.csproj.user"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\Settings.Designer.cs">
+            <DesignTimeSharedInput>True</DesignTimeSharedInput>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Settings.settings</DependentUpon>
+        </Compile>
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="Properties\Settings.settings">
+            <Generator>SettingsSingleFileGenerator</Generator>
+            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+        </None>
+    </ItemGroup>
 </Project>

@@ -1,18 +1,26 @@
-﻿using NewHorizons.Utility;
+﻿#region
+
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Handlers
 {
     public static class ShipLogHandler
     {
-        public static readonly string PAN_ROOT_PATH = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot";
+        public static readonly string PAN_ROOT_PATH =
+            "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/MapMode/ScaleRoot/PanRoot";
 
         // NewHorizonsBody -> EntryIDs
         private static Dictionary<NewHorizonsBody, List<string>> _nhBodyToEntryIDs;
+
         //EntryID -> NewHorizonsBody
         private static Dictionary<string, NewHorizonsBody> _entryIDsToNHBody;
+
         // NewHorizonsBody -> AstroID
         private static Dictionary<NewHorizonsBody, string> _nhBodyToAstroIDs;
 
@@ -26,14 +34,15 @@ namespace NewHorizons.Handlers
             _entryIDsToNHBody = new Dictionary<string, NewHorizonsBody>();
             _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
 
-            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
+            var gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
             _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
             _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
         }
 
         public static void CheckForModdedFacts(ShipLogManager manager)
         {
-            List<ShipLogFact> moddedFacts = manager._factList.Where(e => manager._entryDataDict.ContainsKey(e._entryID) == false).ToList();
+            var moddedFacts = manager._factList.Where(e => manager._entryDataDict.ContainsKey(e._entryID) == false)
+                .ToList();
             _moddedFactsIDs = moddedFacts.ConvertAll(e => e.GetID()).ToArray();
         }
 
@@ -59,11 +68,9 @@ namespace NewHorizons.Handlers
         public static NewHorizonsBody GetConfigFromEntryID(string entryID)
         {
             if (_entryIDsToNHBody.ContainsKey(entryID)) return _entryIDsToNHBody[entryID];
-            else
-            {
-                Logger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
-                return null;
-            }
+
+            Logger.LogError($"Couldn't find NewHorizonsBody that corresponds to {entryID}");
+            return null;
         }
 
         public static bool IsModdedFact(string FactID)
@@ -83,16 +90,16 @@ namespace NewHorizons.Handlers
 
             // EntryID to Body
             foreach (var entryID in entryIDs)
-            {
                 if (!_entryIDsToNHBody.ContainsKey(entryID)) _entryIDsToNHBody.Add(entryID, body);
-                else Logger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.name}");
-            }
+                else
+                    Logger.LogWarning(
+                        $"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.name}");
         }
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
             if (_nhBodyToAstroIDs.ContainsKey(body)) return _nhBodyToAstroIDs[body];
-            else return body.Config.name;
+            return body.Config.name;
         }
 
         public static bool BodyHasEntries(NewHorizonsBody body)

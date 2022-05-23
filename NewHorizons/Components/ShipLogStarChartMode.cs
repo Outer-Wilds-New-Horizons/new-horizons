@@ -1,17 +1,23 @@
-﻿using NewHorizons.Handlers;
-using NewHorizons.Utility;
+﻿#region
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using UnityEngine;
+using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
+
 namespace NewHorizons.Components
 {
     public class ShipLogStarChartMode : ShipLogMode
     {
-        private List<GameObject> _starSystemCards = new List<GameObject>();
-        private GameObject _cardTemplate = null;
-        private int _cardIndex = 0;
+        private readonly List<GameObject> _starSystemCards = new List<GameObject>();
+        private GameObject _cardTemplate;
+        private int _cardIndex;
         private OWAudioSource _oneShotSource;
 
         private float _startPanTime;
@@ -25,10 +31,10 @@ namespace NewHorizons.Components
 
         private ScreenPrompt _detectiveModePrompt;
         private ScreenPrompt _targetSystemPrompt;
-        private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
+        private readonly ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
-        private ShipLogEntryCard _target = null;
-        private NotificationData _warpNotificationData = null;
+        private ShipLogEntryCard _target;
+        private NotificationData _warpNotificationData;
 
         private int _nextCardIndex;
         private bool _isAtFlightConsole;
@@ -36,25 +42,26 @@ namespace NewHorizons.Components
         private void Awake()
         {
             // Prompts
-            Locator.GetPromptManager().AddScreenPrompt(_warpPrompt, PromptPosition.UpperLeft, false);
+            Locator.GetPromptManager().AddScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
         }
 
-        public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
+        public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList,
+            OWAudioSource oneShotSource)
         {
-            root = base.transform.Find("ScaleRoot/PanRoot");
+            root = transform.Find("ScaleRoot/PanRoot");
             _oneShotSource = oneShotSource;
 
             _centerPromptList = centerPromptList;
             _upperRightPromptList = upperRightPromptList;
 
-            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Rumor Mode", 0, ScreenPrompt.DisplayState.Normal, false);
-            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Lock Autopilot to Star System", 0, ScreenPrompt.DisplayState.Normal, false);
+            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Rumor Mode");
+            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Lock Autopilot to Star System");
 
-            GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
-            GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
-            GlobalMessenger.AddListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
-            GlobalMessenger.AddListener("GamePaused", new Callback(OnGamePaused));
-            GlobalMessenger.AddListener("GameUnpaused", new Callback(OnGameUnpaused));
+            GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", OnTargetReferenceFrame);
+            GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", OnEnterFlightConsole);
+            GlobalMessenger.AddListener("ExitFlightConsole", OnExitFlightConsole);
+            GlobalMessenger.AddListener("GamePaused", OnGamePaused);
+            GlobalMessenger.AddListener("GameUnpaused", OnGameUnpaused);
 
             _nextCardIndex = 0;
             foreach (var starSystem in Main.SystemDict.Keys)
@@ -71,10 +78,7 @@ namespace NewHorizons.Components
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
 
-                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive)
-                {
-                    AddSystemCard(starSystem);
-                }
+                if (flag && Main.SystemDict[starSystem].Config.canEnterViaWarpDrive) AddSystemCard(starSystem);
             }
 
             //AddSystemCard("EyeOfTheUniverse");
@@ -95,11 +99,11 @@ namespace NewHorizons.Components
 
         public void OnDestroy()
         {
-            GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
-            GlobalMessenger<OWRigidbody>.RemoveListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
-            GlobalMessenger.RemoveListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
-            GlobalMessenger.RemoveListener("GamePaused", new Callback(OnGamePaused));
-            GlobalMessenger.RemoveListener("GameUnpaused", new Callback(OnGameUnpaused));
+            GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", OnTargetReferenceFrame);
+            GlobalMessenger<OWRigidbody>.RemoveListener("EnterFlightConsole", OnEnterFlightConsole);
+            GlobalMessenger.RemoveListener("ExitFlightConsole", OnExitFlightConsole);
+            GlobalMessenger.RemoveListener("GamePaused", OnGamePaused);
+            GlobalMessenger.RemoveListener("GameUnpaused", OnGameUnpaused);
 
             Locator.GetPromptManager().RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
         }
@@ -107,10 +111,7 @@ namespace NewHorizons.Components
         private void OnEnterFlightConsole(OWRigidbody _)
         {
             _isAtFlightConsole = true;
-            if (_target != null)
-            {
-                _warpPrompt.SetVisibility(true);
-            }
+            if (_target != null) _warpPrompt.SetVisibility(true);
         }
 
         private void OnExitFlightConsole()
@@ -126,23 +127,22 @@ namespace NewHorizons.Components
 
         private void OnGameUnpaused()
         {
-            if (_target != null && _isAtFlightConsole)
-            {
-                _warpPrompt.SetVisibility(true);
-            }
+            if (_target != null && _isAtFlightConsole) _warpPrompt.SetVisibility(true);
         }
 
         public GameObject CreateCard(string uniqueID, Transform parent, Vector2 position)
         {
             if (_cardTemplate == null)
             {
-                var panRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
-                _cardTemplate = GameObject.Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
+                var panRoot =
+                    GameObject.Find(
+                        "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
+                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
                 _cardTemplate.SetActive(false);
             }
 
-            var newCard = GameObject.Instantiate(_cardTemplate, parent);
-            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>();
+            var newCard = Instantiate(_cardTemplate, parent);
+            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
             var name = UniqueIDToName(uniqueID);
 
@@ -170,11 +170,13 @@ namespace NewHorizons.Components
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
             }
-            catch (Exception) { }
+            catch (Exception)
+            {
+            }
 
             if (texture != null)
             {
-                shipLogEntryCard._photo.sprite = MakeSprite((Texture2D)texture);
+                shipLogEntryCard._photo.sprite = MakeSprite((Texture2D) texture);
                 newCard.transform.Find("EntryCardRoot/EntryCardBackground/PhotoImage").gameObject.SetActive(true);
             }
 
@@ -197,15 +199,17 @@ namespace NewHorizons.Components
 
         public override void EnterMode(string entryID = "", List<ShipLogFact> revealQueue = null)
         {
-            base.gameObject.SetActive(true);
+            gameObject.SetActive(true);
 
-            Locator.GetPromptManager().AddScreenPrompt(_detectiveModePrompt, _upperRightPromptList, TextAnchor.MiddleRight, -1, true);
-            Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
+            Locator.GetPromptManager().AddScreenPrompt(_detectiveModePrompt, _upperRightPromptList,
+                TextAnchor.MiddleRight, -1, true);
+            Locator.GetPromptManager()
+                .AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
         }
 
         public override void ExitMode()
         {
-            base.gameObject.SetActive(false);
+            gameObject.SetActive(false);
 
             Locator.GetPromptManager().RemoveScreenPrompt(_detectiveModePrompt);
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
@@ -218,12 +222,10 @@ namespace NewHorizons.Components
 
         public override void OnEnterComputer()
         {
-
         }
 
         public override void OnExitComputer()
         {
-
         }
 
         public override void UpdateMode()
@@ -236,7 +238,7 @@ namespace NewHorizons.Components
         private void UpdateMapCamera()
         {
             Vector2 b = -_starSystemCards[_cardIndex].transform.localPosition;
-            float num = Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime);
+            var num = Mathf.InverseLerp(_startPanTime, _startPanTime + _panDuration, Time.unscaledTime);
             num = 1f - (num - 1f) * (num - 1f);
             _panRootPos = Vector2.Lerp(_startPanPos, b, num);
             root.transform.localPosition = new Vector3(_panRootPos.x, _panRootPos.y, 0);
@@ -245,18 +247,14 @@ namespace NewHorizons.Components
         private void UpdateMapNavigation()
         {
             var oldIndex = _cardIndex;
-            if (OWInput.IsNewlyPressed(InputLibrary.right, InputMode.All) || OWInput.IsNewlyPressed(InputLibrary.right2, InputMode.All))
-            {
+            if (OWInput.IsNewlyPressed(InputLibrary.right) || OWInput.IsNewlyPressed(InputLibrary.right2))
                 _cardIndex = Posmod(_cardIndex + 1, _starSystemCards.Count());
-            }
-            else if (OWInput.IsNewlyPressed(InputLibrary.left, InputMode.All) || OWInput.IsNewlyPressed(InputLibrary.left2, InputMode.All))
-            {
+            else if (OWInput.IsNewlyPressed(InputLibrary.left) || OWInput.IsNewlyPressed(InputLibrary.left2))
                 _cardIndex = Posmod(_cardIndex - 1, _starSystemCards.Count());
-            }
 
             if (oldIndex != _cardIndex)
             {
-                _oneShotSource.PlayOneShot(global::AudioType.ShipLogMoveBetweenPlanets, 1f);
+                _oneShotSource.PlayOneShot(AudioType.ShipLogMoveBetweenPlanets);
                 _startPanTime = Time.unscaledTime;
                 _startPanPos = _panRootPos;
                 _panDuration = 0.25f;
@@ -265,7 +263,7 @@ namespace NewHorizons.Components
 
         private void UpdatePrompts()
         {
-            if (OWInput.IsNewlyPressed(InputLibrary.markEntryOnHUD, InputMode.All))
+            if (OWInput.IsNewlyPressed(InputLibrary.markEntryOnHUD))
             {
                 var shipLogEntryCard = _starSystemCards[_cardIndex].GetComponent<ShipLogEntryCard>();
 
@@ -309,14 +307,15 @@ namespace NewHorizons.Components
 
         private void SetWarpTarget(ShipLogEntryCard shipLogEntryCard)
         {
-            RemoveWarpTarget(false);
-            _oneShotSource.PlayOneShot(global::AudioType.ShipLogUnmarkLocation, 1f);
+            RemoveWarpTarget();
+            _oneShotSource.PlayOneShot(AudioType.ShipLogUnmarkLocation);
             _target = shipLogEntryCard;
             _target.SetMarkedOnHUD(true);
             Locator._rfTracker.UntargetReferenceFrame();
 
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
-            _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueIDToName(shipLogEntryCard.name).ToUpper()}");
+            _warpNotificationData =
+                new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueIDToName(shipLogEntryCard.name).ToUpper()}");
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 
             _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueIDToName(shipLogEntryCard.name)}");
@@ -324,9 +323,10 @@ namespace NewHorizons.Components
 
         private void RemoveWarpTarget(bool playSound = false)
         {
-            if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
+            if (_warpNotificationData != null)
+                NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
             if (_target == null) return;
-            if (playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
+            if (playSound) _oneShotSource.PlayOneShot(AudioType.ShipLogMarkLocation);
             _target.SetMarkedOnHUD(false);
             _target = null;
 

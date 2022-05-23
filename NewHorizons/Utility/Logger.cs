@@ -1,12 +1,17 @@
-﻿using OWML.Common;
+﻿#region
+
 using System;
 using System.ComponentModel;
+using OWML.Common;
 using UnityEngine;
+using Object = UnityEngine.Object;
+
+#endregion
+
 namespace NewHorizons.Utility
 {
     public static class Logger
     {
-
         private static LogType _logLevel = LogType.Error;
 
         public static void UpdateLogLevel(LogType newLevel)
@@ -14,11 +19,11 @@ namespace NewHorizons.Utility
             _logLevel = newLevel;
         }
 
-        public static void LogProperties(UnityEngine.Object obj)
+        public static void LogProperties(Object obj)
         {
             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
             {
-                string name = descriptor?.Name;
+                var name = descriptor?.Name;
                 object value;
                 try
                 {
@@ -41,29 +46,34 @@ namespace NewHorizons.Utility
 
         public static void Log(string text, LogType type)
         {
-            if ((int)type < (int)_logLevel) return;
-            Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
+            if ((int) type < (int) _logLevel) return;
+            Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text,
+                LogTypeToMessageType(type));
         }
 
         public static void Log(string text)
         {
             Log(text, LogType.Log);
         }
+
         public static void LogError(string text)
         {
             Log(text, LogType.Error);
         }
+
         public static void LogWarning(string text)
         {
             Log(text, LogType.Warning);
         }
+
         public enum LogType
         {
             Todo,
             Log,
             Warning,
-            Error,
+            Error
         }
+
         private static MessageType LogTypeToMessageType(LogType t)
         {
             switch (t)
