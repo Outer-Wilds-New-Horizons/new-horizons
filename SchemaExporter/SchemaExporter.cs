@@ -59,22 +59,10 @@ public static class SchemaExporter
             return GetJsonSchema().ToJson();
         }
 
-        private static void FixOneOf(JsonSchema schema)
-        {
-            if (schema.OneOf.Count != 0)
-            {
-                schema.Reference = schema.OneOf.First();
-                schema.OneOf.Clear();
-                foreach (var property in schema.Reference.Properties.Values) FixOneOf(property);
-            }
-            foreach (var property in schema.Properties.Values) FixOneOf(property);
-        }
-
         private JsonSchema GetJsonSchema()
         {
             var schema = JsonSchema.FromType<T>(_generatorSettings);
             schema.Title = _title;
-            // FixOneOf(schema);
             return schema;
         }
     }
