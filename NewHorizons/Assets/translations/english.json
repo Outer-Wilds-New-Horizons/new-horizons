@@ -12,5 +12,27 @@
 		"FREQ_STATUE" : "Nomai Statue",
 		"FREQ_WARP_CORE" : "Anti-Graviton Flux",
 		"FREQ_UNKNOWN" : "???"
-	}	
+	},
+	"AchievementTranslations": {
+		"NH_EATEN_OUTSIDE_BRAMBLE" : {
+			"Name": "Containment Breach",
+			"Description": "Get eaten outside of Dark Bramble"
+		},
+		"NH_MULTIPLE_SYSTEM" : {
+			"Name": "Traveller",
+			"Description": "Visit 5 unique star systems in a row."
+		},
+		"NH_NEW_FREQ" : {
+			"Name": "Anomalous Frequencies",
+			"Description": "Discover a new frequency."
+		},
+		"NH_PROBE_LOST" : {
+			"Name": "Connection Lost",
+			"Description": "Lose your little scout."
+		},
+		"NH_WARP_DRIVE": {
+			"Name": "Lore Inaccurate",
+			"Description": "Use your ship's warp drive."
+		}
+	}
 }

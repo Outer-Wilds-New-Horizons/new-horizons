@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Atmosphere
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             if (_lightningPrefab == null) _lightningPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
-            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Clouds_Bottom_ramp.png");
+            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);

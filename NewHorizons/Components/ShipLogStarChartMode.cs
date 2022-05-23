@@ -161,7 +161,7 @@ namespace NewHorizons.Components
             {
                 if (uniqueID.Equals("SolarSystem"))
                 {
-                    texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/hearthian system.png");
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
                 }
                 else
                 {

@@ -55,11 +55,11 @@ namespace NewHorizons.Builder.Props
             }
             if (_mainTexture == null)
             {
-                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Tornado_BH_Cyclone_02_d.png");
+                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
             }
             if (_detailTexture == null)
             {
-                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Tornado_BH_CycloneDetail_d.png");
+                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
             }
 
             Vector3 position;
