@@ -161,7 +161,7 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("CloudFluidType is deprecated, please use CloudInfo instead")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public CloudFluidType? fluidType;
+        public CloudFluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;
