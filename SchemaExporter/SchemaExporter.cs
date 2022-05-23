@@ -22,14 +22,11 @@ public static class SchemaExporter
             FlattenInheritanceHierarchy = true,
             AllowReferencesWithProperties = true
         };
-        Console.WriteLine("Outputting Body Schema");
         var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", $"{folderName}/body_schema", settings);
         bodySchema.Output();
-        Console.WriteLine("Outputting Star System Schema");
         var systemSchema =
             new Schema<StarSystemConfig>("Star System Schema", $"{folderName}/star_system_schema", settings);
         systemSchema.Output();
-        Console.WriteLine("Outputting Translation Schema");
         var translationSchema =
             new Schema<TranslationConfig>("Translation Schema", $"{folderName}/translation_schema", settings);
         translationSchema.Output();
@@ -51,6 +48,7 @@ public static class SchemaExporter
 
         public void Output()
         {
+            Console.WriteLine($"Outputting {_title}");
             File.WriteAllText($"{_outFileName}.json", ToString());
         }
 
