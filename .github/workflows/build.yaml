@@ -44,12 +44,13 @@ jobs:
         name: NewHorizons-${{ env.BUILD_TYPE }}
         path: .\NewHorizons\Obj\${{ env.BUILD_TYPE }}
         
+    # Debugging, remove later
     - run: tree /f
         
     - name: Generate Schemas
       run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
       
-      # Only want to commit schemas if they've actually changed
+    # Only want to commit schemas if they've actually changed
     - name: Verify Changed Schemas
       uses: tj-actions/verify-changed-files@v6
       id: changed_files
