@@ -6,8 +6,19 @@ namespace NewHorizons.External.Configs
 {
     public class TranslationConfig
     {
+        /// <summary>
+        /// Translation table for dialogue
+        /// </summary>
         public Dictionary<string, string> dialogueDictionary;
+
+        /// <summary>
+        /// Translation table for Ship Log (entries, facts, etc)
+        /// </summary>
         public Dictionary<string, string> shipLogDictionary;
+
+        /// <summary>
+        /// Translation table for UI elements
+        /// </summary>
         public Dictionary<string, string> uiDictionary;
 
         public TranslationConfig(string filename)

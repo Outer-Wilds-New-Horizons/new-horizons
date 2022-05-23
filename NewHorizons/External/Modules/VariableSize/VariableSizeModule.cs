@@ -20,9 +20,17 @@ namespace NewHorizons.External.Modules.VariableSize
             return curve;
         }
 
+        [JsonObject]
         public class TimeValuePair
         {
+            /// <summary>
+            /// A specific point in time
+            /// </summary>
             public float Time { get; set; }
+
+            /// <summary>
+            /// The value for this point in time
+            /// </summary>
             public float Value { get; set; }
         }
     }
