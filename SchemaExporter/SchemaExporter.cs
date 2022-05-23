@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using NewHorizons.External.Configs;
 using NJsonSchema;
 using NJsonSchema.Generation;
@@ -16,7 +17,8 @@ public static class SchemaExporter
         Console.WriteLine("Schema Generator: We're winning!");
         var settings = new JsonSchemaGeneratorSettings
         {
-            IgnoreObsoleteProperties = true
+            IgnoreObsoleteProperties = true,
+            DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull
         };
         Console.WriteLine("Outputting Body Schema");
         var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", $"{folderName}/body_schema", settings);
@@ -55,10 +57,25 @@ public static class SchemaExporter
             return GetJsonSchema().ToJson();
         }
 
-        public JsonSchema GetJsonSchema()
+        private static void FixOneOf(JsonSchema schema)
+        {
+            if (schema.OneOf.Count != 0)
+            {
+                schema.Reference = schema.OneOf.First();
+                schema.OneOf.Clear();
+                foreach (var property in schema.Reference.Properties.Values) FixOneOf(property);
+            }
+            else
+            {
+                foreach (var property in schema.Properties.Values) FixOneOf(property);
+            }
+        }
+
+        private JsonSchema GetJsonSchema()
         {
             var schema = JsonSchema.FromType<T>(_generatorSettings);
             schema.Title = _title;
+            FixOneOf(schema);
             return schema;
         }
     }
