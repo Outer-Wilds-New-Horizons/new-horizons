@@ -15,9 +15,6 @@
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
-        <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
-            <HintPath>System.Runtime.Serialization.dll</HintPath>
-        </Reference>
         <None Include="System.Runtime.Serialization.dll">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
