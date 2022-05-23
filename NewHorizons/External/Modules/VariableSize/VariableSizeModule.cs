@@ -1,9 +1,5 @@
-﻿#region
-
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using UnityEngine;
-
-#endregion
 
 namespace NewHorizons.External.Modules.VariableSize
 {

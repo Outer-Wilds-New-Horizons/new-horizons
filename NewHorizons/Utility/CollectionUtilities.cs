@@ -1,9 +1,4 @@
-﻿#region
-
-using System.Collections.Generic;
-
-#endregion
-
+﻿using System.Collections.Generic;
 namespace NewHorizons.Utility
 {
     public static class CollectionUtilities
@@ -11,13 +6,14 @@ namespace NewHorizons.Utility
         public static T KeyByValue<T, W>(Dictionary<T, W> dict, W val)
         {
             T key = default;
-            foreach (var pair in dict)
+            foreach (KeyValuePair<T, W> pair in dict)
+            {
                 if (EqualityComparer<W>.Default.Equals(pair.Value, val))
                 {
                     key = pair.Key;
                     break;
                 }
-
+            }
             return key;
         }
     }

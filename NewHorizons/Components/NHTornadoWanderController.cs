@@ -1,9 +1,5 @@
-﻿#region
-
 using UnityEngine;
-
-#endregion
-
+using Random = UnityEngine.Random;
 namespace NewHorizons.Components
 {
     public class NHTornadoWanderController : MonoBehaviour
@@ -38,8 +34,8 @@ namespace NewHorizons.Components
 
         public void Update()
         {
-            var num = Mathf.PerlinNoise(Time.time * wanderRate + noiseOffset, 0f) * 2f - 1f;
-            var num2 = Mathf.PerlinNoise(Time.time * wanderRate + noiseOffset, 5f) * 2f - 1f;
+            float num = Mathf.PerlinNoise(Time.time * wanderRate + noiseOffset, 0f) * 2f - 1f;
+            float num2 = Mathf.PerlinNoise(Time.time * wanderRate + noiseOffset, 5f) * 2f - 1f;
 
             var newDegreesX = startDegreesX + num * wanderDegreesX;
             var newDegreesZ = startDegreesZ + num2 * wanderDegreesZ;
@@ -51,8 +47,7 @@ namespace NewHorizons.Components
             var newPos = new Vector3(newX, newY, newZ);
 
             transform.localPosition = newPos;
-            transform.rotation =
-                Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(newPos.normalized));
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(newPos.normalized));
         }
     }
 }

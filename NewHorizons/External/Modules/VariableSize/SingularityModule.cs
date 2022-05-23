@@ -1,13 +1,9 @@
-﻿#region
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-
-#endregion
 
 namespace NewHorizons.External.Modules.VariableSize
 {

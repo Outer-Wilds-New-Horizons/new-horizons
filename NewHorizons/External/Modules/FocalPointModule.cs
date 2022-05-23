@@ -1,8 +1,4 @@
-﻿#region
-
-using Newtonsoft.Json;
-
-#endregion
+﻿using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {

@@ -1,10 +1,5 @@
-﻿#region
-
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Builder.General
 {
     public static class RigidBodyBuilder
@@ -13,7 +8,7 @@ namespace NewHorizons.Builder.General
         {
             body.AddComponent<ProxyShadowCasterSuperGroup>();
 
-            var rigidBody = body.AddComponent<Rigidbody>();
+            Rigidbody rigidBody = body.AddComponent<Rigidbody>();
             rigidBody.mass = 10000;
             rigidBody.drag = 0f;
             rigidBody.angularDrag = 0f;
@@ -22,10 +17,10 @@ namespace NewHorizons.Builder.General
             rigidBody.interpolation = RigidbodyInterpolation.None;
             rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
-            var kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
+            KinematicRigidbody kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
             kinematicRigidBody.centerOfMass = Vector3.zero;
 
-            var owRigidBody = body.AddComponent<OWRigidbody>();
+            OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
             owRigidBody._kinematicSimulation = true;
             owRigidBody._autoGenerateCenterOfMass = true;
             owRigidBody.SetIsTargetable(true);

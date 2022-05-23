@@ -1,11 +1,6 @@
-﻿#region
-
+﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
-using HarmonyLib;
-
-#endregion
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -29,15 +24,11 @@ namespace NewHorizons.Patches
             __instance._ejectedBodyList = new List<OWRigidbody>(64);
             try
             {
-                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody();
-                __instance._whiteHoleProxyShadowSuperGroup =
-                    __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
+                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody(false);
+                __instance._whiteHoleProxyShadowSuperGroup = __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
                 __instance._fluidVolume = __instance.gameObject.GetRequiredComponent<WhiteHoleFluidVolume>();
             }
-            catch (Exception)
-            {
-            }
-
+            catch (Exception) { }
             return false;
         }
 
@@ -54,7 +45,6 @@ namespace NewHorizons.Patches
             {
                 __result = true;
             }
-
             return false;
         }
     }

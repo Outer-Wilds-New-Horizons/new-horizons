@@ -1,11 +1,6 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
-#endregion
-
 namespace NewHorizons.Components
 {
     [RequireComponent(typeof(SunLightController))]
@@ -14,7 +9,7 @@ namespace NewHorizons.Components
     {
         public static StarLightController Instance { get; private set; }
 
-        private readonly List<StarController> _stars = new List<StarController>();
+        private List<StarController> _stars = new List<StarController>();
         private StarController _activeStar;
 
         private SunLightController _sunLightController;
@@ -71,10 +66,12 @@ namespace NewHorizons.Components
 
                 // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
                 var origin = Vector3.zero;
-                if (PlayerState.InMapView()) origin = Locator.GetActiveCamera().transform.position;
+                if (PlayerState.InMapView())
+                {
+                    origin = Locator.GetActiveCamera().transform.position;
+                }
 
-                if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStar.Intensity *
-                    (_activeStar.transform.position - origin).sqrMagnitude)
+                if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStar.Intensity * (_activeStar.transform.position - origin).sqrMagnitude)
                 {
                     ChangeActiveStar(star);
                     break;
@@ -106,8 +103,8 @@ namespace NewHorizons.Components
             _sunLightParamUpdater._propID_OWSunColorIntensity = Shader.PropertyToID("_OWSunColorIntensity");
 
             // For the param thing to work it wants this to be on the star idk
-            transform.parent = star.transform;
-            transform.localPosition = Vector3.zero;
+            this.transform.parent = star.transform;
+            this.transform.localPosition = Vector3.zero;
         }
     }
 }

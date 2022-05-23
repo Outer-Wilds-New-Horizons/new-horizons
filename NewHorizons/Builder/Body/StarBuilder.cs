@@ -1,13 +1,9 @@
-﻿#region
-
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
 using OWML.Utils;
 using UnityEngine;
-
-#endregion
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -26,7 +22,7 @@ namespace NewHorizons.Builder.Body
         {
             var starGO = MakeStarGraphics(planetGO, sector, starModule);
 
-            var sunAudio = Object.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
+            var sunAudio = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.size * 2f;
@@ -39,17 +35,16 @@ namespace NewHorizons.Builder.Body
             GameObject sunAtmosphere = null;
             if (starModule.hasAtmosphere)
             {
-                sunAtmosphere = Object.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
+                sunAtmosphere = GameObject.Instantiate(GameObject.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
-                var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
+                PlanetaryFogController fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint;
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
-                    foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere")
-                                 .GetComponentsInChildren<MeshRenderer>())
+                    foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
                         lod.material.SetColor(SkyColor, starModule.tint);
                         lod.material.SetColor(AtmosFar, starModule.tint);
@@ -58,27 +53,22 @@ namespace NewHorizons.Builder.Body
                         lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
                     }
                 }
-
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.size * OuterRadiusRatio;
-                fog.lodFadeDistance = fog.fogRadius * (OuterRadiusRatio - 1f);
+                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
             }
 
-            var ambientLightGO = Object.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
+            var ambientLightGO = GameObject.Instantiate(GameObject.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
             ambientLightGO.transform.localPosition = Vector3.zero;
             ambientLightGO.name = "AmbientLight_Star";
 
-            var heatVolume = Object.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/HeatVolume"),
-                starGO.transform);
+            var heatVolume = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/HeatVolume"), starGO.transform);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
             heatVolume.GetComponent<SphereShape>().radius = 1f;
             heatVolume.name = "HeatVolume";
 
-            var deathVolume =
-                Object.Instantiate(
-                    GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/ScaledVolumesRoot/DestructionFluidVolume"),
-                    starGO.transform);
+            var deathVolume = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN/ScaledVolumesRoot/DestructionFluidVolume"), starGO.transform);
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
@@ -86,7 +76,7 @@ namespace NewHorizons.Builder.Body
             deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             deathVolume.name = "DestructionVolume";
 
-            var ambientLight = ambientLightGO.GetComponent<Light>();
+            Light ambientLight = ambientLightGO.GetComponent<Light>();
 
             var sunLight = new GameObject();
             sunLight.transform.parent = starGO.transform;
@@ -99,22 +89,19 @@ namespace NewHorizons.Builder.Body
             light.intensity *= starModule.solarLuminosity;
             light.range *= Mathf.Sqrt(starModule.solarLuminosity);
 
-            var lightColour = light.color;
+            Color lightColour = light.color;
             if (starModule.lightTint != null) lightColour = starModule.lightTint;
 
             light.color = lightColour;
             ambientLight.color = lightColour;
 
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
-            faceActiveCamera.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight")
-                .GetComponent<FaceActiveCamera>());
+            faceActiveCamera.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>());
             var csmTextureCacher = sunLight.AddComponent<CSMTextureCacher>();
-            csmTextureCacher.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight")
-                .GetComponent<CSMTextureCacher>());
+            csmTextureCacher.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>());
             csmTextureCacher._light = light;
             var proxyShadowLight = sunLight.AddComponent<ProxyShadowLight>();
-            proxyShadowLight.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight")
-                .GetComponent<ProxyShadowLight>());
+            proxyShadowLight.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>());
             proxyShadowLight._light = light;
 
             StarController starController = null;
@@ -173,21 +160,17 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
         {
-            if (_colorOverTime == null)
-                _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
             starGO.transform.parent = sector?.transform ?? rootObject.transform;
 
-            var sunSurface = Object.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface"),
-                starGO.transform);
+            var sunSurface = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface"), starGO.transform);
             sunSurface.transform.position = rootObject.transform.position;
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
 
-            var solarFlareEmitter =
-                Object.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter"),
-                    starGO.transform);
+            var solarFlareEmitter = GameObject.Instantiate(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter"), starGO.transform);
             solarFlareEmitter.transform.localPosition = Vector3.zero;
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
@@ -210,13 +193,12 @@ namespace NewHorizons.Builder.Body
 
             if (starModule.tint != null)
             {
-                var surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
+                TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
 
                 var colour = starModule.tint;
 
                 var sun = GameObject.Find("Sun_Body");
-                var mainSequenceMaterial =
-                    sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
+                var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
                 var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
 
                 surface.sharedMaterial = new Material(starModule.size >= 3000 ? giantMaterial : mainSequenceMaterial);
@@ -224,7 +206,7 @@ namespace NewHorizons.Builder.Body
                 var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
                 surface.sharedMaterial.color = adjustedColour;
 
-                Color.RGBToHSV(adjustedColour, out var H, out var S, out var V);
+                Color.RGBToHSV(adjustedColour, out float H, out float S, out float V);
                 var darkenedColor = Color.HSVToRGB(H, S * 1.2f, V * 0.05f);
 
                 if (starModule.endTint != null)
@@ -233,8 +215,7 @@ namespace NewHorizons.Builder.Body
                     darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
                 }
 
-                surface.sharedMaterial.SetTexture(ColorRamp,
-                    ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+                surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
             }
 
             return starGO;
@@ -255,9 +236,7 @@ namespace NewHorizons.Builder.Body
                 var colour = starModule.supernovaTint;
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
-                var ramp = ImageUtilities.LerpGreyscaleImage(
-                    ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white,
-                    colour);
+                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/Effects_SUN_Supernova_d.png"), Color.white, colour);
                 supernovaMaterial.SetTexture(ColorRamp, ramp);
                 supernova._supernovaMaterial = supernovaMaterial;
 

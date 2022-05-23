@@ -22,10 +22,10 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-
+    
     <!-- Empty Type -->
     <xs:complexType name="empty"/>
-
+    
     <!-- Entry Info -->
     <xs:complexType name="Entry">
         <xs:sequence>
@@ -101,7 +101,7 @@
             </xs:element>
         </xs:sequence>
     </xs:complexType>
-
+    
     <!-- Rumor Fact Info -->
     <xs:complexType name="RumorFact">
         <xs:sequence>
@@ -143,7 +143,7 @@
             <xs:group ref="TextData"/>
         </xs:sequence>
     </xs:complexType>
-
+    
     <!-- Explore Fact Info -->
     <xs:complexType name="ExploreFact">
         <xs:sequence>

@@ -1,15 +1,10 @@
-﻿#region
-
-using System;
-using HarmonyLib;
+﻿using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.Handlers;
+using System;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -21,9 +16,11 @@ namespace NewHorizons.Patches
         {
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
             if (customSignalName == null) return true;
-
-            __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI).ToUpper();
-            return false;
+            else
+            {
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI).ToUpper();
+                return false;
+            }
         }
 
         [HarmonyPrefix]
@@ -32,33 +29,33 @@ namespace NewHorizons.Patches
         {
             switch (__0)
             {
-                case SignalFrequency.Default:
+                case (SignalFrequency.Default):
                     __result = 0;
                     break;
-                case SignalFrequency.Traveler:
+                case (SignalFrequency.Traveler):
                     __result = 1;
                     break;
-                case SignalFrequency.Quantum:
+                case (SignalFrequency.Quantum):
                     __result = 2;
                     break;
-                case SignalFrequency.EscapePod:
+                case (SignalFrequency.EscapePod):
                     __result = 3;
                     break;
-                case SignalFrequency.WarpCore:
+                case (SignalFrequency.WarpCore):
                     __result = 4;
                     break;
-                case SignalFrequency.HideAndSeek:
+                case (SignalFrequency.HideAndSeek):
                     __result = 5;
                     break;
-                case SignalFrequency.Radio:
+                case (SignalFrequency.Radio):
                     __result = 6;
                     break;
-                case SignalFrequency.Statue:
+                case (SignalFrequency.Statue):
                     __result = 7;
                     break;
                 default:
                     // Frequencies are in powers of 2
-                    __result = (int) (Mathf.Log((float) __0) / Mathf.Log(2f));
+                    __result = (int)(Mathf.Log((float)__0) / Mathf.Log(2f));
                     break;
             }
 
@@ -96,10 +93,9 @@ namespace NewHorizons.Patches
                     __result = SignalFrequency.Statue;
                     break;
                 default:
-                    __result = (SignalFrequency) Math.Pow(2, __0);
+                    __result = (SignalFrequency)(Math.Pow(2, __0));
                     break;
             }
-
             return false;
         }
 
@@ -110,12 +106,10 @@ namespace NewHorizons.Patches
             var customName = SignalBuilder.GetCustomFrequencyName(__0);
             if (customName != null && customName != "")
             {
-                if (NewHorizonsData.KnowsFrequency(customName))
-                    __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }
-
             return true;
         }
 
@@ -126,10 +120,9 @@ namespace NewHorizons.Patches
             // I hate this, just because I can't override the base method in CloakedAudioSignal
             if (__instance is CloakedAudioSignal)
             {
-                ((CloakedAudioSignal) __instance).UpdateSignalStrength(__0, __1);
+                ((CloakedAudioSignal)__instance).UpdateSignalStrength(__0, __1);
                 return false;
             }
-
             return true;
         }
 
@@ -137,9 +130,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(TravelerAudioManager), nameof(TravelerAudioManager.Update))]
         public static void TravelerAudioManager_Update(TravelerAudioManager __instance)
         {
-            __instance._signals.RemoveAll(signal =>
-                signal == null || signal.gameObject == null || signal._owAudioSource == null ||
-                signal._owAudioSource._audioSource == null);
+            __instance._signals.RemoveAll(signal => signal == null || signal.gameObject == null || signal._owAudioSource == null || signal._owAudioSource._audioSource == null);
         }
     }
 }

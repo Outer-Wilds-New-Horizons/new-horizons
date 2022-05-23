@@ -1,9 +1,4 @@
-﻿#region
-
-using UnityEngine;
-
-#endregion
-
+﻿using UnityEngine;
 namespace NewHorizons.Components
 {
     public class StarController : MonoBehaviour

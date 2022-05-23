@@ -1,13 +1,9 @@
-﻿#region
-
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
-using Tessellation;
 using UnityEngine;
-
-#endregion
+using NewHorizons.External.Modules.VariableSize;
+using Tessellation;
 
 namespace NewHorizons.Builder.Body
 {
@@ -20,7 +16,7 @@ namespace NewHorizons.Builder.Body
         {
             var waterSize = module.size;
 
-            var waterGO = new GameObject("Water");
+            GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
             waterGO.layer = 15;
             waterGO.transform.parent = sector?.transform ?? planetGO.transform;
@@ -28,19 +24,18 @@ namespace NewHorizons.Builder.Body
 
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
-            var TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
+            TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
-            for (var i = 0; i < 16; i++)
+            for (int i = 0; i < 16; i++)
             {
                 var mesh = new Mesh();
                 mesh.CopyPropertiesFrom(GDTSR.tessellationMeshGroup.variants[i]);
                 TSR.tessellationMeshGroup.variants[i] = mesh;
             }
 
-            var GDSharedMaterials =
-                GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
+            var GDSharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
             var tempArray = new Material[GDSharedMaterials.Length];
-            for (var i = 0; i < GDSharedMaterials.Length; i++)
+            for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
                 if (module.tint != null)
@@ -55,7 +50,7 @@ namespace NewHorizons.Builder.Body
             TSR.LODBias = 0;
             TSR.LODRadius = 0;
 
-            var OEC = waterGO.AddComponent<OceanEffectController>();
+            OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC._sector = sector;
             OEC._ocean = TSR;
 
@@ -83,16 +78,14 @@ namespace NewHorizons.Builder.Body
             fluidVolume._radius = waterSize;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-            var fogGO = Object.Instantiate(
-                GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"),
-                waterGO.transform);
+            var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
 
             if (module.tint != null)
             {
-                var adjustedColour = (Color) module.tint / 4f;
+                var adjustedColour = (Color)module.tint / 4f;
                 adjustedColour.a = adjustedColour.a * 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
@@ -101,7 +94,10 @@ namespace NewHorizons.Builder.Body
             {
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve) curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                foreach (var pair in module.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                }
                 sizeController.scaleCurve = curve;
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
                 sizeController.size = module.size;

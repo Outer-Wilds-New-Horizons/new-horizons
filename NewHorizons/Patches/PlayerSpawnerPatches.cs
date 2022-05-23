@@ -1,10 +1,5 @@
-﻿#region
-
-using HarmonyLib;
-using NewHorizons.Utility;
-
-#endregion
-
+﻿using HarmonyLib;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

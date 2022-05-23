@@ -1,11 +1,7 @@
-﻿#region
-
-using NewHorizons.Components.SizeControllers;
+﻿using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
+using System.Collections.Generic;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Components
 {
     public class NHProxy : ProxyPlanet
@@ -41,7 +37,7 @@ namespace NewHorizons.Components
 
         public override void Initialize()
         {
-            var astroObject = AstroObjectLocator.GetAstroObject(astroName);
+            AstroObject astroObject = AstroObjectLocator.GetAstroObject(astroName);
             _realObjectTransform = astroObject.transform;
             _hasAtmosphere = _atmosphere != null;
             if (_hasAtmosphere)
@@ -51,7 +47,6 @@ namespace NewHorizons.Components
                 _baseAtmoMatShellOuterRadius = _atmosphereMaterial.GetFloat(propID_AtmoOuterRadius);
                 _atmosphere.sharedMaterial = _atmosphereMaterial;
             }
-
             if (_fog != null)
             {
                 _hasFog = true;
@@ -73,13 +68,25 @@ namespace NewHorizons.Components
 
             if (_star != null)
             {
-                if (_solarFlareEmitter != null) _solarFlareEmitter.gameObject.SetActive(on);
+                if (_solarFlareEmitter != null)
+                {
+                    _solarFlareEmitter.gameObject.SetActive(on);
+                }
 
-                foreach (var renderer in _starRenderers) renderer.enabled = on;
+                foreach (var renderer in _starRenderers)
+                {
+                    renderer.enabled = on;
+                }
 
-                foreach (var renderer in _starTessellatedRenderers) renderer.enabled = on;
+                foreach (var renderer in _starTessellatedRenderers)
+                {
+                    renderer.enabled = on;
+                }
 
-                foreach (var renderer in _starParticleRenderers) renderer.enabled = on;
+                foreach (var renderer in _starParticleRenderers)
+                {
+                    renderer.enabled = on;
+                }
             }
         }
     }

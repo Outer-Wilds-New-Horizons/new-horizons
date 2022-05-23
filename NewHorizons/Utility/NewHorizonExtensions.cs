@@ -1,15 +1,9 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
-using Object = UnityEngine.Object;
-
-#endregion
-
 namespace NewHorizons.Utility
 {
     public static class NewHorizonsExtensions
@@ -21,7 +15,7 @@ namespace NewHorizons.Utility
 
         public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName)
         {
-            return (T) dict[settingName];
+            return (T)dict[settingName];
         }
 
         public static float GetFalloffExponent(this GravityVolume gv)
@@ -35,14 +29,14 @@ namespace NewHorizons.Utility
 
         public static string ToCamelCase(this string str)
         {
-            var strBuilder = new StringBuilder(str);
+            StringBuilder strBuilder = new StringBuilder(str);
             strBuilder[0] = strBuilder[0].ToString().ToLower().ToCharArray()[0];
             return strBuilder.ToString();
         }
 
         public static string ToTitleCase(this string str)
         {
-            var strBuilder = new StringBuilder(str);
+            StringBuilder strBuilder = new StringBuilder(str);
             strBuilder[0] = strBuilder[0].ToString().ToUpper().ToCharArray()[0];
             return strBuilder.ToString();
         }
@@ -53,21 +47,39 @@ namespace NewHorizons.Utility
             if (source == null || destination == null)
                 throw new Exception("Source or/and Destination Objects are null");
             // Getting the Types of the objects
-            var typeDest = destination.GetType();
-            var typeSrc = source.GetType();
+            Type typeDest = destination.GetType();
+            Type typeSrc = source.GetType();
 
             // Iterate the Properties of the source instance and  
             // populate them from their desination counterparts  
-            var srcProps = typeSrc.GetProperties();
-            foreach (var srcProp in srcProps)
+            PropertyInfo[] srcProps = typeSrc.GetProperties();
+            foreach (PropertyInfo srcProp in srcProps)
             {
-                if (!srcProp.CanRead) continue;
-                var targetProperty = typeDest.GetProperty(srcProp.Name);
-                if (targetProperty == null) continue;
-                if (!targetProperty.CanWrite) continue;
-                if (targetProperty.GetSetMethod(true) != null && targetProperty.GetSetMethod(true).IsPrivate) continue;
-                if ((targetProperty.GetSetMethod().Attributes & MethodAttributes.Static) != 0) continue;
-                if (!targetProperty.PropertyType.IsAssignableFrom(srcProp.PropertyType)) continue;
+                if (!srcProp.CanRead)
+                {
+                    continue;
+                }
+                PropertyInfo targetProperty = typeDest.GetProperty(srcProp.Name);
+                if (targetProperty == null)
+                {
+                    continue;
+                }
+                if (!targetProperty.CanWrite)
+                {
+                    continue;
+                }
+                if (targetProperty.GetSetMethod(true) != null && targetProperty.GetSetMethod(true).IsPrivate)
+                {
+                    continue;
+                }
+                if ((targetProperty.GetSetMethod().Attributes & MethodAttributes.Static) != 0)
+                {
+                    continue;
+                }
+                if (!targetProperty.PropertyType.IsAssignableFrom(srcProp.PropertyType))
+                {
+                    continue;
+                }
 
                 try
                 {
@@ -95,10 +107,13 @@ namespace NewHorizons.Utility
 
         public static GameObject InstantiateInactive(this GameObject original)
         {
-            if (!original.activeSelf) return Object.Instantiate(original);
+            if (!original.activeSelf)
+            {
+                return UnityEngine.Object.Instantiate(original);
+            }
 
             original.SetActive(false);
-            var copy = Object.Instantiate(original);
+            var copy = UnityEngine.Object.Instantiate(original);
             original.SetActive(true);
             return copy;
         }

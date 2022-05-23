@@ -1,10 +1,5 @@
-﻿#region
-
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -18,11 +13,10 @@ namespace NewHorizons.Patches
 
             // Stop the game from trying to recall your ship when you're visiting far away planets
 
-            var sunTransform = Locator.GetSunTransform();
-            var shipBody = Locator.GetShipBody();
+            Transform sunTransform = Locator.GetSunTransform();
+            OWRigidbody shipBody = Locator.GetShipBody();
             var maxDist2 = Mathf.Max(900000000f, Main.FurthestOrbit * Main.FurthestOrbit * 2f);
-            __result = sunTransform != null && shipBody != null &&
-                       (sunTransform.position - shipBody.transform.position).sqrMagnitude > maxDist2;
+            __result = sunTransform != null && shipBody != null && (sunTransform.position - shipBody.transform.position).sqrMagnitude > maxDist2;
             return false;
         }
     }

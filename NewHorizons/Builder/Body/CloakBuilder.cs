@@ -1,11 +1,6 @@
-﻿#region
-
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
@@ -14,12 +9,12 @@ namespace NewHorizons.Builder.Body
         {
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
 
-            var newCloak = Object.Instantiate(cloak, sector?.transform ?? planetGO.transform);
+            var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);
             newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;
 
-            Object.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
+            GameObject.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
 
             var cloakFieldController = newCloak.GetComponent<CloakFieldController>();
             cloakFieldController._cloakScaleDist = radius * 2000 / 3000f;

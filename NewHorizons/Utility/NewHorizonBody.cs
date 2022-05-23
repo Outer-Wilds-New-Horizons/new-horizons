@@ -1,11 +1,6 @@
-﻿#region
-
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using OWML.Common;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Utility
 {
     public class NewHorizonsBody

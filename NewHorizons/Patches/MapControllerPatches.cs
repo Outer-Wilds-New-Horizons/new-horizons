@@ -1,9 +1,5 @@
-﻿#region
-
-using HarmonyLib;
+﻿using HarmonyLib;
 using UnityEngine.SceneManagement;
-
-#endregion
 
 namespace NewHorizons.Patches
 {
@@ -12,8 +8,7 @@ namespace NewHorizons.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MapController), nameof(MapController.Awake))]
-        public static void MapController_Awake(MapController __instance, ref float ____maxPanDistance,
-            ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
+        public static void MapController_Awake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
         {
             ____maxPanDistance = Main.FurthestOrbit * 1.5f;
             ____maxZoomDistance *= 6f;
@@ -44,9 +39,7 @@ namespace NewHorizons.Patches
                     return false;
                 }
             }
-            catch
-            {
-            }
+            catch { }
 
             return true;
         }

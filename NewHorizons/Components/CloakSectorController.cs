@@ -1,11 +1,6 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-
-#endregion
-
 namespace NewHorizons.Components
 {
     public class CloakSectorController : MonoBehaviour
@@ -15,7 +10,7 @@ namespace NewHorizons.Components
 
         private bool _isInitialized;
 
-        private List<Renderer> _renderers;
+        private List<Renderer> _renderers = null;
 
         public void Init(CloakFieldController cloak, GameObject root)
         {
@@ -32,7 +27,7 @@ namespace NewHorizons.Components
             _isInitialized = true;
         }
 
-        private void OnDestroy()
+        void OnDestroy()
         {
             if (_isInitialized)
             {
@@ -50,14 +45,20 @@ namespace NewHorizons.Components
         {
             SetUpList();
 
-            foreach (var renderer in _renderers) renderer.forceRenderingOff = false;
+            foreach (var renderer in _renderers)
+            {
+                renderer.forceRenderingOff = false;
+            }
         }
 
         public void OnPlayerExit()
         {
             SetUpList();
 
-            foreach (var renderer in _renderers) renderer.forceRenderingOff = true;
+            foreach (var renderer in _renderers)
+            {
+                renderer.forceRenderingOff = true;
+            }
         }
     }
 }

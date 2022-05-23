@@ -1,11 +1,7 @@
-﻿#region
-
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility;
-
-#endregion
 
 namespace NewHorizons.External.Modules
 {

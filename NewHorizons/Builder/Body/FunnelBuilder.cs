@@ -1,13 +1,9 @@
-﻿#region
-
+﻿using System.Runtime.Serialization;
 using NewHorizons.Components;
-using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
 using UnityEngine;
-using UnityEngine.Rendering;
 using Logger = NewHorizons.Utility.Logger;
-
-#endregion
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -17,8 +13,7 @@ namespace NewHorizons.Builder.Body
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
         private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
 
-        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody,
-            FunnelModule module)
+        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
             var funnelType = module.type;
 
@@ -48,16 +43,13 @@ namespace NewHorizons.Builder.Body
             scaleRoot.transform.localPosition = Vector3.zero;
             scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
-            var proxyGO = Object.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"),
-                scaleRoot.transform);
+            var proxyGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
 
-            var geoGO = Object.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel"),
-                scaleRoot.transform);
+            var geoGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel"), scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
 
-            var volumesGO = Object.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"),
-                scaleRoot.transform);
+            var volumesGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"), scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
             var fluidVolume = sfv.gameObject;
@@ -69,17 +61,17 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Water:
                     sfv._fluidType = FluidVolume.Type.WATER;
 
-                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var waterMaterials = GameObject
-                        .Find(
-                            "TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo")
-                        .GetComponent<MeshRenderer>().materials;
+                    var waterMaterials = GameObject.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
                     var materials = new Material[waterMaterials.Length];
-                    for (var i = 0; i < waterMaterials.Length; i++)
+                    for (int i = 0; i < waterMaterials.Length; i++)
                     {
                         materials[i] = new Material(waterMaterials[i]);
-                        if (module.tint != null) materials[i].SetColor(FogColor, module.tint);
+                        if (module.tint != null)
+                        {
+                            materials[i].SetColor(FogColor, module.tint);
+                        }
                     }
 
                     // Proxy
@@ -87,7 +79,7 @@ namespace NewHorizons.Builder.Body
                     proxyExterior.name = "WaterColumn_Exterior";
                     var proxyExteriorMR = proxyExterior.GetComponent<MeshRenderer>();
                     proxyExteriorMR.material = materials[0];
-                    proxyExteriorMR.shadowCastingMode = ShadowCastingMode.Off;
+                    proxyExteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
                     /*
                     var proxyInterior = GameObject.Instantiate(proxyExterior, proxyGO.transform);
@@ -102,7 +94,7 @@ namespace NewHorizons.Builder.Body
                     geoExterior.name = "WaterColumn_Exterior";
                     var geoExteriorMR = geoExterior.GetComponent<MeshRenderer>();
                     geoExteriorMR.material = materials[0];
-                    geoExteriorMR.shadowCastingMode = ShadowCastingMode.Off;
+                    geoExteriorMR.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
 
                     /*
                     var geoInterior = GameObject.Instantiate(geoExterior, geoGO.transform);
@@ -117,14 +109,16 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Star:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
-                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var lavaMaterial = new Material(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere")
-                        .GetComponent<MeshRenderer>().material);
+                    var lavaMaterial = new Material(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material);
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
                     lavaMaterial.mainTextureScale = new Vector2(1f, 3f);
 
-                    if (module.tint != null) lavaMaterial.SetColor(EmissionColor, module.tint);
+                    if (module.tint != null)
+                    {
+                        lavaMaterial.SetColor(EmissionColor, module.tint);
+                    }
 
                     proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
                     geoGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
@@ -156,15 +150,16 @@ namespace NewHorizons.Builder.Body
             if (module.Curve != null)
             {
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve) curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                foreach (var pair in module.Curve)
+                {
+                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                }
                 funnelSizeController.scaleCurve = curve;
             }
-
             funnelSizeController.anchor = planetGO.transform;
 
             // Finish up next tick
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(
-                () => PostMake(funnelGO, funnelSizeController, module));
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
         }
 
         private static void PostMake(GameObject funnelGO, FunnelController funnelSizeController, FunnelModule module)
@@ -173,9 +168,7 @@ namespace NewHorizons.Builder.Body
             var target = targetAO?.GetAttachedOWRigidbody();
             if (target == null)
             {
-                if (targetAO != null)
-                    Logger.LogError(
-                        $"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
+                if (targetAO != null) Logger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
                 else Logger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
                 return;
             }

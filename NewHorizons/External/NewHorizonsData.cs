@@ -1,10 +1,6 @@
-﻿#region
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using NewHorizons.Utility;
-
-#endregion
 
 namespace NewHorizons.External
 {

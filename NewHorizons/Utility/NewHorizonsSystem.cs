@@ -1,11 +1,6 @@
-﻿#region
-
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
-
-#endregion
-
 namespace NewHorizons.Utility
 {
     public class NewHorizonsSystem

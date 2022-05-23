@@ -1,22 +1,16 @@
-﻿#region
-
-using System;
-using System.Collections.Generic;
-using NewHorizons.Components;
+﻿using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using Object = UnityEngine.Object;
-
-#endregion
-
 namespace NewHorizons.Builder.Props
 {
     public static class SignalBuilder
     {
-        private static AnimationCurve _customCurve;
+        private static AnimationCurve _customCurve = null;
 
         private static Dictionary<SignalName, string> _customSignalNames;
         private static Stack<SignalName> _availableSignalNames;
@@ -29,34 +23,34 @@ namespace NewHorizons.Builder.Props
 
         public static void Init()
         {
-            Logger.Log("Initializing SignalBuilder");
+            Logger.Log($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
-            _availableSignalNames = new Stack<SignalName>(new[]
+            _availableSignalNames = new Stack<SignalName>(new SignalName[]
             {
-                (SignalName) 17,
-                (SignalName) 18,
-                (SignalName) 19,
-                (SignalName) 26,
-                (SignalName) 27,
-                (SignalName) 28,
-                (SignalName) 29,
-                (SignalName) 33,
-                (SignalName) 34,
-                (SignalName) 35,
-                (SignalName) 36,
-                (SignalName) 37,
-                (SignalName) 38,
-                (SignalName) 39,
-                (SignalName) 50,
-                (SignalName) 51,
-                (SignalName) 52,
-                (SignalName) 53,
-                (SignalName) 54,
-                (SignalName) 55,
-                (SignalName) 56,
-                (SignalName) 57,
-                (SignalName) 58,
-                (SignalName) 59,
+                (SignalName)17,
+                (SignalName)18,
+                (SignalName)19,
+                (SignalName)26,
+                (SignalName)27,
+                (SignalName)28,
+                (SignalName)29,
+                (SignalName)33,
+                (SignalName)34,
+                (SignalName)35,
+                (SignalName)36,
+                (SignalName)37,
+                (SignalName)38,
+                (SignalName)39,
+                (SignalName)50,
+                (SignalName)51,
+                (SignalName)52,
+                (SignalName)53,
+                (SignalName)54,
+                (SignalName)55,
+                (SignalName)56,
+                (SignalName)57,
+                (SignalName)58,
+                (SignalName)59,
                 SignalName.WhiteHole_WH,
                 SignalName.WhiteHole_SS_Receiver,
                 SignalName.WhiteHole_CT_Receiver,
@@ -66,13 +60,12 @@ namespace NewHorizons.Builder.Props
                 SignalName.WhiteHole_TH_Receiver,
                 SignalName.WhiteHole_BH_NorthPoleReceiver,
                 SignalName.WhiteHole_BH_ForgeReceiver,
-                SignalName.WhiteHole_GD_Receiver
+                SignalName.WhiteHole_GD_Receiver,
             });
-            _customFrequencyNames = new Dictionary<SignalFrequency, string>
-            {
-                {SignalFrequency.Statue, "FREQ_STATUE"},
-                {SignalFrequency.Default, "FREQ_UNKNOWN"},
-                {SignalFrequency.WarpCore, "FREQ_WARP_CORE"}
+            _customFrequencyNames = new Dictionary<SignalFrequency, string>() {
+                { SignalFrequency.Statue, "FREQ_STATUE" },
+                { SignalFrequency.Default, "FREQ_UNKNOWN" },
+                { SignalFrequency.WarpCore, "FREQ_WARP_CORE" }
             };
             _nextCustomSignalName = 200;
             _nextCustomFrequencyName = 256;
@@ -90,23 +83,26 @@ namespace NewHorizons.Builder.Props
             }
 
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
-            if (freq != default) return freq;
+            if (freq != default)
+            {
+                return freq;
+            }
 
-            freq = (SignalFrequency) _nextCustomFrequencyName;
+            freq = (SignalFrequency)_nextCustomFrequencyName;
             _nextCustomFrequencyName *= 2;
             _customFrequencyNames.Add(freq, str);
 
             NumberOfFrequencies++;
 
             // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            Object.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
+            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
 
             return freq;
         }
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
-            _customFrequencyNames.TryGetValue(frequencyName, out var name);
+            _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
 
@@ -115,7 +111,7 @@ namespace NewHorizons.Builder.Props
             Logger.Log($"Registering new signal name [{str}]");
             SignalName newName;
 
-            if (_availableSignalNames.Count == 0) newName = (SignalName) _nextCustomSignalName++;
+            if (_availableSignalNames.Count == 0) newName = (SignalName)_nextCustomSignalName++;
             else newName = _availableSignalNames.Pop();
 
             _customSignalNames.Add(newName, str);
@@ -124,13 +120,16 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomSignalName(SignalName signalName)
         {
-            _customSignalNames.TryGetValue(signalName, out var name);
+            _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
 
         public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)
         {
-            foreach (var info in module.signals) Make(body, sector, info, mod);
+            foreach (var info in module.signals)
+            {
+                Make(body, sector, info, mod);
+            }
         }
 
         public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
@@ -138,8 +137,7 @@ namespace NewHorizons.Builder.Props
             var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
             signalGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalGO.transform.position =
-                planetGO.transform.TransformPoint(info.position != null ? (Vector3) info.position : Vector3.zero);
+            signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();
@@ -157,6 +155,7 @@ namespace NewHorizons.Builder.Props
             AudioClip clip = null;
             if (info.audioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
             else if (info.audioFilePath != null)
+            {
                 try
                 {
                     clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
@@ -165,6 +164,7 @@ namespace NewHorizons.Builder.Props
                 {
                     Logger.LogError($"Couldn't load audio file {info.audioFilePath} : {e.Message}");
                 }
+            }
 
             if (clip == null)
             {
@@ -192,9 +192,7 @@ namespace NewHorizons.Builder.Props
             source.rolloffMode = AudioRolloffMode.Custom;
 
             if (_customCurve == null)
-                _customCurve = GameObject
-                    .Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling")
-                    .GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
+                _customCurve = GameObject.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately
@@ -210,8 +208,7 @@ namespace NewHorizons.Builder.Props
             var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.name}");
             signalDetectionGO.SetActive(false);
             signalDetectionGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalDetectionGO.transform.position =
-                planetGO.transform.TransformPoint(info.position != null ? (Vector3) info.position : Vector3.zero);
+            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             signalDetectionGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var sphereShape = signalDetectionGO.AddComponent<SphereShape>();
@@ -229,8 +226,9 @@ namespace NewHorizons.Builder.Props
         private static SignalFrequency StringToFrequency(string str)
         {
             foreach (SignalFrequency freq in Enum.GetValues(typeof(SignalFrequency)))
-                if (str.Equals(freq.ToString()))
-                    return freq;
+            {
+                if (str.Equals(freq.ToString())) return freq;
+            }
             var customName = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
 
             if (customName == default) customName = AddFrequency(str);
@@ -241,8 +239,9 @@ namespace NewHorizons.Builder.Props
         private static SignalName StringToSignalName(string str)
         {
             foreach (SignalName name in Enum.GetValues(typeof(SignalName)))
-                if (str.Equals(name.ToString()))
-                    return name;
+            {
+                if (str.Equals(name.ToString())) return name;
+            }
             var customName = CollectionUtilities.KeyByValue(_customSignalNames, str);
             if (customName == default) customName = AddSignalName(str);
 

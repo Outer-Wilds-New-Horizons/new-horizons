@@ -1,10 +1,6 @@
-﻿#region
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
-
-#endregion
 
 namespace NewHorizons.External.Configs
 {
