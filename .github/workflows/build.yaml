@@ -40,7 +40,7 @@ jobs:
     - uses: actions/setup-dotnet@v1
 
     # Debugging, remove later
-    - run: "tree C: /f"
+    - run: "tree /f"
 
     # Epic moment
     - run: "C:\\Program Files (x86)\\Microsoft SDKs\\Windows\\v10.0A\\bin\\NETFX 4.8.0 Tools\\x64\\sn.exe -Vr *"
