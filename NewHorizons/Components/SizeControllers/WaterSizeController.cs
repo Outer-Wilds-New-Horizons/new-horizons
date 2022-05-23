@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace NewHorizons.Components.SizeControllers
 {
     public class WaterSizeController : SizeController

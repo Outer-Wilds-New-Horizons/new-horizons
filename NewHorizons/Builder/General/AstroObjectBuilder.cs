@@ -2,13 +2,14 @@
 using NewHorizons.External.Configs;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
         public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
         {
-            NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
+            var astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
@@ -38,20 +39,18 @@ namespace NewHorizons.Builder.General
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._usePhysicsToRotate = true;
                 if (config.Orbit.AlignmentAxis == null)
-                {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
-                }
                 else
-                {
                     alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
-                }
             }
 
             if (config.Base.centerOfSolarSystem)
             {
                 Logger.Log($"Setting center of universe to {config.name}");
                 // By the time it runs we'll be able to get the OWRB with the method
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(
+                    () => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(),
+                    2);
             }
 
             return astroObject;

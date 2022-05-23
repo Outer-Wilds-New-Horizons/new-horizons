@@ -4,6 +4,7 @@ using NewHorizons.External;
 using NewHorizons.Handlers;
 using System.Collections.Generic;
 using System.Linq;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -20,6 +21,7 @@ namespace NewHorizons.Patches
                 __result = NewHorizonsData.KnowsFrequency(freqString);
                 return false;
             }
+
             return true;
         }
 
@@ -33,6 +35,7 @@ namespace NewHorizons.Patches
                 NewHorizonsData.LearnFrequency(freqString);
                 return false;
             }
+
             return true;
         }
 
@@ -46,6 +49,7 @@ namespace NewHorizons.Patches
                 __result = NewHorizonsData.KnowsSignal(customSignalName);
                 return false;
             }
+
             return true;
         }
 
@@ -59,6 +63,7 @@ namespace NewHorizons.Patches
                 if (!NewHorizonsData.KnowsSignal(customSignalName)) NewHorizonsData.LearnSignal(customSignalName);
                 return false;
             }
+
             return true;
         }
 
@@ -71,6 +76,7 @@ namespace NewHorizons.Patches
                 __result = true;
                 return false;
             }
+
             return true;
         }
 
@@ -83,17 +89,16 @@ namespace NewHorizons.Patches
                 NewHorizonsData.AddNewlyRevealedFactID(__0);
                 return false;
             }
-            else
-            {
-                return true;
-            }
+
+            return true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlayerData), nameof(PlayerData.GetNewlyRevealedFactIDs))]
         public static bool OnPlayerDataGetNewlyRevealedFactIDs(ref List<string> __result)
         {
-            __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(NewHorizonsData.GetNewlyRevealedFactIDs()).ToList();
+            __result = PlayerData._currentGameSave.newlyRevealedFactIDs
+                .Concat(NewHorizonsData.GetNewlyRevealedFactIDs()).ToList();
             return false;
         }
 
@@ -117,7 +122,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(PlayerData), nameof(PlayerData.GetNewlyRevealedFactIDs))]
         public static void PlayerData_GetNewlyRevealedFactIDs(ref List<string> __result)
         {
-            ShipLogManager manager = Locator.GetShipLogManager();
+            var manager = Locator.GetShipLogManager();
             __result = __result.Where(e => manager.GetFact(e) != null).ToList();
         }
     }

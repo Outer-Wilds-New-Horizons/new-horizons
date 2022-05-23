@@ -1,5 +1,6 @@
 ﻿using NewHorizons.External.Configs;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class VolumesBuilder
@@ -10,15 +11,15 @@ namespace NewHorizons.Builder.Atmosphere
         {
             var innerRadius = config.Base.surfaceSize;
 
-            GameObject volumesGO = new GameObject("Volumes");
+            var volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
             volumesGO.transform.parent = planetGO.transform;
 
-            GameObject rulesetGO = new GameObject("Ruleset");
+            var rulesetGO = new GameObject("Ruleset");
             rulesetGO.SetActive(false);
             rulesetGO.transform.parent = volumesGO.transform;
 
-            SphereShape SS = rulesetGO.AddComponent<SphereShape>();
+            var SS = rulesetGO.AddComponent<SphereShape>();
             SS.SetCollisionMode(Shape.CollisionMode.Volume);
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
@@ -27,7 +28,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<OWTriggerVolume>();
 
-            PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
+            var PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
             PR._useMinimap = config.Base.showMinimap;
@@ -35,17 +36,16 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
-            EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
+            var ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
-            var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
+            var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD")
+                .GetComponent<EffectRuleset>();
 
             ER._material = gdRuleset._material;
 
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);
             if (config.Atmosphere?.clouds?.tint != null)
-            {
                 cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint);
-            }
             ER._cloudMaterial = cloudMaterial;
 
             volumesGO.transform.position = planetGO.transform.position;

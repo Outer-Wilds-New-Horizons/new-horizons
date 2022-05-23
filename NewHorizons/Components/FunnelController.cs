@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace NewHorizons.Components
 {
     public class FunnelController : MonoBehaviour
@@ -12,7 +13,7 @@ namespace NewHorizons.Components
             // Temporary solution that i will never get rid of
             transform.position = anchor.position;
 
-            float num = scaleCurve?.Evaluate(TimeLoop.GetMinutesElapsed()) ?? 1f;
+            var num = scaleCurve?.Evaluate(TimeLoop.GetMinutesElapsed()) ?? 1f;
 
             var dist = (transform.position - target.position).magnitude;
             transform.localScale = new Vector3(num, num, dist / 500f);
@@ -21,9 +22,7 @@ namespace NewHorizons.Components
 
             // The target or anchor could have been destroyed by a star
             if (!target.gameObject.activeInHierarchy || !anchor.gameObject.activeInHierarchy)
-            {
                 gameObject.SetActive(false);
-            }
         }
     }
 }

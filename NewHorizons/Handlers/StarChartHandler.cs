@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public static class StarChartHandler
@@ -18,7 +19,8 @@ namespace NewHorizons.Handlers
         {
             _systems = systems;
 
-            var shipLogRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
+            var shipLogRoot =
+                GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
 
             var starChartLog = new GameObject("StarChartMode");
             starChartLog.SetActive(false);
@@ -29,7 +31,11 @@ namespace NewHorizons.Handlers
 
             ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-            var reticleImage = GameObject.Instantiate(GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"), starChartLog.transform);
+            var reticleImage =
+                Object.Instantiate(
+                    GameObject.Find(
+                        "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"),
+                    starChartLog.transform);
 
             var scaleRoot = new GameObject("ScaleRoot");
             scaleRoot.transform.parent = starChartLog.transform;
@@ -43,20 +49,20 @@ namespace NewHorizons.Handlers
             panRoot.transform.localPosition = Vector3.zero;
             panRoot.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-            var centerPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_Center")?.GetComponent<ScreenPromptList>();
-            var upperRightPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_UpperRight")?.GetComponent<ScreenPromptList>();
-            var oneShotSource = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")?.GetComponent<OWAudioSource>();
+            var centerPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_Center")
+                ?.GetComponent<ScreenPromptList>();
+            var upperRightPromptList = shipLogRoot.transform
+                .Find("ScreenPromptListScaleRoot/ScreenPromptList_UpperRight")?.GetComponent<ScreenPromptList>();
+            var oneShotSource = GameObject
+                .Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")
+                ?.GetComponent<OWAudioSource>();
 
             _starSystemToFactID = new Dictionary<string, string>();
             _factIDToStarSystem = new Dictionary<string, string>();
 
-            foreach (NewHorizonsSystem system in _systems)
-            {
+            foreach (var system in _systems)
                 if (system.Config.factRequiredForWarp != default)
-                {
                     RegisterFactForSystem(system.Config.factRequiredForWarp, system.UniqueID);
-                }
-            }
 
             ShipLogStarChartMode.Initialize(
                 centerPromptList,
@@ -67,12 +73,9 @@ namespace NewHorizons.Handlers
         public static bool CanWarp()
         {
             foreach (var system in _systems)
-            {
-                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawnPoint != null && HasUnlockedSystem(system.UniqueID))
-                {
+                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawnPoint != null &&
+                    HasUnlockedSystem(system.UniqueID))
                     return true;
-                }
-            }
             return false;
         }
 
@@ -86,7 +89,7 @@ namespace NewHorizons.Handlers
                 return true;
 
             // If we got a fact but now can't find it elsewhere, its not unlocked
-            if (!GameObject.FindObjectOfType<ShipLogManager>()._factDict.TryGetValue(factID, out var fact))
+            if (!Object.FindObjectOfType<ShipLogManager>()._factDict.TryGetValue(factID, out var fact))
                 return false;
 
             // It's unlocked if revealed

@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Collections.Generic;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -9,10 +10,7 @@ namespace NewHorizons.Patches
         // For our custom black holes that don't link to anything
         [HarmonyPrefix]
         [HarmonyPatch(typeof(BlackHoleVolume), nameof(BlackHoleVolume.Start))]
-        public static bool BlackHoleVolume_Start(BlackHoleVolume __instance)
-        {
-            return __instance._whiteHole == null;
-        }
+        public static bool BlackHoleVolume_Start(BlackHoleVolume __instance) => __instance._whiteHole == null;
 
         // To fix custom white holes
         [HarmonyPrefix]
@@ -24,11 +22,13 @@ namespace NewHorizons.Patches
             __instance._ejectedBodyList = new List<OWRigidbody>(64);
             try
             {
-                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody(false);
-                __instance._whiteHoleProxyShadowSuperGroup = __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
+                __instance._whiteHoleBody = __instance.gameObject.GetAttachedOWRigidbody();
+                __instance._whiteHoleProxyShadowSuperGroup =
+                    __instance._whiteHoleBody.GetComponentInChildren<ProxyShadowCasterSuperGroup>();
                 __instance._fluidVolume = __instance.gameObject.GetRequiredComponent<WhiteHoleFluidVolume>();
             }
             catch (Exception) { }
+
             return false;
         }
 
@@ -45,6 +45,7 @@ namespace NewHorizons.Patches
             {
                 __result = true;
             }
+
             return false;
         }
     }

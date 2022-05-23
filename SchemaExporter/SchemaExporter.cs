@@ -1,9 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Linq;
-using NewHorizons.External.Configs;
+﻿using NewHorizons.External.Configs;
 using NJsonSchema;
 using NJsonSchema.Generation;
+using System;
+using System.IO;
+using System.Linq;
 
 namespace SchemaExporter;
 
@@ -52,10 +52,7 @@ public static class SchemaExporter
             File.WriteAllText($"{_outFileName}.json", ToString());
         }
 
-        public override string ToString()
-        {
-            return GetJsonSchema().ToJson();
-        }
+        public override string ToString() => GetJsonSchema().ToJson();
 
         private static void FixOneOf(JsonSchema schema)
         {

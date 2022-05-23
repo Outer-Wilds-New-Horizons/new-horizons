@@ -1,16 +1,14 @@
 {
-    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
-    "DialogueDictionary": 
-    {
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1" : "Dein Schiff ist nun mit einem Warpantrieb ausgestattet!",
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "Du kannst den neuen \"Interstellar Modus\" aus dem Schiffslogbuch auswählen um mit dem Autopilot in andere Sternensysteme zu reisen.",
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "Dann schnall dich an und aktiviere den Autopiloten um dich in andere Sternensysteme zu warpen."
-    },
-    "UIDictionary": 
-    {
-        "INTERSTELLAR_MODE" : "Interstellar Modus",
-        "FREQ_STATUE" : "Nomai-Statue",
-        "FREQ_WARP_CORE" : "Anti-Gravitations Flux",
-        "FREQ_UNKNOWN" : "???"
-    }    
+  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
+  "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Dein Schiff ist nun mit einem Warpantrieb ausgestattet!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Du kannst den neuen \"Interstellar Modus\" aus dem Schiffslogbuch auswählen um mit dem Autopilot in andere Sternensysteme zu reisen.",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Dann schnall dich an und aktiviere den Autopiloten um dich in andere Sternensysteme zu warpen."
+  },
+  "UIDictionary": {
+    "INTERSTELLAR_MODE": "Interstellar Modus",
+    "FREQ_STATUE": "Nomai-Statue",
+    "FREQ_WARP_CORE": "Anti-Gravitations Flux",
+    "FREQ_UNKNOWN": "???"
+  }
 }

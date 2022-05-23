@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 namespace NewHorizons.Handlers
 {
     public static class OWAssetHandler
@@ -41,10 +42,7 @@ namespace NewHorizons.Handlers
                 foreach (var streamingHandle in obj.GetComponentsInChildren<StreamingMeshHandle>())
                 {
                     var assetBundle = streamingHandle.assetBundle;
-                    if (!assetBundles.Contains(assetBundle))
-                    {
-                        assetBundles.Add(assetBundle);
-                    }
+                    if (!assetBundles.Contains(assetBundle)) assetBundles.Add(assetBundle);
                     if (streamingHandle is StreamingRenderMeshHandle || streamingHandle is StreamingSkinnedMeshHandle)
                     {
                         var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
@@ -53,32 +51,22 @@ namespace NewHorizons.Handlers
 
                         // Gonna assume that if theres more than one material its probably in the same asset bundle anyway right
                         if (_materialCache.TryGetValue(materials[0], out assetBundle))
-                        {
                             assetBundles.Add(assetBundle);
-                        }
                         else
-                        {
                             foreach (var table in tables)
-                            {
-                                foreach (var x in table._materialPropertyLookups)
+                            foreach (var x in table._materialPropertyLookups)
+                                if (materials.Contains(x.material))
                                 {
-                                    if (materials.Contains(x.material))
-                                    {
-                                        _materialCache.SafeAdd(x.material, table.assetBundle);
-                                        assetBundles.SafeAdd(table.assetBundle);
-                                    }
+                                    _materialCache.SafeAdd(x.material, table.assetBundle);
+                                    assetBundles.SafeAdd(table.assetBundle);
                                 }
-                            }
-                        }
                     }
                 }
+
                 _objectCache[obj] = assetBundles;
             }
 
-            foreach (var assetBundle in assetBundles)
-            {
-                StreamingManager.LoadStreamingAssets(assetBundle);
-            }
+            foreach (var assetBundle in assetBundles) StreamingManager.LoadStreamingAssets(assetBundle);
         }
     }
 }

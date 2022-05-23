@@ -4,19 +4,14 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public static class NewHorizonsExtensions
     {
-        public static MVector3 ToMVector3(this Vector3 vector3)
-        {
-            return new MVector3(vector3.x, vector3.y, vector3.z);
-        }
+        public static MVector3 ToMVector3(this Vector3 vector3) => new MVector3(vector3.x, vector3.y, vector3.z);
 
-        public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName)
-        {
-            return (T)dict[settingName];
-        }
+        public static T GetSetting<T>(this Dictionary<string, object> dict, string settingName) => (T)dict[settingName];
 
         public static float GetFalloffExponent(this GravityVolume gv)
         {
@@ -29,14 +24,14 @@ namespace NewHorizons.Utility
 
         public static string ToCamelCase(this string str)
         {
-            StringBuilder strBuilder = new StringBuilder(str);
+            var strBuilder = new StringBuilder(str);
             strBuilder[0] = strBuilder[0].ToString().ToLower().ToCharArray()[0];
             return strBuilder.ToString();
         }
 
         public static string ToTitleCase(this string str)
         {
-            StringBuilder strBuilder = new StringBuilder(str);
+            var strBuilder = new StringBuilder(str);
             strBuilder[0] = strBuilder[0].ToString().ToUpper().ToCharArray()[0];
             return strBuilder.ToString();
         }
@@ -47,39 +42,21 @@ namespace NewHorizons.Utility
             if (source == null || destination == null)
                 throw new Exception("Source or/and Destination Objects are null");
             // Getting the Types of the objects
-            Type typeDest = destination.GetType();
-            Type typeSrc = source.GetType();
+            var typeDest = destination.GetType();
+            var typeSrc = source.GetType();
 
             // Iterate the Properties of the source instance and  
             // populate them from their desination counterparts  
-            PropertyInfo[] srcProps = typeSrc.GetProperties();
-            foreach (PropertyInfo srcProp in srcProps)
+            var srcProps = typeSrc.GetProperties();
+            foreach (var srcProp in srcProps)
             {
-                if (!srcProp.CanRead)
-                {
-                    continue;
-                }
-                PropertyInfo targetProperty = typeDest.GetProperty(srcProp.Name);
-                if (targetProperty == null)
-                {
-                    continue;
-                }
-                if (!targetProperty.CanWrite)
-                {
-                    continue;
-                }
-                if (targetProperty.GetSetMethod(true) != null && targetProperty.GetSetMethod(true).IsPrivate)
-                {
-                    continue;
-                }
-                if ((targetProperty.GetSetMethod().Attributes & MethodAttributes.Static) != 0)
-                {
-                    continue;
-                }
-                if (!targetProperty.PropertyType.IsAssignableFrom(srcProp.PropertyType))
-                {
-                    continue;
-                }
+                if (!srcProp.CanRead) continue;
+                var targetProperty = typeDest.GetProperty(srcProp.Name);
+                if (targetProperty == null) continue;
+                if (!targetProperty.CanWrite) continue;
+                if (targetProperty.GetSetMethod(true) != null && targetProperty.GetSetMethod(true).IsPrivate) continue;
+                if ((targetProperty.GetSetMethod().Attributes & MethodAttributes.Static) != 0) continue;
+                if (!targetProperty.PropertyType.IsAssignableFrom(srcProp.PropertyType)) continue;
 
                 try
                 {
@@ -92,9 +69,8 @@ namespace NewHorizons.Utility
             }
         }
 
-        public static string SplitCamelCase(this string str)
-        {
-            return Regex.Replace(
+        public static string SplitCamelCase(this string str) =>
+            Regex.Replace(
                 Regex.Replace(
                     str,
                     @"(\P{Ll})(\P{Ll}\p{Ll})",
@@ -103,14 +79,10 @@ namespace NewHorizons.Utility
                 @"(\p{Ll})(\P{Ll})",
                 "$1 $2"
             );
-        }
 
         public static GameObject InstantiateInactive(this GameObject original)
         {
-            if (!original.activeSelf)
-            {
-                return UnityEngine.Object.Instantiate(original);
-            }
+            if (!original.activeSelf) return UnityEngine.Object.Instantiate(original);
 
             original.SetActive(false);
             var copy = UnityEngine.Object.Instantiate(original);
@@ -118,9 +90,7 @@ namespace NewHorizons.Utility
             return copy;
         }
 
-        public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
-        {
-            return transform.rotation * localRotation;
-        }
+        public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation) =>
+            transform.rotation * localRotation;
     }
 }

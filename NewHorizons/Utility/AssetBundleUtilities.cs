@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public static class AssetBundleUtilities
@@ -12,16 +13,16 @@ namespace NewHorizons.Utility
         public static void ClearCache()
         {
             foreach (var pair in AssetBundles)
-            {
-                if (pair.Value == null) Logger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
+                if (pair.Value == null)
+                    Logger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
                 else pair.Value.Unload(true);
-            }
             AssetBundles.Clear();
         }
 
-        public static T Load<T>(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod) where T : UnityEngine.Object
+        public static T Load<T>(string assetBundleRelativeDir, string pathInBundle, IModBehaviour mod)
+            where T : UnityEngine.Object
         {
-            string key = Path.GetFileName(assetBundleRelativeDir);
+            var key = Path.GetFileName(assetBundleRelativeDir);
             T obj;
 
             try
@@ -38,7 +39,8 @@ namespace NewHorizons.Utility
                     bundle = AssetBundle.LoadFromFile(completePath);
                     if (bundle == null)
                     {
-                        Logger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
+                        Logger.LogError(
+                            $"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
                         return null;
                     }
 
@@ -49,7 +51,8 @@ namespace NewHorizons.Utility
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir} : {e.Message}");
+                Logger.LogError(
+                    $"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir} : {e.Message}");
                 return null;
             }
 
@@ -70,17 +73,12 @@ namespace NewHorizons.Utility
         public static void ReplaceShaders(GameObject prefab)
         {
             foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
+            foreach (var material in renderer.sharedMaterials)
             {
-                foreach (var material in renderer.sharedMaterials)
-                {
-                    if (material == null)
-                    {
-                        continue;
-                    }
+                if (material == null) continue;
 
-                    var replacementShader = Shader.Find(material.shader.name);
-                    if (replacementShader != null) material.shader = replacementShader;
-                }
+                var replacementShader = Shader.Find(material.shader.name);
+                if (replacementShader != null) material.shader = replacementShader;
             }
         }
     }

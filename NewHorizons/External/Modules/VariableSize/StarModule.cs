@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using NewHorizons.Utility;
+﻿using NewHorizons.Utility;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules.VariableSize
 {

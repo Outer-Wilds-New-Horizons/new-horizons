@@ -1,8 +1,8 @@
 ﻿using HarmonyLib;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
-using System;
 using UnityEngine;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -27,7 +27,8 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(CanvasMapMarker), nameof(CanvasMapMarker.Init), new Type[] { typeof(Canvas), typeof(Transform), typeof(string) })]
+        [HarmonyPatch(typeof(CanvasMapMarker), nameof(CanvasMapMarker.Init), typeof(Canvas), typeof(Transform),
+            typeof(string))]
         public static void CanvasMapMarker_Init(CanvasMapMarker __instance)
         {
             __instance._label = TranslationHandler.GetTranslation(__instance._label, TranslationHandler.TextType.UI);

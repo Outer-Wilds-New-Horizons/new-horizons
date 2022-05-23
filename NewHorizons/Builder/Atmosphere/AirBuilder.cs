@@ -1,21 +1,22 @@
 ﻿using NewHorizons.External.Modules;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AirBuilder
     {
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule.AirInfo info)
         {
-            GameObject airGO = new GameObject("Air");
+            var airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
             airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
 
-            SphereCollider sc = airGO.AddComponent<SphereCollider>();
+            var sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
             sc.radius = info.scale;
 
-            SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
+            var sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
             sfv._priority = 1;
             sfv._density = 1.2f;
@@ -23,10 +24,7 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            if (info.hasOxygen)
-            {
-                airGO.AddComponent<OxygenVolume>();
-            }
+            if (info.hasOxygen) airGO.AddComponent<OxygenVolume>();
 
             if (info.isRaining)
             {
@@ -35,7 +33,7 @@ namespace NewHorizons.Builder.Atmosphere
                 vref._layer = 0;
                 vref._priority = 0;
 
-                AudioSource AS = airGO.AddComponent<AudioSource>();
+                var AS = airGO.AddComponent<AudioSource>();
                 AS.mute = false;
                 AS.bypassEffects = false;
                 AS.bypassListenerEffects = false;

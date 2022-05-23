@@ -1,7 +1,7 @@
 ﻿using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
@@ -16,7 +16,8 @@ namespace NewHorizons.Builder.General
             if (exponent == 2f) gravityRadius = Mathf.Sqrt(gravityRadius);
 
             // To let you actually orbit things the way you would expect we cap this at 4x the diameter if its not a star or black hole (this is what giants deep has)
-            if (config.Star == null && config.Singularity == null) gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
+            if (config.Star == null && config.Singularity == null)
+                gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
             else gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
             if (config.Base.sphereOfInfluence != 0f) gravityRadius = config.Base.sphereOfInfluence;
 
@@ -38,8 +39,10 @@ namespace NewHorizons.Builder.General
             var gravityVolume = gravityGO.AddComponent<GravityVolume>();
             gravityVolume._cutoffAcceleration = 0.1f;
 
-            var falloff = config.Base.gravityFallOff == GravityFallOff.Linear? GravityVolume.FalloffType.linear : GravityVolume.FalloffType.inverseSquared;
-            
+            var falloff = config.Base.gravityFallOff == GravityFallOff.Linear
+                ? GravityVolume.FalloffType.linear
+                : GravityVolume.FalloffType.inverseSquared;
+
             gravityVolume._falloffType = falloff;
 
             // Radius where your feet turn to the planet

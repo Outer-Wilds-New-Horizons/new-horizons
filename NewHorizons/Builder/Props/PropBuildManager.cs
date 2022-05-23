@@ -4,14 +4,15 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config,
+            IModBehaviour mod, string uniqueModName)
         {
             if (config.Props.scatter != null)
-            {
                 try
                 {
                     ScatterBuilder.Make(go, sector, config, mod, uniqueModName);
@@ -20,25 +21,21 @@ namespace NewHorizons.Builder.Props
                 {
                     Logger.LogError($"Couldn't make planet scatter for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                 }
-            }
+
             if (config.Props.details != null)
-            {
                 foreach (var detail in config.Props.details)
-                {
                     try
                     {
                         DetailBuilder.Make(go, sector, config, mod, uniqueModName, detail);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError(
+                            $"Couldn't make planet detail [{detail.path}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.geysers != null)
-            {
                 foreach (var geyserInfo in config.Props.geysers)
-                {
                     try
                     {
                         GeyserBuilder.Make(go, sector, geyserInfo);
@@ -47,12 +44,9 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make geyser for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (Main.HasDLC && config.Props.rafts != null)
-            {
                 foreach (var raftInfo in config.Props.rafts)
-                {
                     try
                     {
                         RaftBuilder.Make(go, sector, raftInfo, planetBody);
@@ -61,12 +55,9 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make raft for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.tornados != null)
-            {
                 foreach (var tornadoInfo in config.Props.tornados)
-                {
                     try
                     {
                         TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.clouds != null);
@@ -75,12 +66,9 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make tornado for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.volcanoes != null)
-            {
                 foreach (var volcanoInfo in config.Props.volcanoes)
-                {
                     try
                     {
                         VolcanoBuilder.Make(go, sector, volcanoInfo);
@@ -89,70 +77,58 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make volcano for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
             if (config.Props.dialogue != null)
-            {
                 foreach (var dialogueInfo in config.Props.dialogue)
-                {
                     try
                     {
                         DialogueBuilder.Make(go, sector, dialogueInfo, mod);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError(
+                            $"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.reveal != null)
-            {
                 foreach (var revealInfo in config.Props.reveal)
-                {
                     try
                     {
                         RevealBuilder.Make(go, sector, revealInfo, mod);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError(
+                            $"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.entryLocation != null)
-            {
                 foreach (var entryLocationInfo in config.Props.entryLocation)
-                {
                     try
                     {
                         EntryLocationBuilder.Make(go, sector, entryLocationInfo, mod);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError(
+                            $"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
+
             if (config.Props.nomaiText != null)
-            {
                 foreach (var nomaiTextInfo in config.Props.nomaiText)
-                {
                     try
                     {
                         NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError(
+                            $"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
 
-                }
-            }
             if (Main.HasDLC && config.Props.slideShows != null)
-            {
                 foreach (var slideReelInfo in config.Props.slideShows)
-                {
                     try
                     {
                         ProjectionBuilder.Make(go, sector, slideReelInfo, mod);
@@ -161,8 +137,6 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make slide reel for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
-                }
-            }
         }
     }
 }

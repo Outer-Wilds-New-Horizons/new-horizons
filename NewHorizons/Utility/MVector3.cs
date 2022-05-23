@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public class MVector3
@@ -14,14 +15,8 @@ namespace NewHorizons.Utility
         public float Y { get; }
         public float Z { get; }
 
-        public static implicit operator MVector3(Vector3 vec)
-        {
-            return new MVector3(vec.x, vec.y, vec.z);
-        }
+        public static implicit operator MVector3(Vector3 vec) => new MVector3(vec.x, vec.y, vec.z);
 
-        public static implicit operator Vector3(MVector3 vec)
-        {
-            return new Vector3(vec.X, vec.Y, vec.Z);
-        }
+        public static implicit operator Vector3(MVector3 vec) => new Vector3(vec.X, vec.Y, vec.Z);
     }
 }

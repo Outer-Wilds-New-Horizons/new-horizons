@@ -1,6 +1,6 @@
-﻿using System;
+﻿using NewHorizons.Utility;
+using System;
 using System.Collections.Generic;
-using NewHorizons.Utility;
 
 namespace NewHorizons.External
 {
@@ -64,10 +64,7 @@ namespace NewHorizons.External
 
         private class NewHorizonsSaveFile
         {
-            public NewHorizonsSaveFile()
-            {
-                Profiles = new Dictionary<string, NewHorizonsProfile>();
-            }
+            public NewHorizonsSaveFile() => Profiles = new Dictionary<string, NewHorizonsProfile>();
 
             public Dictionary<string, NewHorizonsProfile> Profiles { get; }
         }
@@ -105,10 +102,8 @@ namespace NewHorizons.External
             }
         }
 
-        public static bool KnowsMultipleFrequencies()
-        {
-            return _activeProfile != null && _activeProfile.KnownFrequencies.Count > 0;
-        }
+        public static bool KnowsMultipleFrequencies() =>
+            _activeProfile != null && _activeProfile.KnownFrequencies.Count > 0;
 
         #endregion
 
@@ -140,10 +135,7 @@ namespace NewHorizons.External
             Save();
         }
 
-        public static List<string> GetNewlyRevealedFactIDs()
-        {
-            return _activeProfile?.NewlyRevealedFactIDs;
-        }
+        public static List<string> GetNewlyRevealedFactIDs() => _activeProfile?.NewlyRevealedFactIDs;
 
         public static void ClearNewlyRevealedFactIDs()
         {

@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public static class AstroObjectLocator
     {
-        private static Dictionary<string, AstroObject> _customAstroObjectDictionary = new Dictionary<string, AstroObject>();
+        private static Dictionary<string, AstroObject> _customAstroObjectDictionary =
+            new Dictionary<string, AstroObject>();
 
         public static void Init()
         {
             _customAstroObjectDictionary = new Dictionary<string, AstroObject>();
-            foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+            foreach (var ao in Object.FindObjectsOfType<AstroObject>())
             {
                 // Ignore the sun station debris, we handle it as a child of the sun station
                 if (ao.gameObject.name == "SS_Debris_Body") continue;
@@ -23,10 +25,7 @@ namespace NewHorizons.Utility
         {
             if (string.IsNullOrEmpty(name)) return null;
 
-            if (_customAstroObjectDictionary.ContainsKey(name))
-            {
-                return _customAstroObjectDictionary[name];
-            }
+            if (_customAstroObjectDictionary.ContainsKey(name)) return _customAstroObjectDictionary[name];
 
             // Else check stock names
             var stringID = name.ToUpper().Replace(" ", "_").Replace("'", "");
@@ -38,18 +37,11 @@ namespace NewHorizons.Utility
 
             string key;
             if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))
-            {
                 key = AstroObject.Name.MapSatellite.ToString();
-            }
             else
-            {
                 key = AstroObject.StringIDToAstroObjectName(stringID).ToString();
-            }
 
-            if (_customAstroObjectDictionary.ContainsKey(key))
-            {
-                return _customAstroObjectDictionary[key];
-            }
+            if (_customAstroObjectDictionary.ContainsKey(key)) return _customAstroObjectDictionary[key];
 
             // Try again
             if (!flag) return GetAstroObject(name.Replace(" ", ""), true);
@@ -79,14 +71,12 @@ namespace NewHorizons.Utility
             _customAstroObjectDictionary.Remove(key);
         }
 
-        public static AstroObject[] GetAllAstroObjects()
-        {
-            return _customAstroObjectDictionary.Values.ToArray();
-        }
+        public static AstroObject[] GetAllAstroObjects() => _customAstroObjectDictionary.Values.ToArray();
 
         public static GameObject[] GetMoons(AstroObject primary)
         {
-            return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
+            return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject)
+                .ToArray();
         }
 
         public static GameObject[] GetChildren(AstroObject primary)
@@ -130,14 +120,10 @@ namespace NewHorizons.Utility
                 // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
-                    {
                         // there are multiple debris with the same name
                         otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
                             .Select(x => x.gameObject)
                             .Where(x => x.name == "SS_Debris_Body"));
-                    }
-                    break;
-                default:
                     break;
             }
 

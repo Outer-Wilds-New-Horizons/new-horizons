@@ -4,7 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public class PlanetGraphHandler : IEnumerable<PlanetGraphHandler.PlanetNode>
@@ -60,29 +60,24 @@ namespace NewHorizons.Handlers
             var childBodyDict = new Dictionary<NewHorizonsBody, List<NewHorizonsBody>>();
 
             // Mmmm O(N^2) moment but this is limited to stock bodies
-            for (int i = 0; i < bodies.Length; i++)
+            for (var i = 0; i < bodies.Length; i++)
             {
                 var ao = astroObjects[i];
 
                 var childBodies = new List<NewHorizonsBody>();
-                for (int j = 0; j < bodies.Length; j++)
+                for (var j = 0; j < bodies.Length; j++)
                 {
                     if (i == j) continue;
                     // If the list of children for current object (i) containes the ao for body at index j
-                    if (children[i] != null && astroObjects[j]?.gameObject != null && children[i].Contains(astroObjects[j].gameObject))
-                    {
+                    if (children[i] != null && astroObjects[j]?.gameObject != null &&
+                        children[i].Contains(astroObjects[j].gameObject))
                         childBodies.Add(bodies[j]);
-                    }
                     // If uh the primary body straight up matches the name
                     else if (bodies[j].Config.Orbit.PrimaryBody == bodies[i].Config.name)
-                    {
                         childBodies.Add(bodies[j]);
-                    }
                     // If finding the astro object of the primary body matches the astro object but not null bc if its a new planet it'll always be null
-                    else if (AstroObjectLocator.GetAstroObject(bodies[j].Config.Orbit.PrimaryBody) == astroObjects[i] && astroObjects[i] != null)
-                    {
-                        childBodies.Add(bodies[j]);
-                    }
+                    else if (AstroObjectLocator.GetAstroObject(bodies[j].Config.Orbit.PrimaryBody) == astroObjects[i] &&
+                             astroObjects[i] != null) childBodies.Add(bodies[j]);
                 }
 
                 childBodyDict.Add(bodies[i], childBodies);
@@ -99,21 +94,20 @@ namespace NewHorizons.Handlers
             foreach (var body in bodies)
             {
                 nodeDict[body].children = childBodyDict[body].Select(x => nodeDict[x]);
-                foreach (var child in nodeDict[body].children)
-                {
-                    child.parent = nodeDict[body];
-                }
+                foreach (var child in nodeDict[body].children) child.parent = nodeDict[body];
             }
 
             // Verifying it worked
             foreach (var node in nodeDict.Values.ToList())
             {
-                var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.name).ToList());
-                Logger.Log($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
+                var childrenString = string.Join(", ", node.children.Select(x => x?.body?.Config?.name).ToList());
+                Logger.Log(
+                    $"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
             }
 
             // Return all tree roots (no parents)
-            return nodeDict.Values.Where(x => x.parent == null).Select(x => new PlanetGraphHandler() { _rootNode = x }).ToList();
+            return nodeDict.Values.Where(x => x.parent == null).Select(x => new PlanetGraphHandler { _rootNode = x })
+                .ToList();
         }
 
         private static bool DetermineIfChildOfFocal(NewHorizonsBody body, FocalPointNode node)
@@ -122,7 +116,8 @@ namespace NewHorizons.Handlers
             var primary = (body.Config.Orbit?.PrimaryBody ?? "").ToLower();
             var primaryName = node.primary.body.Config.name.ToLower();
             var secondaryName = node.secondary.body.Config.name.ToLower();
-            return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLower() || primary == primaryName || primary == secondaryName);
+            return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLower() ||
+                                                                    primary == primaryName || primary == secondaryName);
         }
 
 
@@ -134,40 +129,35 @@ namespace NewHorizons.Handlers
                 {
                     body = body,
                     children = bodies
-                        .Where(b => string.Equals(b.Config.Orbit.PrimaryBody, body.Config.name, StringComparison.CurrentCultureIgnoreCase))
+                        .Where(b => string.Equals(b.Config.Orbit.PrimaryBody, body.Config.name,
+                            StringComparison.CurrentCultureIgnoreCase))
                         .Select(b => ConstructGraph(b, bodies))
                 };
             }
-            else
+
+            var newNode = new FocalPointNode
             {
-                var newNode = new FocalPointNode
-                {
-                    body = body
-                };
-                foreach (var child in bodies)
-                {
-                    if (string.Equals(child.Config.name, body.Config.FocalPoint.primary, StringComparison.CurrentCultureIgnoreCase))
+                body = body
+            };
+            foreach (var child in bodies)
+                if (string.Equals(child.Config.name, body.Config.FocalPoint.primary,
+                        StringComparison.CurrentCultureIgnoreCase))
+                    newNode.primary = new PlanetNode
                     {
-                        newNode.primary = new PlanetNode
-                        {
-                            body = child,
-                            children = new List<PlanetNode>()
-                        };
-                    }
-                    else if (string.Equals(child.Config.name, body.Config.FocalPoint.secondary, StringComparison.CurrentCultureIgnoreCase))
+                        body = child,
+                        children = new List<PlanetNode>()
+                    };
+                else if (string.Equals(child.Config.name, body.Config.FocalPoint.secondary,
+                             StringComparison.CurrentCultureIgnoreCase))
+                    newNode.secondary = new PlanetNode
                     {
-                        newNode.secondary = new PlanetNode
-                        {
-                            body = child,
-                            children = new List<PlanetNode>()
-                        };
-                    }
-                }
-                newNode.children = bodies
-                    .Where(b => DetermineIfChildOfFocal(b, newNode))
-                    .Select(b => ConstructGraph(b, bodies));
-                return newNode;
-            }
+                        body = child,
+                        children = new List<PlanetNode>()
+                    };
+            newNode.children = bodies
+                .Where(b => DetermineIfChildOfFocal(b, newNode))
+                .Select(b => ConstructGraph(b, bodies));
+            return newNode;
         }
 
         public IEnumerator<PlanetNode> GetEnumerator()
@@ -178,16 +168,10 @@ namespace NewHorizons.Handlers
             {
                 var node = queue.Dequeue();
                 yield return node;
-                foreach (var child in node.children)
-                {
-                    queue.Enqueue(child);
-                }
+                foreach (var child in node.children) queue.Enqueue(child);
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 }

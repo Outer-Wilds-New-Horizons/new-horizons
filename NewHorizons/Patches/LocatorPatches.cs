@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -6,9 +7,6 @@ namespace NewHorizons.Patches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Locator), nameof(Locator.RegisterCloakFieldController))]
-        public static bool Locator_RegisterCloakFieldController()
-        {
-            return Locator._cloakFieldController == null;
-        }
+        public static bool Locator_RegisterCloakFieldController() => Locator._cloakFieldController == null;
     }
 }

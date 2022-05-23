@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

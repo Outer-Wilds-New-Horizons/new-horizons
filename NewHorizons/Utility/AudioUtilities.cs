@@ -3,11 +3,12 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+
 namespace NewHorizons.Utility
 {
     public static class AudioUtilities
     {
-        private static Dictionary<string, AudioClip> _loadedAudioClips = new Dictionary<string, AudioClip>();
+        private static readonly Dictionary<string, AudioClip> _loadedAudioClips = new Dictionary<string, AudioClip>();
 
         public static AudioClip LoadAudio(string path)
         {
@@ -16,6 +17,7 @@ namespace NewHorizons.Utility
                 Logger.Log($"Already loaded audio at path: {path}");
                 return _loadedAudioClips[path];
             }
+
             Logger.Log($"Loading audio at path: {path}");
             var task = Task.Run(async () => await GetAudioClip(path));
             task.Wait();
@@ -30,23 +32,24 @@ namespace NewHorizons.Utility
             foreach (var audioClip in _loadedAudioClips.Values)
             {
                 if (audioClip == null) continue;
-                UnityEngine.Object.Destroy(audioClip);
+                Object.Destroy(audioClip);
             }
+
             _loadedAudioClips.Clear();
         }
 
         private static async Task<AudioClip> GetAudioClip(string filePath)
         {
-            var extension = filePath.Split(new char[] { '.' }).Last();
+            var extension = filePath.Split('.').Last();
 
             UnityEngine.AudioType audioType;
 
             switch (extension)
             {
-                case ("wav"):
+                case "wav":
                     audioType = UnityEngine.AudioType.WAV;
                     break;
-                case ("ogg"):
+                case "ogg":
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
                 default:
@@ -54,21 +57,19 @@ namespace NewHorizons.Utility
                     return null;
             }
 
-            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, audioType))
+            using (var www = UnityWebRequestMultimedia.GetAudioClip(filePath, audioType))
             {
                 var result = www.SendWebRequest();
 
-                while (!result.isDone) { await Task.Delay(100); }
+                while (!result.isDone) await Task.Delay(100);
 
                 if (www.isNetworkError)
                 {
                     Debug.Log(www.error);
                     return null;
                 }
-                else
-                {
-                    return DownloadHandlerAudioClip.GetContent(www);
-                }
+
+                return DownloadHandlerAudioClip.GetContent(www);
             }
         }
     }
