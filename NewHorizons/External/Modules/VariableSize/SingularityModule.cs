@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -36,7 +37,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that
         /// has warped effects in it.
         /// </summary>
-        public float size;
+        [Range(0f, double.MaxValue)] public float size;
 
         /// <summary>
         /// If you want a black hole to load a new star system scene, put its name here.

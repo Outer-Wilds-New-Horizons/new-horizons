@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
@@ -9,7 +10,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Amount of asteroids to create.
         /// </summary>
-        [DefaultValue(-1)] public int amount = -1;
+        [Range(0, 200)] [DefaultValue(-1)] public int amount = -1;
 
         /// <summary>
         /// Angle between the rings and the equatorial plane of the planet.
@@ -19,7 +20,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Lowest distance from the planet asteroids can spawn
         /// </summary>
-        public float innerRadius;
+        [Range(0f, double.MaxValue)] public float innerRadius;
 
         /// <summary>
         /// Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.
@@ -29,17 +30,19 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Maximum size of the asteroids.
         /// </summary>
-        [DefaultValue(50)] public float maxSize = 50f;
+        [Range(0f, double.MaxValue)] [DefaultValue(50)]
+        public float maxSize = 50f;
 
         /// <summary>
         /// Minimum size of the asteroids.
         /// </summary>
-        [DefaultValue(20)] public float minSize = 20;
+        [Range(0f, double.MaxValue)] [DefaultValue(20)]
+        public float minSize = 20;
 
         /// <summary>
         /// Greatest distance from the planet asteroids can spawn
         /// </summary>
-        public float outerRadius;
+        [Range(0f, double.MaxValue)] public float outerRadius;
 
         /// <summary>
         /// How the asteroids are generated

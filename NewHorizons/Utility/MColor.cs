@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel;
+using Newtonsoft.Json;
 using UnityEngine;
 namespace NewHorizons.Utility
 {
@@ -34,7 +35,8 @@ namespace NewHorizons.Utility
         /// <summary>
         /// The alpha (opacity) component of this colour
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Range(0f, int.MaxValue)] 
+        [System.ComponentModel.DataAnnotations.Range(0f, 255f)] 
+        [DefaultValue(255f)]
         public int a;
 
         public Color32 ToColor32() => new Color32((byte)r, (byte)g, (byte)b, (byte)a);

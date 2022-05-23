@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 
@@ -31,12 +32,14 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Radius of the star.
         /// </summary>
-        [DefaultValue(2000f)] public float size = 2000f;
+        [DefaultValue(2000f)] [Range(0f, double.MaxValue)]
+        public float size = 2000f;
 
         /// <summary>
         /// Relative strength of the light compared to the sun.
         /// </summary>
-        [DefaultValue(1f)] public float solarLuminosity = 1f;
+        [DefaultValue(1f)] [Range(0f, double.MaxValue)]
+        public float solarLuminosity = 1f;
 
         /// <summary>
         /// The tint of the supernova this star creates when it dies.

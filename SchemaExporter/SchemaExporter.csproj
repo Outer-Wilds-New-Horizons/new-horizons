@@ -22,7 +22,6 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="Newtonsoft.Json.Schema" Version="3.0.14" />
         <PackageReference Include="NJsonSchema" Version="10.7.1" />
         <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" IncludeAssets="compile" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />

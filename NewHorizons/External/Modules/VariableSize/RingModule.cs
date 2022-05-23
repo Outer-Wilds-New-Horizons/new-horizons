@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.VariableSize
 {
@@ -18,7 +19,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Inner radius of the disk
         /// </summary>
-        public float innerRadius;
+        [Range(0, double.MaxValue)] public float innerRadius;
 
         /// <summary>
         /// Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.
@@ -28,7 +29,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Outer radius of the disk
         /// </summary>
-        public float outerRadius;
+        [Range(0, double.MaxValue)] public float outerRadius;
 
         /// <summary>
         /// Allows the rings to rotate.

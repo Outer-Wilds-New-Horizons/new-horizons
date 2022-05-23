@@ -37,14 +37,12 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How dense the fog is, if you put fog.
         /// </summary>
-        [Range(0f, 1f)]
-        public float fogDensity;
+        [Range(0f, 1f)] public float fogDensity;
 
         /// <summary>
         /// Radius of fog sphere, independent of the atmosphere. This has to be set for there to be fog.
         /// </summary>
-        [Range(0f, float.MaxValue)]
-        public float fogSize;
+        [Range(0f, double.MaxValue)] public float fogSize;
 
         /// <summary>
         /// Colour of fog on the planet, if you put fog.

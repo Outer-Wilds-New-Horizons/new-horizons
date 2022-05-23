@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 
@@ -29,7 +30,7 @@ namespace NewHorizons.External.Modules
             /// How close the player must get to the signal to detect it. This is when you get the "Unknown Signal Detected"
             /// notification.
             /// </summary>
-            public float detectionRadius;
+            [Range(0f, double.MaxValue)] public float detectionRadius;
 
             /// <summary>
             /// The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,
@@ -40,7 +41,8 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// How close the player must get to the signal to identify it. This is when you learn its name.
             /// </summary>
-            [DefaultValue(10f)] public float identificationRadius = 10f;
+            [DefaultValue(10f)] [Range(0f, double.MaxValue)]
+            public float identificationRadius = 10f;
 
             /// <summary>
             /// Only set to `true` if you are putting this signal inside a cloaking field.

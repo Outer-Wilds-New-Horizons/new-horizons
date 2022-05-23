@@ -1,7 +1,10 @@
-﻿using NewHorizons.Utility;
+﻿using System.ComponentModel.DataAnnotations;
+using NewHorizons.Utility;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {
+    [JsonObject]
     public class HeightMapModule
     {
         /// <summary>
@@ -12,12 +15,12 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// The highest points on your planet will be at this height.
         /// </summary>
-        public float maxHeight;
+        [Range(0f, double.MaxValue)] public float maxHeight;
 
         /// <summary>
         /// The lowest points on your planet will be at this height.
         /// </summary>
-        public float minHeight;
+        [Range(0f, double.MaxValue)] public float minHeight;
 
         /// <summary>
         /// The scale of the terrain.

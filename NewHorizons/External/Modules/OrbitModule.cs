@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility;
 
@@ -66,6 +67,8 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
         /// </summary>
+        [Range(0f, double.MaxValue)]
+        [DefaultValue(5000f)]
         public float SemiMajorAxis { get; set; }
 
         /// <summary>
@@ -82,7 +85,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// At 0 the orbit is a circle. The closer to 1 it is, the more oval-shaped the orbit is.
         /// </summary>
-        // FIXME: Needs Min & Max!
+        [Range(0f, 0.9999999999f)]
         public float Eccentricity { get; set; }
 
         /// <summary>

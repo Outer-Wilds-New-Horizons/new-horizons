@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -475,7 +476,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The z euler angle for this arc.
             /// </summary>
-            public float zRotation;
+            [Range(0f, 360f)] public float zRotation;
         }
 
         [JsonObject]
