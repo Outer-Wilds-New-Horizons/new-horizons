@@ -287,14 +287,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/CloudFluidType"
-            }
-          ]
+          "$ref": "#/definitions/CloudFluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -1315,14 +1308,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "oneOf": [
-            {
-              "type": "null"
-            },
-            {
-              "$ref": "#/definitions/CloudFluidType2"
-            }
-          ]
+          "$ref": "#/definitions/CloudFluidType2"
         },
         "inclination": {
           "type": "number",
