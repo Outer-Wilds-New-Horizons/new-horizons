@@ -19,7 +19,8 @@ public static class SchemaExporter
         {
             IgnoreObsoleteProperties = true,
             DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
-            FlattenInheritanceHierarchy = true
+            FlattenInheritanceHierarchy = true,
+            AllowReferencesWithProperties = true
         };
         Console.WriteLine("Outputting Body Schema");
         var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", $"{folderName}/body_schema", settings);
@@ -73,7 +74,7 @@ public static class SchemaExporter
         {
             var schema = JsonSchema.FromType<T>(_generatorSettings);
             schema.Title = _title;
-            FixOneOf(schema);
+            // FixOneOf(schema);
             return schema;
         }
     }
