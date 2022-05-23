@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.General
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
             var type = AstroObject.Type.Planet;
-            if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
+            if (config.Orbit.isMoon) type = AstroObject.Type.Moon;
             // else if (config.Base.IsSatellite) type = AstroObject.Type.Satellite;
             else if (config.Base.hasCometTail) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
@@ -25,25 +25,25 @@ namespace NewHorizons.Builder.General
             astroObject._primaryBody = primaryBody;
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
-            if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
+            if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.isStatic)
             {
                 var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
                 if (primarySphereOfInfluence.radius < config.Orbit.semiMajorAxis)
                     primarySphereOfInfluence.radius = config.Orbit.semiMajorAxis * 1.5f;
             }
 
-            if (config.Orbit.IsTidallyLocked)
+            if (config.Orbit.isTidallyLocked)
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._usePhysicsToRotate = true;
-                if (config.Orbit.AlignmentAxis == null)
+                if (config.Orbit.alignmentAxis == null)
                 {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
                 }
                 else
                 {
-                    alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
+                    alignment._localAlignmentAxis = config.Orbit.alignmentAxis;
                 }
             }
 

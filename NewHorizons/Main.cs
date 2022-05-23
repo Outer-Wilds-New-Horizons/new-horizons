@@ -17,7 +17,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Utility.DebugUtilities;
-using Newtonsoft.Json.Schema;
+using Newtonsoft.Json;
 
 namespace NewHorizons
 {
@@ -113,25 +113,8 @@ namespace NewHorizons
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
         }
 
-        #region Assembly Stuff
-
-        public static Assembly ResolveAssembly(object sender, ResolveEventArgs e) 
-        {
-            Logger.LogError($"Couldn't resolve assembly: {e.Name} from {e.RequestingAssembly.FullName}... Trying to fix it.");
-            if (e.Name.Contains("Namotion.Reflection"))
-                return Assembly.LoadFrom("Namotion.Reflection.dll");
-            else if (e.Name.Contains("Microsoft.CSharp"))
-                return Assembly.LoadFrom("Microsoft.CSharp.dll");
-            else 
-                return null;
-        }
-        
-        #endregion
-
         public void Start()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += ResolveAssembly;
-            
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
@@ -385,11 +368,6 @@ namespace NewHorizons
                     Logger.Log($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
 
                     var config = new TranslationConfig($"{folder}{relativeFile}");
-                    if (config == null)
-                    {
-                        Logger.Log($"Found {folder}{relativeFile} but couldn't load it");
-                        continue;
-                    }
 
                     foundFile = true;
 
@@ -405,9 +383,11 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                // var config = JsonConvert.DeserializeObject<PlanetConfig>(File.ReadAllText($"{mod.ModHelper.Manifest.ModFolderPath}/{relativeDirectory}"));
+                
                 config.MigrateAndValidate();
 
-                Logger.Log($"Loaded {config.name}");
+                Logger.Log($"Loaded {config.name}"); 
 
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {

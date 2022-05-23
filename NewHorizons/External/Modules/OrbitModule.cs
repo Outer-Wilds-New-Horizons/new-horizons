@@ -2,67 +2,69 @@
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {
+    [JsonObject]
     public class OrbitModule : IOrbitalParameters
     {
         /// <summary>
         /// The name of the body this one will orbit around
         /// </summary>
-        public string PrimaryBody { get; set; }
+        public string primaryBody;
 
         /// <summary>
         /// Is this the moon of a planet? Used for determining when its name is shown on the map.
         /// </summary>
-        public bool IsMoon { get; set; }
+        public bool isMoon;
 
         /// <summary>
         /// The angle between the normal to the orbital plane and its axis of rotation.
         /// </summary>
-        public float AxialTilt { get; set; }
+        public float axialTilt;
 
         /// <summary>
         /// Rotation period in minutes.
         /// </summary>
-        public float SiderealPeriod { get; set; }
+        public float siderealPeriod;
 
         /// <summary>
         /// Should the body always have one side facing its primary?
         /// </summary>
-        public bool IsTidallyLocked { get; set; }
+        public bool isTidallyLocked;
 
         /// <summary>
         /// If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets
         /// will want something like `-1, 0, 0`.
         /// </summary>
-        public MVector3 AlignmentAxis { get; set; }
+        public MVector3 alignmentAxis;
 
         /// <summary>
         /// Referring to the orbit line in the map screen.
         /// </summary>
         [DefaultValue(true)]
-        public bool ShowOrbitLine { get; set; } = true;
+        public bool showOrbitLine = true;
 
         /// <summary>
         /// Should the orbit line be dotted?
         /// </summary>
-        public bool DottedOrbitLine { get; set; } = false;
+        public bool dottedOrbitLine;
 
         /// <summary>
         /// Is the body meant to stay in one place without moving?
         /// </summary>
-        public bool IsStatic { get; set; }
+        public bool isStatic;
 
         /// <summary>
         /// Colour of the orbit-line in the map view.
         /// </summary>
-        public MColor Tint { get; set; }
+        public MColor tint;
 
         /// <summary>
         /// Should we just draw a line behind its orbit instead of the entire circle/ellipse?
         /// </summary>
-        public bool TrackingOrbitLine { get; set; }
+        public bool trackingOrbitLine;
 
         /// <summary>
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.

@@ -40,13 +40,13 @@ namespace NewHorizons.Builder.Body
 
                 config.Orbit = new OrbitModule()
                 {
-                    IsMoon = true,
+                    isMoon = true,
                     inclination = belt.inclination + Random.Range(-2f, 2f),
                     longitudeOfAscendingNode = belt.longitudeOfAscendingNode,
                     trueAnomaly = 360f * (i + Random.Range(-0.2f, 0.2f)) / (float)count,
-                    PrimaryBody = bodyName,
+                    primaryBody = bodyName,
                     semiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
-                    ShowOrbitLine = false
+                    showOrbitLine = false
                 };
 
                 config.ProcGen = belt.procGen;

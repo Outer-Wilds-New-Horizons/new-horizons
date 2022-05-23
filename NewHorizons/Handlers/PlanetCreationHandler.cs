@@ -266,14 +266,14 @@ namespace NewHorizons.Handlers
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
             AstroObject primaryBody;
-            if (body.Config.Orbit.PrimaryBody != null)
+            if (body.Config.Orbit.primaryBody != null)
             {
-                primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+                primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.primaryBody);
                 if (primaryBody == null)
                 {
                     if (defaultPrimaryToSun)
                     {
-                        Logger.Log($"Couldn't find {body.Config.Orbit.PrimaryBody}, defaulting to Sun");
+                        Logger.Log($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to Sun");
                         primaryBody = AstroObjectLocator.GetAstroObject("Sun");
                     }
                     else
@@ -341,12 +341,12 @@ namespace NewHorizons.Handlers
                 Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
-            if (body.Config.Orbit.ShowOrbitLine && !body.Config.Orbit.IsStatic)
+            if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.IsMoon, body.Config));
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
             }
 
-            if (!body.Config.Orbit.IsStatic)
+            if (!body.Config.Orbit.isStatic)
             {
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
             }
@@ -507,10 +507,10 @@ namespace NewHorizons.Handlers
 
                 // By default keep it with the same primary body else update to the new one
                 var primary = ao._primaryBody;
-                if (!string.IsNullOrEmpty(body.Config.Orbit.PrimaryBody))
+                if (!string.IsNullOrEmpty(body.Config.Orbit.primaryBody))
                 {
                     // If we can't find the new one we want to try again later (return false)
-                    primary = AstroObjectLocator.GetAstroObject(body.Config.Orbit.PrimaryBody);
+                    primary = AstroObjectLocator.GetAstroObject(body.Config.Orbit.primaryBody);
                     if (primary == null) return;
                 }
 
@@ -539,7 +539,7 @@ namespace NewHorizons.Handlers
 
                 GameObject.Destroy(go.GetComponentInChildren<OrbitLine>().gameObject);
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
-                if (body.Config.Orbit.ShowOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
+                if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
 

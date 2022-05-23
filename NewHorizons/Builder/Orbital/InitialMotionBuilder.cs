@@ -19,11 +19,11 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._orbitImpulseScalar = 0f;
 
             // Rotation
-            initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt, Vector3.right) * Vector3.up;
+            initialMotion._initAngularSpeed = orbit.siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.siderealPeriod * 60f);
+            var rotationAxis = Quaternion.AngleAxis(orbit.axialTilt, Vector3.right) * Vector3.up;
             secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 
-            if (!orbit.IsStatic && primaryBody != null)
+            if (!orbit.isStatic && primaryBody != null)
             {
                 SetInitialMotion(initialMotion, primaryBody, secondaryBody);
             }

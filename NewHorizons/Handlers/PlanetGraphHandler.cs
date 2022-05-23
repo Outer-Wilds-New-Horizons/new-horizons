@@ -74,12 +74,12 @@ namespace NewHorizons.Handlers
                         childBodies.Add(bodies[j]);
                     }
                     // If uh the primary body straight up matches the name
-                    else if (bodies[j].Config.Orbit.PrimaryBody == bodies[i].Config.name)
+                    else if (bodies[j].Config.Orbit.primaryBody == bodies[i].Config.name)
                     {
                         childBodies.Add(bodies[j]);
                     }
                     // If finding the astro object of the primary body matches the astro object but not null bc if its a new planet it'll always be null
-                    else if (AstroObjectLocator.GetAstroObject(bodies[j].Config.Orbit.PrimaryBody) == astroObjects[i] && astroObjects[i] != null)
+                    else if (AstroObjectLocator.GetAstroObject(bodies[j].Config.Orbit.primaryBody) == astroObjects[i] && astroObjects[i] != null)
                     {
                         childBodies.Add(bodies[j]);
                     }
@@ -119,7 +119,7 @@ namespace NewHorizons.Handlers
         private static bool DetermineIfChildOfFocal(NewHorizonsBody body, FocalPointNode node)
         {
             var name = body.Config.name.ToLower();
-            var primary = (body.Config.Orbit?.PrimaryBody ?? "").ToLower();
+            var primary = (body.Config.Orbit?.primaryBody ?? "").ToLower();
             var primaryName = node.primary.body.Config.name.ToLower();
             var secondaryName = node.secondary.body.Config.name.ToLower();
             return name != primaryName && name != secondaryName && (primary == node.body.Config.name.ToLower() || primary == primaryName || primary == secondaryName);
@@ -134,7 +134,7 @@ namespace NewHorizons.Handlers
                 {
                     body = body,
                     children = bodies
-                        .Where(b => string.Equals(b.Config.Orbit.PrimaryBody, body.Config.name, StringComparison.CurrentCultureIgnoreCase))
+                        .Where(b => string.Equals(b.Config.Orbit.primaryBody, body.Config.name, StringComparison.CurrentCultureIgnoreCase))
                         .Select(b => ConstructGraph(b, bodies))
                 };
             }

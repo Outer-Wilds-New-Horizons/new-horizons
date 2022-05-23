@@ -388,7 +388,7 @@ namespace NewHorizons.Builder.ShipLog
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
 
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.PrimaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
                 newX = even ? newX : newX + 1;

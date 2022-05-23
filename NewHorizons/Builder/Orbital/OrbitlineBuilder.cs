@@ -20,16 +20,16 @@ namespace NewHorizons.Builder.Orbital
 
             var lineRenderer = orbitGO.AddComponent<LineRenderer>();
 
-            lineRenderer.material = new Material(config.Orbit.DottedOrbitLine ? _dottedLineMaterial : _lineMaterial);
-            lineRenderer.textureMode = config.Orbit.DottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
+            lineRenderer.material = new Material(config.Orbit.dottedOrbitLine ? _dottedLineMaterial : _lineMaterial);
+            lineRenderer.textureMode = config.Orbit.dottedOrbitLine ? LineTextureMode.RepeatPerSegment : LineTextureMode.Stretch;
 
-            var width = config.Orbit.DottedOrbitLine ? 100 : 50;
+            var width = config.Orbit.dottedOrbitLine ? 100 : 50;
             lineRenderer.startWidth = width;
             lineRenderer.endWidth = width;
             lineRenderer.useWorldSpace = false;
             lineRenderer.loop = false;
 
-            var numVerts = config.Orbit.DottedOrbitLine ? 128 : 256;
+            var numVerts = config.Orbit.dottedOrbitLine ? 128 : 256;
             lineRenderer.positionCount = numVerts;
 
             var ecc = config.Orbit.eccentricity;
@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.Orbital
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
             OrbitLine orbitLine;
-            if (config.Orbit.TrackingOrbitLine || (new Gravity(parentGravity).Power == 1 && ecc != 0))
+            if (config.Orbit.trackingOrbitLine || (new Gravity(parentGravity).Power == 1 && ecc != 0))
             {
                 orbitLine = orbitGO.AddComponent<TrackingOrbitLine>();
             }
@@ -57,7 +57,7 @@ namespace NewHorizons.Builder.Orbital
             }
 
             var color = Color.white;
-            if (config.Orbit.Tint != null) color = config.Orbit.Tint;
+            if (config.Orbit.tint != null) color = config.Orbit.tint;
             else if (config.Star != null) color = config.Star.tint;
             else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint;
             else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);

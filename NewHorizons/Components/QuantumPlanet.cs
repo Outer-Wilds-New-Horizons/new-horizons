@@ -81,7 +81,7 @@ namespace NewHorizons.Components
                 var newOrbit = newState.orbit ?? groundState.orbit;
                 newOrbit.trueAnomaly = Random.Range(0f, 360f);
 
-                primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.PrimaryBody);
+                primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.primaryBody);
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
                 orbitalParams = newOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity);

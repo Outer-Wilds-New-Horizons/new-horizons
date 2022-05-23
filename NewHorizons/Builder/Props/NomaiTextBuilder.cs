@@ -333,7 +333,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var a = info.arcInfo[i];
                     if (a.position == null) arc.transform.localPosition = Vector3.zero;
-                    else arc.transform.localPosition = new Vector3(a.position.X, a.position.Y, 0);
+                    else arc.transform.localPosition = new Vector3(a.position.x, a.position.y, 0);
 
                     arc.transform.localRotation = Quaternion.Euler(0, 0, a.zRotation);
                 }

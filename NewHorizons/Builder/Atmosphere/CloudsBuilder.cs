@@ -117,7 +117,7 @@ namespace NewHorizons.Builder.Atmosphere
                     for(int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
                     {
                         var pair = atmo.clouds.lightningGradient[i];
-                        gradient[i] = new GradientColorKey(pair.Tint, pair.Time);
+                        gradient[i] = new GradientColorKey(pair.tint, pair.time);
                     }
 
                     lightningGenerator._lightColor.colorKeys = gradient;

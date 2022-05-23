@@ -3,18 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace NewHorizons.Utility
 {
+    [JsonObject]
     public class MGradient
     {
         public MGradient(float time, MColor tint)
         {
-            Time = time;
-            Tint = tint;
+            this.time = time; 
+            this.tint = tint;
         }
 
-        public float Time { get; }
-        public MColor Tint { get; }
+        public float time;
+        public MColor tint;
     }
 }

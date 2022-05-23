@@ -45,6 +45,7 @@ namespace NewHorizons.Components.SizeControllers
         private StarEvolutionController _proxy;
 
         private float maxScale;
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         void Awake()
         {
@@ -55,10 +56,10 @@ namespace NewHorizons.Components.SizeControllers
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
             // Copy over the material that was set in star builder
-            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _startSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _endSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
+            _collapseStartSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
+            _collapseEndSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
+            _startSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
+            _endSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
 
             if (startColour == null)
             {

@@ -160,7 +160,7 @@ namespace NewHorizons.External.Configs
         public void MigrateAndValidate()
         {
             // Validate
-            if (Base.centerOfSolarSystem) Orbit.IsStatic = true;
+            if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
 
             // Backwards compatability
