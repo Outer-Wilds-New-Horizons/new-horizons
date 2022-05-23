@@ -19,7 +19,7 @@
             <HintPath>System.Runtime.Serialization.dll</HintPath>
         </Reference>
         <None Include="System.Runtime.Serialization.dll">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="UnityEngine.CoreModule.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
