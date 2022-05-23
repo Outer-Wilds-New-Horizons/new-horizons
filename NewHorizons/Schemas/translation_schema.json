@@ -6,18 +6,21 @@
   "properties": {
     "dialogueDictionary": {
       "type": "object",
+      "description": "Translation table for dialogue",
       "additionalProperties": {
         "type": "string"
       }
     },
     "shipLogDictionary": {
       "type": "object",
+      "description": "Translation table for Ship Log (entries, facts, etc)",
       "additionalProperties": {
         "type": "string"
       }
     },
     "uiDictionary": {
       "type": "object",
+      "description": "Translation table for UI elements",
       "additionalProperties": {
         "type": "string"
       }

@@ -508,10 +508,12 @@
       "properties": {
         "Time": {
           "type": "number",
+          "description": "A specific point in time",
           "format": "float"
         },
         "Value": {
           "type": "number",
+          "description": "The value for this point in time",
           "format": "float"
         }
       }
