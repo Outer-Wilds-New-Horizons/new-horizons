@@ -44,7 +44,7 @@ jobs:
         name: NewHorizons-${{ env.BUILD_TYPE }}
         path: .\NewHorizons\Obj\${{ env.BUILD_TYPE }}
         
-    - run: tree
+    - run: tree /f
         
     - name: Generate Schemas
       run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
