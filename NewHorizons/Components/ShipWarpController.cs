@@ -1,7 +1,6 @@
 ﻿using NewHorizons.Builder.General;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-
 namespace NewHorizons.Components
 {
     public class ShipWarpController : MonoBehaviour
@@ -13,16 +12,14 @@ namespace NewHorizons.Components
         private bool _isWarpingIn;
         private bool _wearingSuit;
         private bool _waitingToBeSeated;
-        private bool _eyesOpen;
+        private bool _eyesOpen = false;
 
         private float _impactDeathSpeed;
 
         private const float size = 14f;
 
-        private readonly string _blackHolePath =
-            "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
-        private readonly string _whiteHolePath =
-            "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
+        private readonly string _blackHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
+        private readonly string _whiteHolePath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
 
         private GameObject _blackHolePrefab;
         private GameObject _whiteHolePrefab;
@@ -40,24 +37,23 @@ namespace NewHorizons.Components
 
             _isWarpingIn = false;
 
-            _oneShotSource = gameObject.AddComponent<OWAudioSource>();
+            _oneShotSource = base.gameObject.AddComponent<OWAudioSource>();
 
-            GlobalMessenger.AddListener("FinishOpenEyes", OnFinishOpenEyes);
+            GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
         public void OnDestroy()
         {
-            GlobalMessenger.RemoveListener("FinishOpenEyes", OnFinishOpenEyes);
+            GlobalMessenger.RemoveListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
         private void MakeBlackHole()
         {
             var blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().material.shader;
-            if (blackHoleShader == null)
-                blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+            if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var blackHoleRender = new GameObject("BlackHoleRender");
-            blackHoleRender.transform.parent = transform;
+            blackHoleRender.transform.parent = base.transform;
             blackHoleRender.transform.localPosition = new Vector3(0, 1, 0);
             blackHoleRender.transform.localScale = Vector3.one * size;
 
@@ -78,11 +74,10 @@ namespace NewHorizons.Components
         private void MakeWhiteHole()
         {
             var whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().material.shader;
-            if (whiteHoleShader == null)
-                whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+            if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
-            whiteHoleRenderer.transform.parent = transform;
+            whiteHoleRenderer.transform.parent = base.transform;
             whiteHoleRenderer.transform.localPosition = new Vector3(0, 1, 0);
             whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
 
@@ -116,7 +111,7 @@ namespace NewHorizons.Components
         public void WarpOut()
         {
             Logger.Log("Starting warp-out");
-            _oneShotSource.PlayOneShot(AudioType.VesselSingularityCreate);
+            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
             _blackhole.Create();
         }
 
@@ -129,14 +124,15 @@ namespace NewHorizons.Components
             }
 
             if (_waitingToBeSeated)
-                if (Locator.GetPlayerTransform().TryGetComponent<PlayerResources>(out var resources) &&
-                    resources._currentHealth < 100f)
+            {
+                if (Locator.GetPlayerTransform().TryGetComponent<PlayerResources>(out var resources) && resources._currentHealth < 100f)
                 {
                     Logger.Log("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
                     resources._currentHealth = 100f;
                     if (!PlayerState.AtFlightConsole()) TeleportToShip();
                 }
+            }
 
             // Idk whats making this work but now it works and idc
             if (_waitingToBeSeated && PlayerState.IsInsideShip() && _eyesOpen)
@@ -154,17 +150,20 @@ namespace NewHorizons.Components
         private void StartWarpInEffect()
         {
             Logger.Log("Starting warp-in effect");
-            _oneShotSource.PlayOneShot(AudioType.VesselSingularityCollapse);
+            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
             if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
             _whitehole.Create();
             _waitingToBeSeated = true;
-            if (_wearingSuit && !Locator.GetPlayerController()._isWearingSuit) SpawnPointBuilder.SuitUp();
+            if (_wearingSuit && !Locator.GetPlayerController()._isWearingSuit)
+            {
+                SpawnPointBuilder.SuitUp();
+            }
         }
 
         private void TeleportToShip()
         {
-            var playerSpawner = FindObjectOfType<PlayerSpawner>();
+            var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
             playerSpawner.DebugWarp(playerSpawner.GetSpawnPoint(SpawnLocation.Ship));
         }
 
@@ -184,8 +183,7 @@ namespace NewHorizons.Components
             // For some reason warping into the ship makes you suffocate while in the ship
             if (_wearingSuit) resources.OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
-            var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume")
-                .GetComponent<SimpleFluidVolume>();
+            var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
             resources._cameraFluidDetector.AddVolume(atmoVolume);
             resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);

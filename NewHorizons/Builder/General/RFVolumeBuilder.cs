@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-
+﻿using NewHorizons.External.Configs;
+using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder

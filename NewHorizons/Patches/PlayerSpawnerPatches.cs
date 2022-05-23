@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
-using NewHorizons.Utility;
-
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

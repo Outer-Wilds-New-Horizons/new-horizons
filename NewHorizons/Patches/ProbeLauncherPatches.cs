@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -7,7 +6,9 @@ namespace NewHorizons.Patches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ProbeLauncher), nameof(ProbeLauncher.UpdateOrbitalLaunchValues))]
-        public static bool ProbeLauncher_UpdateOrbitalLaunchValues(ProbeLauncher __instance) =>
-            Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null;
+        public static bool ProbeLauncher_UpdateOrbitalLaunchValues(ProbeLauncher __instance)
+        {
+            return (Locator.GetPlayerRulesetDetector()?.GetPlanetoidRuleset()?.GetGravityVolume() != null);
+        }
     }
 }

@@ -10,8 +10,12 @@
 
         public override void VanishProbe(OWRigidbody probeBody, RelativeLocationData entryLocation)
         {
-            var requiredComponent = probeBody.GetRequiredComponent<SurveyorProbe>();
-            if (requiredComponent.IsLaunched()) Destroy(requiredComponent.gameObject);
+            SurveyorProbe requiredComponent = probeBody.GetRequiredComponent<SurveyorProbe>();
+            if (requiredComponent.IsLaunched())
+            {
+                UnityEngine.Object.Destroy(requiredComponent.gameObject);
+            }
         }
     }
 }
+

@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-
 namespace NewHorizons.Components.Orbital
 {
     public class BinaryFocalPoint : MonoBehaviour
@@ -12,13 +11,13 @@ namespace NewHorizons.Components.Orbital
 
         public GameObject FakeMassBody { get; set; }
 
-        private void Start()
+        void Start()
         {
             // Make sure its active but maybe it hasn't been set yet
             if (FakeMassBody) FakeMassBody.SetActive(true);
         }
 
-        private void Update()
+        void Update()
         {
             if (Primary == null || Secondary == null)
             {
@@ -38,11 +37,17 @@ namespace NewHorizons.Components.Orbital
 
         private void CleanUp()
         {
-            var component = Locator.GetPlayerBody()?.GetComponent<ReferenceFrameTracker>();
-            if (component?.GetReferenceFrame()?.GetOWRigidBody() == gameObject) component.UntargetReferenceFrame();
+            ReferenceFrameTracker component = Locator.GetPlayerBody()?.GetComponent<ReferenceFrameTracker>();
+            if (component?.GetReferenceFrame(true)?.GetOWRigidBody() == gameObject)
+            {
+                component.UntargetReferenceFrame();
+            }
 
-            var component2 = gameObject.GetComponent<MapMarker>();
-            if (component2 != null) component2.DisableMarker();
+            MapMarker component2 = gameObject.GetComponent<MapMarker>();
+            if (component2 != null)
+            {
+                component2.DisableMarker();
+            }
 
             FakeMassBody.SetActive(false);
         }

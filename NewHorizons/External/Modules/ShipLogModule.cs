@@ -1,6 +1,6 @@
-﻿using NewHorizons.Utility;
+﻿using System.ComponentModel;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
-using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
 {

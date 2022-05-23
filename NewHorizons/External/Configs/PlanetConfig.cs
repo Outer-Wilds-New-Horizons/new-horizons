@@ -1,8 +1,8 @@
-﻿using NewHorizons.External.Modules;
+﻿using System;
+using System.ComponentModel;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
-using System;
-using System.ComponentModel;
 
 namespace NewHorizons.External.Configs
 {

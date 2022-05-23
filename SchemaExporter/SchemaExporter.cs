@@ -1,13 +1,9 @@
-﻿#region
-
 using System;
 using System.IO;
 using System.Linq;
 using NewHorizons.External.Configs;
 using NJsonSchema;
 using NJsonSchema.Generation;
-
-#endregion
 
 namespace SchemaExporter;
 
@@ -56,7 +52,10 @@ public static class SchemaExporter
             File.WriteAllText($"{_outFileName}.json", ToString());
         }
 
-        public override string ToString() => GetJsonSchema().ToJson();
+        public override string ToString()
+        {
+            return GetJsonSchema().ToJson();
+        }
 
         private static void FixOneOf(JsonSchema schema)
         {

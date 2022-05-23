@@ -3,7 +3,6 @@ using NewHorizons.Handlers;
 using OWML.Common;
 using System.Xml;
 using UnityEngine;
-
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
@@ -12,37 +11,34 @@ namespace NewHorizons.Builder.Props
         {
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
-            if (info.blockAfterPersistentCondition != null &&
-                PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
+            if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
-            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0)
-                MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
 
             // Make the character look at the player
             // Useful for dialogue replacement
             if (!string.IsNullOrEmpty(info.pathToAnimController)) MakePlayerTrackingZone(go, dialogue, info);
         }
 
-        public static void MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info,
-            CharacterDialogueTree dialogue)
+        public static void MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = new GameObject("ConversationTrigger");
+            GameObject conversationTrigger = new GameObject("ConversationTrigger");
             conversationTrigger.SetActive(false);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
             conversationTrigger.AddComponent<OWCollider>();
 
-            remoteDialogueTrigger._listDialogues = new[]
+            remoteDialogueTrigger._listDialogues = new RemoteDialogueTrigger.RemoteDialogueCondition[]
             {
-                new RemoteDialogueTrigger.RemoteDialogueCondition
+                new RemoteDialogueTrigger.RemoteDialogueCondition()
                 {
                     priority = 1,
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
-                    prereqConditions = new string[] { },
-                    onTriggerEnterConditions = new string[] { }
+                    prereqConditions = new string[]{ },
+                    onTriggerEnterConditions = new string[]{ }
                 }
             };
             remoteDialogueTrigger._activatedDialogues = new bool[1];
@@ -51,15 +47,13 @@ namespace NewHorizons.Builder.Props
             sphereCollider.radius = info.remoteTriggerRadius == 0 ? info.radius : info.remoteTriggerRadius;
 
             conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
-            conversationTrigger.transform.position =
-                planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
+            conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
         }
 
-        public static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector,
-            PropModule.DialogueInfo info, IModHelper mod)
+        public static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
-            var conversationZone = new GameObject("ConversationZone");
+            GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
 
             conversationZone.layer = LayerMask.NameToLayer("Interactible");
@@ -93,8 +87,7 @@ namespace NewHorizons.Builder.Props
             return dialogueTree;
         }
 
-        public static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue,
-            PropModule.DialogueInfo info)
+        public static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
 
@@ -118,10 +111,14 @@ namespace NewHorizons.Builder.Props
                     dialogue.OnEndConversation += nomaiController.StopWatchingPlayer;
                 }
             }
+            else
+            {
+                // TODO: make a custom controller for basic characters to just turn them to face you
+            }
 
             if (info.lookAtRadius > 0)
             {
-                var playerTrackingZone = new GameObject("PlayerTrackingZone");
+                GameObject playerTrackingZone = new GameObject("PlayerTrackingZone");
                 playerTrackingZone.SetActive(false);
 
                 playerTrackingZone.layer = LayerMask.NameToLayer("BasicEffectVolume");
@@ -143,7 +140,6 @@ namespace NewHorizons.Builder.Props
                         controller.playerTrackingZone.OnEntry -= controller.OnZoneEntry;
                         controller.playerTrackingZone.OnExit -= controller.OnZoneExit;
                     }
-
                     // Set it to use the new zone
                     controller.playerTrackingZone = triggerVolume;
                     triggerVolume.OnEntry += controller.OnZoneEntry;
@@ -152,10 +148,14 @@ namespace NewHorizons.Builder.Props
                 // Simpler for the Nomai
                 else if (nomaiController)
                 {
-                    triggerVolume.OnEntry += _ => nomaiController.StartWatchingPlayer();
-                    triggerVolume.OnExit += _ => nomaiController.StopWatchingPlayer();
+                    triggerVolume.OnEntry += (_) => nomaiController.StartWatchingPlayer();
+                    triggerVolume.OnExit += (_) => nomaiController.StopWatchingPlayer();
                 }
                 // No controller
+                else
+                {
+                    // TODO
+                }
 
                 playerTrackingZone.transform.parent = dialogue.gameObject.transform;
                 playerTrackingZone.transform.localPosition = Vector3.zero;
@@ -166,30 +166,30 @@ namespace NewHorizons.Builder.Props
 
         private static void AddTranslation(string xml)
         {
-            var xmlDocument = new XmlDocument();
+            XmlDocument xmlDocument = new XmlDocument();
             xmlDocument.LoadXml(xml);
-            var xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
-            var xmlNodeList = xmlNode.SelectNodes("DialogueNode");
-            var characterName = xmlNode.SelectSingleNode("NameField").InnerText;
+            XmlNode xmlNode = xmlDocument.SelectSingleNode("DialogueTree");
+            XmlNodeList xmlNodeList = xmlNode.SelectNodes("DialogueNode");
+            string characterName = xmlNode.SelectSingleNode("NameField").InnerText;
             TranslationHandler.AddDialogue(characterName);
 
-            foreach (var obj in xmlNodeList)
+            foreach (object obj in xmlNodeList)
             {
-                var xmlNode2 = (XmlNode)obj;
+                XmlNode xmlNode2 = (XmlNode)obj;
                 var name = xmlNode2.SelectSingleNode("Name").InnerText;
 
-                var xmlText = xmlNode2.SelectNodes("Dialogue/Page");
-                foreach (var Page in xmlText)
+                XmlNodeList xmlText = xmlNode2.SelectNodes("Dialogue/Page");
+                foreach (object Page in xmlText)
                 {
-                    var pageData = (XmlNode)Page;
+                    XmlNode pageData = (XmlNode)Page;
                     var text = pageData.InnerText;
                     TranslationHandler.AddDialogue(text, name);
                 }
 
                 xmlText = xmlNode2.SelectNodes("DialogueOptionsList/DialogueOption/Text");
-                foreach (var Page in xmlText)
+                foreach (object Page in xmlText)
                 {
-                    var pageData = (XmlNode)Page;
+                    XmlNode pageData = (XmlNode)Page;
                     var text = pageData.InnerText;
                     TranslationHandler.AddDialogue(text, characterName, name);
                 }

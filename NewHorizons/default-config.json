@@ -1,8 +1,8 @@
 {
-  "enabled": true,
-  "settings": {
-    "Debug": false,
-    "Custom title screen": true,
-    "Default System Override": ""
-  }
+	"enabled": true,
+	"settings": {
+		"Debug": false,
+		"Custom title screen": true,
+		"Default System Override": ""
+	}
 }

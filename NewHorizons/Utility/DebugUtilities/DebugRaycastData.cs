@@ -1,8 +1,13 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NewHorizons.Utility.DebugUtilities
 {
-    internal struct DebugRaycastData
+    struct DebugRaycastData
     {
         public bool hit;
         public Vector3 pos;

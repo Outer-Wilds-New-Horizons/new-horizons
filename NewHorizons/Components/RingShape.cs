@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
 namespace NewHorizons.Components
 {
     public class RingShape : Shape
@@ -15,7 +14,7 @@ namespace NewHorizons.Components
 
         public Vector3 center
         {
-            get => _center;
+            get { return _center; }
             set
             {
                 _center = value;
@@ -25,7 +24,7 @@ namespace NewHorizons.Components
 
         public float innerRadius
         {
-            get => _innerRadius;
+            get { return _innerRadius; }
             set
             {
                 _innerRadius = Mathf.Max(value, 0f);
@@ -37,7 +36,7 @@ namespace NewHorizons.Components
 
         public float outerRadius
         {
-            get => _outerRadius;
+            get { return _outerRadius; }
             set
             {
                 _outerRadius = Mathf.Max(value, 0f);
@@ -49,7 +48,7 @@ namespace NewHorizons.Components
 
         public float height
         {
-            get => _height;
+            get { return _height; }
             set
             {
                 _height = Mathf.Max(value, 0f);
@@ -62,7 +61,7 @@ namespace NewHorizons.Components
 
         public override int layerMask
         {
-            get => base.layerMask;
+            get { return base.layerMask; }
             set
             {
                 base.layerMask = value;
@@ -73,7 +72,7 @@ namespace NewHorizons.Components
 
         public override bool pointChecksOnly
         {
-            get => base.pointChecksOnly;
+            get { return base.pointChecksOnly; }
             set
             {
                 base.pointChecksOnly = value;
@@ -174,19 +173,24 @@ namespace NewHorizons.Components
             _outerCylinderShape?.SetActivation(newActive);
         }
 
-        public override Vector3 GetWorldSpaceCenter() => transform.TransformPoint(_center);
+        public override Vector3 GetWorldSpaceCenter()
+        {
+            return transform.TransformPoint(_center);
+        }
 
         public override void RecalculateLocalBounds()
         {
             localBounds.Set(_center, outerRadius);
         }
 
-        public override bool PointInside(Vector3 point) =>
-            !_innerCylinderShape.PointInside(point) && _outerCylinderShape.PointInside(point);
+        public override bool PointInside(Vector3 point)
+        {
+            return (!_innerCylinderShape.PointInside(point) && _outerCylinderShape.PointInside(point));
+        }
 
-        private readonly List<Shape> _shapesInInner = new List<Shape>();
-        private readonly List<Shape> _shapesInOuter = new List<Shape>();
-        private readonly List<Shape> _shapesInside = new List<Shape>();
+        private List<Shape> _shapesInInner = new List<Shape>();
+        private List<Shape> _shapesInOuter = new List<Shape>();
+        private List<Shape> _shapesInside = new List<Shape>();
 
         private void UpdateCollisionStatus(Shape shape)
         {

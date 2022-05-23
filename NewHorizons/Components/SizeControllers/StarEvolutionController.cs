@@ -1,7 +1,10 @@
 ﻿using NewHorizons.Builder.Body;
 using NewHorizons.Utility;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Components.SizeControllers
@@ -43,19 +46,17 @@ namespace NewHorizons.Components.SizeControllers
 
         private float maxScale;
 
-        private void Awake()
+        void Awake()
         {
-            var sun = FindObjectOfType<SunController>();
+            var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
             _collapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
             // Copy over the material that was set in star builder
-            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp",
-                supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
-            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp",
-                supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
+            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
+            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
             _startSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
             _endSurfaceMaterial.SetTexture("_ColorRamp", supernova._surface.sharedMaterial.GetTexture("_ColorRamp"));
 
@@ -86,13 +87,15 @@ namespace NewHorizons.Components.SizeControllers
             if (atmosphere != null)
             {
                 _fog = atmosphere?.GetComponentInChildren<PlanetaryFogController>();
-                _atmosphereRenderers =
-                    atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
+                _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
             if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
-            if (scaleCurve != null) maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+            if (scaleCurve != null)
+            {
+                maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+            }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
         }
@@ -131,14 +134,14 @@ namespace NewHorizons.Components.SizeControllers
                 transform.localScale = Vector3.one;
 
                 // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-                if (_destructionVolume != null)
-                    _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
-                if (_heatVolume != null)
-                    _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+                if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+                if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
 
                 if (Time.time > _supernovaStartTime + 45f)
+                {
                     // Just turn off the star entirely
-                    gameObject.SetActive(false);
+                    base.gameObject.SetActive(false);
+                }
                 return;
             }
 
@@ -203,6 +206,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             if (_atmosphereRenderers != null && _atmosphereRenderers.Count() > 0)
+            {
                 foreach (var lod in _atmosphereRenderers)
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
@@ -211,6 +215,7 @@ namespace NewHorizons.Components.SizeControllers
                     lod.material.SetColor("_AtmosNear", currentColour);
                     lod.material.SetColor("_SkyColor", currentColour);
                 }
+            }
         }
     }
 }
