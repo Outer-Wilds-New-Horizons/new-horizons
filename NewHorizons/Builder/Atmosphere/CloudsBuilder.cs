@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Atmosphere
             // If they set a colour apply it to all the materials else keep the default QM one
             if (atmo.clouds.tint != null)
             {
-                var bottomColor = atmo.clouds.tint.ToColor();
+                var bottomColor = atmo.clouds.tint;
 
                 var bottomTSRTempArray = new Material[2];
 
@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Atmosphere
                     for(int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
                     {
                         var pair = atmo.clouds.lightningGradient[i];
-                        gradient[i] = new GradientColorKey(pair.Tint.ToColor(), pair.Time);
+                        gradient[i] = new GradientColorKey(pair.Tint, pair.Time);
                     }
 
                     lightningGenerator._lightColor.colorKeys = gradient;
@@ -138,7 +138,7 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.clouds.tint?.ToColor() ?? Color.white;
+            Color cloudTint = atmo.clouds.tint ?? Color.white;
 
             Texture2D image, cap, ramp;
 

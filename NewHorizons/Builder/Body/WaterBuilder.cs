@@ -40,8 +40,8 @@ namespace NewHorizons.Builder.Body
                 tempArray[i] = new Material(GDSharedMaterials[i]);
                 if (module.tint != null)
                 {
-                    tempArray[i].color = module.tint.ToColor();
-                    tempArray[i].SetColor("_FogColor", module.tint.ToColor());
+                    tempArray[i].color = module.tint;
+                    tempArray[i].SetColor("_FogColor", module.tint);
                 }
             }
 
@@ -85,7 +85,7 @@ namespace NewHorizons.Builder.Body
 
             if (module.tint != null)
             {
-                var adjustedColour = module.tint.ToColor() / 4f;
+                var adjustedColour = (Color)module.tint / 4f;
                 adjustedColour.a = adjustedColour.a * 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }

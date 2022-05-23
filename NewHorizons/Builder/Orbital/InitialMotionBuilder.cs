@@ -108,18 +108,18 @@ namespace NewHorizons.Builder.Orbital
             }
 
             // Update the positions
-            var distance = secondaryBody.SemiMajorAxis + primaryBody.SemiMajorAxis;
+            var distance = secondaryBody.semiMajorAxis + primaryBody.semiMajorAxis;
             var m1 = primaryGravity.Mass;
             var m2 = secondaryGravity.Mass;
 
             var r1 = distance * m2 / (m1 + m2);
             var r2 = distance * m1 / (m1 + m2);
 
-            var ecc = secondaryBody.Eccentricity;
-            var inc = secondaryBody.Inclination;
-            var arg = secondaryBody.ArgumentOfPeriapsis;
-            var lon = secondaryBody.LongitudeOfAscendingNode;
-            var tru = secondaryBody.TrueAnomaly;
+            var ecc = secondaryBody.eccentricity;
+            var inc = secondaryBody.inclination;
+            var arg = secondaryBody.argumentOfPeriapsis;
+            var lon = secondaryBody.longitudeOfAscendingNode;
+            var tru = secondaryBody.trueAnomaly;
 
             // Update their astro objects
             primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg, lon, tru - 180);

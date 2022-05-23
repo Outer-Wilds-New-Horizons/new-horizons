@@ -66,7 +66,7 @@ namespace NewHorizons.Components.SizeControllers
             }
             else
             {
-                _startColour = startColour.ToColor();
+                _startColour = startColour;
                 _startSurfaceMaterial.color = _startColour;
             }
 
@@ -77,7 +77,7 @@ namespace NewHorizons.Components.SizeControllers
             }
             else
             {
-                _endColour = endColour.ToColor();
+                _endColour = endColour;
                 _endSurfaceMaterial.color = _endColour;
             }
 

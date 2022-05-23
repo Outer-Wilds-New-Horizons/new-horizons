@@ -4,12 +4,12 @@ namespace NewHorizons.Components.Orbital
 {
     public class OrbitalParameters : IOrbitalParameters
     {
-        public float Inclination { get; set; }
-        public float SemiMajorAxis { get; set; }
-        public float LongitudeOfAscendingNode { get; set; }
-        public float Eccentricity { get; set; }
-        public float ArgumentOfPeriapsis { get; set; }
-        public float TrueAnomaly { get; set; }
+        public float inclination { get; set; }
+        public float semiMajorAxis { get; set; }
+        public float longitudeOfAscendingNode { get; set; }
+        public float eccentricity { get; set; }
+        public float argumentOfPeriapsis { get; set; }
+        public float trueAnomaly { get; set; }
         public float Period { get; set; }
 
         public Vector3 InitialPosition { get; private set; }
@@ -19,11 +19,11 @@ namespace NewHorizons.Components.Orbital
         public static OrbitalParameters FromTrueAnomaly(Gravity primaryGravity, Gravity secondaryGravity, float eccentricity, float semiMajorAxis, float inclination, float argumentOfPeriapsis, float longitudeOfAscendingNode, float trueAnomaly)
         {
             var orbitalParameters = new OrbitalParameters();
-            orbitalParameters.Inclination = inclination;
-            orbitalParameters.SemiMajorAxis = semiMajorAxis;
-            orbitalParameters.LongitudeOfAscendingNode = longitudeOfAscendingNode;
-            orbitalParameters.Eccentricity = eccentricity;
-            orbitalParameters.ArgumentOfPeriapsis = argumentOfPeriapsis;
+            orbitalParameters.inclination = inclination;
+            orbitalParameters.semiMajorAxis = semiMajorAxis;
+            orbitalParameters.longitudeOfAscendingNode = longitudeOfAscendingNode;
+            orbitalParameters.eccentricity = eccentricity;
+            orbitalParameters.argumentOfPeriapsis = argumentOfPeriapsis;
 
             // If primary gravity is linear and the orbit is eccentric its not even an ellipse so theres no true anomaly
             if (primaryGravity.Power == 1 && eccentricity != 0)
@@ -31,7 +31,7 @@ namespace NewHorizons.Components.Orbital
                 trueAnomaly = 0;
             }
 
-            orbitalParameters.TrueAnomaly = trueAnomaly;
+            orbitalParameters.trueAnomaly = trueAnomaly;
 
             // Have to calculate the rest
 
@@ -110,7 +110,7 @@ namespace NewHorizons.Components.Orbital
 
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {
-            return FromTrueAnomaly(primaryGravity, secondaryGravity, Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
+            return FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis, inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
         }
     }
 }

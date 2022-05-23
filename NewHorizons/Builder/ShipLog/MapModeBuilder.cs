@@ -365,7 +365,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             foreach (NewHorizonsBody body in bodies.Where(b => b.Config.Base.centerOfSolarSystem))
             {
-                bodies.Sort((b, o) => b.Config.Orbit.SemiMajorAxis.CompareTo(o.Config.Orbit.SemiMajorAxis));
+                bodies.Sort((b, o) => b.Config.Orbit.semiMajorAxis.CompareTo(o.Config.Orbit.semiMajorAxis));
                 MapModeObject newNode = new MapModeObject
                 {
                     mainBody = body,
@@ -521,10 +521,10 @@ namespace NewHorizons.Builder.ShipLog
                 }
 
                 var starColor = body.Config?.Star?.tint;
-                if (starColor != null) return starColor.ToColor();
+                if (starColor != null) return starColor;
 
                 var atmoColor = body.Config.Atmosphere?.atmosphereTint;
-                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor.ToColor();
+                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor;
 
                 if (body.Config?.HeightMap?.textureMap != null)
                 {
@@ -538,13 +538,13 @@ namespace NewHorizons.Builder.ShipLog
                 }
 
                 var waterColor = body.Config.Water?.tint;
-                if (waterColor != null) return waterColor.ToColor();
+                if (waterColor != null) return waterColor;
 
                 var lavaColor = body.Config.Lava?.tint;
-                if (lavaColor != null) return lavaColor.ToColor();
+                if (lavaColor != null) return lavaColor;
 
                 var sandColor = body.Config.Sand?.Tint;
-                if (sandColor != null) return sandColor.ToColor();
+                if (sandColor != null) return sandColor;
             }
             catch (Exception)
             {

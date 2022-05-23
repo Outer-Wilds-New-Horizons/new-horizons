@@ -32,7 +32,7 @@ namespace NewHorizons.Builder.Orbital
             var numVerts = config.Orbit.DottedOrbitLine ? 128 : 256;
             lineRenderer.positionCount = numVerts;
 
-            var ecc = config.Orbit.Eccentricity;
+            var ecc = config.Orbit.eccentricity;
 
             var parentGravity = astroObject.GetPrimaryBody()?.GetGravityVolume();
 
@@ -45,25 +45,25 @@ namespace NewHorizons.Builder.Orbital
             {
                 orbitLine = orbitGO.AddComponent<NHOrbitLine>();
 
-                var a = astroObject.SemiMajorAxis;
-                var e = astroObject.Eccentricity;
+                var a = astroObject.semiMajorAxis;
+                var e = astroObject.eccentricity;
                 var b = a * Mathf.Sqrt(1f - (e * e));
-                var l = astroObject.LongitudeOfAscendingNode;
-                var p = astroObject.ArgumentOfPeriapsis;
-                var i = astroObject.Inclination;
+                var l = astroObject.longitudeOfAscendingNode;
+                var p = astroObject.argumentOfPeriapsis;
+                var i = astroObject.inclination;
 
                 (orbitLine as NHOrbitLine).SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
                 (orbitLine as NHOrbitLine).SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
             }
 
             var color = Color.white;
-            if (config.Orbit.Tint != null) color = config.Orbit.Tint.ToColor32();
-            else if (config.Star != null) color = config.Star.tint.ToColor32();
-            else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint.ToColor32();
+            if (config.Orbit.Tint != null) color = config.Orbit.Tint;
+            else if (config.Star != null) color = config.Star.tint;
+            else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint;
             else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);
-            else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint.ToColor32();
+            else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint;
 
             var fade = isMoon;
 
@@ -84,7 +84,7 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._lineWidth = 0.2f;
 
-            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.SemiMajorAxis / 1000f, numVerts, 4096);
+            orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.semiMajorAxis / 1000f, numVerts, 4096);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
