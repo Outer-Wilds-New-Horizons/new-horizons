@@ -1,24 +1,26 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "table": {
-      "type": "object",
-      "description": "A set of key value pairs where each key is the english text and each value is the translated text"
-    }
-  },
-  "title": "Translation",
-  "description": "Describes a set tables to use for translations",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Translation Schema",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
-    "ShipLogDictionary": {
-      "$ref": "#/$defs/table"
+    "dialogueDictionary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
-    "UIDictionary": {
-      "$ref": "#/$defs/table"
+    "shipLogDictionary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
-    "DialogueDictionary": {
-      "$ref": "#/$defs/table"
+    "uiDictionary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
     }
-  },
-  "additionalProperties": false
+  }
 }

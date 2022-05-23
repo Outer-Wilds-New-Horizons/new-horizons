@@ -1,51 +1,87 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Star System Schema",
   "type": "object",
-  "title": "Star System",
   "description": "Configuration for a specific star system",
+  "additionalProperties": false,
   "properties": {
     "canEnterViaWarpDrive": {
       "type": "boolean",
       "description": "Whether this system can be warped to via the warp drive"
     },
-    "startHere": {
-      "type": "boolean",
-      "description": "Set to true if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system."
-    },
-    "factRequiredForWarp": {
-      "type": "string",
-      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to false if you're using this, that would make no sense."
+    "coords": {
+      "description": "[DEPRECATED] Not implemented",
+      "$ref": "#/definitions/NomaiCoordinates"
     },
     "destroyStockPlanets": {
-      "type": "bool",
+      "type": "boolean",
       "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original."
     },
     "enableTimeLoop": {
-      "type": "bool",
-      "description": "Should the player be sent back in time after 22 minutes?",
+      "type": "boolean",
+      "description": "Should the time loop be enabled in this system?",
       "default": true
     },
+    "factRequiredForWarp": {
+      "type": "string",
+      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if\nyou're using this, that would make no sense."
+    },
     "mapRestricted": {
-      "type": "bool",
-      "description": "Should the player be unable to use their map in this system?",
-      "default": false
+      "type": "boolean",
+      "description": "Should the player not be able to view the map in this system?"
+    },
+    "skybox": {
+      "description": "Customize the skybox for this system",
+      "$ref": "#/definitions/SkyboxConfig"
+    },
+    "startHere": {
+      "type": "boolean",
+      "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
     },
     "subtitle": {
       "type": "string",
-      "description": "Relative path to a subtitle image to be displayed on the main menu scene. The image should be 669x97 resolution."
-    },
-    "skybox": {
+      "description": "Relative path to the image file to use as the subtitle image (replaces the eote banner)"
+    }
+  },
+  "definitions": {
+    "NomaiCoordinates": {
       "type": "object",
-      "description": "Options for the skybox of your system",
+      "additionalProperties": false,
       "properties": {
-        "destroyStarField": {
-          "type": "boolean",
-          "description": "Whether to destroy the star field around the player (always set to true if `assetBundle` and `path` is set)",
-          "default": false
+        "x": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
         },
+        "y": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "z": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "SkyboxConfig": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
         "assetBundle": {
           "type": "string",
           "description": "Path to the Unity asset bundle to load the skybox material from"
+        },
+        "destroyStarField": {
+          "type": "boolean",
+          "description": "Whether to destroy the star field around the player"
         },
         "path": {
           "type": "string",
