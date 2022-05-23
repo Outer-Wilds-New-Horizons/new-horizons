@@ -162,6 +162,13 @@ namespace NewHorizons.Builder.Props
             var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
             var position = info.position;
             GameObject g = DetailBuilder.MakeDetail(planetGO, sector, path, position, Vector3.zero, 1, false);
+
+            if (g == null)
+            {
+                Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
+                return null;
+            }
+
             g.name = "VisionStaffDetector";
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
@@ -187,8 +194,9 @@ namespace NewHorizons.Builder.Props
             VisionTorchTarget target = g.AddComponent<VisionTorchTarget>();
             SlideCollectionContainer slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
-            target.slideCollection = new MindSlideCollection();
+            target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
+            target.slideCollectionContainer = slideCollectionContainer;
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
