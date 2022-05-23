@@ -5,14 +5,12 @@ on:
     branches: [ main ]
     paths:
       - docs/**
-      - NewHorizons/*schema*.json
-      - NewHorizons/*.xsd
+      - NewHorizons/Schemas/**
 
   pull_request:
     paths:
       - docs/**
-      - NewHorizons/*schema*.json
-      - NewHorizons/*.xsd
+      - NewHorizons/Schemas/**
 
   workflow_dispatch:
     inputs:
