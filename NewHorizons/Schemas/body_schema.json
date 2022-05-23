@@ -167,11 +167,7 @@
         },
         "procGen": {
           "description": "How the asteroids are generated",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/ProcGenModule"
-            }
-          ]
+          "$ref": "#/definitions/ProcGenModule"
         },
         "randomSeed": {
           "type": "integer",
@@ -235,19 +231,11 @@
       "properties": {
         "atmosphereTint": {
           "description": "Colour of atmospheric shader on the planet.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "clouds": {
           "description": "Describes the clouds in the atmosphere",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/CloudInfo"
-            }
-          ]
+          "$ref": "#/definitions/CloudInfo"
         },
         "fogDensity": {
           "type": "number",
@@ -264,11 +252,7 @@
         },
         "fogTint": {
           "description": "Colour of fog on the planet, if you put fog.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "hasOxygen": {
           "type": "boolean",
@@ -343,11 +327,7 @@
         },
         "tint": {
           "description": "Colour of the inner cloud layer.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "unlit": {
           "type": "boolean",
@@ -410,19 +390,11 @@
         },
         "cometTailRotation": {
           "description": "If it has a comet tail, it'll be oriented according to these Euler angles.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "gravityFallOff": {
           "description": "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/GravityFallOff"
-            }
-          ]
+          "$ref": "#/definitions/GravityFallOff"
         },
         "groundSize": {
           "type": "number",
@@ -529,19 +501,11 @@
         },
         "tint": {
           "description": "Tint of the funnel",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "type": {
           "description": "Type of fluid the funnel transfers",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/FunnelType"
-            }
-          ]
+          "$ref": "#/definitions/FunnelType"
         }
       }
     },
@@ -597,11 +561,7 @@
         },
         "stretch": {
           "description": "The scale of the terrain.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "textureMap": {
           "type": "string",
@@ -627,11 +587,7 @@
         },
         "tint": {
           "description": "Tint of the lava",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -663,11 +619,7 @@
         },
         "AlignmentAxis": {
           "description": "If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets\nwill want something like `-1, 0, 0`.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "ShowOrbitLine": {
           "type": "boolean",
@@ -684,11 +636,7 @@
         },
         "Tint": {
           "description": "Colour of the orbit-line in the map view.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "TrackingOrbitLine": {
           "type": "boolean",
@@ -846,11 +794,7 @@
         },
         "position": {
           "description": "Position of this prop relative to the body's center",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "removeChildren": {
           "type": "array",
@@ -865,11 +809,7 @@
         },
         "rotation": {
           "description": "Rotate this prop",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
@@ -898,11 +838,7 @@
         },
         "position": {
           "description": "When you enter into dialogue, you will look here.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
@@ -911,11 +847,7 @@
         },
         "remoteTriggerPosition": {
           "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "remoteTriggerRadius": {
           "type": "number",
@@ -942,11 +874,7 @@
         },
         "position": {
           "description": "The position of this entry location",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
@@ -956,11 +884,7 @@
       "properties": {
         "position": {
           "description": "Position of the geyser",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
@@ -977,27 +901,15 @@
         },
         "normal": {
           "description": "The normal vector for this object. Used for writing on walls and positioning computers.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "position": {
           "description": "Position of the root of this text",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "rotation": {
           "description": "The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient\nthemselves to the surface of the planet automatically.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "seed": {
           "type": "integer",
@@ -1006,11 +918,7 @@
         },
         "type": {
           "description": "The type of object this is.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/NomaiTextType"
-            }
-          ]
+          "$ref": "#/definitions/NomaiTextType"
         },
         "xmlFile": {
           "type": "string",
@@ -1024,19 +932,11 @@
       "properties": {
         "position": {
           "description": "The local position of this object on the wall.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         },
         "type": {
           "description": "The type of text to display.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/NomaiTextArcType"
-            }
-          ]
+          "$ref": "#/definitions/NomaiTextArcType"
         },
         "zRotation": {
           "type": "number",
@@ -1099,11 +999,7 @@
       "properties": {
         "position": {
           "description": "Position of the raft",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
@@ -1123,11 +1019,7 @@
         },
         "position": {
           "description": "The position to place this volume at",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
@@ -1136,11 +1028,7 @@
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/RevealVolumeType"
-            }
-          ]
+          "$ref": "#/definitions/RevealVolumeType"
         },
         "reveals": {
           "type": "array",
@@ -1180,11 +1068,7 @@
         },
         "offset": {
           "description": "Offset this prop once it is placed",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "path": {
           "type": "string",
@@ -1192,11 +1076,7 @@
         },
         "rotation": {
           "description": "Rotate this prop once it is placed",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
@@ -1216,11 +1096,7 @@
       "properties": {
         "position": {
           "description": "The position of this slideshow.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "reveals": {
           "type": "array",
@@ -1231,11 +1107,7 @@
         },
         "rotation": {
           "description": "The rotation of this slideshow.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "slides": {
           "type": "array",
@@ -1246,11 +1118,7 @@
         },
         "type": {
           "description": "The type of object this is.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/SlideShowType"
-            }
-          ]
+          "$ref": "#/definitions/SlideShowType"
         }
       }
     },
@@ -1260,11 +1128,7 @@
       "properties": {
         "ambientLightColor": {
           "description": "Ambient light colour when viewing this slide.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "ambientLightIntensity": {
           "type": "number",
@@ -1352,27 +1216,15 @@
         },
         "position": {
           "description": "Position of the tornado",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "tint": {
           "description": "The colour of the tornado.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/TornadoType"
-            }
-          ]
+          "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
           "type": "number",
@@ -1413,11 +1265,7 @@
       "properties": {
         "lavaTint": {
           "description": "The colour of the meteor's lava.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "maxInterval": {
           "type": "number",
@@ -1441,11 +1289,7 @@
         },
         "position": {
           "description": "Position of this volcano",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
@@ -1454,11 +1298,7 @@
         },
         "stoneTint": {
           "description": "The colour of the meteor's stone.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -1557,11 +1397,7 @@
         },
         "Tint": {
           "description": "Tint of the sand",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -1592,11 +1428,7 @@
         },
         "mapMode": {
           "description": "Describe what this planet looks and like in map mode",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MapModeInfo"
-            }
-          ]
+          "$ref": "#/definitions/MapModeInfo"
         },
         "spriteFolder": {
           "type": "string",
@@ -1614,19 +1446,11 @@
       "properties": {
         "color": {
           "description": "The color to apply to entries with this curiosity.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "highlightColor": {
           "description": "The color to apply to highlighted entries with this curiosity.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "id": {
           "type": "string",
@@ -1644,11 +1468,7 @@
         },
         "position": {
           "description": "Position of the entry",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         }
       }
     },
@@ -1669,19 +1489,11 @@
         },
         "manualNavigationPosition": {
           "description": "Specify where this planet is in terms of navigation.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         },
         "manualPosition": {
           "description": "Manually place this planet at the specified position.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         },
         "offset": {
           "type": "number",
@@ -1722,11 +1534,7 @@
         },
         "position": {
           "description": "The position (relative to the parent) to place the detail.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         },
         "revealedSprite": {
           "type": "string",
@@ -1739,11 +1547,7 @@
         },
         "scale": {
           "description": "The amount to scale the x and y-axis of the detail by.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector2"
-            }
-          ]
+          "$ref": "#/definitions/MVector2"
         }
       }
     },
@@ -1804,11 +1608,7 @@
         },
         "position": {
           "description": "Position of the signal's source",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "reveals": {
           "type": "string",
@@ -1845,11 +1645,7 @@
         },
         "position": {
           "description": "Position of the singularity",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "size": {
           "type": "number",
@@ -1863,11 +1659,7 @@
         },
         "type": {
           "description": "Type of singularity (white hole or black hole)",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/SingularityType"
-            }
-          ]
+          "$ref": "#/definitions/SingularityType"
         }
       }
     },
@@ -1889,35 +1681,19 @@
       "properties": {
         "playerSpawnPoint": {
           "description": "If you want the player to spawn on the new body, set a value for this. Press `P` in game with Debug mode on to have\nthe game log the position you're looking at to find a good value for this.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "playerSpawnRotation": {
           "description": "Euler angles by which the player will be oriented.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "shipSpawnPoint": {
           "description": "Required for the system to be accessible by warp drive.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "shipSpawnRotation": {
           "description": "Euler angles by which the ship will be oriented.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MVector3"
-            }
-          ]
+          "$ref": "#/definitions/MVector3"
         },
         "startWithSuit": {
           "type": "boolean",
@@ -1938,11 +1714,7 @@
         },
         "endTint": {
           "description": "Colour of the star at the end of its life.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "goSupernova": {
           "type": "boolean",
@@ -1956,11 +1728,7 @@
         },
         "lightTint": {
           "description": "Colour of the light given off.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "size": {
           "type": "number",
@@ -1978,19 +1746,11 @@
         },
         "supernovaTint": {
           "description": "The tint of the supernova this star creates when it dies.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         },
         "tint": {
           "description": "Colour of the star.",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -2012,11 +1772,7 @@
         },
         "tint": {
           "description": "Tint of the water",
-          "oneOf": [
-            {
-              "$ref": "#/definitions/MColor"
-            }
-          ]
+          "$ref": "#/definitions/MColor"
         }
       }
     }
