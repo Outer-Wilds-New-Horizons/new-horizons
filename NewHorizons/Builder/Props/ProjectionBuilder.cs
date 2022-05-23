@@ -1,10 +1,11 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
@@ -154,6 +155,47 @@ namespace NewHorizons.Builder.Props
             projectorObj.SetActive(true);
         }
 
+        // Makes a target for a vision torch to scan
+        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        {
+            // spawn a trigger for the vision torch
+            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
+            var position = info.position;
+            GameObject g = DetailBuilder.MakeDetail(planetGO, sector, path, position, Vector3.zero, 1, false);
+            g.name = "VisionStaffDetector";
+
+            // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
+            SlideInfo[] slides = info.slides;
+            var slidesCount = slides.Length;
+            var slideCollection = new SlideCollection(slidesCount);
+
+
+            for (int i = 0; i < slidesCount; i++)
+            {
+                var slide = new Slide();
+                var slideInfo = slides[i];
+
+                var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
+                slide.textureOverride = ImageUtilities.Invert(texture);
+
+                AddModules(slideInfo, ref slide);
+
+                slideCollection.slides[i] = slide;
+            }
+
+            // attatch a component to store all the data for the slides that play when a vision torch scans this target
+            VisionTorchTarget target = g.AddComponent<VisionTorchTarget>();
+            SlideCollectionContainer slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
+            slideCollectionContainer.slideCollection = slideCollection;
+            target.slideCollection = new MindSlideCollection();
+            target.slideCollection._slideCollectionContainer = slideCollectionContainer;
+
+            // Idk why but it wants reveals to be comma delimited not a list
+            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+
+            return g;
+        }
+
         private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide)
         {
             var modules = new List<SlideFunctionModule>();
@@ -201,5 +243,11 @@ namespace NewHorizons.Builder.Props
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
         }
+    }
+
+	public class VisionTorchTarget : MonoBehaviour
+    {
+		public MindSlideCollection slideCollection;
+		public SlideCollectionContainer slideCollectionContainer;
     }
 }
