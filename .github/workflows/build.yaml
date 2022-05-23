@@ -2,11 +2,20 @@ name: Build
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev, main, schema-integration]
     paths-ignore:
-      - docs/**
-      - "**schema**"
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
   workflow_dispatch:
   
 env:
@@ -34,3 +43,29 @@ jobs:
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
         path: .\NewHorizons\Bin\${{ env.BUILD_TYPE }}
+        
+    - name: Generate Schemas
+      run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
+      
+      # Only want to commit schemas if they've actually changed
+    - name: Verify Changed Schemas
+      uses: tj-actions/verify-changed-files@v6
+      id: changed_files
+      with:
+        files: NewHorizons\Schemas\**
+        
+    - name: Commit Schemas
+      if: steps.changed_files.outputs.files_changed == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add NewHorizons\Schemas\**
+        git commit -m "Updated Schemas"
+        
+    - name: Push Schemas
+      if: steps.changed_files.outputs.files_changed == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.github_token }}
+        branch: ${{ github.ref }}
+      
