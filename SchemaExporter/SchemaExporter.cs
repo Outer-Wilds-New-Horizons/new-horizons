@@ -18,7 +18,8 @@ public static class SchemaExporter
         var settings = new JsonSchemaGeneratorSettings
         {
             IgnoreObsoleteProperties = true,
-            DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull
+            DefaultReferenceTypeNullHandling = ReferenceTypeNullHandling.NotNull,
+            FlattenInheritanceHierarchy = true
         };
         Console.WriteLine("Outputting Body Schema");
         var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", $"{folderName}/body_schema", settings);
