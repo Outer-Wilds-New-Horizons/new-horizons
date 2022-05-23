@@ -354,11 +354,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "Time": {
+        "time": {
           "type": "number",
           "format": "float"
         },
-        "Tint": {
+        "tint": {
           "$ref": "#/definitions/MColor"
         }
       }
@@ -437,15 +437,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "X": {
+        "x": {
           "type": "number",
           "format": "float"
         },
-        "Y": {
+        "y": {
           "type": "number",
           "format": "float"
         },
-        "Z": {
+        "z": {
           "type": "number",
           "format": "float"
         }
@@ -590,50 +590,50 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "PrimaryBody": {
+        "primaryBody": {
           "type": "string",
           "description": "The name of the body this one will orbit around"
         },
-        "IsMoon": {
+        "isMoon": {
           "type": "boolean",
           "description": "Is this the moon of a planet? Used for determining when its name is shown on the map."
         },
-        "AxialTilt": {
+        "axialTilt": {
           "type": "number",
           "description": "The angle between the normal to the orbital plane and its axis of rotation.",
           "format": "float"
         },
-        "SiderealPeriod": {
+        "siderealPeriod": {
           "type": "number",
           "description": "Rotation period in minutes.",
           "format": "float"
         },
-        "IsTidallyLocked": {
+        "isTidallyLocked": {
           "type": "boolean",
           "description": "Should the body always have one side facing its primary?"
         },
-        "AlignmentAxis": {
+        "alignmentAxis": {
           "description": "If it is tidally locked, this direction will face towards the primary. Ex: Interloper uses `0, -1, 0`. Most planets\nwill want something like `-1, 0, 0`.",
           "$ref": "#/definitions/MVector3"
         },
-        "ShowOrbitLine": {
+        "showOrbitLine": {
           "type": "boolean",
           "description": "Referring to the orbit line in the map screen.",
           "default": true
         },
-        "DottedOrbitLine": {
+        "dottedOrbitLine": {
           "type": "boolean",
           "description": "Should the orbit line be dotted?"
         },
-        "IsStatic": {
+        "isStatic": {
           "type": "boolean",
           "description": "Is the body meant to stay in one place without moving?"
         },
-        "Tint": {
+        "tint": {
           "description": "Colour of the orbit-line in the map view.",
           "$ref": "#/definitions/MColor"
         },
-        "TrackingOrbitLine": {
+        "trackingOrbitLine": {
           "type": "boolean",
           "description": "Should we just draw a line behind its orbit instead of the entire circle/ellipse?"
         },
@@ -946,11 +946,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "X": {
+        "x": {
           "type": "number",
           "format": "float"
         },
-        "Y": {
+        "y": {
           "type": "number",
           "format": "float"
         }
