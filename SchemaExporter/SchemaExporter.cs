@@ -65,10 +65,7 @@ public static class SchemaExporter
                 schema.OneOf.Clear();
                 foreach (var property in schema.Reference.Properties.Values) FixOneOf(property);
             }
-            else
-            {
-                foreach (var property in schema.Properties.Values) FixOneOf(property);
-            }
+            foreach (var property in schema.Properties.Values) FixOneOf(property);
         }
 
         private JsonSchema GetJsonSchema()
