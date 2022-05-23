@@ -1,9 +1,13 @@
-﻿using NewHorizons.External.Configs;
-using NJsonSchema;
-using NJsonSchema.Generation;
+﻿#region
+
 using System;
 using System.IO;
 using System.Linq;
+using NewHorizons.External.Configs;
+using NJsonSchema;
+using NJsonSchema.Generation;
+
+#endregion
 
 namespace SchemaExporter;
 
@@ -11,7 +15,7 @@ public static class SchemaExporter
 {
     public static void Main(string[] args)
     {
-        const string folderName = "Schemas";
+        const string folderName = "NewHorizons/Schemas";
 
         Directory.CreateDirectory(folderName);
         Console.WriteLine("Schema Generator: We're winning!");
