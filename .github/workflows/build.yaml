@@ -39,8 +39,11 @@ jobs:
 
     - uses: actions/setup-dotnet@v1
 
+    # Debugging, remove later
+    - run: "tree C: /f"
+
     # Epic moment
-    - run: sn -Vr *
+    - run: "C:\Program Files (x86)\Microsoft SDKs\Windows\v10.0A\bin\NETFX 4.8.0 Tools\x64\sn.exe" -Vr *
 
     - name: Build Project
       run: dotnet build -c $Env:BUILD_TYPE
@@ -50,9 +53,6 @@ jobs:
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
         path: .\NewHorizons\Obj\${{ env.BUILD_TYPE }}
-        
-    # Debugging, remove later
-    - run: tree /f
         
     - name: Generate Schemas
       run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
