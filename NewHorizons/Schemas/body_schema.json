@@ -513,55 +513,6 @@
       }
     },
     "FunnelModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "target": {
-              "type": "string",
-              "description": "The planet the funnel will flow to"
-            },
-            "tint": {
-              "description": "Tint of the funnel",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            },
-            "type": {
-              "description": "Type of fluid the funnel transfers",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/FunnelType"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    },
-    "FunnelType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Sand",
-        "Water",
-        "Lava",
-        "Star"
-      ],
-      "enum": [
-        "Sand",
-        "Water",
-        "Lava",
-        "Star"
-      ]
-    },
-    "VariableSizeModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -571,6 +522,26 @@
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "target": {
+          "type": "string",
+          "description": "The planet the funnel will flow to"
+        },
+        "tint": {
+          "description": "Tint of the funnel",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
+        },
+        "type": {
+          "description": "Type of fluid the funnel transfers",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/FunnelType"
+            }
+          ]
         }
       }
     },
@@ -587,6 +558,22 @@
           "format": "float"
         }
       }
+    },
+    "FunnelType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Sand",
+        "Water",
+        "Lava",
+        "Star"
+      ],
+      "enum": [
+        "Sand",
+        "Water",
+        "Lava",
+        "Star"
+      ]
     },
     "HeightMapModule": {
       "type": "object",
@@ -623,30 +610,30 @@
       }
     },
     "LavaModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "size": {
-              "type": "number",
-              "description": "Size of the lava sphere",
-              "format": "float"
-            },
-            "tint": {
-              "description": "Tint of the lava",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "size": {
+          "type": "number",
+          "description": "Size of the lava sphere",
+          "format": "float"
+        },
+        "tint": {
+          "description": "Tint of the lava",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
         }
-      ]
+      }
     },
     "OrbitModule": {
       "type": "object",
@@ -1476,63 +1463,63 @@
       }
     },
     "RingModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "fluidType": {
-              "description": "Fluid type for sounds/effects when colliding with this ring.",
-              "oneOf": [
-                {
-                  "type": "null"
-                },
-                {
-                  "$ref": "#/definitions/CloudFluidType2"
-                }
-              ]
-            },
-            "inclination": {
-              "type": "number",
-              "description": "Angle between the rings and the equatorial plane of the planet.",
-              "format": "float"
-            },
-            "innerRadius": {
-              "type": "number",
-              "description": "Inner radius of the disk",
-              "format": "float",
-              "minimum": 0.0
-            },
-            "longitudeOfAscendingNode": {
-              "type": "number",
-              "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.",
-              "format": "float"
-            },
-            "outerRadius": {
-              "type": "number",
-              "description": "Outer radius of the disk",
-              "format": "float",
-              "minimum": 0.0
-            },
-            "rotationSpeed": {
-              "type": "number",
-              "description": "Allows the rings to rotate.",
-              "format": "float"
-            },
-            "texture": {
-              "type": "string",
-              "description": "Relative filepath to the texture used for the rings."
-            },
-            "unlit": {
-              "type": "boolean",
-              "description": "Should this ring be unlit?"
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "fluidType": {
+          "description": "Fluid type for sounds/effects when colliding with this ring.",
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/definitions/CloudFluidType2"
+            }
+          ]
+        },
+        "inclination": {
+          "type": "number",
+          "description": "Angle between the rings and the equatorial plane of the planet.",
+          "format": "float"
+        },
+        "innerRadius": {
+          "type": "number",
+          "description": "Inner radius of the disk",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "longitudeOfAscendingNode": {
+          "type": "number",
+          "description": "Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.",
+          "format": "float"
+        },
+        "outerRadius": {
+          "type": "number",
+          "description": "Outer radius of the disk",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "description": "Allows the rings to rotate.",
+          "format": "float"
+        },
+        "texture": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the rings."
+        },
+        "unlit": {
+          "type": "boolean",
+          "description": "Should this ring be unlit?"
         }
-      ]
+      }
     },
     "CloudFluidType2": {
       "type": "integer",
@@ -1553,30 +1540,30 @@
       ]
     },
     "SandModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "Size": {
-              "type": "number",
-              "description": "Size of the sand",
-              "format": "float"
-            },
-            "Tint": {
-              "description": "Tint of the sand",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "Size": {
+          "type": "number",
+          "description": "Size of the sand",
+          "format": "float"
+        },
+        "Tint": {
+          "description": "Tint of the sand",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
         }
-      ]
+      }
     },
     "ShipLogModule": {
       "type": "object",
@@ -1837,52 +1824,52 @@
       }
     },
     "SingularityModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "makeZeroGVolume": {
-              "type": "boolean",
-              "description": "Only for White Holes. Should this white hole repel the player from it.",
-              "default": true
-            },
-            "pairedSingularity": {
-              "type": "string",
-              "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
-            },
-            "position": {
-              "description": "Position of the singularity",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MVector3"
-                }
-              ]
-            },
-            "size": {
-              "type": "number",
-              "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
-              "format": "float",
-              "minimum": 0.0
-            },
-            "targetStarSystem": {
-              "type": "string",
-              "description": "If you want a black hole to load a new star system scene, put its name here."
-            },
-            "type": {
-              "description": "Type of singularity (white hole or black hole)",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/SingularityType"
-                }
-              ]
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "makeZeroGVolume": {
+          "type": "boolean",
+          "description": "Only for White Holes. Should this white hole repel the player from it.",
+          "default": true
+        },
+        "pairedSingularity": {
+          "type": "string",
+          "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
+        },
+        "position": {
+          "description": "Position of the singularity",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MVector3"
+            }
+          ]
+        },
+        "size": {
+          "type": "number",
+          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "If you want a black hole to load a new star system scene, put its name here."
+        },
+        "type": {
+          "description": "Type of singularity (white hole or black hole)",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/SingularityType"
+            }
+          ]
         }
-      ]
+      }
     },
     "SingularityType": {
       "type": "string",
@@ -1939,99 +1926,99 @@
       }
     },
     "StarModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "endTint": {
-              "description": "Colour of the star at the end of its life.",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            },
-            "goSupernova": {
-              "type": "boolean",
-              "description": "Should this star explode after 22 minutes?",
-              "default": true
-            },
-            "hasAtmosphere": {
-              "type": "boolean",
-              "description": "The default sun has its own atmosphere that is different from regular planets. If you want that, set this to\n`true`.",
-              "default": true
-            },
-            "lightTint": {
-              "description": "Colour of the light given off.",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            },
-            "size": {
-              "type": "number",
-              "description": "Radius of the star.",
-              "format": "float",
-              "default": 2000.0,
-              "minimum": 0.0
-            },
-            "solarLuminosity": {
-              "type": "number",
-              "description": "Relative strength of the light compared to the sun.",
-              "format": "float",
-              "default": 1.0,
-              "minimum": 0.0
-            },
-            "supernovaTint": {
-              "description": "The tint of the supernova this star creates when it dies.",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            },
-            "tint": {
-              "description": "Colour of the star.",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "endTint": {
+          "description": "Colour of the star at the end of its life.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
+        },
+        "goSupernova": {
+          "type": "boolean",
+          "description": "Should this star explode after 22 minutes?",
+          "default": true
+        },
+        "hasAtmosphere": {
+          "type": "boolean",
+          "description": "The default sun has its own atmosphere that is different from regular planets. If you want that, set this to\n`true`.",
+          "default": true
+        },
+        "lightTint": {
+          "description": "Colour of the light given off.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
+        },
+        "size": {
+          "type": "number",
+          "description": "Radius of the star.",
+          "format": "float",
+          "default": 2000.0,
+          "minimum": 0.0
+        },
+        "solarLuminosity": {
+          "type": "number",
+          "description": "Relative strength of the light compared to the sun.",
+          "format": "float",
+          "default": 1.0,
+          "minimum": 0.0
+        },
+        "supernovaTint": {
+          "description": "The tint of the supernova this star creates when it dies.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
+        },
+        "tint": {
+          "description": "Colour of the star.",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
         }
-      ]
+      }
     },
     "WaterModule": {
-      "allOf": [
-        {
-          "$ref": "#/definitions/VariableSizeModule"
-        },
-        {
-          "type": "object",
-          "additionalProperties": false,
-          "properties": {
-            "size": {
-              "type": "number",
-              "description": "Size of the water sphere",
-              "format": "float"
-            },
-            "tint": {
-              "description": "Tint of the water",
-              "oneOf": [
-                {
-                  "$ref": "#/definitions/MColor"
-                }
-              ]
-            }
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "size": {
+          "type": "number",
+          "description": "Size of the water sphere",
+          "format": "float"
+        },
+        "tint": {
+          "description": "Tint of the water",
+          "oneOf": [
+            {
+              "$ref": "#/definitions/MColor"
+            }
+          ]
         }
-      ]
+      }
     }
   }
 }
