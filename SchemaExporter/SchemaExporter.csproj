@@ -15,16 +15,19 @@
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="System.Runtime.Serialization, Version=4.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e">
+            <HintPath>System.Runtime.Serialization.dll</HintPath>
+        </Reference>
         <None Include="System.Runtime.Serialization.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="UnityEngine.CoreModule.dll">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-        <PackageReference Include="NJsonSchema" Version="10.7.1" />
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" IncludeAssets="compile" />
-        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="NJsonSchema" Version="10.7.1"/>
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" IncludeAssets="compile"/>
+        <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0"/>
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\NewHorizons\NewHorizons.csproj" />
