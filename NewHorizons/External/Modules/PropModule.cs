@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using System.ComponentModel;
 
 namespace NewHorizons.External.Modules
@@ -143,6 +143,9 @@ namespace NewHorizons.External.Modules
             public MVector3 rotation;
             public string[] reveals;
             public SlideInfo[] slides;
+
+            // enum values for this property: "autoProjector", "slideReel", "playerVisionTorchTarget", "standingVisionTorch"
+            // I don't know why the default value is capital 'S' SlideReel. it should be lower case as far as I can tell.
             public string type = "SlideReel";
         }
 
