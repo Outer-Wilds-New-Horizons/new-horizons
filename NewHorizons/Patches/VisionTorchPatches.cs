@@ -68,5 +68,8 @@ namespace NewHorizons.Patches
 
 			return true;
 		}
+
+        // ProbeLauncher.Disable()?
+        // public override void PickUpItem(Transform holdTranform)
 	}
 }

@@ -184,7 +184,7 @@ namespace NewHorizons.Builder.Props
 
                 // TODO: do this part asynchronously so that you can load all the slides you want without stalling the game out for 5 days
                 var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                slide.textureOverride = ImageUtilities.Invert(texture);
+                slide.textureOverride = texture; //ImageUtilities.Invert(texture);
 
                 AddModules(slideInfo, ref slide);
 
