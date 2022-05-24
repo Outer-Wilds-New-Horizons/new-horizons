@@ -7,6 +7,7 @@ using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum GravityFallOff
     {
         [EnumMember(Value = @"linear")] Linear = 0,
@@ -43,7 +44,6 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public GravityFallOff gravityFallOff = GravityFallOff.Linear;
 
         /// <summary>

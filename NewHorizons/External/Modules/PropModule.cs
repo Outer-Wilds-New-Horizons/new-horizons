@@ -185,6 +185,7 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class TornadoInfo
         {
+            [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
             {
                 [EnumMember(Value = @"downwards")] Downwards = 0,
@@ -222,7 +223,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public TornadoType type = TornadoType.Downwards;
 
             /// <summary>
@@ -337,6 +337,7 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class RevealInfo
         {
+            [JsonConverter(typeof(StringEnumConverter))]
             public enum RevealVolumeType
             {
                 [EnumMember(Value = @"enter")] Enter = 0,
@@ -369,7 +370,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public RevealVolumeType revealOn = RevealVolumeType.Enter;
 
             /// <summary>
@@ -400,6 +400,7 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class NomaiTextInfo
         {
+            [JsonConverter(typeof(StringEnumConverter))]
             public enum NomaiTextType
             {
                 [EnumMember(Value = @"wall")] Wall = 0,
@@ -442,7 +443,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
@@ -454,6 +454,7 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class NomaiTextArcInfo
         {
+            [JsonConverter(typeof(StringEnumConverter))]
             public enum NomaiTextArcType
             {
                 [EnumMember(Value = @"adult")] Adult = 0,
@@ -471,7 +472,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of text to display.
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public NomaiTextArcType type = NomaiTextArcType.Adult;
 
             /// <summary>
@@ -483,6 +483,7 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class ProjectionInfo
         {
+            [JsonConverter(typeof(StringEnumConverter))]
             public enum SlideShowType
             {
                 [EnumMember(Value = @"slideReel")] SlideReel = 0,
@@ -513,7 +514,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public SlideShowType type = SlideShowType.SlideReel;
         }
 

@@ -8,6 +8,7 @@ using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum CloudFluidType
     {
         [EnumMember(Value = @"none")] None = 0,
@@ -94,7 +95,6 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            [JsonConverter(typeof(StringEnumConverter))]
             public CloudFluidType fluidType = CloudFluidType.Cloud;
 
             /// <summary>
@@ -160,7 +160,6 @@ namespace NewHorizons.External.Modules
         public string cloudRamp;
 
         [Obsolete("CloudFluidType is deprecated, please use CloudInfo instead")]
-        [JsonConverter(typeof(StringEnumConverter))]
         public CloudFluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]

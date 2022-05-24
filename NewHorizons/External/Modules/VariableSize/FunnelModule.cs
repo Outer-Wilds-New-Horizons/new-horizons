@@ -5,6 +5,7 @@ using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules.VariableSize
 {
+    [JsonConverter(typeof(StringEnumConverter))]
     public enum FunnelType
     {
         [EnumMember(Value = @"sand")] Sand = 0,
@@ -32,7 +33,6 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Type of fluid the funnel transfers
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public FunnelType type = FunnelType.Sand;
     }
 }

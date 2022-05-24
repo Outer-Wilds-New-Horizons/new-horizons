@@ -10,6 +10,7 @@ namespace NewHorizons.External.Modules.VariableSize
     [JsonObject]
     public class SingularityModule : VariableSizeModule
     {
+        [JsonConverter(typeof(StringEnumConverter))]
         public enum SingularityType
         {
             [EnumMember(Value = @"blackHole")] BlackHole = 0,
@@ -47,7 +48,6 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Type of singularity (white hole or black hole)
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public SingularityType type;
     }
 }
