@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogRadius = atmo.fogSize;
             PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
-            PFC.fogColorRampTexture = atmo.FogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.FogTint.ToColor());
+            PFC.fogColorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint);
             PFC.fogColorRampIntensity = 1f;
             PFC.fogTint = atmo.fogTint;
 
