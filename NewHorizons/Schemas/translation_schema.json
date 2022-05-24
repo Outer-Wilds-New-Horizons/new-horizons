@@ -25,5 +25,9 @@
         "type": "string"
       }
     }
+  },
+  "$docs": {
+    "title": "Translation Schema",
+    "description": "Schema for a translation file in New Horizons"
   }
 }

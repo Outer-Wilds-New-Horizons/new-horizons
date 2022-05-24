@@ -89,5 +89,9 @@
         }
       }
     }
+  },
+  "$docs": {
+    "title": "Star System Schema",
+    "description": "Schema for a star system in New Horizons"
   }
 }

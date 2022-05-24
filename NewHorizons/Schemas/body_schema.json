@@ -1750,5 +1750,9 @@
         }
       }
     }
+  },
+  "$docs": {
+    "title": "Celestial Body Schema",
+    "description": "Schema for a celestial body in New Horizons"
   }
 }
