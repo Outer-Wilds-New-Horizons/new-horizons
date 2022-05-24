@@ -162,7 +162,7 @@ namespace NewHorizons.Builder.Props
         {
             // spawn a trigger for the vision torch
             var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            GameObject g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 1, false);
+            GameObject g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
 
             if (g == null)
             {
@@ -208,7 +208,10 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
+            //
             // spawn the torch itself
+            //
+
             var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
             GameObject standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
 
@@ -218,11 +221,21 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
+            //
+            // set some required properties on the torch
+            //
+
+            MindSlideProjector mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
+			mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+			
+            //
+            // set up slides
+            //
+
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             SlideInfo[] slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
-
 
             for (int i = 0; i < slidesCount; i++)
             {
@@ -238,12 +251,19 @@ namespace NewHorizons.Builder.Props
                 slideCollection.slides[i] = slide;
             }
 
-            // attatch a component to store all the data for the slides that play when a vision torch scans this target
+            // set up the containers for the slides
             SlideCollectionContainer slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
-            MindSlideCollection mindlideCollection = standingTorch.AddComponent<MindSlideCollection>();
-            mindlideCollection._slideCollectionContainer = slideCollectionContainer;
-            slideCollectionContainer = slideCollectionContainer;
+            MindSlideCollection mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
+            mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
+
+            // make sure that these slides play when the player wanders into the beam
+            // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
+            standingTorch.GetComponent<MindSlideProjector>()._mindSlideCollection = mindSlideCollection;
+		    mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
+		    mindSlideProjector._mindSlideCollection = mindSlideCollection;
+            mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
+
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
