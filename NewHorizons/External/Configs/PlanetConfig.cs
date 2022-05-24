@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
@@ -77,6 +78,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Unique name of your planet
         /// </summary>
+        [Required]
         public string name;
 
         /// <summary>
