@@ -471,6 +471,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of text to display.
             /// </summary>
+            [JsonConverter(typeof(StringEnumConverter))]
             public NomaiTextArcType type = NomaiTextArcType.Adult;
 
             /// <summary>
