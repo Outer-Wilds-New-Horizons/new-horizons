@@ -123,13 +123,13 @@ namespace NewHorizons.Builder.Body
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.Curve != null)
+            if (ring.curve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in ring.Curve)
+                foreach (var pair in ring.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 levelController.scaleCurve = curve;
             }

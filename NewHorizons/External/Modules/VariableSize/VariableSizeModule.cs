@@ -9,14 +9,14 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Scale this module over time
         /// </summary>
-        public TimeValuePair[] Curve { get; set; }
+        public TimeValuePair[] curve;
 
         public AnimationCurve GetAnimationCurve(float size = 1f)
         {
             var curve = new AnimationCurve();
-            if (Curve != null)
-                foreach (var pair in Curve)
-                    curve.AddKey(new Keyframe(pair.Time, size * pair.Value));
+            if (this.curve != null)
+                foreach (var pair in this.curve)
+                    curve.AddKey(new Keyframe(pair.time, size * pair.value));
             return curve;
         }
 
@@ -26,12 +26,12 @@ namespace NewHorizons.External.Modules.VariableSize
             /// <summary>
             /// A specific point in time
             /// </summary>
-            public float Time { get; set; }
+            public float time;
 
             /// <summary>
             /// The value for this point in time
             /// </summary>
-            public float Value { get; set; }
+            public float value;
         }
     }
 }

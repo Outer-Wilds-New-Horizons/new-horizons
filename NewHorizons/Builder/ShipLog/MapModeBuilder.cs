@@ -543,7 +543,7 @@ namespace NewHorizons.Builder.ShipLog
                 var lavaColor = body.Config.Lava?.tint;
                 if (lavaColor != null) return lavaColor.ToColor();
 
-                var sandColor = body.Config.Sand?.Tint;
+                var sandColor = body.Config.Sand?.tint;
                 if (sandColor != null) return sandColor.ToColor();
             }
             catch (Exception)

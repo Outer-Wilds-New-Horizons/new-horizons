@@ -7,11 +7,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Size of the sand
         /// </summary>
-        public float Size { get; set; }
+        public float size;
 
         /// <summary>
         /// Tint of the sand
         /// </summary>
-        public MColor Tint { get; set; }
+        public MColor tint;
     }
 }

@@ -90,13 +90,13 @@ namespace NewHorizons.Builder.Body
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 sizeController.scaleCurve = curve;
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;

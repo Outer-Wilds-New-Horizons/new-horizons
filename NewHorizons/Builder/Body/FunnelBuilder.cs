@@ -147,12 +147,12 @@ namespace NewHorizons.Builder.Body
 
             var funnelSizeController = funnelGO.AddComponent<FunnelController>();
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 funnelSizeController.scaleCurve = curve;
             }

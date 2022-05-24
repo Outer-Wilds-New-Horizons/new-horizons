@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Body
             sandGO.SetActive(false);
 
             var sandSphere = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/SandSphere"), sandGO.transform);
-            if (module.Tint != null)
+            if (module.tint != null)
             {
                 var oldMR = sandSphere.GetComponent<TessellatedSphereRenderer>();
                 var sandMaterials = oldMR.sharedMaterials;
@@ -24,8 +24,8 @@ namespace NewHorizons.Builder.Body
                     new Material(sandMaterials[1])
                 };
                 GameObject.Destroy(oldMR);
-                sandMR.sharedMaterials[0].color = module.Tint.ToColor();
-                sandMR.sharedMaterials[1].color = module.Tint.ToColor();
+                sandMR.sharedMaterials[0].color = module.tint.ToColor();
+                sandMR.sharedMaterials[1].color = module.tint.ToColor();
             }
 
             var collider = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/Collider"), sandGO.transform);
@@ -40,20 +40,20 @@ namespace NewHorizons.Builder.Body
 
             sandSphere.AddComponent<ChildColliderSettings>();
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var levelController = sandGO.AddComponent<SandLevelController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, 2f * module.Size * pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, 2f * module.size * pair.value));
                 }
                 levelController._scaleCurve = curve;
             }
 
             sandGO.transform.parent = sector?.transform ?? planetGO.transform;
             sandGO.transform.position = planetGO.transform.position;
-            sandGO.transform.localScale = Vector3.one * module.Size * 2f;
+            sandGO.transform.localScale = Vector3.one * module.size * 2f;
 
             sandGO.SetActive(true);
         }

@@ -12,12 +12,12 @@ namespace NewHorizons.Builder.Body
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, LavaModule module)
         {
             var heightScale = module.size;
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var modifier = 1f;
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    if (pair.Value < modifier) modifier = pair.Value;
+                    if (pair.value < modifier) modifier = pair.value;
                 }
                 heightScale = Mathf.Max(0.1f, heightScale * modifier);
             }
@@ -54,13 +54,13 @@ namespace NewHorizons.Builder.Body
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
             destructionVolume.SetActive(true);
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var levelController = moltenCore.AddComponent<SandLevelController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, module.size * pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, module.size * pair.value));
                 }
                 levelController._scaleCurve = curve;
             }

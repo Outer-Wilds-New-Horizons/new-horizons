@@ -73,7 +73,7 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Lava != null)
                 {
-                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.size, body.Config.Lava.Curve, Color.black);
+                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.size, body.Config.Lava.curve, Color.black);
                     if (realSize < body.Config.Lava.size) realSize = body.Config.Lava.size;
 
                     var material = new Material(lavaMaterial);
@@ -83,14 +83,14 @@ namespace NewHorizons.Builder.Body
                 if (body.Config.Water != null)
                 {
                     var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
-                    AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.Curve, colour);
+                    AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.curve, colour);
                     if (realSize < body.Config.Water.size) realSize = body.Config.Water.size;
                 }
                 if (body.Config.Sand != null)
                 {
-                    var colour = body.Config.Sand.Tint?.ToColor() ?? Color.yellow;
-                    AddColouredSphere(newProxy, body.Config.Sand.Size, body.Config.Sand.Curve, colour);
-                    if (realSize < body.Config.Sand.Size) realSize = body.Config.Sand.Size;
+                    var colour = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+                    AddColouredSphere(newProxy, body.Config.Sand.size, body.Config.Sand.curve, colour);
+                    if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Singularity != null)
@@ -168,7 +168,7 @@ namespace NewHorizons.Builder.Body
             var animCurve = new AnimationCurve();
             foreach (var pair in curve)
             {
-                animCurve.AddKey(new Keyframe(pair.Time, pair.Value));
+                animCurve.AddKey(new Keyframe(pair.time, pair.value));
             }
             sizeController.scaleCurve = animCurve;
             sizeController.size = size;
