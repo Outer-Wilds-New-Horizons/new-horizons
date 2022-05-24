@@ -234,7 +234,7 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 if (body.RelativePath == null)
                 {
-                    Logger.Log("Error loading config for " + body.Config.Name + " in " + body.Config.StarSystem);
+                    Logger.Log("Error loading config for " + body.Config.name + " in " + body.Config.starSystem);
                 }
 
                 loadedConfigFiles[folder + body.RelativePath] = (body.Config as PlanetConfig);
@@ -251,8 +251,8 @@ namespace NewHorizons.Utility.DebugUtilities
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                Logger.Log("Possibly Saving... " + loadedConfigFiles[filePath].Name + " @ " + filePath);
-                if (loadedConfigFiles[filePath].StarSystem != Main.Instance.CurrentStarSystem) continue;
+                Logger.Log("Possibly Saving... " + loadedConfigFiles[filePath].name + " @ " + filePath);
+                if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
 
                 var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
 
@@ -296,16 +296,16 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 Logger.Log("potentially updating copy of config at " + filePath);
 
-                if (loadedConfigFiles[filePath].StarSystem != Main.Instance.CurrentStarSystem) return;
-                if (loadedConfigFiles[filePath].Name == null || AstroObjectLocator.GetAstroObject(loadedConfigFiles[filePath].Name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
+                if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
+                if (loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(loadedConfigFiles[filePath].name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
 
-                var astroObjectName = DebugPropPlacer.GetAstroObjectName(loadedConfigFiles[filePath].Name);
+                var astroObjectName = DebugPropPlacer.GetAstroObjectName(loadedConfigFiles[filePath].name);
                 planetToConfigPath[astroObjectName] = filePath;
 
                 if (!newDetails.ContainsKey(astroObjectName)) continue;
 
                 if (loadedConfigFiles[filePath].Props == null) loadedConfigFiles[filePath].Props = new External.Modules.PropModule();
-                loadedConfigFiles[filePath].Props.Details = newDetails[astroObjectName];
+                loadedConfigFiles[filePath].Props.details = newDetails[astroObjectName];
 
                 Logger.Log("successfully updated copy of config file for " + astroObjectName);
             }
@@ -318,10 +318,10 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObjectName + ".json";
                 PlanetConfig c = new PlanetConfig();
-                c.StarSystem = Main.Instance.CurrentStarSystem;
-                c.Name = astroObjectName;
+                c.starSystem = Main.Instance.CurrentStarSystem;
+                c.name = astroObjectName;
                 c.Props = new PropModule();
-                c.Props.Details = newDetails[astroObjectName];
+                c.Props.details = newDetails[astroObjectName];
 
                 loadedConfigFiles[filepath] = c;
             }

@@ -2,12 +2,13 @@
 {
     public interface IOrbitalParameters
     {
-        float Inclination { get; set; }
-        float SemiMajorAxis { get; set; }
-        float LongitudeOfAscendingNode { get; set; }
-        float Eccentricity { get; set; }
-        float ArgumentOfPeriapsis { get; set; }
-        float TrueAnomaly { get; set; }
+        // lowercase cuz schema
+        float inclination { get; set; }
+        float semiMajorAxis { get; set; }
+        float longitudeOfAscendingNode { get; set; }
+        float eccentricity { get; set; }
+        float argumentOfPeriapsis { get; set; }
+        float trueAnomaly { get; set; }
 
         OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity);
     }

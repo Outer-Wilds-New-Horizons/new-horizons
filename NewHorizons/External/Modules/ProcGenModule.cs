@@ -1,10 +1,14 @@
-﻿using NewHorizons.Utility;
+﻿using System.ComponentModel.DataAnnotations;
+using NewHorizons.Utility;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {
-    public class ProcGenModule 
+    [JsonObject]
+    public class ProcGenModule
     {
-        public float Scale { get; set; }
-        public MColor Color { get; set; }
+        public MColor color;
+
+        [Range(0, double.MaxValue)] public float scale;
     }
 }

@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
-            var waterSize = module.Size;
+            var waterSize = module.size;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
@@ -38,10 +38,10 @@ namespace NewHorizons.Builder.Body
             for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
-                if (module.Tint != null)
+                if (module.tint != null)
                 {
-                    tempArray[i].color = module.Tint.ToColor();
-                    tempArray[i].SetColor("_FogColor", module.Tint.ToColor());
+                    tempArray[i].color = module.tint.ToColor();
+                    tempArray[i].SetColor("_FogColor", module.tint.ToColor());
                 }
             }
 
@@ -83,29 +83,29 @@ namespace NewHorizons.Builder.Body
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
 
-            if (module.Tint != null)
+            if (module.tint != null)
             {
-                var adjustedColour = module.Tint.ToColor() / 4f;
+                var adjustedColour = module.tint.ToColor() / 4f;
                 adjustedColour.a = adjustedColour.a * 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 sizeController.scaleCurve = curve;
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
-                sizeController.size = module.Size;
+                sizeController.size = module.size;
             }
             else
             {
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius, module.Size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius2, module.Size / 2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius, module.size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius2, module.size / 2f);
             }
 
             // TODO: make LOD work 

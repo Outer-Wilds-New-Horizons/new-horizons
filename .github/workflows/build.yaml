@@ -2,11 +2,20 @@ name: Build
 
 on:
   push:
-    branches: [dev, main]
+    branches: [dev, main, schema-integration]
     paths-ignore:
-      - docs/**
-      - "**schema**"
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
   pull_request:
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
   workflow_dispatch:
   
 env:
@@ -27,10 +36,43 @@ jobs:
     - name: Set Debug
       if: github.ref != 'refs/heads/main'
       run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-    
+
     - uses: actions/setup-dotnet@v1
-    - run: dotnet build -c $Env:BUILD_TYPE -o .\NewHorizons\Bin\$Env:BUILD_TYPE
-    - uses: actions/upload-artifact@v2
+
+    # Disable Strong Name Verification to let us pull a switch-a-roo
+    - run: "C:\\\"Program Files (x86)\"\\\"Microsoft SDKs\"\\Windows\\v10.0A\\bin\\\"NETFX 4.8 Tools\"\\x64\\sn.exe -Vr *"
+
+    - name: Build Project
+      run: dotnet build -c $Env:BUILD_TYPE
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v2
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
-        path: .\NewHorizons\Bin\${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\Obj\${{ env.BUILD_TYPE }}
+        
+    - name: Generate Schemas
+      run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
+      
+    # Only want to commit schemas if they've actually changed
+    - name: Verify Changed Schemas
+      uses: tj-actions/verify-changed-files@v9.1
+      id: changed_files
+      with:
+        files: NewHorizons\Schemas\**
+        
+    - name: Commit Schemas
+      if: steps.changed_files.outputs.files_changed == 'true'
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add NewHorizons\Schemas\**
+        git commit -m "Updated Schemas"
+        
+    - name: Push Schemas
+      if: steps.changed_files.outputs.files_changed == 'true'
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.github_token }}
+        branch: ${{ github.ref }}
+      

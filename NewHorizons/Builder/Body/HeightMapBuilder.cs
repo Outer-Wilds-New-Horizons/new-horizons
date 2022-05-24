@@ -16,10 +16,10 @@ namespace NewHorizons.Builder.Body
             Texture2D heightMap, textureMap;
             try
             {
-                if (module.HeightMap == null) heightMap = Texture2D.whiteTexture;
-                else heightMap = ImageUtilities.GetTexture(mod, module.HeightMap);
-                if (module.TextureMap == null) textureMap = Texture2D.whiteTexture;
-                else textureMap = ImageUtilities.GetTexture(mod, module.TextureMap);
+                if (module.heightMap == null) heightMap = Texture2D.whiteTexture;
+                else heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
+                if (module.textureMap == null) textureMap = Texture2D.whiteTexture;
+                else textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
             }
             catch (Exception e)
             {
@@ -32,8 +32,8 @@ namespace NewHorizons.Builder.Body
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Vector3 stretch = module.Stretch != null ? (Vector3)module.Stretch : Vector3.one;
-            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.MinHeight, module.MaxHeight, stretch);
+            Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
+            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.minHeight, module.maxHeight, stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;

@@ -31,88 +31,88 @@ namespace NewHorizons.Builder.Body
         {
             if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
-            var proxyName = $"{body.Config.Name}_Proxy";
+            var proxyName = $"{body.Config.name}_Proxy";
 
             var newProxy = new GameObject(proxyName);
 
             try
             {
                 // We want to take the largest size I think
-                var realSize = body.Config.Base.SurfaceSize;
+                var realSize = body.Config.Base.surfaceSize;
 
                 if (body.Config.HeightMap != null)
                 {
                     HeightMapBuilder.Make(newProxy, null, body.Config.HeightMap, body.Mod, 20);
-                    if (realSize < body.Config.HeightMap.MaxHeight) realSize = body.Config.HeightMap.MaxHeight;
+                    if (realSize < body.Config.HeightMap.maxHeight) realSize = body.Config.HeightMap.maxHeight;
                 }
-                if (body.Config.Base.GroundSize != 0)
+                if (body.Config.Base.groundSize != 0)
                 {
-                    GeometryBuilder.Make(newProxy, null, body.Config.Base.GroundSize);
-                    if (realSize < body.Config.Base.GroundSize) realSize = body.Config.Base.GroundSize;
+                    GeometryBuilder.Make(newProxy, null, body.Config.Base.groundSize);
+                    if (realSize < body.Config.Base.groundSize) realSize = body.Config.Base.groundSize;
                 }
-                if (body.Config.Atmosphere?.Clouds != null)
+                if (body.Config.Atmosphere?.clouds != null)
                 {
                     CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod);
-                    if (realSize < body.Config.Atmosphere.Size) realSize = body.Config.Atmosphere.Size;
+                    if (realSize < body.Config.Atmosphere.size) realSize = body.Config.Atmosphere.size;
                 }
                 if (body.Config.Ring != null)
                 {
                     RingBuilder.MakeRingGraphics(newProxy, null, body.Config.Ring, body.Mod);
-                    if (realSize < body.Config.Ring.OuterRadius) realSize = body.Config.Ring.OuterRadius;
+                    if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
                 }
                 if (body.Config.Star != null)
                 {
                     var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star);
 
-                    if (realSize < body.Config.Star.Size) realSize = body.Config.Star.Size;
+                    if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
                 if (body.Config.ProcGen != null)
                 {
                     ProcGenBuilder.Make(newProxy, null, body.Config.ProcGen);
-                    if (realSize < body.Config.ProcGen.Scale) realSize = body.Config.ProcGen.Scale;
+                    if (realSize < body.Config.ProcGen.scale) realSize = body.Config.ProcGen.scale;
                 }
                 if (body.Config.Lava != null)
                 {
-                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.Size, body.Config.Lava.Curve, Color.black);
-                    if (realSize < body.Config.Lava.Size) realSize = body.Config.Lava.Size;
+                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.size, body.Config.Lava.curve, Color.black);
+                    if (realSize < body.Config.Lava.size) realSize = body.Config.Lava.size;
 
                     var material = new Material(lavaMaterial);
-                    if (body.Config.Lava.Tint != null) material.SetColor(EmissionColor, body.Config.Lava.Tint.ToColor());
+                    if (body.Config.Lava.tint != null) material.SetColor(EmissionColor, body.Config.Lava.tint.ToColor());
                     sphere.GetComponent<MeshRenderer>().material = material;
                 }
                 if (body.Config.Water != null)
                 {
-                    var colour = body.Config.Water.Tint?.ToColor() ?? Color.blue;
-                    AddColouredSphere(newProxy, body.Config.Water.Size, body.Config.Water.Curve, colour);
-                    if (realSize < body.Config.Water.Size) realSize = body.Config.Water.Size;
+                    var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
+                    AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.curve, colour);
+                    if (realSize < body.Config.Water.size) realSize = body.Config.Water.size;
                 }
                 if (body.Config.Sand != null)
                 {
-                    var colour = body.Config.Sand.Tint?.ToColor() ?? Color.yellow;
-                    AddColouredSphere(newProxy, body.Config.Sand.Size, body.Config.Sand.Curve, colour);
-                    if (realSize < body.Config.Sand.Size) realSize = body.Config.Sand.Size;
+                    var colour = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+                    AddColouredSphere(newProxy, body.Config.Sand.size, body.Config.Sand.curve, colour);
+                    if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Singularity != null)
                 {
-                    if (body.Config.Singularity.Type == "BlackHole")
+                    if (body.Config.Singularity.type == SingularityModule.SingularityType.BlackHole)
                     {
-                        MakeBlackHole(newProxy, body.Config.Singularity.Size);
+                        MakeBlackHole(newProxy, body.Config.Singularity.size);
                     }
                     else
                     {
-                        MakeWhiteHole(newProxy, body.Config.Singularity.Size);
+                        MakeWhiteHole(newProxy, body.Config.Singularity.size);
                     }
 
-                    if (realSize < body.Config.Singularity.Size) realSize = body.Config.Singularity.Size;
+                    if (realSize < body.Config.Singularity.size) realSize = body.Config.Singularity.size;
                 }
-                if (body.Config.Base.HasCometTail)
+                if (body.Config.Base.hasCometTail)
                 {
                     CometTailBuilder.Make(newProxy, null, body.Config);
                 }
-                if (body.Config.Props?.ProxyDetails != null)
+                if (body.Config.Props?.proxyDetails != null)
                 {
-                    foreach (var detailInfo in body.Config.Props.ProxyDetails)
+                    foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
                         DetailBuilder.Make(newProxy, null, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName, detailInfo);
                     }
@@ -136,12 +136,12 @@ namespace NewHorizons.Builder.Body
                 }
 
                 var proxyController = newProxy.AddComponent<NHProxy>();
-                proxyController.astroName = body.Config.Name;
+                proxyController.astroName = body.Config.name;
                 proxyController._realObjectDiameter = realSize;
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.Name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}] : {ex.Message}, {ex.StackTrace}");
                 GameObject.Destroy(newProxy);
             }
         }
@@ -168,7 +168,7 @@ namespace NewHorizons.Builder.Body
             var animCurve = new AnimationCurve();
             foreach (var pair in curve)
             {
-                animCurve.AddKey(new Keyframe(pair.Time, pair.Value));
+                animCurve.AddKey(new Keyframe(pair.time, pair.value));
             }
             sizeController.scaleCurve = animCurve;
             sizeController.size = size;

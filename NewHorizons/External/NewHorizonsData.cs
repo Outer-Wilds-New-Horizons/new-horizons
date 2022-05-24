@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility;
 
 namespace NewHorizons.External
 {
@@ -9,20 +9,22 @@ namespace NewHorizons.External
         private static NewHorizonsSaveFile _saveFile;
         private static NewHorizonsProfile _activeProfile;
         private static string _activeProfileName;
-        private static string _fileName = "save.json";
+        private static readonly string FileName = "save.json";
 
         public static void Load()
         {
             _activeProfileName = StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
             if (_activeProfileName == null)
             {
-                Logger.LogError($"Couldn't find active profile, are you on Gamepass?");
+                Logger.LogError("Couldn't find active profile, are you on Gamepass?");
                 _activeProfileName = "XboxGamepassDefaultProfile";
             }
+
             try
             {
-                _saveFile = Main.Instance.ModHelper.Storage.Load<NewHorizonsSaveFile>(_fileName);
-                if (!_saveFile.Profiles.ContainsKey(_activeProfileName)) _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
+                _saveFile = Main.Instance.ModHelper.Storage.Load<NewHorizonsSaveFile>(FileName);
+                if (!_saveFile.Profiles.ContainsKey(_activeProfileName))
+                    _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                 _activeProfile = _saveFile.Profiles[_activeProfileName];
                 Logger.Log($"Loaded save data for {_activeProfileName}");
             }
@@ -30,11 +32,11 @@ namespace NewHorizons.External
             {
                 try
                 {
-                    Logger.Log($"Couldn't load save data from {_fileName}, creating a new file");
+                    Logger.Log($"Couldn't load save data from {FileName}, creating a new file");
                     _saveFile = new NewHorizonsSaveFile();
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                     _activeProfile = _saveFile.Profiles[_activeProfileName];
-                    Main.Instance.ModHelper.Storage.Save(_saveFile, _fileName);
+                    Main.Instance.ModHelper.Storage.Save(_saveFile, FileName);
                     Logger.Log($"Loaded save data for {_activeProfileName}");
                 }
                 catch (Exception e)
@@ -47,20 +49,42 @@ namespace NewHorizons.External
         public static void Save()
         {
             if (_saveFile == null) return;
-            Main.Instance.ModHelper.Storage.Save(_saveFile, _fileName);
+            Main.Instance.ModHelper.Storage.Save(_saveFile, FileName);
         }
 
         public static void Reset()
         {
-            if (_saveFile == null || _activeProfile == null)
-            {
-                Load();
-            }
+            if (_saveFile == null || _activeProfile == null) Load();
             Logger.Log($"Resetting save data for {_activeProfileName}");
             _activeProfile = new NewHorizonsProfile();
             _saveFile.Profiles[_activeProfileName] = _activeProfile;
 
             Save();
+        }
+
+        private class NewHorizonsSaveFile
+        {
+            public NewHorizonsSaveFile()
+            {
+                Profiles = new Dictionary<string, NewHorizonsProfile>();
+            }
+
+            public Dictionary<string, NewHorizonsProfile> Profiles { get; }
+        }
+
+        private class NewHorizonsProfile
+        {
+            public NewHorizonsProfile()
+            {
+                KnownFrequencies = new List<string>();
+                KnownSignals = new List<string>();
+                NewlyRevealedFactIDs = new List<string>();
+            }
+
+            public List<string> KnownFrequencies { get; }
+            public List<string> KnownSignals { get; }
+
+            public List<string> NewlyRevealedFactIDs { get; }
         }
 
         #region Frequencies
@@ -83,7 +107,7 @@ namespace NewHorizons.External
 
         public static bool KnowsMultipleFrequencies()
         {
-            return (_activeProfile != null && _activeProfile.KnownFrequencies.Count > 0);
+            return _activeProfile != null && _activeProfile.KnownFrequencies.Count > 0;
         }
 
         #endregion
@@ -128,30 +152,5 @@ namespace NewHorizons.External
         }
 
         #endregion
-
-        private class NewHorizonsSaveFile
-        {
-            public NewHorizonsSaveFile()
-            {
-                Profiles = new Dictionary<string, NewHorizonsProfile>();
-            }
-
-            public Dictionary<string, NewHorizonsProfile> Profiles { get; set; }
-        }
-
-        private class NewHorizonsProfile
-        {
-            public NewHorizonsProfile()
-            {
-                KnownFrequencies = new List<string>();
-                KnownSignals = new List<string>();
-                NewlyRevealedFactIDs = new List<string>();
-            }
-
-            public List<string> KnownFrequencies { get; set; }
-            public List<string> KnownSignals { get; set; }
-
-            public List<string> NewlyRevealedFactIDs { get; set; }
-        }
     }
 }

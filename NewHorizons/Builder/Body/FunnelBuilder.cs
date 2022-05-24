@@ -1,4 +1,5 @@
-﻿using NewHorizons.Components;
+﻿using System.Runtime.Serialization;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -12,26 +13,15 @@ namespace NewHorizons.Builder.Body
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
         private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
 
-        private enum FunnelType
-        {
-            SAND,
-            WATER,
-            LAVA,
-            STAR
-        }
-
         public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
-            var funnelType = FunnelType.SAND;
-            if (module.Type.ToUpper().Equals("WATER")) funnelType = FunnelType.WATER;
-            else if (module.Type.ToUpper().Equals("LAVA")) funnelType = FunnelType.LAVA;
-            else if (module.Type.ToUpper().Equals("STAR")) funnelType = FunnelType.STAR;
+            var funnelType = module.type;
 
             var funnelGO = new GameObject($"{planetGO.name.Replace("_Body", "")}Funnel_Body");
             funnelGO.SetActive(false);
             funnelGO.transform.parent = planetGO.transform;
 
-            var owrb = funnelGO.AddComponent<OWRigidbody>();
+            funnelGO.AddComponent<OWRigidbody>();
 
             var matchMotion = funnelGO.AddComponent<MatchInitialMotion>();
             matchMotion.SetBodyToMatch(rigidbody);
@@ -65,10 +55,10 @@ namespace NewHorizons.Builder.Body
             var fluidVolume = sfv.gameObject;
             switch (funnelType)
             {
-                case FunnelType.SAND:
+                case FunnelType.Sand:
                     sfv._fluidType = FluidVolume.Type.SAND;
                     break;
-                case FunnelType.WATER:
+                case FunnelType.Water:
                     sfv._fluidType = FluidVolume.Type.WATER;
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
@@ -78,9 +68,9 @@ namespace NewHorizons.Builder.Body
                     for (int i = 0; i < waterMaterials.Length; i++)
                     {
                         materials[i] = new Material(waterMaterials[i]);
-                        if (module.Tint != null)
+                        if (module.tint != null)
                         {
-                            materials[i].SetColor(FogColor, module.Tint.ToColor());
+                            materials[i].SetColor(FogColor, module.tint.ToColor());
                         }
                     }
 
@@ -115,8 +105,8 @@ namespace NewHorizons.Builder.Body
                     */
 
                     break;
-                case FunnelType.LAVA:
-                case FunnelType.STAR:
+                case FunnelType.Lava:
+                case FunnelType.Star:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
@@ -125,20 +115,20 @@ namespace NewHorizons.Builder.Body
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
                     lavaMaterial.mainTextureScale = new Vector2(1f, 3f);
 
-                    if (module.Tint != null)
+                    if (module.tint != null)
                     {
-                        lavaMaterial.SetColor(EmissionColor, module.Tint.ToColor());
+                        lavaMaterial.SetColor(EmissionColor, module.tint.ToColor());
                     }
 
                     proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
                     geoGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;
 
-                    if (funnelType == FunnelType.LAVA)
+                    if (funnelType == FunnelType.Lava)
                     {
                         lavaMaterial.SetFloat(HeightScale, 0);
                         AddDestructionVolumes(fluidVolume, DeathType.Lava);
                     }
-                    else if (funnelType == FunnelType.STAR)
+                    else if (funnelType == FunnelType.Star)
                     {
                         lavaMaterial.renderQueue = 2999;
                         lavaMaterial.SetFloat(HeightScale, 100000);
@@ -157,12 +147,12 @@ namespace NewHorizons.Builder.Body
 
             var funnelSizeController = funnelGO.AddComponent<FunnelController>();
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 funnelSizeController.scaleCurve = curve;
             }
@@ -174,12 +164,12 @@ namespace NewHorizons.Builder.Body
 
         private static void PostMake(GameObject funnelGO, FunnelController funnelSizeController, FunnelModule module)
         {
-            var targetAO = AstroObjectLocator.GetAstroObject(module.Target);
+            var targetAO = AstroObjectLocator.GetAstroObject(module.target);
             var target = targetAO?.GetAttachedOWRigidbody();
             if (target == null)
             {
                 if (targetAO != null) Logger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
-                else Logger.LogError($"Couldn't find the target ({module.Target}) for the funnel {funnelGO.name}");
+                else Logger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
                 return;
             }
 

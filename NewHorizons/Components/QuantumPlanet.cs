@@ -79,9 +79,9 @@ namespace NewHorizons.Components
 
                 // Figure out what the new orbit will be if we switch
                 var newOrbit = newState.orbit ?? groundState.orbit;
-                newOrbit.TrueAnomaly = Random.Range(0f, 360f);
+                newOrbit.trueAnomaly = Random.Range(0f, 360f);
 
-                primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.PrimaryBody);
+                primaryBody = AstroObjectLocator.GetAstroObject(newOrbit.primaryBody);
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(_astroObject.GetGravityVolume());
                 orbitalParams = newOrbit.GetOrbitalParameters(primaryGravity, secondaryGravity);
@@ -131,7 +131,7 @@ namespace NewHorizons.Components
             _detector._activeVolumes = new List<EffectVolume>() { primaryBody.GetGravityVolume() };
             if (_alignment != null) _alignment.SetTargetBody(primaryBody.GetComponent<OWRigidbody>());
 
-            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.Eccentricity, orbitalParameters.SemiMajorAxis, orbitalParameters.Inclination, orbitalParameters.ArgumentOfPeriapsis, orbitalParameters.LongitudeOfAscendingNode, orbitalParameters.TrueAnomaly);
+            _astroObject.SetOrbitalParametersFromTrueAnomaly(orbitalParameters.eccentricity, orbitalParameters.semiMajorAxis, orbitalParameters.inclination, orbitalParameters.argumentOfPeriapsis, orbitalParameters.longitudeOfAscendingNode, orbitalParameters.trueAnomaly);
 
             PlanetCreationHandler.UpdatePosition(gameObject, orbitalParameters, primaryBody, _astroObject);
 

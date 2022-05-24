@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName)
         {
-            MakeScatter(go, config.Props.Scatter, config.Base.SurfaceSize, sector, mod, uniqueModName, config);
+            MakeScatter(go, config.Props.scatter, config.Base.surfaceSize, sector, mod, uniqueModName, config);
         }
 
         private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, string uniqueModName, PlanetConfig config)
@@ -26,12 +26,12 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.HeightMap);
+                    heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
                 }
                 catch (Exception) { }
                 if (heightMapTexture == null)
                 {
-                    radius = heightMap.MaxHeight;
+                    radius = heightMap.maxHeight;
                 }
             }
 
@@ -58,13 +58,13 @@ namespace NewHorizons.Builder.Props
                         float sampleY = heightMapTexture.height * latitude / 180f;
 
                         float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
-                        height = (relativeHeight * (heightMap.MaxHeight - heightMap.MinHeight) + heightMap.MinHeight);
+                        height = (relativeHeight * (heightMap.maxHeight - heightMap.minHeight) + heightMap.minHeight);
 
                         // Because heightmaps are dumb gotta rotate it 90 degrees around the x axis bc UHHHHHHHHHHHHH
                         point = Quaternion.Euler(90, 0, 0) * point;
 
                         // Keep things mostly above water
-                        if (config.Water != null && height - 1f < config.Water.Size) continue;
+                        if (config.Water != null && height - 1f < config.Water.size) continue;
 
                         // Move it slightly into the ground
                         height -= 0.1f;

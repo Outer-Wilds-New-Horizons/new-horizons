@@ -1,24 +1,33 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$defs": {
-    "table": {
-      "type": "object",
-      "description": "A set of key value pairs where each key is the english text and each value is the translated text"
-    }
-  },
-  "title": "Translation",
-  "description": "Describes a set tables to use for translations",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Translation Schema",
   "type": "object",
+  "additionalProperties": false,
   "properties": {
+    "DialogueDictionary": {
+      "type": "object",
+      "description": "Translation table for dialogue",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
     "ShipLogDictionary": {
-      "$ref": "#/$defs/table"
+      "type": "object",
+      "description": "Translation table for Ship Log (entries, facts, etc)",
+      "additionalProperties": {
+        "type": "string"
+      }
     },
     "UIDictionary": {
-      "$ref": "#/$defs/table"
-    },
-    "DialogueDictionary": {
-      "$ref": "#/$defs/table"
+      "type": "object",
+      "description": "Translation table for UI elements",
+      "additionalProperties": {
+        "type": "string"
+      }
     }
   },
-  "additionalProperties": false
+  "$docs": {
+    "title": "Translation Schema",
+    "description": "Schema for a translation file in New Horizons"
+  }
 }

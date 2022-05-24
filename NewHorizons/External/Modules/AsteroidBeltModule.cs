@@ -1,24 +1,57 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules
 {
+    [JsonObject]
     public class AsteroidBeltModule
     {
-        public float InnerRadius { get; set; }
-        public float OuterRadius { get; set; }
+        /// <summary>
+        /// Amount of asteroids to create.
+        /// </summary>
+        [Range(0, 200)] [DefaultValue(-1)] public int amount = -1;
 
-        [DefaultValue(20)]
-        public float MinSize { get; set; } = 20;
+        /// <summary>
+        /// Angle between the rings and the equatorial plane of the planet.
+        /// </summary>
+        public float inclination;
 
-        [DefaultValue(50)]
-        public float MaxSize { get; set; } = 50;
+        /// <summary>
+        /// Lowest distance from the planet asteroids can spawn
+        /// </summary>
+        [Range(0f, double.MaxValue)] public float innerRadius;
 
-        [DefaultValue(-1)]
-        public int Amount { get; set; } = -1;
+        /// <summary>
+        /// Angle defining the point where the rings rise up from the planet's equatorial plane if inclination is nonzero.
+        /// </summary>
+        public float longitudeOfAscendingNode;
 
-        public float Inclination { get; set; }
-        public float LongitudeOfAscendingNode { get; set; }
-        public int RandomSeed { get; set; }
-        public ProcGenModule ProcGen { get; set; }
+        /// <summary>
+        /// Maximum size of the asteroids.
+        /// </summary>
+        [Range(0f, double.MaxValue)] [DefaultValue(50)]
+        public float maxSize = 50f;
+
+        /// <summary>
+        /// Minimum size of the asteroids.
+        /// </summary>
+        [Range(0f, double.MaxValue)] [DefaultValue(20)]
+        public float minSize = 20;
+
+        /// <summary>
+        /// Greatest distance from the planet asteroids can spawn
+        /// </summary>
+        [Range(0f, double.MaxValue)] public float outerRadius;
+
+        /// <summary>
+        /// How the asteroids are generated
+        /// </summary>
+        public ProcGenModule procGen;
+
+        /// <summary>
+        /// Number used to randomize asteroid positions
+        /// </summary>
+        public int randomSeed;
     }
 }
