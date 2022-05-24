@@ -957,7 +957,7 @@
       }
     },
     "NomaiTextArcType": {
-      "type": "integer",
+      "type": "string",
       "description": "",
       "x-enumNames": [
         "Adult",
@@ -965,9 +965,9 @@
         "Stranger"
       ],
       "enum": [
-        0,
-        1,
-        2
+        "adult",
+        "child",
+        "stranger"
       ]
     },
     "NomaiTextType": {
