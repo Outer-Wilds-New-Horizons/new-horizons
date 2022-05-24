@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using NewHorizons.External.Configs;
 using NJsonSchema;
@@ -21,13 +22,13 @@ public static class SchemaExporter
             FlattenInheritanceHierarchy = true,
             AllowReferencesWithProperties = true
         };
-        var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", $"{folderName}/body_schema", settings);
+        var bodySchema = new Schema<PlanetConfig>("Celestial Body Schema", "Schema for a celestial body in New Horizons", $"{folderName}/body_schema", settings);
         bodySchema.Output();
         var systemSchema =
-            new Schema<StarSystemConfig>("Star System Schema", $"{folderName}/star_system_schema", settings);
+            new Schema<StarSystemConfig>("Star System Schema", "Schema for a star system in New Horizons", $"{folderName}/star_system_schema", settings);
         systemSchema.Output();
         var translationSchema =
-            new Schema<TranslationConfig>("Translation Schema", $"{folderName}/translation_schema", settings);
+            new Schema<TranslationConfig>("Translation Schema", "Schema for a translation file in New Horizons", $"{folderName}/translation_schema", settings);
         translationSchema.Output();
         Console.WriteLine("Done!");
     }
@@ -35,12 +36,13 @@ public static class SchemaExporter
     private readonly struct Schema<T>
     {
         private readonly JsonSchemaGeneratorSettings _generatorSettings;
-        private readonly string _title;
+        private readonly string _title, _description;
         private readonly string _outFileName;
 
-        public Schema(string schemaTitle, string fileName, JsonSchemaGeneratorSettings settings)
+        public Schema(string schemaTitle, string schemaDescription, string fileName, JsonSchemaGeneratorSettings settings)
         {
             _title = schemaTitle;
+            _description = schemaDescription;
             _outFileName = fileName;
             _generatorSettings = settings;
         }
@@ -60,6 +62,12 @@ public static class SchemaExporter
         {
             var schema = JsonSchema.FromType<T>(_generatorSettings);
             schema.Title = _title;
+            schema.ExtensionData ??= new Dictionary<string, object>();
+            schema.ExtensionData.Add("$docs", new Dictionary<string, object>
+            {
+                {"title", _title},
+                {"description", _description}
+            });
             return schema;
         }
     }
