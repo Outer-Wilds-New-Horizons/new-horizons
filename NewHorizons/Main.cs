@@ -301,7 +301,7 @@ namespace NewHorizons
                 // Load systems first so that when we load bodies later we can check for missing ones
                 if (Directory.Exists(folder + @"systems\"))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json", SearchOption.AllDirectories))
+                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json?", SearchOption.AllDirectories))
                     {
                         var name = Path.GetFileNameWithoutExtension(file);
 
@@ -327,7 +327,7 @@ namespace NewHorizons
                 }
                 if (Directory.Exists(folder + "planets"))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json", SearchOption.AllDirectories))
+                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json?", SearchOption.AllDirectories))
                     {
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
