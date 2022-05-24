@@ -24,6 +24,10 @@
       "additionalProperties": {
         "type": "string"
       }
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The schema to validate with"
     }
   },
   "$docs": {

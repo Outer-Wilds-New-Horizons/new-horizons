@@ -118,6 +118,10 @@
     "Water": {
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The schema to validate with"
     }
   },
   "definitions": {

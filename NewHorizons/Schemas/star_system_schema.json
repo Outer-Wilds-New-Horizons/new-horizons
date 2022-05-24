@@ -41,6 +41,10 @@
     "subtitle": {
       "type": "string",
       "description": "Relative path to the image file to use as the subtitle image (replaces the eote banner)"
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The schema to validate with"
     }
   },
   "definitions": {
