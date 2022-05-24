@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -12,6 +12,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
+        private static readonly string VISION_TORCH_PATH = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Interactibles_PrisonCell/PrisonerSequence/VisionTorchWallSocket/Prefab_IP_VisionTorchItem";
         private static Dictionary<PropModule.DetailInfo, GameObject> detailInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.DetailInfo, GameObject>();
 
         public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
@@ -81,6 +82,8 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
+            if (propToClone == VISION_TORCH_PATH) return MakeVisionTorch(go, sector, position, rotation, scale, alignWithNormal);
+
             var prefab = SearchUtilities.Find(propToClone);
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
             return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
@@ -218,6 +221,27 @@ namespace NewHorizons.Builder.Props
             prop.SetActive(true);
 
             return prop;
+        }
+
+        public static GameObject MakeVisionTorch(GameObject planetGO, Sector sector, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
+        {
+            if (!Main.HasDLC) 
+            {
+                Logger.LogError("Could not instantiate Prefab_IP_VisionTorchItem, user does not own the DLC.");
+                return null;
+            }
+
+            var prefab = SearchUtilities.Find(VISION_TORCH_PATH);
+            if (prefab == null) Logger.LogError($"Couldn't find detail Prefab_IP_VisionTorchItem");
+
+            GameObject Prefab_IP_VisionTorchItem = MakeDetail(planetGO, sector, prefab, position, rotation, scale, alignWithNormal);
+
+			Prefab_IP_VisionTorchItem.GetComponent<VisionTorchItem>().enabled = true;
+			Prefab_IP_VisionTorchItem.GetComponent<VisionTorchItem>().mindProjectorTrigger.enabled = true;
+
+			Prefab_IP_VisionTorchItem.GetComponent<VisionTorchItem>().mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+			
+			return Prefab_IP_VisionTorchItem;
         }
     }
 }
