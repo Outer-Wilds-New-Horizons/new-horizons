@@ -23,6 +23,7 @@ namespace NewHorizons.Patches
                 // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
 				__instance._mindProjector._slideCollectionItem = t.slideCollectionContainer; 
 				__instance._mindProjector._mindSlideCollection = t.slideCollection;
+                __instance._mindProjector.SetMindSlideCollection(t.slideCollection);
 
 				Main.Instance.ModHelper.Console.WriteLine("MIND PROJECTOR CUSTOM TRIGGER");
 			    __instance.OnBeamStartHitPrisoner.Invoke();
@@ -30,10 +31,10 @@ namespace NewHorizons.Patches
 			    __instance._mindProjector.OnProjectionStart += new OWEvent.OWCallback(__instance.OnProjectionStart);
 			    __instance._mindProjector.OnProjectionComplete += new OWEvent.OWCallback(__instance.OnProjectionComplete);
 
-                __instance._mindProjector._slideCollectionItem.onSlideTextureUpdated += new OWEvent.OWCallback(__instance._mindProjector.OnSlideTextureUpdated);
-		        __instance._mindProjector._slideCollectionItem.onPlayBeatAudio += new OWEvent<AudioType>.OWCallback(__instance._mindProjector.OnPlayBeatAudio);
-		        __instance._mindProjector._slideCollectionItem.Initialize();
-
+          //      __instance._mindProjector._slideCollectionItem.onSlideTextureUpdated += new OWEvent.OWCallback(__instance._mindProjector.OnSlideTextureUpdated);
+		        //__instance._mindProjector._slideCollectionItem.onPlayBeatAudio += new OWEvent<AudioType>.OWCallback(__instance._mindProjector.OnPlayBeatAudio);
+		        //__instance._mindProjector._slideCollectionItem.Initialize();
+         
 			    Locator.GetPlayerTransform().GetComponent<PlayerLockOnTargeting>().LockOn(hitObj.transform, Vector3.zero);
 			    __instance._playerLockedOn = true;
                 return false;
