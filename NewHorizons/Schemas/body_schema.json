@@ -4,6 +4,9 @@
   "type": "object",
   "description": "Describes a body to generate",
   "additionalProperties": false,
+  "required": [
+    "name"
+  ],
   "properties": {
     "AsteroidBelt": {
       "description": "Generate asteroids around this body",
@@ -53,7 +56,8 @@
     },
     "name": {
       "type": "string",
-      "description": "Unique name of your planet"
+      "description": "Unique name of your planet",
+      "minLength": 1
     },
     "Orbit": {
       "description": "Describes this Body's orbit (or lack there of)",
