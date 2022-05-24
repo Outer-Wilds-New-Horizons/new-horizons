@@ -119,21 +119,24 @@ namespace NewHorizons.Builder.Body
 
             var supernova = MakeSupernova(starGO, starModule);
 
+            starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
             if (starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
-            controller.startColour = starModule.tint;
-            controller.endColour = starModule.endTint;
-            controller.willExplode = starModule.goSupernova;
+            controller.StartColour = starModule.tint;
+            controller.EndColour = starModule.endTint;
+            controller.WillExplode = starModule.goSupernova;
+            starGO.SetActive(true);
 
             // It fucking insists on this existing and its really annoying
             var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
             supernovaVolume.transform.SetParent(starGO.transform);
             supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
-            var sphere = supernovaVolume.AddComponent<SphereShape>();
+            var sphere = supernovaVolume.AddComponent<SphereCollider>();
             sphere.radius = 0f;
+            sphere.isTrigger = true;
             supernovaVolume.AddComponent<OWCollider>();
 
             return starController;
@@ -145,13 +148,15 @@ namespace NewHorizons.Builder.Body
 
             var supernova = MakeSupernova(starGO, starModule);
 
+            starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
             if (starModule.Curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
             controller.size = starModule.size;
             controller.supernova = supernova;
-            controller.startColour = starModule.tint;
-            controller.endColour = starModule.endTint;
+            controller.StartColour = starModule.tint;
+            controller.EndColour = starModule.endTint;
             controller.enabled = true;
+            starGO.SetActive(true);
 
             planet.GetComponentInChildren<StarEvolutionController>().SetProxy(controller);
 

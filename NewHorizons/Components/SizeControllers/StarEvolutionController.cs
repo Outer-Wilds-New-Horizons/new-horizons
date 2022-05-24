@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Body;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace NewHorizons.Components.SizeControllers
 {
@@ -13,9 +14,9 @@ namespace NewHorizons.Components.SizeControllers
     {
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
-        public bool willExplode;
-        public MColor startColour { get; set; }
-        public MColor endColour { get; set; }
+        public bool WillExplode { get; set; }
+        public MColor StartColour { get; set; }
+        public MColor EndColour { get; set; }
 
         private Color _startColour;
         private Color _endColour;
@@ -44,6 +45,8 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
+        public UnityEvent SupernovaStart = new UnityEvent();
+
         private float maxScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
@@ -61,24 +64,24 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
             _endSurfaceMaterial.SetTexture(ColorRamp, supernova._surface.sharedMaterial.GetTexture(ColorRamp));
 
-            if (startColour == null)
+            if (StartColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = startColour;
+                _startColour = StartColour;
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (endColour == null)
+            if (EndColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = endColour;
+                _endColour = EndColour;
                 _endSurfaceMaterial.color = _endColour;
             }
 
@@ -91,11 +94,17 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
             if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+            }
+            else
+            {
+                maxScale = 0;
+                scaleCurve = new AnimationCurve();
+                scaleCurve.AddKey(0, 1);
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
@@ -103,7 +112,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (willExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -153,7 +162,7 @@ namespace NewHorizons.Components.SizeControllers
                 base.FixedUpdate();
 
                 // Only do colour transition stuff if they set an end colour
-                if (endColour != null)
+                if (EndColour != null)
                 {
                     // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                     var t = ageValue;
@@ -183,6 +192,7 @@ namespace NewHorizons.Components.SizeControllers
                 // After the collapse is done we go supernova
                 if (_collapseTimer > collapseTime)
                 {
+                    SupernovaStart.Invoke();
                     supernova.enabled = true;
                     _isSupernova = true;
                     _supernovaStartTime = Time.time;
