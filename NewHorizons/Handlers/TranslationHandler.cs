@@ -61,39 +61,39 @@ namespace NewHorizons.Handlers
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)
         {
-            if (config.shipLogDictionary != null && config.shipLogDictionary.Count() > 0)
+            if (config.ShipLogDictionary != null && config.ShipLogDictionary.Count > 0)
             {
                 if (!_shipLogTranslationDictionary.ContainsKey(language)) _shipLogTranslationDictionary.Add(language, new Dictionary<string, string>());
-                foreach (var originalKey in config.shipLogDictionary.Keys)
+                foreach (var originalKey in config.ShipLogDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_shipLogTranslationDictionary[language].ContainsKey(key)) _shipLogTranslationDictionary[language].Add(key, config.shipLogDictionary[originalKey]);
-                    else _shipLogTranslationDictionary[language][key] = config.shipLogDictionary[originalKey];
+                    if (!_shipLogTranslationDictionary[language].ContainsKey(key)) _shipLogTranslationDictionary[language].Add(key, config.ShipLogDictionary[originalKey]);
+                    else _shipLogTranslationDictionary[language][key] = config.ShipLogDictionary[originalKey];
                 }
             }
 
-            if (config.dialogueDictionary != null && config.dialogueDictionary.Count() > 0)
+            if (config.DialogueDictionary != null && config.DialogueDictionary.Count > 0)
             {
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
-                foreach (var originalKey in config.dialogueDictionary.Keys)
+                foreach (var originalKey in config.DialogueDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, config.dialogueDictionary[originalKey]);
-                    else _dialogueTranslationDictionary[language][key] = config.dialogueDictionary[originalKey];
+                    if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, config.DialogueDictionary[originalKey]);
+                    else _dialogueTranslationDictionary[language][key] = config.DialogueDictionary[originalKey];
                 }
             }
 
-            if (config.uiDictionary != null && config.uiDictionary.Count() > 0)
+            if (config.UIDictionary != null && config.UIDictionary.Count() > 0)
             {
                 if (!_uiTranslationDictionary.ContainsKey(language)) _uiTranslationDictionary.Add(language, new Dictionary<string, string>());
-                foreach (var originalKey in config.uiDictionary.Keys)
+                foreach (var originalKey in config.UIDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, config.uiDictionary[originalKey]);
-                    else _uiTranslationDictionary[language][key] = config.uiDictionary[originalKey];
+                    if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, config.UIDictionary[originalKey]);
+                    else _uiTranslationDictionary[language][key] = config.UIDictionary[originalKey];
                 }
             }
         }
