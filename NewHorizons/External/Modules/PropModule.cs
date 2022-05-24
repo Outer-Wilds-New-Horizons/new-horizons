@@ -406,11 +406,11 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"scroll")] Scroll = 1,
 
-                [EnumMember(Value = @"Computer")] Computer = 2,
+                [EnumMember(Value = @"computer")] Computer = 2,
 
-                [EnumMember(Value = @"Cairn")] Cairn = 3,
+                [EnumMember(Value = @"cairn")] Cairn = 3,
 
-                [EnumMember(Value = @"Recorder")] Recorder = 4
+                [EnumMember(Value = @"recorder")] Recorder = 4
             }
 
             /// <summary>

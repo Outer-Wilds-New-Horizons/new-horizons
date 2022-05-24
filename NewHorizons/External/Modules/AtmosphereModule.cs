@@ -10,15 +10,15 @@ namespace NewHorizons.External.Modules
 {
     public enum CloudFluidType
     {
-        [EnumMember(Value = @"NONE")] None = 0,
+        [EnumMember(Value = @"none")] None = 0,
 
-        [EnumMember(Value = @"WATER")] Water = 1,
+        [EnumMember(Value = @"water")] Water = 1,
 
-        [EnumMember(Value = @"CLOUD")] Cloud = 2,
+        [EnumMember(Value = @"cloud")] Cloud = 2,
 
-        [EnumMember(Value = @"SAND")] Sand = 3,
+        [EnumMember(Value = @"sand")] Sand = 3,
 
-        [EnumMember(Value = @"PLASMA")] Plasma = 4
+        [EnumMember(Value = @"plasma")] Plasma = 4
     }
 
     [JsonObject]

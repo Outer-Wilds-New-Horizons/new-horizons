@@ -12,9 +12,9 @@ namespace NewHorizons.External.Modules.VariableSize
     {
         public enum SingularityType
         {
-            [EnumMember(Value = @"BlackHole")] BlackHole = 0,
+            [EnumMember(Value = @"blackHole")] BlackHole = 0,
 
-            [EnumMember(Value = @"WhiteHole")] WhiteHole = 1
+            [EnumMember(Value = @"whiteHole")] WhiteHole = 1
         }
 
         /// <summary>

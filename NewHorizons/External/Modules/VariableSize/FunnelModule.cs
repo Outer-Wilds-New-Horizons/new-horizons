@@ -7,13 +7,13 @@ namespace NewHorizons.External.Modules.VariableSize
 {
     public enum FunnelType
     {
-        [EnumMember(Value = @"Sand")] Sand = 0,
+        [EnumMember(Value = @"sand")] Sand = 0,
 
-        [EnumMember(Value = @"Water")] Water = 1,
+        [EnumMember(Value = @"water")] Water = 1,
 
-        [EnumMember(Value = @"Lava")] Lava = 2,
+        [EnumMember(Value = @"lava")] Lava = 2,
 
-        [EnumMember(Value = @"Star")] Star = 3
+        [EnumMember(Value = @"star")] Star = 3
     }
 
     [JsonObject]
