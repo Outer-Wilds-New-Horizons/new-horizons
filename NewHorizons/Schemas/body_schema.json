@@ -343,11 +343,11 @@
         "Plasma"
       ],
       "enum": [
-        "NONE",
-        "WATER",
-        "CLOUD",
-        "SAND",
-        "PLASMA"
+        "none",
+        "water",
+        "cloud",
+        "sand",
+        "plasma"
       ]
     },
     "MGradient": {
@@ -528,10 +528,10 @@
         "Star"
       ],
       "enum": [
-        "Sand",
-        "Water",
-        "Lava",
-        "Star"
+        "sand",
+        "water",
+        "lava",
+        "star"
       ]
     },
     "HeightMapModule": {
@@ -983,9 +983,9 @@
       "enum": [
         "wall",
         "scroll",
-        "Computer",
-        "Cairn",
-        "Recorder"
+        "computer",
+        "cairn",
+        "recorder"
       ]
     },
     "RaftInfo": {
@@ -1310,7 +1310,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/CloudFluidType2"
+          "$ref": "#/definitions/CloudFluidType"
         },
         "inclination": {
           "type": "number",
@@ -1348,24 +1348,6 @@
           "description": "Should this ring be unlit?"
         }
       }
-    },
-    "CloudFluidType2": {
-      "type": "integer",
-      "description": "",
-      "x-enumNames": [
-        "None",
-        "Water",
-        "Cloud",
-        "Sand",
-        "Plasma"
-      ],
-      "enum": [
-        0,
-        1,
-        2,
-        3,
-        4
-      ]
     },
     "SandModule": {
       "type": "object",
@@ -1659,8 +1641,8 @@
         "WhiteHole"
       ],
       "enum": [
-        "BlackHole",
-        "WhiteHole"
+        "blackHole",
+        "whiteHole"
       ]
     },
     "SpawnModule": {
