@@ -62,6 +62,12 @@ public static class SchemaExporter
         {
             var schema = JsonSchema.FromType<T>(_generatorSettings);
             schema.Title = _title;
+            var schemaLinkProp = new JsonSchemaProperty
+            {
+                Type = JsonObjectType.String,
+                Description = "The schema to validate with"
+            };
+            schema.Properties.Add("$schema", schemaLinkProp);
             schema.ExtensionData ??= new Dictionary<string, object>();
             schema.ExtensionData.Add("$docs", new Dictionary<string, object>
             {
