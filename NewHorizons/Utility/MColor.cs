@@ -39,6 +39,9 @@ namespace NewHorizons.Utility
         [DefaultValue(255f)]
         public int a;
 
+        public Color32 ToColor32() => new Color32((byte)r, (byte)g, (byte)b, (byte)a);
+
+        public Color ToColor() => new Color(r / 255f, g / 255f, b / 255f, a / 255f);
         public static implicit operator Color(MColor c) => new Color(c.r / 255f, c.g / 255f, c.b / 255f, c.a / 255f);
     }
 }

@@ -521,10 +521,10 @@ namespace NewHorizons.Builder.ShipLog
                 }
 
                 var starColor = body.Config?.Star?.tint;
-                if (starColor != null) return starColor;
+                if (starColor != null) return starColor.ToColor();
 
                 var atmoColor = body.Config.Atmosphere?.atmosphereTint;
-                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor;
+                if (body.Config.Atmosphere?.clouds != null && atmoColor != null) return atmoColor.ToColor();
 
                 if (body.Config?.HeightMap?.textureMap != null)
                 {
@@ -538,13 +538,13 @@ namespace NewHorizons.Builder.ShipLog
                 }
 
                 var waterColor = body.Config.Water?.tint;
-                if (waterColor != null) return waterColor;
+                if (waterColor != null) return waterColor.ToColor();
 
                 var lavaColor = body.Config.Lava?.tint;
-                if (lavaColor != null) return lavaColor;
+                if (lavaColor != null) return lavaColor.ToColor();
 
                 var sandColor = body.Config.Sand?.Tint;
-                if (sandColor != null) return sandColor;
+                if (sandColor != null) return sandColor.ToColor();
             }
             catch (Exception)
             {

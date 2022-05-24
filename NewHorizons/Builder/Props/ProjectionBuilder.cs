@@ -185,7 +185,7 @@ namespace NewHorizons.Builder.Props
                 var ambientLight = new SlideAmbientLightModule();
                 ambientLight._intensity = slideInfo.ambientLightIntensity;
                 ambientLight._range = slideInfo.ambientLightRange;
-                ambientLight._color = slideInfo.ambientLightColor;
+                ambientLight._color = slideInfo.ambientLightColor.ToColor();
                 ambientLight._spotIntensityMod = slideInfo.spotIntensityMod;
                 modules.Add(ambientLight);
             }

@@ -148,7 +148,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.tint != null)
             {
-                ApplyTint(tornadoGO, info.tint, false, downwards);
+                ApplyTint(tornadoGO, info.tint.ToColor(), false, downwards);
             }
 
             if (info.wanderRate != 0)
@@ -205,7 +205,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.tint != null)
             {
-                ApplyTint(hurricaneGO, info.tint, true, false);
+                ApplyTint(hurricaneGO, info.tint.ToColor(), true, false);
             }
 
             if (info.wanderRate != 0)

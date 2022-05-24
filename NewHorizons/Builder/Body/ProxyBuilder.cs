@@ -77,18 +77,18 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Lava.size) realSize = body.Config.Lava.size;
 
                     var material = new Material(lavaMaterial);
-                    if (body.Config.Lava.tint != null) material.SetColor(EmissionColor, body.Config.Lava.tint);
+                    if (body.Config.Lava.tint != null) material.SetColor(EmissionColor, body.Config.Lava.tint.ToColor());
                     sphere.GetComponent<MeshRenderer>().material = material;
                 }
                 if (body.Config.Water != null)
                 {
-                    var colour = body.Config.Water.tint ?? Color.blue;
+                    var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
                     AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.Curve, colour);
                     if (realSize < body.Config.Water.size) realSize = body.Config.Water.size;
                 }
                 if (body.Config.Sand != null)
                 {
-                    var colour = body.Config.Sand.Tint ?? Color.yellow;
+                    var colour = body.Config.Sand.Tint?.ToColor() ?? Color.yellow;
                     AddColouredSphere(newProxy, body.Config.Sand.Size, body.Config.Sand.Curve, colour);
                     if (realSize < body.Config.Sand.Size) realSize = body.Config.Sand.Size;
                 }

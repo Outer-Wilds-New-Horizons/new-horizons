@@ -43,13 +43,13 @@ namespace NewHorizons.Builder.Body
                 var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 if (starModule.tint != null)
                 {
-                    fog.fogTint = starModule.tint;
+                    fog.fogTint = starModule.tint.ToColor();
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
-                        lod.material.SetColor(SkyColor, starModule.tint);
-                        lod.material.SetColor(AtmosFar, starModule.tint);
-                        lod.material.SetColor(AtmosNear, starModule.tint);
+                        lod.material.SetColor(SkyColor, starModule.tint.ToColor());
+                        lod.material.SetColor(AtmosFar, starModule.tint.ToColor());
+                        lod.material.SetColor(AtmosNear, starModule.tint.ToColor());
                         lod.material.SetFloat(InnerRadius, starModule.size);
                         lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
                     }
@@ -91,7 +91,7 @@ namespace NewHorizons.Builder.Body
             light.range *= Mathf.Sqrt(starModule.solarLuminosity);
 
             Color lightColour = light.color;
-            if (starModule.lightTint != null) lightColour = starModule.lightTint;
+            if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
             ambientLight.color = lightColour;
@@ -183,7 +183,7 @@ namespace NewHorizons.Builder.Body
 
             if (starModule.tint != null)
             {
-                var flareTint = starModule.tint;
+                var flareTint = starModule.tint.ToColor();
                 var emitter = solarFlareEmitter.GetComponent<SolarFlareEmitter>();
                 emitter.tint = flareTint;
                 foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
@@ -201,7 +201,7 @@ namespace NewHorizons.Builder.Body
             {
                 TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
 
-                var colour = starModule.tint;
+                var colour = starModule.tint.ToColor();
 
                 var sun = GameObject.Find("Sun_Body");
                 var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
@@ -217,7 +217,7 @@ namespace NewHorizons.Builder.Body
 
                 if (starModule.endTint != null)
                 {
-                    var endColour = starModule.endTint;
+                    var endColour = starModule.endTint.ToColor();
                     darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
                 }
 
@@ -239,7 +239,7 @@ namespace NewHorizons.Builder.Body
 
             if (starModule.supernovaTint != null)
             {
-                var colour = starModule.supernovaTint;
+                var colour = starModule.supernovaTint.ToColor();
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
                 var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);

@@ -33,9 +33,9 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogRadius = atmo.fogSize;
             PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
-            PFC.fogColorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint);
+            PFC.fogColorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
             PFC.fogColorRampIntensity = 1f;
-            PFC.fogTint = atmo.fogTint;
+            PFC.fogTint = atmo.fogTint.ToColor();
 
             GameObject lodFogGO = new GameObject("LODFogSphere");
             lodFogGO.SetActive(false);
@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             MeshRenderer lodMR = lodFogGO.AddComponent<MeshRenderer>();
             lodMR.material = new Material(brambleLODFog.GetComponent<MeshRenderer>().material);
-            lodMR.material.color = atmo.fogTint;
+            lodMR.material.color = atmo.fogTint.ToColor();
             lodMR.material.renderQueue = 1000;
 
             /*

@@ -57,13 +57,13 @@ namespace NewHorizons.Builder.Orbital
             }
 
             var color = Color.white;
-            if (config.Orbit.tint != null) color = config.Orbit.tint;
-            else if (config.Star != null) color = config.Star.tint;
-            else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint;
+            if (config.Orbit.tint != null) color = config.Orbit.tint.ToColor32();
+            else if (config.Star != null) color = config.Star.tint.ToColor32();
+            else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint.ToColor32();
             else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);
-            else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint;
+            else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint.ToColor32();
 
             var fade = isMoon;
 

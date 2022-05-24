@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Body
                         materials[i] = new Material(waterMaterials[i]);
                         if (module.tint != null)
                         {
-                            materials[i].SetColor(FogColor, module.tint);
+                            materials[i].SetColor(FogColor, module.tint.ToColor());
                         }
                     }
 
@@ -117,7 +117,7 @@ namespace NewHorizons.Builder.Body
 
                     if (module.tint != null)
                     {
-                        lavaMaterial.SetColor(EmissionColor, module.tint);
+                        lavaMaterial.SetColor(EmissionColor, module.tint.ToColor());
                     }
 
                     proxyGO.GetComponentInChildren<MeshRenderer>().material = lavaMaterial;

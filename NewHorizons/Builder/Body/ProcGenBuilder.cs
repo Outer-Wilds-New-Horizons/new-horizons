@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphereMR = icosphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(Shader.Find("Standard"));
-            cubeSphereMR.material.color = module.color != null ? module.color : Color.white;
+            cubeSphereMR.material.color = module.color != null ? module.color.ToColor() : Color.white;
 
             var cubeSphereMC = icosphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;

@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Atmosphere
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);
             if (config.Atmosphere?.clouds?.tint != null)
             {
-                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint);
+                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor32());
             }
             ER._cloudMaterial = cloudMaterial;
 
