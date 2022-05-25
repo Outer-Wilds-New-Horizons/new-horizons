@@ -1,14 +1,10 @@
-<<<<<<< HEAD
+
 using NewHorizons.Utility;
 using System.ComponentModel;
-=======
-﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
->>>>>>> dev
 
 namespace NewHorizons.External.Modules
 {
@@ -510,13 +506,6 @@ namespace NewHorizons.External.Modules
             /// The ship log entries revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
-<<<<<<< HEAD
-            public SlideInfo[] slides;
-
-            // enum values for this property: "autoProjector", "slideReel", "playerVisionTorchTarget", "standingVisionTorch"
-            // I don't know why the default value is capital 'S' SlideReel. it should be lower case as far as I can tell.
-            public string type = "SlideReel";
-=======
 
             /// <summary>
             /// The rotation of this slideshow.
@@ -532,7 +521,6 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             public SlideShowType type = SlideShowType.SlideReel;
->>>>>>> dev
         }
 
         [JsonObject]
