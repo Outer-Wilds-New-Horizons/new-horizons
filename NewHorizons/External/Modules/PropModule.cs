@@ -271,12 +271,12 @@ namespace NewHorizons.External.Modules
             public float minLaunchSpeed = 50f;
 
             /// <summary>
-            /// Position of this volcano
+            /// Position of this volcano.
             /// </summary>
             public MVector3 position;
 
             /// <summary>
-            /// Scale of this volcano
+            /// Scale of the meteors.
             /// </summary>
             public float scale = 1;
 
