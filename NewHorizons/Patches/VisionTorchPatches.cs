@@ -25,15 +25,10 @@ namespace NewHorizons.Patches
 				__instance._mindProjector._mindSlideCollection = t.slideCollection;
                 __instance._mindProjector.SetMindSlideCollection(t.slideCollection);
 
-				Main.Instance.ModHelper.Console.WriteLine("MIND PROJECTOR CUSTOM TRIGGER");
 			    __instance.OnBeamStartHitPrisoner.Invoke();
 			    __instance._mindProjector.Play(reset: true);
 			    __instance._mindProjector.OnProjectionStart += new OWEvent.OWCallback(__instance.OnProjectionStart);
 			    __instance._mindProjector.OnProjectionComplete += new OWEvent.OWCallback(__instance.OnProjectionComplete);
-
-          //      __instance._mindProjector._slideCollectionItem.onSlideTextureUpdated += new OWEvent.OWCallback(__instance._mindProjector.OnSlideTextureUpdated);
-		        //__instance._mindProjector._slideCollectionItem.onPlayBeatAudio += new OWEvent<AudioType>.OWCallback(__instance._mindProjector.OnPlayBeatAudio);
-		        //__instance._mindProjector._slideCollectionItem.Initialize();
          
 			    Locator.GetPlayerTransform().GetComponent<PlayerLockOnTargeting>().LockOn(hitObj.transform, Vector3.zero);
 			    __instance._playerLockedOn = true;
@@ -42,8 +37,6 @@ namespace NewHorizons.Patches
 
             return true;
         }
-
-        // TOOD: OnTriggerVolumeExit
     }
 
 	[HarmonyPatch]
@@ -68,8 +61,5 @@ namespace NewHorizons.Patches
 
 			return true;
 		}
-
-        // ProbeLauncher.Disable()?
-        // public override void PickUpItem(Transform holdTranform)
 	}
 }
