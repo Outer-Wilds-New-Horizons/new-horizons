@@ -336,7 +336,7 @@
         },
         "useBasicCloudShader": {
           "type": "boolean",
-          "description": "Set to `false` in order to use Giant's deep shader. Set to `true` to just apply the cloud texture as is."
+          "description": "Set to `false` in order to use Giant's Deep's shader. Set to `true` to just apply the cloud texture as is."
         }
       }
     },
@@ -1291,12 +1291,12 @@
           "format": "float"
         },
         "position": {
-          "description": "Position of this volcano",
+          "description": "Position of this volcano.",
           "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
-          "description": "Scale of this volcano",
+          "description": "Scale of the meteors.",
           "format": "float"
         },
         "stoneTint": {
