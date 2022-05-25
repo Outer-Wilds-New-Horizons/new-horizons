@@ -162,7 +162,7 @@ namespace NewHorizons.Builder.Props
         {
             // spawn a trigger for the vision torch
             var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            GameObject g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
+            var g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
 
             if (g == null)
             {
@@ -173,7 +173,7 @@ namespace NewHorizons.Builder.Props
             g.name = "VisionStaffDetector";
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
-            SlideInfo[] slides = info.slides;
+            var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
@@ -193,8 +193,8 @@ namespace NewHorizons.Builder.Props
             }
 
             // attatch a component to store all the data for the slides that play when a vision torch scans this target
-            VisionTorchTarget target = g.AddComponent<VisionTorchTarget>();
-            SlideCollectionContainer slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
+            var target = g.AddComponent<VisionTorchTarget>();
+            var slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
@@ -213,7 +213,7 @@ namespace NewHorizons.Builder.Props
             //
 
             var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
-            GameObject standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
+            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
 
             if (standingTorch == null)
             {
@@ -225,7 +225,7 @@ namespace NewHorizons.Builder.Props
             // set some required properties on the torch
             //
 
-            MindSlideProjector mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
+            var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
 			mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
 			
             //
@@ -233,7 +233,7 @@ namespace NewHorizons.Builder.Props
             //
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
-            SlideInfo[] slides = info.slides;
+            var slides = info.slides;
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
@@ -252,9 +252,9 @@ namespace NewHorizons.Builder.Props
             }
 
             // set up the containers for the slides
-            SlideCollectionContainer slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
+            var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
-            MindSlideCollection mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
+            var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
             // make sure that these slides play when the player wanders into the beam
