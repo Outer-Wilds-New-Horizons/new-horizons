@@ -114,7 +114,7 @@ namespace NewHorizons.Builder.Body
                 {
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
-                        DetailBuilder.Make(newProxy, null, body.Config, body.Mod, body.Mod.ModHelper.Manifest.UniqueName, detailInfo);
+                        DetailBuilder.Make(newProxy, null, body.Config, body.Mod, detailInfo);
                     }
                 }
 

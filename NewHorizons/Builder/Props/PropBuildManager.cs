@@ -8,13 +8,13 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
         {
             if (config.Props.scatter != null)
             {
                 try
                 {
-                    ScatterBuilder.Make(go, sector, config, mod, uniqueModName);
+                    ScatterBuilder.Make(go, sector, config, mod);
                 }
                 catch (Exception ex)
                 {
@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, uniqueModName, detail);
+                        DetailBuilder.Make(go, sector, config, mod, detail);
                     }
                     catch (Exception ex)
                     {

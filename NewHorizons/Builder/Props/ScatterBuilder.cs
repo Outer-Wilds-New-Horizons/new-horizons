@@ -10,12 +10,12 @@ namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
     {
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod)
         {
-            MakeScatter(go, config.Props.scatter, config.Base.surfaceSize, sector, mod, uniqueModName, config);
+            MakeScatter(go, config.Props.scatter, config.Base.surfaceSize, sector, mod, config);
         }
 
-        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, string uniqueModName, PlanetConfig config)
+        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
 

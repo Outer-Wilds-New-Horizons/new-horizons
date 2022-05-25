@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Props
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
 
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
 
