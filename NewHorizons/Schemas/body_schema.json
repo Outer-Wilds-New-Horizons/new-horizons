@@ -1191,11 +1191,15 @@
       "description": "",
       "x-enumNames": [
         "SlideReel",
-        "AutoProjector"
+        "AutoProjector",
+        "VisionTorchTarget",
+        "StandingVisionTorch"
       ],
       "enum": [
         "slideReel",
-        "autoProjector"
+        "autoProjector",
+        "visionTorchTarget",
+        "standingVisionTorch"
       ]
     },
     "TornadoInfo": {
