@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Configs
@@ -50,11 +50,6 @@ namespace NewHorizons.External.Configs
         /// system.
         /// </summary>
         public bool startHere;
-
-        /// <summary>
-        /// Relative path to the image file to use as the subtitle image (replaces the eote banner)
-        /// </summary>
-        public string subtitle;
 
         public class NomaiCoordinates
         {

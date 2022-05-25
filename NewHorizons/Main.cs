@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
@@ -316,11 +316,6 @@ namespace NewHorizons
                             if (name != "SolarSystem") SetDefaultSystem(name);
                         }
 
-                        if (starSystemConfig.subtitle != null)
-                        {
-                            SubtitlesHandler.AddSubtitle(mod, starSystemConfig.subtitle);
-                        }
-
                         var system = new NewHorizonsSystem(name, starSystemConfig, mod);
                         SystemDict[name] = system;
                     }
@@ -346,6 +341,10 @@ namespace NewHorizons
                 if (Directory.Exists(folder + @"translations\"))
                 {
                     LoadTranslations(folder, mod);
+                }
+                if (File.Exists($"{mod.ModHelper.Manifest.ModFolderPath}subtitle.png"))
+                {
+                    SubtitlesHandler.AddSubtitle(mod, "subtitle.png");
                 }
             }
             catch (Exception ex)

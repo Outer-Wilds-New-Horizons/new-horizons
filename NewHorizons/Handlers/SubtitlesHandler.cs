@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using NewHorizons.Utility;
 using OWML.Common;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -49,6 +50,8 @@ namespace NewHorizons.Handlers
 
         public static void AddSubtitle(IModBehaviour mod, string filepath)
         {
+            Logger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
+
             var tex = ImageUtilities.GetTexture(mod, filepath);
             if (tex == null) return;
 
