@@ -81,6 +81,10 @@ namespace NewHorizons.External.Modules
             public bool hasOxygen;
             public bool isRaining;
             public bool isSnowing;
+
+            /// <summary>
+            /// The radius of the volume.
+            /// </summary>
             public float scale;
         }
 
@@ -139,7 +143,7 @@ namespace NewHorizons.External.Modules
             public bool unlit;
 
             /// <summary>
-            /// Set to `false` in order to use Giant's deep shader. Set to `true` to just apply the cloud texture as is.
+            /// Set to `false` in order to use Giant's Deep's shader. Set to `true` to just apply the cloud texture as is.
             /// </summary>
             public bool useBasicCloudShader;
         }
