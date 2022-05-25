@@ -177,20 +177,24 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
-
+        
+            var imageLoader = g.AddComponent<AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
                 // TODO: do this part asynchronously so that you can load all the slides you want without stalling the game out for 5 days
-                var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                slide.textureOverride = texture; //ImageUtilities.Invert(texture);
+                //var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
+                //slide.textureOverride = texture; //ImageUtilities.Invert(texture);
+                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
 
                 slideCollection.slides[i] = slide;
             }
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = tex; });
+
 
             // attatch a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
@@ -237,19 +241,22 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
+            var imageLoader = standingTorch.AddComponent<AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
                 // TODO: do this part asynchronously so that you can load all the slides you want without stalling the game out for 5 days
-                var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                slide.textureOverride = texture; //ImageUtilities.Invert(texture);
+                //var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
+                //slide.textureOverride = texture; //ImageUtilities.Invert(texture);
+                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
 
                 slideCollection.slides[i] = slide;
             }
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = tex; });
 
             // set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();

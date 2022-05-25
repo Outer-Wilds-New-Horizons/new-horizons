@@ -1,8 +1,12 @@
 using OWML.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
+
 namespace NewHorizons.Utility
 {
     public static class ImageUtilities
@@ -312,6 +316,46 @@ namespace NewHorizons.Utility
             newTexture.SetPixels(pixels);
             newTexture.Apply();
             return newTexture;
+        }
+    }
+
+    // Modified from https://stackoverflow.com/a/69141085/9643841
+    public class AsyncImageLoader : MonoBehaviour
+    {
+        public List<string> pathsToLoad = new List<string>();
+
+        public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
+        public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+
+        void Start()
+        {
+            for (int i = 0; i < pathsToLoad.Count; i++)
+            {
+                StartCoroutine(DownloadTexture(pathsToLoad[i], i));
+            }
+        }
+
+        IEnumerator DownloadTexture(string url, int index)
+        {
+            Logger.Log("loading img " + url);
+            using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
+            {
+                yield return uwr.SendWebRequest();
+
+                var hasError = uwr.error != null && uwr.error != "";
+                
+                if (hasError) // (uwr.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.Log(uwr.error);
+                }
+                else
+                {
+                    // Get downloaded asset bundle
+                    var texture = DownloadHandlerTexture.GetContent(uwr);
+                    Logger.Log("Finished loading image " + url);
+                    imageLoadedEvent.Invoke(texture, index);
+                }
+            }
         }
     }
 }
