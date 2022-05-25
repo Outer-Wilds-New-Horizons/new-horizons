@@ -38,10 +38,6 @@
       "type": "boolean",
       "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
     },
-    "subtitle": {
-      "type": "string",
-      "description": "Relative path to the image file to use as the subtitle image (replaces the eote banner)"
-    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
