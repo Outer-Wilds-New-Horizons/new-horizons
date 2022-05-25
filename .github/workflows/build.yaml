@@ -51,10 +51,10 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: NewHorizons-${{ env.BUILD_TYPE }}
-        path: .\NewHorizons\Obj\${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\bin\${{ env.BUILD_TYPE }}
         
     - name: Generate Schemas
-      run: .\SchemaExporter\Bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
+      run: .\SchemaExporter\bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
       
     # Only want to commit schemas if they've actually changed
     - name: Verify Changed Schemas
