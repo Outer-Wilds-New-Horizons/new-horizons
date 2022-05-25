@@ -2,7 +2,7 @@ name: Build
 
 on:
   push:
-    branches: [dev, main, schema-integration]
+    branches: [dev, main]
     paths-ignore:
       - "docs/**"
       - "*.md"
@@ -70,7 +70,7 @@ jobs:
         git commit -m "Updated Schemas"
         
     - name: Push Schemas
-      if: steps.changed_files.outputs.files_changed == 'true'
+      if: ${{ (steps.changed_files.outputs.files_changed == 'true') && (github.event_name != 'pull_request') }}
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.github_token }}
