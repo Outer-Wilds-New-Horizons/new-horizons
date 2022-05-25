@@ -327,6 +327,10 @@ namespace NewHorizons.Utility
         public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
         public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
 
+        // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
+        // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
+        // for them to start loading, and unload when the player leaves)
+
         void Start()
         {
             for (int i = 0; i < pathsToLoad.Count; i++)
