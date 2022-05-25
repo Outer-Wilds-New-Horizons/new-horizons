@@ -5,6 +5,7 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using Object = UnityEngine.Object;
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
@@ -17,7 +18,12 @@ namespace NewHorizons.Builder.Body
             try
             {
                 if (module.heightMap == null) heightMap = Texture2D.whiteTexture;
-                else heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
+                else
+                {
+                    heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
+                    // defer remove texture to next frame
+                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Object.Destroy(heightMap));
+                }
                 if (module.textureMap == null) textureMap = Texture2D.whiteTexture;
                 else textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
             }

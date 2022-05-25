@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 namespace NewHorizons.Builder.Props
 {
@@ -27,6 +28,8 @@ namespace NewHorizons.Builder.Props
                 try
                 {
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
+                    // defer remove texture to next frame
+                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
                 }
                 catch (Exception) { }
                 if (heightMapTexture == null)
