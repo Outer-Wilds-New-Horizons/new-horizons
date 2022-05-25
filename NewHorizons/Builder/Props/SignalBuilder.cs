@@ -126,7 +126,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)
         {
-            foreach (var info in module.Signals)
+            foreach (var info in module.signals)
             {
                 Make(body, sector, info, mod);
             }
@@ -134,10 +134,10 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
-            var signalGO = new GameObject($"Signal_{info.Name}");
+            var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
             signalGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
+            signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();
@@ -145,30 +145,30 @@ namespace NewHorizons.Builder.Props
             owAudioSource._audioSource = source;
 
             AudioSignal audioSignal;
-            if (info.InsideCloak) audioSignal = signalGO.AddComponent<CloakedAudioSignal>();
+            if (info.insideCloak) audioSignal = signalGO.AddComponent<CloakedAudioSignal>();
             else audioSignal = signalGO.AddComponent<AudioSignal>();
             audioSignal._owAudioSource = owAudioSource;
 
-            var frequency = StringToFrequency(info.Frequency);
-            var name = StringToSignalName(info.Name);
+            var frequency = StringToFrequency(info.frequency);
+            var name = StringToSignalName(info.name);
 
             AudioClip clip = null;
-            if (info.AudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.AudioClip);
-            else if (info.AudioFilePath != null)
+            if (info.audioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
+            else if (info.audioFilePath != null)
             {
                 try
                 {
-                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.AudioFilePath);
+                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't load audio file {info.AudioFilePath} : {e.Message}");
+                    Logger.LogError($"Couldn't load audio file {info.audioFilePath} : {e.Message}");
                 }
             }
 
             if (clip == null)
             {
-                Logger.LogError($"Couldn't find AudioClip {info.AudioClip} or AudioFile {info.AudioFilePath}");
+                Logger.LogError($"Couldn't find AudioClip {info.audioClip} or AudioFile {info.audioFilePath}");
                 return;
             }
 
@@ -178,10 +178,10 @@ namespace NewHorizons.Builder.Props
 
             audioSignal._frequency = frequency;
             audioSignal._name = name;
-            audioSignal._sourceRadius = info.SourceRadius;
-            audioSignal._revealFactID = info.Reveals;
-            audioSignal._onlyAudibleToScope = info.OnlyAudibleToScope;
-            audioSignal._identificationDistance = info.IdentificationRadius;
+            audioSignal._sourceRadius = info.sourceRadius;
+            audioSignal._revealFactID = info.reveals;
+            audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
+            audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
 
             source.clip = clip;
@@ -196,7 +196,7 @@ namespace NewHorizons.Builder.Props
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately
-            source.playOnAwake = !info.OnlyAudibleToScope;
+            source.playOnAwake = !info.onlyAudibleToScope;
             source.spatialBlend = 1f;
             source.volume = 0.5f;
             source.dopplerLevel = 0;
@@ -205,17 +205,17 @@ namespace NewHorizons.Builder.Props
 
             // Frequency detection trigger volume
 
-            var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.Name}");
+            var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.name}");
             signalDetectionGO.SetActive(false);
             signalDetectionGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.Position != null ? (Vector3)info.Position : Vector3.zero);
+            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             signalDetectionGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var sphereShape = signalDetectionGO.AddComponent<SphereShape>();
             var owTriggerVolume = signalDetectionGO.AddComponent<OWTriggerVolume>();
             var audioSignalDetectionTrigger = signalDetectionGO.AddComponent<AudioSignalDetectionTrigger>();
 
-            sphereShape.radius = info.DetectionRadius == 0 ? info.SourceRadius + 30 : info.DetectionRadius;
+            sphereShape.radius = info.detectionRadius == 0 ? info.sourceRadius + 30 : info.detectionRadius;
             audioSignalDetectionTrigger._signal = audioSignal;
             audioSignalDetectionTrigger._trigger = owTriggerVolume;
 

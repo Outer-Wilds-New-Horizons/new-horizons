@@ -1,16 +1,23 @@
-﻿using UnityEngine;
+﻿#region
+
+using Newtonsoft.Json;
+using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Utility
 {
+    [JsonObject]
     public class MVector2
     {
         public MVector2(float x, float y)
         {
-            X = x;
-            Y = y;
+            this.x = x;
+            this.y = y;
         }
 
-        public float X { get; }
-        public float Y { get; }
+        public float x;
+        public float y;
 
         public static implicit operator MVector2(Vector2 vec)
         {
@@ -19,7 +26,7 @@ namespace NewHorizons.Utility
 
         public static implicit operator Vector2(MVector2 vec)
         {
-            return new Vector2(vec.X, vec.Y);
+            return new Vector2(vec.x, vec.y);
         }
     }
 }

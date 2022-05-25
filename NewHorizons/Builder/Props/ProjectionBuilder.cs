@@ -17,11 +17,24 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (info.type == "autoProjector") MakeAutoProjector(go, sector, info, mod);
-            else if (info.type == "slideReel") MakeSlideReel(go, sector, info, mod);
-            else if (info.type == "playerVisionTorchTarget") MakeMindSlidesTarget(go, sector, info, mod);
-            else if (info.type == "standingVisionTorch") MakeStandingVisionTorch(go, sector, info, mod);
-            else Logger.LogError($"Invalid projection type {info.type}");
+            switch (info.type)
+            {
+                case PropModule.ProjectionInfo.SlideShowType.AutoProjector:
+                    MakeAutoProjector(go, sector, info, mod);
+                    break;
+                case PropModule.ProjectionInfo.SlideShowType.SlideReel:
+                    MakeSlideReel(go, sector, info, mod);
+                    break;
+                case PropModule.ProjectionInfo.SlideShowType.VisionTorchTarget:
+                    MakeMindSlidesTarget(go, sector, info, mod);
+                    break;
+                case PropModule.ProjectionInfo.SlideShowType.StandingVisionTorch:
+                    MakeStandingVisionTorch(go, sector, info, mod);
+                    break;
+                default:
+                    Logger.LogError($"Invalid projection type {info.type}");
+                    break;
+            }
         }
 
         private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)

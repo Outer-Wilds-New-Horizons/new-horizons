@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             SphereCollider sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
-            sc.radius = info.Scale;
+            sc.radius = info.scale;
 
             SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
@@ -23,12 +23,12 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            if (info.HasOxygen)
+            if (info.hasOxygen)
             {
                 airGO.AddComponent<OxygenVolume>();
             }
 
-            if (info.IsRaining)
+            if (info.isRaining)
             {
                 var vref = airGO.AddComponent<VisorRainEffectVolume>();
                 vref._rainDirection = VisorRainEffectVolume.RainDirection.Radial;

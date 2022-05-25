@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Props
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
 
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, string uniqueModName, PropModule.DetailInfo detail)
+        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.DetailInfo detail)
         {
             GameObject detailGO = null;
 
@@ -106,14 +106,14 @@ namespace NewHorizons.Builder.Props
                 // Fix a bunch of sector stuff
                 if (sector != null)
                 {
-                    if (component is Sector)
+                    if (component is Sector s)
                     {
-                        (component as Sector)._parentSector = sector;
+                        s._parentSector = sector;
                     }
 
                     // TODO: Make this work or smthng
-                    if (component is GhostIK) (component as GhostIK).enabled = false;
-                    if (component is GhostEffects) (component as GhostEffects).enabled = false;
+                    if (component is GhostIK ik) ik.enabled = false;
+                    if (component is GhostEffects effects) effects.enabled = false;
 
                     if (component is DarkMatterVolume)
                     {
@@ -121,9 +121,9 @@ namespace NewHorizons.Builder.Props
                         if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
                     }
 
-                    if (component is SectoredMonoBehaviour)
+                    if (component is SectoredMonoBehaviour behaviour)
                     {
-                        (component as SectoredMonoBehaviour).SetSector(sector);
+                        behaviour.SetSector(sector);
                     }
                     else
                     {
@@ -131,11 +131,11 @@ namespace NewHorizons.Builder.Props
                         if (sectorField != null && sectorField.FieldType == typeof(Sector)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                     }
 
-                    if (component is AnglerfishController)
+                    if (component is AnglerfishController angler)
                     {
                         try
                         {
-                            (component as AnglerfishController)._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
+                            angler._chaseSpeed += OWPhysics.CalculateOrbitVelocity(planetGO.GetAttachedOWRigidbody(), planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetAttachedOWRigidbody()).magnitude;
                         }
                         catch (Exception e)
                         {
@@ -144,14 +144,14 @@ namespace NewHorizons.Builder.Props
                     }
 
                     // Fix slide reel
-                    if (component is SlideCollectionContainer)
+                    if (component is SlideCollectionContainer container)
                     {
-                        sector.OnOccupantEnterSector.AddListener((_) => (component as SlideCollectionContainer).LoadStreamingTextures());
+                        sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
                     }
 
-                    if (component is OWItemSocket)
+                    if (component is OWItemSocket socket)
                     {
-                        (component as OWItemSocket)._sector = sector;
+                        socket._sector = sector;
                     }
 
                     // Fix vision torch
@@ -166,7 +166,7 @@ namespace NewHorizons.Builder.Props
                 {
                     // Remove things that require sectors. Will just keep extending this as things pop up
 
-                    if (component is FogLight || component is SectoredMonoBehaviour)
+                    if (component is FogLight or SectoredMonoBehaviour)
                     {
                         GameObject.DestroyImmediate(component);
                         continue;
@@ -178,15 +178,14 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        if (component is Animator) (component as Animator).enabled = true;
-                        else if (component is Collider) (component as Collider).enabled = true;
-                        else if (component is Renderer) (component as Renderer).enabled = true;
-                        else if (component is Shape) (component as Shape).enabled = true;
+                        if (component is Animator animator) animator.enabled = true;
+                        else if (component is Collider collider) collider.enabled = true;
+                        else if (component is Renderer renderer) renderer.enabled = true;
+                        else if (component is Shape shape) shape.enabled = true;
                         // If it's not a moving anglerfish make sure the anim controller is regular
-                        else if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                        else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {
                             Logger.Log("Enabling anglerfish animation");
-                            var angler = (component as AnglerfishAnimController);
                             // Remove any reference to its angler
                             if (angler._anglerfishController)
                             {
@@ -229,3 +228,4 @@ namespace NewHorizons.Builder.Props
         }
     }
 }
+>>>>>>> dev
