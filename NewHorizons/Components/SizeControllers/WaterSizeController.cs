@@ -5,16 +5,17 @@ namespace NewHorizons.Components.SizeControllers
     {
         public Material oceanFogMaterial;
 
-        private const float oceanFogR1Ratio = 1f;
-        private const float oceanFogR2Ratio = 0.5f;
+        private void Awake()
+        {
+            oceanFogMaterial.SetFloat("_Radius2", 0);
+        }
 
         protected new void FixedUpdate()
         {
             base.FixedUpdate();
             if (oceanFogMaterial)
             {
-                oceanFogMaterial.SetFloat("_Radius", oceanFogR1Ratio * CurrentScale);
-                oceanFogMaterial.SetFloat("_Radius2", oceanFogR2Ratio * CurrentScale);
+                oceanFogMaterial.SetFloat("_Radius", CurrentScale);
             }
         }
     }

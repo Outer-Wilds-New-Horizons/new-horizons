@@ -9,9 +9,6 @@ namespace NewHorizons.Builder.Body
 {
     public static class WaterBuilder
     {
-        private static readonly int Radius = Shader.PropertyToID("_Radius");
-        private static readonly int Radius2 = Shader.PropertyToID("_Radius2");
-
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             var waterSize = module.size;
@@ -46,13 +43,25 @@ namespace NewHorizons.Builder.Body
             }
 
             TSR.sharedMaterials = tempArray;
-            TSR.maxLOD = 0;
-            TSR.LODBias = 0;
-            TSR.LODRadius = 0;
 
+            // stuff is black without this crap
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC._sector = sector;
             OEC._ocean = TSR;
+
+            var GDOLC = GDTSR.GetComponent<OceanLODController>();
+            var OLC = waterGO.AddComponent<OceanLODController>();
+            OLC._sector = sector;
+            OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
+            
+            // trigger sector enter
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                OEC._active = true;
+                OEC.enabled = true;
+
+                OLC.enabled = true;
+            });
 
             //Buoyancy
             var buoyancyObject = new GameObject("WaterVolume");
@@ -86,7 +95,7 @@ namespace NewHorizons.Builder.Body
             if (module.tint != null)
             {
                 var adjustedColour = module.tint.ToColor() / 4f;
-                adjustedColour.a = adjustedColour.a * 4f;
+                adjustedColour.a *= 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 
@@ -104,13 +113,9 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius, module.size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius2, module.size / 2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
             }
-
-            // TODO: make LOD work 
-            //waterGO.AddComponent<TessellatedSphereLOD>();
-            //waterGO.AddComponent<OceanLODController>();
 
             // TODO: fix ruleset making the sand bubble pop up
 
