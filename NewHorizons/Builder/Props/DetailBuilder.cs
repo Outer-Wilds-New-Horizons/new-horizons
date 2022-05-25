@@ -158,7 +158,7 @@ namespace NewHorizons.Builder.Props
                 {
                     // Remove things that require sectors. Will just keep extending this as things pop up
 
-                    if (component is FogLight || component is SectoredMonoBehaviour)
+                    if (component is FogLight or SectoredMonoBehaviour)
                     {
                         GameObject.DestroyImmediate(component);
                         continue;
