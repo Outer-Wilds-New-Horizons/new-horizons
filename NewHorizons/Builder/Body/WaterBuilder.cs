@@ -46,9 +46,6 @@ namespace NewHorizons.Builder.Body
             }
 
             TSR.sharedMaterials = tempArray;
-            TSR.maxLOD = GDTSR.maxLOD;
-            TSR.LODBias = GDTSR.LODBias;
-            TSR.LODRadius = GDTSR.LODRadius;
 
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC._sector = sector;
@@ -58,13 +55,6 @@ namespace NewHorizons.Builder.Body
             var OLC = waterGO.AddComponent<OceanLODController>();
             OLC._sector = sector;
             OLC._ambientLight = GDOLC._ambientLight;
-            OLC._ambientLightLookup = GDOLC._ambientLightLookup;
-            OLC._maxLOD_High = GDOLC._maxLOD_High;
-            OLC._LODBias_High = GDOLC._LODBias_High;
-            OLC._maxLOD_Medium = GDOLC._maxLOD_Medium;
-            OLC._LODBias_Medium = GDOLC._LODBias_Medium;
-            OLC._maxLOD_Low = GDOLC._maxLOD_Low;
-            OLC._LODBias_Low = GDOLC._LODBias_Low;
             
             // trigger sector enter
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
