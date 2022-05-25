@@ -144,9 +144,9 @@ namespace NewHorizons.Builder.Props
                     }
 
                     // Fix slide reel
-                    if (component is SlideCollectionContainer)
+                    if (component is SlideCollectionContainer container)
                     {
-                        sector.OnOccupantEnterSector.AddListener((_) => (component as SlideCollectionContainer).LoadStreamingTextures());
+                        sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
                     }
 
                     if (component is OWItemSocket socket)
