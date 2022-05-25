@@ -1,23 +1,44 @@
-﻿using UnityEngine;
+﻿using System.ComponentModel;
+using Newtonsoft.Json;
+using UnityEngine;
 namespace NewHorizons.Utility
 {
+    [JsonObject]
     public class MColor
     {
         public MColor(int r, int g, int b, int a)
         {
-            R = r;
-            G = g;
-            B = b;
-            A = a;
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
         }
 
-        public int R { get; }
-        public int G { get; }
-        public int B { get; }
-        public int A { get; }
+        /// <summary>
+        /// The red component of this colour
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Range(0f, int.MaxValue)] 
+        public int r;
 
-        public Color32 ToColor32() => new Color32((byte)R, (byte)G, (byte)B, (byte)A);
+        /// <summary>
+        /// The green component of this colour
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Range(0f, int.MaxValue)] 
+        public int g;
+        
+        /// <summary>
+        /// The blue component of this colour
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Range(0f, int.MaxValue)] 
+        public int b;
+        
+        /// <summary>
+        /// The alpha (opacity) component of this colour
+        /// </summary>
+        [System.ComponentModel.DataAnnotations.Range(0f, 255f)] 
+        [DefaultValue(255f)]
+        public int a;
 
-        public Color ToColor() => new Color(R / 255f, G / 255f, B / 255f, A / 255f);
+        public Color ToColor() => new Color(r / 255f, g / 255f, b / 255f, a / 255f);
     }
 }

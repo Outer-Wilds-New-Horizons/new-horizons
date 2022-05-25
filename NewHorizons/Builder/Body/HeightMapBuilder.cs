@@ -5,6 +5,7 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using Object = UnityEngine.Object;
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
@@ -16,10 +17,15 @@ namespace NewHorizons.Builder.Body
             Texture2D heightMap, textureMap;
             try
             {
-                if (module.HeightMap == null) heightMap = Texture2D.whiteTexture;
-                else heightMap = ImageUtilities.GetTexture(mod, module.HeightMap);
-                if (module.TextureMap == null) textureMap = Texture2D.whiteTexture;
-                else textureMap = ImageUtilities.GetTexture(mod, module.TextureMap);
+                if (module.heightMap == null) heightMap = Texture2D.whiteTexture;
+                else
+                {
+                    heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
+                    // defer remove texture to next frame
+                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Object.Destroy(heightMap));
+                }
+                if (module.textureMap == null) textureMap = Texture2D.whiteTexture;
+                else textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
             }
             catch (Exception e)
             {
@@ -32,20 +38,21 @@ namespace NewHorizons.Builder.Body
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
             cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Vector3 stretch = module.Stretch != null ? (Vector3)module.Stretch : Vector3.one;
-            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.MinHeight, module.MaxHeight, stretch);
+            Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
+            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.minHeight, module.maxHeight, stretch);
 
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            // TODO: fix UVs so we can switch to the default shader
             if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
             var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
-            cubeSphereMR.material = new Material(PlanetShader);
-            cubeSphereMR.material.name = textureMap.name;
-            cubeSphereMR.material.mainTexture = textureMap;
+            var material = cubeSphereMR.material;
+            material = new Material(PlanetShader);
+            cubeSphereMR.material = material;
+            material.name = textureMap.name;
+            material.mainTexture = textureMap;
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;

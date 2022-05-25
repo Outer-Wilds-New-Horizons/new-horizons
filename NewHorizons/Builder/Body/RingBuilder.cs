@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
@@ -16,6 +17,7 @@ namespace NewHorizons.Builder.Body
         public static Shader RingShader1Pixel;
         public static Shader UnlitRingShader;
         public static Shader UnlitRingShader1Pixel;
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
 
         public static GameObject Make(GameObject planetGO, Sector sector, RingModule ring, IModBehaviour mod)
         {
@@ -31,8 +33,8 @@ namespace NewHorizons.Builder.Body
             ringVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var ringShape = ringVolume.AddComponent<RingShape>();
-            ringShape.innerRadius = ring.InnerRadius;
-            ringShape.outerRadius = ring.OuterRadius;
+            ringShape.innerRadius = ring.innerRadius;
+            ringShape.outerRadius = ring.outerRadius;
             ringShape.height = 20f;
             ringShape.center = Vector3.zero;
             ringShape.SetCollisionMode(Shape.CollisionMode.Volume);
@@ -46,16 +48,13 @@ namespace NewHorizons.Builder.Body
             var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
             var fluidType = FluidVolume.Type.NONE;
 
-            if (!string.IsNullOrEmpty(ring.FluidType))
+            try
             {
-                try
-                {
-                    fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), ring.FluidType.ToUpper());
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogError($"Couldn't parse fluid volume type [{ring.FluidType}]: {ex.Message}, {ex.StackTrace}");
-                }
+                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
             }
 
             sfv._fluidType = fluidType;
@@ -71,12 +70,12 @@ namespace NewHorizons.Builder.Body
         public static GameObject MakeRingGraphics(GameObject rootObject, Sector sector, RingModule ring, IModBehaviour mod)
         {
             // Properly lit shader doesnt work yet
-            ring.Unlit = true;
+            ring.unlit = true;
 
             Texture2D ringTexture;
             try
             {
-                ringTexture = ImageUtilities.GetTexture(mod, ring.Texture);
+                ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
             }
             catch (Exception e)
             {
@@ -88,8 +87,8 @@ namespace NewHorizons.Builder.Body
             ringGO.transform.parent = sector?.transform ?? rootObject.transform;
             ringGO.transform.position = rootObject.transform.position;
             ringGO.transform.rotation = rootObject.transform.rotation;
-            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.LongitudeOfAscendingNode);
-            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.Inclination);
+            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.up), ring.longitudeOfAscendingNode);
+            ringGO.transform.Rotate(ringGO.transform.TransformDirection(Vector3.left), ring.inclination);
 
             var ringMF = ringGO.AddComponent<MeshFilter>();
             var ringMesh = ringMF.mesh;
@@ -101,36 +100,36 @@ namespace NewHorizons.Builder.Body
             if (RingShader1Pixel == null) RingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring1Pixel.shader");
             if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
 
-            var mat = new Material(ring.Unlit ? UnlitRingShader : RingShader);
+            var mat = new Material(ring.unlit ? UnlitRingShader : RingShader);
             if (texture.width == 1)
             {
-                mat = new Material(ring.Unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
-                mat.SetFloat("_InnerRadius", 0);
+                mat = new Material(ring.unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
+                mat.SetFloat(InnerRadius, 0);
             }
-            ringMR.receiveShadows = !ring.Unlit;
+            ringMR.receiveShadows = !ring.unlit;
 
             mat.mainTexture = texture;
             mat.renderQueue = 3000;
             ringMR.material = mat;
 
             // Make mesh
-            var segments = (int)Mathf.Clamp(ring.OuterRadius, 20, 2000);
-            BuildRingMesh(ringMesh, segments, ring.InnerRadius, ring.OuterRadius);
+            var segments = (int)Mathf.Clamp(ring.outerRadius, 20, 2000);
+            BuildRingMesh(ringMesh, segments, ring.innerRadius, ring.outerRadius);
 
-            if (ring.RotationSpeed != 0)
+            if (ring.rotationSpeed != 0)
             {
                 var rot = ringGO.AddComponent<RotateTransform>();
-                rot._degreesPerSecond = ring.RotationSpeed;
+                rot._degreesPerSecond = ring.rotationSpeed;
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.Curve != null)
+            if (ring.curve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in ring.Curve)
+                foreach (var pair in ring.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 levelController.scaleCurve = curve;
             }

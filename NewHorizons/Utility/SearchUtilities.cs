@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -119,6 +119,16 @@ namespace NewHorizons.Utility
         }
         */
 
+        public static GameObject FindChild(GameObject g, string childName)
+        {
+            foreach(Transform child in g.transform)
+            {
+                if (child.gameObject.name == childName) return child.gameObject;
+            }
+
+            return null;
+        }
+
         public static GameObject Find(string path)
         {
             if (CachedGameObjects.ContainsKey(path))
@@ -135,7 +145,7 @@ namespace NewHorizons.Utility
 
                     // Get the root object and hope its the right one
                     var root = GameObject.Find(names[0]);
-                    if (root == null) root = FindObjectOfTypeAndName<GameObject>(names[0]);
+                    if (root == null) root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.Equals(names[0])).FirstOrDefault();
 
                     var t = root?.transform;
                     if (t == null)

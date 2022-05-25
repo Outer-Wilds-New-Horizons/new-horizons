@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using UnityEngine.SceneManagement;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -26,12 +28,18 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(MapController), nameof(MapController.MapInoperable))]
         public static bool MapController_MapInoperable(MapController __instance, ref bool __result)
         {
-            if(Main.SystemDict[Main.Instance.CurrentStarSystem]?.Config?.mapRestricted ?? false)
+            if (SceneManager.GetActiveScene().name != "SolarSystem") return true;
+
+            try
             {
-                __instance._playerMapRestricted = true;
-                __result = true;
-                return false;
+                if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.mapRestricted)
+                {
+                    __instance._playerMapRestricted = true;
+                    __result = true;
+                    return false;
+                }
             }
+            catch { }
 
             return true;
         }

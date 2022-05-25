@@ -3,6 +3,7 @@ using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
+using Tessellation;
 
 namespace NewHorizons.Builder.Body
 {
@@ -10,7 +11,7 @@ namespace NewHorizons.Builder.Body
     {
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
-            var waterSize = module.Size;
+            var waterSize = module.size;
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
@@ -21,7 +22,7 @@ namespace NewHorizons.Builder.Body
             var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
-            TSR.tessellationMeshGroup = new Tessellation.MeshGroup();
+            TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
             for (int i = 0; i < 16; i++)
             {
                 var mesh = new Mesh();
@@ -34,21 +35,33 @@ namespace NewHorizons.Builder.Body
             for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
                 tempArray[i] = new Material(GDSharedMaterials[i]);
-                if (module.Tint != null)
+                if (module.tint != null)
                 {
-                    tempArray[i].color = module.Tint.ToColor();
-                    tempArray[i].SetColor("_FogColor", module.Tint.ToColor());
+                    tempArray[i].color = module.tint.ToColor();
+                    tempArray[i].SetColor("_FogColor", module.tint.ToColor());
                 }
             }
 
             TSR.sharedMaterials = tempArray;
-            TSR.maxLOD = 0;
-            TSR.LODBias = 0;
-            TSR.LODRadius = 0;
 
+            // stuff is black without this crap
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC._sector = sector;
             OEC._ocean = TSR;
+
+            var GDOLC = GDTSR.GetComponent<OceanLODController>();
+            var OLC = waterGO.AddComponent<OceanLODController>();
+            OLC._sector = sector;
+            OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
+            
+            // trigger sector enter
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                OEC._active = true;
+                OEC.enabled = true;
+
+                OLC.enabled = true;
+            });
 
             //Buoyancy
             var buoyancyObject = new GameObject("WaterVolume");
@@ -72,41 +85,37 @@ namespace NewHorizons.Builder.Body
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
-            fluidVolume._layer = LayerMask.NameToLayer("BassicEffectVolume");
+            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
 
-            if (module.Tint != null)
+            if (module.tint != null)
             {
-                var adjustedColour = module.Tint.ToColor() / 4f;
-                adjustedColour.a = adjustedColour.a * 4f;
+                var adjustedColour = module.tint.ToColor() / 4f;
+                adjustedColour.a *= 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 
-            if (module.Curve != null)
+            if (module.curve != null)
             {
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 var curve = new AnimationCurve();
-                foreach (var pair in module.Curve)
+                foreach (var pair in module.curve)
                 {
-                    curve.AddKey(new Keyframe(pair.Time, pair.Value));
+                    curve.AddKey(new Keyframe(pair.time, pair.value));
                 }
                 sizeController.scaleCurve = curve;
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
-                sizeController.size = module.Size;
+                sizeController.size = module.size;
             }
             else
             {
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.Size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", module.Size / 2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
             }
-
-            // TODO: make LOD work 
-            //waterGO.AddComponent<TessellatedSphereLOD>();
-            //waterGO.AddComponent<OceanLODController>();
 
             // TODO: fix ruleset making the sand bubble pop up
 

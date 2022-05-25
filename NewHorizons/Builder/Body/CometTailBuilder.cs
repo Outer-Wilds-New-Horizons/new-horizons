@@ -9,10 +9,10 @@ namespace NewHorizons.Builder.Body
             var cometTail = GameObject.Instantiate(GameObject.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes"), sector?.transform ?? planetGO.transform);
             cometTail.transform.position = planetGO.transform.position;
             cometTail.name = "CometTail";
-            cometTail.transform.localScale = Vector3.one * config.Base.SurfaceSize / 110;
+            cometTail.transform.localScale = Vector3.one * config.Base.surfaceSize / 110;
 
             Vector3 alignment = new Vector3(0, 270, 90);
-            if (config.Base.CometTailRotation != null) alignment = config.Base.CometTailRotation;
+            if (config.Base.cometTailRotation != null) alignment = config.Base.cometTailRotation;
 
             cometTail.transform.rotation = Quaternion.Euler(alignment);
         }

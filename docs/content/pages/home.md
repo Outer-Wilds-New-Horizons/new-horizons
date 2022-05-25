@@ -14,7 +14,8 @@ This is the official documentation for [New Horizons](https://github.com/xen-42/
 
 Before starting, go into your in-game mod settings for New Horizons and switch Debug mode on. This allows you to:
 
-- Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place details.
+- Use the Prop Placer tool. This convienence tool allows you to place details in game and save your work to your config files.
+- Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place props the Prop Placer is unable to, such as signal scope points or dialogue triggers.
 - Use the "Reload Configs" button in the pause menu. This will restart the current solar system and update all the planets. Much faster than quitting and relaunching the game.
 
 !!! alert-danger "Get VSCode"

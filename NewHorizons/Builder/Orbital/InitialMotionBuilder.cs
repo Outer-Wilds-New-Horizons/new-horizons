@@ -19,11 +19,11 @@ namespace NewHorizons.Builder.Orbital
             initialMotion._orbitImpulseScalar = 0f;
 
             // Rotation
-            initialMotion._initAngularSpeed = orbit.SiderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.SiderealPeriod * 60f);
-            var rotationAxis = Quaternion.AngleAxis(orbit.AxialTilt, Vector3.right) * Vector3.up;
+            initialMotion._initAngularSpeed = orbit.siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.siderealPeriod * 60f);
+            var rotationAxis = Quaternion.AngleAxis(orbit.axialTilt, Vector3.right) * Vector3.up;
             secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
 
-            if (!orbit.IsStatic && primaryBody != null)
+            if (!orbit.isStatic && primaryBody != null)
             {
                 SetInitialMotion(initialMotion, primaryBody, secondaryBody);
             }
@@ -108,18 +108,18 @@ namespace NewHorizons.Builder.Orbital
             }
 
             // Update the positions
-            var distance = secondaryBody.SemiMajorAxis + primaryBody.SemiMajorAxis;
+            var distance = secondaryBody.semiMajorAxis + primaryBody.semiMajorAxis;
             var m1 = primaryGravity.Mass;
             var m2 = secondaryGravity.Mass;
 
             var r1 = distance * m2 / (m1 + m2);
             var r2 = distance * m1 / (m1 + m2);
 
-            var ecc = secondaryBody.Eccentricity;
-            var inc = secondaryBody.Inclination;
-            var arg = secondaryBody.ArgumentOfPeriapsis;
-            var lon = secondaryBody.LongitudeOfAscendingNode;
-            var tru = secondaryBody.TrueAnomaly;
+            var ecc = secondaryBody.eccentricity;
+            var inc = secondaryBody.inclination;
+            var arg = secondaryBody.argumentOfPeriapsis;
+            var lon = secondaryBody.longitudeOfAscendingNode;
+            var tru = secondaryBody.trueAnomaly;
 
             // Update their astro objects
             primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg, lon, tru - 180);

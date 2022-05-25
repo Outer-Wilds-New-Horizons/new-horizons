@@ -3,38 +3,38 @@ namespace NewHorizons.Components.Orbital
 {
     public class NHAstroObject : AstroObject, IOrbitalParameters
     {
-        public float Inclination { get; set; }
-        public float SemiMajorAxis { get; set; }
-        public float LongitudeOfAscendingNode { get; set; }
-        public float Eccentricity { get; set; }
-        public float ArgumentOfPeriapsis { get; set; }
-        public float TrueAnomaly { get; set; }
+        public float inclination { get; set; }
+        public float semiMajorAxis { get; set; }
+        public float longitudeOfAscendingNode { get; set; }
+        public float eccentricity { get; set; }
+        public float argumentOfPeriapsis { get; set; }
+        public float trueAnomaly { get; set; }
         public bool HideDisplayName { get; set; }
 
         public void SetOrbitalParametersFromConfig(OrbitModule orbit)
         {
-            SetOrbitalParametersFromTrueAnomaly(orbit.Eccentricity, orbit.SemiMajorAxis, orbit.Inclination, orbit.ArgumentOfPeriapsis, orbit.LongitudeOfAscendingNode, orbit.TrueAnomaly);
+            SetOrbitalParametersFromTrueAnomaly(orbit.eccentricity, orbit.semiMajorAxis, orbit.inclination, orbit.argumentOfPeriapsis, orbit.longitudeOfAscendingNode, orbit.trueAnomaly);
         }
 
         public void SetOrbitalParametersFromTrueAnomaly(float ecc, float a, float i, float p, float l, float trueAnomaly)
         {
-            Inclination = ecc;
-            SemiMajorAxis = a;
-            LongitudeOfAscendingNode = l;
-            Inclination = i;
-            Eccentricity = ecc;
-            ArgumentOfPeriapsis = p;
-            TrueAnomaly = trueAnomaly;
+            inclination = ecc;
+            semiMajorAxis = a;
+            longitudeOfAscendingNode = l;
+            inclination = i;
+            eccentricity = ecc;
+            argumentOfPeriapsis = p;
+            this.trueAnomaly = trueAnomaly;
         }
 
         public override string ToString()
         {
-            return $"ParameterizedAstroObject: Eccentricity {Eccentricity}, SemiMajorAxis {SemiMajorAxis}, Inclination {Inclination}, ArgumentOfPeriapsis {ArgumentOfPeriapsis}, LongitudeOfAscendingNode {LongitudeOfAscendingNode}, TrueAnomaly {TrueAnomaly}";
+            return $"ParameterizedAstroObject: Eccentricity {eccentricity}, SemiMajorAxis {semiMajorAxis}, Inclination {inclination}, ArgumentOfPeriapsis {argumentOfPeriapsis}, LongitudeOfAscendingNode {longitudeOfAscendingNode}, TrueAnomaly {trueAnomaly}";
         }
 
         public OrbitalParameters GetOrbitalParameters(Gravity primaryGravity, Gravity secondaryGravity)
         {
-            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, Eccentricity, SemiMajorAxis, Inclination, ArgumentOfPeriapsis, LongitudeOfAscendingNode, TrueAnomaly);
+            return OrbitalParameters.FromTrueAnomaly(primaryGravity, secondaryGravity, eccentricity, semiMajorAxis, inclination, argumentOfPeriapsis, longitudeOfAscendingNode, trueAnomaly);
         }
     }
 }

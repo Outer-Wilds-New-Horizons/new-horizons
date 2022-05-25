@@ -4,9 +4,11 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class VolumesBuilder
     {
+        private static readonly int FogColor = Shader.PropertyToID("_FogColor");
+
         public static void Make(GameObject planetGO, PlanetConfig config, float sphereOfInfluence)
         {
-            var innerRadius = config.Base.SurfaceSize;
+            var innerRadius = config.Base.surfaceSize;
 
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -28,8 +30,8 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
-            PR._useMinimap = config.Base.ShowMinimap;
-            PR._useAltimeter = config.Base.ShowMinimap;
+            PR._useMinimap = config.Base.showMinimap;
+            PR._useAltimeter = config.Base.showMinimap;
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
@@ -40,9 +42,9 @@ namespace NewHorizons.Builder.Atmosphere
             ER._material = gdRuleset._material;
 
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);
-            if (config.Atmosphere?.CloudTint != null)
+            if (config.Atmosphere?.clouds?.tint != null)
             {
-                cloudMaterial.SetColor("_FogColor", config.Atmosphere.CloudTint.ToColor32());
+                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
             }
             ER._cloudMaterial = cloudMaterial;
 

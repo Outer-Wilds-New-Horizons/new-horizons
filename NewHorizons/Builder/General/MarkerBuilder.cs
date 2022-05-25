@@ -1,6 +1,11 @@
-﻿using NewHorizons.External.Configs;
+﻿#region
+
+using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using UnityEngine;
+
+#endregion
+
 namespace NewHorizons.Builder.General
 {
     static class MarkerBuilder
@@ -8,11 +13,11 @@ namespace NewHorizons.Builder.General
         public static void Make(GameObject body, string name, PlanetConfig config)
         {
             MapMarker mapMarker = body.AddComponent<MapMarker>();
-            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.Name);
+            mapMarker._labelID = (UITextType)TranslationHandler.AddUI(config.name);
 
             var markerType = MapMarker.MarkerType.Planet;
 
-            if (config.Orbit.IsMoon)
+            if (config.Orbit.isMoon)
             {
                 markerType = MapMarker.MarkerType.Moon;
             }

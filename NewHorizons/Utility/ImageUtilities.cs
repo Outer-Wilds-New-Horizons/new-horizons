@@ -1,8 +1,12 @@
-﻿using OWML.Common;
+using OWML.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
+
 namespace NewHorizons.Utility
 {
     public static class ImageUtilities
@@ -194,6 +198,12 @@ namespace NewHorizons.Utility
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
+            if(image == null)
+            {
+                Logger.LogError($"Tried to tint null image");
+                return null;
+            }
+
             var pixels = image.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -292,6 +302,62 @@ namespace NewHorizons.Utility
             }
 
             return new Color(r / 255, g / 255, b / 255);
+        }
+        public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
+        {
+            Color[] pixels = new Color[width*height];
+ 
+            for(int i = 0; i < pixels.Length; i++)
+            {
+                pixels[i] = color;
+            }
+ 
+            Texture2D newTexture = new Texture2D(width, height);
+            newTexture.SetPixels(pixels);
+            newTexture.Apply();
+            return newTexture;
+        }
+    }
+
+    // Modified from https://stackoverflow.com/a/69141085/9643841
+    public class AsyncImageLoader : MonoBehaviour
+    {
+        public List<string> pathsToLoad = new List<string>();
+
+        public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
+        public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+
+        // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
+        // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
+        // for them to start loading, and unload when the player leaves)
+
+        void Start()
+        {
+            for (int i = 0; i < pathsToLoad.Count; i++)
+            {
+                StartCoroutine(DownloadTexture(pathsToLoad[i], i));
+            }
+        }
+
+        IEnumerator DownloadTexture(string url, int index)
+        {
+            using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
+            {
+                yield return uwr.SendWebRequest();
+
+                var hasError = uwr.error != null && uwr.error != "";
+                
+                if (hasError) // (uwr.result != UnityWebRequest.Result.Success)
+                {
+                    Debug.Log(uwr.error);
+                }
+                else
+                {
+                    // Get downloaded asset bundle
+                    var texture = DownloadHandlerTexture.GetContent(uwr);
+                    imageLoadedEvent.Invoke(texture, index);
+                }
+            }
         }
     }
 }

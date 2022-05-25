@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Body;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System.Collections.Generic;
@@ -11,11 +11,25 @@ namespace NewHorizons.Handlers
 {
     public static class TitleSceneHandler
     {
+        public static void InitSubtitles()
+        {
+            GameObject subtitleContainer = GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
+            
+            if (subtitleContainer == null)
+            {
+                Logger.LogError("No subtitle container found! Failed to load subtitles.");
+                return;
+            }
+
+            subtitleContainer.SetActive(true);
+            subtitleContainer.AddComponent<SubtitlesHandler>();
+        }
+
         public static void DisplayBodyOnTitleScreen(List<NewHorizonsBody> bodies)
         {
             //Try loading one planet why not
             //var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
-            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null && b.Config.CanShowOnTitle).ToArray();
+            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -60,26 +74,26 @@ namespace NewHorizons.Handlers
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.Log($"Displaying {body.Config.Name} on the title screen");
-            GameObject titleScreenGO = new GameObject(body.Config.Name + "_TitleScreen");
+            Logger.Log($"Displaying {body.Config.name} on the title screen");
+            GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
             HeightMapModule heightMap = new HeightMapModule();
             var minSize = 15;
             var maxSize = 30;
             float size = minSize;
             if (body.Config.HeightMap != null)
             {
-                size = Mathf.Clamp(body.Config.HeightMap.MaxHeight / 10, minSize, maxSize);
-                heightMap.TextureMap = body.Config.HeightMap.TextureMap;
-                heightMap.HeightMap = body.Config.HeightMap.HeightMap;
-                heightMap.MaxHeight = size;
-                heightMap.MinHeight = body.Config.HeightMap.MinHeight * size / body.Config.HeightMap.MaxHeight;
+                size = Mathf.Clamp(body.Config.HeightMap.maxHeight / 10, minSize, maxSize);
+                heightMap.textureMap = body.Config.HeightMap.textureMap;
+                heightMap.heightMap = body.Config.HeightMap.heightMap;
+                heightMap.maxHeight = size;
+                heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
             }
-            if (body.Config.Atmosphere != null && body.Config.Atmosphere.Cloud != null)
+            if (body.Config.Atmosphere?.clouds?.texturePath != null)
             {
                 // Hacky but whatever I just want a sphere
-                size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
-                heightMap.MaxHeight = heightMap.MinHeight = size + 1;
-                heightMap.TextureMap = body.Config.Atmosphere.Cloud;
+                size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);
+                heightMap.maxHeight = heightMap.minHeight = size + 1;
+                heightMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
             }
 
             HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
@@ -95,9 +109,9 @@ namespace NewHorizons.Handlers
             if (body.Config.Ring != null)
             {
                 RingModule newRing = new RingModule();
-                newRing.InnerRadius = size * 1.2f;
-                newRing.OuterRadius = size * 2f;
-                newRing.Texture = body.Config.Ring.Texture;
+                newRing.innerRadius = size * 1.2f;
+                newRing.outerRadius = size * 2f;
+                newRing.texture = body.Config.Ring.texture;
                 var ring = RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }

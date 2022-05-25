@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using Random = UnityEngine.Random;
 namespace NewHorizons.Components
 {
@@ -19,14 +19,17 @@ namespace NewHorizons.Components
         {
             noiseOffset = Random.value;
 
+            // In unity z and y are swapped compared to proper math stuff
+
             var x = transform.localPosition.x;
             var y = transform.localPosition.y;
             var z = transform.localPosition.z;
 
             elevation = Mathf.Sqrt(x * x + y * y + z * z);
 
-            startDegreesX = Mathf.Rad2Deg * Mathf.Atan2(y, x); //theta
-            startDegreesZ = Mathf.Rad2Deg * Mathf.Acos(z / elevation); //phi
+            // I'm using the math notation not physics
+            startDegreesX = Mathf.Rad2Deg * Mathf.Atan2(z, x); //theta (around the polar axis)
+            startDegreesZ = Mathf.Rad2Deg * Mathf.Acos(y / elevation); //phi (down from the polar axis)
         }
 
         public void Update()
@@ -38,8 +41,8 @@ namespace NewHorizons.Components
             var newDegreesZ = startDegreesZ + num2 * wanderDegreesZ;
 
             var newX = elevation * Mathf.Sin(Mathf.Deg2Rad * newDegreesZ) * Mathf.Cos(Mathf.Deg2Rad * newDegreesX);
-            var newY = elevation * Mathf.Sin(Mathf.Deg2Rad * newDegreesZ) * Mathf.Sin(Mathf.Deg2Rad * newDegreesX);
-            var newZ = elevation * Mathf.Cos(Mathf.Deg2Rad * newDegreesZ);
+            var newZ = elevation * Mathf.Sin(Mathf.Deg2Rad * newDegreesZ) * Mathf.Sin(Mathf.Deg2Rad * newDegreesX);
+            var newY = elevation * Mathf.Cos(Mathf.Deg2Rad * newDegreesZ);
 
             var newPos = new Vector3(newX, newY, newZ);
 
