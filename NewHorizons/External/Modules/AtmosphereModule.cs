@@ -76,15 +76,12 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public bool useAtmosphereShader;
 
+        // not an actual config thing, rip 
         public class AirInfo
         {
             public bool hasOxygen;
             public bool isRaining;
             public bool isSnowing;
-
-            /// <summary>
-            /// The radius of the volume.
-            /// </summary>
             public float scale;
         }
 
