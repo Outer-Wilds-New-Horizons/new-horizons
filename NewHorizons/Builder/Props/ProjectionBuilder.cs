@@ -248,8 +248,8 @@ namespace NewHorizons.Builder.Props
             //
 
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
-			mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
-		    
+            mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+            
             // setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
             var visionBeamEffect = SearchUtilities.FindChild(standingTorch, "VisionBeam");
@@ -305,7 +305,7 @@ namespace NewHorizons.Builder.Props
             // make sure that these slides play when the player wanders into the beam
             // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
             mindSlideProjector._mindSlideCollection = mindSlideCollection;
-		    mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
+            mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 
@@ -364,9 +364,9 @@ namespace NewHorizons.Builder.Props
         }
     }
 
-	public class VisionTorchTarget : MonoBehaviour
+    public class VisionTorchTarget : MonoBehaviour
     {
-		public MindSlideCollection slideCollection;
-		public SlideCollectionContainer slideCollectionContainer;
+        public MindSlideCollection slideCollection;
+        public SlideCollectionContainer slideCollectionContainer;
     }
 }

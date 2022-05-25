@@ -157,9 +157,9 @@ namespace NewHorizons.Builder.Props
                     // Fix vision torch
                     if (component is VisionTorchItem)
                     {
-	                    (component as VisionTorchItem).enabled = true;
-	                    (component as VisionTorchItem).mindProjectorTrigger.enabled = true;
-	                    (component as VisionTorchItem).mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                        (component as VisionTorchItem).enabled = true;
+                        (component as VisionTorchItem).mindProjectorTrigger.enabled = true;
+                        (component as VisionTorchItem).mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
                 }
                 else
