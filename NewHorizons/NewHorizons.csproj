@@ -2,6 +2,7 @@
     <PropertyGroup>
         <ProjectGuid>{8A39F9E7-1A89-430C-9C3E-BDFB3B7E17DF}</ProjectGuid>
         <TargetFramework>net48</TargetFramework>
+        <LangVersion>default</LangVersion>
         <OutputPath>Build</OutputPath>
         <AssemblyTitle>NewHorizons</AssemblyTitle>
         <Product>NewHorizons</Product>
