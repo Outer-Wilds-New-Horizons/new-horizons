@@ -9,9 +9,6 @@ namespace NewHorizons.Builder.Body
 {
     public static class WaterBuilder
     {
-        private static readonly int Radius = Shader.PropertyToID("_Radius");
-        private static readonly int Radius2 = Shader.PropertyToID("_Radius2");
-
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             var waterSize = module.size;
@@ -116,8 +113,8 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius, module.size);
-                fogGO.GetComponent<MeshRenderer>().material.SetFloat(Radius2, module.size / 2f);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
+                fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
             }
 
             // TODO: fix ruleset making the sand bubble pop up
