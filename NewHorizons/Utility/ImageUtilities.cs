@@ -337,7 +337,6 @@ namespace NewHorizons.Utility
 
         IEnumerator DownloadTexture(string url, int index)
         {
-            Logger.Log("loading img " + url);
             using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
             {
                 yield return uwr.SendWebRequest();
@@ -352,7 +351,6 @@ namespace NewHorizons.Utility
                 {
                     // Get downloaded asset bundle
                     var texture = DownloadHandlerTexture.GetContent(uwr);
-                    Logger.Log("Finished loading image " + url);
                     imageLoadedEvent.Invoke(texture, index);
                 }
             }

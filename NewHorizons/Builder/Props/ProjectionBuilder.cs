@@ -249,7 +249,12 @@ namespace NewHorizons.Builder.Props
 
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
 			mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
-			
+		    
+            // setup for visually supporting async texture loading
+            mindSlideProjector.enabled = false;	
+            var visionBeamEffect = SearchUtilities.FindChild(standingTorch, "VisionBeam");
+            visionBeamEffect.SetActive(false);
+
             //
             // set up slides
             //
@@ -271,7 +276,25 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = tex; });
+            
+            // this variable just lets us track how many of the slides have been loaded.
+            // this way as soon as the last one is loaded (due to async loading, this may be
+            // slide 7, or slide 3, or whatever), we can enable the vision torch. This allows us
+            // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
+            int displaySlidesLoaded = 0;
+            imageLoader.imageLoadedEvent.AddListener(
+                (Texture2D tex, int index) => 
+                { 
+                    slideCollection.slides[index].textureOverride = tex;
+                    displaySlidesLoaded++; // threading moment
+
+                    if (displaySlidesLoaded >= slides.Length)
+                    {
+                        mindSlideProjector.enabled = true;
+                        visionBeamEffect.SetActive(true);
+                    }
+                }
+            );
 
             // set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
@@ -281,9 +304,8 @@ namespace NewHorizons.Builder.Props
 
             // make sure that these slides play when the player wanders into the beam
             // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
-            standingTorch.GetComponent<MindSlideProjector>()._mindSlideCollection = mindSlideCollection;
+            mindSlideProjector._mindSlideCollection = mindSlideCollection;
 		    mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
-		    mindSlideProjector._mindSlideCollection = mindSlideCollection;
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 

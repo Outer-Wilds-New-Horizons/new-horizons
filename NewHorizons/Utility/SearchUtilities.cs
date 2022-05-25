@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -118,6 +118,16 @@ namespace NewHorizons.Utility
             return null;
         }
         */
+
+        public static GameObject FindChild(GameObject g, string childName)
+        {
+            foreach(Transform child in g.transform)
+            {
+                if (child.gameObject.name == childName) return child.gameObject;
+            }
+
+            return null;
+        }
 
         public static GameObject Find(string path)
         {
