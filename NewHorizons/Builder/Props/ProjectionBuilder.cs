@@ -62,21 +62,51 @@ namespace NewHorizons.Builder.Props
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
+            var imageLoader = slideReelObj.AddComponent<AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
 
-                var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                slide.textureOverride = ImageUtilities.Invert(texture);
-
-                // Track the first 15 to put on the slide reel object
-                if (i < 15) textures[i] = texture;
+                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
 
                 slideCollection.slides[i] = slide;
             }
+            
+            // this variable just lets us track how many of the first 15 slides have been loaded.
+            // this way as soon as the last one is loaded (due to async loading, this may be
+            // slide 7, or slide 3, or whatever), we can build the slide reel texture. This allows us
+            // to avoid doing a "is every element in the array `textures` not null" check every time a texture finishes loading
+            int displaySlidesLoaded = 0;
+            imageLoader.imageLoadedEvent.AddListener(
+                (Texture2D tex, int index) => 
+                { 
+                    slideCollection.slides[index].textureOverride = ImageUtilities.Invert(tex); 
+
+                    // Track the first 15 to put on the slide reel object
+                    if (index < 15) 
+                    {
+                        textures[index] = tex;
+                        displaySlidesLoaded++; // threading moment
+                    }
+
+                    if (displaySlidesLoaded >= textures.Length)
+                    {
+                        // all textures required to build the reel's textures have been loaded
+                        var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back").GetComponent<MeshRenderer>();
+                        var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front").GetComponent<MeshRenderer>();
+
+                        // Now put together the textures into a 4x4 thing for the materials
+                        var reelTexture = ImageUtilities.MakeReelTexture(textures);
+                        slidesBack.material.mainTexture = reelTexture;
+                        slidesBack.material.SetTexture(EmissionMap, reelTexture);
+                        slidesFront.material.mainTexture = reelTexture;
+                        slidesFront.material.SetTexture(EmissionMap, reelTexture);
+                    }
+                }
+            );
 
             // Else when you put them down you can't pick them back up
             slideReelObj.GetComponent<OWCollider>()._physicsRemoved = false;
@@ -88,16 +118,6 @@ namespace NewHorizons.Builder.Props
 
             OWAssetHandler.LoadObject(slideReelObj);
             sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(slideReelObj));
-
-            var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back").GetComponent<MeshRenderer>();
-            var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front").GetComponent<MeshRenderer>();
-
-            // Now put together the textures into a 4x4 thing for the materials
-            var reelTexture = ImageUtilities.MakeReelTexture(textures);
-            slidesBack.material.mainTexture = reelTexture;
-            slidesBack.material.SetTexture(EmissionMap, reelTexture);
-            slidesFront.material.mainTexture = reelTexture;
-            slidesFront.material.SetTexture(EmissionMap, reelTexture);
 
             slideReelObj.SetActive(true);
         }
@@ -130,19 +150,20 @@ namespace NewHorizons.Builder.Props
             // Now we replace the slides
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
-
+            
+            var imageLoader = projectorObj.AddComponent<AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
 
-                var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                slide.textureOverride = ImageUtilities.Invert(texture);
+                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
 
                 slideCollection.slides[i] = slide;
             }
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = ImageUtilities.Invert(tex); });
 
             slideCollectionContainer.slideCollection = slideCollection;
 
@@ -184,9 +205,6 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
-                // TODO: do this part asynchronously so that you can load all the slides you want without stalling the game out for 5 days
-                //var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                //slide.textureOverride = texture; //ImageUtilities.Invert(texture);
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
@@ -247,9 +265,6 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
-                // TODO: do this part asynchronously so that you can load all the slides you want without stalling the game out for 5 days
-                //var texture = ImageUtilities.GetTexture(mod, slideInfo.imagePath);
-                //slide.textureOverride = texture; //ImageUtilities.Invert(texture);
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide);
