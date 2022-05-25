@@ -38,7 +38,6 @@ namespace NewHorizons.Builder.Body
             cubeSphere.AddComponent<MeshFilter>();
             cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
-            // TODO: fix UVs so we can switch to the default shader
             if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             //if (PlanetShader == null) PlanetShader = Shader.Find("Standard"); 
 
