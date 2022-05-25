@@ -86,7 +86,7 @@ namespace NewHorizons.Builder.Body
             if (module.tint != null)
             {
                 var adjustedColour = module.tint.ToColor() / 4f;
-                adjustedColour.a = adjustedColour.a * 4f;
+                adjustedColour.a *= 4f;
                 fogGO.GetComponent<MeshRenderer>().material.color = adjustedColour;
             }
 
