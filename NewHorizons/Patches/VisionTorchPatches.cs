@@ -17,7 +17,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(MindProjectorTrigger), nameof(MindProjectorTrigger.OnTriggerVolumeEntry))]
         public static bool MindProjectorTrigger_OnTriggerVolumeEntry(MindProjectorTrigger __instance, GameObject hitObj)
         {
-			VisionTorchTarget t = hitObj.GetComponent<VisionTorchTarget>();
+			var t = hitObj.GetComponent<VisionTorchTarget>();
             if (t != null) //(hitObj.CompareTag("PrisonerDetector"))
 		    {
                 // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item

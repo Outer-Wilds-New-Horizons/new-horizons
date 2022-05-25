@@ -22,8 +22,8 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ToolModeSwapper), nameof(ToolModeSwapper.EquipToolMode))]
         public static bool ToolModeSwapper_EquipToolMode(ToolModeSwapper __instance, ToolMode mode)
         {
-            bool isHoldingVisionTorch = __instance.GetItemCarryTool()?.GetHeldItemType() == ItemType.VisionTorch;
-            bool swappingToRestrictedTool = 
+            var isHoldingVisionTorch = __instance.GetItemCarryTool()?.GetHeldItemType() == ItemType.VisionTorch;
+            var swappingToRestrictedTool = 
                 mode == ToolMode.Probe || 
                 mode == ToolMode.SignalScope || 
                 mode == ToolMode.Translator;
