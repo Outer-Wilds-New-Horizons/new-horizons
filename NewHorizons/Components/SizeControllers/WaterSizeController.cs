@@ -5,7 +5,7 @@ namespace NewHorizons.Components.SizeControllers
     {
         public Material oceanFogMaterial;
 
-        private void Awake()
+        private void Start()
         {
             oceanFogMaterial.SetFloat("_Radius2", 0);
         }
