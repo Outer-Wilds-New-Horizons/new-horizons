@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -152,6 +152,14 @@ namespace NewHorizons.Builder.Props
                     if (component is OWItemSocket socket)
                     {
                         socket._sector = sector;
+                    }
+
+                    // Fix vision torch
+                    if (component is VisionTorchItem torchItem)
+                    {
+                        torchItem.enabled = true;
+                        torchItem.mindProjectorTrigger.enabled = true;
+                        torchItem.mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
                 }
                 else

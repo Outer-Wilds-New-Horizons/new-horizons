@@ -1,7 +1,8 @@
-﻿using System.ComponentModel;
+
+using NewHorizons.Utility;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -487,8 +488,13 @@ namespace NewHorizons.External.Modules
             public enum SlideShowType
             {
                 [EnumMember(Value = @"slideReel")] SlideReel = 0,
+                
+                [EnumMember(Value = @"autoProjector")] AutoProjector = 1,
 
-                [EnumMember(Value = @"autoProjector")] AutoProjector = 1
+                [EnumMember(Value = @"visionTorchTarget")] VisionTorchTarget = 2,
+
+                [EnumMember(Value = @"standingVisionTorch")] StandingVisionTorch = 3,
+
             }
 
             /// <summary>

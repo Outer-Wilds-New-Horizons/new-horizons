@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Body;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System.Collections.Generic;
