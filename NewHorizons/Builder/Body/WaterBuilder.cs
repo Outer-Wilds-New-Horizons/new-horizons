@@ -47,6 +47,7 @@ namespace NewHorizons.Builder.Body
 
             TSR.sharedMaterials = tempArray;
 
+            // stuff is black without this crap
             OceanEffectController OEC = waterGO.AddComponent<OceanEffectController>();
             OEC._sector = sector;
             OEC._ocean = TSR;
@@ -54,7 +55,7 @@ namespace NewHorizons.Builder.Body
             var GDOLC = GDTSR.GetComponent<OceanLODController>();
             var OLC = waterGO.AddComponent<OceanLODController>();
             OLC._sector = sector;
-            OLC._ambientLight = GDOLC._ambientLight;
+            OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
             
             // trigger sector enter
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
