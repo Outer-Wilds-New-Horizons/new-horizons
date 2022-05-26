@@ -21,7 +21,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.
         /// </summary>
-        [DefaultValue(true)] public bool hasStarController { get; set; } = true;
+        [DefaultValue(true)] public bool hasStarController = true;
 
         /// <summary>
         /// The default sun has its own atmosphere that is different from regular planets. If you want that, set this to
