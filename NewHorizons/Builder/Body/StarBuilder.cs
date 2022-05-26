@@ -79,11 +79,10 @@ namespace NewHorizons.Builder.Body
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
-            var sunLight = new GameObject();
+            var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
             sunLight.transform.localPosition = Vector3.zero;
             sunLight.transform.localScale = Vector3.one;
-            sunLight.name = "StarLight";
 
             var light = sunLight.AddComponent<Light>();
             light.CopyPropertiesFrom(GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
@@ -106,7 +105,7 @@ namespace NewHorizons.Builder.Body
             proxyShadowLight._light = light;
 
             StarController starController = null;
-            if (starModule.solarLuminosity != 0)
+            if (starModule.solarLuminosity != 0 && starModule.hasStarController)
             {
                 starController = planetGO.AddComponent<StarController>();
                 starController.Light = light;
@@ -204,8 +203,8 @@ namespace NewHorizons.Builder.Body
                 var colour = starModule.tint.ToColor();
 
                 var sun = GameObject.Find("Sun_Body");
-                var mainSequenceMaterial = sun.GetComponent<SunController>().GetValue<Material>("_startSurfaceMaterial");
-                var giantMaterial = sun.GetComponent<SunController>().GetValue<Material>("_endSurfaceMaterial");
+                var mainSequenceMaterial = sun.GetComponent<SunController>()._startSurfaceMaterial;
+                var giantMaterial = sun.GetComponent<SunController>()._endSurfaceMaterial;
 
                 surface.sharedMaterial = new Material(starModule.size >= 3000 ? giantMaterial : mainSequenceMaterial);
                 var mod = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));

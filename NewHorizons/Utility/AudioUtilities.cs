@@ -49,25 +49,53 @@ namespace NewHorizons.Utility
                 case ("ogg"):
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
+                case ("mp3"):
+                    audioType = UnityEngine.AudioType.MPEG;
+                    break;
                 default:
-                    Logger.LogError($"Invalid audio file extension ({extension}) must be .wav or .ogg");
+                    Logger.LogError($"Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
                     return null;
             }
 
-            using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, audioType))
+            if (audioType == UnityEngine.AudioType.MPEG)
             {
-                var result = www.SendWebRequest();
-
-                while (!result.isDone) { await Task.Delay(100); }
-
-                if (www.isNetworkError)
+                string fileProtocolPath = $"file://{filePath}";
+                DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(fileProtocolPath, UnityEngine.AudioType.MPEG);
+                dh.compressed = true;
+                using (UnityWebRequest www = new UnityWebRequest(fileProtocolPath, "GET", dh, null))
                 {
-                    Debug.Log(www.error);
-                    return null;
+                    var result = www.SendWebRequest();
+
+                    while (!result.isDone) { await Task.Delay(100); }
+
+                    if (www.isNetworkError)
+                    {
+                        Debug.Log(www.error);
+                        return null;
+                    }
+                    else
+                    {
+                        return dh.audioClip;
+                    }
                 }
-                else
+            }
+            else
+            {
+                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, audioType))
                 {
-                    return DownloadHandlerAudioClip.GetContent(www);
+                    var result = www.SendWebRequest();
+
+                    while (!result.isDone) { await Task.Delay(100); }
+
+                    if (www.isNetworkError)
+                    {
+                        Debug.Log(www.error);
+                        return null;
+                    }
+                    else
+                    {
+                        return DownloadHandlerAudioClip.GetContent(www);
+                    }
                 }
             }
         }

@@ -1703,6 +1703,11 @@
           "description": "Should this star explode after 22 minutes?",
           "default": true
         },
+        "hasStarController": {
+          "type": "boolean",
+          "description": "Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.",
+          "default": true
+        },
         "hasAtmosphere": {
           "type": "boolean",
           "description": "The default sun has its own atmosphere that is different from regular planets. If you want that, set this to\n`true`.",

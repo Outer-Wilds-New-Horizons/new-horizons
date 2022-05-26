@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
@@ -114,7 +114,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 prop.transform.localEulerAngles = alignToSurface;     
         
                 // rotate facing dir towards player
-                GameObject g = new GameObject();
+                GameObject g = new GameObject("DebugProp");
                 g.transform.parent = prop.transform.parent;
                 g.transform.localPosition = prop.transform.localPosition;
                 g.transform.localRotation = prop.transform.localRotation;
