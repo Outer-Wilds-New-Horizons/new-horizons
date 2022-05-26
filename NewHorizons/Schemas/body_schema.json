@@ -1434,6 +1434,7 @@
           "description": "The color to apply to highlighted entries with this curiosity.",
           "$ref": "#/definitions/MColor"
         },
+        
         "id": {
           "type": "string",
           "description": "The ID of the curiosity to apply the color to."
@@ -1701,6 +1702,11 @@
         "goSupernova": {
           "type": "boolean",
           "description": "Should this star explode after 22 minutes?",
+          "default": true
+        },
+        "hasStarController": {
+          "type": "boolean",
+          "description": "Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.",
           "default": true
         },
         "hasAtmosphere": {

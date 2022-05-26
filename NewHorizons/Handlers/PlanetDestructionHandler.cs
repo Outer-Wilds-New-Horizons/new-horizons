@@ -175,7 +175,7 @@ namespace NewHorizons.Handlers
             // Deal with proxies
             foreach (var p in GameObject.FindObjectsOfType<ProxyOrbiter>())
             {
-                if (p.GetValue<AstroObject>("_originalBody") == ao.gameObject)
+                if (p._originalBody == ao.gameObject)
                 {
                     DisableBody(p.gameObject, true);
                     break;
