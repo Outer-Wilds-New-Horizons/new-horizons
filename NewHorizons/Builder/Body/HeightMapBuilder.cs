@@ -1,8 +1,9 @@
-﻿using NewHorizons.Builder.Body.Geometry;
+using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
@@ -54,6 +55,16 @@ namespace NewHorizons.Builder.Body
             material.name = textureMap.name;
             material.mainTexture = textureMap;
 
+            // set up LOD stuff for textures
+            var debounceRange = 50;
+            var loadDistance = 250;
+            var lodHandler = cubeSphere.AddComponent<LODImageLoader>();
+            lodHandler.pathsToLoad = new List<string>{ module.textureMap };
+            lodHandler.lodSwapEvent.AddListener((List<Texture2D> textures) => material.mainTexture = textures[0]);
+            lodHandler.UnloadCondition = () => { return Vector3.Distance(Locator._playerBody.transform.position, planetGO.transform.position) > loadDistance+debounceRange; };
+            lodHandler.LoadCondition   = () => { return Vector3.Distance(Locator._playerBody.transform.position, planetGO.transform.position) < loadDistance; };
+
+            // mesh colliders
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
