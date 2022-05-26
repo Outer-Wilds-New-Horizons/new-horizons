@@ -8,26 +8,26 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod, string uniqueModName)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
         {
-            if (config.Props.Scatter != null)
+            if (config.Props.scatter != null)
             {
                 try
                 {
-                    ScatterBuilder.Make(go, sector, config, mod, uniqueModName);
+                    ScatterBuilder.Make(go, sector, config, mod);
                 }
                 catch (Exception ex)
                 {
                     Logger.LogError($"Couldn't make planet scatter for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                 }
             }
-            if (config.Props.Details != null)
+            if (config.Props.details != null)
             {
-                foreach (var detail in config.Props.Details)
+                foreach (var detail in config.Props.details)
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, uniqueModName, detail);
+                        DetailBuilder.Make(go, sector, config, mod, detail);
                     }
                     catch (Exception ex)
                     {
@@ -35,9 +35,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.Geysers != null)
+            if (config.Props.geysers != null)
             {
-                foreach (var geyserInfo in config.Props.Geysers)
+                foreach (var geyserInfo in config.Props.geysers)
                 {
                     try
                     {
@@ -49,9 +49,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (Main.HasDLC && config.Props.Rafts != null)
+            if (Main.HasDLC && config.Props.rafts != null)
             {
-                foreach (var raftInfo in config.Props.Rafts)
+                foreach (var raftInfo in config.Props.rafts)
                 {
                     try
                     {
@@ -63,13 +63,13 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.Tornados != null)
+            if (config.Props.tornados != null)
             {
-                foreach (var tornadoInfo in config.Props.Tornados)
+                foreach (var tornadoInfo in config.Props.tornados)
                 {
                     try
                     {
-                        TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.Clouds != null);
+                        TornadoBuilder.Make(go, sector, tornadoInfo, config.Atmosphere?.clouds != null);
                     }
                     catch (Exception ex)
                     {
@@ -77,9 +77,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.Volcanoes != null)
+            if (config.Props.volcanoes != null)
             {
-                foreach (var volcanoInfo in config.Props.Volcanoes)
+                foreach (var volcanoInfo in config.Props.volcanoes)
                 {
                     try
                     {
@@ -92,9 +92,9 @@ namespace NewHorizons.Builder.Props
                 }
             }
             // Reminder that dialogue has to be built after props if they're going to be using CharacterAnimController stuff
-            if (config.Props.Dialogue != null)
+            if (config.Props.dialogue != null)
             {
-                foreach (var dialogueInfo in config.Props.Dialogue)
+                foreach (var dialogueInfo in config.Props.dialogue)
                 {
                     try
                     {
@@ -106,9 +106,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.Reveal != null)
+            if (config.Props.reveal != null)
             {
-                foreach (var revealInfo in config.Props.Reveal)
+                foreach (var revealInfo in config.Props.reveal)
                 {
                     try
                     {
@@ -120,9 +120,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.EntryLocation != null)
+            if (config.Props.entryLocation != null)
             {
-                foreach (var entryLocationInfo in config.Props.EntryLocation)
+                foreach (var entryLocationInfo in config.Props.entryLocation)
                 {
                     try
                     {
@@ -134,9 +134,9 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.NomaiText != null)
+            if (config.Props.nomaiText != null)
             {
-                foreach (var nomaiTextInfo in config.Props.NomaiText)
+                foreach (var nomaiTextInfo in config.Props.nomaiText)
                 {
                     try
                     {
@@ -149,9 +149,9 @@ namespace NewHorizons.Builder.Props
 
                 }
             }
-            if (Main.HasDLC && config.Props.SlideShows != null)
+            if (Main.HasDLC && config.Props.slideShows != null)
             {
-                foreach (var slideReelInfo in config.Props.SlideShows)
+                foreach (var slideReelInfo in config.Props.slideShows)
                 {
                     try
                     {

@@ -61,7 +61,7 @@ namespace NewHorizons.Handlers
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)
         {
-            if (config.ShipLogDictionary != null && config.ShipLogDictionary.Count() > 0)
+            if (config.ShipLogDictionary != null && config.ShipLogDictionary.Count > 0)
             {
                 if (!_shipLogTranslationDictionary.ContainsKey(language)) _shipLogTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.ShipLogDictionary.Keys)
@@ -73,7 +73,7 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (config.DialogueDictionary != null && config.DialogueDictionary.Count() > 0)
+            if (config.DialogueDictionary != null && config.DialogueDictionary.Count > 0)
             {
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.DialogueDictionary.Keys)

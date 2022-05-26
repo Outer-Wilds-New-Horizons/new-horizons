@@ -150,16 +150,16 @@ namespace NewHorizons.Utility.DebugUtilities
 
         public void FindAndRegisterPropsFromConfig(PlanetConfig config)
         {
-            if (config.StarSystem != Main.Instance.CurrentStarSystem) return;
+            if (config.starSystem != Main.Instance.CurrentStarSystem) return;
 
-            AstroObject planet = AstroObjectLocator.GetAstroObject(config.Name);
+            AstroObject planet = AstroObjectLocator.GetAstroObject(config.name);
 
             if (planet == null) return;
-            if (config.Props == null || config.Props.Details == null) return;
+            if (config.Props == null || config.Props.details == null) return;
 
-            var astroObjectName = GetAstroObjectName(config.Name);
+            var astroObjectName = GetAstroObjectName(config.name);
 
-            foreach (var detail in config.Props.Details)
+            foreach (var detail in config.Props.details)
             {
                 GameObject spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
 

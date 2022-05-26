@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Body;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Events;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.SizeControllers
 {
@@ -13,9 +15,9 @@ namespace NewHorizons.Components.SizeControllers
     {
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
-        public bool willExplode;
-        public MColor startColour { get; set; }
-        public MColor endColour { get; set; }
+        public bool WillExplode { get; set; }
+        public MColor StartColour { get; set; }
+        public MColor EndColour { get; set; }
 
         private Color _startColour;
         private Color _endColour;
@@ -44,7 +46,10 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
+        public UnityEvent SupernovaStart = new UnityEvent();
+
         private float maxScale;
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         void Start()
         {
@@ -54,32 +59,32 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
-            var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture("_ColorRamp");
+            var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture(ColorRamp);
 
             // Copy over the material that was set in star builder
-            _collapseStartSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
-            _collapseEndSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
-            _startSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
-            _endSurfaceMaterial.SetTexture("_ColorRamp", supernovaSurfaceColorRamp);
+            _collapseStartSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
+            _collapseEndSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
+            _startSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
+            _endSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
 
-            if (startColour == null)
+            if (StartColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = startColour.ToColor();
+                _startColour = StartColour.ToColor();
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (endColour == null)
+            if (EndColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = endColour.ToColor();
+                _endColour = EndColour.ToColor();
                 _endSurfaceMaterial.color = _endColour;
             }
 
@@ -92,11 +97,17 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
             if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+            }
+            else
+            {
+                maxScale = 0;
+                scaleCurve = new AnimationCurve();
+                scaleCurve.AddKey(0, 1);
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
@@ -104,7 +115,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (willExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -154,7 +165,7 @@ namespace NewHorizons.Components.SizeControllers
                 base.FixedUpdate();
 
                 // Only do colour transition stuff if they set an end colour
-                if (endColour != null)
+                if (EndColour != null)
                 {
                     // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                     var t = ageValue;
@@ -184,6 +195,7 @@ namespace NewHorizons.Components.SizeControllers
                 // After the collapse is done we go supernova
                 if (_collapseTimer > collapseTime)
                 {
+                    SupernovaStart.Invoke();
                     supernova.enabled = true;
                     _isSupernova = true;
                     _supernovaStartTime = Time.time;

@@ -11,7 +11,7 @@ namespace NewHorizons.Components
             {
                 Base =
                 {
-                    SurfaceSize = 10f
+                    surfaceSize = 10f
                 }
             };
 
