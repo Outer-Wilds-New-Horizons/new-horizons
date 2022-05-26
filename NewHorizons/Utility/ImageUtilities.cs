@@ -323,20 +323,58 @@ namespace NewHorizons.Utility
     public class AsyncImageLoader : MonoBehaviour
     {
         public List<string> pathsToLoad = new List<string>();
+        public List<Texture2D> loadedTextures = new List<Texture2D>();
 
         public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
         public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+        public ImageLoadedEvent imageUnloadedEvent = new ImageLoadedEvent();
 
         // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
         // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
         // for them to start loading, and unload when the player leaves)
 
+        public bool active = false;
+
+        public Func<bool> LoadCondition;
+        public Func<bool> UnloadCondition;
+
+
         void Start()
+        {
+            for (int i = 0; i < pathsToLoad.Count; i++) loadedTextures.Add(null);
+        }
+
+        void Update()
+        {
+            if (active && (UnloadCondition?.Invoke()??false))
+            {
+                Unload();
+            } 
+            else if (!active && (LoadCondition?.Invoke()??true))
+            {  
+                Load();
+            }
+        }
+
+        internal void Load()
         {
             for (int i = 0; i < pathsToLoad.Count; i++)
             {
                 StartCoroutine(DownloadTexture(pathsToLoad[i], i));
             }
+
+            active = true;
+        }
+
+        internal void Unload()
+        {
+            for (int i = 0; i < pathsToLoad.Count; i++)
+            {
+                if (loadedTextures[i] != null) imageUnloadedEvent.Invoke(loadedTextures[i], i);
+                loadedTextures[i] = null;
+            }
+                
+            active = false;
         }
 
         IEnumerator DownloadTexture(string url, int index)
@@ -355,8 +393,70 @@ namespace NewHorizons.Utility
                 {
                     // Get downloaded asset bundle
                     var texture = DownloadHandlerTexture.GetContent(uwr);
-                    imageLoadedEvent.Invoke(texture, index);
+
+                    if (!active) 
+                    {
+                        // if the component was switched from "load" mode to "unload" while we were getting this texture,
+                        Destroy(texture);
+                        loadedTextures[index] = null;
+                    } 
+                    else
+                    {
+                        imageLoadedEvent.Invoke(texture, index);
+                        loadedTextures[index] = texture;
+                    }
                 }
+            }
+        }
+
+        public class LODImageLoader : AsyncImageLoader
+        {
+            private int numLoadedTextures = 0;
+            private bool firstLoad = true;
+            
+            public List<Texture2D> lowDetailTextures = new List<Texture2D>();
+            public class LODSwapEvent : UnityEvent<List<Texture2D>> { }
+            public LODSwapEvent lodSwapEvent = new LODSwapEvent();
+
+
+
+            private void Start()
+            {
+                base.Start();
+            
+                for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures.Add(null);
+
+                imageLoadedEvent.AddListener((Texture2D tex, int i) =>   { numLoadedTextures++; if (numLoadedTextures == pathsToLoad.Count) SwapHighDetail(); });
+                imageUnloadedEvent.AddListener((Texture2D tex, int i) => { numLoadedTextures--; if (numLoadedTextures == pathsToLoad.Count) SwapLowDetail(); });
+                
+                // this will load all the high res textures, and then trigger the above listener, which calls SwapHighDetail
+                base.Load();
+            }
+
+            private void SwapHighDetail()
+            {
+                if (firstLoad)
+                {
+                    // this is essentially part of the base.Load() call in Start()
+                    // we're doing some extra setup here, including creating the low res textures
+                    for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures[i] = loadedTextures[i].DownscaledCopy();
+                    firstLoad = false;
+
+                    if (UnloadCondition?.Invoke()??false) 
+                    {
+                        base.Unload();
+                        SwapLowDetail();
+                    }   
+
+                    return;
+                }
+
+                lodSwapEvent.Invoke(base.loadedTextures);
+            }
+
+            private void SwapLowDetail()
+            {
+                lodSwapEvent.Invoke(lowDetailTextures);
             }
         }
     }
