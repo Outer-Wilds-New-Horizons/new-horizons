@@ -1434,7 +1434,6 @@
           "description": "The color to apply to highlighted entries with this curiosity.",
           "$ref": "#/definitions/MColor"
         },
-        
         "id": {
           "type": "string",
           "description": "The ID of the curiosity to apply the color to."
