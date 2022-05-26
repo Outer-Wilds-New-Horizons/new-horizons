@@ -50,11 +50,10 @@ namespace NewHorizons.Utility
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
                 case ("mp3"):
-                    Logger.LogWarning($".mp3 files take up a lot of memory! Please use .wav or .ogg instead.");
                     audioType = UnityEngine.AudioType.MPEG;
                     break;
                 default:
-                    Logger.LogError($"Invalid audio file extension ({extension}) must be .wav or .ogg");
+                    Logger.LogError($"Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
                     return null;
             }
 
