@@ -64,7 +64,7 @@ jobs:
     - name: Upload Schemas Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: NewHorizons-${{ env.BUILD_TYPE }}
+        name: NewHorizons-Schemas-${{ env.BUILD_TYPE }}
         path: .\NewHorizons\Schemas
       
     # Only want to commit schemas if they've actually changed
