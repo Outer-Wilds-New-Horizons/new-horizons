@@ -339,7 +339,7 @@ namespace NewHorizons.Utility
         public Func<bool> UnloadCondition;
 
 
-        void Start()
+        internal void Start()
         {
             for (int i = 0; i < pathsToLoad.Count; i++) loadedTextures.Add(null);
         }
@@ -408,56 +408,54 @@ namespace NewHorizons.Utility
                 }
             }
         }
+    }
+    
+    public class LODImageLoader : AsyncImageLoader
+    {
+        private int numLoadedTextures = 0;
+        private bool firstLoad = true;
+            
+        public List<Texture2D> lowDetailTextures = new List<Texture2D>();
+        public class LODSwapEvent : UnityEvent<List<Texture2D>> { }
+        public LODSwapEvent lodSwapEvent = new LODSwapEvent();
 
-        public class LODImageLoader : AsyncImageLoader
+        private void Start()
         {
-            private int numLoadedTextures = 0;
-            private bool firstLoad = true;
+            base.Start();
             
-            public List<Texture2D> lowDetailTextures = new List<Texture2D>();
-            public class LODSwapEvent : UnityEvent<List<Texture2D>> { }
-            public LODSwapEvent lodSwapEvent = new LODSwapEvent();
+            for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures.Add(null);
 
-
-
-            private void Start()
-            {
-                base.Start();
-            
-                for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures.Add(null);
-
-                imageLoadedEvent.AddListener((Texture2D tex, int i) =>   { numLoadedTextures++; if (numLoadedTextures == pathsToLoad.Count) SwapHighDetail(); });
-                imageUnloadedEvent.AddListener((Texture2D tex, int i) => { numLoadedTextures--; if (numLoadedTextures == pathsToLoad.Count) SwapLowDetail(); });
+            imageLoadedEvent.AddListener((Texture2D tex, int i) =>   { numLoadedTextures++; if (numLoadedTextures == pathsToLoad.Count) SwapHighDetail(); });
+            imageUnloadedEvent.AddListener((Texture2D tex, int i) => { numLoadedTextures--; if (numLoadedTextures == pathsToLoad.Count) SwapLowDetail(); });
                 
-                // this will load all the high res textures, and then trigger the above listener, which calls SwapHighDetail
-                base.Load();
-            }
+            // this will load all the high res textures, and then trigger the above listener, which calls SwapHighDetail
+            base.Load();
+        }
 
-            private void SwapHighDetail()
+        private void SwapHighDetail()
+        {
+            if (firstLoad)
             {
-                if (firstLoad)
+                // this is essentially part of the base.Load() call in Start()
+                // we're doing some extra setup here, including creating the low res textures
+                for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures[i] = loadedTextures[i].DownscaledCopy();
+                firstLoad = false;
+
+                if (UnloadCondition?.Invoke()??false) 
                 {
-                    // this is essentially part of the base.Load() call in Start()
-                    // we're doing some extra setup here, including creating the low res textures
-                    for (int i = 0; i < pathsToLoad.Count; i++) lowDetailTextures[i] = loadedTextures[i].DownscaledCopy();
-                    firstLoad = false;
+                    base.Unload();
+                    SwapLowDetail();
+                }   
 
-                    if (UnloadCondition?.Invoke()??false) 
-                    {
-                        base.Unload();
-                        SwapLowDetail();
-                    }   
-
-                    return;
-                }
-
-                lodSwapEvent.Invoke(base.loadedTextures);
+                return;
             }
 
-            private void SwapLowDetail()
-            {
-                lodSwapEvent.Invoke(lowDetailTextures);
-            }
+            lodSwapEvent.Invoke(base.loadedTextures);
+        }
+
+        private void SwapLowDetail()
+        {
+            lodSwapEvent.Invoke(lowDetailTextures);
         }
     }
 }
