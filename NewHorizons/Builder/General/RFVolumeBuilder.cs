@@ -1,10 +1,10 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject planetGO, OWRigidbody owRigidBody, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence)
         {
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.General
 
             var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
-            var RV = new ReferenceFrame(owRigidBody);
+            var RV = new ReferenceFrame(owrb);
             RV._minSuitTargetDistance = sphereOfInfluence;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
@@ -35,6 +35,8 @@ namespace NewHorizons.Builder.General
             RFV._maxColliderRadius = sphereOfInfluence * 2f;
             RFV._isPrimaryVolume = true;
             RFV._isCloseRangeVolume = false;
+
+            owrb.SetAttachedReferenceFrameVolume(RFV);
 
             rfGO.SetActive(true);
         }

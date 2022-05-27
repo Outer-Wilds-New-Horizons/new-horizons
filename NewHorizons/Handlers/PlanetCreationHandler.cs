@@ -303,7 +303,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Base.surfaceGravity != 0)
             {
-                GravityBuilder.Make(go, ao, body.Config);
+                GravityBuilder.Make(go, ao, owRigidBody, body.Config);
             }
 
             if (body.Config.Base.hasReferenceFrame)
