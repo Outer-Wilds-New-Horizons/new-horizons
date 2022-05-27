@@ -342,10 +342,6 @@ namespace NewHorizons
                 {
                     LoadTranslations(folder, mod);
                 }
-                if (File.Exists($"{mod.ModHelper.Manifest.ModFolderPath}subtitle.png"))
-                {
-                    SubtitlesHandler.AddSubtitle(mod, "subtitle.png");
-                }
             }
             catch (Exception ex)
             {
