@@ -76,5 +76,9 @@ namespace NewHorizons.Components
             Shader.DisableKeyword("_CLOAKINGFIELDENABLED");
             _cloak._cloakVisualsEnabled = false;
         }
+
+        public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume.gameObject.SetActive(active);
+        public void EnableReferenceFrameVolume() => SetReferenceFrameVolumeActive(true);
+        public void DisableReferenceFrameVolume() => SetReferenceFrameVolumeActive(false);
     }
 }

@@ -5,7 +5,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, OWRigidbody OWRB, float radius)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody OWRB, float radius, bool keepReferenceFrame)
         {
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
 
@@ -36,6 +36,7 @@ namespace NewHorizons.Builder.Body
 
             // To cloak from the start
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(keepReferenceFrame ? cloakSectorController.EnableReferenceFrameVolume : cloakSectorController.DisableReferenceFrameVolume);
         }
     }
 }
