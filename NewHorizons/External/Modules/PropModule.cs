@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace NewHorizons.External.Modules
 {
@@ -123,14 +124,10 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public string assetBundle;
 
-            /// <summary>
-            /// [DEPRECATED] Path to the .mtl file to load a 3d model from
-            /// </summary>
+            [Obsolete]
             public string mtlFilePath;
 
-            /// <summary>
-            /// [DEPRECATED] Path to the .obj file to load a 3d model from
-            /// </summary>
+            [Obsolete]
             public string objFilePath;
 
             /// <summary>

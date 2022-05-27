@@ -30,20 +30,6 @@ namespace NewHorizons.Builder.Props
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
-            else if (detail.objFilePath != null)
-            {
-                try
-                {
-                    var prefab = mod.ModHelper.Assets.Get3DObject(detail.objFilePath, detail.mtlFilePath);
-                    AssetBundleUtilities.ReplaceShaders(prefab);
-                    prefab.SetActive(false);
-                    detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Could not load 3d object {detail.objFilePath} with texture {detail.mtlFilePath} : {e.Message}");
-                }
-            }
             else detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
 
             if (detailGO != null && detail.removeChildren != null)
