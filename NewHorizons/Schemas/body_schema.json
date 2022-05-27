@@ -783,14 +783,6 @@
           "type": "string",
           "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from/"
         },
-        "mtlFilePath": {
-          "type": "string",
-          "description": "[DEPRECATED] Path to the .mtl file to load a 3d model from"
-        },
-        "objFilePath": {
-          "type": "string",
-          "description": "[DEPRECATED] Path to the .obj file to load a 3d model from"
-        },
         "path": {
           "type": "string",
           "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
