@@ -482,7 +482,7 @@ namespace NewHorizons.Handlers
             // Has to go last probably
             if (body.Config.Cloak != null && body.Config.Cloak.radius != 0f)
             {
-                CloakBuilder.Make(go, sector, rb, body.Config.Cloak, body.Config.Base.hasReferenceFrame);
+                CloakBuilder.Make(go, sector, rb, body.Config.Cloak, body.Config.Base.hasReferenceFrame, body.Mod);
             }
 
             return go;

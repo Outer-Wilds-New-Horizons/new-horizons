@@ -15,5 +15,15 @@ namespace NewHorizons.External.Modules
         /// don't want a cloak, leave this as 0.
         /// </summary>
         public float radius;
+
+        /// <summary>
+        /// Name of an existing AudioClip in the game that will play when entering the cloaking field.
+        /// </summary>
+        public string audioClip;
+
+        /// <summary>
+        /// Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip.
+        /// </summary>
+        public string audioFilePath;
     }
 }

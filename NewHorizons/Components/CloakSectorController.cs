@@ -80,5 +80,8 @@ namespace NewHorizons.Components
         public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume.gameObject.SetActive(active);
         public void EnableReferenceFrameVolume() => SetReferenceFrameVolumeActive(true);
         public void DisableReferenceFrameVolume() => SetReferenceFrameVolumeActive(false);
+
+        public void TurnOnMusic() => _cloak._hasTriggeredMusic = false;
+        public void TurnOffMusic() => _cloak._hasTriggeredMusic = true;
     }
 }
