@@ -8,13 +8,13 @@ Sort_Priority: 100
 
 # Outer Wilds New Horizons
         
-This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons){ target="_blank" }
+This is the official documentation for [New Horizons](https://github.com/xen-42/outer-wilds-new-horizons), a framework for creating custom planets in the game [Outer Wilds](https://www.mobiusdigitalgames.com/outer-wilds.html) by Mobius Digital. Planets are created using simple JSON and XML files and are loaded at runtime. An [API]({{ "API"|route }}) is also provided for more advanced use-cases. 
 
 ## Getting Started
 
 Before starting, go into your in-game mod settings for New Horizons and switch Debug mode on. This allows you to:
 
-- Use the Prop Placer tool. This convienence tool allows you to place details in game and save your work to your config files.
+- Use the [Prop Placer tool]({{ "detailing"|route }}#using-the-prop-placer). This convienence tool allows you to place details in game and save your work to your config files.
 - Print the position of what you are looking at to the logs by pressing "P". This is useful for determining locations to place props the Prop Placer is unable to, such as signal scope points or dialogue triggers.
 - Use the "Reload Configs" button in the pause menu. This will restart the current solar system and update all the planets. Much faster than quitting and relaunching the game.
 
