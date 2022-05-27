@@ -63,9 +63,10 @@ namespace NewHorizons.Handlers
         {
             Logger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
 
-            var tex = mod.ModHelper.Assets.GetTexture(filepath);
+            var tex = ImageUtilities.GetTexture(mod, filepath);
             if (tex == null) return;
 
+            // var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, SUBTITLE_HEIGHT), new Vector2(0.5f, 0.5f), 100.0f);
             AddSubtitle(sprite);
         }
