@@ -30,6 +30,10 @@
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen?"
     },
+    "Cloak": {
+      "description": "Add a cloaking field to this planet",
+      "$ref": "#/definitions/CloakModule"
+    },
     "destroy": {
       "type": "boolean",
       "description": "`true` if you want to delete this planet"
@@ -285,6 +289,17 @@
         }
       }
     },
+    "CloakModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
+          "format": "float"
+        }
+      }
+    },
     "CloudInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -383,11 +398,6 @@
         "centerOfSolarSystem": {
           "type": "boolean",
           "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever\nhave this set to true."
-        },
-        "cloakRadius": {
-          "type": "number",
-          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
-          "format": "float"
         },
         "cometTailRotation": {
           "description": "If it has a comet tail, it'll be oriented according to these Euler angles.",

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.External.Modules;
@@ -44,6 +44,11 @@ namespace NewHorizons.External.Configs
         public string[] childrenToDestroy;
 
         #endregion Obsolete
+
+        /// <summary>
+        /// Add a cloaking field to this planet
+        /// </summary>
+        public CloakModule Cloak;
 
         /// <summary>
         /// `true` if you want to delete this planet
@@ -191,6 +196,12 @@ namespace NewHorizons.External.Configs
             if (Base.isSatellite) Base.showMinimap = false;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
+
+            if (Base.cloakRadius != 0)
+                Cloak = new CloakModule
+                {
+                    radius = Base.cloakRadius
+                };
 
             if (Base.hasAmbientLight) Base.ambientLight = 0.5f;
 

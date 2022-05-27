@@ -1,12 +1,14 @@
 using NewHorizons.Components;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, OWRigidbody OWRB, float radius, bool keepReferenceFrame)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody OWRB, CloakModule module, bool keepReferenceFrame)
         {
+            var radius = module.radius;
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
 
             var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);

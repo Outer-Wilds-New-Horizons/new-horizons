@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
@@ -29,12 +29,6 @@ namespace NewHorizons.External.Modules
         /// have this set to true.
         /// </summary>
         public bool centerOfSolarSystem;
-
-        /// <summary>
-        /// Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you
-        /// don't want a cloak, leave this as 0.
-        /// </summary>
-        public float cloakRadius;
 
         /// <summary>
         /// If it has a comet tail, it'll be oriented according to these Euler angles.
@@ -111,6 +105,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
         public bool hasAmbientLight;
+
+        [Obsolete("CloakRadius is deprecated, please use CloakModule instead")]
+        public float cloakRadius;
 
         #endregion Obsolete
     }
