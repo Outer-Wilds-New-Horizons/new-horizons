@@ -360,10 +360,20 @@ namespace NewHorizons.Utility
                     }
                     else
                     {
-                        // Get downloaded asset bundle
-                        var texture = DownloadHandlerTexture.GetContent(uwr);
-                        _loadedTextures.Add(url, texture);
-                        imageLoadedEvent.Invoke(texture, index);
+                        if (_loadedTextures.ContainsKey(url))
+                        {
+                            Logger.Log($"Already loaded image at path: {url}");
+                            var texture = _loadedTextures[url];
+                            imageLoadedEvent.Invoke(texture, index);
+                            yield break;
+                        }
+
+                        {
+                            // Get downloaded asset bundle
+                            var texture = DownloadHandlerTexture.GetContent(uwr);
+                            _loadedTextures.Add(url, texture);
+                            imageLoadedEvent.Invoke(texture, index);
+                        }
                     }
                 }
             }
