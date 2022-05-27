@@ -5,7 +5,6 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using System;
 
 namespace NewHorizons.External.Modules
 {
@@ -123,12 +122,6 @@ namespace NewHorizons.External.Modules
             /// Relative filepath to an asset-bundle to load the prefab defined in `path` from/
             /// </summary>
             public string assetBundle;
-
-            [Obsolete]
-            public string mtlFilePath;
-
-            [Obsolete]
-            public string objFilePath;
 
             /// <summary>
             /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle
