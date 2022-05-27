@@ -40,21 +40,32 @@ jobs:
     - uses: actions/setup-dotnet@v1
 
     # Disable Strong Name Verification to let us pull a switch-a-roo
-    - run: "C:\\\"Program Files (x86)\"\\\"Microsoft SDKs\"\\Windows\\v10.0A\\bin\\\"NETFX 4.8 Tools\"\\x64\\sn.exe -Vr *"
-        
-    - run: "rm .\\NewHorizons\\NewHorizons.csproj.user"
+    - name: Disable strong name validation
+      run: "C:\\\"Program Files (x86)\"\\\"Microsoft SDKs\"\\Windows\\v10.0A\\bin\\\"NETFX 4.8 Tools\"\\x64\\sn.exe -Vr *"
+       
+    - name: Remove .csproj.user
+      run: "rm .\\NewHorizons\\NewHorizons.csproj.user"
 
     - name: Build Project
       run: dotnet build -c $Env:BUILD_TYPE
-
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: NewHorizons-${{ env.BUILD_TYPE }}
-        path: .\NewHorizons\bin\${{ env.BUILD_TYPE }}
         
     - name: Generate Schemas
       run: .\SchemaExporter\bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
+      
+    - name: Delete XML documentation
+      run: rm .\NewHorizons\bin\${{ env.BUILD_TYPE }}\NewHorizons.xml
+      
+    - name: Upload Mod Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: xen.NewHorizons.${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\bin\${{ env.BUILD_TYPE }}
+        
+    - name: Upload Schemas Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: NewHorizons-Schemas-${{ env.BUILD_TYPE }}
+        path: .\NewHorizons\Schemas
       
     # Only want to commit schemas if they've actually changed
     - name: Verify Changed Schemas

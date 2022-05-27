@@ -75,7 +75,7 @@ namespace NewHorizons.Builder.Props
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
-            var imageLoader = slideReelObj.AddComponent<AsyncImageLoader>();
+            var imageLoader = slideReelObj.AddComponent<ImageUtilities.AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Props
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
             
-            var imageLoader = projectorObj.AddComponent<AsyncImageLoader>();
+            var imageLoader = projectorObj.AddComponent<ImageUtilities.AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
@@ -212,7 +212,7 @@ namespace NewHorizons.Builder.Props
             var slideCollection = new SlideCollection(slidesCount);
 
         
-            var imageLoader = g.AddComponent<AsyncImageLoader>();
+            var imageLoader = g.AddComponent<ImageUtilities.AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();
@@ -277,7 +277,7 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
-            var imageLoader = standingTorch.AddComponent<AsyncImageLoader>();
+            var imageLoader = standingTorch.AddComponent<ImageUtilities.AsyncImageLoader>();
             for (int i = 0; i < slidesCount; i++)
             {
                 var slide = new Slide();

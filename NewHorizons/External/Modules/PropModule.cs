@@ -124,16 +124,6 @@ namespace NewHorizons.External.Modules
             public string assetBundle;
 
             /// <summary>
-            /// [DEPRECATED] Path to the .mtl file to load a 3d model from
-            /// </summary>
-            public string mtlFilePath;
-
-            /// <summary>
-            /// [DEPRECATED] Path to the .obj file to load a 3d model from
-            /// </summary>
-            public string objFilePath;
-
-            /// <summary>
             /// Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle
             /// </summary>
             public string path;
