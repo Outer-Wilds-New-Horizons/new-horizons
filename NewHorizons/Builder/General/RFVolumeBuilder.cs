@@ -4,7 +4,7 @@ namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, bool hide = false)
         {
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.General
 
             owrb.SetAttachedReferenceFrameVolume(RFV);
 
-            rfGO.SetActive(true);
+            rfGO.SetActive(!hide);
         }
     }
 }

@@ -306,10 +306,7 @@ namespace NewHorizons.Handlers
                 GravityBuilder.Make(go, ao, owRigidBody, body.Config);
             }
 
-            if (body.Config.Base.hasReferenceFrame)
-            {
-                RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence);
-            }
+            RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, !body.Config.Base.hasReferenceFrame);
 
             if (body.Config.Base.hasMapMarker)
             {
