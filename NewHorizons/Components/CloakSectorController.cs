@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Components
@@ -59,6 +59,22 @@ namespace NewHorizons.Components
             {
                 renderer.forceRenderingOff = true;
             }
+        }
+
+        public void EnableCloak()
+        {
+            SunLightController.RegisterSunOverrider(_cloak, 900);
+            _cloak._cloakSphereRenderer.SetActivation(true);
+            Shader.EnableKeyword("_CLOAKINGFIELDENABLED");
+            _cloak._cloakVisualsEnabled = true;
+        }
+
+        public void DisableCloak()
+        {
+            SunLightController.UnregisterSunOverrider(_cloak);
+            _cloak._cloakSphereRenderer.SetActivation(false);
+            Shader.DisableKeyword("_CLOAKINGFIELDENABLED");
+            _cloak._cloakVisualsEnabled = false;
         }
     }
 }

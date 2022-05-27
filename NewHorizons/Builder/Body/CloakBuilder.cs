@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Body
@@ -31,6 +31,8 @@ namespace NewHorizons.Builder.Body
 
             newCloak.SetActive(true);
             cloakFieldController.enabled = true;
+
+            cloakSectorController.EnableCloak();
 
             // To cloak from the start
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
