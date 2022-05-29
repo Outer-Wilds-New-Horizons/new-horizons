@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Patches
@@ -42,6 +42,13 @@ namespace NewHorizons.Patches
             catch { }
 
             return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ReferenceFrameTracker), nameof(ReferenceFrameTracker.UntargetReferenceFrame), new System.Type[] { typeof(bool) })]
+        public static bool ReferenceFrameTracker_UntargetReferenceFrame(ReferenceFrameTracker __instance, bool playAudio)
+        {
+            return __instance._hasTarget && __instance._currentReferenceFrame != null;
         }
     }
 }

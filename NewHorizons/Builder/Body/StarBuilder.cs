@@ -133,11 +133,11 @@ namespace NewHorizons.Builder.Body
             // It fucking insists on this existing and its really annoying
             var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
             supernovaVolume.transform.SetParent(starGO.transform);
-            supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
             var sphere = supernovaVolume.AddComponent<SphereCollider>();
             sphere.radius = 0f;
             sphere.isTrigger = true;
             supernovaVolume.AddComponent<OWCollider>();
+            supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
 
             return starController;
         }
@@ -147,6 +147,8 @@ namespace NewHorizons.Builder.Body
             var starGO = MakeStarGraphics(proxyGO, null, starModule);
 
             var supernova = MakeSupernova(starGO, starModule);
+
+            supernova._belongsToProxySun = true;
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();

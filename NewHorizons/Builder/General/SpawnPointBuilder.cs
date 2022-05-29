@@ -18,8 +18,9 @@ namespace NewHorizons.Builder.General
                 spawnGO.transform.localPosition = module.playerSpawnPoint;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
-                
-                if(module.playerSpawnRotation != null)
+                playerSpawn._triggerVolumes = new OWTriggerVolume[0];
+
+                if (module.playerSpawnRotation != null)
                 {
                     spawnGO.transform.rotation = Quaternion.Euler(module.playerSpawnRotation);
                 }
@@ -40,6 +41,7 @@ namespace NewHorizons.Builder.General
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
+                spawnPoint._triggerVolumes = new OWTriggerVolume[0];
 
                 var ship = GameObject.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;
@@ -67,6 +69,7 @@ namespace NewHorizons.Builder.General
                     playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
+                    playerSpawn._triggerVolumes = new OWTriggerVolume[0];
                     playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
             }
