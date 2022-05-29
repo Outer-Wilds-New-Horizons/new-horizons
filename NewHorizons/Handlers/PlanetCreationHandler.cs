@@ -313,7 +313,7 @@ namespace NewHorizons.Handlers
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
 
-            VolumesBuilder.Make(go, body.Config, sphereOfInfluence);
+            VolumesBuilder.Make(go, owRigidBody, body.Config, sphereOfInfluence);
 
             if (body.Config.FocalPoint != null)
             {

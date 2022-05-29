@@ -451,6 +451,11 @@
           "type": "number",
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
           "format": "float"
+        },
+        "zeroGravityRadius": {
+          "type": "number",
+          "description": "Radius of the zero gravity sphere. This sphere will make gravity no longer affect you while you are inside it. Useful for satellites.",
+          "format": "float"
         }
       }
     },

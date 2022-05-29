@@ -81,6 +81,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public float surfaceSize;
 
+        /// <summary>
+        /// Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.
+        /// </summary>
+        public float zeroGravityRadius;
+
         #region Obsolete
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
