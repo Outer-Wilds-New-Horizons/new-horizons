@@ -381,5 +381,6 @@ namespace NewHorizons.Builder.Props
     {
         public MindSlideCollection slideCollection;
         public SlideCollectionContainer slideCollectionContainer;
+        public OWEvent.OWCallback onSlidesComplete;
     }
 }
