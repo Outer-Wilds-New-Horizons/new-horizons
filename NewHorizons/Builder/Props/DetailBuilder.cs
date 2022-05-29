@@ -169,6 +169,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
+                        if (component == null) return;
                         if (component is Animator animator) animator.enabled = true;
                         else if (component is Collider collider) collider.enabled = true;
                         else if (component is Renderer renderer) renderer.enabled = true;
