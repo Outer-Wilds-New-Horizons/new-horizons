@@ -62,6 +62,11 @@ namespace NewHorizons.Builder.Props
                 detailGO = newDetailGO;
             }
 
+            if (detail.comment != null)
+            {
+                detailGO.name = detail.comment;
+            }
+
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
