@@ -57,11 +57,6 @@ namespace NewHorizons.External.Modules
         public bool hasMapMarker;
 
         /// <summary>
-        /// Allows the object to be targeted on the map.
-        /// </summary>
-        [DefaultValue(true)] public bool hasReferenceFrame = true;
-
-        /// <summary>
         /// Can this planet survive entering a star?
         /// </summary>
         public bool invulnerableToSun;
@@ -105,6 +100,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
         public bool hasAmbientLight;
+
+        [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
+        [DefaultValue(true)] public bool hasReferenceFrame = true;
 
         [Obsolete("CloakRadius is deprecated, please use CloakModule instead")]
         public float cloakRadius;
