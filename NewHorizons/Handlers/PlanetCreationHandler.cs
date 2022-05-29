@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Atmosphere;
+using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
@@ -306,7 +306,7 @@ namespace NewHorizons.Handlers
                 GravityBuilder.Make(go, ao, owRigidBody, body.Config);
             }
 
-            RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, !body.Config.Base.hasReferenceFrame);
+            RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, body.Config.ReferenceFrame);
 
             if (body.Config.Base.hasMapMarker)
             {
@@ -482,7 +482,7 @@ namespace NewHorizons.Handlers
             // Has to go last probably
             if (body.Config.Cloak != null && body.Config.Cloak.radius != 0f)
             {
-                CloakBuilder.Make(go, sector, rb, body.Config.Cloak, body.Config.Base.hasReferenceFrame, body.Mod);
+                CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
 
             return go;

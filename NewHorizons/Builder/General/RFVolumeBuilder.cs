@@ -1,10 +1,11 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, bool hide = false)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
@@ -19,7 +20,7 @@ namespace NewHorizons.Builder.General
             var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
             var RV = new ReferenceFrame(owrb);
-            RV._minSuitTargetDistance = sphereOfInfluence;
+            RV._minSuitTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
             RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
@@ -28,7 +29,7 @@ namespace NewHorizons.Builder.General
             RV._matchAngularVelocity = true;
             RV._minMatchAngularVelocityDistance = 70;
             RV._maxMatchAngularVelocityDistance = 400;
-            RV._bracketsRadius = sphereOfInfluence;
+            RV._bracketsRadius = module.bracketRadius > -1 ? module.bracketRadius : sphereOfInfluence;
 
             RFV._referenceFrame = RV;
             RFV._minColliderRadius = sphereOfInfluence;
@@ -38,7 +39,7 @@ namespace NewHorizons.Builder.General
 
             owrb.SetAttachedReferenceFrameVolume(RFV);
 
-            rfGO.SetActive(!hide);
+            rfGO.SetActive(!module.hideInMap);
         }
     }
 }

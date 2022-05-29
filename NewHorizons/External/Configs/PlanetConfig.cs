@@ -102,6 +102,11 @@ namespace NewHorizons.External.Configs
         public PropModule Props;
 
         /// <summary>
+        /// Reference frame properties of this body
+        /// </summary>
+        public ReferenceFrameModule ReferenceFrame;
+
+        /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
         /// </summary>
         public string[] removeChildren;
@@ -162,6 +167,7 @@ namespace NewHorizons.External.Configs
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
             if (ShipLog == null) ShipLog = new ShipLogModule();
+            if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
         }
 
         public void MigrateAndValidate()
@@ -194,6 +200,8 @@ namespace NewHorizons.External.Configs
                 };
 
             if (Base.isSatellite) Base.showMinimap = false;
+
+            if (!Base.hasReferenceFrame) ReferenceFrame.hideInMap = true;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 

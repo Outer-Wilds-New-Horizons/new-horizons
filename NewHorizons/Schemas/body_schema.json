@@ -428,11 +428,6 @@
           "type": "boolean",
           "description": "If the body should have a marker on the map screen."
         },
-        "hasReferenceFrame": {
-          "type": "boolean",
-          "description": "Allows the object to be targeted on the map.",
-          "default": true
-        },
         "invulnerableToSun": {
           "type": "boolean",
           "description": "Can this planet survive entering a star?"
@@ -456,6 +451,26 @@
           "type": "number",
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
           "format": "float"
+        }
+      }
+    },
+    "ReferenceFrameModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hideInMap": {
+          "type": "boolean",
+          "description": "Stop the object from being targeted on the map."
+        },
+        "bracketRadius": {
+          "type": "number",
+          "description": "Radius of the brackets that show up when you target this. Defaults to the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
+        },
+        "targetWhenClose": {
+          "type": "boolean",
+          "description": "If it should be targetable even when super close."
         }
       }
     },
