@@ -23,8 +23,7 @@ namespace NewHorizons.Builder.Body
 
             Mesh mesh = Icosphere.Build(4, module.scale, module.scale * 1.2f);
 
-            icosphere.AddComponent<MeshFilter>();
-            icosphere.GetComponent<MeshFilter>().mesh = mesh;
+            icosphere.AddComponent<MeshFilter>().mesh = mesh;
 
             var cubeSphereMR = icosphere.AddComponent<MeshRenderer>();
             cubeSphereMR.material = new Material(Shader.Find("Standard"));
