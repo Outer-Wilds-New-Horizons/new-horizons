@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -192,7 +192,7 @@ namespace NewHorizons.Builder.Props
             source.rolloffMode = AudioRolloffMode.Custom;
 
             if (_customCurve == null)
-                _customCurve = GameObject.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
+                _customCurve = SearchUtilities.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately

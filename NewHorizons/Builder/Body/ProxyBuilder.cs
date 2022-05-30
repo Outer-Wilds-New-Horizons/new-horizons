@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Atmosphere;
+using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
@@ -176,7 +176,7 @@ namespace NewHorizons.Builder.Body
 
         private static void MakeBlackHole(GameObject rootObject, float size)
         {
-            if (_blackHolePrefab == null) _blackHolePrefab = GameObject.Find(_blackHolePath);
+            if (_blackHolePrefab == null) _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
 
             var blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().material.shader;
             if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
@@ -201,7 +201,7 @@ namespace NewHorizons.Builder.Body
 
         private static void MakeWhiteHole(GameObject rootObject, float size)
         {
-            if (_whiteHolePrefab == null) _whiteHolePrefab = GameObject.Find(_whiteHolePath);
+            if (_whiteHolePrefab == null) _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
 
             var whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().material.shader;
             if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;

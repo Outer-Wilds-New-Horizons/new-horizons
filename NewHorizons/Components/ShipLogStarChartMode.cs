@@ -1,4 +1,4 @@
-﻿using NewHorizons.Handlers;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -136,7 +136,7 @@ namespace NewHorizons.Components
         {
             if (_cardTemplate == null)
             {
-                var panRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
+                var panRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
                 _cardTemplate = GameObject.Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
                 _cardTemplate.SetActive(false);
             }

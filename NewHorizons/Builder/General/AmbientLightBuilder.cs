@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+using UnityEngine;
+using NewHorizons.Utility;
 namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
         public static void Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
-            GameObject lightGO = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? planetGO.transform);
+            GameObject lightGO = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
             lightGO.name = "Light";
 

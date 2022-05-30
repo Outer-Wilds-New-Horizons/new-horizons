@@ -33,13 +33,13 @@ namespace NewHorizons.Handlers
 
             // Set up stars
             // Need to manage this when there are multiple stars
-            var sun = GameObject.Find("Sun_Body");
+            var sun = SearchUtilities.Find("Sun_Body");
             var starController = sun.AddComponent<StarController>();
-            starController.Light = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
-            starController.AmbientLight = GameObject.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
-            starController.FaceActiveCamera = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
-            starController.CSMTextureCacher = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
-            starController.ProxyShadowLight = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
+            starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+            starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
+            starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
+            starController.CSMTextureCacher = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
+            starController.ProxyShadowLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
             starController.Intensity = 0.9859f;
             starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
 
@@ -137,7 +137,7 @@ namespace NewHorizons.Handlers
             catch (Exception)
             {
                 if (body?.Config?.name == null) Logger.LogError($"How is there no name for {body}");
-                else existingPlanet = GameObject.Find(body.Config.name.Replace(" ", "") + "_Body");
+                else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
             }
 
             if (existingPlanet != null)
@@ -252,7 +252,7 @@ namespace NewHorizons.Handlers
             {
                 foreach (var child in body.Config.removeChildren)
                 {
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SearchUtilities.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 

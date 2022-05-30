@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.ShipLog
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
-            Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
+            Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
                 b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
             ).ToList();
@@ -251,12 +251,12 @@ namespace NewHorizons.Builder.ShipLog
                             navMatrix[navIndex[0]][navIndex[1]] = null;
                             if (astroObject.GetID() == "CAVE_TWIN" || astroObject.GetID() == "TOWER_TWIN")
                             {
-                                GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                                SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                             }
                         }
                         else if (name == "SandFunnel")
                         {
-                            GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                            SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                         }
                         gameObject.SetActive(false);
                     }
