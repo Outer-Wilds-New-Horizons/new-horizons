@@ -192,7 +192,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception e)
                     {
-                        Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] : {e.Message}, {e.StackTrace}");
+                        Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] for prop [{prefab.name}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
                     }
                 });
             }
