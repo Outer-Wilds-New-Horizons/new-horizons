@@ -158,7 +158,14 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
-            Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            try
+            {
+                Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+            }
         }
 
         private void OnSceneUnloaded(Scene scene)
