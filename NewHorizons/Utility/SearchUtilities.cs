@@ -162,7 +162,7 @@ namespace NewHorizons.Utility
                             {
                                 foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
                                 {
-                                    if (t.name.Equals(names[i]))
+                                    if (c.name.Equals(names[i]))
                                     {
                                         child = c;
                                         break;
