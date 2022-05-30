@@ -24,6 +24,7 @@ namespace NewHorizons.Patches
         {
             if (!Main.HasWarpDrive) return true;
 
+            StarChartHandler.ShipLogStarChartMode.UpdateWarpPromptVisibility();
             if (__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
                 var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();
