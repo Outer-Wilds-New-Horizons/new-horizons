@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
 using NewHorizons.Handlers;
@@ -135,8 +135,8 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ShipLogMapMode), nameof(ShipLogMapMode.Initialize))]
         public static void ShipLogMapMode_Initialize(ShipLogMapMode __instance)
         {
-            GameObject panRoot = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH);
-            GameObject sunObject = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
+            GameObject panRoot = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH);
+            GameObject sunObject = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/Sun");
             ShipLogAstroObject[][] navMatrix = MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot, __instance._astroObjects, sunObject.layer);
             if (navMatrix == null || navMatrix.Length <= 1)
             {
@@ -151,9 +151,9 @@ namespace NewHorizons.Patches
                     List<GameObject> delete = SearchUtilities.GetAllChildren(panRoot).Where(g => g.name.Contains("_ShipLog") == false).ToList();
                     foreach (GameObject gameObject in delete)
                     {
-                        Object.Destroy(GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + gameObject.name));
+                        Object.Destroy(SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + gameObject.name));
                     }
-                    if (GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel") == null)
+                    if (SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel") == null)
                     {
                         __instance._sandFunnel = __instance.gameObject.AddComponent<ShipLogSandFunnel>();
                     }

@@ -150,7 +150,7 @@ namespace NewHorizons.Builder.Props
                     {
                         torchItem.enabled = true;
                         torchItem.mindProjectorTrigger.enabled = true;
-                        torchItem.mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                        torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
                 }
                 else

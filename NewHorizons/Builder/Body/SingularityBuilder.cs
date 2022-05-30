@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
@@ -88,10 +88,10 @@ namespace NewHorizons.Builder.Body
             blackHoleRender.transform.localScale = Vector3.one * size;
 
             var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
-            meshFilter.mesh = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
+            meshFilter.mesh = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
 
             var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
-            if (blackHoleShader == null) blackHoleShader = GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
+            if (blackHoleShader == null) blackHoleShader = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(blackHoleShader);
             meshRenderer.material.SetFloat(Radius, size * 0.4f);
             meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
@@ -100,7 +100,7 @@ namespace NewHorizons.Builder.Body
 
             if (makeAudio)
             {
-                var blackHoleAmbience = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleAmbience"), blackHole.transform);
+                var blackHoleAmbience = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleAmbience"), blackHole.transform);
                 blackHoleAmbience.name = "BlackHoleAmbience";
                 blackHoleAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
 
@@ -109,7 +109,7 @@ namespace NewHorizons.Builder.Body
                 blackHoleAudioSource.minDistance = size * 0.4f;
                 blackHoleAmbience.transform.localPosition = Vector3.zero;
 
-                var blackHoleOneShot = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleEmissionOneShot"), blackHole.transform);
+                var blackHoleOneShot = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleEmissionOneShot"), blackHole.transform);
                 var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
                 oneShotAudioSource.maxDistance = size * 3f;
                 oneShotAudioSource.minDistance = size * 0.4f;
@@ -137,7 +137,7 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                var blackHoleVolume = GameObject.Instantiate(GameObject.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleVolume"), blackHole.transform);
+                var blackHoleVolume = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleVolume"), blackHole.transform);
                 blackHoleVolume.name = "BlackHoleVolume";
                 blackHoleVolume.GetComponent<SphereCollider>().radius = size * 0.4f;
             }
@@ -159,10 +159,10 @@ namespace NewHorizons.Builder.Body
             whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
 
             var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
-            meshFilter.mesh = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshFilter>().mesh;
+            meshFilter.mesh = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshFilter>().mesh;
 
             var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
-            if (whiteHoleShader == null) whiteHoleShader = GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshRenderer>().sharedMaterial.shader;
+            if (whiteHoleShader == null) whiteHoleShader = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshRenderer>().sharedMaterial.shader;
             meshRenderer.material = new Material(whiteHoleShader);
             meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
             meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
@@ -170,14 +170,14 @@ namespace NewHorizons.Builder.Body
             meshRenderer.sharedMaterial.SetFloat(MassScale, -1);
             meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
 
-            var ambientLight = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVisuals/AmbientLight_WH"));
+            var ambientLight = GameObject.Instantiate(SearchUtilities.Find("WhiteHole_Body/WhiteHoleVisuals/AmbientLight_WH"));
             ambientLight.transform.parent = whiteHole.transform;
             ambientLight.transform.localScale = Vector3.one;
             ambientLight.transform.localPosition = Vector3.zero;
             ambientLight.name = "AmbientLight";
             ambientLight.GetComponent<Light>().range = size * 7f;
 
-            GameObject whiteHoleVolumeGO = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/WhiteHoleVolume"));
+            GameObject whiteHoleVolumeGO = GameObject.Instantiate(SearchUtilities.Find("WhiteHole_Body/WhiteHoleVolume"));
             whiteHoleVolumeGO.transform.parent = whiteHole.transform;
             whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
             whiteHoleVolumeGO.transform.localScale = Vector3.one;
@@ -205,13 +205,13 @@ namespace NewHorizons.Builder.Body
 
             if (makeZeroGVolume)
             {
-                var zeroGVolume = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/ZeroGVolume"), whiteHole.transform);
+                var zeroGVolume = GameObject.Instantiate(SearchUtilities.Find("WhiteHole_Body/ZeroGVolume"), whiteHole.transform);
                 zeroGVolume.name = "ZeroGVolume";
                 zeroGVolume.transform.localPosition = Vector3.zero;
                 zeroGVolume.GetComponent<SphereCollider>().radius = size * 10f;
                 zeroGVolume.GetComponent<ZeroGVolume>()._attachedBody = OWRB;
 
-                var rulesetVolume = GameObject.Instantiate(GameObject.Find("WhiteHole_Body/Sector_WhiteHole/RulesetVolumes_WhiteHole"), planetGO.transform);
+                var rulesetVolume = GameObject.Instantiate(SearchUtilities.Find("WhiteHole_Body/Sector_WhiteHole/RulesetVolumes_WhiteHole"), planetGO.transform);
                 rulesetVolume.name = "RulesetVolume";
                 rulesetVolume.transform.localPosition = Vector3.zero;
                 rulesetVolume.transform.localScale = Vector3.one * size / 100f;

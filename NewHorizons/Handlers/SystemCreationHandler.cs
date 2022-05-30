@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.StarSystem;
+using NewHorizons.Builder.StarSystem;
 using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -9,7 +9,7 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-            var skybox = GameObject.Find("Skybox/Starfield");
+            var skybox = SearchUtilities.Find("Skybox/Starfield");
 
             if (system.Config.skybox?.destroyStarField ?? false)
             {

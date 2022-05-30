@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -37,7 +38,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
-            var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
+            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
 
             ER._material = gdRuleset._material;
 

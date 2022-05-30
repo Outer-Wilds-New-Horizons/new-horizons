@@ -17,9 +17,9 @@ namespace NewHorizons.Builder.Atmosphere
             fogGO.transform.localScale = Vector3.one;
 
             // Going to copy from dark bramble
-            var dbFog = GameObject.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
-            var dbPlanetaryFogController = GameObject.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB").GetComponent<PlanetaryFogController>();
-            var brambleLODFog = GameObject.Find("DarkBramble_Body/Sector_DB/Proxy_DB/LOD_DB_VolumeticFog");
+            var dbFog = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
+            var dbPlanetaryFogController = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB").GetComponent<PlanetaryFogController>();
+            var brambleLODFog = SearchUtilities.Find("DarkBramble_Body/Sector_DB/Proxy_DB/LOD_DB_VolumeticFog");
 
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
             MF.mesh = dbFog.GetComponent<MeshFilter>().mesh;

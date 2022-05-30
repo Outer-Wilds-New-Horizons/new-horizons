@@ -1,4 +1,4 @@
-﻿using System.Runtime.Serialization;
+using System.Runtime.Serialization;
 using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -43,13 +43,13 @@ namespace NewHorizons.Builder.Body
             scaleRoot.transform.localPosition = Vector3.zero;
             scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
-            var proxyGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
+            var proxyGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
 
-            var geoGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel"), scaleRoot.transform);
+            var geoGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel"), scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
 
-            var volumesGO = GameObject.Instantiate(GameObject.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"), scaleRoot.transform);
+            var volumesGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"), scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
             var fluidVolume = sfv.gameObject;
@@ -63,7 +63,7 @@ namespace NewHorizons.Builder.Body
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var waterMaterials = GameObject.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
+                    var waterMaterials = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
                     var materials = new Material[waterMaterials.Length];
                     for (int i = 0; i < waterMaterials.Length; i++)
                     {
@@ -111,7 +111,7 @@ namespace NewHorizons.Builder.Body
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var lavaMaterial = new Material(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material);
+                    var lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material);
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
                     lavaMaterial.mainTextureScale = new Vector2(1f, 3f);
 
