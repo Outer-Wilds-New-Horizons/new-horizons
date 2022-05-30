@@ -1772,6 +1772,13 @@
         "tint": {
           "description": "Colour of the star.",
           "$ref": "#/definitions/MColor"
+        },
+        "lightRadius": {
+          "type": "number",
+          "description": "How far the light from the star can reach.",
+          "format": "float",
+          "default": 50000.0,
+          "minimum": 0.0
         }
       }
     },

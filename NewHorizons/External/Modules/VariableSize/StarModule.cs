@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -55,5 +55,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Colour of the star.
         /// </summary>
         public MColor tint;
+
+        /// <summary>
+        /// How far the light from the star can reach.
+        /// </summary>
+        [DefaultValue(50000f)] [Range(0f, double.MaxValue)]
+        public float lightRadius = 50000f;
     }
 }
