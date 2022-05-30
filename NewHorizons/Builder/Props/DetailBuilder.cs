@@ -147,6 +147,20 @@ namespace NewHorizons.Builder.Props
                         torchItem.mindProjectorTrigger.enabled = true;
                         torchItem.mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
+
+                    // fix campfires
+                    if (component is InteractVolume interactVolume)
+                    {
+                        interactVolume._playerCam = GameObject.Find("Player_Body/PlayerCamera").GetComponent<OWCamera>();
+                    }
+                    if (component is PlayerAttachPoint playerAttachPoint)
+                    {
+                        var playerBody = GameObject.Find("Player_Body");
+                        playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
+                        playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
+                        playerAttachPoint._playerTransform = playerBody.transform;
+                        playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
+                    }
                 }
                 else
                 {
