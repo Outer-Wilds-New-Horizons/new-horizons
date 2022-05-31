@@ -6,11 +6,16 @@
 <form class="form mt-5">
     <script src="{{ "scripts/shiplog_validator.js"|static }}" defer></script>
     <label for="file-select">Select files to validate</label>
-    <input id="file-select" class="mb-4 form-control" type="file" multiple/>
+    <input id="file-select" class="mb-4 form-control" type="file" accept="application/xml" multiple/>
     <div class="d-grid gap-2">
-        <button id="validate-button" class="btn btn-primary" type="button">
+        <button disabled id="validate-button" class="btn btn-primary" type="button">
             <span class="text">Validate</span>
             <span class="d-none loading-icon spinner-border spinner-border-sm"></span>
         </button>
     </div>
 </form>
+
+<div id="error-box" class="mt-4 alert alert-secondary" role="alert">
+    <i id="error-icon" class="bi bi-dash-circle pe-2"></i>
+    <span id="error-text">Errors Will Appear Here</span>
+</div>
