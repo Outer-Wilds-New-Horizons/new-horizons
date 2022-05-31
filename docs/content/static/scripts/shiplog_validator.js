@@ -109,10 +109,14 @@ const validateReferences = (referencerType, possibleReferencees, referenceeType)
 }
 
 const allTagsOfTypeHaveChildOfType = (xmlDocs, tagType, childType) => {
+    xmlDocs.map((doc, index) =>                // for each document,
+		[...doc.getElementsByTagName(tagType)]
+        .map(element => console.log("index: " + index + " element: " + element))
+    )
 	xmlDocs.map((doc, index) =>                // for each document,
 		[...doc.getElementsByTagName(tagType)] // get all <tagType> tags in this document
 		.map((element, jndex) =>               // for each <tagType> in this document
-			element.getChildByTag(             // make sure this tag has at least one <childType> tag as a child
+			getChildByTag(                     // make sure this tag has at least one <childType> tag as a child
 				element, 
 				childType, 
 				`<${tagType}> tag #${jndex} in file ${index} has no <${childType}> tag.`
