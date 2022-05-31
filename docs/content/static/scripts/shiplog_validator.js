@@ -38,9 +38,9 @@ const validate = (xmlDocs) => {
     allTagsOfTypeHaveChildOfType(xmlDocs, "Entry", "Name")
 
 	// validate curiosity references and that all entries referred to as curiosities actually are curiosities
-    validateReferences("Curiosity", allEntryIDs, "Entry")
-        .map(referenceConection => {
-            const curiosityEntry = referenceConection.referencedElement
+    validateReferences(xmlDocs, "Curiosity", allEntryIDs, "Entry")
+        .map(reference => {
+            const curiosityEntry = reference.referencedElement
 
             // get the ID of the Entry that should be a curiosity, for use in error reporting
             const curiosityEntryId = reference.referenceID
@@ -50,16 +50,16 @@ const validate = (xmlDocs) => {
         })
 
 	// validate SourceID and Condition references
-	validateReferences("SourceID", allEntryIDs, "Entry")
-	validateReferences("Condition", allFactIDs, "ExploreFact or RumourFact")
-	validateReferences("IgnoreMoreToExploreCondition", allFactIDs, "ExploreFact or RumourFact")
+	validateReferences(xmlDocs, "SourceID", allEntryIDs, "Entry")
+	validateReferences(xmlDocs, "Condition", allFactIDs, "ExploreFact or RumourFact")
+	validateReferences(xmlDocs, "IgnoreMoreToExploreCondition", allFactIDs, "ExploreFact or RumourFact")
 	
 	
 	// validate that all AltText tags have a <Condition> child
 	allTagsOfTypeHaveChildOfType(xmlDocs, "AltText", "Condition")
 }
 
-const validateReferences = (referencerType, possibleReferencees, referenceeType) => {
+const validateReferences = (xmlDocs, referencerType, possibleReferencees, referenceeType) => {
     // allReferences is an array of all <referencerType> tags: 
     // [
     //     {
@@ -83,7 +83,7 @@ const validateReferences = (referencerType, possibleReferencees, referenceeType)
 	.map(reference => {                                                // for each <referencerType> tag
             const referencedElement = getElementByIDTag(               // get the tag with the ID it references, where the id it references is <referencerType>THIS IS THE ID</referencerType>
                 possibleReferencees,                                   // note: for most uses of this function, we don't do anything with the referenced tag, we're just making sure it exists, and throwing an error if it doesn't.
-                referenceID, 
+                reference.referenceID, 
                 `A <${referencerType}> tag in file ${reference.index} has an invalid reference id: "${reference.referenceID}". There is no <${referenceeType}> with the supplied ID.`
             )
 
