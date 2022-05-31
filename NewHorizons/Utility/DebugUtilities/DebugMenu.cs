@@ -1,4 +1,4 @@
-﻿using NewHorizons.External;
+using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -30,24 +30,26 @@ namespace NewHorizons.Utility.DebugUtilities
         private static IModButton pauseMenuButton;
 
         GUIStyle _editorMenuStyle;
-        Vector2 EditorMenuSize = new Vector2(600, 900);
+        GUIStyle _tabBarStyle;
+        GUIStyle _submenuStyle;
+        internal Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
         static bool openMenuOnPause;
         static bool staticInitialized;
 
-        DebugPropPlacer _dpp;
-        DebugRaycaster _drc;
+        internal DebugPropPlacer _dpp;
+        internal DebugRaycaster _drc;
 
         // menu params
-        private Vector2 recentPropsScrollPosition = Vector2.zero;
-        private HashSet<string> favoriteProps = new HashSet<string>();
-        public static readonly char separatorCharacter = '☧'; // since no chars are illegal in game object names, I picked one that's extremely unlikely to be used to be a separator
-        private static readonly string favoritePropsPlayerPrefKey = "FavoriteProps";
-
         private static IModBehaviour loadedMod = null;
         private Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
+
+        // submenus
+        private List<DebugSubmenu> submenus;
+        private int activeSubmenu = 0;
+
 
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
@@ -60,7 +62,15 @@ namespace NewHorizons.Utility.DebugUtilities
         {
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
-            LoadFavoriteProps();
+
+            submenus = new List<DebugSubmenu>()
+            {
+                new DebugMenuPropPlacer(),
+                new DebugMenuDummySubmenu()
+            };
+
+
+            submenus.ForEach((submenu) => submenu.OnAwake(this));
         }
 
         private void Start()
@@ -107,19 +117,6 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private void CloseMenu() { menuOpen = false; }
 
-        private void LoadFavoriteProps()
-        {
-            string favoritePropsPlayerPref = PlayerPrefs.GetString(favoritePropsPlayerPrefKey);
-
-            if (favoritePropsPlayerPref == null || favoritePropsPlayerPref == "") return;
-
-            var favoritePropPaths = favoritePropsPlayerPref.Split(separatorCharacter);
-            foreach (string favoriteProp in favoritePropPaths)
-            {
-                DebugPropPlacer.RecentlyPlacedProps.Add(favoriteProp);
-                this.favoriteProps.Add(favoriteProp);
-            }
-        }
 
         private void OnGUI()
         {
@@ -129,53 +126,6 @@ namespace NewHorizons.Utility.DebugUtilities
             Vector2 menuPosition = new Vector2(10, 40);
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
-
-            //
-            // DebugPropPlacer
-            // 
-            GUILayout.Label("Recently placed objects");
-            _dpp.SetCurrentObject(GUILayout.TextArea(_dpp.currentObject));
-
-            GUILayout.Space(5);
-
-            // List of recently placed objects
-            GUILayout.Label("Recently placed objects");
-            recentPropsScrollPosition = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(EditorMenuSize.x), GUILayout.Height(100));
-            foreach (string propPath in DebugPropPlacer.RecentlyPlacedProps)
-            {
-                GUILayout.BeginHorizontal();
-
-                var propPathElements = propPath[propPath.Length-1] == '/'
-                    ? propPath.Substring(0, propPath.Length-1).Split('/')
-                    : propPath.Split('/');
-                string propName = propPathElements[propPathElements.Length - 1];
-
-                string favoriteButtonIcon = favoriteProps.Contains(propPath) ? "★" : "☆";
-                if (GUILayout.Button(favoriteButtonIcon, GUILayout.ExpandWidth(false)))
-                {
-                    if (favoriteProps.Contains(propPath))
-                    {
-                        favoriteProps.Remove(propPath);
-                    }
-                    else
-                    {
-                        favoriteProps.Add(propPath);
-                    }
-
-                    string[] favoritePropsArray = favoriteProps.ToArray<string>();
-                    PlayerPrefs.SetString(favoritePropsPlayerPrefKey, string.Join(separatorCharacter + "", favoritePropsArray));
-                }
-
-                if (GUILayout.Button(propName))
-                {
-                    _dpp.SetCurrentObject(propPath);
-                }
-
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.EndScrollView();
-
-            GUILayout.Space(5);
 
             // continue working on existing mod
 
@@ -218,6 +168,33 @@ namespace NewHorizons.Utility.DebugUtilities
                 GUI.enabled = true;
                 GUILayout.EndHorizontal();
             }
+
+            GUILayout.Space(5);
+            // todo: a line or something?
+            GUILayout.Space(5);
+        
+            // draw submenu stuff
+            if (loadedMod != null)
+            {
+                GUILayout.BeginHorizontal(_tabBarStyle);
+                GUILayout.Space(5);
+                for (int i = 0; i < submenus.Count; i++) 
+                {
+                    GUI.enabled = i != activeSubmenu;
+                    var style = i == activeSubmenu ? _submenuStyle : _tabBarStyle;
+                    if (GUILayout.Button("  "+submenus[i].SubmenuName()+"  ", style, GUILayout.ExpandWidth(false))) 
+                        activeSubmenu = i;
+                    GUI.enabled = true;
+
+                    // if (i < submenus.Count-1) GUILayout.Label("|", GUILayout.ExpandWidth(false));
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginVertical(_submenuStyle);
+                submenus[activeSubmenu].OnGUI(this);
+                GUILayout.EndVertical();
+            }
+            
 
             GUILayout.EndArea();
         }
@@ -339,14 +316,33 @@ namespace NewHorizons.Utility.DebugUtilities
             _dpp = this.GetRequiredComponent<DebugPropPlacer>();
             _drc = this.GetRequiredComponent<DebugRaycaster>();
 
-            Texture2D bgTexture = ImageUtilities.MakeSolidColorTexture((int)EditorMenuSize.x, (int)EditorMenuSize.y, Color.black);
-
             _editorMenuStyle = new GUIStyle
             {
                 normal =
                 {
-                    background = bgTexture
+                    background = ImageUtilities.MakeSolidColorTexture(1, 1, Color.black)
                 }
+            };
+
+            _tabBarStyle = new GUIStyle
+            {
+                normal =
+                {
+                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.3f, 0.3f, 0.3f))
+                },
+                fontStyle = FontStyle.Bold,
+                fontSize = 16
+            };
+
+            _submenuStyle = new GUIStyle
+            {
+                normal =
+                {
+                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.2f, 0.2f, 0.2f)),
+                    textColor = Color.white
+                },
+                fontStyle = FontStyle.Bold,
+                fontSize = 16
             };
         }
     }

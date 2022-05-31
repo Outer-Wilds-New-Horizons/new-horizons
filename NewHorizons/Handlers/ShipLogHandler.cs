@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
