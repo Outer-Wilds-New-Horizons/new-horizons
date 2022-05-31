@@ -16,15 +16,6 @@ using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility.DebugUtilities
 {
-
-    //
-    //
-    //  TODO: split this into two separate classes "DebugMenu" and "DebugPropPlacerMenu"
-    //
-    //
-
-    [RequireComponent(typeof(DebugRaycaster))]
-    [RequireComponent(typeof(DebugPropPlacer))]
     class DebugMenu : MonoBehaviour
     {
         private static IModButton pauseMenuButton;
@@ -37,12 +28,9 @@ namespace NewHorizons.Utility.DebugUtilities
         static bool openMenuOnPause;
         static bool staticInitialized;
 
-        internal DebugPropPlacer _dpp;
-        internal DebugRaycaster _drc;
-
         // menu params
-        private static IModBehaviour loadedMod = null;
-        private Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
+        internal static IModBehaviour loadedMod = null;
+        internal Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
 
@@ -60,9 +48,6 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private void Awake()
         {
-            _dpp = this.GetRequiredComponent<DebugPropPlacer>();
-            _drc = this.GetRequiredComponent<DebugRaycaster>();
-
             submenus = new List<DebugSubmenu>()
             {
                 new DebugMenuPropPlacer(),
@@ -153,7 +138,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             // save your work
 
-            {
+            if (loadedMod != null) {
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(saveButtonUnlocked ? " O " : " | ", GUILayout.ExpandWidth(false)))
                 {
@@ -214,13 +199,13 @@ namespace NewHorizons.Utility.DebugUtilities
                 }
 
                 loadedConfigFiles[folder + body.RelativePath] = (body.Config as PlanetConfig);
-                _dpp.FindAndRegisterPropsFromConfig(body.Config);
+                submenus.ForEach(submenu => submenu.LoadConfigFile(this, body.Config));
             }
         }
 
         private void SaveLoadedConfigsForRecentSystem()
         {
-            UpdateLoadedConfigsForRecentSystem();
+            submenus.ForEach(submenu => submenu.PreSave(this));
 
             string backupFolderName = "configBackups\\" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "\\";
             Logger.Log($"Potentially saving {loadedConfigFiles.Keys.Count} files");
@@ -259,50 +244,6 @@ namespace NewHorizons.Utility.DebugUtilities
             }
         }
 
-        private void UpdateLoadedConfigsForRecentSystem()
-        {
-            var newDetails = _dpp.GetPropsConfigByBody();
-
-            Logger.Log("Updating config files. New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
-
-            Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
-
-            // Get all configs
-            foreach (var filePath in loadedConfigFiles.Keys)
-            {
-                Logger.Log("potentially updating copy of config at " + filePath);
-
-                if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
-                if (loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(loadedConfigFiles[filePath].name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
-
-                var astroObjectName = DebugPropPlacer.GetAstroObjectName(loadedConfigFiles[filePath].name);
-                planetToConfigPath[astroObjectName] = filePath;
-
-                if (!newDetails.ContainsKey(astroObjectName)) continue;
-
-                if (loadedConfigFiles[filePath].Props == null) loadedConfigFiles[filePath].Props = new External.Modules.PropModule();
-                loadedConfigFiles[filePath].Props.details = newDetails[astroObjectName];
-
-                Logger.Log("successfully updated copy of config file for " + astroObjectName);
-            }
-
-            // find all new planets that do not yet have config paths
-            var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
-            foreach (var astroObjectName in planetsThatDoNotHaveConfigFiles)
-            {
-                Logger.Log("Fabricating new config file for " + astroObjectName);
-
-                var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObjectName + ".json";
-                PlanetConfig c = new PlanetConfig();
-                c.starSystem = Main.Instance.CurrentStarSystem;
-                c.name = astroObjectName;
-                c.Props = new PropModule();
-                c.Props.details = newDetails[astroObjectName];
-
-                loadedConfigFiles[filepath] = c;
-            }
-        }
-
         private void InitMenu()
         {
             if (_editorMenuStyle != null) return;
@@ -312,8 +253,8 @@ namespace NewHorizons.Utility.DebugUtilities
             // TODO: figure out how to clear this event list so that we don't pile up useless instances of the DebugMenu that can't get garbage collected
             pauseMenuButton.OnClick += ToggleMenu;
 
-            _dpp = this.GetRequiredComponent<DebugPropPlacer>();
-            _drc = this.GetRequiredComponent<DebugRaycaster>();
+            submenus.ForEach(submenu => submenu.OnInit(this));
+            
 
             _editorMenuStyle = new GUIStyle
             {

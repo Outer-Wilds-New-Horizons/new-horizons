@@ -1,3 +1,4 @@
+using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +11,11 @@ namespace NewHorizons.Utility.DebugUtilities
     {
         internal abstract void OnAwake(DebugMenu menu);
         internal abstract void OnGUI(DebugMenu menu);
+        internal abstract void PreSave(DebugMenu menu);
+        internal abstract void OnInit(DebugMenu menu);
+        internal abstract void LoadConfigFile(DebugMenu menu, PlanetConfig config);
 
         internal abstract string SubmenuName();
+
     }
 }
