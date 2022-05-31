@@ -189,6 +189,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 GUILayout.EndHorizontal();
 
                 GUILayout.BeginVertical(_submenuStyle);
+                GUILayout.Space(10);
                 submenus[activeSubmenu].OnGUI(this);
                 GUILayout.EndVertical();
             }
