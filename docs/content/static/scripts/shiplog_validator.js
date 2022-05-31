@@ -2,6 +2,8 @@
 
 // I wish this was TypeScript. The code would be so much cleaner and I wouldn't need so many "this returns objects of form X" comments ;-;
 
+const allErrors = []
+
 // filesContents is an array of the contents of the xml files to validate with
 // throws and exception if the files are not valid xml
 const parse = (filesContents) => {
@@ -145,7 +147,7 @@ const checkForDuplicateIDs = (ids) => {
 		duplicationsMessage += `${id} occurs in the following documents: ${docIndices.join(', ')}\n`
 	}
 
-	if (duplicationsMessage !== "") throw new Error("Duplicate IDs were found:\n" + duplicationsMessage)
+	if (duplicationsMessage !== "") allErrors.push("Duplicate IDs were found:\n" + duplicationsMessage)
 
 	return
 }
@@ -187,7 +189,7 @@ const getElementByIDTag = (idsList, id, errMsg) => {
 
 	const possibleElements = idsList.filter(idMeta => idMeta.id === id).map(idMeta => idMeta.element)
 	if (possibleElements === null || possibleElements.length === 0) {
-		throw new Error(errMsg);
+		allErrors.push(errMsg);
 	}
 
 	return possibleElements[0]
@@ -198,7 +200,7 @@ const getChildByTag = (xmlElement, tagName, errMsg) => {
 
 	const possibleChildren = [...xmlElement.children].filter(element => element.tagName === tagName)
 	if (possibleChildren === null || possibleChildren.length === 0) {
-		throw new Error(errMsg);
+		allErrors.push(errMsg);
 	}
 
 	return possibleChildren[0]
@@ -244,7 +246,8 @@ $(document).ready(() => {
         const xmlDocs = parse(allFiles);
         try {
             validate(xmlDocs);
-            setError(false, "No Issues Found!")
+            if (allErrors.length === 0) setError(false, "No Issues Found!")
+            else setError(true, allErrors.join('\n'))
         }
         catch (e) {
             console.error(e)
