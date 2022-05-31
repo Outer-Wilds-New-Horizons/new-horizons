@@ -136,7 +136,7 @@ const checkForDuplicateIDs = (ids) => {
 		}
 	}
 
-	const duplicationsMessage = ""
+	let duplicationsMessage = ""
 	for (const [id, docIndices] of Object.entries(duplicate)) {
 		duplicationsMessage += `${id} occurs in the following documents: ${docIndices.join(', ')}\n`
 	}
@@ -243,6 +243,7 @@ $(document).ready(() => {
             setError(false, "No Issues Found!")
         }
         catch (e) {
+            console.error(e)
             setError(true, e);
         }
         finally {
