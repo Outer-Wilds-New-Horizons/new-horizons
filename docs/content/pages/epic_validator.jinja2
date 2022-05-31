@@ -1,0 +1,16 @@
+{#~ Title:Ship Log XML Validator ~#}
+{#~ Render_TOC:False  ~#}
+
+<h1>Hi, welcome to Clay's magic parser (he's so amazing)</h1>
+
+<form class="form mt-5">
+    <script src="{{ "scripts/shiplog_validator.js"|static }}" defer></script>
+    <label for="file-select">Select files to validate</label>
+    <input id="file-select" class="mb-4 form-control" type="file" multiple/>
+    <div class="d-grid gap-2">
+        <button id="validate-button" class="btn btn-primary" type="button">
+            <span class="text">Validate</span>
+            <span class="d-none loading-icon spinner-border spinner-border-sm"></span>
+        </button>
+    </div>
+</form>
