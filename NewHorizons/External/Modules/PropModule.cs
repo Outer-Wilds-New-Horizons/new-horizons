@@ -116,7 +116,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// An optional rename of the detail
             /// </summary>
-            public string comment;
+            public string rename;
 
             /// <summary>
             /// Do we override rotation and try to automatically align this object to stand upright on the body's surface?
