@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugMenu
 {
     class DebugMenu : MonoBehaviour
     {
@@ -186,7 +186,7 @@ namespace NewHorizons.Utility.DebugUtilities
         private void LoadMod(IModBehaviour mod)
         {
             loadedMod = mod;
-            DebugPropPlacer.active = true;
+            submenus.ForEach(submenu => submenu.OnBeginLoadMod(this));
 
             var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
 

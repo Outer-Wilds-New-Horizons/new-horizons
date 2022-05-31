@@ -18,6 +18,7 @@ using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Utility.DebugUtilities;
 using Newtonsoft.Json;
+using NewHorizons.Utility.DebugMenu;
 
 namespace NewHorizons
 {

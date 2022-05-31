@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugMenu
 {
     class DebugMenuDummySubmenu : DebugSubmenu
     {
@@ -15,6 +15,10 @@ namespace NewHorizons.Utility.DebugUtilities
         }
 
         internal override void OnAwake(DebugMenu menu)
+        {
+        }
+
+        internal override void OnBeginLoadMod(DebugMenu debugMenu)
         {
         }
 

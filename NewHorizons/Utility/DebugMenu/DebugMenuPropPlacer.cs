@@ -1,5 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.DebugUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugMenu
 {
     class DebugMenuPropPlacer : DebugSubmenu
     {
@@ -35,6 +36,11 @@ namespace NewHorizons.Utility.DebugUtilities
             _dpp = menu.GetComponent<DebugPropPlacer>();
             _drc = menu.GetComponent<DebugRaycaster>();
             LoadFavoriteProps();
+        }
+
+        internal override void OnBeginLoadMod(DebugMenu debugMenu)
+        {
+            DebugPropPlacer.active = true;
         }
         
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)

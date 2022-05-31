@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugMenu
 {
     abstract class DebugSubmenu
     {
@@ -14,6 +14,7 @@ namespace NewHorizons.Utility.DebugUtilities
         internal abstract void PreSave(DebugMenu menu);
         internal abstract void OnInit(DebugMenu menu);
         internal abstract void LoadConfigFile(DebugMenu menu, PlanetConfig config);
+        internal abstract void OnBeginLoadMod(DebugMenu debugMenu);
 
         internal abstract string SubmenuName();
 
