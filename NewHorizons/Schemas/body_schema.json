@@ -813,7 +813,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "comment": {
+        "rename": {
           "type": "string",
           "description": "An optional rename of the detail"
         },
