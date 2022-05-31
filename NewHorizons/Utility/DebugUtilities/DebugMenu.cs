@@ -169,9 +169,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 GUILayout.EndHorizontal();
             }
 
-            GUILayout.Space(5);
-            // todo: a line or something?
-            GUILayout.Space(5);
+            GUILayout.Space(20);
         
             // draw submenu stuff
             if (loadedMod != null)
@@ -328,7 +326,8 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 normal =
                 {
-                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.3f, 0.3f, 0.3f))
+                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.2f, 0.2f, 0.2f, 1)),
+                    textColor = Color.white
                 },
                 fontStyle = FontStyle.Bold,
                 fontSize = 16
@@ -338,7 +337,7 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 normal =
                 {
-                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.2f, 0.2f, 0.2f)),
+                    background = ImageUtilities.MakeSolidColorTexture(1, 1, new Color(0.1f, 0.1f, 0.1f, 1)),
                     textColor = Color.white
                 },
                 fontStyle = FontStyle.Bold,

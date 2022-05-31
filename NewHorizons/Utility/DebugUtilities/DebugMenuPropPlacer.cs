@@ -43,14 +43,14 @@ namespace NewHorizons.Utility.DebugUtilities
             //
             // DebugPropPlacer
             // 
-            GUILayout.Label("Recently placed objects");
+            GUILayout.Label("Currently placing: ");
             menu._dpp.SetCurrentObject(GUILayout.TextArea(menu._dpp.currentObject));
 
             GUILayout.Space(5);
 
             // List of recently placed objects
             GUILayout.Label("Recently placed objects");
-            recentPropsScrollPosition = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(menu.EditorMenuSize.x));
+            recentPropsScrollPosition = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(menu.EditorMenuSize.x), GUILayout.Height(500));
             foreach (string propPath in DebugPropPlacer.RecentlyPlacedProps)
             {
                 GUILayout.BeginHorizontal();
