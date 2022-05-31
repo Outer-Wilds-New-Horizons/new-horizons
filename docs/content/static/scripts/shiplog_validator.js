@@ -4,7 +4,7 @@
 
 // filesContents is an array of the contents of the xml files to validate with
 // throws and exception if the files are not valid xml
-module.exports.parse = (filesContents) => {
+const parse = (filesContents) => {
 	const parser = new DOMParser()
 	const xmlDocs = filesContents.map((contents, index) => 
 		{
@@ -20,7 +20,7 @@ module.exports.parse = (filesContents) => {
 
 // throws and exception if the files are invalid
 // otherwise does not
-module.exports.validate = (xmlDocs) => {
+const validate = (xmlDocs) => {
 	const planetIDs = xmlDocs.map((doc, index) => getChildByTag(doc.documentElement, "ID", `Document ${index} does not have a planet id.`).innerHTML)
 	const allEntryIDs = getAllIDsForTagType(xmlDocs, "Entry")
 
