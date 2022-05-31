@@ -34,6 +34,9 @@ module.exports.validate = (xmlDocs) => {
 	
 	checkForDuplicateIDs(allEntryIDs.concat(allFactIDs).concat(planetIDs))
 
+    // validate that all <Entry> tags have a name
+    allTagsOfTypeHaveChildOfType(xmlDocs, "Entry", "Name")
+
 	// validate curiosity references and that all entries referred to as curiosities actually are curiosities
     validateReferences("Curiosity", allEntryIDs, "Entry")
         .map(referenceConection => {
@@ -44,8 +47,7 @@ module.exports.validate = (xmlDocs) => {
             
             // ensure that this Entry actually is marked as a curiosity
             getChildByTag(curiosityEntry, "IsCuriosity", `Entry id ${curiosityEntryId} is referred to as a curiosity by an <Entry> in file ${reference.index}, but does not have the <IsCuriosity/> tag.`)
-        }
-    )
+        })
 
 	// validate SourceID and Condition references
 	validateReferences("SourceID", allEntryIDs, "Entry")
@@ -55,9 +57,6 @@ module.exports.validate = (xmlDocs) => {
 	
 	// validate that all AltText tags have a <Condition> child
 	allTagsOfTypeHaveChildOfType(xmlDocs, "AltText", "Condition")
-
-	// validate that all <Entry> tags have a name
-	allTagsOfTypeHaveChildOfType(xmlDocs, "Entry", "Name")
 }
 
 const validateReferences = (referencerType, possibleReferencees, referenceeType) => {
