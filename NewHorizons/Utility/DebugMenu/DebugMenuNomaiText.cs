@@ -29,7 +29,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override string SubmenuName()
         {
-            return "Prop Placer";
+            return "Text Placer";
         }
 
         internal override void OnInit(DebugMenu menu)

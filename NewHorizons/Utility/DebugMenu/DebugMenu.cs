@@ -51,7 +51,8 @@ namespace NewHorizons.Utility.DebugMenu
             submenus = new List<DebugSubmenu>()
             {
                 new DebugMenuPropPlacer(),
-                new DebugMenuDummySubmenu()
+                new DebugMenuDummySubmenu(),
+                new DebugMenuNomaiText()
             };
 
 
