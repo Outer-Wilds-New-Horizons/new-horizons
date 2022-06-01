@@ -51,6 +51,16 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool startHere;
 
+        /// <summary>
+        /// Name of an existing AudioClip in the game that will play when travelling in space.
+        /// </summary>
+        public string travelAudioClip;
+
+        /// <summary>
+        /// Relative filepath to the .wav file to use as the audio. Mutually exclusive with travelAudioClip.
+        /// </summary>
+        public string travelAudioFilePath;
+
         public class NomaiCoordinates
         {
             public int[] x;
