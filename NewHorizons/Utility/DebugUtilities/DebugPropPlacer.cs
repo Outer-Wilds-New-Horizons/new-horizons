@@ -94,9 +94,9 @@ namespace NewHorizons.Utility.DebugUtilities
             // TODO: implement sectors
             // if this hits a sector, store that sector and add a config file option for it
 
-            if (!data.hitObject.name.EndsWith("_Body"))
+            if (!data.hitBodyGameObject.name.EndsWith("_Body"))
             {
-                Logger.Log("Cannot place object on non-body object: " + data.hitObject.name);
+                Logger.Log("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
             }
 
             try 
@@ -106,7 +106,7 @@ namespace NewHorizons.Utility.DebugUtilities
                     SetCurrentObject(DEFAULT_OBJECT);
                 }
 
-                GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
+                GameObject prop = DetailBuilder.MakeDetail(data.hitBodyGameObject, data.hitBodyGameObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
                 
                 // align with surface normal
@@ -131,7 +131,7 @@ namespace NewHorizons.Utility.DebugUtilities
             } 
             catch 
             {
-                Logger.Log($"Failed to place object {currentObject} on body ${data.hitObject} at location ${data.pos}.");
+                Logger.Log($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
             }
         }
 
