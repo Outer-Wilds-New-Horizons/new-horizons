@@ -305,24 +305,35 @@ namespace NewHorizons.Builder.Props
             var i = 0;
             foreach (var textData in dict.Values)
             {
+                var arcInfo = info.arcInfo[i];
                 var textEntryID = textData.ID;
                 var parentID = textData.ParentID;
 
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
                 GameObject arc;
-                var type = info.arcInfo != null ? info.arcInfo[i].type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+                var type = info.arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+                var variation = 0;
                 switch (type)
                 {
                     case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
-                        arc = _childArcPrefabs[Random.Range(0, _childArcPrefabs.Count())].InstantiateInactive();
+                        variation = arcInfo.variation < 0
+                            ? Random.Range(0, _childArcPrefabs.Count())
+                            : (arcInfo.variation % _childArcPrefabs.Count());
+                        arc = _childArcPrefabs[variation].InstantiateInactive();
                         break;
                     case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
-                        arc = _ghostArcPrefabs[Random.Range(0, _ghostArcPrefabs.Count())].InstantiateInactive();
+                        variation = arcInfo.variation < 0
+                            ? Random.Range(0, _ghostArcPrefabs.Count())
+                            : (arcInfo.variation % _ghostArcPrefabs.Count());
+                        arc = _ghostArcPrefabs[variation].InstantiateInactive();
                         break;
                     case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                     default:
-                        arc = _arcPrefabs[Random.Range(0, _arcPrefabs.Count())].InstantiateInactive();
+                        variation = arcInfo.variation < 0
+                            ? Random.Range(0, _arcPrefabs.Count())
+                            : (arcInfo.variation % _arcPrefabs.Count());
+                        arc = _arcPrefabs[variation].InstantiateInactive();
                         break;
                 }
 

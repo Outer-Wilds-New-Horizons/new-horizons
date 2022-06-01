@@ -455,6 +455,7 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"stranger")] Stranger = 2
             }
 
+
             /// <summary>
             /// The local position of this object on the wall.
             /// </summary>
@@ -464,6 +465,11 @@ namespace NewHorizons.External.Modules
             /// The type of text to display.
             /// </summary>
             public NomaiTextArcType type = NomaiTextArcType.Adult;
+
+            /// <summary>
+            /// Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.
+            /// </summary>
+            [DefaultValue(-1)] public int variation = -1;
 
             /// <summary>
             /// The z euler angle for this arc.
