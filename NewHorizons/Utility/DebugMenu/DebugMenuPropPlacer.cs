@@ -40,7 +40,17 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void OnBeginLoadMod(DebugMenu debugMenu)
         {
+            
+        }
+
+        internal override void GainActive()
+        {
             DebugPropPlacer.active = true;
+        }
+
+        internal override void LoseActive()
+        {
+            DebugPropPlacer.active = false;
         }
         
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)

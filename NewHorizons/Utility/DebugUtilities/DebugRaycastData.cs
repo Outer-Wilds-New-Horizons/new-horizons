@@ -12,7 +12,7 @@ namespace NewHorizons.Utility.DebugUtilities
         public bool hit;
         public Vector3 pos;
         public Vector3 norm;
-        public Plane plane;
+        public DebugRaycastPlane plane;
 
         public string bodyName;
         public string bodyPath;
@@ -20,7 +20,7 @@ namespace NewHorizons.Utility.DebugUtilities
         public GameObject hitObject;
     }
 
-    struct Plane
+    struct DebugRaycastPlane
     {
         public Vector3 origin;
         public Vector3 normal;

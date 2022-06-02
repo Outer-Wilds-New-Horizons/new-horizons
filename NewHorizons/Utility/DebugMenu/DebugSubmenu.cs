@@ -18,5 +18,9 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal abstract string SubmenuName();
 
+        internal abstract void GainActive();
+        internal abstract void LoseActive();
+
+
     }
 }

@@ -9,10 +9,20 @@ namespace NewHorizons.Utility.DebugMenu
 {
     class DebugMenuDummySubmenu : DebugSubmenu
     {
+        internal override void GainActive()
+        {
+        
+        }
+        internal override void LoseActive()
+        {
+            
+        }
+
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)
         {
         
         }
+
 
         internal override void OnAwake(DebugMenu menu)
         {

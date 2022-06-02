@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
@@ -7,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static NewHorizons.External.Modules.PropModule;
 
 namespace NewHorizons.Utility.DebugMenu
 {
@@ -20,19 +22,35 @@ namespace NewHorizons.Utility.DebugMenu
     class DebugMenuNomaiText : DebugSubmenu
     {
         internal DebugRaycaster _drc;
+        internal DebugNomaiTextPlacer _dnp;
 
-        class NomaiTextTree
+        class ConversationMetadata
         {
-            public GameObject text;
-            public int variation;
-            public float arcLengthLocationOnParent;
+            public NomaiTextInfo conversation;
+            public GameObject conversationGo;
+            public PlanetConfig planetConfig;
 
-            public List<NomaiTextTree> children = new List<NomaiTextTree>();
+            public List<SpiralMetadata> spirals;
+
+            public bool collapsed;
         }
 
-        List<NomaiTextTree> textTrees = new List<NomaiTextTree>();
-        NomaiTextTree currentTree;
+        class SpiralMetadata
+        {
+            public NomaiTextArcInfo spiral;
+            public GameObject spiralGo;
 
+            public NomaiTextInfo conversation;
+            public PlanetConfig planetConfig;
+
+            public string planetName;
+            public int id;
+        }
+
+        List<ConversationMetadata> conversations = new List<ConversationMetadata>();
+
+        // menu stuff
+        Vector2 conversationsScrollPosition = new Vector2();
 
         internal override string SubmenuName()
         {
@@ -42,87 +60,223 @@ namespace NewHorizons.Utility.DebugMenu
         internal override void OnInit(DebugMenu menu)
         {
             _drc = menu.GetComponent<DebugRaycaster>();
+            _dnp = menu.GetComponent<DebugNomaiTextPlacer>();
         }
 
         internal override void OnAwake(DebugMenu menu)
         {
             _drc = menu.GetComponent<DebugRaycaster>();
+            _dnp = menu.GetComponent<DebugNomaiTextPlacer>();
         }
 
-        internal override void OnBeginLoadMod(DebugMenu debugMenu)
+        internal override void OnBeginLoadMod(DebugMenu debugMenu) {}
+
+        internal override void GainActive() {} // intentionally blank. do not set `DebugNomaiTextPlacer.active = true;` here
+
+        internal override void LoseActive()
         {
-            DebugPropPlacer.active = true;
+            DebugNomaiTextPlacer.active = false;
         }
         
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)
         {
-            // TODO: populate textTrees
+            if (config?.Props?.nomaiText == null) return;
+
+            foreach(NomaiTextInfo conversation in config.Props.nomaiText)
+            {
+                ConversationMetadata conversationMetadata = new ConversationMetadata()
+                {
+                    conversation = conversation,
+                    conversationGo = NomaiTextBuilder.GetSpawnedGameObjectByNomaiTextInfo(conversation),
+                    planetConfig = config,
+                    spirals = new List<SpiralMetadata>(),
+                    collapsed = true
+                };
+
+                Logger.Log("adding go " + conversationMetadata.conversationGo);
+
+                conversations.Add(conversationMetadata);
+
+                var numArcs = conversation.arcInfo == null
+                    ? 0
+                    : conversation.arcInfo.Length;
+                for(int id = 0; id < numArcs; id++)
+                {
+                    NomaiTextArcInfo arcInfo = conversation.arcInfo[id];
+
+                    SpiralMetadata metadata = new SpiralMetadata()
+                    {
+                        spiral = arcInfo,
+                        spiralGo = NomaiTextBuilder.GetSpawnedGameObjectByNomaiTextArcInfo(arcInfo),
+                        conversation = conversation,
+                        planetConfig = config,
+                        planetName = config.name,
+                        id = id
+                    };
+
+                    conversationMetadata.spirals.Add(metadata);
+                }
+            }
         }
 
+
+        /*
+           Conversations:                                                
+           +---------------------------+                            
+           |1) comment                 |
+           |   |o Visible| |Place|     | // replace is greyed out if the user is currently replacing this plane (replacing is done after the user presses G
+           |2) ...                     |                                        
+           +---------------------------+
+                                                                    
+           Spirals:                                
+           +---------------------------+                     
+           | v Planet - Comment        |
+           | +----------------------+  | 
+           | | v ID                 |  |                            
+           | |                      |  |                            
+           | | | > Surface 2 |      |  |                            
+           | | x: 5  ---o---        |  |                            
+           | | y: 2  ---o---        |  |                            
+           | | theta: 45 ---o---    |  |                            
+           | |                      |  |                            
+           | | o Child o Adult o ...|  |                            
+           | | variation: o1 o2 o3..|  |                            
+           | +----------------------+  |                            
+           |                           |                            
+           | +----------------------+  |                            
+           | | > ID                 |  |                            
+           | +----------------------+  |                            
+           |                           |                            
+           | ...                       |                            
+           +---------------------------+ 
+        
+           +---------------------------+                                                        
+           | > Planet - Comment        |                            
+           +---------------------------+   
+           ...
+                                                                    
+         */
         internal override void OnGUI(DebugMenu menu)
         {
-            GUILayout.Space(5);
+            conversationsScrollPosition = GUILayout.BeginScrollView(conversationsScrollPosition);
+            
+            for(int i = 0; i < conversations.Count(); i++)
+            {
+                ConversationMetadata conversationMeta = conversations[i];
 
-            GUILayout.Space(5);
+                GUILayout.BeginHorizontal();
+                    GUILayout.Space(5);        
+
+                    GUILayout.BeginVertical(menu._editorMenuStyle);
+                        
+                        var arrow = conversationMeta.collapsed ? " > " : " v ";
+                        if (GUILayout.Button(arrow + conversationMeta.planetConfig.name + " - " + i)) 
+                        {
+                            conversationMeta.collapsed = !conversationMeta.collapsed;
+                            Logger.Log("BUTTON " + i);
+                        }
+
+                        if (!conversationMeta.collapsed)
+                        {
+                            GUILayout.Space(5);
+                            // button to set this one to place with a raycast
+                            GUILayout.Label("Conversation");
+                            
+                            // only show the button if this conversation is a wall text, do not show it if it is a scroll text or something
+                            if (
+                                conversationMeta.conversation.type == PropModule.NomaiTextInfo.NomaiTextType.Wall &&
+                                GUILayout.Button("Place conversation with G")
+                            ) {
+                                Logger.Log(conversationMeta.conversationGo+" 0");
+                                DebugNomaiTextPlacer.active = true;
+                                _dnp.onRaycast = (DebugRaycastData data) =>
+                                {
+                                    var sectorObject = data.hitBodyGameObject.GetComponentInChildren<Sector>()?.gameObject;
+                                    if (sectorObject == null) sectorObject = data.hitBodyGameObject.GetComponentInParent<Sector>()?.gameObject;
+
+                                    conversationMeta.conversation.position = data.pos;
+                                    conversationMeta.conversation.normal   = data.norm;
+                                    conversationMeta.conversation.rotation = null;
+
+                                    DebugNomaiTextPlacer.active = false;
+                                    UpdateConversationTransform(conversationMeta, sectorObject);
+                                };
+                            }
+
+                            //
+                            // spirals
+                            //
+
+                            for(int j = 0; j < conversationMeta.spirals.Count(); j++)
+                            {
+                                GUILayout.BeginHorizontal();
+                                    GUILayout.Space(5);        
+                                    GUILayout.BeginVertical(menu._submenuStyle);
+
+                                        // spiral controls
+                                        GUILayout.Label("Spiral");
+
+                                    GUILayout.EndVertical();
+                                    GUILayout.Space(5);
+                                GUILayout.EndHorizontal();
+                
+                                GUILayout.Space(10);
+                            }
+                        }
+
+                    GUILayout.EndVertical();
+
+                    GUILayout.Space(5);
+                GUILayout.EndHorizontal();
+                
+                GUILayout.Space(10);
+            }
+
+            GUILayout.EndScrollView();
         }
 
-        void DrawSpiralControls(int indentationLevel, NomaiTextTree tree)
+        void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
         {
-            GUILayout.BeginHorizontal();
-            GUILayout.Space(5*indentationLevel);
+            var nomaiWallTextObj = conversationMetadata.conversationGo;
+            var planetGO = sectorParent;
+            var info = conversationMetadata.conversation;
+        
+            Logger.Log(nomaiWallTextObj + " 1");
+            Logger.Log(nomaiWallTextObj?.transform + " 2");
+            Logger.Log(planetGO + " 3");
+            Logger.Log(planetGO?.transform + " 4");
+            Logger.Log(info + " 5");
+            Logger.Log(info?.position + " 6");
+            nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
+            if (info.normal != null)
+            {
+                // In global coordinates (normal was in local coordinates)
+                var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
+                var forward = planetGO.transform.TransformDirection(info.normal).normalized;
 
-            GUILayout.EndHorizontal();
-
-            tree.children.ForEach(child => DrawSpiralControls(indentationLevel+1, child));
+                nomaiWallTextObj.transform.up = up;
+                nomaiWallTextObj.transform.forward = forward;
+            }
+            if (info.rotation != null)
+            {
+                nomaiWallTextObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+            }
         }
 
         internal override void PreSave(DebugMenu menu)
         {
-            UpdateLoadedConfigsForRecentSystem(menu);
-        }
+            conversations.ForEach(metadata =>
+            {
+                metadata.conversation.position = metadata.conversationGo.transform.localPosition;
+                metadata.conversation.rotation = metadata.conversationGo.transform.localEulerAngles;           
+            });
 
-        private void UpdateLoadedConfigsForRecentSystem(DebugMenu menu)
-        {
-            //var newDetails = _dpp.GetPropsConfigByBody();
-
-            //Logger.Log("Updating config files. New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
-
-            //Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
-
-            //// Get all configs
-            //foreach (var filePath in menu.loadedConfigFiles.Keys)
+            // Spirals' configs do not need to be updated. They are always up to date
+            //spirals.ForEach(metadata =>
             //{
-            //    Logger.Log("potentially updating copy of config at " + filePath);
-
-            //    if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
-            //    if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
-
-            //    var astroObjectName = DebugPropPlacer.GetAstroObjectName(menu.loadedConfigFiles[filePath].name);
-            //    planetToConfigPath[astroObjectName] = filePath;
-
-            //    if (!newDetails.ContainsKey(astroObjectName)) continue;
-
-            //    if (menu.loadedConfigFiles[filePath].Props == null) menu.loadedConfigFiles[filePath].Props = new External.Modules.PropModule();
-            //    menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObjectName];
-
-            //    Logger.Log("successfully updated copy of config file for " + astroObjectName);
-            //}
-
-            //// find all new planets that do not yet have config paths
-            //var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
-            //foreach (var astroObjectName in planetsThatDoNotHaveConfigFiles)
-            //{
-            //    Logger.Log("Fabricating new config file for " + astroObjectName);
-
-            //    var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObjectName + ".json";
-            //    PlanetConfig c = new PlanetConfig();
-            //    c.starSystem = Main.Instance.CurrentStarSystem;
-            //    c.name = astroObjectName;
-            //    c.Props = new PropModule();
-            //    c.Props.details = newDetails[astroObjectName];
-
-            //    menu.loadedConfigFiles[filepath] = c;
-            //}
+            //    metadata.spiral.position = metadata.spiral.position;
+            //    metadata.spiral.zRotation = metadata.spiral.zRotation;
+            //});
         }
     }
 }

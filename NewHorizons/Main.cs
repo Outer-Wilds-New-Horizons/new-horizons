@@ -274,6 +274,7 @@ namespace NewHorizons
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugNomaiTextPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);

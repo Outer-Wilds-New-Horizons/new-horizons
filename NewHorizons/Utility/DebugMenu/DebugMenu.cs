@@ -20,9 +20,9 @@ namespace NewHorizons.Utility.DebugMenu
     {
         private static IModButton pauseMenuButton;
 
-        GUIStyle _editorMenuStyle;
-        GUIStyle _tabBarStyle;
-        GUIStyle _submenuStyle;
+        public GUIStyle _editorMenuStyle;
+        public GUIStyle _tabBarStyle;
+        public GUIStyle _submenuStyle;
         internal Vector2 EditorMenuSize = new Vector2(600, 900);
         bool menuOpen = false;
         static bool openMenuOnPause;
@@ -125,6 +125,7 @@ namespace NewHorizons.Utility.DebugMenu
                     if (GUILayout.Button(mod.ModHelper.Manifest.UniqueName))
                     {
                         LoadMod(mod);
+                        submenus[activeSubmenu].GainActive();
                     }
                 }
 
@@ -167,7 +168,13 @@ namespace NewHorizons.Utility.DebugMenu
                     GUI.enabled = i != activeSubmenu;
                     var style = i == activeSubmenu ? _submenuStyle : _tabBarStyle;
                     if (GUILayout.Button("  "+submenus[i].SubmenuName()+"  ", style, GUILayout.ExpandWidth(false))) 
+                    { 
+                        GUI.enabled = true;
+                        submenus[activeSubmenu].LoseActive();
                         activeSubmenu = i;
+                        submenus[activeSubmenu].GainActive();
+                        
+                    }
                     GUI.enabled = true;
 
                     // if (i < submenus.Count-1) GUILayout.Label("|", GUILayout.ExpandWidth(false));

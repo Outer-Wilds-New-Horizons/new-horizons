@@ -19,6 +19,22 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _recorderPrefab;
+        
+        private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
+        {
+            if (!arcInfoToCorrespondingSpawnedGameObject.ContainsKey(arc)) return null;
+            return arcInfoToCorrespondingSpawnedGameObject[arc];
+        }
+        
+        private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
+        {
+            Logger.Log("retrieving wall text obj for " + convo);
+            if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
+            return conversationInfoToCorrespondingSpawnedGameObject[convo];
+        }
+
 
         private static void InitPrefabs()
         {
@@ -283,6 +299,9 @@ namespace NewHorizons.Builder.Props
 
             nomaiWallText.SetTextAsset(text);
 
+            Logger.Log("adding to wall text dict: "+info + ", " + nomaiWallTextObj);
+            conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
+
             return nomaiWallText;
         }
 
@@ -372,6 +391,7 @@ namespace NewHorizons.Builder.Props
                 arc.SetActive(true);
 
                 arcsByID.Add(textEntryID, arc);
+                arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
             }
         }
 

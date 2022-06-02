@@ -103,7 +103,7 @@ namespace NewHorizons.Utility.DebugUtilities
         }
 
         
-        internal Plane ConstructPlane(DebugRaycastData data)
+        internal DebugRaycastPlane ConstructPlane(DebugRaycastData data)
         {
             var U = data.pos - Vector3.zero; // U is the local "up" direction. the direction directly away from the center of the planet at this point. // pos is always relative to the body, so the body is considered to be at 0,0,0.
             var R = data.pos; // R is our origin point for the plane
@@ -123,7 +123,7 @@ namespace NewHorizons.Utility.DebugUtilities
             
             var u = Vector3.Cross(N, v);
 
-            Plane p = new Plane()
+            DebugRaycastPlane p = new DebugRaycastPlane()
             {
                 origin = R,
                 normal = N,
