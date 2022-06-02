@@ -112,6 +112,7 @@ namespace NewHorizons.Builder.Props
                     }
 
                     nomaiWallTextObj.SetActive(true);
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
@@ -167,6 +168,7 @@ namespace NewHorizons.Builder.Props
                             customScroll.GetComponent<CapsuleCollider>().enabled = true;
                         }
                     );
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = customScroll;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Computer:
@@ -192,6 +194,7 @@ namespace NewHorizons.Builder.Props
                     sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(computerObject));
 
                     computerObject.SetActive(true);
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
@@ -236,6 +239,7 @@ namespace NewHorizons.Builder.Props
                     // Make sure the computer model is loaded
                     OWAssetHandler.LoadObject(cairnObject);
                     sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(cairnObject));
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
@@ -269,6 +273,7 @@ namespace NewHorizons.Builder.Props
                     recorderObject.SetActive(true);
 
                     recorderObject.transform.Find("InteractSphere").gameObject.GetComponent<SphereShape>().enabled = true;
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                     break;
                 }
                 default:
@@ -298,9 +303,6 @@ namespace NewHorizons.Builder.Props
             nomaiWallText._nomaiTextAsset = text;
 
             nomaiWallText.SetTextAsset(text);
-
-            Logger.Log("adding to wall text dict: "+info + ", " + nomaiWallTextObj);
-            conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
 
             return nomaiWallText;
         }

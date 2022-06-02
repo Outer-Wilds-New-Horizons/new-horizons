@@ -180,26 +180,38 @@ namespace NewHorizons.Utility.DebugMenu
                         {
                             GUILayout.Space(5);
                             // button to set this one to place with a raycast
-                            GUILayout.Label("Conversation");
+                            GUILayout.Label(conversationMeta.conversation.type.ToString());
                             
                             // only show the button if this conversation is a wall text, do not show it if it is a scroll text or something
                             if (
-                                conversationMeta.conversation.type == PropModule.NomaiTextInfo.NomaiTextType.Wall &&
+                                //conversationMeta.conversation.type == PropModule.NomaiTextInfo.NomaiTextType.Wall &&
                                 GUILayout.Button("Place conversation with G")
                             ) {
                                 Logger.Log(conversationMeta.conversationGo+" 0");
                                 DebugNomaiTextPlacer.active = true;
                                 _dnp.onRaycast = (DebugRaycastData data) =>
                                 {
+                                    // I think this should be looking for AstroObject and then doing ._rootSector
                                     var sectorObject = data.hitBodyGameObject.GetComponentInChildren<Sector>()?.gameObject;
                                     if (sectorObject == null) sectorObject = data.hitBodyGameObject.GetComponentInParent<Sector>()?.gameObject;
 
-                                    conversationMeta.conversation.position = data.pos;
-                                    conversationMeta.conversation.normal   = data.norm;
-                                    conversationMeta.conversation.rotation = null;
+                                    if (conversationMeta.conversation.type == NomaiTextInfo.NomaiTextType.Wall)
+                                    {
+                                        conversationMeta.conversation.position = data.pos;
+                                        conversationMeta.conversation.normal   = data.norm;
+                                        conversationMeta.conversation.rotation = null;
+                                        UpdateConversationTransform(conversationMeta, sectorObject);
+                                    }
+                                    else
+                                    {
+                                        conversationMeta.conversationGo.transform.localPosition = data.pos;
+                                        DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
+                                        
+                                        conversationMeta.conversation.position = conversationMeta.conversationGo.transform.localPosition;
+                                        conversationMeta.conversation.rotation = conversationMeta.conversationGo.transform.localEulerAngles;
+                                    }
 
                                     DebugNomaiTextPlacer.active = false;
-                                    UpdateConversationTransform(conversationMeta, sectorObject);
                                 };
                             }
 
@@ -231,18 +243,43 @@ namespace NewHorizons.Utility.DebugMenu
                                         GUILayout.Label("Variation");
                                             GUILayout.BeginHorizontal();
                                             var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
-                                            for (int k = 0; k < varietyCount; k++)
+                                            if (GUILayout.Button("Reroll variation"))
                                             {
-                                                GUI.enabled = spiralMeta.spiral.variation != k;
-                                                if (GUILayout.Button(k+""))
-                                                {
-                                                    spiralMeta.spiral.variation = k;
-                                                    changed = true;
-                                                }
+                                                spiralMeta.spiral.variation = UnityEngine.Random.Range(0, varietyCount);
                                             }
                                             GUI.enabled = true;
                                             GUILayout.EndHorizontal();
+        
+                                        // x
+                                        GUILayout.BeginHorizontal();
+                                            GUILayout.Label("x:     " + (spiralMeta.spiral.position?.x ?? 0), GUILayout.Width(100));
+                                            var deltaX = GUILayout.HorizontalSlider(0, -1, 1);
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 0.1f;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 0.1f;
+                                        GUILayout.EndHorizontal();
+                                        // y
+                                        GUILayout.BeginHorizontal();
+                                            GUILayout.Label("y:     " + (spiralMeta.spiral.position?.y ?? 0), GUILayout.Width(100));
+                                            var deltaY = GUILayout.HorizontalSlider(0, -1, 1);
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 0.1f;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 0.1f;
+                                        GUILayout.EndHorizontal();
+                                        // theta
+                                        GUILayout.BeginHorizontal();
+                                            GUILayout.Label("theta: " + spiralMeta.spiral.zRotation, GUILayout.Width(100));
+                                            var deltaTheta = GUILayout.HorizontalSlider(0, -1, 1);
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 1f;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 1f;
+                                        GUILayout.EndHorizontal();
 
+                                        if (deltaX != 0 || deltaY != 0 || deltaTheta != 0)
+                                        {
+                                            spiralMeta.spiral.position = (spiralMeta.spiral.position??Vector2.zero) + new Vector2(deltaX, deltaY);
+                                            spiralMeta.spiral.zRotation += deltaTheta; 
+        
+                                            spiralMeta.spiralGo.transform.localPosition = new Vector3(spiralMeta.spiral.position.x, spiralMeta.spiral.position.y, 0);
+                                            spiralMeta.spiralGo.transform.localRotation = Quaternion.Euler(0, 0, spiralMeta.spiral.zRotation);
+                                        }
                                     GUILayout.EndVertical();
                                     GUILayout.Space(5);
                                 GUILayout.EndHorizontal();
@@ -250,6 +287,11 @@ namespace NewHorizons.Utility.DebugMenu
                                 if (changed)
                                 { 
                                     // cache required stuff, destroy spiralMeta.go, call NomaiTextBuilder.MakeArc using spiralMeta.spiral and cached stuff
+                                    // PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, int i
+                                    var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
+                                    var textEntryId = spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._entryID;
+                                    GameObject.Destroy(spiralMeta.spiralGo);
+                                    spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId, 0);
                                 }
 
                                 GUILayout.Space(10);
