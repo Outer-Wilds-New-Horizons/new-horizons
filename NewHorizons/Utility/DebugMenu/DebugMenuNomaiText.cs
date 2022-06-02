@@ -51,6 +51,9 @@ namespace NewHorizons.Utility.DebugMenu
 
         // menu stuff
         Vector2 conversationsScrollPosition = new Vector2();
+        float dx = 0.1f;
+        float dy = 0.1f;
+        float dT = 1f;
 
         internal override string SubmenuName()
         {
@@ -170,7 +173,7 @@ namespace NewHorizons.Utility.DebugMenu
                     GUILayout.BeginVertical(menu._editorMenuStyle);
                         
                         var arrow = conversationMeta.collapsed ? " > " : " v ";
-                        if (GUILayout.Button(arrow + conversationMeta.planetConfig.name + " - " + i)) 
+                        if (GUILayout.Button(arrow + conversationMeta.planetConfig.name + " - " + i, menu._submenuStyle)) 
                         {
                             conversationMeta.collapsed = !conversationMeta.collapsed;
                             Logger.Log("BUTTON " + i);
@@ -253,23 +256,29 @@ namespace NewHorizons.Utility.DebugMenu
                                         // x
                                         GUILayout.BeginHorizontal();
                                             GUILayout.Label("x:     " + (spiralMeta.spiral.position?.x ?? 0), GUILayout.Width(100));
-                                            var deltaX = GUILayout.HorizontalSlider(0, -1, 1);
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 0.1f;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 0.1f;
+                                            //var deltaX = GUILayout.HorizontalSlider(0, -1, 1);
+                                            float deltaX = 0;
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
+                                            dx = float.Parse(GUILayout.TextField(dx+"", GUILayout.Width(100)));
                                         GUILayout.EndHorizontal();
                                         // y
                                         GUILayout.BeginHorizontal();
                                             GUILayout.Label("y:     " + (spiralMeta.spiral.position?.y ?? 0), GUILayout.Width(100));
-                                            var deltaY = GUILayout.HorizontalSlider(0, -1, 1);
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 0.1f;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 0.1f;
+                                            //var deltaY = GUILayout.HorizontalSlider(0, -1, 1);
+                                            float deltaY = 0;
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
+                                            dy = float.Parse(GUILayout.TextField(dy+"", GUILayout.Width(100)));
                                         GUILayout.EndHorizontal();
                                         // theta
                                         GUILayout.BeginHorizontal();
                                             GUILayout.Label("theta: " + spiralMeta.spiral.zRotation, GUILayout.Width(100));
-                                            var deltaTheta = GUILayout.HorizontalSlider(0, -1, 1);
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += 1f;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= 1f;
+                                            //var deltaTheta = GUILayout.HorizontalSlider(0, -1, 1);
+                                            float deltaTheta = 0;
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaTheta += dT;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaTheta -= dT;
+                                            dT = float.Parse(GUILayout.TextField(dT+"", GUILayout.Width(100)));
                                         GUILayout.EndHorizontal();
 
                                         if (deltaX != 0 || deltaY != 0 || deltaTheta != 0)
