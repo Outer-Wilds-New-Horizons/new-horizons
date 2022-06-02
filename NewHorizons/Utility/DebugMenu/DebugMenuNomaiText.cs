@@ -209,17 +209,49 @@ namespace NewHorizons.Utility.DebugMenu
 
                             for(int j = 0; j < conversationMeta.spirals.Count(); j++)
                             {
+                                var spiralMeta = conversationMeta.spirals[j];
+                                bool changed = false;
                                 GUILayout.BeginHorizontal();
                                     GUILayout.Space(5);        
                                     GUILayout.BeginVertical(menu._submenuStyle);
 
                                         // spiral controls
                                         GUILayout.Label("Spiral");
+                                        GUILayout.Label("Type");
+                                            GUILayout.BeginHorizontal();
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
+                                            if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
+                                            if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
+                                            if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
+                                            GUI.enabled = true;
+                                            GUILayout.EndHorizontal();
+                                        
+                                        GUILayout.Label("Variation");
+                                            GUILayout.BeginHorizontal();
+                                            var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
+                                            for (int k = 0; k < varietyCount; k++)
+                                            {
+                                                GUI.enabled = spiralMeta.spiral.variation != k;
+                                                if (GUILayout.Button(k+""))
+                                                {
+                                                    spiralMeta.spiral.variation = k;
+                                                    changed = true;
+                                                }
+                                            }
+                                            GUI.enabled = true;
+                                            GUILayout.EndHorizontal();
 
                                     GUILayout.EndVertical();
                                     GUILayout.Space(5);
                                 GUILayout.EndHorizontal();
                 
+                                if (changed)
+                                { 
+                                    // cache required stuff, destroy spiralMeta.go, call NomaiTextBuilder.MakeArc using spiralMeta.spiral and cached stuff
+                                }
+
                                 GUILayout.Space(10);
                             }
                         }
@@ -233,6 +265,18 @@ namespace NewHorizons.Utility.DebugMenu
             }
 
             GUILayout.EndScrollView();
+        }
+
+        private int GetVarietyCountForType(NomaiTextArcInfo.NomaiTextArcType type)
+        {
+            switch(type)
+            {
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger: return NomaiTextBuilder._ghostArcPrefabs.Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Child: return NomaiTextBuilder._childArcPrefabs.Count();
+                default:
+                case NomaiTextArcInfo.NomaiTextArcType.Adult: return NomaiTextBuilder._arcPrefabs.Count();
+            }
+            return 0;
         }
 
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
