@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
 using static NewHorizons.External.Modules.PropModule;
@@ -45,6 +46,9 @@ namespace NewHorizons.Utility.DebugMenu
 
             public string planetName;
             public int id;
+            public int parentID;
+
+            public int pointOnParent = -1;
         }
 
         List<ConversationMetadata> conversations = new List<ConversationMetadata>();
@@ -116,6 +120,12 @@ namespace NewHorizons.Utility.DebugMenu
                         planetName = config.name,
                         id = id
                     };
+                    
+                    string regex = @"Arc \d+ - Child of (\d*)"; // $"Arc {i} - Child of {parentID}";
+                    var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
+                    metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
+                    
+                    Logger.Log("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
 
                     conversationMetadata.spirals.Add(metadata);
                 }
@@ -253,41 +263,58 @@ namespace NewHorizons.Utility.DebugMenu
                                             GUI.enabled = true;
                                             GUILayout.EndHorizontal();
         
-                                        // x
-                                        GUILayout.BeginHorizontal();
-                                            GUILayout.Label("x:     " + (spiralMeta.spiral.position?.x ?? 0), GUILayout.Width(100));
-                                            //var deltaX = GUILayout.HorizontalSlider(0, -1, 1);
-                                            float deltaX = 0;
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
-                                            dx = float.Parse(GUILayout.TextField(dx+"", GUILayout.Width(100)));
-                                        GUILayout.EndHorizontal();
-                                        // y
-                                        GUILayout.BeginHorizontal();
-                                            GUILayout.Label("y:     " + (spiralMeta.spiral.position?.y ?? 0), GUILayout.Width(100));
-                                            //var deltaY = GUILayout.HorizontalSlider(0, -1, 1);
-                                            float deltaY = 0;
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
-                                            dy = float.Parse(GUILayout.TextField(dy+"", GUILayout.Width(100)));
-                                        GUILayout.EndHorizontal();
-                                        // theta
-                                        GUILayout.BeginHorizontal();
-                                            GUILayout.Label("theta: " + spiralMeta.spiral.zRotation, GUILayout.Width(100));
-                                            //var deltaTheta = GUILayout.HorizontalSlider(0, -1, 1);
-                                            float deltaTheta = 0;
-                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaTheta += dT;
-                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaTheta -= dT;
-                                            dT = float.Parse(GUILayout.TextField(dT+"", GUILayout.Width(100)));
-                                        GUILayout.EndHorizontal();
+                                        var shouldBeInManual = spiralMeta.parentID < 0 || GUILayout.Toggle(spiralMeta.pointOnParent < 0, "Manual Positioning");
+                                        if ( shouldBeInManual && spiralMeta.pointOnParent >= 0) spiralMeta.pointOnParent = -1;
+                                        if (!shouldBeInManual && spiralMeta.pointOnParent < 0 ) spiralMeta.pointOnParent = 0;
 
-                                        if (deltaX != 0 || deltaY != 0 || deltaTheta != 0)
+                                        if (shouldBeInManual)
                                         {
-                                            spiralMeta.spiral.position = (spiralMeta.spiral.position??Vector2.zero) + new Vector2(deltaX, deltaY);
-                                            spiralMeta.spiral.zRotation += deltaTheta; 
+                                            // x
+                                            GUILayout.BeginHorizontal();
+                                                var positionX = (spiralMeta.spiral.position?.x ?? 0);
+                                                GUILayout.Label("x:     ", GUILayout.Width(50));
+                                                float deltaX = float.Parse(GUILayout.TextField(positionX+"", GUILayout.Width(50))) - positionX;
+                                                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
+                                                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
+                                                dx = float.Parse(GUILayout.TextField(dx+"", GUILayout.Width(100)));
+                                            GUILayout.EndHorizontal();
+                                            // y
+                                            GUILayout.BeginHorizontal();
+                                                var positionY = (spiralMeta.spiral.position?.y ?? 0);
+                                                GUILayout.Label("y:     ", GUILayout.Width(50));
+                                                float deltaY = float.Parse(GUILayout.TextField(positionY+"", GUILayout.Width(50))) - positionY;
+                                                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
+                                                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
+                                                dy = float.Parse(GUILayout.TextField(dy+"", GUILayout.Width(100)));
+                                            GUILayout.EndHorizontal();
+                                            // theta
+                                            GUILayout.BeginHorizontal();
+                                                var theta = spiralMeta.spiral.zRotation;
+                                                GUILayout.Label("theta: ", GUILayout.Width(50));
+                                                float deltaTheta = float.Parse(GUILayout.TextField(theta+"", GUILayout.Width(50))) - theta;
+                                                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaTheta += dT;
+                                                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaTheta -= dT;
+                                                dT = float.Parse(GUILayout.TextField(dT+"", GUILayout.Width(100)));
+                                            GUILayout.EndHorizontal();
+
+                                            if (deltaX != 0 || deltaY != 0 || deltaTheta != 0)
+                                            {
+                                                spiralMeta.spiral.position = (spiralMeta.spiral.position??Vector2.zero) + new Vector2(deltaX, deltaY);
+                                                spiralMeta.spiral.zRotation += deltaTheta; 
         
-                                            spiralMeta.spiralGo.transform.localPosition = new Vector3(spiralMeta.spiral.position.x, spiralMeta.spiral.position.y, 0);
-                                            spiralMeta.spiralGo.transform.localRotation = Quaternion.Euler(0, 0, spiralMeta.spiral.zRotation);
+                                                spiralMeta.spiralGo.transform.localPosition = new Vector3(spiralMeta.spiral.position.x, spiralMeta.spiral.position.y, 0);
+                                                spiralMeta.spiralGo.transform.localRotation = Quaternion.Euler(0, 0, spiralMeta.spiral.zRotation);
+
+                                                spiralMeta.pointOnParent = -1; // since tweaks have been made, we're setting this to manual mode
+                                            
+                                                UpdateChildrenLocations(spiralMeta);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            // var newPointOnParent = GUI.HorizontalSlider(); // stepped horizontal slider
+                                            // if new value, set spiral GO positioning (and spiral's x/y/theta)
+                                            // UpdateChildPositions()
                                         }
                                     GUILayout.EndVertical();
                                     GUILayout.Space(5);
@@ -300,7 +327,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
                                     var textEntryId = spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._entryID;
                                     GameObject.Destroy(spiralMeta.spiralGo);
-                                    spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId, 0);
+                                    spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId);
                                 }
 
                                 GUILayout.Space(10);
@@ -316,6 +343,20 @@ namespace NewHorizons.Utility.DebugMenu
             }
 
             GUILayout.EndScrollView();
+        }
+
+        private void UpdateChildrenLocations(SpiralMetadata parentSprialMetadata)
+        {
+            ConversationMetadata convoMeta = conversations.Where(m => m.conversation == parentSprialMetadata.conversation).First();
+            convoMeta.spirals
+                .Where(spiralMeta => spiralMeta.parentID == parentSprialMetadata.id)
+                .ToList()
+                .ForEach(spiralMeta => {
+                    if (spiralMeta.pointOnParent == -1) return; // this spiral is positioned manually
+
+                    // TODO: set x, y, and theta of spiralMeta based on spiralMeta.pointOnParent and parentSprialMetadata's x,y,theta
+                    UpdateChildrenLocations(spiralMeta);
+                });
         }
 
         private int GetVarietyCountForType(NomaiTextArcInfo.NomaiTextArcType type)

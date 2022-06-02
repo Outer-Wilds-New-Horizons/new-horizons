@@ -332,7 +332,8 @@ namespace NewHorizons.Builder.Props
 
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
-                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID, i);
+                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
+                arc.name = $"Arc {i} - Child of {parentID}";
         
                 arcsByID.Add(textEntryID, arc);
 
@@ -340,7 +341,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, int i)
+        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
@@ -398,7 +399,6 @@ namespace NewHorizons.Builder.Props
 
             arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
             arc.GetComponent<MeshRenderer>().enabled = false;
-            arc.name = $"Arc {i}";
 
             arc.SetActive(true);
     
