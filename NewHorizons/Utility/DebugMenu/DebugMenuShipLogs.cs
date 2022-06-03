@@ -4,11 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NewHorizons.Utility.DebugMenu
 {
-    class DebugMenuDummySubmenu : DebugSubmenu
+    class DebugMenuShipLogs : DebugSubmenu
     {
+        string entryPositionsText = "";
+
         internal override void GainActive()
         {
         
@@ -34,6 +37,20 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void OnGUI(DebugMenu menu)
         {
+            if (GUILayout.Button("Print Ship Log Positions"))
+            {
+                entryPositionsText = String.Join("\n", 
+                    Resources
+                        .FindObjectsOfTypeAll<ShipLogEntryCard>()
+                        .ToList()
+                        .Select(go => 
+                            ("{ \"id\": \"" +go.name+ "\", \"position\": {\"x\": "+go.transform.localPosition.x+", \"y\": "+go.transform.localPosition.y+" } ")
+                        )
+                        .ToList()
+                );
+            }
+
+            GUILayout.TextArea(entryPositionsText);
         }
 
         internal override void OnInit(DebugMenu menu)
@@ -48,7 +65,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override string SubmenuName()
         {
-            return "Blank";
+            return "Ship Log";
         }
     }
 }
