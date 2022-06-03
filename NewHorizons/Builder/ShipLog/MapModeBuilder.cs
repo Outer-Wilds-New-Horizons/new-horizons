@@ -237,6 +237,12 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                     ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
+                    if (body.Config.FocalPoint != null)
+                    {
+                        newAstroObject._imageObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._outlineObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._unviewedObj.GetComponent<Image>().enabled = false;
+                    }
                     MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                     Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
                     navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
@@ -483,7 +489,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
-            {
+            { 
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
