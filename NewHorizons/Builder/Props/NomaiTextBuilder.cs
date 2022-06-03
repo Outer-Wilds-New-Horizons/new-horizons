@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -503,14 +503,60 @@ namespace NewHorizons.Builder.Props
                     return new Vector3(skeletonPoint.x, skeletonPoint.y, 0) - width*normal;
                 }).ToList();
                 
-                List<Vector3> newVerts =;
+                Vector3[] newVerts = vertsSide1.Zip(vertsSide2, (f, s) => new[] { f, s }).SelectMany(f => f).ToArray(); // interleave vertsSide1 and vertsSide2
                 
-                if (mesh != null) { set each vert in array to the corresponding value in the newVerts array }
-                else
+                if (mesh != null) 
                 {
-                    List<int> triangles =;
-                    List<Vector2> uvs = ;
-                    List<Vector2> uv2s = ;
+                    mesh.vertices = newVerts;
+                    mesh.RecalculateBounds();
+                }
+                else
+                {   
+                    List<int> triangles = new List<int>();
+                    for (int i = 0; i < newVerts.Length-2; i+= 2)
+                    {
+                        /*  
+                           2       3
+                            *-----*                   
+                            |⟍    |                   
+                            |  ⟍  |                   
+                            |    ⟍|                   
+                            *-----*         
+                           0       1
+                         */
+                        triangles.Add(i);
+                        triangles.Add(i+1);
+                        triangles.Add(i+2);
+            
+                        triangles.Add(i+1);
+                        triangles.Add(i+3);
+                        triangles.Add(i+2);
+                    }
+
+                    Vector2[] uvs = new Vector2[newVerts.Length];
+                    Vector2[] uv2s = new Vector2[newVerts.Length];
+                    for (int i = 0; i < newVerts.Length; i+= 2)
+                    {
+                        float frac = ((float)i) / ((float)newVerts.Length);
+                        float u = uvScale * frac;
+                        uvs[i]   = new Vector2(1-u, 0);
+                        uvs[i+1] = new Vector2(1-u, 1);
+
+                        uv2s[i]   = new Vector2(frac, 0);
+                        uv2s[i+1] = new Vector2(frac, 1);
+                    }
+                    
+                    Vector3[] normals = new Vector3[newVerts.Length];
+                    for (int i = 0; i < newVerts.Length; i++) normals[i] = new Vector3(0, 0, 1);
+                    
+                    
+                    mesh = new Mesh();
+                    mesh.vertices = newVerts.ToArray();
+                    mesh.triangles = triangles.ToArray();
+                    mesh.uv = uvs;
+                    mesh.uv2 = uv2s;
+                    mesh.normals = normals;
+                    mesh.RecalculateBounds();
                 }
             }
             
