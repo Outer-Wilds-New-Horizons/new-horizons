@@ -49,6 +49,7 @@ namespace NewHorizons.Utility.DebugMenu
             public int parentID;
 
             public int pointOnParent = -1;
+            public SpiralMetadata parent;
         }
 
         List<ConversationMetadata> conversations = new List<ConversationMetadata>();
@@ -242,30 +243,36 @@ namespace NewHorizons.Utility.DebugMenu
 
                                         // spiral controls
                                         GUILayout.Label("Spiral");
-                                        GUILayout.Label("Type");
-                                            GUILayout.BeginHorizontal();
-                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
-                                            if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
-                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
-                                            if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
-                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
-                                            if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
-                                            GUI.enabled = true;
-                                            GUILayout.EndHorizontal();
+
+                                        // TODO: implement disabled feature: change spiral type and variation
+                                        //GUILayout.Label("Type");
+                                        //    GUILayout.BeginHorizontal();
+                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
+                                        //    if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
+                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
+                                        //    if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
+                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
+                                        //    if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
+                                        //    GUI.enabled = true;
+                                        //    GUILayout.EndHorizontal();
                                         
-                                        GUILayout.Label("Variation");
-                                            GUILayout.BeginHorizontal();
-                                            var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
-                                            if (GUILayout.Button("Reroll variation"))
-                                            {
-                                                spiralMeta.spiral.variation = UnityEngine.Random.Range(0, varietyCount);
-                                            }
-                                            GUI.enabled = true;
-                                            GUILayout.EndHorizontal();
+                                        //GUILayout.Label("Variation");
+                                        //    GUILayout.BeginHorizontal();
+                                        //    var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
+                                        //    if (GUILayout.Button("Reroll variation"))
+                                        //    {
+                                        //        spiralMeta.spiral.variation = UnityEngine.Random.Range(0, varietyCount);
+                                        //    }
+                                        //    GUI.enabled = true;
+                                        //    GUILayout.EndHorizontal();
         
-                                        var shouldBeInManual = spiralMeta.parentID < 0 || GUILayout.Toggle(spiralMeta.pointOnParent < 0, "Manual Positioning");
-                                        if ( shouldBeInManual && spiralMeta.pointOnParent >= 0) spiralMeta.pointOnParent = -1;
-                                        if (!shouldBeInManual && spiralMeta.pointOnParent < 0 ) spiralMeta.pointOnParent = 0;
+
+                                        // TODO: debug disabled feature: place spiral point on parent
+                                        //var shouldBeInManual = spiralMeta.parentID < 0 || GUILayout.Toggle(spiralMeta.pointOnParent < 0, "Manual Positioning");
+                                        //if ( shouldBeInManual && spiralMeta.pointOnParent >= 0) spiralMeta.pointOnParent = -1;
+                                        //if (!shouldBeInManual && spiralMeta.pointOnParent < 0 ) spiralMeta.pointOnParent = 0;
+
+                                        var shouldBeInManual = true;
 
                                         if (shouldBeInManual)
                                         {
@@ -312,9 +319,23 @@ namespace NewHorizons.Utility.DebugMenu
                                         }
                                         else
                                         {
-                                            // var newPointOnParent = GUI.HorizontalSlider(); // stepped horizontal slider
-                                            // if new value, set spiral GO positioning (and spiral's x/y/theta)
-                                            // UpdateChildPositions()
+                                            var parent = GetParent(spiralMeta);
+                                            var numPoints = 10; // parent.spiralGo.GetComponent<NomaiTextLine>()._points.Count();
+                                            
+                                            var newPointOnParent = Mathf.RoundToInt(GUILayout.HorizontalSlider(spiralMeta.pointOnParent, 0, numPoints)); // stepped horizontal slider
+                                            
+                                            if (spiralMeta.pointOnParent != newPointOnParent)
+                                            {
+                                                spiralMeta.pointOnParent = newPointOnParent;
+                                                UpdateSpiralLocationByPointOnParent(spiralMeta);
+                                            }
+                                        }
+
+                                        var newMirror = GUILayout.Toggle(spiralMeta.spiral.mirror, "Mirror");
+                                        if (newMirror != spiralMeta.spiral.mirror)
+                                        {
+                                            spiralMeta.spiral.mirror = newMirror;
+                                            spiralMeta.spiralGo.transform.localScale = new Vector3(newMirror ? -1 : 1, 1, 1);
                                         }
                                     GUILayout.EndVertical();
                                     GUILayout.Space(5);
@@ -345,17 +366,65 @@ namespace NewHorizons.Utility.DebugMenu
             GUILayout.EndScrollView();
         }
 
+        private SpiralMetadata GetParent(SpiralMetadata child)
+        {
+            if (child.parent != null || child.parentID < 0) return child.parent;
+
+            
+            ConversationMetadata convoMeta = conversations.Where(m => m.conversation == child.conversation).First();
+            SpiralMetadata parentSpiralMeta = convoMeta.spirals.Where(potentialParentMeta => potentialParentMeta.id == child.id).First();
+            child.parent = parentSpiralMeta;
+            
+            return child.parent;
+        }
+
+        private void UpdateSpiralLocationByPointOnParent(SpiralMetadata spiralMetadata, bool updateChildren = true)
+        {
+            Logger.Log("Updating spiral " + spiralMetadata.id);
+            Logger.Log("Setting point on parent " + spiralMetadata.pointOnParent);
+            if (spiralMetadata.pointOnParent < 0) return;
+
+            SpiralMetadata parentSpiralMeta = GetParent(spiralMetadata);
+            var parentPoints = parentSpiralMeta.spiralGo.GetComponent<NomaiTextLine>()._points;
+            
+            Logger.Log("got parent and parent points");
+
+            var prevPointOnParent = parentPoints[Mathf.Max(0,                      spiralMetadata.pointOnParent-1)];
+            var nextPointOnParent = parentPoints[Mathf.Min(parentPoints.Count()-1, spiralMetadata.pointOnParent+1)];
+            var delta = nextPointOnParent - prevPointOnParent;
+            var parentTangent = Mathf.Rad2Deg * Mathf.Atan2(delta.y, delta.x);
+            var newRotationRelativeToParent = parentTangent + 90;
+            spiralMetadata.spiral.zRotation = parentSpiralMeta.spiral.zRotation + newRotationRelativeToParent;
+
+            Logger.Log("got zRotation: " + newRotationRelativeToParent + " -=- " + spiralMetadata.spiral.zRotation);
+
+            var pointOnParent = parentPoints[spiralMetadata.pointOnParent];
+            var selfBasePoint = spiralMetadata.spiralGo.GetComponent<NomaiTextLine>()._points[0];
+            var newPointRelativeToParent = -selfBasePoint + pointOnParent;
+            spiralMetadata.spiral.position = parentSpiralMeta.spiral.position + new Vector2(newPointRelativeToParent.x, newPointRelativeToParent.y);
+
+            Logger.Log("got position " + newPointRelativeToParent + " -=- " + spiralMetadata.spiral.position);
+
+            spiralMetadata.spiralGo.transform.localPosition = new Vector3(spiralMetadata.spiral.position.x, spiralMetadata.spiral.position.y, 0);
+            spiralMetadata.spiralGo.transform.localEulerAngles = new Vector3(0, 0, spiralMetadata.spiral.zRotation);
+            
+
+            if (updateChildren) UpdateChildrenLocations(spiralMetadata);
+        }
+
         private void UpdateChildrenLocations(SpiralMetadata parentSprialMetadata)
         {
+            Logger.Log("updating children");
             ConversationMetadata convoMeta = conversations.Where(m => m.conversation == parentSprialMetadata.conversation).First();
+            Logger.Log("got convo meta");
+
             convoMeta.spirals
-                .Where(spiralMeta => spiralMeta.parentID == parentSprialMetadata.id)
+                .Where(spiralMeta => spiralMeta.parentID == parentSprialMetadata.id && spiralMeta.id != parentSprialMetadata.id)
                 .ToList()
                 .ForEach(spiralMeta => {
-                    if (spiralMeta.pointOnParent == -1) return; // this spiral is positioned manually
+                    if (spiralMeta.pointOnParent == -1) return; // this spiral is positioned manually, skip
 
-                    // TODO: set x, y, and theta of spiralMeta based on spiralMeta.pointOnParent and parentSprialMetadata's x,y,theta
-                    UpdateChildrenLocations(spiralMeta);
+                    UpdateSpiralLocationByPointOnParent(spiralMeta);
                 });
         }
 

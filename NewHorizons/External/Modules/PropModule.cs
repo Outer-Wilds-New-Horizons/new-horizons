@@ -455,6 +455,10 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"stranger")] Stranger = 2
             }
 
+            /// <summary>
+            /// Whether to flip the spiral from left-curling to right-curling or vice versa.
+            /// </summary>
+            public bool mirror;
 
             /// <summary>
             /// The local position of this object on the wall.

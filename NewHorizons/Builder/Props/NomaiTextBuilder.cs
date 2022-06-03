@@ -345,7 +345,7 @@ namespace NewHorizons.Builder.Props
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
-            var variation = 0;
+            var variation = arcInfo.variation;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -368,6 +368,7 @@ namespace NewHorizons.Builder.Props
                     arc = _arcPrefabs[variation].InstantiateInactive();
                     break;
             }
+            arcInfo.variation = variation;
 
             arc.transform.parent = conversationZone.transform;
             arc.GetComponent<NomaiTextLine>()._prebuilt = false;
@@ -379,6 +380,8 @@ namespace NewHorizons.Builder.Props
                 else arc.transform.localPosition = new Vector3(a.position.x, a.position.y, 0);
 
                 arc.transform.localRotation = Quaternion.Euler(0, 0, a.zRotation);
+
+                if (a.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
             }
             // Try auto I guess
             else
