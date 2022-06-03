@@ -20,9 +20,17 @@ namespace NewHorizons.Components
             // Lets just clear these off idc
             _cloak.OnPlayerEnter = new OWEvent();
             _cloak.OnPlayerExit = new OWEvent();
+            _cloak.OnProbeEnter = new OWEvent();
+            _cloak.OnProbeExit = new OWEvent();
+            _cloak.OnShipEnter = new OWEvent();
+            _cloak.OnShipExit = new OWEvent();
 
             _cloak.OnPlayerEnter += OnPlayerEnter;
             _cloak.OnPlayerExit += OnPlayerExit;
+            _cloak.OnProbeEnter += OnProbeEnter;
+            _cloak.OnProbeExit += OnProbeExit;
+            _cloak.OnShipEnter += OnShipEnter;
+            _cloak.OnShipExit += OnShipExit;
 
             _isInitialized = true;
         }
@@ -49,6 +57,8 @@ namespace NewHorizons.Components
             {
                 renderer.forceRenderingOff = false;
             }
+
+            GlobalMessenger.FireEvent("PlayerEnterCloakField");
         }
 
         public void OnPlayerExit()
@@ -59,6 +69,28 @@ namespace NewHorizons.Components
             {
                 renderer.forceRenderingOff = true;
             }
+
+            GlobalMessenger.FireEvent("PlayerExitCloakField");
+        }
+
+        public void OnProbeEnter()
+        {
+            GlobalMessenger.FireEvent("ProbeEnterCloakField");
+        }
+
+        public void OnProbeExit()
+        {
+            GlobalMessenger.FireEvent("ProbeExitCloakField");
+        }
+
+        public void OnShipEnter()
+        {
+            GlobalMessenger.FireEvent("ShipEnterCloakField");
+        }
+
+        public void OnShipExit()
+        {
+            GlobalMessenger.FireEvent("ShipExitCloakField");
         }
 
         public void EnableCloak()
