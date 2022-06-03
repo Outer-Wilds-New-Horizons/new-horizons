@@ -116,7 +116,10 @@ namespace NewHorizons
         public void Start()
         {
             // Patches
-            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            Harmony harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isPlayerInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isPlayerInsideCloak), BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isProbeInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isProbeInsideCloak), BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isShipInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isShipInsideCloak), BindingFlags.Static | BindingFlags.Public)));
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
