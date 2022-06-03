@@ -19,8 +19,10 @@ namespace NewHorizons.Builder.General
 
             var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
+            var minTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
+
             var RV = new ReferenceFrame(owrb);
-            RV._minSuitTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
+            RV._minSuitTargetDistance = minTargetDistance;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
             RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
@@ -32,7 +34,7 @@ namespace NewHorizons.Builder.General
             RV._bracketsRadius = module.bracketRadius > -1 ? module.bracketRadius : sphereOfInfluence;
 
             RFV._referenceFrame = RV;
-            RFV._minColliderRadius = sphereOfInfluence;
+            RFV._minColliderRadius = minTargetDistance;
             RFV._maxColliderRadius = sphereOfInfluence * 2f;
             RFV._isPrimaryVolume = true;
             RFV._isCloseRangeVolume = false;
