@@ -388,7 +388,7 @@ namespace NewHorizons.Builder.ShipLog
             return new MapModeObject();
         }
 
-        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "")
+        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "", string focalPointName = "")
         {
             List<MapModeObject> children = new List<MapModeObject>();
             int newX = parent.x;
@@ -396,7 +396,7 @@ namespace NewHorizons.Builder.ShipLog
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
 
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || (b.Config.Orbit.primaryBody == focalPointName && b.Config.name != parent.mainBody.Config.name) || b.Config.name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
                 newX = even ? newX : newX + 1;
@@ -411,13 +411,15 @@ namespace NewHorizons.Builder.ShipLog
                     lastSibling = lastSibling
                 };
                 string newSecondaryName = "";
+                string newFocalPointName = "";
                 if (body.Config.FocalPoint != null)
                 {
+                    newFocalPointName = body.Config.name;
                     newNode.mainBody = searchList.Find(b => b.Config.name == body.Config.FocalPoint.primary);
                     newSecondaryName = searchList.Find(b => b.Config.name == body.Config.FocalPoint.secondary).Config.name;
                 }
 
-                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
+                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName, newFocalPointName);
                 if (even)
                 {
                     newY += newNode.branch_height;
