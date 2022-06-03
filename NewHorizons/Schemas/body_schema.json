@@ -476,6 +476,12 @@
         "targetWhenClose": {
           "type": "boolean",
           "description": "If it should be targetable even when super close."
+        },
+        "maxTargetDistance": {
+          "type": "number",
+          "description": "The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
         }
       }
     },
