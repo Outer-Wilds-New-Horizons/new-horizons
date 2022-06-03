@@ -19,7 +19,6 @@ namespace NewHorizons.Builder.General
             rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
             KinematicRigidbody kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
-            kinematicRigidBody.centerOfMass = Vector3.zero;
 
             OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
             owRigidBody._kinematicSimulation = true;
