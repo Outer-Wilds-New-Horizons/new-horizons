@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.General
 
             RFV._referenceFrame = RV;
             RFV._minColliderRadius = minTargetDistance;
-            RFV._maxColliderRadius = sphereOfInfluence * 2f;
+            RFV._maxColliderRadius = module.maxTargetDistance > -1 ? module.maxTargetDistance : sphereOfInfluence * 2f;
             RFV._isPrimaryVolume = true;
             RFV._isCloseRangeVolume = false;
 

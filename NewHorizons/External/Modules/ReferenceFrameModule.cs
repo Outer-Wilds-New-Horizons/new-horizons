@@ -24,5 +24,10 @@ namespace NewHorizons.External.Modules
         /// If it should be targetable even when super close.
         /// </summary>
         public bool targetWhenClose;
+
+        /// <summary>
+        /// The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.
+        /// </summary>
+        [DefaultValue(-1)] public float maxTargetDistance = -1;
     }
 }
