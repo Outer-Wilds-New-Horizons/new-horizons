@@ -12,6 +12,10 @@ namespace NewHorizons.Components
 
         private List<Renderer> _renderers = null;
 
+        internal static bool isPlayerInside = false;
+        internal static bool isProbeInside = false;
+        internal static bool isShipInside = false;
+
         public void Init(CloakFieldController cloak, GameObject root)
         {
             _cloak = cloak;
@@ -58,6 +62,7 @@ namespace NewHorizons.Components
                 renderer.forceRenderingOff = false;
             }
 
+            isPlayerInside = true;
             GlobalMessenger.FireEvent("PlayerEnterCloakField");
         }
 
@@ -70,26 +75,31 @@ namespace NewHorizons.Components
                 renderer.forceRenderingOff = true;
             }
 
+            isPlayerInside = false;
             GlobalMessenger.FireEvent("PlayerExitCloakField");
         }
 
         public void OnProbeEnter()
         {
+            isProbeInside = true;
             GlobalMessenger.FireEvent("ProbeEnterCloakField");
         }
 
         public void OnProbeExit()
         {
+            isProbeInside = false;
             GlobalMessenger.FireEvent("ProbeExitCloakField");
         }
 
         public void OnShipEnter()
         {
+            isShipInside = true;
             GlobalMessenger.FireEvent("ShipEnterCloakField");
         }
 
         public void OnShipExit()
         {
+            isShipInside = false;
             GlobalMessenger.FireEvent("ShipExitCloakField");
         }
 

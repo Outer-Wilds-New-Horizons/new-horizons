@@ -52,5 +52,12 @@ namespace NewHorizons.Patches
             GlobalMessenger.RemoveListener("ShipEnterCloakField", __instance.RefreshOwnVisibility);
             GlobalMessenger.RemoveListener("ShipExitCloakField", __instance.RefreshOwnVisibility);
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(ProbeCamera), nameof(ProbeCamera.HasInterference))]
+        public static void ProbeCamera_HasInterference(ProbeCamera __instance, ref bool __result)
+        {
+            __result = __result || Components.CloakSectorController.isPlayerInside != Components.CloakSectorController.isProbeInside;
+        }
     }
 }
