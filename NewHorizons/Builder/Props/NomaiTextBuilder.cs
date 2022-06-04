@@ -536,12 +536,13 @@ namespace NewHorizons.Builder.Props
                     }
 
 
-                    var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
-                    var startS = tToArcLen(startT, a, b);
-                    var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
+                    //var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
+                    //var startS = tToArcLen(startT, a, b);
+                    //var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
+                    var startT = tFromArcLen(startS, a, b);
                     var endT = tFromArcLen(endS, a, b);
 
-                    Logger.Log($"START AND END S: {startS}   {endS}");
+                    Logger.Log($"START AND END S: {startS}   {endS}"); // 42.87957 342.8796 
 
                     var rangeT = endT-startT;    
                     var rangeS = endS-startS;
@@ -648,6 +649,9 @@ namespace NewHorizons.Builder.Props
 
             public float startIndex = 2.5f;
 
+            public float startS = 42.87957f; 
+            public float endS = 342.8796f;
+
 
             // (float startSOnParent=0, bool mirror=false, float len=300, float a=0.7f, float b=0.305f, float scale=0.01f) 
             public Spiral(float startSOnParent=0, bool mirror=false, float len=300, float a=0.5f, float b=0.43f, float scale=0.01f) 
@@ -699,11 +703,11 @@ namespace NewHorizons.Builder.Props
                 // TODO: wherever len is used, undo the change from endT-startT to startT-endT
                 // and also make spiralStartT a param of the spiral
 
-                var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
-                var startS = tToArcLen(startT, a, b);
-                var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
+                //var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
+                //var startS = tToArcLen(startT, a, b);
+                //var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
                 var endT = tFromArcLen(endS, a, b);
-
+                var startT = tFromArcLen(startS, a, b);
                 var rangeT = endT-startT;    
                 
                 Logger.Log($"STARTING PARAMS FOR SKELE: {startT}, {startS}, {endS}, {len}, {endT}, {rangeT}");

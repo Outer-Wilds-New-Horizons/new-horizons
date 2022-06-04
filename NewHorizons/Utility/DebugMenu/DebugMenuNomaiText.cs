@@ -189,6 +189,8 @@ namespace NewHorizons.Utility.DebugMenu
             GUILayout.BeginHorizontal(); GUILayout.Label("x: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.x = float.Parse(GUILayout.TextField(_dnp.spiralMesh.x+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("y: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.y = float.Parse(GUILayout.TextField(_dnp.spiralMesh.y+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("ang: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.ang = float.Parse(GUILayout.TextField(_dnp.spiralMesh.ang+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("startS: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.startS = float.Parse(GUILayout.TextField(_dnp.spiralMesh.startS+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("endS: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.endS = float.Parse(GUILayout.TextField(_dnp.spiralMesh.endS+"")); GUILayout.EndHorizontal();
             
             _dnp.spiralMesh.mirror = GUILayout.Toggle(_dnp.spiralMesh.mirror, "Mirror");
             
