@@ -174,6 +174,27 @@ namespace NewHorizons.Utility.DebugMenu
         {
             conversationsScrollPosition = GUILayout.BeginScrollView(conversationsScrollPosition);
             
+            
+            GUILayout.BeginHorizontal(); GUILayout.Label("numSkeletonPoints: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.numSkeletonPoints = int.Parse(GUILayout.TextField(_dnp.spiralMesh.numSkeletonPoints+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("innerWidth: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.innerWidth = float.Parse(GUILayout.TextField(_dnp.spiralMesh.innerWidth+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("outerWidth: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.outerWidth = float.Parse(GUILayout.TextField(_dnp.spiralMesh.outerWidth+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("uvScale: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.uvScale = float.Parse(GUILayout.TextField(_dnp.spiralMesh.uvScale+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("uvOffset: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.uvOffset = float.Parse(GUILayout.TextField(_dnp.spiralMesh.uvOffset+"")); GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal(); GUILayout.Label("a: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.a = float.Parse(GUILayout.TextField(_dnp.spiralMesh.a+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("b: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.b = float.Parse(GUILayout.TextField(_dnp.spiralMesh.b+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("len: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.len = float.Parse(GUILayout.TextField(_dnp.spiralMesh.len+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("startSOnParent: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.startSOnParent = float.Parse(GUILayout.TextField(_dnp.spiralMesh.startSOnParent+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("scale: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.scale = float.Parse(GUILayout.TextField(_dnp.spiralMesh.scale+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("x: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.x = float.Parse(GUILayout.TextField(_dnp.spiralMesh.x+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("y: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.y = float.Parse(GUILayout.TextField(_dnp.spiralMesh.y+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("ang: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.ang = float.Parse(GUILayout.TextField(_dnp.spiralMesh.ang+"")); GUILayout.EndHorizontal();
+            
+            _dnp.spiralMesh.mirror = GUILayout.Toggle(_dnp.spiralMesh.mirror, "Mirror");
+            
+            if (GUILayout.Button("Regenerate")) _dnp.spiralMesh.updateChildren();
+            
+
             for(int i = 0; i < conversations.Count(); i++)
             {
                 ConversationMetadata conversationMeta = conversations[i];

@@ -15,7 +15,7 @@ namespace NewHorizons.Utility.DebugUtilities
         public Action<DebugRaycastData> onRaycast;
 
         private DebugRaycaster _rc;
-        private SpiralMesh spiralMesh;
+        public SpiralMesh spiralMesh;
 
         private void Awake()
         {

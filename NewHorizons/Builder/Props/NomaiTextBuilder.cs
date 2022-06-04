@@ -480,9 +480,11 @@ namespace NewHorizons.Builder.Props
 
             public int numSkeletonPoints = 51; // seems to be Mobius' default
 
-            public float innerWidth = 0.5f*0.15f; // width at the tip
-            public float outerWidth = 0.5f*0.3f; // width at the base
-            public float uvScale = 2f * 1f/300f;
+            public float innerWidth = 0.001f; // width at the tip
+            public float outerWidth = 0.107f; // width at the base
+            public float uvScale = 2.9f;
+            private float baseUVScale = 1f/300f;
+            public float uvOffset = 0;
 
             public Mesh mesh;
 
@@ -505,7 +507,7 @@ namespace NewHorizons.Builder.Props
                 
                 Vector3[] newVerts = vertsSide1.Zip(vertsSide2, (f, s) => new[] { f, s }).SelectMany(f => f).ToArray(); // interleave vertsSide1 and vertsSide2
                 
-                if (mesh != null) 
+                if (mesh != null && false)  // TODO: remove the && false
                 {
                     mesh.vertices = newVerts;
                     mesh.RecalculateBounds();
@@ -536,11 +538,11 @@ namespace NewHorizons.Builder.Props
 
                     var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
                     var startS = tToArcLen(startT, a, b);
-                    var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
+                    var endS = startS - len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
                     var endT = tFromArcLen(endS, a, b);
 
-                    var rangeT = endT-startT;    
-                    var rangeS = endS-startS;
+                    var rangeT = startT-endT;    
+                    var rangeS = startS-endS;
             
                     Vector2[] uvs = new Vector2[newVerts.Length];
                     Vector2[] uv2s = new Vector2[newVerts.Length];
@@ -559,8 +561,7 @@ namespace NewHorizons.Builder.Props
 
                         Logger.Log("ABSOLUTE S " + absoluteS);
 
-                         float random = skeleton[skeleton.Count()-1].x;
-                        float u = absoluteS * uvScale + random;
+                        float u = absoluteS * uvScale * baseUVScale + uvOffset;
                         uvs[i*2]   = new Vector2(u, 0);
                         uvs[i*2+1] = new Vector2(u, 1);
 
@@ -585,7 +586,7 @@ namespace NewHorizons.Builder.Props
                     for (int i = 0; i < newVerts.Length; i++) normals[i] = new Vector3(0, 1, 0);
                     
                     
-                    mesh = new Mesh();
+                    if (mesh == null) mesh = new Mesh(); // TODO: remove the if statement
                     mesh.vertices = newVerts.ToArray();
                     mesh.triangles = triangles.ToArray();
                     mesh.uv = uvs;
@@ -646,7 +647,9 @@ namespace NewHorizons.Builder.Props
 
             public float startIndex = 2.5f;
 
-            public Spiral(float startSOnParent=0, bool mirror=false, float len=300, float a=0.7f, float b=0.305f, float scale=0.01f) 
+
+            // (float startSOnParent=0, bool mirror=false, float len=300, float a=0.7f, float b=0.305f, float scale=0.01f) 
+            public Spiral(float startSOnParent=0, bool mirror=false, float len=300, float a=0.5f, float b=0.43f, float scale=0.01f) 
             {
                 this.mirror = mirror;
                 this.a = a;
@@ -692,12 +695,15 @@ namespace NewHorizons.Builder.Props
             // note: each Vector3 in this list is of form <x, y, angle in radians of the normal at this point>
             public List<Vector3> getSkeleton(int numPoints)
             {
+                // TODO: wherever len is used, undo the change from endT-startT to startT-endT
+                // and also make spiralStartT a param of the spiral
+
                 var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
                 var startS = tToArcLen(startT, a, b);
-                var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
+                var endS = startS - len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
                 var endT = tFromArcLen(endS, a, b);
 
-                var rangeT = endT-startT;    
+                var rangeT = startT-endT;    
                 
                 Logger.Log($"STARTING PARAMS FOR SKELE: {startT}, {startS}, {endS}, {len}, {endT}, {rangeT}");
 
@@ -779,7 +785,9 @@ namespace NewHorizons.Builder.Props
             Logger.Log("start point: " + startPoint + "  point: " + point);
 
             if (mirror) { 
-                x = -(x-startX-width/2) +width/2+startX;
+                // x = -(x-startX-width/2) +width/2+startX;
+                x = x + 2*(startX-x);
+
                 ang = -ang+Mathf.PI;
             } 
 
@@ -850,7 +858,8 @@ namespace NewHorizons.Builder.Props
         // so this really returns the largest allowed value of t for this spiral
         // note: n is just an index. what it's an index of is irrelevant, but 2.5 is a good value
         private static float spiralStartT(float n, float a, float b) {
-            return Mathf.Atan(b)+Mathf.PI*n;
+            return 16f;
+            //return Mathf.Atan(b)+Mathf.PI*n;
         }
 
         // returns the angle of the spiral's normal at a given point
