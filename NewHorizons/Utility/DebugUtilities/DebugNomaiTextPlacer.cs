@@ -39,14 +39,15 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 // (float arcLen, float offsetX, float offsetY, float offsetAngle, bool mirror, float scale, float a, float b, float startS)
                 GameObject p = AddDebugShape.AddSphere(g, 0.05f, Color.green);
-                Vector3 start = getDrawnSpiralPointAndNormal(m.endS, m.x, m.y, m.ang, m.mirror, m.scale, m.a, m.b, m.endS);
+                Vector3 start = m.getDrawnSpiralPointAndNormal(m.endS);
                 p.transform.localPosition = new Vector3(start.x, 0, start.y);
             }
 
             public SpiralTextArc MakeChild()
             {
+                Logger.Log("MAKING CHILD");
                 var s = new SpiralTextArc();
-                m.startSOnParent = UnityEngine.Random.Range(50, 250);
+                s.m.startSOnParent = UnityEngine.Random.Range(50, 250);
                 m.addChild(s.m);
                 return s;
             }
@@ -82,7 +83,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 var rootArc = new SpiralTextArc();
                 spiralMesh = rootArc.m;
 
-                // rootArc.MakeChild();
+                rootArc.MakeChild();
                 spiralMesh.updateChildren();
 
 

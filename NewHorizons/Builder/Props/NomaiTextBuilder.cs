@@ -483,7 +483,7 @@ namespace NewHorizons.Builder.Props
             public float innerWidth = 0.001f; // width at the tip
             public float outerWidth = 0.05f;//0.107f; // width at the base
             public float uvScale = 4.9f; //2.9f;
-            private float baseUVScale = 1f/300f;
+            private float baseUVScale = 1f/300f; 
             public float uvOffset = 0;
 
             public Mesh mesh;
@@ -517,14 +517,14 @@ namespace NewHorizons.Builder.Props
                     List<int> triangles = new List<int>();
                     for (int i = 0; i < newVerts.Length-2; i+= 2)
                     {
-                        /*  
-                           2       3
-                            *-----*                   
+                        /*  |  ⟍  |
+                            |    ⟍|
+                          2 *-----* 3                  
                             |⟍    |                   
-                            |  ⟍  |                   
+                            |  ⟍  |        
                             |    ⟍|                   
-                            *-----*         
-                           0       1
+                          0 *-----* 1       
+                            |⟍    | 
                          */
                         triangles.Add(i+2);
                         triangles.Add(i+1);
@@ -536,13 +536,8 @@ namespace NewHorizons.Builder.Props
                     }
 
 
-                    //var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
-                    //var startS = tToArcLen(startT, a, b);
-                    //var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
-                    var startT = tFromArcLen(startS, a, b);
-                    var endT = tFromArcLen(endS, a, b);
-
-                    Logger.Log($"START AND END S: {startS}   {endS}"); // 42.87957 342.8796 
+                    var startT = tFromArcLen(startS);
+                    var endT = tFromArcLen(endS);
 
                     var rangeT = endT-startT;    
                     var rangeS = endS-startS;
@@ -558,7 +553,7 @@ namespace NewHorizons.Builder.Props
                         // on the other hand, cutting the spiral into numPoints equal slices of t
                         // will cluster points in areas of higher detail. this is the way Mobius does it, so it is the way we also will do it
                         float inputT = startT + rangeT*fraction;
-                        float inputS = tToArcLen(inputT, a, b);
+                        float inputS = tToArcLen(inputT);
                         float sFraction = (inputS-startS)/rangeS;
                         float absoluteS = (inputS-startS);
 
@@ -569,19 +564,6 @@ namespace NewHorizons.Builder.Props
                         uv2s[i*2]   = new Vector2(1-sFraction, 0);
                         uv2s[i*2+1] = new Vector2(1-sFraction, 1);
                     }
-
-                    //Vector2[] uvs = new Vector2[newVerts.Length];
-                    //Vector2[] uv2s = new Vector2[newVerts.Length];
-                    //for (int i = 0; i < newVerts.Length; i+= 2)
-                    //{
-                    //    float frac = 1f-((float)i) / ((float)newVerts.Length);
-                    //    float u = uvScale * frac;
-                    //    uvs[i]   = new Vector2(1-u, 0);
-                    //    uvs[i+1] = new Vector2(1-u, 1);
-
-                    //    uv2s[i]   = new Vector2(frac, 0);
-                    //    uv2s[i+1] = new Vector2(frac, 1);
-                    //}
                     
                     Vector3[] normals = new Vector3[newVerts.Length];
                     for (int i = 0; i < newVerts.Length; i++) normals[i] = new Vector3(0, 1, 0);
@@ -599,10 +581,10 @@ namespace NewHorizons.Builder.Props
             
             internal void updateChild(SpiralMesh child)
             {
-                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b, this.endS); //, this.len); // len is not needed - this function pretends the spiral is infinite
+                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent); 
                 var cx = pointAndNormal.x;
                 var cy = pointAndNormal.y;
-                var cang = pointAndNormal.z;
+                var cang = pointAndNormal.z  + (this.mirror? -1:1) * Mathf.PI/2f; // if this spiral is mirrored, the child needs to be rotated by -90deg. if it's not, +90deg
                 child.x = cx;
                 child.y = cy;
                 child.ang = cang+(child.mirror?Mathf.PI:0);
@@ -617,7 +599,7 @@ namespace NewHorizons.Builder.Props
             }
 
             
-            public virtual void updateChildren() 
+            public override void updateChildren() 
             {
                 this.updateMesh();
                 this.children.ForEach(child => {
@@ -640,7 +622,6 @@ namespace NewHorizons.Builder.Props
             public bool mirror;
             public float a;
             public float b; // 0.3-0.6
-            public float len;
             public float startSOnParent;
             public float scale;
             public List<Spiral> children;
@@ -655,20 +636,15 @@ namespace NewHorizons.Builder.Props
             public float startS = 42.87957f; // go all the way down to 0, all the way up to 50
             public float endS = 342.8796f;
 
-
-            // (float startSOnParent=0, bool mirror=false, float len=300, float a=0.7f, float b=0.305f, float scale=0.01f) 
             public Spiral(float startSOnParent=0, bool mirror=false, float len=300, float a=0.5f, float b=0.43f, float scale=0.01f) 
             {
                 this.mirror = mirror;
                 this.a = a;
                 this.b = b;
-                this.len = len;
                 this.startSOnParent = startSOnParent;
                 this.scale = scale;
 
                 this.children = new List<Spiral>();
-
-                //this.params = [mirror, scale, a, b, len]
 
                 this.x = 0;
                 this.y = 0;
@@ -677,7 +653,7 @@ namespace NewHorizons.Builder.Props
 
             internal virtual void updateChild(Spiral child)
             {
-                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b, this.endS); //, this.len); // len is not needed - this function pretends the spiral is infinite
+                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent);
                 var cx = pointAndNormal.x;
                 var cy = pointAndNormal.y;
                 var cang = pointAndNormal.z;
@@ -703,17 +679,9 @@ namespace NewHorizons.Builder.Props
             // note: each Vector3 in this list is of form <x, y, angle in radians of the normal at this point>
             public List<Vector3> getSkeleton(int numPoints)
             {
-                // TODO: wherever len is used, undo the change from endT-startT to startT-endT
-                // and also make spiralStartT a param of the spiral
-
-                //var startT = spiralStartT(startIndex, a, b); // let's try switching this up. define a set starting point T using the Desmos graph, and make it the larger value so that the skeleton generates in the right direction
-                //var startS = tToArcLen(startT, a, b);
-                //var endS = startS + len; // remember the spiral is defined backwards, so the start is the inner part of the spiral
-                var endT = tFromArcLen(endS, a, b);
-                var startT = tFromArcLen(startS, a, b);
+                var endT = tFromArcLen(endS);
+                var startT = tFromArcLen(startS);
                 var rangeT = endT-startT;    
-                
-                Logger.Log($"STARTING PARAMS FOR SKELE: {startT}, {startS}, {endS}, {len}, {endT}, {rangeT}");
 
                 List<Vector3> skeleton = new List<Vector3>();
                 for (int i = 0; i < numPoints; i++)
@@ -725,31 +693,119 @@ namespace NewHorizons.Builder.Props
                     // on the other hand, cutting the spiral into numPoints equal slices of t
                     // will cluster points in areas of higher detail. this is the way Mobius does it, so it is the way we also will do it
                     float inputT = startT + rangeT*fraction;
-                    float inputS = tToArcLen(inputT, a, b);
+                    float inputS = tToArcLen(inputT);
 
-                    skeleton.Add(getDrawnSpiralPointAndNormal(inputS, x, y, ang, mirror, scale, a, b, endS));
+                    skeleton.Add(getDrawnSpiralPointAndNormal(inputS));
                 }
 
                 skeleton.Reverse();
                 return skeleton;
             }
 
-            //draw() {
-            //    drawSpiral(drawMsg, this.x, this.y, this.ang, ...this.params)
+            
 
-            //    this.children.forEach(child => child.draw())
-            //}
+            // all of this math is based off of this:
+            // https://www.desmos.com/calculator/9gdfgyuzf6
+            //
+            // note: t refers to theta, and s refers to arc length
+            //
+            
+
+            // get the (x, y) coordinates and the normal angle at the given location (measured in arcLen) of a spiral with the given parameters 
+            // note: arcLen is inverted so that 0 refers to what we consider the start of the Nomai spiral
+            public Vector3 getDrawnSpiralPointAndNormal(float arcLen) {
+                float offsetX = this.x; 
+                float offsetY = this.y;
+                float offsetAngle = this.ang;
+                var startS = this.endS; // I know this is funky, but just go with it for now. 
+
+                var startT = tFromArcLen(startS); // this is the `t` value for the root of the spiral (the end of the non-curled side)
+
+
+                var startPoint = spiralPoint(startT); // and this is the (x,y) location of the non-curled side, relative to the rest of the spiral. we'll offset everything so this is at (0,0) later
+                var startX = startPoint.x;
+                var startY = startPoint.y;
+
+                var t = tFromArcLen(arcLen);
+                var point = spiralPoint(t);  // the absolute (x,y) location that corresponds to `arcLen`, before accounting for things like putting the start point at (0,0), or dealing with offsetX/offsetY/offsetAngle
+                var x = point.x; 
+                var y = point.y;
+                var ang = normalAngle(t); 
+
+                if (mirror) { 
+                    x = x + 2*(startX-x);
+                    ang = -ang+Mathf.PI;
+                }     
+    
+                // translate so that startPoint is at (0,0)
+                // (also scale the spiral)
+                var retX = scale*(x-startX); 
+                var retY = scale*(y-startY);
+
+                // rotate offsetAngle rads 
+                var retX2=retX*cos(offsetAngle)
+                         -retY*sin(offsetAngle);
+                var retY2=retX*sin(offsetAngle)        
+                         +retY*cos(offsetAngle);
+
+                retX = retX2;
+                retY = retY2;
+
+                // translate for offsetX, offsetY
+                retX += offsetX;
+                retY += offsetY;
+
+                return new Vector3(retX, retY, ang+offsetAngle+Mathf.PI/2f);
+            } 
+
+            // the base formula for the spiral
+            protected Vector2 spiralPoint(float t) {
+                var r = a*exp(b*t);
+                var retval = new Vector2(r*cos(t), r*sin(t));
+                return retval;
+            }
+
+            // the spiral's got two functions: x(t) and y(t)
+            // so it's got two derrivatives (with respect to t) x'(t) and y'(t)
+            protected Vector2 spiralDerivative(float t) { // derrivative with respect to t
+                var r = a*exp(b*t);
+                return new Vector2(
+                    -r*(sin(t)-b*cos(t)),
+                     r*(b*sin(t)+cos(t))
+                );
+            }
+
+            // returns the length of the spiral between t0 and t1
+            protected float spiralArcLength(float t0, float t1) {
+                return (a/b)*sqrt(b*b+1)*(exp(b*t1)-exp(b*t0));
+            }
+
+            // converts from a value of t to the equivalent value of s (the value of s that corresponds to the same point on the spiral as t)
+            protected float tToArcLen(float t) {
+                return spiralArcLength(0, t);
+            }
+
+            // reverse of above
+            protected float tFromArcLen(float s) {
+                return ln(
+                        1+s/(
+                            (a/b)*
+                            sqrt(b*b+1)
+                        )
+                    )/b;
+            }
+
+            // returns the angle of the spiral's normal at a given point
+            protected float normalAngle(float t) {
+                var d = spiralDerivative(t);
+                var n = new Vector2(d.y, -d.x);
+                var angle = Mathf.Atan2(n.y, n.x);
+
+                return angle-Mathf.PI/2;
+            }
         }
 
-        
-
-        // all of this math is based off of this:
-        // https://www.desmos.com/calculator/9gdfgyuzf6
-
-        // note: t refers to theta, and s refers to arc length
-        //
-
-
+        // convenience, so the math above is more readable
         private static float lerp(float a, float b, float t) {
             return a*t + b*(1-t);
         }
@@ -759,109 +815,5 @@ namespace NewHorizons.Builder.Props
         private static float exp(float t) { return Mathf.Exp(t); }
         private static float sqrt(float t) { return Mathf.Sqrt(t); }
         private static float ln(float t) { return Mathf.Log(t); }
-
-
-        // get the (x, y) coordinates and the normal angle at the given location (measured in arcLen) of a spiral with the given parameters 
-        // note: arcLen is inverted so that 0 refers to what we consider the start of the Nomai spiral
-        public static Vector3 getDrawnSpiralPointAndNormal(float arcLen, float offsetX, float offsetY, float offsetAngle, bool mirror, float scale, float a, float b, float startS) {
-            var startT = tFromArcLen(startS, a, b);
-
-            var startPoint = spiralPoint(startT, a, b);
-            var startX = startPoint.x;
-            var startY = startPoint.y;
-
-            var t = tFromArcLen(arcLen, a, b);
-            var point = spiralPoint(t, a, b);
-            var x = point.x; 
-            var y = point.y;
-            var ang = normalAngle(t, a, b);
-
-            if (mirror) { 
-                x = x + 2*(startX-x);
-                ang = -ang+Mathf.PI;
-            }     
-    
-            var retX = scale*(x-startX);
-            var retY = scale*(y-startY);
-
-            // rotate offsetAngle rads 
-            var retX2=retX*cos(offsetAngle)
-                     -retY*sin(offsetAngle);
-            var retY2=retX*sin(offsetAngle)        
-                     +retY*cos(offsetAngle);
-
-            retX = retX2;
-            retY = retY2;
-
-            retX += offsetX;
-            retY += offsetY;
-
-            return new Vector3(retX, retY, ang+offsetAngle+Mathf.PI/2f);
-        } 
-
-        private static Vector2 spiralPoint(float t, float a, float b) {
-            var r = a*exp(b*t);
-            var retval = new Vector2(r*cos(t), r*sin(t));
-            //Logger.Log($"Point for {t}, {a}, {b}: " + retval.x + ", " + retval.y);
-            return retval;
-        }
-
-        // the spiral's got two functions: x(t) and y(t)
-        // so it's got two derrivatives (with respect to t) x'(t) and y'(t)
-        private static Vector2 spiralDerivative(float t, float a, float b) { // derrivative with respect to t
-            var r = a*exp(b*t);
-            return new Vector2(
-                -r*(sin(t)-b*cos(t)),
-                 r*(b*sin(t)+cos(t))
-            );
-        }
-
-        // returns the length of the spiral between t0 and t1
-        private static float spiralArcLength(float t0, float t1, float a, float b) {
-            return (a/b)*sqrt(b*b+1)*(exp(b*t1)-exp(b*t0));
-        }
-
-        // converts from a value of t to the equivalent value of s (the value of s that corresponds to the same point on the spiral as t)
-        private static float tToArcLen(float t, float a, float b) {
-            return spiralArcLength(0, t, a, b);
-        }
-
-        // reverse of above
-        private static float tFromArcLen(float s, float a, float b) {
-            return ln(
-                    1+s/(
-                        (a/b)*
-                        sqrt(b*b+1)
-                    )
-                )/b;
-        }
-
-        // returns the value of t where the spiral starts
-        // nomai spirals are reversed from the way the math is defined. in the math, they start at the center and spiral out, whereas Nomai writing spirals in
-        // so this really returns the largest allowed value of t for this spiral
-        // note: n is just an index. what it's an index of is irrelevant, but 2.5 is a good value
-        private static float spiralStartT(float n, float a, float b) {
-            return Mathf.Atan(b)+Mathf.PI*n;
-        }
-
-        // returns the angle of the spiral's normal at a given point
-        private static float normalAngle(float t, float a, float b) {
-            var d = spiralDerivative(t, a, b);
-            var n = new Vector2(d.y, -d.x);
-            var angle = Mathf.Atan2(n.y, n.x);
-
-            return angle-Mathf.PI/2;
-        }
-
-        // startN refers to the same n as spiralStartT
-        private static float spiralBoundingBoxWidth(float startN, float a, float b) {
-            var topT = Mathf.Atan(-1/b)+Mathf.PI*startN;
-            var startT = spiralStartT(startN, a, b);
-
-            var topX = spiralPoint(topT, a, b).x;
-            var startX = spiralPoint(startT, a, b).x;
-
-            return Mathf.Abs(topX-startX);
-        }
     }
 }

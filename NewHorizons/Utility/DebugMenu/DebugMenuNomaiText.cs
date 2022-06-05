@@ -183,13 +183,13 @@ namespace NewHorizons.Utility.DebugMenu
 
             GUILayout.BeginHorizontal(); GUILayout.Label("a: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.a = float.Parse(GUILayout.TextField(_dnp.spiralMesh.a+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("b: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.b = float.Parse(GUILayout.TextField(_dnp.spiralMesh.b+"")); GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal(); GUILayout.Label("len: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.len = float.Parse(GUILayout.TextField(_dnp.spiralMesh.len+"")); GUILayout.EndHorizontal();
+            // GUILayout.BeginHorizontal(); GUILayout.Label("len: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.len = float.Parse(GUILayout.TextField(_dnp.spiralMesh.len+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("startSOnParent: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.startSOnParent = float.Parse(GUILayout.TextField(_dnp.spiralMesh.startSOnParent+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("scale: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.scale = float.Parse(GUILayout.TextField(_dnp.spiralMesh.scale+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("x: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.x = float.Parse(GUILayout.TextField(_dnp.spiralMesh.x+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("y: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.y = float.Parse(GUILayout.TextField(_dnp.spiralMesh.y+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("ang: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.ang = float.Parse(GUILayout.TextField(_dnp.spiralMesh.ang+"")); GUILayout.EndHorizontal();
-            GUILayout.BeginHorizontal(); GUILayout.Label("startS: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.startS = float.Parse(GUILayout.TextField(_dnp.spiralMesh.startS+"")); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); GUILayout.Label("startS: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.startS = float.Parse(GUILayout.TextField(_dnp.spiralMesh.ang+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("endS: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.endS = float.Parse(GUILayout.TextField(_dnp.spiralMesh.endS+"")); GUILayout.EndHorizontal();
             
             _dnp.spiralMesh.mirror = GUILayout.Toggle(_dnp.spiralMesh.mirror, "Mirror");
@@ -460,7 +460,7 @@ namespace NewHorizons.Utility.DebugMenu
                 default:
                 case NomaiTextArcInfo.NomaiTextArcType.Adult: return NomaiTextBuilder._arcPrefabs.Count();
             }
-            return 0;
+            //return 0;
         }
 
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
