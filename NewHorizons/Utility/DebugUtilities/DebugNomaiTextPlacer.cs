@@ -83,11 +83,10 @@ namespace NewHorizons.Utility.DebugUtilities
                 
                 
                 var rootArc = new SpiralTextArc();
-                spiralMesh = rootArc.m;
-
                 rootArc.MakeChild();
                 spiralMesh.updateChildren();
 
+                spiralMesh = rootArc.m.children[0];
 
                 // // add a sphere at each skeleton point
                 //spiralMesh.skeleton.ForEach(point => {

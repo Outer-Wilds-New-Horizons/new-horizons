@@ -508,19 +508,26 @@ namespace NewHorizons.Builder.Props
             public PropModule.NomaiTextArcInfo config;
             public List<SpiralGameObjectManager> children = new List<SpiralGameObjectManager>();
 
-            public SpiralGameObjectManager(GameObject parent)
+            public SpiralGameObjectManager(SpiralProfile profile, GameObject parent)
             {
-                gameObject = new GameObject();
+                gameObject = GameObject.Instantiate(_arcPrefabs[0]);
                 gameObject.transform.parent = parent.transform;
                 gameObject.transform.localPosition = Vector3.zero;
                 gameObject.transform.localEulerAngles = Vector3.zero;
                 
-                spiralMesh = new SpiralMesh(adultSpiralProfile);
+                spiralMesh = new SpiralMesh(profile);
                 spiralMesh.Randomize();
                 spiralMesh.updateMesh();
+
+                gameObject.GetComponent<MeshFilter>().sharedMesh = spiralMesh.mesh;
+                gameObject.GetComponent<MeshRenderer>().enabled = false;
+
+                gameObject.SetActive(true);
                 
-                gameObject.AddComponent<MeshFilter>().sharedMesh = spiralMesh.mesh;
-                gameObject.AddComponent<MeshRenderer>().sharedMaterial = _arcPrefabs[0].GetComponent<MeshRenderer>().sharedMaterial;
+                //gameObject.AddComponent<MeshFilter>().sharedMesh = spiralMesh.mesh;
+                //gameObject.AddComponent<MeshRenderer>().sharedMaterial = profile.material; //_arcPrefabs[0].GetComponent<MeshRenderer>().sharedMaterial;
+                //var text = gameObject.AddComponent<NomaiTextLine>();
+                //text._points = spiralMesh.skeleton.ToArray();
             }
 
             public void addChild(SpiralGameObjectManager child)
@@ -529,10 +536,16 @@ namespace NewHorizons.Builder.Props
                 this.spiralMesh.addChild(child.spiralMesh);
             }
 
+            public void UpdateMesh()
+            {
+                this.spiralMesh.updateMesh();
+                var text = gameObject.GetComponent<NomaiTextLine>();
+                text._points = spiralMesh.skeleton.ToArray();
+            }
             
             public void updateChildren() 
             {
-                this.spiralMesh.updateMesh();
+                this.UpdateMesh();
                 this.children.ForEach(child => {
                     this.spiralMesh.updateChild(child.spiralMesh, false);
                     child.updateChildren();
