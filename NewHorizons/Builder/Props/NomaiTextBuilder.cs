@@ -474,7 +474,7 @@ namespace NewHorizons.Builder.Props
 
         public class SpiralMesh : Spiral
         {
-            public new List<SpiralMesh> children;
+            public new List<SpiralMesh> children = new List<SpiralMesh>();
 
             public List<Vector3> skeleton;
 
@@ -599,7 +599,7 @@ namespace NewHorizons.Builder.Props
             
             internal void updateChild(SpiralMesh child)
             {
-                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b); //, this.len); // len is not needed - this function pretends the spiral is infinite
+                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b, this.endS); //, this.len); // len is not needed - this function pretends the spiral is infinite
                 var cx = pointAndNormal.x;
                 var cy = pointAndNormal.y;
                 var cang = pointAndNormal.z;
@@ -620,7 +620,10 @@ namespace NewHorizons.Builder.Props
             public virtual void updateChildren() 
             {
                 this.updateMesh();
-                base.updateChildren();
+                this.children.ForEach(child => {
+                    updateChild(child);
+                    child.updateChildren();
+                });
             }
         }
 
@@ -636,7 +639,7 @@ namespace NewHorizons.Builder.Props
         public class Spiral {
             public bool mirror;
             public float a;
-            public float b;
+            public float b; // 0.3-0.6
             public float len;
             public float startSOnParent;
             public float scale;
@@ -649,7 +652,7 @@ namespace NewHorizons.Builder.Props
 
             public float startIndex = 2.5f;
 
-            public float startS = 42.87957f; 
+            public float startS = 42.87957f; // go all the way down to 0, all the way up to 50
             public float endS = 342.8796f;
 
 
@@ -674,7 +677,7 @@ namespace NewHorizons.Builder.Props
 
             internal virtual void updateChild(Spiral child)
             {
-                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b); //, this.len); // len is not needed - this function pretends the spiral is infinite
+                Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent, this.x, this.y, this.ang, this.mirror, this.scale, this.a, this.b, this.endS); //, this.len); // len is not needed - this function pretends the spiral is infinite
                 var cx = pointAndNormal.x;
                 var cy = pointAndNormal.y;
                 var cang = pointAndNormal.z;
@@ -715,7 +718,7 @@ namespace NewHorizons.Builder.Props
                 List<Vector3> skeleton = new List<Vector3>();
                 for (int i = 0; i < numPoints; i++)
                 {
-                    float fraction = ((float)i)/((float)numPoints); // casting is so uuuuuuuugly
+                    float fraction = ((float)i)/((float)numPoints-1f); // casting is so uuuuuuuugly
 
                     // note: cutting the sprial into numPoints equal slices of arclen would
                     // provide evenly spaced skeleton points
@@ -724,11 +727,7 @@ namespace NewHorizons.Builder.Props
                     float inputT = startT + rangeT*fraction;
                     float inputS = tToArcLen(inputT, a, b);
 
-                    Logger.Log($"GENREATING INPUT S: {fraction}, {inputT}, {inputS}");
-
-                    skeleton.Add(getDrawnSpiralPointAndNormal(inputS, x, y, ang, mirror, scale, a, b));
-                    
-                    Logger.Log(fraction + ": " + skeleton[skeleton.Count()-1]);
+                    skeleton.Add(getDrawnSpiralPointAndNormal(inputS, x, y, ang, mirror, scale, a, b, endS));
                 }
 
                 skeleton.Reverse();
@@ -764,16 +763,8 @@ namespace NewHorizons.Builder.Props
 
         // get the (x, y) coordinates and the normal angle at the given location (measured in arcLen) of a spiral with the given parameters 
         // note: arcLen is inverted so that 0 refers to what we consider the start of the Nomai spiral
-        private static Vector3 getDrawnSpiralPointAndNormal(float arcLen, float offsetX=0, float offsetY=0, float offsetAngle=0, bool mirror=false, float scale=0.01f, float a=0.7f, float b=0.305f) {
-        
-            //Logger.Log($"params: {arcLen}, {a}, {b}, {mirror}, {offsetX}, {offsetY}, {offsetAngle}, {scale}");
-
-            var startIndex = 2.5f;
-
-            var startT = spiralStartT(startIndex, a, b);
-            var startS = tToArcLen(startT, a, b);
-
-            var width = spiralBoundingBoxWidth(startIndex, a, b);
+        public static Vector3 getDrawnSpiralPointAndNormal(float arcLen, float offsetX, float offsetY, float offsetAngle, bool mirror, float scale, float a, float b, float startS) {
+            var startT = tFromArcLen(startS, a, b);
 
             var startPoint = spiralPoint(startT, a, b);
             var startX = startPoint.x;
@@ -785,24 +776,13 @@ namespace NewHorizons.Builder.Props
             var y = point.y;
             var ang = normalAngle(t, a, b);
 
-            Logger.Log($"T AND Ses HREEEEERE: {startS} => {startT} ;;; {startS} - {arcLen} = {startS-arcLen} => {t}");
-
-            Logger.Log("start point: " + startPoint + "  point: " + point);
-
             if (mirror) { 
-                // x = -(x-startX-width/2) +width/2+startX;
                 x = x + 2*(startX-x);
-
                 ang = -ang+Mathf.PI;
-            } 
-
-            var retX = 0f;
-            var retY = 0f;
-
+            }     
     
-    
-            retX += scale*(x-startX);
-            retY += scale*(y-startY);
+            var retX = scale*(x-startX);
+            var retY = scale*(y-startY);
 
             // rotate offsetAngle rads 
             var retX2=retX*cos(offsetAngle)
@@ -815,8 +795,6 @@ namespace NewHorizons.Builder.Props
 
             retX += offsetX;
             retY += offsetY;
-
-            //Logger.Log("returning point: " + new Vector3(retX, retY, ang+offsetAngle+Mathf.PI/2f));
 
             return new Vector3(retX, retY, ang+offsetAngle+Mathf.PI/2f);
         } 
