@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,7 +32,8 @@ namespace NewHorizons.Utility.DebugUtilities
                 g.transform.localPosition = Vector3.zero;
                 g.transform.localEulerAngles = Vector3.zero;
                 
-                m = new SpiralMesh();
+                m = new SpiralMesh(NomaiTextBuilder.adultSpiralProfile);
+                m.Randomize();
                 m.updateMesh();
                 
                 g.AddComponent<MeshFilter>().sharedMesh = m.mesh;

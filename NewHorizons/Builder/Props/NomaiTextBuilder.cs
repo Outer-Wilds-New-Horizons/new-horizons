@@ -464,6 +464,81 @@ namespace NewHorizons.Builder.Props
         }
 
 
+        //
+        //
+        // Handle the connection between game objects and spiral meshes
+        //
+        //
+
+        // TODO: spiral profiles, pass as a value to constructor, use value in Randomize()
+        // use current defaults to make an AdultSpiralProfile, then make ChildSpiralProfile and StrangerSpiralProfile
+        public struct SpiralProfile
+        {
+            // all of the Vector2 params here refer to a range of valid values
+            public bool canMirror;
+            public Vector2 a;
+            public Vector2 b;
+            public Vector2 endS;
+            public Vector2 skeletonScale;
+            public int numSkeletonPoints;
+            public float uvScale;
+            public float innerWidth;
+            public float outerWidth;
+            public Material material;
+        }
+
+        public static SpiralProfile adultSpiralProfile = new SpiralProfile()
+        {
+            canMirror = true,
+            a =      new Vector2(0.5f, 0.5f),
+            b =      new Vector2(0.3f, 0.6f),
+            endS =   new Vector2(0, 50f),
+            skeletonScale = new Vector2(0.01f, 0.01f),
+            numSkeletonPoints = 51,
+
+            innerWidth = 0.001f, // width at the tip
+            outerWidth = 0.05f, //0.107f; // width at the base
+            uvScale = 4.9f, //2.9f;
+        };
+
+        public class SpiralGameObjectManager
+        {
+            public SpiralMesh spiralMesh;
+            public GameObject gameObject;
+            public PropModule.NomaiTextArcInfo config;
+            public List<SpiralGameObjectManager> children = new List<SpiralGameObjectManager>();
+
+            public SpiralGameObjectManager(GameObject parent)
+            {
+                gameObject = new GameObject();
+                gameObject.transform.parent = parent.transform;
+                gameObject.transform.localPosition = Vector3.zero;
+                gameObject.transform.localEulerAngles = Vector3.zero;
+                
+                spiralMesh = new SpiralMesh(adultSpiralProfile);
+                spiralMesh.Randomize();
+                spiralMesh.updateMesh();
+                
+                gameObject.AddComponent<MeshFilter>().sharedMesh = spiralMesh.mesh;
+                gameObject.AddComponent<MeshRenderer>().sharedMaterial = _arcPrefabs[0].GetComponent<MeshRenderer>().sharedMaterial;
+            }
+
+            public void addChild(SpiralGameObjectManager child)
+            {
+                this.children.Add(child);
+                this.spiralMesh.addChild(child.spiralMesh);
+            }
+
+            
+            public void updateChildren() 
+            {
+                this.spiralMesh.updateMesh();
+                this.children.ForEach(child => {
+                    this.spiralMesh.updateChild(child.spiralMesh, false);
+                    child.updateChildren();
+                });
+            }
+        }
 
 
         //
@@ -487,6 +562,24 @@ namespace NewHorizons.Builder.Props
             public float uvOffset = 0;
 
             public Mesh mesh;
+
+            
+            public SpiralMesh(SpiralProfile profile) : base(profile)
+            {
+                this.numSkeletonPoints = profile.numSkeletonPoints;
+                this.innerWidth        = profile.innerWidth;
+                this.outerWidth        = profile.outerWidth;
+                this.uvScale           = profile.uvScale;
+
+                this.uvOffset = UnityEngine.Random.value;
+            }
+
+            public override void Randomize()
+            {
+                base.Randomize();
+                uvOffset = UnityEngine.Random.value;
+                updateChildren();
+            }
 
             internal void updateMesh()
             {
@@ -579,7 +672,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
             
-            internal void updateChild(SpiralMesh child)
+            internal void updateChild(SpiralMesh child, bool updateMesh = true)
             {
                 Vector3 pointAndNormal = getDrawnSpiralPointAndNormal(child.startSOnParent); 
                 var cx = pointAndNormal.x;
@@ -589,7 +682,7 @@ namespace NewHorizons.Builder.Props
                 child.y = cy;
                 child.ang = cang+(child.mirror?Mathf.PI:0);
             
-                child.updateMesh();
+                if (updateMesh) child.updateMesh();
             }
 
             public void addChild(SpiralMesh child)
@@ -603,7 +696,7 @@ namespace NewHorizons.Builder.Props
             {
                 this.updateMesh();
                 this.children.ForEach(child => {
-                    updateChild(child);
+                    updateChild(child, false);
                     child.updateChildren();
                 });
             }
@@ -615,8 +708,6 @@ namespace NewHorizons.Builder.Props
         // Construct the mathematical spirals that Nomai arcs are built from
         //
         //
-
-        // TODO: replace the len param with a start and end param
         
         public class Spiral {
             public bool mirror;
@@ -631,10 +722,19 @@ namespace NewHorizons.Builder.Props
             public float ang;
 
 
-            public float startIndex = 2.5f;
+            // public float startIndex = 2.5f;
 
             public float startS = 42.87957f; // go all the way down to 0, all the way up to 50
             public float endS = 342.8796f;
+
+            SpiralProfile profile;
+
+            public Spiral(SpiralProfile profile)
+            {
+                this.profile = profile;
+                
+                this.Randomize();
+            }
 
             public Spiral(float startSOnParent=0, bool mirror=false, float len=300, float a=0.5f, float b=0.43f, float scale=0.01f) 
             {
@@ -649,6 +749,15 @@ namespace NewHorizons.Builder.Props
                 this.x = 0;
                 this.y = 0;
                 this.ang = 0;
+            }
+
+            public virtual void Randomize()
+            {
+                this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y); //0.5f;
+                this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
+                this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);
+                this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
+                if (profile.canMirror) this.mirror = UnityEngine.Random.value < 0.5f;
             }
 
             internal virtual void updateChild(Spiral child)
