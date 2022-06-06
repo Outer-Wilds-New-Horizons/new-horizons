@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.External.Modules;
@@ -216,6 +216,10 @@ namespace NewHorizons.External.Configs
                 // Former is obsolete, latter is to validate
                 if (Atmosphere.hasAtmosphere || Atmosphere.atmosphereTint != null)
                     Atmosphere.useAtmosphereShader = true;
+
+                // useBasicCloudShader is obsolete
+                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader) 
+                    Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
             }
 
             if (Props?.tornados != null)

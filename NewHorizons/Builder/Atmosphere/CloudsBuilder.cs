@@ -176,7 +176,7 @@ namespace NewHorizons.Builder.Atmosphere
             Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
             var tempArray = new Material[2];
 
-            if (atmo.clouds.useBasicCloudShader)
+            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
                 var material = new Material(_sphereShader);
                 if (atmo.clouds.unlit) material.renderQueue = 2550;

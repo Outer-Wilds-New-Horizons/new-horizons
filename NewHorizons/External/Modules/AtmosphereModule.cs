@@ -28,6 +28,8 @@ namespace NewHorizons.External.Modules
         [EnumMember(Value = @"giantsDeep")] GiantsDeep = 0,
 
         [EnumMember(Value = @"quantumMoon")] QuantumMoon = 1,
+
+        [EnumMember(Value = @"basic")] Basic = 2,
     }
 
     [JsonObject]
@@ -152,10 +154,18 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public bool unlit;
 
+
+            
+            #region Obsolete
+
             /// <summary>
             /// Set to `false` in order to use Giant's Deep's shader. Set to `true` to just apply the cloud texture as is.
             /// </summary>
+            [Obsolete("useBasicCloudShader is deprecated, please use cloudsPrefab=\"basic\" instead")]
             public bool useBasicCloudShader;
+
+            #endregion Obsolete
+
         }
 
 
