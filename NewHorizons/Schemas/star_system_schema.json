@@ -38,6 +38,14 @@
       "type": "boolean",
       "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
     },
+    "travelAudioClip": {
+      "type": "string",
+      "description": "Name of an existing AudioClip in the game that will play when travelling in space."
+    },
+    "travelAudioFilePath": {
+      "type": "string",
+      "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with travelAudioClip."
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

@@ -1,10 +1,11 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject planetGO, OWRigidbody owRigidBody, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
@@ -18,8 +19,10 @@ namespace NewHorizons.Builder.General
 
             var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
-            var RV = new ReferenceFrame(owRigidBody);
-            RV._minSuitTargetDistance = sphereOfInfluence;
+            var minTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
+
+            var RV = new ReferenceFrame(owrb);
+            RV._minSuitTargetDistance = minTargetDistance;
             RV._maxTargetDistance = 0;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
             RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
@@ -28,15 +31,17 @@ namespace NewHorizons.Builder.General
             RV._matchAngularVelocity = true;
             RV._minMatchAngularVelocityDistance = 70;
             RV._maxMatchAngularVelocityDistance = 400;
-            RV._bracketsRadius = sphereOfInfluence;
+            RV._bracketsRadius = module.bracketRadius > -1 ? module.bracketRadius : sphereOfInfluence;
 
             RFV._referenceFrame = RV;
-            RFV._minColliderRadius = sphereOfInfluence;
-            RFV._maxColliderRadius = sphereOfInfluence * 2f;
+            RFV._minColliderRadius = minTargetDistance;
+            RFV._maxColliderRadius = module.maxTargetDistance > -1 ? module.maxTargetDistance : sphereOfInfluence * 2f;
             RFV._isPrimaryVolume = true;
             RFV._isCloseRangeVolume = false;
 
-            rfGO.SetActive(true);
+            owrb.SetAttachedReferenceFrameVolume(RFV);
+
+            rfGO.SetActive(!module.hideInMap);
         }
     }
 }

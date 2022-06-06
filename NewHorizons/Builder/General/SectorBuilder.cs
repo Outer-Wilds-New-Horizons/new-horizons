@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
@@ -27,6 +27,7 @@ namespace NewHorizons.Builder.General
             S._subsectors = new List<Sector>();
 
             sectorGO.SetActive(true);
+            S.enabled = true;
 
             return S;
         }

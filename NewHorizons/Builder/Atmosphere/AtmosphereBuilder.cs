@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -16,7 +17,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                GameObject atmo = GameObject.Instantiate(GameObject.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"), atmoGO.transform, true);
+                GameObject atmo = GameObject.Instantiate(SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"), atmoGO.transform, true);
                 atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
                 atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
                 foreach (var meshRenderer in atmo.GetComponentsInChildren<MeshRenderer>())

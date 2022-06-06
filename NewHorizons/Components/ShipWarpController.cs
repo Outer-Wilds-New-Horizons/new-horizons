@@ -1,4 +1,5 @@
-﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.General;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components
@@ -26,8 +27,8 @@ namespace NewHorizons.Components
 
         public void Init()
         {
-            _blackHolePrefab = GameObject.Find(_blackHolePath);
-            _whiteHolePrefab = GameObject.Find(_whiteHolePath);
+            _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
+            _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
         }
 
         public void Start()
@@ -183,7 +184,7 @@ namespace NewHorizons.Components
             // For some reason warping into the ship makes you suffocate while in the ship
             if (_wearingSuit) resources.OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
-            var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
+            var atmoVolume = SearchUtilities.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
             resources._cameraFluidDetector.AddVolume(atmoVolume);
             resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);

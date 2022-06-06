@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -18,8 +19,9 @@ namespace NewHorizons.Builder.General
                 spawnGO.transform.localPosition = module.playerSpawnPoint;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
-                
-                if(module.playerSpawnRotation != null)
+                playerSpawn._triggerVolumes = new OWTriggerVolume[0];
+
+                if (module.playerSpawnRotation != null)
                 {
                     spawnGO.transform.rotation = Quaternion.Euler(module.playerSpawnRotation);
                 }
@@ -40,8 +42,9 @@ namespace NewHorizons.Builder.General
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
+                spawnPoint._triggerVolumes = new OWTriggerVolume[0];
 
-                var ship = GameObject.Find("Ship_Body");
+                var ship = SearchUtilities.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;
                 
                 if(module.shipSpawnRotation != null)
@@ -67,6 +70,7 @@ namespace NewHorizons.Builder.General
                     playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
+                    playerSpawn._triggerVolumes = new OWTriggerVolume[0];
                     playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
             }
@@ -89,7 +93,7 @@ namespace NewHorizons.Builder.General
             Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
 
             // Make the ship act as if the player took the suit
-            var spv = GameObject.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
+            var spv = SearchUtilities.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
 
             if (spv == null) return;
 

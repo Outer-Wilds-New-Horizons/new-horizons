@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -6,7 +6,7 @@ namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
     {
-        public static GravityVolume Make(GameObject planetGO, AstroObject ao, PlanetConfig config)
+        public static GravityVolume Make(GameObject planetGO, AstroObject ao, OWRigidbody owrb, PlanetConfig config)
         {
             var exponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1f : 2f;
             var GM = config.Base.surfaceGravity * Mathf.Pow(config.Base.surfaceSize, exponent);
@@ -60,6 +60,7 @@ namespace NewHorizons.Builder.General
             gravityGO.SetActive(true);
 
             ao._gravityVolume = gravityVolume;
+            owrb.RegisterAttachedGravityVolume(gravityVolume);
 
             return gravityVolume;
         }

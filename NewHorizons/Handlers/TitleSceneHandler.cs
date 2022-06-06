@@ -13,7 +13,7 @@ namespace NewHorizons.Handlers
     {
         public static void InitSubtitles()
         {
-            GameObject subtitleContainer = GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
+            GameObject subtitleContainer = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
             
             if (subtitleContainer == null)
             {
@@ -60,11 +60,11 @@ namespace NewHorizons.Handlers
                 body3.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
             }
 
-            GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
-            GameObject.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
+            SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
+            SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
 
             var lightGO = new GameObject("Light");
-            lightGO.transform.parent = GameObject.Find("Scene/Background").transform;
+            lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
             var light = lightGO.AddComponent<Light>();
             light.color = new Color(1f, 1f, 1f, 1f);
@@ -98,7 +98,7 @@ namespace NewHorizons.Handlers
 
             HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
 
-            GameObject pivot = GameObject.Instantiate(GameObject.Find("Scene/Background/PlanetPivot"), GameObject.Find("Scene/Background").transform);
+            GameObject pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
             foreach (Transform child in pivot.transform)
             {
