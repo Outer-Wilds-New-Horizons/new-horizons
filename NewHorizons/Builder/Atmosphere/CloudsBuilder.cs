@@ -1,9 +1,13 @@
+#region
+
 using System;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
+#endregion
 
 namespace NewHorizons.Builder.Atmosphere;
 
