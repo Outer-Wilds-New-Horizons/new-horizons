@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -20,6 +20,14 @@ namespace NewHorizons.External.Modules
         [EnumMember(Value = @"sand")] Sand = 3,
 
         [EnumMember(Value = @"plasma")] Plasma = 4
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum CloudPrefabType
+    {
+        [EnumMember(Value = @"giantsDeep")] GiantsDeep = 0,
+
+        [EnumMember(Value = @"quantumMoon")] QuantumMoon = 1,
     }
 
     [JsonObject]
@@ -88,6 +96,11 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class CloudInfo
         {
+            /// <summary>
+            /// Should these clouds be based on Giant's Deep's banded clouds, or the Quantum Moon's non-banded clouds?
+            /// </summary>
+            public CloudPrefabType cloudsPrefab;
+
             /// <summary>
             /// Relative filepath to the cloud cap texture, if the planet has clouds.
             /// </summary>
