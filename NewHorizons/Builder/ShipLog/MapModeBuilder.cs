@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.ShipLog
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
-            Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
+            Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
                 b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
             ).ToList();
@@ -98,6 +98,8 @@ namespace NewHorizons.Builder.ShipLog
         private static ShipLogAstroObject AddShipLogAstroObject(GameObject gameObject, NewHorizonsBody body, Material greyScaleMaterial, int layer)
         {
             const float unviewedIconOffset = 15;
+
+            Logger.Log($"Adding ship log astro object for {body.Config.name}");
 
             GameObject unviewedReference = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
 
@@ -235,6 +237,12 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                     ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
+                    if (body.Config.FocalPoint != null)
+                    {
+                        newAstroObject._imageObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._outlineObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._unviewedObj.GetComponent<Image>().enabled = false;
+                    }
                     MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                     Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
                     navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
@@ -251,12 +259,12 @@ namespace NewHorizons.Builder.ShipLog
                             navMatrix[navIndex[0]][navIndex[1]] = null;
                             if (astroObject.GetID() == "CAVE_TWIN" || astroObject.GetID() == "TOWER_TWIN")
                             {
-                                GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                                SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                             }
                         }
                         else if (name == "SandFunnel")
                         {
-                            GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                            SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                         }
                         gameObject.SetActive(false);
                     }
@@ -380,7 +388,7 @@ namespace NewHorizons.Builder.ShipLog
             return new MapModeObject();
         }
 
-        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "")
+        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "", string focalPointName = "")
         {
             List<MapModeObject> children = new List<MapModeObject>();
             int newX = parent.x;
@@ -388,7 +396,7 @@ namespace NewHorizons.Builder.ShipLog
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
 
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || (b.Config.Orbit.primaryBody == focalPointName && b.Config.name != parent.mainBody.Config.name) || b.Config.name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
                 newX = even ? newX : newX + 1;
@@ -403,13 +411,15 @@ namespace NewHorizons.Builder.ShipLog
                     lastSibling = lastSibling
                 };
                 string newSecondaryName = "";
+                string newFocalPointName = "";
                 if (body.Config.FocalPoint != null)
                 {
+                    newFocalPointName = body.Config.name;
                     newNode.mainBody = searchList.Find(b => b.Config.name == body.Config.FocalPoint.primary);
                     newSecondaryName = searchList.Find(b => b.Config.name == body.Config.FocalPoint.secondary).Config.name;
                 }
 
-                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
+                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName, newFocalPointName);
                 if (even)
                 {
                     newY += newNode.branch_height;
@@ -481,7 +491,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
-            {
+            { 
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;

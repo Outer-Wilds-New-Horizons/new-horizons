@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
@@ -39,6 +39,27 @@ namespace NewHorizons.Patches
             float num = Mathf.InverseLerp(1600f, 100f, value);
             __instance._audioSource.SetLocalVolume(num * num * __instance._fade);
             return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SunProxyEffectController), nameof(SunProxyEffectController.UpdateScales))]
+        public static bool SunProxyEffectController_UpdateScales(SunProxyEffectController __instance)
+        {
+            return __instance != null && __instance._surface != null && __instance._fog != null && __instance._fogMaterial != null && __instance._solarFlareEmitter != null && __instance._atmosphere != null;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SunProxyEffectController), nameof(SunProxyEffectController.UpdateAtmosphereRadii))]
+        public static bool SunProxyEffectController_UpdateAtmosphereRadii(SunProxyEffectController __instance)
+        {
+            return __instance != null && __instance.transform != null && __instance.transform.parent != null && __instance._atmosphereMaterial != null;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(VanishVolume), nameof(VanishVolume.Shrink))]
+        public static bool VanishVolume_Shrink(VanishVolume __instance, OWRigidbody bodyToShrink)
+        {
+            return __instance != null && __instance.transform != null && __instance._shrinkingBodies != null && __instance._shrinkingBodyLocationData != null && bodyToShrink != null;
         }
     }
 }

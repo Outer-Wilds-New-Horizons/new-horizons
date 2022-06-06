@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
@@ -18,7 +18,7 @@ namespace NewHorizons.Handlers
         {
             _systems = systems;
 
-            var shipLogRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
+            var shipLogRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
 
             var starChartLog = new GameObject("StarChartMode");
             starChartLog.SetActive(false);
@@ -29,7 +29,7 @@ namespace NewHorizons.Handlers
 
             ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-            var reticleImage = GameObject.Instantiate(GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"), starChartLog.transform);
+            var reticleImage = GameObject.Instantiate(SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"), starChartLog.transform);
 
             var scaleRoot = new GameObject("ScaleRoot");
             scaleRoot.transform.parent = starChartLog.transform;
@@ -45,7 +45,7 @@ namespace NewHorizons.Handlers
 
             var centerPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_Center")?.GetComponent<ScreenPromptList>();
             var upperRightPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_UpperRight")?.GetComponent<ScreenPromptList>();
-            var oneShotSource = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")?.GetComponent<OWAudioSource>();
+            var oneShotSource = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")?.GetComponent<OWAudioSource>();
 
             _starSystemToFactID = new Dictionary<string, string>();
             _factIDToStarSystem = new Dictionary<string, string>();

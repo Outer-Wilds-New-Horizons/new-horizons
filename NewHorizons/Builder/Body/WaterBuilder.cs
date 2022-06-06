@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Body
             waterGO.transform.parent = sector?.transform ?? planetGO.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
 
-            var GDTSR = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
+            var GDTSR = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.Body
                 TSR.tessellationMeshGroup.variants[i] = mesh;
             }
 
-            var GDSharedMaterials = GameObject.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
+            var GDSharedMaterials = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
             var tempArray = new Material[GDSharedMaterials.Length];
             for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
@@ -87,7 +87,7 @@ namespace NewHorizons.Builder.Body
             fluidVolume._radius = waterSize;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-            var fogGO = GameObject.Instantiate(GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
+            var fogGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
