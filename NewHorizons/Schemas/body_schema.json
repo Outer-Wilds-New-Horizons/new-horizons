@@ -75,6 +75,10 @@
       "description": "Spawn various objects on this body",
       "$ref": "#/definitions/PropModule"
     },
+    "ReferenceFrame": {
+      "description": "Reference frame properties of this body",
+      "$ref": "#/definitions/ReferenceFrameModule"
+    },
     "removeChildren": {
       "type": "array",
       "description": "A list of paths to child GameObjects to destroy on this planet",
@@ -289,25 +293,6 @@
         }
       }
     },
-    "CloakModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "radius": {
-          "type": "number",
-          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
-          "format": "float"
-        },
-        "audioClip": {
-          "type": "string",
-          "description": "Name of an existing AudioClip in the game that will play when entering the cloaking field."
-        },
-        "audioFilePath": {
-          "type": "string",
-          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
-        }
-      }
-    },
     "CloudInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -454,34 +439,8 @@
         },
         "zeroGravityRadius": {
           "type": "number",
-          "description": "Radius of the zero gravity sphere. This sphere will make gravity no longer affect you while you are inside it. Useful for satellites.",
+          "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
           "format": "float"
-        }
-      }
-    },
-    "ReferenceFrameModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "hideInMap": {
-          "type": "boolean",
-          "description": "Stop the object from being targeted on the map."
-        },
-        "bracketRadius": {
-          "type": "number",
-          "description": "Radius of the brackets that show up when you target this. Defaults to the sphereOfInfluence.",
-          "format": "float",
-          "default": -1
-        },
-        "targetWhenClose": {
-          "type": "boolean",
-          "description": "If it should be targetable even when super close."
-        },
-        "maxTargetDistance": {
-          "type": "number",
-          "description": "The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.",
-          "format": "float",
-          "default": -1
         }
       }
     },
@@ -514,6 +473,25 @@
         "linear",
         "inverseSquared"
       ]
+    },
+    "CloakModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
+          "format": "float"
+        },
+        "audioClip": {
+          "type": "string",
+          "description": "Name of an existing AudioClip in the game that will play when entering the cloaking field."
+        },
+        "audioFilePath": {
+          "type": "string",
+          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
+        }
+      }
     },
     "FocalPointModule": {
       "type": "object",
@@ -1346,6 +1324,32 @@
         "stoneTint": {
           "description": "The colour of the meteor's stone.",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "ReferenceFrameModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hideInMap": {
+          "type": "boolean",
+          "description": "Stop the object from being targeted on the map."
+        },
+        "bracketRadius": {
+          "type": "number",
+          "description": "Radius of the brackets that show up when you target this. Defaults to the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
+        },
+        "targetWhenClose": {
+          "type": "boolean",
+          "description": "If it should be targetable even when super close."
+        },
+        "maxTargetDistance": {
+          "type": "number",
+          "description": "The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
         }
       }
     },
