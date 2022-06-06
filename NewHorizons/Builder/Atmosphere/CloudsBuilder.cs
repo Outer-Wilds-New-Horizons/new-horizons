@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Atmosphere;
 
 public static class CloudsBuilder
 {
-    private static Shader _sphereShader = null;
+    private static Shader _sphereShader;
     private static Material[] _gdCloudMaterials;
     private static Material[] _qmCloudMaterials;
     private static GameObject _lightningPrefab;
@@ -177,9 +177,9 @@ public static class CloudsBuilder
 
         var topMR = cloudsTopGO.AddComponent<MeshRenderer>();
 
-        if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
-        if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
-        if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
+        _sphereShader ??= Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+        _gdCloudMaterials ??= SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+        _qmCloudMaterials ??= SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
         Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
         var tempArray = new Material[2];
 
