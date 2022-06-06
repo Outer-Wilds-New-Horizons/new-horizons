@@ -116,7 +116,10 @@ namespace NewHorizons
         public void Start()
         {
             // Patches
-            Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            Harmony harmony = Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isPlayerInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isPlayerInsideCloak), BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isProbeInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isProbeInsideCloak), BindingFlags.Static | BindingFlags.Public)));
+            harmony.Patch(typeof(CloakFieldController).GetMethod("get_" + nameof(CloakFieldController.isShipInsideCloak), BindingFlags.Public | BindingFlags.Instance), postfix: new HarmonyMethod(typeof(Patches.LocatorPatches).GetMethod(nameof(Patches.LocatorPatches.CloakFieldController_isShipInsideCloak), BindingFlags.Static | BindingFlags.Public)));
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
@@ -158,7 +161,14 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
-            Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            try
+            {
+                Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+            }
         }
 
         private void OnSceneUnloaded(Scene scene)
@@ -189,7 +199,7 @@ namespace NewHorizons
                     }
                     launchController.enabled = false;
                 }
-                var nomaiProbe = GameObject.Find("NomaiProbe_Body");
+                var nomaiProbe = SearchUtilities.Find("NomaiProbe_Body");
                 if (nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
             }
 
@@ -220,7 +230,7 @@ namespace NewHorizons
 
                 if (_ship != null)
                 {
-                    _ship = GameObject.Find("Ship_Body").InstantiateInactive();
+                    _ship = SearchUtilities.Find("Ship_Body").InstantiateInactive();
                     DontDestroyOnLoad(_ship);
                 }
 
@@ -237,7 +247,7 @@ namespace NewHorizons
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
                 HasWarpDrive = StarChartHandler.CanWarp();
-                _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+                _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
@@ -250,7 +260,7 @@ namespace NewHorizons
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
                 // Fix the map satellite
-                GameObject.Find("HearthianMapSatellite_Body").AddComponent<MapSatelliteOrbitFix>();
+                SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
             }
             else
             {

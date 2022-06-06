@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -34,7 +34,6 @@ namespace NewHorizons.Builder.Body
                     hasMapMarker = false,
                     surfaceGravity = 1,
                     surfaceSize = size,
-                    hasReferenceFrame = false,
                     gravityFallOff = GravityFallOff.InverseSquared
                 };
 
@@ -47,6 +46,11 @@ namespace NewHorizons.Builder.Body
                     primaryBody = bodyName,
                     semiMajorAxis = Random.Range(belt.innerRadius, belt.outerRadius),
                     showOrbitLine = false
+                };
+
+                config.ReferenceFrame = new ReferenceFrameModule()
+                {
+                    hideInMap = true
                 };
 
                 config.ProcGen = belt.procGen;

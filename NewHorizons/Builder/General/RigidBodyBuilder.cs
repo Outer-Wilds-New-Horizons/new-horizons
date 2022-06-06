@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
@@ -18,7 +19,6 @@ namespace NewHorizons.Builder.General
             rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
 
             KinematicRigidbody kinematicRigidBody = body.AddComponent<KinematicRigidbody>();
-            kinematicRigidBody.centerOfMass = Vector3.zero;
 
             OWRigidbody owRigidBody = body.AddComponent<OWRigidbody>();
             owRigidBody._kinematicSimulation = true;
@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.General
             owRigidBody._maintainOriginalCenterOfMass = true;
             owRigidBody._rigidbody = rigidBody;
             owRigidBody._kinematicRigidbody = kinematicRigidBody;
-            owRigidBody._origParent = GameObject.Find("SolarSystemRoot").transform;
+            owRigidBody._origParent = SearchUtilities.Find("SolarSystemRoot").transform;
             owRigidBody.EnableKinematicSimulation();
             owRigidBody.MakeKinematic();
 

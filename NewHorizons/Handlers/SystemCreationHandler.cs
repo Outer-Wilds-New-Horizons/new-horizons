@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.StarSystem;
+using NewHorizons.Builder.StarSystem;
 using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -9,7 +9,7 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-            var skybox = GameObject.Find("Skybox/Starfield");
+            var skybox = SearchUtilities.Find("Skybox/Starfield");
 
             if (system.Config.skybox?.destroyStarField ?? false)
             {
@@ -25,6 +25,30 @@ namespace NewHorizons.Handlers
             {
                 var timeLoopController = new GameObject("TimeLoopController");
                 timeLoopController.AddComponent<TimeLoopController>();
+            }
+
+            AudioClip clip = null;
+            if (system.Config.travelAudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
+            else if (system.Config.travelAudioFilePath != null)
+            {
+                try
+                {
+                    clip = AudioUtilities.LoadAudio(system.Mod.ModHelper.Manifest.ModFolderPath + "/" + system.Config.travelAudioFilePath);
+                }
+                catch (System.Exception e)
+                {
+                    Utility.Logger.LogError($"Couldn't load audio file {system.Config.travelAudioFilePath} : {e.Message}");
+                }
+            }
+
+            if (clip != null)
+            {
+                var travelSource = Locator.GetGlobalMusicController()._travelSource;
+                travelSource._audioLibraryClip = AudioType.None;
+                travelSource._clipArrayIndex = 0;
+                travelSource._clipArrayLength = 0;
+                travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
+                travelSource.clip = clip;
             }
         }
     }
