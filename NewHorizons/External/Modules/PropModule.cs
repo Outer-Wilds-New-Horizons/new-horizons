@@ -16,6 +16,10 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public DetailInfo[] details;
 
+        public QuantumSocketGroupInfo[] quantumSocketGroups;
+        class QuantumSocketGroupInfo { string id; QuantumSocketInfo[] sockets; }
+        class QuantumSocketInfo { MVector3 position; MVector3 rotation; float probability; }
+
         /// <summary>
         /// Add dialogue triggers to this planet
         /// </summary>
@@ -153,6 +157,8 @@ namespace NewHorizons.External.Modules
             /// Scale the prop
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
+
+            public string quantumGroupID;
         }
 
         [JsonObject]
