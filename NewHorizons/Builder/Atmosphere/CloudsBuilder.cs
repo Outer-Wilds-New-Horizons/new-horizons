@@ -10,6 +10,7 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static Shader _sphereShader = null;
         private static Material[] _gdCloudMaterials;
+        private static Material[] _qmCloudMaterials;
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
         private static readonly int Color1 = Shader.PropertyToID("_Color");
@@ -171,9 +172,11 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
+            Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
             var tempArray = new Material[2];
 
-            if (atmo.clouds.useBasicCloudShader)
+            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
                 var material = new Material(_sphereShader);
                 if (atmo.clouds.unlit) material.renderQueue = 2550;
@@ -183,14 +186,14 @@ namespace NewHorizons.Builder.Atmosphere
             }
             else
             {
-                var material = new Material(_gdCloudMaterials[0]);
+                var material = new Material(prefabMaterials[0]);
                 if (atmo.clouds.unlit) material.renderQueue = 2550;
                 material.name = atmo.clouds.unlit ? "AdvancedCloud" : "AdvancedShadowCloud";
                 tempArray[0] = material;
             }
 
             // This is the stencil material for the fog under the clouds
-            tempArray[1] = new Material(_gdCloudMaterials[1]);
+            tempArray[1] = new Material(prefabMaterials[1]);
             topMR.sharedMaterials = tempArray;
 
             foreach (var material in topMR.sharedMaterials)
