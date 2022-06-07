@@ -297,6 +297,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "cloudsPrefab": {
+          "description": "Should these clouds be based on Giant's Deep's banded clouds, or the Quantum Moon's non-banded clouds?",
+          "$ref": "#/definitions/CloudPrefabType"
+        },
         "capPath": {
           "type": "string",
           "description": "Relative filepath to the cloud cap texture, if the planet has clouds."
@@ -341,12 +345,22 @@
         "unlit": {
           "type": "boolean",
           "description": "If the top layer shouldn't have shadows. Set to true if you're making a brown dwarf for example."
-        },
-        "useBasicCloudShader": {
-          "type": "boolean",
-          "description": "Set to `false` in order to use Giant's Deep's shader. Set to `true` to just apply the cloud texture as is."
         }
       }
+    },
+    "CloudPrefabType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "GiantsDeep",
+        "QuantumMoon",
+        "Basic"
+      ],
+      "enum": [
+        "giantsDeep",
+        "quantumMoon",
+        "basic"
+      ]
     },
     "CloudFluidType": {
       "type": "string",
