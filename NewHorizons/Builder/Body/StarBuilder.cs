@@ -134,6 +134,7 @@ namespace NewHorizons.Builder.Body
             // It fucking insists on this existing and its really annoying
             var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
             supernovaVolume.transform.SetParent(starGO.transform);
+            supernovaVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
             var sphere = supernovaVolume.AddComponent<SphereCollider>();
             sphere.radius = 0f;
             sphere.isTrigger = true;
