@@ -26,7 +26,7 @@ body:
         - Epic Games
         - Xbox Game Pass
     validations:
-      required: true
+      required: false
   - type: textarea
     id: mods
     attributes:
@@ -34,7 +34,7 @@ body:
       description: Please define which mods you had enabled when the problem occurred.
       render: Markdown
     validations:
-      required: true
+      required: false
   - type: textarea
     id: logs
     attributes:
