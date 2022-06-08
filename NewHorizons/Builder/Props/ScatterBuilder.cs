@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props
 
                 GameObject prefab;
                 if (propInfo.assetBundle != null) prefab = AssetBundleUtilities.LoadPrefab(propInfo.assetBundle, propInfo.path, mod);
-                else prefab = GameObject.Find(propInfo.path);
+                else prefab = SearchUtilities.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
                     var randomInd = (int)Random.Range(0, points.Count - 1);

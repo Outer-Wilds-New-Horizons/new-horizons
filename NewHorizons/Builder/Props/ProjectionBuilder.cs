@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_slideReelPrefab == null)
             {
-                _slideReelPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
+                _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
                 if (_slideReelPrefab == null)
                 {
                     Logger.LogWarning($"Tried to make a slide reel but couldn't. Do you have the DLC installed?");
@@ -139,7 +139,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_autoPrefab == null)
             {
-                _autoPrefab = GameObject.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive();
+                _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive();
                 if (_autoPrefab == null)
                 {
                     Logger.LogWarning($"Tried to make a auto projector but couldn't. Do you have the DLC installed?");
@@ -261,7 +261,7 @@ namespace NewHorizons.Builder.Props
             //
 
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
-            mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+            mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
             
             // setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
@@ -381,5 +381,6 @@ namespace NewHorizons.Builder.Props
     {
         public MindSlideCollection slideCollection;
         public SlideCollectionContainer slideCollectionContainer;
+        public OWEvent.OWCallback onSlidesComplete;
     }
 }

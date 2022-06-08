@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -30,6 +30,8 @@ namespace NewHorizons.Builder.General
                 var owCollider = detectorGO.AddComponent<OWCollider>();
 
                 fluidDetector._collider = sphereCollider;
+
+                OWRB.RegisterAttachedFluidDetector(fluidDetector);
 
                 // Could copy the splash from the interloper as well some day
             }

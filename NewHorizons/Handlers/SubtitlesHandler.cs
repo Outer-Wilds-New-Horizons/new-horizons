@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NewHorizons.Utility;
@@ -19,9 +21,9 @@ namespace NewHorizons.Handlers
         public float fade = 1;
         public bool fadingAway = true;
 
-        public static List<Sprite> possibleSubtitles = new List<Sprite>();
-        public static bool eoteSubtitleHasBeenInserted = false;
-        public static Sprite eoteSprite;
+        public List<Sprite> possibleSubtitles = new List<Sprite>();
+        public bool eoteSubtitleHasBeenInserted = false;
+        public Sprite eoteSprite;
         public int subtitleIndex;
 
         public System.Random randomizer;
@@ -29,7 +31,7 @@ namespace NewHorizons.Handlers
         public static readonly int PAUSE_TIMER_MAX = 50;
         public int pauseTimer = PAUSE_TIMER_MAX;
 
-        public static void CheckForEOTE()
+        public void CheckForEOTE()
         {
             if (!eoteSubtitleHasBeenInserted)
             {
@@ -57,21 +59,30 @@ namespace NewHorizons.Handlers
             CheckForEOTE();
 
             image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+
+            AddSubtitles();
         }
 
-        public static void AddSubtitle(IModBehaviour mod, string filepath)
+        private void AddSubtitles()
+        {
+            foreach (var mod in Main.MountedAddons.Where(mod => File.Exists($"{mod.ModHelper.Manifest.ModFolderPath}subtitle.png")))
+            {
+                AddSubtitle(mod, "subtitle.png");
+            }
+        }
+
+        public void AddSubtitle(IModBehaviour mod, string filepath)
         {
             Logger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
 
             var tex = ImageUtilities.GetTexture(mod, filepath);
             if (tex == null) return;
 
-            // var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, SUBTITLE_HEIGHT), new Vector2(0.5f, 0.5f), 100.0f);
             AddSubtitle(sprite);
         }
 
-        public static void AddSubtitle(Sprite sprite)
+        public void AddSubtitle(Sprite sprite)
         {
             possibleSubtitles.Add(sprite);
         }

@@ -199,8 +199,8 @@ namespace NewHorizons.Components.SizeControllers
                     supernova.enabled = true;
                     _isSupernova = true;
                     _supernovaStartTime = Time.time;
-                    atmosphere.SetActive(false);
-                    _destructionVolume._deathType = DeathType.Supernova;
+                    if (atmosphere != null) atmosphere.SetActive(false);
+                    if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
                     return;
                 }
             }

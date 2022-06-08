@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 
@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Body
             var sandGO = new GameObject("Sand");
             sandGO.SetActive(false);
 
-            var sandSphere = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/SandSphere"), sandGO.transform);
+            var sandSphere = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/SandSphere"), sandGO.transform);
             if (module.tint != null)
             {
                 var oldMR = sandSphere.GetComponent<TessellatedSphereRenderer>();
@@ -28,13 +28,13 @@ namespace NewHorizons.Builder.Body
                 sandMR.sharedMaterials[1].color = module.tint.ToColor();
             }
 
-            var collider = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/Collider"), sandGO.transform);
+            var collider = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/Collider"), sandGO.transform);
             var sphereCollider = collider.GetComponent<SphereCollider>();
             collider.SetActive(true);
 
-            var occlusionSphere = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere"), sandGO.transform);
+            var occlusionSphere = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere"), sandGO.transform);
 
-            var proxyShadowCasterGO = GameObject.Instantiate(GameObject.Find("TowerTwin_Body/SandSphere_Draining/ProxyShadowCaster"), sandGO.transform);
+            var proxyShadowCasterGO = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/ProxyShadowCaster"), sandGO.transform);
             var proxyShadowCaster = proxyShadowCasterGO.GetComponent<ProxyShadowCaster>();
             proxyShadowCaster.SetSuperGroup(sandGO.GetComponent<ProxyShadowCasterSuperGroup>());
 

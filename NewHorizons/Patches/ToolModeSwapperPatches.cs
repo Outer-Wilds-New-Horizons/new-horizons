@@ -27,8 +27,9 @@ namespace NewHorizons.Patches
                 mode == ToolMode.Probe || 
                 mode == ToolMode.SignalScope || 
                 mode == ToolMode.Translator;
+            var isInShip = UnityEngine.GameObject.FindObjectOfType<ShipCockpitController>()?._playerAtFlightConsole ?? false;
 
-            if (isHoldingVisionTorch && swappingToRestrictedTool) return false;
+            if (!isInShip && isHoldingVisionTorch && swappingToRestrictedTool) return false;
 
             return true;
         }

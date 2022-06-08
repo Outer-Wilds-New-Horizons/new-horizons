@@ -20,6 +20,8 @@ namespace NewHorizons.Patches
 			var t = hitObj.GetComponent<VisionTorchTarget>();
             if (t != null) //(hitObj.CompareTag("PrisonerDetector"))
 		    {
+                __instance._mindProjector.OnProjectionComplete += t.onSlidesComplete;
+
                 // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
 				__instance._mindProjector._slideCollectionItem = t.slideCollectionContainer; 
 				__instance._mindProjector._mindSlideCollection = t.slideCollection;
@@ -35,6 +37,19 @@ namespace NewHorizons.Patches
                 return false;
             }
 
+            return true;
+        }
+
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MindProjectorTrigger), nameof(MindProjectorTrigger.OnTriggerVolumeExit))]
+	    private static bool MindProjectorTrigger_OnTriggerVolumeExit(MindProjectorTrigger __instance, GameObject hitObj)
+        {
+            var t = hitObj.GetComponent<VisionTorchTarget>();
+            if (t != null) //(hitObj.CompareTag("PrisonerDetector"))
+		    {
+                __instance._mindProjector.OnProjectionComplete -= t.onSlidesComplete;
+            }
             return true;
         }
     }

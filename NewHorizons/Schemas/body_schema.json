@@ -30,6 +30,10 @@
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen?"
     },
+    "Cloak": {
+      "description": "Add a cloaking field to this planet",
+      "$ref": "#/definitions/CloakModule"
+    },
     "destroy": {
       "type": "boolean",
       "description": "`true` if you want to delete this planet"
@@ -70,6 +74,10 @@
     "Props": {
       "description": "Spawn various objects on this body",
       "$ref": "#/definitions/PropModule"
+    },
+    "ReferenceFrame": {
+      "description": "Reference frame properties of this body",
+      "$ref": "#/definitions/ReferenceFrameModule"
     },
     "removeChildren": {
       "type": "array",
@@ -289,6 +297,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "cloudsPrefab": {
+          "description": "Should these clouds be based on Giant's Deep's banded clouds, or the Quantum Moon's non-banded clouds?",
+          "$ref": "#/definitions/CloudPrefabType"
+        },
         "capPath": {
           "type": "string",
           "description": "Relative filepath to the cloud cap texture, if the planet has clouds."
@@ -333,12 +345,22 @@
         "unlit": {
           "type": "boolean",
           "description": "If the top layer shouldn't have shadows. Set to true if you're making a brown dwarf for example."
-        },
-        "useBasicCloudShader": {
-          "type": "boolean",
-          "description": "Set to `false` in order to use Giant's Deep's shader. Set to `true` to just apply the cloud texture as is."
         }
       }
+    },
+    "CloudPrefabType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "GiantsDeep",
+        "QuantumMoon",
+        "Basic"
+      ],
+      "enum": [
+        "giantsDeep",
+        "quantumMoon",
+        "basic"
+      ]
     },
     "CloudFluidType": {
       "type": "string",
@@ -384,11 +406,6 @@
           "type": "boolean",
           "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever\nhave this set to true."
         },
-        "cloakRadius": {
-          "type": "number",
-          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
-          "format": "float"
-        },
         "cometTailRotation": {
           "description": "If it has a comet tail, it'll be oriented according to these Euler angles.",
           "$ref": "#/definitions/MVector3"
@@ -409,11 +426,6 @@
         "hasMapMarker": {
           "type": "boolean",
           "description": "If the body should have a marker on the map screen."
-        },
-        "hasReferenceFrame": {
-          "type": "boolean",
-          "description": "Allows the object to be targeted on the map.",
-          "default": true
         },
         "invulnerableToSun": {
           "type": "boolean",
@@ -437,6 +449,11 @@
         "surfaceSize": {
           "type": "number",
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
+          "format": "float"
+        },
+        "zeroGravityRadius": {
+          "type": "number",
+          "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
           "format": "float"
         }
       }
@@ -470,6 +487,25 @@
         "linear",
         "inverseSquared"
       ]
+    },
+    "CloakModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "radius": {
+          "type": "number",
+          "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
+          "format": "float"
+        },
+        "audioClip": {
+          "type": "string",
+          "description": "Name of an existing AudioClip in the game that will play when entering the cloaking field."
+        },
+        "audioFilePath": {
+          "type": "string",
+          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
+        }
+      }
     },
     "FocalPointModule": {
       "type": "object",
@@ -775,6 +811,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of the detail"
+        },
         "alignToNormal": {
           "type": "boolean",
           "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?"
@@ -1301,6 +1341,32 @@
         }
       }
     },
+    "ReferenceFrameModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hideInMap": {
+          "type": "boolean",
+          "description": "Stop the object from being targeted on the map."
+        },
+        "bracketRadius": {
+          "type": "number",
+          "description": "Radius of the brackets that show up when you target this. Defaults to the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
+        },
+        "targetWhenClose": {
+          "type": "boolean",
+          "description": "If it should be targetable even when super close."
+        },
+        "maxTargetDistance": {
+          "type": "number",
+          "description": "The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.",
+          "format": "float",
+          "default": -1
+        }
+      }
+    },
     "RingModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1730,6 +1796,13 @@
         "tint": {
           "description": "Colour of the star.",
           "$ref": "#/definitions/MColor"
+        },
+        "lightRadius": {
+          "type": "number",
+          "description": "How far the light from the star can reach.",
+          "format": "float",
+          "default": 50000.0,
+          "minimum": 0.0
         }
       }
     },

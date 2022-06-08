@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Props
@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
         {
-            var prefab = GameObject.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher");
+            var prefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher");
 
             var launcherGO = prefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;

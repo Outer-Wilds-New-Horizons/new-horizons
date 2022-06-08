@@ -1,5 +1,6 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
@@ -24,6 +25,7 @@ namespace NewHorizons.Patches
         {
             if (!Main.HasWarpDrive) return true;
 
+            StarChartHandler.ShipLogStarChartMode.UpdateWarpPromptVisibility();
             if (__instance._playerAtFlightConsole && OWInput.IsNewlyPressed(InputLibrary.autopilot, InputMode.ShipCockpit))
             {
                 var targetSystem = StarChartHandler.ShipLogStarChartMode.GetTargetStarSystem();

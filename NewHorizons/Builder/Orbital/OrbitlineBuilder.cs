@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Orbital
 
             var color = Color.white;
             if (config.Orbit.tint != null) color = config.Orbit.tint.ToColor();
-            else if (config.Star != null) color = config.Star.tint.ToColor();
+            else if (config.Star?.tint != null) color = config.Star.tint.ToColor();
             else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint.ToColor();
             else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);

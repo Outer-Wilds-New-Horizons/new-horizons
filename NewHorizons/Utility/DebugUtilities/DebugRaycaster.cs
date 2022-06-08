@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility.DebugUtilities
@@ -33,6 +33,7 @@ namespace NewHorizons.Utility.DebugUtilities
         internal void PrintRaycast()
         {
             DebugRaycastData data = Raycast();
+
             var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
             var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
 
@@ -40,13 +41,16 @@ namespace NewHorizons.Utility.DebugUtilities
             if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
             if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
 
-            _surfaceSphere = AddDebugShape.AddSphere(data.hitObject, 0.1f, Color.green);
-            _normalSphere1 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
-            _normalSphere2 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
+            if (data.hitObject != null)
+            {
+                _surfaceSphere = AddDebugShape.AddSphere(data.hitObject, 0.1f, Color.green);
+                _normalSphere1 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
+                _normalSphere2 = AddDebugShape.AddSphere(data.hitObject, 0.01f, Color.red);
 
-            _surfaceSphere.transform.localPosition = data.pos;
-            _normalSphere1.transform.localPosition = data.pos + data.norm * 0.5f;
-            _normalSphere2.transform.localPosition = data.pos + data.norm;
+                _surfaceSphere.transform.localPosition = data.pos;
+                _normalSphere1.transform.localPosition = data.pos + data.norm * 0.5f;
+                _normalSphere2.transform.localPosition = data.pos + data.norm;
+            }
 
             Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
         }

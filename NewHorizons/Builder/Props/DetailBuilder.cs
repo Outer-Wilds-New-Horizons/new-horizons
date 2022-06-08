@@ -62,6 +62,11 @@ namespace NewHorizons.Builder.Props
                 detailGO = newDetailGO;
             }
 
+            if (detail.rename != null)
+            {
+                detailGO.name = detail.rename;
+            }
+
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
@@ -145,7 +150,21 @@ namespace NewHorizons.Builder.Props
                     {
                         torchItem.enabled = true;
                         torchItem.mindProjectorTrigger.enabled = true;
-                        torchItem.mindSlideProjector._mindProjectorImageEffect = GameObject.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                        torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                    }
+
+                    // fix campfires
+                    if (component is InteractVolume interactVolume)
+                    {
+                        interactVolume._playerCam = GameObject.Find("Player_Body/PlayerCamera").GetComponent<OWCamera>();
+                    }
+                    if (component is PlayerAttachPoint playerAttachPoint)
+                    {
+                        var playerBody = GameObject.Find("Player_Body");
+                        playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
+                        playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
+                        playerAttachPoint._playerTransform = playerBody.transform;
+                        playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
                     }
                 }
                 else
@@ -164,6 +183,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
+                        if (component == null) return;
                         if (component is Animator animator) animator.enabled = true;
                         else if (component is Collider collider) collider.enabled = true;
                         else if (component is Renderer renderer) renderer.enabled = true;
@@ -186,7 +206,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception e)
                     {
-                        Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] : {e.Message}, {e.StackTrace}");
+                        Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] for prop [{prefab.name}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
                     }
                 });
             }
