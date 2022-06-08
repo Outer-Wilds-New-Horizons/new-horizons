@@ -103,7 +103,7 @@ namespace NewHorizons.Builder.Atmosphere
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if (atmo.clouds.useBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             // Lightning
             if (atmo.clouds.hasLightning)
@@ -213,7 +213,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             // Idk why but the axis is weird
-            topRT._localAxis = atmo.clouds.useBasicCloudShader ? Vector3.forward : Vector3.up;
+            topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
             topRT._degreesPerSecond = 10;
             topRT._randomizeRotationRate = false;
 
