@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Body
             cloakFieldController._nearCloakRadius = radius * 800 / 3000f;
 
             cloakFieldController._referenceFrameVolume = OWRB._attachedRFVolume;
-            cloakFieldController._exclusionSector = sector;
+            cloakFieldController._exclusionSector = null; // Must be null! Cloaks in custom solar systems will break otherwise.
             cloakFieldController._cloakSphereVolume = (sector?.transform ?? planetGO.transform).GetComponentInChildren<OWTriggerVolume>();
 
             var cloakSectorController = newCloak.AddComponent<CloakSectorController>();
