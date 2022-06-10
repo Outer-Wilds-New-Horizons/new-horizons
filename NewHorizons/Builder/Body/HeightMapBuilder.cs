@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body.Geometry;
+using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -57,7 +57,8 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
-            if (planetGO.GetComponent<ProxyShadowCasterSuperGroup>() != null) cubeSphere.AddComponent<ProxyShadowCaster>();
+            var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
+            if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             // Fix rotation in the end
             cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));

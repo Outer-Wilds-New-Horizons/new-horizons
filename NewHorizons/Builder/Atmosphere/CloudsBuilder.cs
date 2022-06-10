@@ -10,6 +10,7 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static Shader _sphereShader = null;
         private static Material[] _gdCloudMaterials;
+        private static Material[] _qmCloudMaterials;
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
         private static readonly int Color1 = Shader.PropertyToID("_Color");
@@ -21,7 +22,7 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
-            if (_lightningPrefab == null) _lightningPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
+            if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
             if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Clouds_Bottom_ramp.png");
 
             GameObject cloudsMainGO = new GameObject("Clouds");
@@ -36,8 +37,8 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsBottomGO.transform.localScale = Vector3.one * atmo.clouds.innerCloudRadius;
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
-            bottomTSR.tessellationMeshGroup = GameObject.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            var bottomTSRMaterials = GameObject.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            bottomTSR.tessellationMeshGroup = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
+            var bottomTSRMaterials = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
 
             // If they set a colour apply it to all the materials else keep the default QM one
             if (atmo.clouds.tint != null)
@@ -102,7 +103,7 @@ namespace NewHorizons.Builder.Atmosphere
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
             // For the base shader it has to be rotated idk
-            if (atmo.clouds.useBasicCloudShader) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             // Lightning
             if (atmo.clouds.hasLightning)
@@ -165,15 +166,17 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsTopGO.transform.localScale = Vector3.one * atmo.clouds.outerCloudRadius;
 
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
-            topMF.mesh = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+            topMF.mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
 
             if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
-            if (_gdCloudMaterials == null) _gdCloudMaterials = GameObject.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
+            if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
+            Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
             var tempArray = new Material[2];
 
-            if (atmo.clouds.useBasicCloudShader)
+            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
                 var material = new Material(_sphereShader);
                 if (atmo.clouds.unlit) material.renderQueue = 2550;
@@ -183,14 +186,14 @@ namespace NewHorizons.Builder.Atmosphere
             }
             else
             {
-                var material = new Material(_gdCloudMaterials[0]);
+                var material = new Material(prefabMaterials[0]);
                 if (atmo.clouds.unlit) material.renderQueue = 2550;
                 material.name = atmo.clouds.unlit ? "AdvancedCloud" : "AdvancedShadowCloud";
                 tempArray[0] = material;
             }
 
             // This is the stencil material for the fog under the clouds
-            tempArray[1] = new Material(_gdCloudMaterials[1]);
+            tempArray[1] = new Material(prefabMaterials[1]);
             topMR.sharedMaterials = tempArray;
 
             foreach (var material in topMR.sharedMaterials)
@@ -210,7 +213,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             // Idk why but the axis is weird
-            topRT._localAxis = atmo.clouds.useBasicCloudShader ? Vector3.forward : Vector3.up;
+            topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
             topRT._degreesPerSecond = 10;
             topRT._randomizeRotationRate = false;
 

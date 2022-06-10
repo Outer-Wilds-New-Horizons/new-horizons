@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -59,7 +59,7 @@ namespace NewHorizons.Builder.Orbital
             fakeMassConfig.name = config.name + "_FakeBarycenterMass";
             fakeMassConfig.Base.sphereOfInfluence = 0;
             fakeMassConfig.Base.hasMapMarker = false;
-            fakeMassConfig.Base.hasReferenceFrame = false;
+            fakeMassConfig.ReferenceFrame.hideInMap = true;
 
             fakeMassConfig.Orbit = new OrbitModule();
             fakeMassConfig.Orbit.CopyPropertiesFrom(config.Orbit);

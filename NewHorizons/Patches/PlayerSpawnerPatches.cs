@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Patches
 {

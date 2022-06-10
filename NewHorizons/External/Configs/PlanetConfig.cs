@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.External.Modules;
@@ -44,6 +44,11 @@ namespace NewHorizons.External.Configs
         public string[] childrenToDestroy;
 
         #endregion Obsolete
+
+        /// <summary>
+        /// Add a cloaking field to this planet
+        /// </summary>
+        public CloakModule Cloak;
 
         /// <summary>
         /// `true` if you want to delete this planet
@@ -95,6 +100,11 @@ namespace NewHorizons.External.Configs
         /// Spawn various objects on this body
         /// </summary>
         public PropModule Props;
+
+        /// <summary>
+        /// Reference frame properties of this body
+        /// </summary>
+        public ReferenceFrameModule ReferenceFrame;
 
         /// <summary>
         /// A list of paths to child GameObjects to destroy on this planet
@@ -157,6 +167,7 @@ namespace NewHorizons.External.Configs
             if (Base == null) Base = new BaseModule();
             if (Orbit == null) Orbit = new OrbitModule();
             if (ShipLog == null) ShipLog = new ShipLogModule();
+            if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
         }
 
         public void MigrateAndValidate()
@@ -190,7 +201,15 @@ namespace NewHorizons.External.Configs
 
             if (Base.isSatellite) Base.showMinimap = false;
 
+            if (!Base.hasReferenceFrame) ReferenceFrame.hideInMap = true;
+
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
+
+            if (Base.cloakRadius != 0)
+                Cloak = new CloakModule
+                {
+                    radius = Base.cloakRadius
+                };
 
             if (Base.hasAmbientLight) Base.ambientLight = 0.5f;
 
@@ -216,6 +235,10 @@ namespace NewHorizons.External.Configs
                 // Former is obsolete, latter is to validate
                 if (Atmosphere.hasAtmosphere || Atmosphere.atmosphereTint != null)
                     Atmosphere.useAtmosphereShader = true;
+
+                // useBasicCloudShader is obsolete
+                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader) 
+                    Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
             }
 
             if (Props?.tornados != null)

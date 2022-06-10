@@ -39,6 +39,7 @@ namespace NewHorizons.Utility.DebugUtilities
         internal void PrintRaycast()
         {
             DebugRaycastData data = Raycast();
+
             var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
             var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
         

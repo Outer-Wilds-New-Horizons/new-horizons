@@ -159,7 +159,14 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
-            Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            try
+            {
+                Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+            }
         }
 
         private void OnSceneUnloaded(Scene scene)
@@ -190,7 +197,7 @@ namespace NewHorizons
                     }
                     launchController.enabled = false;
                 }
-                var nomaiProbe = GameObject.Find("NomaiProbe_Body");
+                var nomaiProbe = SearchUtilities.Find("NomaiProbe_Body");
                 if (nomaiProbe != null) nomaiProbe.gameObject.SetActive(false);
             }
 
@@ -221,7 +228,7 @@ namespace NewHorizons
 
                 if (_ship != null)
                 {
-                    _ship = GameObject.Find("Ship_Body").InstantiateInactive();
+                    _ship = SearchUtilities.Find("Ship_Body").InstantiateInactive();
                     DontDestroyOnLoad(_ship);
                 }
 
@@ -238,7 +245,7 @@ namespace NewHorizons
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
                 HasWarpDrive = StarChartHandler.CanWarp();
-                _shipWarpController = GameObject.Find("Ship_Body").AddComponent<ShipWarpController>();
+                _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
@@ -251,7 +258,7 @@ namespace NewHorizons
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
                 // Fix the map satellite
-                GameObject.Find("HearthianMapSatellite_Body").AddComponent<MapSatelliteOrbitFix>();
+                SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
             }
             else
             {

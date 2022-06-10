@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
@@ -31,12 +31,6 @@ namespace NewHorizons.External.Modules
         public bool centerOfSolarSystem;
 
         /// <summary>
-        /// Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you
-        /// don't want a cloak, leave this as 0.
-        /// </summary>
-        public float cloakRadius;
-
-        /// <summary>
         /// If it has a comet tail, it'll be oriented according to these Euler angles.
         /// </summary>
         public MVector3 cometTailRotation;
@@ -63,11 +57,6 @@ namespace NewHorizons.External.Modules
         public bool hasMapMarker;
 
         /// <summary>
-        /// Allows the object to be targeted on the map.
-        /// </summary>
-        [DefaultValue(true)] public bool hasReferenceFrame = true;
-
-        /// <summary>
         /// Can this planet survive entering a star?
         /// </summary>
         public bool invulnerableToSun;
@@ -92,6 +81,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public float surfaceSize;
 
+        /// <summary>
+        /// Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.
+        /// </summary>
+        public float zeroGravityRadius;
+
         #region Obsolete
 
         [Obsolete("IsSatellite is deprecated, please use ShowMinimap instead")]
@@ -111,6 +105,12 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
         public bool hasAmbientLight;
+
+        [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
+        [DefaultValue(true)] public bool hasReferenceFrame = true;
+
+        [Obsolete("CloakRadius is deprecated, please use CloakModule instead")]
+        public float cloakRadius;
 
         #endregion Obsolete
     }

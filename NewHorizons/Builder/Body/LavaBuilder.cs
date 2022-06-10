@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+using NewHorizons.Utility;
 using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
@@ -28,7 +29,7 @@ namespace NewHorizons.Builder.Body
             moltenCore.transform.position = planetGO.transform.position;
             moltenCore.transform.localScale = Vector3.one * module.size;
 
-            var lavaSphere = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
+            var lavaSphere = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
             lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
@@ -37,7 +38,7 @@ namespace NewHorizons.Builder.Body
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
 
-            var moltenCoreProxy = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/MoltenCore_Proxy"), moltenCore.transform); ;
+            var moltenCoreProxy = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/MoltenCore_Proxy"), moltenCore.transform); ;
             moltenCoreProxy.name = "MoltenCore_Proxy";
 
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
@@ -50,7 +51,7 @@ namespace NewHorizons.Builder.Body
             sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };
             sectorProxy.SetSector(sector);
 
-            var destructionVolume = GameObject.Instantiate(GameObject.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);
+            var destructionVolume = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
             destructionVolume.SetActive(true);
 

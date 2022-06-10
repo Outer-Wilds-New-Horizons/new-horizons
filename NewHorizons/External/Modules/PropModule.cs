@@ -16,10 +16,6 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public DetailInfo[] details;
 
-        public QuantumSocketGroupInfo[] quantumSocketGroups;
-        class QuantumSocketGroupInfo { string id; QuantumSocketInfo[] sockets; }
-        class QuantumSocketInfo { MVector3 position; MVector3 rotation; float probability; }
-
         /// <summary>
         /// Add dialogue triggers to this planet
         /// </summary>
@@ -117,6 +113,11 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class DetailInfo
         {
+            /// <summary>
+            /// An optional rename of the detail
+            /// </summary>
+            public string rename;
+
             /// <summary>
             /// Do we override rotation and try to automatically align this object to stand upright on the body's surface?
             /// </summary>

@@ -26,7 +26,7 @@ namespace NewHorizons.Handlers
             _entryIDsToNHBody = new Dictionary<string, NewHorizonsBody>();
             _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
 
-            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
+            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(SearchUtilities.Find(PAN_ROOT_PATH));
             _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
             _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
         }

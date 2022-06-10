@@ -67,18 +67,18 @@ namespace NewHorizons.Builder.Props
                 _ghostArcPrefabs.Add(arc);
             }
 
-            _scrollPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive();
+            _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive();
             _scrollPrefab.name = "Prefab_NOM_Scroll";
 
-            _computerPrefab = GameObject.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive();
+            _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive();
             _computerPrefab.name = "Prefab_NOM_Computer";
             _computerPrefab.transform.rotation = Quaternion.identity;
 
-            _cairnPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive();
+            _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive();
             _cairnPrefab.name = "Prefab_NOM_Cairn";
             _cairnPrefab.transform.rotation = Quaternion.identity;
 
-            _recorderPrefab = GameObject.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive();
+            _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive();
             _recorderPrefab.name = "Prefab_NOM_Recorder";
             _recorderPrefab.transform.rotation = Quaternion.identity;
         }
