@@ -69,7 +69,7 @@ New Horizons was made with help from:
 - And the Outer Wilds modding server.
 
 Translation credits:
-- Russian: Tlya
+- Russian: GrayFix and Tlya
 - German: Nolram
 - Spanish: Ciborgm9 and Ink
 
