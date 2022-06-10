@@ -37,11 +37,9 @@ namespace NewHorizons.Components
             MakeWhiteHole();
 
             _isWarpingIn = false;
-
-            gameObject.SetActive(false);
-            _oneShotSource = base.gameObject.AddComponent<OWAudioSource>();
+            
+            _oneShotSource = gameObject.AddComponent<OWAudioSource>();
             _oneShotSource._track = OWAudioMixer.TrackName.Ship;
-            gameObject.SetActive(true);
 
             GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
