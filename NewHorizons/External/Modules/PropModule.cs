@@ -16,6 +16,17 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public DetailInfo[] details;
 
+
+
+
+        public QuantumGroupInfo[] quantumGroups;
+        public enum QuantumGroupType { "sockets" = 0; "states" = 1 }
+        public class QuantumGroupInfo { QuantumGroupType type; string id; QuantumSocketInfo[] sockets; } // QuantumSocketInfo is only used for type = "sockets"
+        class QuantumSocketInfo { MVector3 position; MVector3 rotation; float probability; }
+
+
+
+
         /// <summary>
         /// Add dialogue triggers to this planet
         /// </summary>
@@ -158,6 +169,7 @@ namespace NewHorizons.External.Modules
             /// Scale the prop
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
+
 
             public string quantumGroupID;
         }
