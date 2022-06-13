@@ -1018,14 +1018,16 @@
         "Scroll",
         "Computer",
         "Cairn",
-        "Recorder"
+        "Recorder",
+        "PreCrashRecorder"
       ],
       "enum": [
         "wall",
         "scroll",
         "computer",
         "cairn",
-        "recorder"
+        "recorder",
+        "preCrashRecorder"
       ]
     },
     "RaftInfo": {
