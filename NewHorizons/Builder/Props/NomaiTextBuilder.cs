@@ -19,6 +19,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _recorderPrefab;
+        private static GameObject _preCrashRecorderPrefab;
 
         private static void InitPrefabs()
         {
@@ -65,6 +66,10 @@ namespace NewHorizons.Builder.Props
             _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive();
             _recorderPrefab.name = "Prefab_NOM_Recorder";
             _recorderPrefab.transform.rotation = Quaternion.identity;
+            
+            _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive();
+            _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
+            _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
         }
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
@@ -222,9 +227,10 @@ namespace NewHorizons.Builder.Props
                     sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(cairnObject));
                     break;
                 }
+                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                 {
-                    var recorderObject = _recorderPrefab.InstantiateInactive();
+                    var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
 
                     recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
                     recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);

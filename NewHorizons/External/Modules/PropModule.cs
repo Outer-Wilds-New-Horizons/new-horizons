@@ -407,7 +407,9 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"cairn")] Cairn = 3,
 
-                [EnumMember(Value = @"recorder")] Recorder = 4
+                [EnumMember(Value = @"recorder")] Recorder = 4,
+                
+                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5
             }
 
             /// <summary>
