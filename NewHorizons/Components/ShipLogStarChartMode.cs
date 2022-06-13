@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components
 {
@@ -105,12 +106,15 @@ namespace NewHorizons.Components
             }
 
             var newCard = GameObject.Instantiate(_cardTemplate, parent);
-            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>();
+            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
             var name = UniqueIDToName(uniqueID);
 
             textComponent.text = name;
             if (name.Length > 17) textComponent.fontSize = 10;
+            // Do it next frame
+            var fontPath = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot/TH_VILLAGE/EntryCardRoot/NameBackground/Name";
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
 
             newCard.SetActive(true);
             newCard.transform.name = uniqueID;
@@ -273,16 +277,20 @@ namespace NewHorizons.Components
         private void SetWarpTarget(ShipLogEntryCard shipLogEntryCard)
         {
             RemoveWarpTarget(false);
-            _oneShotSource.PlayOneShot(global::AudioType.ShipLogUnmarkLocation, 1f);
+            _oneShotSource.PlayOneShot(AudioType.ShipLogUnmarkLocation, 1f);
             _target = shipLogEntryCard;
             _target.SetMarkedOnHUD(true);
             Locator._rfTracker.UntargetReferenceFrame();
-
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
-            _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueIDToName(shipLogEntryCard.name).ToUpper()}");
+
+            var name = UniqueIDToName(shipLogEntryCard.name);
+
+            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpper());
+            _warpNotificationData = new NotificationData(warpNotificationDataText);
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 
-            _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueIDToName(shipLogEntryCard.name)}");
+            var warpPromptText = "<CMD> " + TranslationHandler.GetTranslation("ENGAGE_WARP_PROMPT", TranslationHandler.TextType.UI).Replace("{0}", name);
+            _warpPrompt.SetText(warpPromptText);
         }
 
         private void RemoveWarpTarget(bool playSound = false)
