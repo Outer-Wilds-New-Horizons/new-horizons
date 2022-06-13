@@ -42,6 +42,21 @@ namespace NewHorizons.Utility
             }
         }
 
+        public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
+        {
+            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            if (_loadedTextures.ContainsKey(path))
+            {
+                if (_loadedTextures[path] == texture)
+                {
+                    _loadedTextures.Remove(path);
+                    UnityEngine.Object.Destroy(texture);
+                }
+            }
+
+            UnityEngine.Object.Destroy(texture);
+        }
+
         public static void ClearCache()
         {
             Logger.Log("Clearing image cache");
