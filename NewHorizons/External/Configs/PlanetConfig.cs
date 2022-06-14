@@ -249,7 +249,8 @@ namespace NewHorizons.External.Configs
             // TODO: validate the following
             // for each quantum group,
             //      if type == sockets, group.sockets should not be null or empty
-            //      if type == sockets, count every prop that references this group. the number should be <= group.sockets.Count
+            //      if type == sockets and numPropsInGroup == numSockets, one by one set the location of each prop to the location of a socket, then change the type of the group to "shuffle"
+            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
             // for each detail prop,
             //      if detail.quantumGroupID != null, there exists a quantum group with that id
             //      if detail.quantumGroupID != null, ensure that that group belongs to the same planet as the prop (cross planet quantum objects are not supported yet)
