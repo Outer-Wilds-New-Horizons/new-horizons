@@ -252,6 +252,7 @@ namespace NewHorizons.External.Configs
             //      if type == sockets, count every prop that references this group. the number should be <= group.sockets.Count
             // for each detail prop,
             //      if detail.quantumGroupID != null, there exists a quantum group with that id
+            //      if detail.quantumGroupID != null, ensure that that group belongs to the same planet as the prop (cross planet quantum objects are not supported yet)
         }
     }
 }
