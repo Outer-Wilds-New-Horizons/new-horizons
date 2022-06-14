@@ -245,26 +245,26 @@ namespace NewHorizons.Utility.DebugMenu
                                         GUILayout.Label("Spiral");
 
                                         // TODO: implement disabled feature: change spiral type and variation
-                                        //GUILayout.Label("Type");
-                                        //    GUILayout.BeginHorizontal();
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
-                                        //    if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
-                                        //    if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
-                                        //    if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
-                                        //    GUI.enabled = true;
-                                        //    GUILayout.EndHorizontal();
+                                        GUILayout.Label("Type");
+                                            GUILayout.BeginHorizontal();
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
+                                            if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
+                                            if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
+                                            if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
+                                            GUI.enabled = true;
+                                            GUILayout.EndHorizontal();
                                         
-                                        //GUILayout.Label("Variation");
-                                        //    GUILayout.BeginHorizontal();
-                                        //    var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
-                                        //    if (GUILayout.Button("Reroll variation"))
-                                        //    {
-                                        //        spiralMeta.spiral.variation = UnityEngine.Random.Range(0, varietyCount);
-                                        //    }
-                                        //    GUI.enabled = true;
-                                        //    GUILayout.EndHorizontal();
+                                        GUILayout.Label("Variation");
+                                            GUILayout.BeginHorizontal();
+                                            var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
+                                            var newVariation = int.Parse(GUILayout.TextField(spiralMeta.spiral.variation+""));
+                                            newVariation = Mathf.Min(Mathf.Max(0, newVariation), varietyCount);
+                                            if (newVariation != spiralMeta.spiral.variation) changed = true;
+                                            spiralMeta.spiral.variation = newVariation;
+                                            GUI.enabled = true;
+                                            GUILayout.EndHorizontal();
         
 
                                         // TODO: debug disabled feature: place spiral point on parent
@@ -346,9 +346,24 @@ namespace NewHorizons.Utility.DebugMenu
                                     // cache required stuff, destroy spiralMeta.go, call NomaiTextBuilder.MakeArc using spiralMeta.spiral and cached stuff
                                     // PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, int i
                                     var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
-                                    var textEntryId = spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._entryID;
+                                    var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
+                                    var oldTextLineComponent = spiralMeta.spiralGo.GetComponent<NomaiTextLine>();
+                                    var indexInParent = 0;
+                                    for (indexInParent = 0; indexInParent < wallTextComponent._textLines.Length; indexInParent++) if (oldTextLineComponent == wallTextComponent._textLines[indexInParent]) break;
+                                    var textEntryId = oldTextLineComponent._entryID;
                                     GameObject.Destroy(spiralMeta.spiralGo);
                                     spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId);
+                                    wallTextComponent._textLines[indexInParent] = spiralMeta.spiralGo.GetComponent<NomaiTextLine>();
+
+                                    spiralMeta.spiralGo.name = "Brandnewspiral";
+
+                                    var s = AddDebugShape.AddSphere(wallTextComponent._sector.gameObject, 0.1f, Color.green);
+                                    s.transform.localPosition = wallTextComponent._sector.transform.InverseTransformPoint(spiralMeta.spiralGo.transform.position);                        
+
+                                    //var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
+                                    //var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
+                                    //foreach(NomaiTextLine l in wallTextComponent._textLines) GameObject.Destroy(l.gameObject);
+                                    //NomaiTextBuilder.RefreshArcs(wallTextComponent, conversationZone, spiralMeta.conversation);
                                 }
 
                                 GUILayout.Space(10);

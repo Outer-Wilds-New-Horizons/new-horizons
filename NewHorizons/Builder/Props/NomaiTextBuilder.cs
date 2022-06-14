@@ -307,12 +307,18 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        private static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
             var dict = MakeNomaiTextDict(xml);
 
             nomaiWallText._dictNomaiTextData = dict;
 
+            RefreshArcs(nomaiWallText, conversationZone, info);
+        }
+
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info) 
+        {
+            var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed);
 
             var arcsByID = new Dictionary<int, GameObject>();

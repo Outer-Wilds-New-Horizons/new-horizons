@@ -20,7 +20,7 @@ namespace NewHorizons.External.Modules
 
 
         public QuantumGroupInfo[] quantumGroups;
-        public enum QuantumGroupType { "sockets" = 0; "states" = 1 }
+        public enum QuantumGroupType { sockets = 0, states = 1 }
         public class QuantumGroupInfo { QuantumGroupType type; string id; QuantumSocketInfo[] sockets; } // QuantumSocketInfo is only used for type = "sockets"
         class QuantumSocketInfo { MVector3 position; MVector3 rotation; float probability; }
 
