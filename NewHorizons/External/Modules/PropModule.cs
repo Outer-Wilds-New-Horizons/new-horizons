@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace NewHorizons.External.Modules
 {
@@ -191,10 +192,7 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"hurricane")] Hurricane = 2
             }
 
-            /// <summary>
-            /// [DEPRECATED] Should this tornado shoot you down instead of up?
-            /// </summary>
-            public bool downwards;
+            [Obsolete("Downwards is deprecated. Use Type instead.")] public bool downwards;
 
             /// <summary>
             /// Alternative to setting the position. Will choose a random place at this elevation.
