@@ -1018,14 +1018,16 @@
         "Scroll",
         "Computer",
         "Cairn",
-        "Recorder"
+        "Recorder",
+        "PreCrashRecorder"
       ],
       "enum": [
         "wall",
         "scroll",
         "computer",
         "cairn",
-        "recorder"
+        "recorder",
+        "preCrashRecorder"
       ]
     },
     "RaftInfo": {
@@ -1238,10 +1240,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "downwards": {
-          "type": "boolean",
-          "description": "[DEPRECATED] Should this tornado shoot you down instead of up?"
-        },
         "elevation": {
           "type": "number",
           "description": "Alternative to setting the position. Will choose a random place at this elevation.",
@@ -1280,6 +1278,11 @@
         "wanderRate": {
           "type": "number",
           "description": "The rate at which the tornado will wander around the planet. Set to 0 for it to be stationary. Should be around\n0.1.",
+          "format": "float"
+        },
+        "audioDistance": {
+          "type": "number",
+          "description": "The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.",
           "format": "float"
         }
       }

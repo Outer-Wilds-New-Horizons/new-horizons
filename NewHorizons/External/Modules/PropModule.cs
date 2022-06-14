@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using System;
 
 namespace NewHorizons.External.Modules
 {
@@ -205,10 +206,7 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"hurricane")] Hurricane = 2
             }
 
-            /// <summary>
-            /// [DEPRECATED] Should this tornado shoot you down instead of up?
-            /// </summary>
-            public bool downwards;
+            [Obsolete("Downwards is deprecated. Use Type instead.")] public bool downwards;
 
             /// <summary>
             /// Alternative to setting the position. Will choose a random place at this elevation.
@@ -250,6 +248,11 @@ namespace NewHorizons.External.Modules
             /// 0.1.
             /// </summary>
             public float wanderRate;
+
+            /// <summary>
+            /// The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.
+            /// </summary>
+            public float audioDistance;
         }
 
         [JsonObject]
@@ -421,7 +424,9 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"cairn")] Cairn = 3,
 
-                [EnumMember(Value = @"recorder")] Recorder = 4
+                [EnumMember(Value = @"recorder")] Recorder = 4,
+                
+                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5
             }
 
             /// <summary>

@@ -45,15 +45,7 @@ namespace NewHorizons.Builder.Orbital
             {
                 orbitLine = orbitGO.AddComponent<NHOrbitLine>();
 
-                var a = astroObject.semiMajorAxis;
-                var e = astroObject.eccentricity;
-                var b = a * Mathf.Sqrt(1f - (e * e));
-                var l = astroObject.longitudeOfAscendingNode;
-                var p = astroObject.argumentOfPeriapsis;
-                var i = astroObject.inclination;
-
-                (orbitLine as NHOrbitLine).SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
-                (orbitLine as NHOrbitLine).SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
+                (orbitLine as NHOrbitLine).SetFromParameters(astroObject);
             }
 
             var color = Color.white;

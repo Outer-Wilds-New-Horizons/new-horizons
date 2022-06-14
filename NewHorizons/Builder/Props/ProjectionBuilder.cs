@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Props
             imageLoader.imageLoadedEvent.AddListener(
                 (Texture2D tex, int index) => 
                 { 
-                    slideCollection.slides[index].textureOverride = ImageUtilities.Invert(tex); 
+                    slideCollection.slides[index]._image = ImageUtilities.Invert(tex); 
 
                     // Track the first 15 to put on the slide reel object
                     if (index < 15) 
@@ -176,7 +176,7 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = ImageUtilities.Invert(tex); });
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = ImageUtilities.Invert(tex); });
 
             slideCollectionContainer.slideCollection = slideCollection;
 
@@ -185,8 +185,8 @@ namespace NewHorizons.Builder.Props
 
             // Change the picture on the lens
             var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();
-            lens.materials[1].mainTexture = slideCollection.slides[0]._textureOverride;
-            lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._textureOverride);
+            lens.materials[1].mainTexture = slideCollection.slides[0]._image;
+            lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._image);
 
             projectorObj.SetActive(true);
         }
@@ -224,7 +224,7 @@ namespace NewHorizons.Builder.Props
 
                 slideCollection.slides[i] = slide;
             }
-            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index].textureOverride = tex; });
+            imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
 
 
             // attatch a component to store all the data for the slides that play when a vision torch scans this target
@@ -298,7 +298,7 @@ namespace NewHorizons.Builder.Props
             imageLoader.imageLoadedEvent.AddListener(
                 (Texture2D tex, int index) => 
                 { 
-                    slideCollection.slides[index].textureOverride = tex;
+                    slideCollection.slides[index]._image = tex;
                     displaySlidesLoaded++; // threading moment
 
                     if (displaySlidesLoaded >= slides.Length)

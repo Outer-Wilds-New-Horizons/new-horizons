@@ -81,6 +81,9 @@ namespace NewHorizons
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
+            // Else it doesn't get set idk
+            if (SceneManager.GetActiveScene().name == "TitleScreen") _currentStarSystem = _defaultSystemOverride;
+
             var wasUsingCustomTitleScreen = _useCustomTitleScreen;
             _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
             // Reload the title screen if this was updated on it

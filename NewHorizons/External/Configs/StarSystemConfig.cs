@@ -15,11 +15,6 @@ namespace NewHorizons.External.Configs
         public bool canEnterViaWarpDrive = true;
 
         /// <summary>
-        /// [DEPRECATED] Not implemented
-        /// </summary>
-        public NomaiCoordinates coords;
-
-        /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
         /// </summary>
         public bool destroyStockPlanets = true;
