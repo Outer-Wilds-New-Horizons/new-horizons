@@ -20,6 +20,7 @@ namespace NewHorizons.Components
         private ConstantForceDetector _detector;
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
+        private OrbitLine _orbitLine;
 
         public int CurrentIndex { get { return _currentIndex; } }
 
@@ -31,6 +32,7 @@ namespace NewHorizons.Components
             _detector = GetComponentInChildren<ConstantForceDetector>();
             _alignment = GetComponent<AlignWithTargetBody>();
             _rb = GetComponent<OWRigidbody>();
+            _orbitLine = GetComponent<OrbitLine>();
 
             GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
 
@@ -143,6 +145,16 @@ namespace NewHorizons.Components
             }
 
             _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
+
+            if (_orbitLine is NHOrbitLine nhOrbitLine)
+            {
+                nhOrbitLine.SetFromParameters(orbitalParameters);
+            }
+
+            if (_orbitLine is TrackingOrbitLine trackingOrbitLine)
+            {
+                trackingOrbitLine.Reset();
+            }
         }
 
         private void OnPlayerBlink()
