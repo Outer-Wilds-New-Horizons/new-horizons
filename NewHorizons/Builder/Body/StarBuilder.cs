@@ -73,9 +73,17 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
-            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
+            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = true;
             deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             deathVolume.name = "DestructionVolume";
+
+            var planetDestructionVolume = Object.Instantiate(deathVolume, starGO.transform);
+            planetDestructionVolume.transform.localPosition = Vector3.zero;
+            planetDestructionVolume.transform.localScale = Vector3.one;
+            planetDestructionVolume.GetComponent<SphereCollider>().radius = 0.75f;
+            planetDestructionVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
+            planetDestructionVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
+            planetDestructionVolume.name = "PlanetDestructionVolume";
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
