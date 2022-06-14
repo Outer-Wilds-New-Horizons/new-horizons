@@ -259,11 +259,16 @@ namespace NewHorizons.Utility.DebugMenu
                                         GUILayout.Label("Variation");
                                             GUILayout.BeginHorizontal();
                                             var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
-                                            var newVariation = int.Parse(GUILayout.TextField(spiralMeta.spiral.variation+""));
-                                            newVariation = Mathf.Min(Mathf.Max(0, newVariation), varietyCount);
-                                            if (newVariation != spiralMeta.spiral.variation) changed = true;
-                                            spiralMeta.spiral.variation = newVariation;
-                                            GUI.enabled = true;
+                                            //var newVariation = int.Parse(GUILayout.TextField(spiralMeta.spiral.variation+""));
+                                            //newVariation = Mathf.Min(Mathf.Max(0, newVariation), varietyCount);
+                                            //if (newVariation != spiralMeta.spiral.variation) changed = true;
+                                            //spiralMeta.spiral.variation = newVariation;
+                                            GUI.enabled = spiralMeta.spiral.variation > 0;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) { spiralMeta.spiral.variation--; changed=true; } 
+                                            GUILayout.Label(spiralMeta.spiral.variation+"", GUILayout.ExpandWidth(false));
+                                            GUI.enabled = spiralMeta.spiral.variation < varietyCount-1;
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) { spiralMeta.spiral.variation++; changed=true; } 
+
                                             GUILayout.EndHorizontal();
         
 
