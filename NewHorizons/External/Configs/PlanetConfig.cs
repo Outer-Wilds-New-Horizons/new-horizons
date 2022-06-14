@@ -245,6 +245,13 @@ namespace NewHorizons.External.Configs
                 foreach (var tornado in Props.tornados)
                     if (tornado.downwards)
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
+
+            // TODO: validate the following
+            // for each quantum group,
+            //      if type == sockets, group.sockets should not be null or empty
+            //      if type == sockets, count every prop that references this group. the number should be <= group.sockets.Count
+            // for each detail prop,
+            //      if detail.quantumGroupID != null, there exists a quantum group with that id
         }
     }
 }
