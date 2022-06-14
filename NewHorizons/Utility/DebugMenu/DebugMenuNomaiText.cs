@@ -364,6 +364,8 @@ namespace NewHorizons.Utility.DebugMenu
                                     //var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
                                     //foreach(NomaiTextLine l in wallTextComponent._textLines) GameObject.Destroy(l.gameObject);
                                     //NomaiTextBuilder.RefreshArcs(wallTextComponent, conversationZone, spiralMeta.conversation);
+
+                                    Locator.GetPlayerBody().gameObject.GetComponentInChildren<DebugArrow>().target = spiralMeta.spiralGo.transform;
                                 }
 
                                 GUILayout.Space(10);

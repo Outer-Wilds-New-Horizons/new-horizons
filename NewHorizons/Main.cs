@@ -286,6 +286,7 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugNomaiTextPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+            DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject);
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);

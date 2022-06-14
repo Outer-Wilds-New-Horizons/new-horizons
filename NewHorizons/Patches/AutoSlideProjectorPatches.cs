@@ -1,14 +1,15 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 
-namespace NewHorizons.Patches;
-
-[HarmonyPatch]
-public class AutoSlideProjectorPatches
-{
-    [HarmonyPostfix]
-    [HarmonyPatch(typeof(AutoSlideProjector), nameof(AutoSlideProjector.Play))]
-    public static void AutoSlideProjector_Play(ref SlideCollectionContainer ____slideCollectionItem)
+namespace NewHorizons.Patches 
+{ 
+    [HarmonyPatch]
+    public class AutoSlideProjectorPatches
     {
-        ____slideCollectionItem.enabled = true;
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(AutoSlideProjector), nameof(AutoSlideProjector.Play))]
+        public static void AutoSlideProjector_Play(ref SlideCollectionContainer ____slideCollectionItem)
+        {
+            ____slideCollectionItem.enabled = true;
+        }
     }
 }
