@@ -364,6 +364,17 @@ namespace NewHorizons.Utility.DebugMenu
                                     //var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
                                     //foreach(NomaiTextLine l in wallTextComponent._textLines) GameObject.Destroy(l.gameObject);
                                     //NomaiTextBuilder.RefreshArcs(wallTextComponent, conversationZone, spiralMeta.conversation);
+                                    
+                                    foreach(NomaiTextLine line in wallTextComponent._textLines)
+                                    {
+                                        line.GetComponent<NomaiTextLine>()._active = true;
+                                        line.GetComponent<NomaiTextLine>().SetTranslatedState(true);
+                                        line.GetComponent<NomaiTextLine>().SetTranslatedState(false);
+                                    }
+
+                                    //spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._active = true;
+                                    //spiralMeta.spiralGo.GetComponent<NomaiTextLine>().SetTranslatedState(true);
+                                    ////wallTextComponent.ShowImmediate();
 
                                     Locator.GetPlayerBody().gameObject.GetComponentInChildren<DebugArrow>().target = spiralMeta.spiralGo.transform;
                                 }
