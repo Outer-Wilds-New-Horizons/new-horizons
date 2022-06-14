@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
@@ -20,6 +20,8 @@ namespace NewHorizons.Components
         private ConstantForceDetector _detector;
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
+
+        public int CurrentIndex { get { return _currentIndex; } }
 
         public override void Awake()
         {
