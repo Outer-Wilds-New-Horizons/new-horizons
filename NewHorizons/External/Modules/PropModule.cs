@@ -234,6 +234,11 @@ namespace NewHorizons.External.Modules
             /// 0.1.
             /// </summary>
             public float wanderRate;
+
+            /// <summary>
+            /// The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.
+            /// </summary>
+            public float audioDistance;
         }
 
         [JsonObject]

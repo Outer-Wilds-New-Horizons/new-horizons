@@ -116,8 +116,9 @@ namespace NewHorizons.Builder.Props
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
-            audioSource.maxDistance = 10 * scale;
-            audioSource.minDistance = scale;
+            var maxDistance = info.audioDistance == 0 ? 10 * scale : info.audioDistance;
+            audioSource.maxDistance = maxDistance;
+            audioSource.minDistance = maxDistance / 10f;
 
             var controller = tornadoGO.GetComponent<TornadoController>();
             controller.SetSector(sector);
