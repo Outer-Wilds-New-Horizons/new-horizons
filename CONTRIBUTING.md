@@ -18,9 +18,48 @@ This will automatically build to your mods directory in OWML (so long as it's in
 To save yourself the pain of decoding where in a function an error occured, you can [download this dll file](https://cdn.discordapp.com/attachments/929787137895854100/936860223983976448/mono-2.0-bdwgc.dll) and place it in `MonoBleedingEdge/EmbedRuntime` of the game's folder.  
 Then (so long as you build targeting `Debug`), line numbers will be shown in any error that comes from New Horizons
 
-## Update the Schema!
+## Updating The Schema
 
-If you make any changes that edit basically anything in the [External](NewHorizons/External) folder, please update the relevant schemas.
+When you add fields to config classes, please document them using XML documentation so that our action can generate a proper schema.
+
+```cs
+/// <summary>
+/// This is my new field!
+/// </summary>
+public string myField;
+```
+
+You can also use `Range` (from `System.ComponentModel.DataAnnotations` NOT Unity), and `DefaultValue`:
+
+```cs
+/// <summary>
+/// This is my new field!
+/// </summary>
+[Range(0, 100)]
+[DefaultValue(50)]
+public int myField;
+```
+
+### Enums
+
+You can also setup enums in the config classes:
+
+```cs
+[JsonConverter(typeof(StringEnumConverter))]
+public enum MyCoolEnum {
+    [EnumMember(Value = @"value1")]
+    Value1 = 0,
+    [EnumMember(Value = @"value2")]
+    Value2 = 1,
+}
+
+/// <summary>
+/// My enum field
+/// </summary>
+public MyCoolEnum enumField;
+```
+
+These will automatically be converted from strings to the proper enum type.
 
 ## Contributing to Documentation
 

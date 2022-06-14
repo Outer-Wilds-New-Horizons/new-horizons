@@ -1,42 +1,47 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class RFVolumeBuilder
     {
-        public static void Make(GameObject planetGO, OWRigidbody owRigidBody, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
-            var referenceFrameGO = new GameObject("RFVolume");
-            referenceFrameGO.transform.parent = planetGO.transform;
-            referenceFrameGO.transform.localPosition = Vector3.zero;
-            referenceFrameGO.layer = 19;
-            referenceFrameGO.SetActive(false);
+            var rfGO = new GameObject("RFVolume");
+            rfGO.transform.parent = planetGO.transform;
+            rfGO.transform.localPosition = Vector3.zero;
+            rfGO.layer = 19;
+            rfGO.SetActive(false);
 
-            var sphereCollider = referenceFrameGO.AddComponent<SphereCollider>();
-            sphereCollider.isTrigger = true;
-            sphereCollider.radius = sphereOfInfluence * 2;
+            var SC = rfGO.AddComponent<SphereCollider>();
+            SC.isTrigger = true;
+            SC.radius = sphereOfInfluence * 2;
 
-            var referenceFrameVolume = referenceFrameGO.AddComponent<ReferenceFrameVolume>();
+            var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
-            var referenceFrame = new ReferenceFrame(owRigidBody);
-            referenceFrame._minSuitTargetDistance = sphereOfInfluence;
-            referenceFrame._maxTargetDistance = 0;
-            referenceFrame._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
-            referenceFrame._autoAlignmentDistance = sphereOfInfluence * 1.5f;
+            var minTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
 
-            referenceFrame._hideLandingModePrompt = false;
-            referenceFrame._matchAngularVelocity = true;
-            referenceFrame._minMatchAngularVelocityDistance = 70;
-            referenceFrame._maxMatchAngularVelocityDistance = 400;
-            referenceFrame._bracketsRadius = sphereOfInfluence;
+            var RV = new ReferenceFrame(owrb);
+            RV._minSuitTargetDistance = minTargetDistance;
+            RV._maxTargetDistance = 0;
+            RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
+            RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
 
-            referenceFrameVolume._referenceFrame = referenceFrame;
-            referenceFrameVolume._minColliderRadius = sphereOfInfluence;
-            referenceFrameVolume._maxColliderRadius = sphereOfInfluence * 2f;
-            referenceFrameVolume._isPrimaryVolume = true;
-            referenceFrameVolume._isCloseRangeVolume = false;
+            RV._hideLandingModePrompt = false;
+            RV._matchAngularVelocity = true;
+            RV._minMatchAngularVelocityDistance = 70;
+            RV._maxMatchAngularVelocityDistance = 400;
+            RV._bracketsRadius = module.bracketRadius > -1 ? module.bracketRadius : sphereOfInfluence;
 
-            referenceFrameGO.SetActive(true);
+            RFV._referenceFrame = RV;
+            RFV._minColliderRadius = minTargetDistance;
+            RFV._maxColliderRadius = module.maxTargetDistance > -1 ? module.maxTargetDistance : sphereOfInfluence * 2f;
+            RFV._isPrimaryVolume = true;
+            RFV._isCloseRangeVolume = false;
+
+            owrb.SetAttachedReferenceFrameVolume(RFV);
+
+            rfGO.SetActive(!module.hideInMap);
         }
     }
 }

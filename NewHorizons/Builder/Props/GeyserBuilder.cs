@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Props
@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
         {
-            var original = GameObject.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village");
+            var original = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village");
             GameObject geyserGO = original.InstantiateInactive();
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
             geyserGO.name = "Geyser";

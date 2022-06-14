@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -15,8 +15,8 @@ namespace NewHorizons.Builder.Orbital
             var module = config.FocalPoint;
 
             var binary = go.AddComponent<BinaryFocalPoint>();
-            binary.PrimaryName = module.Primary;
-            binary.SecondaryName = module.Secondary;
+            binary.PrimaryName = module.primary;
+            binary.SecondaryName = module.secondary;
 
             // Below is the stupid fix for making circumbinary planets or wtv
 
@@ -25,11 +25,11 @@ namespace NewHorizons.Builder.Orbital
             NewHorizonsBody secondary = null;
             foreach (var body in Main.BodyDict[Main.Instance.CurrentStarSystem])
             {
-                if (body.Config.Name == module.Primary)
+                if (body.Config.name == module.primary)
                 {
                     primary = body;
                 }
-                else if (body.Config.Name == module.Secondary)
+                else if (body.Config.name == module.secondary)
                 {
                     secondary = body;
                 }
@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Orbital
 
             if (primary == null || secondary == null)
             {
-                Logger.LogError($"Couldn't make focal point between [{module.Primary} = {primary}] and [{module.Secondary} = {secondary}]");
+                Logger.LogError($"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
                 return;
             }
 
@@ -51,15 +51,15 @@ namespace NewHorizons.Builder.Orbital
             var fakeMassConfig = new PlanetConfig();
 
             // Now need to fake the 3 values to make it return this mass
-            fakeMassConfig.Base.SurfaceSize = 1;
-            fakeMassConfig.Base.SurfaceGravity = gravitationalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
-            fakeMassConfig.Base.GravityFallOff = primary.Config.Base.GravityFallOff;
+            fakeMassConfig.Base.surfaceSize = 1;
+            fakeMassConfig.Base.surfaceGravity = gravitationalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
+            fakeMassConfig.Base.gravityFallOff = primary.Config.Base.gravityFallOff;
 
             // Other stuff to make the fake barycenter not interact with anything in any way
-            fakeMassConfig.Name = config.Name + "_FakeBarycenterMass";
-            fakeMassConfig.Base.SphereOfInfluence = 0;
-            fakeMassConfig.Base.HasMapMarker = false;
-            fakeMassConfig.Base.HasReferenceFrame = false;
+            fakeMassConfig.name = config.name + "_FakeBarycenterMass";
+            fakeMassConfig.Base.sphereOfInfluence = 0;
+            fakeMassConfig.Base.hasMapMarker = false;
+            fakeMassConfig.ReferenceFrame.hideInMap = true;
 
             fakeMassConfig.Orbit = new OrbitModule();
             fakeMassConfig.Orbit.CopyPropertiesFrom(config.Orbit);
@@ -69,9 +69,9 @@ namespace NewHorizons.Builder.Orbital
 
         private static float GetGravitationalMass(PlanetConfig config)
         {
-            var surfaceAcceleration = config.Base.SurfaceGravity;
-            var upperSurfaceRadius = config.Base.SurfaceSize;
-            int falloffExponent = config.Base.GravityFallOff.ToUpper().Equals("LINEAR") ? 1 : 2;
+            var surfaceAcceleration = config.Base.surfaceGravity;
+            var upperSurfaceRadius = config.Base.surfaceSize;
+            int falloffExponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1 : 2;
 
             return surfaceAcceleration * Mathf.Pow(upperSurfaceRadius, falloffExponent) / GravityVolume.GRAVITATIONAL_CONSTANT;
         }

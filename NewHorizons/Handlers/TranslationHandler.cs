@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +19,11 @@ namespace NewHorizons.Handlers
 
         public static string GetTranslation(string text, TextType type)
         {
+            return GetTranslation(text, type, out var _);
+        }
+
+        public static string GetTranslation(string text, TextType type, out TextTranslation.Language translatedLanguage)
+        {
             Dictionary<TextTranslation.Language, Dictionary<string, string>> dictionary;
             var language = TextTranslation.Get().m_language;
 
@@ -34,6 +39,7 @@ namespace NewHorizons.Handlers
                     dictionary = _uiTranslationDictionary;
                     break;
                 default:
+                    translatedLanguage = TextTranslation.Language.UNKNOWN;
                     return text;
             }
 
@@ -41,6 +47,7 @@ namespace NewHorizons.Handlers
             {
                 if (table.TryGetValue(text, out var translatedText))
                 {
+                    translatedLanguage = language;
                     return translatedText;
                 }
             }
@@ -51,17 +58,19 @@ namespace NewHorizons.Handlers
 
                 if (englishTable.TryGetValue(text, out var englishText))
                 {
+                    translatedLanguage = TextTranslation.Language.ENGLISH;
                     return englishText;
                 }
             }
 
             // Default to the key
+            translatedLanguage = TextTranslation.Language.UNKNOWN;
             return text;
         }
 
         public static void RegisterTranslation(TextTranslation.Language language, TranslationConfig config)
         {
-            if (config.ShipLogDictionary != null && config.ShipLogDictionary.Count() > 0)
+            if (config.ShipLogDictionary != null && config.ShipLogDictionary.Count > 0)
             {
                 if (!_shipLogTranslationDictionary.ContainsKey(language)) _shipLogTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.ShipLogDictionary.Keys)
@@ -73,7 +82,7 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (config.DialogueDictionary != null && config.DialogueDictionary.Count() > 0)
+            if (config.DialogueDictionary != null && config.DialogueDictionary.Count > 0)
             {
                 if (!_dialogueTranslationDictionary.ContainsKey(language)) _dialogueTranslationDictionary.Add(language, new Dictionary<string, string>());
                 foreach (var originalKey in config.DialogueDictionary.Keys)

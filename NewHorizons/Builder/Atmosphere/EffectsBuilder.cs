@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Atmosphere
             SCG._dynamicCullingBounds = false;
             SCG._waitForStreaming = false;
 
-            if (info.IsRaining)
+            if (info.isRaining)
             {
                 var rainGO = GameObject.Instantiate(SearchUtilities.CachedFind("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
                 rainGO.transform.position = planetGO.transform.position;
@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Atmosphere
                 {
                     new Keyframe(surfaceSize - 0.5f, 0),
                     new Keyframe(surfaceSize, 10f),
-                    new Keyframe(info.Scale, 0f)
+                    new Keyframe(info.scale, 0f)
                 });
 
                 rainGO.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.Atmosphere
                 rainGO.SetActive(true);
             }
 
-            if (info.IsSnowing)
+            if (info.isSnowing)
             {
                 var snowGO = new GameObject("SnowEffects");
                 snowGO.transform.parent = effectsGO.transform;
@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.Atmosphere
                     {
                         new Keyframe(surfaceSize - 0.5f, 0),
                         new Keyframe(surfaceSize, 10f),
-                        new Keyframe(info.Scale, 0f)
+                        new Keyframe(info.scale, 0f)
                     });
 
                     snowEmitter.GetComponent<PlanetaryVectionController>()._activeInSector = sector;

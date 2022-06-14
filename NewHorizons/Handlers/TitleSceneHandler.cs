@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Body;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System.Collections.Generic;
@@ -13,7 +13,7 @@ namespace NewHorizons.Handlers
     {
         public static void InitSubtitles()
         {
-            GameObject subtitleContainer = GameObject.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
+            GameObject subtitleContainer = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/Logo_EchoesOfTheEye");
             
             if (subtitleContainer == null)
             {
@@ -29,7 +29,7 @@ namespace NewHorizons.Handlers
         {
             //Try loading one planet why not
             //var eligible = BodyDict.Values.ToList().SelectMany(x => x).ToList().Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Cloud != null) && b.Config.Star == null).ToArray();
-            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.Clouds != null) && b.Config.Star == null && b.Config.CanShowOnTitle).ToArray();
+            var eligible = bodies.Where(b => (b.Config.HeightMap != null || b.Config.Atmosphere?.clouds != null) && b.Config.Star == null && b.Config.canShowOnTitle).ToArray();
             var eligibleCount = eligible.Count();
             if (eligibleCount == 0) return;
 
@@ -60,11 +60,11 @@ namespace NewHorizons.Handlers
                 body3.transform.localRotation = Quaternion.Euler(10f, 0f, 0f);
             }
 
-            GameObject.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
-            GameObject.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
+            SearchUtilities.Find("Scene/Background/PlanetPivot/Prefab_HEA_Campfire").SetActive(false);
+            SearchUtilities.Find("Scene/Background/PlanetPivot/PlanetRoot").SetActive(false);
 
             var lightGO = new GameObject("Light");
-            lightGO.transform.parent = GameObject.Find("Scene/Background").transform;
+            lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
             var light = lightGO.AddComponent<Light>();
             light.color = new Color(1f, 1f, 1f, 1f);
@@ -74,31 +74,31 @@ namespace NewHorizons.Handlers
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.Log($"Displaying {body.Config.Name} on the title screen");
-            GameObject titleScreenGO = new GameObject(body.Config.Name + "_TitleScreen");
+            Logger.Log($"Displaying {body.Config.name} on the title screen");
+            GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
             HeightMapModule heightMap = new HeightMapModule();
             var minSize = 15;
             var maxSize = 30;
             float size = minSize;
             if (body.Config.HeightMap != null)
             {
-                size = Mathf.Clamp(body.Config.HeightMap.MaxHeight / 10, minSize, maxSize);
-                heightMap.TextureMap = body.Config.HeightMap.TextureMap;
-                heightMap.HeightMap = body.Config.HeightMap.HeightMap;
-                heightMap.MaxHeight = size;
-                heightMap.MinHeight = body.Config.HeightMap.MinHeight * size / body.Config.HeightMap.MaxHeight;
+                size = Mathf.Clamp(body.Config.HeightMap.maxHeight / 10, minSize, maxSize);
+                heightMap.textureMap = body.Config.HeightMap.textureMap;
+                heightMap.heightMap = body.Config.HeightMap.heightMap;
+                heightMap.maxHeight = size;
+                heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
             }
-            if (body.Config.Atmosphere?.Clouds?.TexturePath != null)
+            if (body.Config.Atmosphere?.clouds?.texturePath != null)
             {
                 // Hacky but whatever I just want a sphere
-                size = Mathf.Clamp(body.Config.Atmosphere.Size / 10, minSize, maxSize);
-                heightMap.MaxHeight = heightMap.MinHeight = size + 1;
-                heightMap.TextureMap = body.Config.Atmosphere.Clouds.TexturePath;
+                size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);
+                heightMap.maxHeight = heightMap.minHeight = size + 1;
+                heightMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
             }
 
             HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
 
-            GameObject pivot = GameObject.Instantiate(GameObject.Find("Scene/Background/PlanetPivot"), GameObject.Find("Scene/Background").transform);
+            GameObject pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
             foreach (Transform child in pivot.transform)
             {
@@ -109,9 +109,9 @@ namespace NewHorizons.Handlers
             if (body.Config.Ring != null)
             {
                 RingModule newRing = new RingModule();
-                newRing.InnerRadius = size * 1.2f;
-                newRing.OuterRadius = size * 2f;
-                newRing.Texture = body.Config.Ring.Texture;
+                newRing.innerRadius = size * 1.2f;
+                newRing.outerRadius = size * 2f;
+                newRing.texture = body.Config.Ring.texture;
                 var ring = RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }

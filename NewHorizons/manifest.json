@@ -3,7 +3,7 @@
   "author": "xen, Bwc9876, & Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.1.0",
+  "version": "1.2.5",
   "owmlVersion": "2.3.3",
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]

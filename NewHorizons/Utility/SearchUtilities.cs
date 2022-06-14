@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -119,7 +119,17 @@ namespace NewHorizons.Utility
         }
         */
 
-        public static GameObject Find(string path)
+        public static GameObject FindChild(GameObject g, string childName)
+        {
+            foreach(Transform child in g.transform)
+            {
+                if (child.gameObject.name == childName) return child.gameObject;
+            }
+
+            return null;
+        }
+
+        public static GameObject Find(string path, bool warn = true)
         {
             if (CachedGameObjects.ContainsKey(path))
             {
@@ -140,7 +150,7 @@ namespace NewHorizons.Utility
                     var t = root?.transform;
                     if (t == null)
                     {
-                        Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
+                        if (warn) Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
                     }
                     else
                     {
@@ -152,7 +162,7 @@ namespace NewHorizons.Utility
                             {
                                 foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
                                 {
-                                    if (t.name.Equals(names[i]))
+                                    if (c.name.Equals(names[i]))
                                     {
                                         child = c;
                                         break;
@@ -162,7 +172,7 @@ namespace NewHorizons.Utility
 
                             if (child == null)
                             {
-                                Logger.LogWarning($"Couldn't find object in path ({names[i]})");
+                                if (warn) Logger.LogWarning($"Couldn't find object in path ({names[i]})");
                                 t = null;
                                 break;
                             }
@@ -177,7 +187,7 @@ namespace NewHorizons.Utility
                 if (go == null)
                 {
                     var name = names.Last();
-                    Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
+                    if (warn) Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
                     go = FindObjectOfTypeAndName<GameObject>(name);
                 }
 

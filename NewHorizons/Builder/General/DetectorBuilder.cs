@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -19,17 +19,19 @@ namespace NewHorizons.Builder.General
             OWRB.RegisterAttachedForceDetector(forceDetector);
 
             // For falling into sun
-            if (!config.Base.InvulnerableToSun && config.Star == null && config.FocalPoint == null)
+            if (!config.Base.invulnerableToSun && config.Star == null && config.FocalPoint == null)
             {
                 detectorGO.layer = LayerMask.NameToLayer("AdvancedDetector");
 
                 var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
                 var sphereCollider = detectorGO.AddComponent<SphereCollider>();
-                sphereCollider.radius = config.Base.SurfaceSize;
+                sphereCollider.radius = config.Base.surfaceSize;
 
                 var owCollider = detectorGO.AddComponent<OWCollider>();
 
                 fluidDetector._collider = sphereCollider;
+
+                OWRB.RegisterAttachedFluidDetector(fluidDetector);
 
                 // Could copy the splash from the interloper as well some day
             }

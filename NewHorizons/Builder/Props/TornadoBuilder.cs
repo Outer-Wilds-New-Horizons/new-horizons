@@ -26,17 +26,17 @@ namespace NewHorizons.Builder.Props
         {
             if (_upPrefab == null)
             {
-                _upPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
+                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
                 _upPrefab.name = "Tornado_Up_Prefab";
             }
             if (_downPrefab == null)
             {
-                _downPrefab = GameObject.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
+                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
                 _downPrefab.name = "Tornado_Down_Prefab";
             }
             if (_hurricanePrefab == null)
             {
-                _hurricanePrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane/").InstantiateInactive();
+                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane/").InstantiateInactive();
                 // For some reason they put the hurricane at the origin and offset all its children (450)
                 // Increasing by 40 will keep the bottom above the ground
                 foreach (Transform child in _hurricanePrefab.transform)
@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
             }
             if (_soundPrefab == null)
             {
-                _soundPrefab = GameObject.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
+                _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
                 _soundPrefab.name = "AudioRail_Prefab";
             }
             if (_mainTexture == null)
@@ -77,8 +77,8 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
-            if (info.type.ToLower() == "hurricane") MakeHurricane(planetGO, sector, info, position, hasClouds);
-            else MakeTornado(planetGO, sector, info, position, info.type.ToLower() == "downwards");
+            if (info.type == PropModule.TornadoInfo.TornadoType.Hurricane) MakeHurricane(planetGO, sector, info, position, hasClouds);
+            else MakeTornado(planetGO, sector, info, position, info.type == PropModule.TornadoInfo.TornadoType.Downwards);
         }
 
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
@@ -116,7 +116,9 @@ namespace NewHorizons.Builder.Props
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
-            audioSource.maxDistance = 100 * scale;
+            var maxDistance = info.audioDistance == 0 ? 10 * scale : info.audioDistance;
+            audioSource.maxDistance = maxDistance;
+            audioSource.minDistance = maxDistance / 10f;
 
             var controller = tornadoGO.GetComponent<TornadoController>();
             controller.SetSector(sector);

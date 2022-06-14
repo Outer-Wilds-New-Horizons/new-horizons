@@ -9,47 +9,47 @@ namespace NewHorizons.Builder.General
         public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
-            astroObject.HideDisplayName = !config.Base.HasMapMarker;
+            astroObject.HideDisplayName = !config.Base.hasMapMarker;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
             var type = AstroObject.Type.Planet;
-            if (config.Orbit.IsMoon) type = AstroObject.Type.Moon;
+            if (config.Orbit.isMoon) type = AstroObject.Type.Moon;
             // else if (config.Base.IsSatellite) type = AstroObject.Type.Satellite;
-            else if (config.Base.HasCometTail) type = AstroObject.Type.Comet;
+            else if (config.Base.hasCometTail) type = AstroObject.Type.Comet;
             else if (config.Star != null) type = AstroObject.Type.Star;
             else if (config.FocalPoint != null) type = AstroObject.Type.None;
             astroObject._type = type;
             astroObject._name = AstroObject.Name.CustomString;
-            astroObject._customName = config.Name;
+            astroObject._customName = config.name;
             astroObject._primaryBody = primaryBody;
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
-            if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.IsStatic)
+            if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.isStatic)
             {
                 var primarySphereOfInfluence = primaryBody.GetGravityVolume().gameObject.GetComponent<SphereCollider>();
-                if (primarySphereOfInfluence.radius < config.Orbit.SemiMajorAxis)
-                    primarySphereOfInfluence.radius = config.Orbit.SemiMajorAxis * 1.5f;
+                if (primarySphereOfInfluence.radius < config.Orbit.semiMajorAxis)
+                    primarySphereOfInfluence.radius = config.Orbit.semiMajorAxis * 1.5f;
             }
 
-            if (config.Orbit.IsTidallyLocked)
+            if (config.Orbit.isTidallyLocked)
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._usePhysicsToRotate = true;
-                if (config.Orbit.AlignmentAxis == null)
+                if (config.Orbit.alignmentAxis == null)
                 {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
                 }
                 else
                 {
-                    alignment._localAlignmentAxis = config.Orbit.AlignmentAxis;
+                    alignment._localAlignmentAxis = config.Orbit.alignmentAxis;
                 }
             }
 
-            if (config.Base.CenterOfSolarSystem)
+            if (config.Base.centerOfSolarSystem)
             {
-                Logger.Log($"Setting center of universe to {config.Name}");
+                Logger.Log($"Setting center of universe to {config.name}");
                 // By the time it runs we'll be able to get the OWRB with the method
                 Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
             }

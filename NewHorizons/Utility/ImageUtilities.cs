@@ -1,8 +1,12 @@
 using OWML.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
+
 namespace NewHorizons.Utility
 {
     public static class ImageUtilities
@@ -38,9 +42,24 @@ namespace NewHorizons.Utility
             }
         }
 
+        public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
+        {
+            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            if (_loadedTextures.ContainsKey(path))
+            {
+                if (_loadedTextures[path] == texture)
+                {
+                    _loadedTextures.Remove(path);
+                    UnityEngine.Object.Destroy(texture);
+                }
+            }
+
+            UnityEngine.Object.Destroy(texture);
+        }
+
         public static void ClearCache()
         {
-            Logger.Log("Cleaing image cache");
+            Logger.Log("Clearing image cache");
 
             foreach (var texture in _loadedTextures.Values)
             {
@@ -312,6 +331,67 @@ namespace NewHorizons.Utility
             newTexture.SetPixels(pixels);
             newTexture.Apply();
             return newTexture;
+        }
+        
+        // Modified from https://stackoverflow.com/a/69141085/9643841
+        public class AsyncImageLoader : MonoBehaviour
+        {
+            public List<string> pathsToLoad = new List<string>();
+
+            public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
+            public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+
+            // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
+            // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
+            // for them to start loading, and unload when the player leaves)
+
+            void Start()
+            {
+                for (int i = 0; i < pathsToLoad.Count; i++)
+                {
+                    StartCoroutine(DownloadTexture(pathsToLoad[i], i));
+                }
+            }
+
+            IEnumerator DownloadTexture(string url, int index)
+            {
+                if (_loadedTextures.ContainsKey(url))
+                {
+                    Logger.Log($"Already loaded image at path: {url}");
+                    var texture = _loadedTextures[url];
+                    imageLoadedEvent.Invoke(texture, index);
+                    yield break;
+                }
+
+                using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
+                {
+                    yield return uwr.SendWebRequest();
+
+                    var hasError = uwr.error != null && uwr.error != "";
+                
+                    if (hasError) // (uwr.result != UnityWebRequest.Result.Success)
+                    {
+                        Debug.Log(uwr.error);
+                    }
+                    else
+                    {
+                        var texture = DownloadHandlerTexture.GetContent(uwr);
+
+                        if (_loadedTextures.ContainsKey(url))
+                        {
+                            Logger.Log($"Already loaded image at path: {url}");
+                            Destroy(texture);
+                            texture = _loadedTextures[url];
+                        }
+                        else
+                        {
+                            _loadedTextures.Add(url, texture);
+                        }
+
+                        imageLoadedEvent.Invoke(texture, index);
+                    }
+                }
+            }
         }
     }
 }

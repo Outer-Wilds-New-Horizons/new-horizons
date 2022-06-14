@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -9,19 +10,20 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
-            if (!Main.Instance.IsWarping && module.PlayerSpawnPoint != null)
+            if (!Main.Instance.IsWarping && module.playerSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("PlayerSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
                 spawnGO.layer = 8;
 
-                spawnGO.transform.localPosition = module.PlayerSpawnPoint;
+                spawnGO.transform.localPosition = module.playerSpawnPoint;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
-                
-                if(module.PlayerSpawnRotation != null)
+                playerSpawn._triggerVolumes = new OWTriggerVolume[0];
+
+                if (module.playerSpawnRotation != null)
                 {
-                    spawnGO.transform.rotation = Quaternion.Euler(module.PlayerSpawnRotation);
+                    spawnGO.transform.rotation = Quaternion.Euler(module.playerSpawnRotation);
                 }
                 else
                 {
@@ -30,23 +32,24 @@ namespace NewHorizons.Builder.General
 
                 spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
             }
-            if (module.ShipSpawnPoint != null)
+            if (module.shipSpawnPoint != null)
             {
                 GameObject spawnGO = new GameObject("ShipSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
                 spawnGO.layer = 8;
 
-                spawnGO.transform.localPosition = module.ShipSpawnPoint;
+                spawnGO.transform.localPosition = module.shipSpawnPoint;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
+                spawnPoint._triggerVolumes = new OWTriggerVolume[0];
 
-                var ship = GameObject.Find("Ship_Body");
+                var ship = SearchUtilities.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;
                 
-                if(module.ShipSpawnRotation != null)
+                if(module.shipSpawnRotation != null)
                 {
-                    ship.transform.rotation = Quaternion.Euler(module.ShipSpawnRotation);
+                    ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
                 }
                 else
                 {
@@ -67,10 +70,11 @@ namespace NewHorizons.Builder.General
                     playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 
                     playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
+                    playerSpawn._triggerVolumes = new OWTriggerVolume[0];
                     playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
                 }
             }
-            if (!Main.Instance.IsWarping && module.StartWithSuit && !suitUpQueued)
+            if (!Main.Instance.IsWarping && module.startWithSuit && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
@@ -89,7 +93,7 @@ namespace NewHorizons.Builder.General
             Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
 
             // Make the ship act as if the player took the suit
-            var spv = GameObject.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
+            var spv = SearchUtilities.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
 
             if (spv == null) return;
 

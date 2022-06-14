@@ -1,27 +1,37 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json;
+using UnityEngine;
+
 namespace NewHorizons.External.Modules.VariableSize
 {
-    public class VariableSizeModule 
+    [JsonObject]
+    public class VariableSizeModule
     {
-        public TimeValuePair[] Curve { get; set; }
-
-        public class TimeValuePair
-        {
-            public float Time { get; set; }
-            public float Value { get; set; }
-        }
+        /// <summary>
+        /// Scale this module over time
+        /// </summary>
+        public TimeValuePair[] curve;
 
         public AnimationCurve GetAnimationCurve(float size = 1f)
         {
             var curve = new AnimationCurve();
-            if(Curve != null)
-            {
-                foreach (var pair in this.Curve)
-                {
-                    curve.AddKey(new Keyframe(pair.Time, size * pair.Value));
-                }
-            }
+            if (this.curve != null)
+                foreach (var pair in this.curve)
+                    curve.AddKey(new Keyframe(pair.time, size * pair.value));
             return curve;
+        }
+
+        [JsonObject]
+        public class TimeValuePair
+        {
+            /// <summary>
+            /// A specific point in time
+            /// </summary>
+            public float time;
+
+            /// <summary>
+            /// The value for this point in time
+            /// </summary>
+            public float value;
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using NewHorizons.Handlers;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components
 {
@@ -31,7 +32,6 @@ namespace NewHorizons.Components
         private NotificationData _warpNotificationData = null;
 
         private int _nextCardIndex;
-        private bool _isAtFlightConsole;
 
         private void Awake()
         {
@@ -51,10 +51,6 @@ namespace NewHorizons.Components
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Lock Autopilot to Star System", 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
-            GlobalMessenger<OWRigidbody>.AddListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
-            GlobalMessenger.AddListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
-            GlobalMessenger.AddListener("GamePaused", new Callback(OnGamePaused));
-            GlobalMessenger.AddListener("GameUnpaused", new Callback(OnGameUnpaused));
 
             _nextCardIndex = 0;
             foreach (var starSystem in Main.SystemDict.Keys)
@@ -67,7 +63,7 @@ namespace NewHorizons.Components
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
-                else if (config.Spawn?.ShipSpawnPoint != null) flag = true;
+                else if (config.Spawn?.shipSpawnPoint != null) flag = true;
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
 
@@ -96,58 +92,29 @@ namespace NewHorizons.Components
         public void OnDestroy()
         {
             GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
-            GlobalMessenger<OWRigidbody>.RemoveListener("EnterFlightConsole", new Callback<OWRigidbody>(OnEnterFlightConsole));
-            GlobalMessenger.RemoveListener("ExitFlightConsole", new Callback(OnExitFlightConsole));
-            GlobalMessenger.RemoveListener("GamePaused", new Callback(OnGamePaused));
-            GlobalMessenger.RemoveListener("GameUnpaused", new Callback(OnGameUnpaused));
 
             Locator.GetPromptManager().RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
-        }
-
-        private void OnEnterFlightConsole(OWRigidbody _)
-        {
-            _isAtFlightConsole = true;
-            if (_target != null)
-            {
-                _warpPrompt.SetVisibility(true);
-            }
-        }
-
-        private void OnExitFlightConsole()
-        {
-            _isAtFlightConsole = false;
-            _warpPrompt.SetVisibility(false);
-        }
-
-        private void OnGamePaused()
-        {
-            _warpPrompt.SetVisibility(false);
-        }
-
-        private void OnGameUnpaused()
-        {
-            if (_target != null && _isAtFlightConsole)
-            {
-                _warpPrompt.SetVisibility(true);
-            }
         }
 
         public GameObject CreateCard(string uniqueID, Transform parent, Vector2 position)
         {
             if (_cardTemplate == null)
             {
-                var panRoot = GameObject.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
+                var panRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
                 _cardTemplate = GameObject.Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
                 _cardTemplate.SetActive(false);
             }
 
             var newCard = GameObject.Instantiate(_cardTemplate, parent);
-            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<UnityEngine.UI.Text>();
+            var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
             var name = UniqueIDToName(uniqueID);
 
             textComponent.text = name;
             if (name.Length > 17) textComponent.fontSize = 10;
+            // Do it next frame
+            var fontPath = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot/TH_VILLAGE/EntryCardRoot/NameBackground/Name";
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
 
             newCard.SetActive(true);
             newCard.transform.name = uniqueID;
@@ -310,16 +277,20 @@ namespace NewHorizons.Components
         private void SetWarpTarget(ShipLogEntryCard shipLogEntryCard)
         {
             RemoveWarpTarget(false);
-            _oneShotSource.PlayOneShot(global::AudioType.ShipLogUnmarkLocation, 1f);
+            _oneShotSource.PlayOneShot(AudioType.ShipLogUnmarkLocation, 1f);
             _target = shipLogEntryCard;
             _target.SetMarkedOnHUD(true);
             Locator._rfTracker.UntargetReferenceFrame();
-
             GlobalMessenger.FireEvent("UntargetReferenceFrame");
-            _warpNotificationData = new NotificationData($"AUTOPILOT LOCKED TO:\n{UniqueIDToName(shipLogEntryCard.name).ToUpper()}");
+
+            var name = UniqueIDToName(shipLogEntryCard.name);
+
+            var warpNotificationDataText = TranslationHandler.GetTranslation("WARP_LOCKED", TranslationHandler.TextType.UI).Replace("{0}", name.ToUpper());
+            _warpNotificationData = new NotificationData(warpNotificationDataText);
             NotificationManager.SharedInstance.PostNotification(_warpNotificationData, true);
 
-            _warpPrompt.SetText($"<CMD> Engage Warp To {UniqueIDToName(shipLogEntryCard.name)}");
+            var warpPromptText = "<CMD> " + TranslationHandler.GetTranslation("ENGAGE_WARP_PROMPT", TranslationHandler.TextType.UI).Replace("{0}", name);
+            _warpPrompt.SetText(warpPromptText);
         }
 
         private void RemoveWarpTarget(bool playSound = false)
@@ -329,8 +300,6 @@ namespace NewHorizons.Components
             if (playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
             _target.SetMarkedOnHUD(false);
             _target = null;
-
-            _warpPrompt.SetVisibility(false);
         }
 
         public string GetTargetStarSystem()
@@ -343,7 +312,7 @@ namespace NewHorizons.Components
             return OWInput.IsInputMode(InputMode.ShipCockpit) && _target != null;
         }
 
-        private void Update()
+        public void UpdateWarpPromptVisibility()
         {
             _warpPrompt.SetVisibility(IsWarpDriveAvailable());
         }

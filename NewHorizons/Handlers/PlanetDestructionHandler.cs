@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using OWML.Utils;
 using System;
@@ -33,7 +33,7 @@ namespace NewHorizons.Handlers
         public static void RemoveSolarSystem()
         {
             // Stop the sun from killing the player
-            var sunVolumes = GameObject.Find("Sun_Body/Sector_SUN/Volumes_SUN");
+            var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
             foreach (var name in _solarSystemBodies)
@@ -82,11 +82,11 @@ namespace NewHorizons.Handlers
                         break;
                     case AstroObject.Name.CaveTwin:
                     case AstroObject.Name.TowerTwin:
-                        DisableBody(GameObject.Find("FocalBody"), delete);
-                        DisableBody(GameObject.Find("SandFunnel_Body"), delete);
+                        DisableBody(SearchUtilities.Find("FocalBody"), delete);
+                        DisableBody(SearchUtilities.Find("SandFunnel_Body"), delete);
                         break;
                     case AstroObject.Name.MapSatellite:
-                        DisableBody(GameObject.Find("MapSatellite_Body"), delete);
+                        DisableBody(SearchUtilities.Find("MapSatellite_Body"), delete);
                         break;
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
@@ -100,7 +100,7 @@ namespace NewHorizons.Handlers
                         break;
                     case AstroObject.Name.TimberHearth:
                         // Always just fucking kill this one to stop THE WARP BUG!!!
-                        DisableBody(GameObject.Find("StreamingGroup_TH"), true);
+                        DisableBody(SearchUtilities.Find("StreamingGroup_TH"), true);
 
                         foreach (var obj in GameObject.FindObjectsOfType<DayNightTracker>())
                         {
@@ -175,7 +175,7 @@ namespace NewHorizons.Handlers
             // Deal with proxies
             foreach (var p in GameObject.FindObjectsOfType<ProxyOrbiter>())
             {
-                if (p.GetValue<AstroObject>("_originalBody") == ao.gameObject)
+                if (p._originalBody == ao.gameObject)
                 {
                     DisableBody(p.gameObject, true);
                     break;
@@ -229,8 +229,8 @@ namespace NewHorizons.Handlers
         {
             if (name.Equals("TowerTwin")) name = "AshTwin";
             if (name.Equals("CaveTwin")) name = "EmberTwin";
-            var distantProxy = GameObject.Find(name + "_DistantProxy");
-            var distantProxyClone = GameObject.Find(name + "_DistantProxy(Clone)");
+            var distantProxy = SearchUtilities.Find(name + "_DistantProxy", false);
+            var distantProxyClone = SearchUtilities.Find(name + "_DistantProxy(Clone)", false);
 
             if (distantProxy != null) GameObject.Destroy(distantProxy.gameObject);
             if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);

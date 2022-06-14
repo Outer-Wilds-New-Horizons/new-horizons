@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +26,7 @@ namespace NewHorizons.Handlers
             _entryIDsToNHBody = new Dictionary<string, NewHorizonsBody>();
             _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
 
-            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(GameObject.Find(PAN_ROOT_PATH));
+            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(SearchUtilities.Find(PAN_ROOT_PATH));
             _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
             _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
         }
@@ -44,16 +44,16 @@ namespace NewHorizons.Handlers
 
         public static bool IsVanillaBody(NewHorizonsBody body)
         {
-            var existingBody = AstroObjectLocator.GetAstroObject(body.Config.Name);
+            var existingBody = AstroObjectLocator.GetAstroObject(body.Config.name);
             if (existingBody != null && existingBody.GetAstroObjectName() != AstroObject.Name.CustomString)
                 return true;
 
-            return _vanillaBodies.Contains(body.Config.Name.Replace(" ", ""));
+            return _vanillaBodies.Contains(body.Config.name.Replace(" ", ""));
         }
 
         public static string GetNameFromAstroID(string astroID)
         {
-            return CollectionUtilities.KeyByValue(_nhBodyToAstroIDs, astroID)?.Config.Name;
+            return CollectionUtilities.KeyByValue(_nhBodyToAstroIDs, astroID)?.Config.name;
         }
 
         public static NewHorizonsBody GetConfigFromEntryID(string entryID)
@@ -75,24 +75,24 @@ namespace NewHorizons.Handlers
         {
             // Nice to be able to just get the AstroID from the body
             if (!_nhBodyToEntryIDs.ContainsKey(body)) _nhBodyToEntryIDs.Add(body, entryIDs);
-            else Logger.LogWarning($"Possible duplicate shiplog entry {body.Config.Name}");
+            else Logger.LogWarning($"Possible duplicate shiplog entry {body.Config.name}");
 
             // AstroID
             if (!_nhBodyToAstroIDs.ContainsKey(body)) _nhBodyToAstroIDs.Add(body, astroID);
-            else Logger.LogWarning($"Possible duplicate shiplog entry {astroID} for {body.Config.Name}");
+            else Logger.LogWarning($"Possible duplicate shiplog entry {astroID} for {body.Config.name}");
 
             // EntryID to Body
             foreach (var entryID in entryIDs)
             {
                 if (!_entryIDsToNHBody.ContainsKey(entryID)) _entryIDsToNHBody.Add(entryID, body);
-                else Logger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.Name}");
+                else Logger.LogWarning($"Possible duplicate shiplog entry  {entryID} for {astroID} from NewHorizonsBody {body.Config.name}");
             }
         }
 
         public static string GetAstroObjectId(NewHorizonsBody body)
         {
             if (_nhBodyToAstroIDs.ContainsKey(body)) return _nhBodyToAstroIDs[body];
-            else return body.Config.Name;
+            else return body.Config.name;
         }
 
         public static bool BodyHasEntries(NewHorizonsBody body)

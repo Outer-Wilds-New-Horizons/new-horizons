@@ -1,53 +1,43 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
-        <ProjectGuid>{8A39F9E7-1A89-430C-9C3E-BDFB3B7E17DF}</ProjectGuid>
         <TargetFramework>net48</TargetFramework>
-        <OutputPath>Build</OutputPath>
-        <AssemblyTitle>NewHorizons</AssemblyTitle>
-        <Product>NewHorizons</Product>
-        <Copyright>Copyright ©  2020</Copyright>
+        <LangVersion>default</LangVersion>
+        <Copyright>Copyright © 2020</Copyright>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+        <GenerateDocumentationFile>true</GenerateDocumentationFile>
+        <ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>None</ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch>
+        <NoWarn>1701;1702;1591</NoWarn>
     </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-        <DebugType>portable</DebugType>
-    </PropertyGroup>
-    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
         <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="HarmonyX" Version="2.10.0" />
         <PackageReference Include="OWML" Version="2.3.3" />
         <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.168" />
+        <Reference Include="../Lib/System.ComponentModel.Annotations.dll" />
     </ItemGroup>
     <ItemGroup>
+        <None Include="../Lib/System.ComponentModel.Annotations.dll">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Include="default-config.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="manifest.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Include="Assets\**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-        <None Include="Icons\**">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		<None Include="Icons\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
     </ItemGroup>
     <ItemGroup>
         <Content Include="NewHorizons.csproj.user" />
-    </ItemGroup>
-    <ItemGroup>
-        <Compile Update="Properties\Settings.Designer.cs">
-            <DesignTimeSharedInput>True</DesignTimeSharedInput>
-            <AutoGen>True</AutoGen>
-            <DependentUpon>Settings.settings</DependentUpon>
-        </Compile>
-    </ItemGroup>
-    <ItemGroup>
-        <None Update="Properties\Settings.settings">
-            <Generator>SettingsSingleFileGenerator</Generator>
-            <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-        </None>
     </ItemGroup>
 </Project>

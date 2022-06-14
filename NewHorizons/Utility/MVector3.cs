@@ -1,18 +1,20 @@
-﻿using UnityEngine;
+﻿using Newtonsoft.Json;
+using UnityEngine;
 namespace NewHorizons.Utility
 {
+    [JsonObject]
     public class MVector3
     {
         public MVector3(float x, float y, float z)
         {
-            X = x;
-            Y = y;
-            Z = z;
+            this.x = x;
+            this.y = y;
+            this.z = z;
         }
 
-        public float X { get; }
-        public float Y { get; }
-        public float Z { get; }
+        public float x;
+        public float y;
+        public float z;
 
         public static implicit operator MVector3(Vector3 vec)
         {
@@ -21,7 +23,7 @@ namespace NewHorizons.Utility
 
         public static implicit operator Vector3(MVector3 vec)
         {
-            return new Vector3(vec.X, vec.Y, vec.Z);
+            return new Vector3(vec.x, vec.y, vec.z);
         }
     }
 }

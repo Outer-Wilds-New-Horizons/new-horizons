@@ -1,8 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using NewHorizons.Utility;
 using OWML.Common;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -11,21 +14,34 @@ namespace NewHorizons.Handlers
         public static int SUBTITLE_HEIGHT = 97;
         public static int SUBTITLE_WIDTH = 669; // nice
 
-        Graphic graphic;
-        Image image;
+        public Graphic graphic;
+        public Image image;
 
         public float fadeSpeed = 0.005f;
-        float fade = 1;
-        bool fadingAway = true;
+        public float fade = 1;
+        public bool fadingAway = true;
 
-        static List<Sprite> possibleSubtitles = new List<Sprite>();
-        static bool eoteSubtitleHasBeenInserted = false;
-        int subtitleIndex;
+        public List<Sprite> possibleSubtitles = new List<Sprite>();
+        public bool eoteSubtitleHasBeenInserted = false;
+        public Sprite eoteSprite;
+        public int subtitleIndex;
 
-        System.Random randomizer;
+        public System.Random randomizer;
 
-        static readonly int PAUSE_TIMER_MAX = 50;
-        int pauseTimer = PAUSE_TIMER_MAX;
+        public static readonly int PAUSE_TIMER_MAX = 50;
+        public int pauseTimer = PAUSE_TIMER_MAX;
+
+        public void CheckForEOTE()
+        {
+            if (!eoteSubtitleHasBeenInserted)
+            {
+                if (Main.HasDLC)
+                {
+                    if (eoteSprite != null) possibleSubtitles.Insert(0, eoteSprite); // ensure that the Echoes of the Eye subtitle always appears first
+                    eoteSubtitleHasBeenInserted = true;
+                }
+            }
+        }
 
         public void Start()
         {
@@ -38,32 +54,45 @@ namespace NewHorizons.Handlers
             graphic.enabled = true;
             image.enabled = true;
 
-            if (!Main.HasDLC) image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+            eoteSprite = image.sprite;
 
-            if (!eoteSubtitleHasBeenInserted)
+            CheckForEOTE();
+
+            image.sprite = null; // Just in case. I don't know how not having the dlc changes the subtitle game object
+
+            AddSubtitles();
+        }
+
+        private void AddSubtitles()
+        {
+            foreach (var mod in Main.MountedAddons.Where(mod => File.Exists($"{mod.ModHelper.Manifest.ModFolderPath}subtitle.png")))
             {
-                if (image.sprite != null) possibleSubtitles.Insert(0, image.sprite); // ensure that the Echoes of the Eye subtitle always appears first
-                eoteSubtitleHasBeenInserted = true;
+                AddSubtitle(mod, "subtitle.png");
             }
         }
 
-        public static void AddSubtitle(IModBehaviour mod, string filepath)
+        public void AddSubtitle(IModBehaviour mod, string filepath)
         {
+            Logger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
+
             var tex = ImageUtilities.GetTexture(mod, filepath);
             if (tex == null) return;
 
-            // var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             var sprite = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, SUBTITLE_HEIGHT), new Vector2(0.5f, 0.5f), 100.0f);
             AddSubtitle(sprite);
         }
 
-        public static void AddSubtitle(Sprite sprite)
+        public void AddSubtitle(Sprite sprite)
         {
             possibleSubtitles.Add(sprite);
         }
 
         public void Update()
         {
+            CheckForEOTE();
+
+            if (possibleSubtitles.Count == 0) return;
+
             if (image.sprite == null) image.sprite = possibleSubtitles[0];
 
             // don't fade transition subtitles if there's only one subtitle

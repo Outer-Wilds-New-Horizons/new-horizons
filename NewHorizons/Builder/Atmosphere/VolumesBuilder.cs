@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -6,9 +7,9 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static readonly int FogColor = Shader.PropertyToID("_FogColor");
 
-        public static void Make(GameObject planetGO, PlanetConfig config, float sphereOfInfluence)
+        public static void Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
         {
-            var innerRadius = config.Base.SurfaceSize;
+            var innerRadius = config.Base.surfaceSize;
 
             GameObject volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
@@ -30,23 +31,49 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
-            PR._useMinimap = config.Base.ShowMinimap;
-            PR._useAltimeter = config.Base.ShowMinimap;
+            PR._useMinimap = config.Base.showMinimap;
+            PR._useAltimeter = config.Base.showMinimap;
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
             EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
-            var gdRuleset = GameObject.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
+            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
 
             ER._material = gdRuleset._material;
 
             var cloudMaterial = new Material(gdRuleset._cloudMaterial);
-            if (config.Atmosphere?.Clouds?.Tint != null)
+            if (config.Atmosphere?.clouds?.tint != null)
             {
-                cloudMaterial.SetColor(FogColor, config.Atmosphere.Clouds.Tint.ToColor32());
+                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
             }
             ER._cloudMaterial = cloudMaterial;
+
+            if (config.Base.zeroGravityRadius != 0)
+            {
+                var zeroGObject = new GameObject("ZeroGVolume");
+                zeroGObject.transform.parent = volumesGO.transform;
+                zeroGObject.transform.localPosition = Vector3.zero;
+                zeroGObject.transform.localScale = Vector3.one * config.Base.zeroGravityRadius;
+                zeroGObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+                var sphereCollider = zeroGObject.AddComponent<SphereCollider>();
+                sphereCollider.radius = 1;
+                sphereCollider.isTrigger = true;
+
+                var owCollider = zeroGObject.AddComponent<OWCollider>();
+                owCollider._parentBody = owrb;
+                owCollider._collider = sphereCollider;
+
+                var triggerVolume = zeroGObject.AddComponent<OWTriggerVolume>();
+                triggerVolume._owCollider = owCollider;
+
+                var zeroGVolume = zeroGObject.AddComponent<ZeroGVolume>();
+                zeroGVolume._attachedBody = owrb;
+                zeroGVolume._triggerVolume = triggerVolume;
+                zeroGVolume._inheritable = true;
+                zeroGVolume._priority = 1;
+            }
 
             volumesGO.transform.position = planetGO.transform.position;
             rulesetGO.SetActive(true);
