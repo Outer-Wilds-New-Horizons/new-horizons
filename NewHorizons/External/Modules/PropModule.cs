@@ -76,7 +76,7 @@ namespace NewHorizons.External.Modules
         public class ScatterInfo
         {
             /// <summary>
-            /// Relative filepath to an asset-bundle"
+            /// Relative filepath to an asset-bundle
             /// </summary>
             public string assetBundle;
 
