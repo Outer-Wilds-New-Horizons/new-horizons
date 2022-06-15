@@ -63,6 +63,26 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public NomaiCoordinates coords;
 
+        /// <summary>
+        /// The position in the solar system the vessel will warp to.
+        /// </summary>
+        public MVector3 vesselPosition;
+
+        /// <summary>
+        /// Euler angles by which the vessel will be oriented.
+        /// </summary>
+        public MVector3 vesselRotation;
+
+        /// <summary>
+        /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
+        /// </summary>
+        public MVector3 warpExitPosition;
+
+        /// <summary>
+        /// Euler angles by which the warp exit will be oriented.
+        /// </summary>
+        public MVector3 warpExitRotation;
+
         public class NomaiCoordinates
         {
             public int[] x;

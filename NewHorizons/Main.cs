@@ -359,15 +359,24 @@ namespace NewHorizons
 
         private EyeSpawnPoint CreateVessel()
         {
+            var system = SystemDict[_currentStarSystem];
             Logger.Log("Checking for Vessel Prefab");
             if (VesselPrefab == null) return null;
             Logger.Log("Creating Vessel");
             var vesselObject = GameObject.Instantiate(VesselPrefab);
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
+            if (system.Config.vesselPosition != null)
+                vesselObject.transform.position += system.Config.vesselPosition;
+            if (system.Config.vesselRotation != null)
+                vesselObject.transform.eulerAngles = system.Config.vesselRotation;
             vesselObject.SetActive(true);
             VesselWarpController vesselWarpController = vesselObject.GetComponentInChildren<VesselWarpController>(true);
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += (OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform) => OnReceiveWarpedBody(vesselObject, warpedBody, startPlatform, targetPlatform);
+            if (system.Config.warpExitPosition != null)
+                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.warpExitPosition;
+            if (system.Config.warpExitRotation != null)
+                vesselObject.transform.localEulerAngles = system.Config.warpExitRotation;
             MapMarker mapMarker = vesselObject.AddComponent<MapMarker>();
             mapMarker._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
             mapMarker._markerType = MapMarker.MarkerType.Planet;
