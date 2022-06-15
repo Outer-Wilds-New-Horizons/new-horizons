@@ -2,6 +2,7 @@ using NewHorizons.Builder.StarSystem;
 using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 namespace NewHorizons.Handlers
 {
@@ -28,21 +29,23 @@ namespace NewHorizons.Handlers
             }
 
             AudioClip clip = null;
-            if (system.Config.travelAudioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
-            else if (system.Config.travelAudioFilePath != null)
+            if (!string.IsNullOrEmpty(system.Config.travelAudioClip))
+            {
+                clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
+            }
+            else if (!string.IsNullOrEmpty(system.Config.travelAudioFilePath))
             {
                 try
                 {
                     clip = AudioUtilities.LoadAudio(system.Mod.ModHelper.Manifest.ModFolderPath + "/" + system.Config.travelAudioFilePath);
                 }
-                catch (System.Exception e)
-                {
-                    Utility.Logger.LogError($"Couldn't load audio file {system.Config.travelAudioFilePath} : {e.Message}");
-                }
+                catch { }
             }
 
             if (clip != null)
             {
+                Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}] or file [{system.Config.travelAudioFilePath}]");
+
                 var travelSource = Locator.GetGlobalMusicController()._travelSource;
                 travelSource._audioLibraryClip = AudioType.None;
                 travelSource._clipArrayIndex = 0;
