@@ -821,7 +821,7 @@
         },
         "assetBundle": {
           "type": "string",
-          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from/"
+          "description": "Relative filepath to an asset-bundle to load the prefab defined in `path` from"
         },
         "path": {
           "type": "string",
@@ -1096,7 +1096,7 @@
       "properties": {
         "assetBundle": {
           "type": "string",
-          "description": "Relative filepath to an asset-bundle\""
+          "description": "Relative filepath to an asset-bundle"
         },
         "count": {
           "type": "integer",
