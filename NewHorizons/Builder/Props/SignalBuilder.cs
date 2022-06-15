@@ -160,10 +160,7 @@ namespace NewHorizons.Builder.Props
                 {
                     clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
                 }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load audio file {info.audioFilePath} : {e.Message}");
-                }
+                catch { }
             }
 
             if (clip == null)
