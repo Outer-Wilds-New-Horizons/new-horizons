@@ -117,7 +117,7 @@ namespace NewHorizons.Builder.Props
 
             // Resize the distance it can be heard from to match roughly with the size
             var maxDistance = info.audioDistance;
-            if (maxDistance <= 0) maxDistance = info.height;
+            if (maxDistance <= 0) maxDistance = scale * 10f;
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
             {
                 audioSource.maxDistance = maxDistance;
