@@ -32,6 +32,11 @@ namespace NewHorizons.Handlers
             if (!string.IsNullOrEmpty(system.Config.travelAudioClip))
             {
                 clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
+
+                if (clip == null)
+                {
+                    Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}]");
+                }
             }
             else if (!string.IsNullOrEmpty(system.Config.travelAudioFilePath))
             {
@@ -40,6 +45,11 @@ namespace NewHorizons.Handlers
                     clip = AudioUtilities.LoadAudio(system.Mod.ModHelper.Manifest.ModFolderPath + "/" + system.Config.travelAudioFilePath);
                 }
                 catch { }
+
+                if (clip == null)
+                {
+                    Logger.LogError($"Couldn't get audio from file [{system.Config.travelAudioFilePath}]");
+                }
             }
 
             if (clip != null)
@@ -50,10 +60,6 @@ namespace NewHorizons.Handlers
                 travelSource._clipArrayLength = 0;
                 travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
                 travelSource.clip = clip;
-            }
-            else
-            {
-                Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}] or file [{system.Config.travelAudioFilePath}]");
             }
         }
     }
