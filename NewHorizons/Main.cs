@@ -55,6 +55,11 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
+        // Vessel
+        private SpawnPoint _vesselSpawnPoint;
+        public static bool HasVessel = false;
+        private static GameObject VesselPrefab = null;
+
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
         public StarSystemEvent OnChangeStarSystem;
@@ -206,6 +211,29 @@ namespace NewHorizons
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
 
+            if (IsWarpingFromVessel && scene.name == "EyeOfTheUniverse" && !HasVessel)
+            {
+                Logger.Log("Grabbing the vessel.");
+                HasVessel = true;
+                GameObject vessel = SearchUtilities.Find("Vessel_Body");
+                NomaiWarpPlatform vesselPlatform = vessel.GetComponentInChildren<NomaiWarpPlatform>(true);
+                vesselPlatform.gameObject.name = "Prefab_NOM_WarpPlatform_Vessel";
+                GameObject warpPlatform = SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/Interactables_SixthPlanet/Prefab_NOM_WarpPlatform");
+                warpPlatform.name = "Prefab_NOM_WarpPlatform_Eye";
+                warpPlatform.transform.SetParent(SearchUtilities.Find("Vessel_Body/Sector_VesselBridge/Interactibles_VesselBridge").transform, true);
+                foreach (NomaiInterfaceOrb orb in FindObjectsOfType<NomaiInterfaceOrb>())
+                {
+                    orb.GetComponent<OWRigidbody>()?.Suspend();
+                    orb.gameObject.SetActive(false);
+                }
+                vessel.SetActive(false);
+                VesselPrefab = GameObject.Instantiate(vessel);
+                VesselPrefab.name = "Vessel_Body";
+                DontDestroyOnLoad(VesselPrefab);
+                LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+                return;
+            }
+
             // Set time loop stuff if its enabled and if we're warping to a new place
             if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
             {
@@ -263,6 +291,10 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                if (IsWarpingFromVessel)
+                    _vesselSpawnPoint = CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
+                else
+                    _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
@@ -274,7 +306,7 @@ namespace NewHorizons
                 if (HasWarpDrive == true) EnableWarpDrive();
 
                 var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
-                var shouldWarpInFromVessel = IsWarpingFromVessel;
+                var shouldWarpInFromVessel = IsWarpingFromVessel && _vesselSpawnPoint != null;
                 Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                 IsWarpingFromShip = false;
@@ -302,6 +334,118 @@ namespace NewHorizons
             }
         }
 
+        private void OnReceiveWarpedBody(GameObject vessel, OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform)
+        {
+            bool isPlayer = warpedBody.CompareTag("Player");
+            if (isPlayer)
+            {
+                Transform player_body = Locator.GetPlayerTransform();
+                OWRigidbody s_rb = Locator.GetShipBody();
+                OWRigidbody p_rb = Locator.GetPlayerBody();
+                Vector3 newPos = player_body.position;
+                Vector3 offset = player_body.up * 10;
+                newPos += offset;
+                s_rb.SetPosition(newPos);
+                s_rb.SetRotation(player_body.transform.rotation);
+                s_rb.SetVelocity(p_rb.GetVelocity());
+                ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                {
+                    vessel.GetComponent<MapMarker>()?.DisableMarker();
+                    vessel.SetActive(false);
+                });
+            }
+        }
+
+        private EyeSpawnPoint CreateVessel()
+        {
+            Logger.Log("Checking for Vessel Prefab");
+            if (VesselPrefab == null) return null;
+            Logger.Log("Creating Vessel");
+            var vesselObject = GameObject.Instantiate(VesselPrefab);
+            vesselObject.name = VesselPrefab.name;
+            vesselObject.transform.parent = null;
+            vesselObject.SetActive(true);
+            VesselWarpController vesselWarpController = vesselObject.GetComponentInChildren<VesselWarpController>(true);
+            vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += (OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform) => OnReceiveWarpedBody(vesselObject, warpedBody, startPlatform, targetPlatform);
+            MapMarker mapMarker = vesselObject.AddComponent<MapMarker>();
+            mapMarker._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
+            mapMarker._markerType = MapMarker.MarkerType.Planet;
+            foreach (NomaiInterfaceOrb orb in vesselObject.GetComponentsInChildren<NomaiInterfaceOrb>(true))
+            {
+                orb.gameObject.SetActive(true);
+                orb.gameObject.GetComponent<OWRigidbody>()?.UnsuspendImmediate(true);
+            }
+            EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
+            system.SpawnPoint = eyeSpawnPoint;
+            ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            return eyeSpawnPoint;
+        }
+
+        private SpawnPoint UpdateVessel()
+        {
+            var system = SystemDict[_currentStarSystem];
+            var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
+            var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>();
+            system.SpawnPoint = spawnPoint;
+            VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
+            ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            return spawnPoint;
+        }
+
+        private void SetupWarpController(VesselWarpController vesselWarpController, bool db = false)
+        {
+            if (db)
+            {
+                //Make warp core
+                foreach (WarpCoreItem core in Resources.FindObjectsOfTypeAll<WarpCoreItem>())
+                {
+                    if (core.GetWarpCoreType().Equals(WarpCoreType.Vessel))
+                    {
+                        var newCore = Instantiate(core, AstroObjectLocator.GetAstroObject("Vessel Dimension")?.transform ?? Locator.GetPlayerBody()?.transform);
+                        newCore._visible = true;
+                        foreach (OWRenderer render in newCore._renderers)
+                        {
+                            if (render)
+                            {
+                                render.enabled = true;
+                                render.SetActivation(true);
+                                render.SetLODActivation(true);
+                                if (render.GetRenderer()) render.GetRenderer().enabled = true;
+                            }
+                        }
+                        foreach (ParticleSystem particleSystem in newCore._particleSystems)
+                        {
+                            if (particleSystem) particleSystem.Play(true);
+                        }
+                        foreach (OWLight2 light in newCore._lights)
+                        {
+                            if (light)
+                            {
+                                light.enabled = true;
+                                light.SetActivation(true);
+                                light.SetLODActivation(true);
+                                if (light.GetLight()) light.GetLight().enabled = true;
+                            }
+                        }
+                        vesselWarpController._coreSocket.PlaceIntoSocket(newCore);
+                        break;
+                    }
+                }
+            }
+            vesselWarpController.OnSlotDeactivated(vesselWarpController._coordinatePowerSlot);
+            if (!db) vesselWarpController.OnSlotActivated(vesselWarpController._coordinatePowerSlot);
+            vesselWarpController._gravityVolume.SetFieldMagnitude(vesselWarpController._origGravityMagnitude);
+            vesselWarpController._coreCable.SetPowered(true);
+            vesselWarpController._coordinateCable.SetPowered(!db);
+            vesselWarpController._warpPlatformCable.SetPowered(false);
+            vesselWarpController._cageClosed = true;
+            vesselWarpController._cageAnimator.TranslateToLocalPosition(new Vector3(0.0f, -8.1f, 0.0f), 0.1f);
+            vesselWarpController._cageAnimator.RotateToLocalEulerAngles(new Vector3(0.0f, 180f, 0.0f), 0.1f);
+            vesselWarpController._cageAnimator.OnTranslationComplete -= new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
+            vesselWarpController._cageAnimator.OnTranslationComplete += new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
+            vesselWarpController._cageLoopingAudio.FadeIn(1f);
+        }
+
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
         private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
@@ -310,7 +454,11 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
 
             if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
-            else if (shouldWarpInFromVessel) { }
+            else if (shouldWarpInFromVessel)
+            {
+                FindObjectOfType<PlayerSpawner>().DebugWarp(_vesselSpawnPoint);
+                Builder.General.SpawnPointBuilder.SuitUp();
+            }
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
         }
 
@@ -487,7 +635,13 @@ namespace NewHorizons
 
             _currentStarSystem = newStarSystem;
 
-            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
+            if (vessel && !HasVessel && newStarSystem != "SolarSystem" && newStarSystem != "EyeOfTheUniverse")
+            {
+                Logger.Log("Going to grab the vessel.");
+                LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
+            }
+            else
+                LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 
         void OnDeath(DeathType _)

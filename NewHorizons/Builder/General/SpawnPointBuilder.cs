@@ -46,8 +46,8 @@ namespace NewHorizons.Builder.General
 
                 var ship = SearchUtilities.Find("Ship_Body");
                 ship.transform.position = spawnPoint.transform.position;
-                
-                if(module.shipSpawnRotation != null)
+
+                if (module.shipSpawnRotation != null)
                 {
                     ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
                 }
@@ -75,7 +75,7 @@ namespace NewHorizons.Builder.General
                 }
             }
 
-            if (!Main.Instance.IsWarpingFromShip && module.startWithSuit && !suitUpQueued)
+            if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && module.startWithSuit)) && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
