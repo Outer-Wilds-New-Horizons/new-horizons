@@ -76,7 +76,7 @@ namespace NewHorizons.External.Modules
         public class ScatterInfo
         {
             /// <summary>
-            /// Relative filepath to an asset-bundle"
+            /// Relative filepath to an asset-bundle
             /// </summary>
             public string assetBundle;
 
@@ -125,7 +125,7 @@ namespace NewHorizons.External.Modules
             public bool alignToNormal;
 
             /// <summary>
-            /// Relative filepath to an asset-bundle to load the prefab defined in `path` from/
+            /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
             /// </summary>
             public string assetBundle;
 
