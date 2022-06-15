@@ -1,9 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
 namespace NewHorizons.Utility
 {
     public static class NewHorizonsExtensions
@@ -121,6 +123,31 @@ namespace NewHorizons.Utility
         public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
         {
             return transform.rotation * localRotation;
+        }
+
+        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface) => Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)).Any(system => nomaiCoordinateInterface.CheckCoordinates(system.Key, system.Value));
+
+        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface, out string selectedSystem)
+        {
+            foreach (KeyValuePair<string, NomaiCoordinates> cbs in Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)))
+            {
+                if (CheckCoordinates(nomaiCoordinateInterface, cbs.Key, cbs.Value))
+                {
+                    selectedSystem = cbs.Key;
+                    return true;
+                }
+            }
+            selectedSystem = null;
+            return false;
+        }
+
+        public static bool CheckCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface, string system, NomaiCoordinates coordinates)
+        {
+            bool xCorrect = nomaiCoordinateInterface._nodeControllers[0].CheckCoordinate(coordinates.x);
+            bool yCorrect = nomaiCoordinateInterface._nodeControllers[1].CheckCoordinate(coordinates.y);
+            bool zCorrect = nomaiCoordinateInterface._nodeControllers[2].CheckCoordinate(coordinates.z);
+            Utility.Logger.Log($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
+            return xCorrect && yCorrect && zCorrect;
         }
     }
 }

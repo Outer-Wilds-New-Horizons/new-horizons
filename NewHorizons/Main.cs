@@ -108,7 +108,25 @@ namespace NewHorizons
             {
                 Config =
                 {
-                    destroyStockPlanets = false
+                    destroyStockPlanets = false,
+                    coords = new StarSystemConfig.NomaiCoordinates
+                    {
+                        x = new int[5]{ 0,3,2,1,5 },
+                        y = new int[5]{ 4,5,3,2,1 },
+                        z = new int[5]{ 4,1,2,5,0 }
+                    }
+                }
+            };
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
+            {
+                Config =
+                {
+                    coords = new StarSystemConfig.NomaiCoordinates
+                    {
+                        x = new int[3]{ 1,5,4 },
+                        y = new int[4]{ 3,0,1,4 },
+                        z = new int[6]{ 1,2,3,0,5,4 }
+                    }
                 }
             };
 
@@ -326,6 +344,7 @@ namespace NewHorizons
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+                        starSystemConfig.FixCoordinates();
 
                         if (starSystemConfig.startHere)
                         {
@@ -405,6 +424,7 @@ namespace NewHorizons
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
+                    starSystemConfig.FixCoordinates();
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 

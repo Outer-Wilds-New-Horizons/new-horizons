@@ -1,4 +1,6 @@
 using System.ComponentModel;
+using System.Linq;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Configs
@@ -56,6 +58,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public string travelAudioFilePath;
 
+        /// <summary>
+        /// Coordinates that the vessel can use to warp to your solar system.
+        /// </summary>
+        public NomaiCoordinates coords;
+
         public class NomaiCoordinates
         {
             public int[] x;
@@ -80,6 +87,13 @@ namespace NewHorizons.External.Configs
             /// Path to the material within the asset bundle specified by `assetBundle` to use for the skybox
             /// </summary>
             public string path;
+        }
+
+        public void FixCoordinates()
+        {
+            coords.x = coords.x.Distinct().ToArray();
+            coords.y = coords.y.Distinct().ToArray();
+            coords.z = coords.z.Distinct().ToArray();
         }
     }
 }
