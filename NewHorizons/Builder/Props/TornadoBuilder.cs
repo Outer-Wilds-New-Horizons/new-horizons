@@ -116,7 +116,8 @@ namespace NewHorizons.Builder.Props
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
-            var maxDistance = info.audioDistance == 0 ? 10 * scale : info.audioDistance;
+            var maxDistance = info.audioDistance;
+            if (maxDistance <= 0) maxDistance = info.height;
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
             {
                 audioSource.maxDistance = maxDistance;
