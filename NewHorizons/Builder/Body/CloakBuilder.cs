@@ -12,8 +12,8 @@ namespace NewHorizons.Builder.Body
             var radius = module.radius;
 
             AudioClip clip = null;
-            if (module.audioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(module.audioClip);
-            else if (module.audioFilePath != null)
+            if (!string.IsNullOrEmpty(module.audioClip)) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(module.audioClip);
+            else if (!string.IsNullOrEmpty(module.audioFilePath))
             {
                 try
                 {
