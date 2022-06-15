@@ -201,7 +201,7 @@ namespace NewHorizons.External.Configs
 
             if (Base.isSatellite) Base.showMinimap = false;
 
-            if (!Base.hasReferenceFrame) ReferenceFrame.hideInMap = true;
+            if (!Base.hasReferenceFrame) ReferenceFrame.enabled = false;
 
             if (childrenToDestroy != null) removeChildren = childrenToDestroy;
 

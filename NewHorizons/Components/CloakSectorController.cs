@@ -119,7 +119,7 @@ namespace NewHorizons.Components
             _cloak._cloakVisualsEnabled = false;
         }
 
-        public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume.gameObject.SetActive(active);
+        public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume?.gameObject.SetActive(active);
         public void EnableReferenceFrameVolume() => SetReferenceFrameVolumeActive(true);
         public void DisableReferenceFrameVolume() => SetReferenceFrameVolumeActive(false);
 
