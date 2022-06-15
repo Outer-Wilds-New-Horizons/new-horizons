@@ -18,7 +18,7 @@ namespace NewHorizons.AchievementsPlus.NH
 
         private static void OnChangeStarSystem(string system)
         {
-            if (Main.Instance.IsWarping) AchievementHandler.Earn(UNIQUE_ID);
+            if (Main.Instance.IsWarpingFromShip) AchievementHandler.Earn(UNIQUE_ID);
         }
     }
 }
