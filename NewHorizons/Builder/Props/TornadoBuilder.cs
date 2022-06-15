@@ -117,8 +117,11 @@ namespace NewHorizons.Builder.Props
 
             // Resize the distance it can be heard from to match roughly with the size
             var maxDistance = info.audioDistance == 0 ? 10 * scale : info.audioDistance;
-            audioSource.maxDistance = maxDistance;
-            audioSource.minDistance = maxDistance / 10f;
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                audioSource.maxDistance = maxDistance;
+                audioSource.minDistance = maxDistance / 10f;
+            });
 
             var controller = tornadoGO.GetComponent<TornadoController>();
             controller.SetSector(sector);
