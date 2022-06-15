@@ -1354,7 +1354,7 @@
         },
         "bracketRadius": {
           "type": "number",
-          "description": "Radius of the brackets that show up when you target this. Defaults to the sphereOfInfluence.",
+          "description": "Radius of the brackets that show up when you target this. Defaults to the sphere of influence.",
           "format": "float",
           "default": -1
         },
@@ -1364,9 +1364,13 @@
         },
         "maxTargetDistance": {
           "type": "number",
-          "description": "The maximum distance that the reference frame can be targeted from. Defaults to double the sphereOfInfluence.",
-          "format": "float",
-          "default": -1
+          "description": "The maximum distance that the reference frame can be targeted from. Defaults to 100km and cannot be greater than that.",
+          "format": "float"
+        },
+        "targetColliderRadius": {
+          "type": "number",
+          "description": "The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.",
+          "format": "float"
         }
       }
     },
