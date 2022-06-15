@@ -20,7 +20,7 @@ public interface INewHorizons
 
     UnityEvent<string> GetStarSystemLoadedEvent();
     
-    GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal)
+    GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal);
 
     string[] GetInstalledAddons();
 }
