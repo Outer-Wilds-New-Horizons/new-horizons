@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
@@ -55,14 +56,14 @@ namespace NewHorizons.Builder.Props
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets;
                 
-                if (prop.GetComponentInChildren<VisibilityTracker>() != null) continue;
+                if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
                 var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
                 var boxShape = prop.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
                 
-                prop.AddComponent<VisibilityTracker>();
+                prop.AddComponent<ShapeVisibilityTracker>();
             }
         }
 
@@ -81,14 +82,14 @@ namespace NewHorizons.Builder.Props
                 var state = prop.AddComponent<QuantumState>();
                 states.Add(state);
 
-                if (prop.GetComponentInChildren<VisibilityTracker>() != null) continue;
+                if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
                 var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
                 var boxShape = prop.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
                 
-                prop.AddComponent<VisibilityTracker>();
+                prop.AddComponent<ShapeVisibilityTracker>();
             }
 
             if (quantumGroup.hasEmptyState)
@@ -105,7 +106,7 @@ namespace NewHorizons.Builder.Props
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
                 
-                empty.AddComponent<VisibilityTracker>();
+                empty.AddComponent<ShapeVisibilityTracker>();
             }
 
             var multiState = groupRoot.AddComponent<MultiStateQuantumObject>();
@@ -124,15 +125,15 @@ namespace NewHorizons.Builder.Props
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
+            shuffle.Awake(); // this doesn't get called on its own for some reason
             
-            var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent);
+            var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent); // TODO: add a box shape to each prop instead of to the parent
             var boxShape = shuffleParent.AddComponent<BoxShape>();
             boxShape.center = boxBounds.center;
             boxShape.extents = boxBounds.size;
                 
-            shuffleParent.AddComponent<VisibilityTracker>();
+            shuffleParent.AddComponent<ShapeVisibilityTracker>();
         }
-
 
         public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
         {
