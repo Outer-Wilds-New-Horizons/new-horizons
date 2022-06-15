@@ -44,14 +44,16 @@ namespace NewHorizons.Handlers
 
             if (clip != null)
             {
-                Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}] or file [{system.Config.travelAudioFilePath}]");
-
                 var travelSource = Locator.GetGlobalMusicController()._travelSource;
                 travelSource._audioLibraryClip = AudioType.None;
                 travelSource._clipArrayIndex = 0;
                 travelSource._clipArrayLength = 0;
                 travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
                 travelSource.clip = clip;
+            }
+            else
+            {
+                Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}] or file [{system.Config.travelAudioFilePath}]");
             }
         }
     }
