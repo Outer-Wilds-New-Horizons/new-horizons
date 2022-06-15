@@ -190,6 +190,7 @@ namespace NewHorizons
             IsSystemReady = true;
             try
             {
+                Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
                 Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
             }
             catch (Exception e)
