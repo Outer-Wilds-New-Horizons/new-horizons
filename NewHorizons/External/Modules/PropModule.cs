@@ -666,17 +666,17 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The location of this socket
             /// </summary>
-            MVector3 position; 
+            public MVector3 position; 
 
             /// <summary>
             /// The rotation the quantum object will take if it's occupying this socket
             /// </summary>
-            MVector3 rotation; 
+            public MVector3 rotation; 
 
             /// <summary>
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
-            float probability; 
+            public float probability; 
         }
     }
 }
