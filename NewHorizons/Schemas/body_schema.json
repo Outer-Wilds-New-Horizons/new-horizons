@@ -436,7 +436,7 @@
           "description": "Do we show the minimap when walking around this planet?",
           "default": true
         },
-        "sphereOfInfluence": {
+        "soiOverride": {
           "type": "number",
           "description": "An override for the radius of the planet's gravitational sphere of influence. Optional",
           "format": "float"
