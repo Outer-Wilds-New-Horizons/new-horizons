@@ -153,17 +153,14 @@ namespace NewHorizons.Builder.Props
             var name = StringToSignalName(info.name);
 
             AudioClip clip = null;
-            if (info.audioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
-            else if (info.audioFilePath != null)
+            if (!string.IsNullOrEmpty(info.audioClip)) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
+            else if (!string.IsNullOrEmpty(info.audioFilePath))
             {
                 try
                 {
                     clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
                 }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load audio file {info.audioFilePath} : {e.Message}");
-                }
+                catch { }
             }
 
             if (clip == null)
