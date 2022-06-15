@@ -54,12 +54,15 @@ namespace NewHorizons.Handlers
 
             if (clip != null)
             {
-                var travelSource = Locator.GetGlobalMusicController()._travelSource;
-                travelSource._audioLibraryClip = AudioType.None;
-                travelSource._clipArrayIndex = 0;
-                travelSource._clipArrayLength = 0;
-                travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
-                travelSource.clip = clip;
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                {
+                    var travelSource = Locator.GetGlobalMusicController()._travelSource;
+                    travelSource._audioLibraryClip = AudioType.None;
+                    travelSource._clipArrayIndex = 0;
+                    travelSource._clipArrayLength = 0;
+                    travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
+                    travelSource.clip = clip;
+                });
             }
         }
     }
