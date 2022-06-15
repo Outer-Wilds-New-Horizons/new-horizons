@@ -11,17 +11,16 @@ namespace NewHorizons.AchievementsPlus
        
         public static void Init()
         {
-            try
-            {
-                API = Main.Instance.ModHelper.Interaction.GetModApi<IAchievements>("xen.AchievementTracker");
-                _enabled = true;
-            }
-            catch (Exception)
+            API = Main.Instance.ModHelper.Interaction.TryGetModApi<IAchievements>("xen.AchievementTracker");
+
+            if (API == null)
             {
                 Logger.Log("Achievements+ isn't installed");
                 _enabled = false;
                 return;
             }
+
+            _enabled = true;
 
             // Register base NH achievements
             NH.WarpDriveAchievement.Init();
