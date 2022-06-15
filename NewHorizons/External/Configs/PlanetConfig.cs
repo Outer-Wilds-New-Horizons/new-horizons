@@ -237,7 +237,7 @@ namespace NewHorizons.External.Configs
                     Atmosphere.useAtmosphereShader = true;
 
                 // useBasicCloudShader is obsolete
-                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader) 
+                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
             }
 
@@ -245,6 +245,8 @@ namespace NewHorizons.External.Configs
                 foreach (var tornado in Props.tornados)
                     if (tornado.downwards)
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
+
+            if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
         }
     }
 }
