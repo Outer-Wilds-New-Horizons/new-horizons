@@ -1,6 +1,7 @@
 using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -90,6 +91,7 @@ namespace NewHorizons.Builder.Props
                 var boxShape = prop.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
+                prop.AddComponent<BoxShapeVisualizer>();
                 
                 prop.AddComponent<ShapeVisibilityTracker>();
             }
@@ -107,6 +109,7 @@ namespace NewHorizons.Builder.Props
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
+                empty.AddComponent<BoxShapeVisualizer>();
                 
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
@@ -139,6 +142,8 @@ namespace NewHorizons.Builder.Props
             var boxShape = shuffleParent.AddComponent<BoxShape>();
             boxShape.center = boxBounds.center;
             boxShape.extents = boxBounds.size;
+            
+            shuffleParent.AddComponent<BoxShapeVisualizer>();
                 
             shuffleParent.AddComponent<ShapeVisibilityTracker>();
             shuffleParent.SetActive(true);
