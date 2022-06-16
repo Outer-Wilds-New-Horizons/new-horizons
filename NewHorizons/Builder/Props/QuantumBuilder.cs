@@ -52,10 +52,12 @@ namespace NewHorizons.Builder.Props
 
             foreach(var prop in propsInGroup)
             {
+                prop.SetActive(false);
                 var quantumObject = prop.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
                 quantumObject._socketList = sockets;
-                
+                prop.SetActive(true);        
+
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
                 var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
@@ -109,22 +111,28 @@ namespace NewHorizons.Builder.Props
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
 
+            groupRoot.SetActive(false);
             var multiState = groupRoot.AddComponent<MultiStateQuantumObject>();
             multiState._loop = quantumGroup.loop;
             multiState._sequential = quantumGroup.sequential;
             multiState._states = states.ToArray();
+            multiState._prerequisiteObjects = new MultiStateQuantumObject[0]; // TODO: support this
+            multiState._initialState = 0;
+            groupRoot.SetActive(true);
         }
 
         public static void MakeShuffleGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
             GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.id);
+            shuffleParent.SetActive(false);
             shuffleParent.transform.parent = sector.transform;
             shuffleParent.transform.localPosition = Vector3.zero;
             propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);    
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
+            NewHorizons.Utility.Logger.Log($"Shuffled objects {shuffle._shuffledObjects}, propsInGroup count {propsInGroup.Count()}");
             shuffle.Awake(); // this doesn't get called on its own for some reason
             
             var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent); // TODO: add a box shape to each prop instead of to the parent
@@ -133,6 +141,7 @@ namespace NewHorizons.Builder.Props
             boxShape.extents = boxBounds.size;
                 
             shuffleParent.AddComponent<ShapeVisibilityTracker>();
+            shuffleParent.SetActive(true);
         }
 
         public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
