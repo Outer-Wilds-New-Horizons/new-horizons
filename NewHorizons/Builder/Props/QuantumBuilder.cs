@@ -94,6 +94,9 @@ namespace NewHorizons.Builder.Props
                 prop.AddComponent<BoxShapeVisualizer>();
                 
                 prop.AddComponent<ShapeVisibilityTracker>();
+
+                var goo = new GameObject("Visibility Tracker Point - " + prop.name);
+                goo.transform.position = prop.transform.TransformPoint(boxShape.center);
             }
 
             if (quantumGroup.hasEmptyState)
@@ -142,6 +145,7 @@ namespace NewHorizons.Builder.Props
             var boxShape = shuffleParent.AddComponent<BoxShape>();
             boxShape.center = boxBounds.center;
             boxShape.extents = boxBounds.size;
+            //Logger.Log();
             
             shuffleParent.AddComponent<BoxShapeVisualizer>();
                 
@@ -180,7 +184,7 @@ namespace NewHorizons.Builder.Props
             
             if (relativeTo == null) return globalCorners;
 
-            return globalCorners.Select(globalCorner => relativeTo.transform.TransformPoint(globalCorner)).ToArray();
+            return globalCorners.Select(globalCorner => relativeTo.transform.InverseTransformPoint(globalCorner)).ToArray();
         }
     }
 }
