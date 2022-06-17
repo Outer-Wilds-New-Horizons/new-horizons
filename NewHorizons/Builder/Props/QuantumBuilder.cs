@@ -71,13 +71,6 @@ namespace NewHorizons.Builder.Props
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
-                var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
-                //var boxShape = prop.AddComponent<BoxShape>();
-                //boxShape.center = boxBounds.center;
-                //boxShape.extents = boxBounds.size;
-                
-                //prop.AddComponent<ShapeVisibilityTracker>();
-                //prop.AddComponent<BoxShapeVisualizer>();
                 AddBoundsVisibility(prop);
             }
         }
@@ -99,14 +92,6 @@ namespace NewHorizons.Builder.Props
                 states.Add(state);
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
-
-                //var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
-                //var boxShape = prop.AddComponent<BoxShape>();
-                //boxShape.center = (boxBounds.center);
-                //boxShape.extents = boxBounds.size;
-                //prop.AddComponent<BoxShapeVisualizer>();
-                
-                //prop.AddComponent<ShapeVisibilityTracker>();
 
                 AddBoundsVisibility(prop);
             }
@@ -150,64 +135,42 @@ namespace NewHorizons.Builder.Props
 
             var shuffle = shuffleParent.AddComponent<QuantumShuffleObject>();
             shuffle._shuffledObjects = propsInGroup.Select(p => p.transform).ToArray();
-            NewHorizons.Utility.Logger.Log($"Shuffled objects {shuffle._shuffledObjects}, propsInGroup count {propsInGroup.Count()}");
             shuffle.Awake(); // this doesn't get called on its own for some reason
             
-            //var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent); // TODO: add a box shape to each prop instead of to the parent
-            //var boxShape = shuffleParent.AddComponent<BoxShape>();
-            //boxShape.center = boxBounds.center;
-            //boxShape.extents = boxBounds.size;
-            ////Logger.Log();
-            
-            //shuffleParent.AddComponent<BoxShapeVisualizer>();
-                
-            //shuffleParent.AddComponent<ShapeVisibilityTracker>();
             AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
+        }
+
+        
+        struct BoxShapeReciever
+        {
+            public MeshFilter f;
+            public SkinnedMeshRenderer s;
+            public GameObject g;
         }
 
         public static void AddBoundsVisibility(GameObject g)
         {
             var meshFilters = g.GetComponentsInChildren<MeshFilter>();
-            foreach(var meshFilter in meshFilters)
+            var skinnedMeshRenderers = g.GetComponentsInChildren<SkinnedMeshRenderer>();
+            
+            var boxShapeRecievers = meshFilters
+                .Select(f => new BoxShapeReciever() { f=f, g=f.gameObject })
+                .Concat (
+                    skinnedMeshRenderers.Select(s => new BoxShapeReciever() { s=s, g=s.gameObject })
+                )
+                .ToList();
+
+            foreach(var boxshapeReciever in boxShapeRecievers)
             {
-                //var copy = GameObject.Instantiate(meshFilter.gameObject);
-                //copy.transform.parent = meshFilter.transform.parent;
-                
-                //copy.AddComponent<RendererVisibilityTracker>();
+                var box = boxshapeReciever.g.AddComponent<BoxShape>();
+                boxshapeReciever.g.AddComponent<ShapeVisibilityTracker>();
+                boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
 
-                //var mesh = new Mesh();
-                //mesh.vertices = meshFilter.mesh.vertices;
-                //mesh.RecalculateBounds();
-                //NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + "  copy bounds size: " + mesh.bounds.size);
-                //NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + "  original bounds size: " + meshFilter.mesh.bounds.size);
-
-                var bounds = meshFilter.mesh.bounds;
-                Logger.Log("go name: " + meshFilter.gameObject.name + "  original bounds size: " + bounds.max + "  " + bounds.min);
-
-                var box = meshFilter.gameObject.AddComponent<BoxShape>();
-                //meshFilter.mesh.RecalculateBounds();
-                meshFilter.gameObject.AddComponent<ShapeVisibilityTracker>();
-                meshFilter.gameObject.AddComponent<BoxShapeVisualizer>();
-
-                box.center = bounds.center;
-                box.size = bounds.size;
-                NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + " bounds size: " + bounds.size + " box size: " + box.size);
-
-                var fixer = meshFilter.gameObject.AddComponent<BoxShapeFixer>();
+                var fixer = boxshapeReciever.g.AddComponent<BoxShapeFixer>();
                 fixer.shape = box;
-                fixer.meshFilter = meshFilter;
-
-                //Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => 
-                //    {
-                //        var bounds = meshFilter.mesh.bounds;
-                //        box.center = bounds.center;
-                //        box.size = bounds.size;
-                //        NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + " bounds size: " + bounds.size + " box size: " + box.size);
-                //        //box.RecalculateLocalBounds();
-                //    }, 
-                //    20
-                //);
+                fixer.meshFilter = boxshapeReciever.f;
+                fixer.skinnedMeshRenderer = boxshapeReciever.s;
             }
         }
 
@@ -274,14 +237,6 @@ namespace NewHorizons.Builder.Props
             shape.center = sharedMesh.bounds.center;
 
             GameObject.DestroyImmediate(this);
-
-            //// TODO: try checking for sharedMesh
-            //if (_fixed) return;
-
-            //shape.size = meshFilter.mesh.bounds.size;
-            //shape.center = meshFilter.mesh.bounds.center;
-            
-            //_fixed = (shape.size != Vector3.zero);
         }
     }
 }
