@@ -12,6 +12,11 @@ using UnityEngine;
 
 using Logger = NewHorizons.Utility.Logger;
 
+// BUGS THAT REQUIRE REWRITING MOBIUS CODE
+// 1) MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
+// 2) QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
+
+
 namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
