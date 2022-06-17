@@ -83,13 +83,14 @@ namespace NewHorizons.Builder.Props
             {
                 prop.transform.parent = groupRoot.transform;
                 var state = prop.AddComponent<QuantumState>();
+                state._probability = 1;
                 states.Add(state);
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
                 var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
                 var boxShape = prop.AddComponent<BoxShape>();
-                boxShape.center = boxBounds.center;
+                boxShape.center = (boxBounds.center);
                 boxShape.extents = boxBounds.size;
                 prop.AddComponent<BoxShapeVisualizer>();
                 
@@ -160,6 +161,10 @@ namespace NewHorizons.Builder.Props
             
             Bounds b = new Bounds(corners[0], Vector3.zero);
             corners.ForEach(corner => b.Encapsulate(corner));
+
+            NewHorizons.Utility.Logger.Log("CORNERS:=-=-=-=-=-==-=-=-=-==-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- ");
+            NewHorizons.Utility.Logger.Log("CORNERS: "+ string.Join(", ",corners));
+            NewHorizons.Utility.Logger.Log("BOUNDS: "+ b.center + "    " + b.size);
 
             return b;
         }
