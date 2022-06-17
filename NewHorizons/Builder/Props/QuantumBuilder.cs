@@ -37,18 +37,22 @@ namespace NewHorizons.Builder.Props
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector.transform;
             groupRoot.transform.localPosition = Vector3.zero;
+            groupRoot.transform.localEulerAngles = Vector3.zero;
             
-            var sockets = new List<QuantumSocket>(quantumGroup.sockets.Length);
+            var sockets = new QuantumSocket[quantumGroup.sockets.Length];
             for (int i = 0; i < quantumGroup.sockets.Length; i++)
             {
                 var socketInfo = quantumGroup.sockets[i];
 
                 var socket = new GameObject("Socket " + i);
+                socket.SetActive(false);
                 socket.transform.parent = groupRoot.transform;
                 socket.transform.localPosition = socketInfo.position;
                 socket.transform.localEulerAngles = socketInfo.rotation;
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
+                sockets[i]._lightSources = new Light[0];
+                socket.SetActive(true);
             }
 
             foreach(var prop in propsInGroup)
@@ -56,7 +60,11 @@ namespace NewHorizons.Builder.Props
                 prop.SetActive(false);
                 var quantumObject = prop.AddComponent<SocketedQuantumObject>();
                 quantumObject._socketRoot = groupRoot;
-                quantumObject._socketList = sockets;
+                quantumObject._socketList = sockets.ToList();
+                quantumObject._sockets = sockets;
+                quantumObject._prebuilt = true;
+                quantumObject._childSockets = new List<QuantumSocket>();
+                // TODO: support _alignWithGravity?
                 prop.SetActive(true);        
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
@@ -67,6 +75,7 @@ namespace NewHorizons.Builder.Props
                 boxShape.extents = boxBounds.size;
                 
                 prop.AddComponent<ShapeVisibilityTracker>();
+                prop.AddComponent<BoxShapeVisualizer>();
             }
         }
 

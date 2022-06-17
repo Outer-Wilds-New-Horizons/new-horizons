@@ -686,7 +686,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
-            public float probability; 
+            [DefaultValue(1f)] public float probability = 1f; 
         }
     }
 }
