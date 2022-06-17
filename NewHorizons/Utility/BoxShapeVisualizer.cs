@@ -17,7 +17,7 @@ namespace NewHorizons.Utility
             box = GetComponent<BoxShape>();
         }
 
-        void OnGUI()
+        void OnRenderObject()
         {
             Popcron.Gizmos.Cube(transform.TransformPoint(box.center), transform.rotation, box.size);
         }

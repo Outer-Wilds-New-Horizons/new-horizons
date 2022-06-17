@@ -10,6 +10,8 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class QuantumBuilder
@@ -70,12 +72,13 @@ namespace NewHorizons.Builder.Props
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
                 var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
-                var boxShape = prop.AddComponent<BoxShape>();
-                boxShape.center = boxBounds.center;
-                boxShape.extents = boxBounds.size;
+                //var boxShape = prop.AddComponent<BoxShape>();
+                //boxShape.center = boxBounds.center;
+                //boxShape.extents = boxBounds.size;
                 
-                prop.AddComponent<ShapeVisibilityTracker>();
-                prop.AddComponent<BoxShapeVisualizer>();
+                //prop.AddComponent<ShapeVisibilityTracker>();
+                //prop.AddComponent<BoxShapeVisualizer>();
+                AddBoundsVisibility(prop);
             }
         }
 
@@ -97,16 +100,15 @@ namespace NewHorizons.Builder.Props
 
                 if (prop.GetComponentInChildren<ShapeVisibilityTracker>() != null) continue;
 
-                var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
-                var boxShape = prop.AddComponent<BoxShape>();
-                boxShape.center = (boxBounds.center);
-                boxShape.extents = boxBounds.size;
-                prop.AddComponent<BoxShapeVisualizer>();
+                //var boxBounds = GetBoundsOfSelfAndChildMeshes(prop);
+                //var boxShape = prop.AddComponent<BoxShape>();
+                //boxShape.center = (boxBounds.center);
+                //boxShape.extents = boxBounds.size;
+                //prop.AddComponent<BoxShapeVisualizer>();
                 
-                prop.AddComponent<ShapeVisibilityTracker>();
+                //prop.AddComponent<ShapeVisibilityTracker>();
 
-                var goo = new GameObject("Visibility Tracker Point - " + prop.name);
-                goo.transform.position = prop.transform.TransformPoint(boxShape.center);
+                AddBoundsVisibility(prop);
             }
 
             if (quantumGroup.hasEmptyState)
@@ -151,16 +153,62 @@ namespace NewHorizons.Builder.Props
             NewHorizons.Utility.Logger.Log($"Shuffled objects {shuffle._shuffledObjects}, propsInGroup count {propsInGroup.Count()}");
             shuffle.Awake(); // this doesn't get called on its own for some reason
             
-            var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent); // TODO: add a box shape to each prop instead of to the parent
-            var boxShape = shuffleParent.AddComponent<BoxShape>();
-            boxShape.center = boxBounds.center;
-            boxShape.extents = boxBounds.size;
-            //Logger.Log();
+            //var boxBounds = GetBoundsOfSelfAndChildMeshes(shuffleParent); // TODO: add a box shape to each prop instead of to the parent
+            //var boxShape = shuffleParent.AddComponent<BoxShape>();
+            //boxShape.center = boxBounds.center;
+            //boxShape.extents = boxBounds.size;
+            ////Logger.Log();
             
-            shuffleParent.AddComponent<BoxShapeVisualizer>();
+            //shuffleParent.AddComponent<BoxShapeVisualizer>();
                 
-            shuffleParent.AddComponent<ShapeVisibilityTracker>();
+            //shuffleParent.AddComponent<ShapeVisibilityTracker>();
+            AddBoundsVisibility(shuffleParent);
             shuffleParent.SetActive(true);
+        }
+
+        public static void AddBoundsVisibility(GameObject g)
+        {
+            var meshFilters = g.GetComponentsInChildren<MeshFilter>();
+            foreach(var meshFilter in meshFilters)
+            {
+                //var copy = GameObject.Instantiate(meshFilter.gameObject);
+                //copy.transform.parent = meshFilter.transform.parent;
+                
+                //copy.AddComponent<RendererVisibilityTracker>();
+
+                //var mesh = new Mesh();
+                //mesh.vertices = meshFilter.mesh.vertices;
+                //mesh.RecalculateBounds();
+                //NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + "  copy bounds size: " + mesh.bounds.size);
+                //NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + "  original bounds size: " + meshFilter.mesh.bounds.size);
+
+                var bounds = meshFilter.mesh.bounds;
+                Logger.Log("go name: " + meshFilter.gameObject.name + "  original bounds size: " + bounds.max + "  " + bounds.min);
+
+                var box = meshFilter.gameObject.AddComponent<BoxShape>();
+                //meshFilter.mesh.RecalculateBounds();
+                meshFilter.gameObject.AddComponent<ShapeVisibilityTracker>();
+                meshFilter.gameObject.AddComponent<BoxShapeVisualizer>();
+
+                box.center = bounds.center;
+                box.size = bounds.size;
+                NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + " bounds size: " + bounds.size + " box size: " + box.size);
+
+                var fixer = meshFilter.gameObject.AddComponent<BoxShapeFixer>();
+                fixer.shape = box;
+                fixer.meshFilter = meshFilter;
+
+                //Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => 
+                //    {
+                //        var bounds = meshFilter.mesh.bounds;
+                //        box.center = bounds.center;
+                //        box.size = bounds.size;
+                //        NewHorizons.Utility.Logger.Log("go name: " + meshFilter.gameObject.name + " bounds size: " + bounds.size + " box size: " + box.size);
+                //        //box.RecalculateLocalBounds();
+                //    }, 
+                //    20
+                //);
+            }
         }
 
         public static Bounds GetBoundsOfSelfAndChildMeshes(GameObject g)
@@ -182,6 +230,8 @@ namespace NewHorizons.Builder.Props
         {
             var bounds = m.mesh.bounds;
                 
+            Logger.Log(m.gameObject.name + " " + bounds.min + "  " + bounds.max);
+
             var localCorners = new Vector3[]
             {
                  bounds.min,
@@ -199,6 +249,39 @@ namespace NewHorizons.Builder.Props
             if (relativeTo == null) return globalCorners;
 
             return globalCorners.Select(globalCorner => relativeTo.transform.InverseTransformPoint(globalCorner)).ToArray();
+        }
+    }
+
+    public class BoxShapeFixer : MonoBehaviour
+    {
+        bool _fixed = false;
+        public BoxShape shape;
+        public MeshFilter meshFilter;
+        public SkinnedMeshRenderer skinnedMeshRenderer;
+
+        void Update()
+        {
+            if (meshFilter == null && skinnedMeshRenderer == null) { Logger.Log("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
+
+            Mesh sharedMesh = null;
+            if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
+            if (skinnedMeshRenderer != null) sharedMesh = skinnedMeshRenderer.sharedMesh;
+
+            if (sharedMesh == null) return;
+            if (sharedMesh.bounds.size == Vector3.zero) return;
+            
+            shape.size = sharedMesh.bounds.size;
+            shape.center = sharedMesh.bounds.center;
+
+            GameObject.DestroyImmediate(this);
+
+            //// TODO: try checking for sharedMesh
+            //if (_fixed) return;
+
+            //shape.size = meshFilter.mesh.bounds.size;
+            //shape.center = meshFilter.mesh.bounds.center;
+            
+            //_fixed = (shape.size != Vector3.zero);
         }
     }
 }
