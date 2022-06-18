@@ -344,8 +344,35 @@ namespace NewHorizons
                 vesselObject.transform.position += system.Config.vesselPosition;
             if (system.Config.vesselRotation != null)
                 vesselObject.transform.eulerAngles = system.Config.vesselRotation;
-            vesselObject.SetActive(true);
+
             VesselWarpController vesselWarpController = vesselObject.GetComponentInChildren<VesselWarpController>(true);
+            vesselWarpController._sourceWarpPlatform.transform.DestroyAllChildren();
+            vesselWarpController._targetWarpPlatform.transform.DestroyAllChildren();
+            Destroy(vesselWarpController._blackHole.transform.parent.gameObject);
+            Destroy(vesselWarpController._whiteHole.transform.parent.gameObject);
+            GameObject WarpPlatform = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WarpController/Prefab_NOM_WarpPlatform");
+            GameObject warpBH = WarpPlatform.transform.Find("BlackHole").gameObject;
+            GameObject warpWH = WarpPlatform.transform.Find("WhiteHole").gameObject;
+            GameObject sourceBH = Instantiate(warpBH, vesselWarpController._sourceWarpPlatform.transform, false);
+            vesselWarpController._sourceWarpPlatform._blackHole = sourceBH.GetComponentInChildren<SingularityController>();
+            GameObject sourceWH = Instantiate(warpWH, vesselWarpController._sourceWarpPlatform.transform, false);
+            vesselWarpController._sourceWarpPlatform._whiteHole = sourceWH.GetComponentInChildren<SingularityController>();
+            GameObject targetBH = Instantiate(warpBH, vesselWarpController._targetWarpPlatform.transform, false);
+            vesselWarpController._targetWarpPlatform._blackHole = targetBH.GetComponentInChildren<SingularityController>();
+            GameObject targetWH = Instantiate(warpWH, vesselWarpController._targetWarpPlatform.transform, false);
+            vesselWarpController._targetWarpPlatform._whiteHole = targetWH.GetComponentInChildren<SingularityController>();
+            GameObject blackHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/BlackHole");
+            GameObject newBlackHole = Instantiate(blackHole, vesselWarpController.transform.parent, false);
+            newBlackHole.name = "BlackHole";
+            vesselWarpController._blackHole = newBlackHole.GetComponentInChildren<SingularityController>();
+            vesselWarpController._blackHoleOneShot = vesselWarpController._blackHole.transform.parent.Find("BlackHoleAudio_OneShot").GetComponent<OWAudioSource>();
+            GameObject whiteHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WhiteHole");
+            GameObject newWhiteHole = Instantiate(whiteHole, vesselWarpController.transform.parent, false);
+            newWhiteHole.name = "WhiteHole";
+            vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
+            vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
+
+            vesselObject.SetActive(true);
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += (OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform) => OnReceiveWarpedBody(vesselObject, warpedBody, startPlatform, targetPlatform);
             if (system.Config.warpExitPosition != null)
                 vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.warpExitPosition;
