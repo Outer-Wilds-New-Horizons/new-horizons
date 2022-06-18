@@ -19,7 +19,7 @@ namespace NewHorizons.Utility
 
         void OnRenderObject()
         {
-            Popcron.Gizmos.Cube(transform.TransformPoint(box.center), transform.rotation, box.size);
+            Popcron.Gizmos.Cube(transform.TransformPoint(box.center), transform.rotation, Vector3.Scale(box.size, transform.lossyScale));
         }
     }
 }

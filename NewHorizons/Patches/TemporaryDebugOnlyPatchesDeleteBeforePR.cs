@@ -13,11 +13,45 @@ namespace NewHorizons.Patches
     [HarmonyPatch]
     public static class TemporaryDebugOnlyPatchesDeleteBeforePR
     {
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(QuantumObject), nameof(QuantumObject.Collapse))]
+        public static bool QuantumObject_Collapse(QuantumObject __instance, ref bool __result, bool skipInstantVisibilityCheck = false)
+        {
+            Logger.Log("trying to collapse");
+            Logger.Log(__instance.gameObject.activeInHierarchy+"");
+            return true;
+        }
+
+
+
+        // This is some dark magic
+        // this creates a method called base_DropItem that basically just calls OWItem.PickUpItem whenever it (VisionTorchItemPatches.base_PickUpItem) is called
+        [HarmonyReversePatch]
+        [HarmonyPatch(typeof(VisibilityObject), nameof(VisibilityObject.Update))]
+        private static void base_Update(VisibilityObject __instance) { }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(QuantumObject), nameof(QuantumObject.Update))]
+	    public static bool QuantumObject_Update(QuantumObject __instance)
+	    {
+		    base_Update(__instance);
+		    bool flag = __instance.IsLocked();
+            if (__instance._wasLocked && !flag) Logger.Log("locked falling edge");
+		    if (__instance._wasLocked && !flag && !__instance.Collapse() && !__instance._ignoreRetryQueue)
+		    {
+			    ShapeManager.AddToRetryQueue(__instance);
+		    }
+		    __instance._wasLocked = flag;
+
+            return false;
+	    }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SocketedQuantumObject), nameof(SocketedQuantumObject.ChangeQuantumState))]
 	    public static bool SocketedQuantumObject_ChangeQuantumState(SocketedQuantumObject __instance, ref bool __result, bool skipInstantVisibilityCheck)
 	    {
+            Logger.Log("attempting change state");
 		    for (int i = 0; i < __instance._childSockets.Count; i++)
 		    {
 			    if (__instance._childSockets[i].IsOccupied())
@@ -28,6 +62,7 @@ namespace NewHorizons.Patches
 		    }
 		    if (__instance._socketList.Count <= 1)
 		    {
+                Logger.Log("not enough sockets");
 			    Debug.LogError("Not enough quantum sockets in list!", __instance);
 			    Debug.Break();
                 __result = false;
