@@ -24,6 +24,7 @@ namespace NewHorizons
     public class Main : ModBehaviour
     {
         public static AssetBundle NHAssetBundle { get; private set; }
+        public static AssetBundle VesselBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -57,7 +58,6 @@ namespace NewHorizons
 
         // Vessel
         private SpawnPoint _vesselSpawnPoint;
-        public static bool HasVessel = false;
         private static GameObject VesselPrefab = null;
 
         // API events
@@ -156,6 +156,8 @@ namespace NewHorizons
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/xen.newhorizons");
+            VesselBundle = ModHelper.Assets.LoadBundle("Assets/vessel.newhorizons");
+            VesselPrefab = VesselBundle.LoadAsset<GameObject>("Vessel_Body");
 
             ResetConfigs(resetTranslation: false);
 
@@ -211,29 +213,6 @@ namespace NewHorizons
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
-
-            if (IsWarpingFromVessel && scene.name == "EyeOfTheUniverse" && !HasVessel)
-            {
-                Logger.Log("Grabbing the vessel.");
-                HasVessel = true;
-                GameObject vessel = SearchUtilities.Find("Vessel_Body");
-                NomaiWarpPlatform vesselPlatform = vessel.GetComponentInChildren<NomaiWarpPlatform>(true);
-                vesselPlatform.gameObject.name = "Prefab_NOM_WarpPlatform_Vessel";
-                GameObject warpPlatform = SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/Interactables_SixthPlanet/Prefab_NOM_WarpPlatform");
-                warpPlatform.name = "Prefab_NOM_WarpPlatform_Eye";
-                warpPlatform.transform.SetParent(SearchUtilities.Find("Vessel_Body/Sector_VesselBridge/Interactibles_VesselBridge").transform, true);
-                foreach (NomaiInterfaceOrb orb in FindObjectsOfType<NomaiInterfaceOrb>())
-                {
-                    orb.GetComponent<OWRigidbody>()?.Suspend();
-                    orb.gameObject.SetActive(false);
-                }
-                vessel.SetActive(false);
-                VesselPrefab = GameObject.Instantiate(vessel);
-                VesselPrefab.name = "Vessel_Body";
-                DontDestroyOnLoad(VesselPrefab);
-                LoadManager.LoadSceneAsync(OWScene.SolarSystem, true, LoadManager.FadeType.ToBlack, 0.1f, true);
-                return;
-            }
 
             // Set time loop stuff if its enabled and if we're warping to a new place
             if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
@@ -349,11 +328,6 @@ namespace NewHorizons
                 s_rb.SetPosition(newPos);
                 s_rb.SetRotation(player_body.transform.rotation);
                 s_rb.SetVelocity(p_rb.GetVelocity());
-                ModHelper.Events.Unity.FireOnNextUpdate(() =>
-                {
-                    vessel.GetComponent<MapMarker>()?.DisableMarker();
-                    vessel.SetActive(false);
-                });
             }
         }
 
@@ -377,14 +351,7 @@ namespace NewHorizons
                 vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.warpExitPosition;
             if (system.Config.warpExitRotation != null)
                 vesselObject.transform.localEulerAngles = system.Config.warpExitRotation;
-            MapMarker mapMarker = vesselObject.AddComponent<MapMarker>();
-            mapMarker._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
-            mapMarker._markerType = MapMarker.MarkerType.Planet;
-            foreach (NomaiInterfaceOrb orb in vesselObject.GetComponentsInChildren<NomaiInterfaceOrb>(true))
-            {
-                orb.gameObject.SetActive(true);
-                orb.gameObject.GetComponent<OWRigidbody>()?.UnsuspendImmediate(true);
-            }
+            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
             ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
@@ -449,11 +416,15 @@ namespace NewHorizons
             vesselWarpController._coordinateCable.SetPowered(!db);
             vesselWarpController._warpPlatformCable.SetPowered(false);
             vesselWarpController._cageClosed = true;
-            vesselWarpController._cageAnimator.TranslateToLocalPosition(new Vector3(0.0f, -8.1f, 0.0f), 0.1f);
-            vesselWarpController._cageAnimator.RotateToLocalEulerAngles(new Vector3(0.0f, 180f, 0.0f), 0.1f);
-            vesselWarpController._cageAnimator.OnTranslationComplete -= new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
-            vesselWarpController._cageAnimator.OnTranslationComplete += new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
-            vesselWarpController._cageLoopingAudio.FadeIn(1f);
+            if (vesselWarpController._cageAnimator != null)
+            {
+                vesselWarpController._cageAnimator.TranslateToLocalPosition(new Vector3(0.0f, -8.1f, 0.0f), 0.1f);
+                vesselWarpController._cageAnimator.RotateToLocalEulerAngles(new Vector3(0.0f, 180f, 0.0f), 0.1f);
+                vesselWarpController._cageAnimator.OnTranslationComplete -= new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
+                vesselWarpController._cageAnimator.OnTranslationComplete += new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
+            }
+            if (vesselWarpController._cageLoopingAudio != null)
+                vesselWarpController._cageLoopingAudio.FadeIn(1f);
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
@@ -645,13 +616,7 @@ namespace NewHorizons
 
             _currentStarSystem = newStarSystem;
 
-            if (vessel && !HasVessel && newStarSystem != "SolarSystem" && newStarSystem != "EyeOfTheUniverse")
-            {
-                Logger.Log("Going to grab the vessel.");
-                LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
-            }
-            else
-                LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
+            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 
         void OnDeath(DeathType _)
