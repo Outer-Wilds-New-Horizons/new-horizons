@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.AchievementsPlus
 {
+    /// <summary>
+    /// Info for an achievement to be used with the Achievements+ mod.
+    /// </summary>
+    [JsonObject]
     public class AchievementInfo
     {
         /// <summary>
