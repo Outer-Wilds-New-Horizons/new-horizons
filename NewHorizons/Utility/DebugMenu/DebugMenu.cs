@@ -86,7 +86,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         private void PauseMenuInitHook()
         {
-            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Prop Placer Menu", TranslationHandler.TextType.UI).ToUpper());
+            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper());
             InitMenu();
         }
         public static void UpdatePauseMenuButton()
