@@ -120,7 +120,7 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), Instance)
             {
                 Config =
                 {
