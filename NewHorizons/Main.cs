@@ -333,8 +333,14 @@ namespace NewHorizons
                             if (name != "SolarSystem") SetDefaultSystem(name);
                         }
 
-                        var system = new NewHorizonsSystem(name, starSystemConfig, mod);
-                        SystemDict[name] = system;
+                        if (SystemDict.ContainsKey(name))
+                        {
+                            SystemDict[name].Config.Merge(starSystemConfig);
+                        }
+                        else
+                        {
+                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, mod);
+                        }
                     }
                 }
                 if (Directory.Exists(folder + "planets"))

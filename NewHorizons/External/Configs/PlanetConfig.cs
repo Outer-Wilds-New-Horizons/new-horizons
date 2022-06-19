@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
@@ -295,6 +296,30 @@ namespace NewHorizons.External.Configs
                         NewHorizons.Utility.Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets."); 
                         quantumGroup.type = PropModule.QuantumGroupType.FailedValidation;   
                     }
+                }
+            }
+
+            // Moved a bunch of stuff off of shiplog module to star system module because it didnt exist when we made this
+            if (ShipLog != null)
+            {
+                Main.SystemDict.TryGetValue(starSystem, out var system);
+
+                if (ShipLog.entryPositions != null)
+                {
+                    if (system.Config.entryPositions == null) system.Config.entryPositions = ShipLog.entryPositions;
+                    else system.Config.entryPositions = system.Config.entryPositions.Concat(ShipLog.entryPositions).ToArray();
+                }
+
+                if (ShipLog.curiosities != null)
+                {
+                    if (system.Config.curiosities == null) system.Config.curiosities = ShipLog.curiosities;
+                    else system.Config.curiosities = system.Config.curiosities.Concat(ShipLog.curiosities).ToArray();
+                }
+
+                if (ShipLog.initialReveal != null)
+                {
+                    if (system.Config.initialReveal == null) system.Config.initialReveal = ShipLog.initialReveal;
+                    else system.Config.initialReveal = system.Config.initialReveal.Concat(ShipLog.initialReveal).ToArray();
                 }
             }
 
