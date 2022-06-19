@@ -452,7 +452,6 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
-                // var config = JsonConvert.DeserializeObject<PlanetConfig>(File.ReadAllText($"{mod.ModHelper.Manifest.ModFolderPath}/{relativeDirectory}"));
 
                 Logger.Log($"Loaded {config.name}");
 
