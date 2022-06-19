@@ -14,13 +14,14 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
 // BUGS THAT REQUIRE REWRITING MOBIUS CODE
-// 1) FIXED! MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
-// 2) QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
-// 3) MultiStateQuantumObjects don't get locked by pictures
+// 1) FIXED!                              - MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
+// 2) FIXED? no longer supporting shuffle - QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
+// 3)                                     - MultiStateQuantumObjects don't get locked by pictures
 
 // New features to support
 // 1) multiState._prerequisiteObjects
 // 2) Socket groups that have an equal number of props and sockets
+// 3) Nice to have: socket groups that specify a filledSocketObject and an emptySocketObject (eg the archway in the giant's deep tower)
 
 namespace NewHorizons.Builder.Props
 {
@@ -29,23 +30,16 @@ namespace NewHorizons.Builder.Props
         
         public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            // if a prop doesn't have a visibiilty volume, create a box volume using the prop's mesh bounds (if there are multiple mesh filters, use the min/max bounds accross all meshes)
             switch(quantumGroup.type)
             {
                 case PropModule.QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
                 case PropModule.QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
                 // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
-                // TODO: for quantum socket group allow specifying an _emptySocketObject
             }
         }
         
         public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            // note: for the visibility boxes on quantum sockets, if there's only one prop that's part of this group, clone its visibility volume
-            // otherwise, create a box according to the max and min dimensions across all props in this group (ie the box should be able to fit inside of it the visibility volume on any prop in this group)
-         
-            // ??? what's with this above comment? I thought only the actual props that are usnig the sockets needed a visibility volume
-
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
             groupRoot.transform.parent = sector.transform;
             groupRoot.transform.localPosition = Vector3.zero;
@@ -84,8 +78,6 @@ namespace NewHorizons.Builder.Props
 
         public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
-            // on parent of the states, MultiStateQuantumObject
-            
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
             groupRoot.transform.parent = sector.transform;
             groupRoot.transform.localPosition = Vector3.zero;
@@ -189,18 +181,12 @@ namespace NewHorizons.Builder.Props
             Bounds b = new Bounds(corners[0], Vector3.zero);
             corners.ForEach(corner => b.Encapsulate(corner));
 
-            NewHorizons.Utility.Logger.Log("CORNERS:=-=-=-=-=-==-=-=-=-==-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=- ");
-            NewHorizons.Utility.Logger.Log("CORNERS: "+ string.Join(", ",corners));
-            NewHorizons.Utility.Logger.Log("BOUNDS: "+ b.center + "    " + b.size);
-
             return b;
         }
 
         public static Vector3[] GetMeshCorners(MeshFilter m, GameObject relativeTo = null)
         {
             var bounds = m.mesh.bounds;
-                
-            Logger.Log(m.gameObject.name + " " + bounds.min + "  " + bounds.max);
 
             var localCorners = new Vector3[]
             {
@@ -224,7 +210,6 @@ namespace NewHorizons.Builder.Props
 
     public class BoxShapeFixer : MonoBehaviour
     {
-        bool _fixed = false;
         public BoxShape shape;
         public MeshFilter meshFilter;
         public SkinnedMeshRenderer skinnedMeshRenderer;
