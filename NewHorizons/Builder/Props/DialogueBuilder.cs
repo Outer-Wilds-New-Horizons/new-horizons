@@ -65,6 +65,8 @@ namespace NewHorizons.Builder.Props
             var owCollider = conversationZone.AddComponent<OWCollider>();
             var interact = conversationZone.AddComponent<InteractReceiver>();
 
+            interact._interactRange = info.range;
+
             if (info.radius <= 0)
             {
                 sphere.enabled = false;
