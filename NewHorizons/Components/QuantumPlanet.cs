@@ -76,7 +76,7 @@ namespace NewHorizons.Components
                 newIndex = _currentIndex;
                 while (newIndex == _currentIndex)
                 {
-                    newIndex = Random.Range(0, states.Count);
+                    newIndex = Random.Range(0, states.Count - 1);
                 }
 
                 newState = states[newIndex];
@@ -167,6 +167,8 @@ namespace NewHorizons.Components
 
         public override bool IsPlayerEntangled()
         {
+            if (_currentIndex >= states.Count) return true;
+
             return states[_currentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
         }
 
