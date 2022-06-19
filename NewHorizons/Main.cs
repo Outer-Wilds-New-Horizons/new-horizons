@@ -19,6 +19,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Utility.DebugUtilities;
 using Newtonsoft.Json;
 using NewHorizons.Utility.DebugMenu;
+using NewHorizons.AchievementsPlus;
 
 namespace NewHorizons
 {
@@ -152,7 +153,7 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
-            AchievementsPlus.AchievementHandler.Init();
+            AchievementHandler.Init();
         }
 
         public void OnDestroy()
@@ -161,6 +162,8 @@ namespace NewHorizons
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
             GlobalMessenger.RemoveListener("WakeUp", new Callback(OnWakeUp));
+
+            AchievementHandler.OnDestroy();
         }
 
         private static void OnWakeUp()
@@ -361,10 +364,18 @@ namespace NewHorizons
                         }
                     }
                 }
+                // Has to go before translations for achievements
+                if (File.Exists(folder + "addon-manifest.json"))
+                {
+                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
+
+                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                }
                 if (Directory.Exists(folder + @"translations\"))
                 {
                     LoadTranslations(folder, mod);
                 }
+
             }
             catch (Exception ex)
             {
@@ -390,6 +401,11 @@ namespace NewHorizons
                     foundFile = true;
 
                     TranslationHandler.RegisterTranslation(language, config);
+
+                    if (AchievementHandler.Enabled)
+                    {
+                        AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
+                    }
                 }
             }
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");

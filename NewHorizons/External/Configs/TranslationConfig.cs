@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace NewHorizons.External.Configs
 {
+    [JsonObject]
     public class TranslationConfig
     {
         /// <summary>
@@ -20,6 +22,30 @@ namespace NewHorizons.External.Configs
         /// Translation table for UI elements
         /// </summary>
         public Dictionary<string, string> UIDictionary;
+
+
+        // Literally only exists for the schema generation, Achievements+ handles the parsing
+        #region Achievements+
+
+        /// <summary>
+        /// Translation table for achievements. The key is the unique ID of the achievement
+        /// </summary>
+        public readonly Dictionary<string, AchievementTranslationInfo> AchievementTranslations;
+
+        [JsonObject]
+        public class AchievementTranslationInfo 
+        {
+            /// <summary>
+            /// The name of the achievement.
+            /// </summary>
+            public string Name;
+
+            /// <summary>
+            /// The short description for this achievement.
+            /// </summary>
+            public readonly string Description;
+        }
+        #endregion
 
         public TranslationConfig(string filename)
         {

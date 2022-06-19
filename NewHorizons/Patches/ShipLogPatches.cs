@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
 using NewHorizons.Handlers;
@@ -217,6 +218,8 @@ namespace NewHorizons.Patches
         public static void ShipLogManager_RevealFact(string __0)
         {
             StarChartHandler.OnRevealFact(__0);
+
+            AchievementHandler.OnRevealFact();
         }
     }
 }

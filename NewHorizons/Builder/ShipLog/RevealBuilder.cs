@@ -1,4 +1,5 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.Components.Achievement;
+using NewHorizons.External.Modules;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -46,35 +47,77 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeTrigger(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
-            SphereShape newShape = MakeShape(go, info, Shape.CollisionMode.Volume);
-            OWTriggerVolume newVolume = go.AddComponent<OWTriggerVolume>();
-            newVolume._shape = newShape;
-            ShipLogFactListTriggerVolume volume = go.AddComponent<ShipLogFactListTriggerVolume>();
-            volume._factIDs = info.reveals;
+            var shape = MakeShape(go, info, Shape.CollisionMode.Volume);
+
+            var volume = go.AddComponent<OWTriggerVolume>();
+            volume._shape = shape;
+
+            if (info.reveals != null)
+            {
+                var factRevealVolume = go.AddComponent<ShipLogFactListTriggerVolume>();
+                factRevealVolume._factIDs = info.reveals;
+            }
+
+            if (!string.IsNullOrEmpty(info.achievementID))
+            {
+                var achievementVolume = go.AddComponent<AchievementVolume>();
+                achievementVolume.achievementID = info.achievementID;
+            }
         }
 
         private static void MakeObservable(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
             go.layer = LayerMask.NameToLayer("Interactible");
-            SphereCollider newSphere = go.AddComponent<SphereCollider>();
-            newSphere.radius = info.radius;
-            OWCollider newCollider = go.AddComponent<OWCollider>();
-            ShipLogFactObserveTrigger newObserveTrigger = go.AddComponent<ShipLogFactObserveTrigger>();
-            newObserveTrigger._factIDs = info.reveals;
-            newObserveTrigger._maxViewDistance = info.maxDistance == -1f ? 2f : info.maxDistance;
-            newObserveTrigger._maxViewAngle = info.maxAngle;
-            newObserveTrigger._owCollider = newCollider;
-            newObserveTrigger._disableColliderOnRevealFact = true;
+
+            var sphere = go.AddComponent<SphereCollider>();
+            sphere.radius = info.radius;
+
+            var collider = go.AddComponent<OWCollider>();
+
+            var maxDistance = info.maxDistance == -1f ? 2f : info.maxDistance;
+
+            if (info.reveals != null)
+            {
+                var observeTrigger = go.AddComponent<ShipLogFactObserveTrigger>();
+                observeTrigger._factIDs = info.reveals;
+                observeTrigger._maxViewDistance = maxDistance;
+                observeTrigger._maxViewAngle = info.maxAngle;
+                observeTrigger._owCollider = collider;
+                observeTrigger._disableColliderOnRevealFact = true;
+            }
+
+            if (!string.IsNullOrEmpty(info.achievementID))
+            {
+                var achievementTrigger = go.AddComponent<AchievementObserveTrigger>();
+                achievementTrigger.achievementID = info.achievementID;
+                achievementTrigger.disableColliderOnUnlockAchievement = true;
+                achievementTrigger.maxViewDistance = maxDistance;
+                achievementTrigger.maxViewAngle = info.maxAngle;
+            }
         }
 
         private static void MakeSnapshot(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
         {
-            SphereShape newShape = MakeShape(go, info, Shape.CollisionMode.Manual);
-            ShapeVisibilityTracker newTracker = go.AddComponent<ShapeVisibilityTracker>();
-            newTracker._shapes = new Shape[] { newShape };
-            ShipLogFactSnapshotTrigger newSnapshotTrigger = go.AddComponent<ShipLogFactSnapshotTrigger>();
-            newSnapshotTrigger._maxDistance = info.maxDistance == -1f ? 200f : info.maxDistance;
-            newSnapshotTrigger._factIDs = info.reveals;
+            var shape = MakeShape(go, info, Shape.CollisionMode.Manual);
+
+            var visibilityTracker = go.AddComponent<ShapeVisibilityTracker>();
+            visibilityTracker._shapes = new Shape[] { shape };
+
+            var maxDistance = info.maxDistance == -1f ? 200f : info.maxDistance;
+
+            if (info.reveals != null)
+            {
+                var snapshotTrigger = go.AddComponent<ShipLogFactSnapshotTrigger>();
+                snapshotTrigger._maxDistance = maxDistance;
+                snapshotTrigger._factIDs = info.reveals;
+            }
+
+            if (!string.IsNullOrEmpty(info.achievementID))
+            {
+                var achievementTrigger = go.AddComponent<AchievementSnapshotTrigger>();
+                achievementTrigger.maxDistance = maxDistance;
+                achievementTrigger.achievementID = info.achievementID;
+            }
         }
     }
 }
