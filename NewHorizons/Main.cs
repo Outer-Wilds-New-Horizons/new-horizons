@@ -57,9 +57,6 @@ namespace NewHorizons
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
-        // Vessel
-        private SpawnPoint _vesselSpawnPoint;
-
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
         public StarSystemEvent OnChangeStarSystem;
@@ -272,10 +269,7 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
-                if (IsWarpingFromVessel)
-                    _vesselSpawnPoint = CurrentStarSystem == "SolarSystem" ? VesselWarpHandler.UpdateVessel() : VesselWarpHandler.CreateVessel();
-                else
-                    _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
+                VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
@@ -287,7 +281,7 @@ namespace NewHorizons
                 if (HasWarpDrive == true) EnableWarpDrive();
 
                 var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
-                var shouldWarpInFromVessel = IsWarpingFromVessel && _vesselSpawnPoint != null;
+                var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
                 Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                 IsWarpingFromShip = false;
@@ -325,11 +319,7 @@ namespace NewHorizons
             // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
             if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
-            else if (shouldWarpInFromVessel)
-            {
-                FindObjectOfType<PlayerSpawner>().DebugWarp(_vesselSpawnPoint);
-                Builder.General.SpawnPointBuilder.SuitUp();
-            }
+            else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
         }
 
