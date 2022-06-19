@@ -364,10 +364,18 @@ namespace NewHorizons
                         }
                     }
                 }
+                // Has to go before translations for achievements
+                if (File.Exists("addon-manifest.json"))
+                {
+                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
+
+                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                }
                 if (Directory.Exists(folder + @"translations\"))
                 {
                     LoadTranslations(folder, mod);
                 }
+
             }
             catch (Exception ex)
             {

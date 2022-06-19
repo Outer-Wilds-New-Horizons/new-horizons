@@ -1,3 +1,4 @@
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.ModHelper;
 using System;
@@ -28,6 +29,8 @@ namespace NewHorizons.AchievementsPlus
 
             _enabled = true;
 
+            _achievements = new List<AchievementInfo>();
+
             // Register base NH achievements
             NH.WarpDriveAchievement.Init();
             NH.MultipleSystemAchievement.Init();
@@ -45,6 +48,20 @@ namespace NewHorizons.AchievementsPlus
             if (!_enabled) return;
 
             GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnDialogueConditionChanged);
+        }
+
+        public static void RegisterAddon(AddonConfig addon, ModBehaviour mod)
+        {
+            if (addon.achievements == null) return;
+
+            if (!_enabled) return;
+
+            foreach (var achievement in addon.achievements)
+            {
+                _achievements.Add(achievement);
+
+                API.RegisterAchievement(achievement.ID, achievement.secret, mod);
+            }
         }
 
         public static void RegisterTranslationsFromFiles(ModBehaviour mod, string path) => API.RegisterTranslationsFromFiles(mod, path);
