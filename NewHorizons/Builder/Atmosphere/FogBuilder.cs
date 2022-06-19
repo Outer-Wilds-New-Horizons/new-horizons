@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
         {
-            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/FogColorRamp.png");
+            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
 
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);

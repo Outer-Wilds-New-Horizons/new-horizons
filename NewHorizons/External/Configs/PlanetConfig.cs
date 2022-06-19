@@ -238,7 +238,7 @@ namespace NewHorizons.External.Configs
                     Atmosphere.useAtmosphereShader = true;
 
                 // useBasicCloudShader is obsolete
-                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader) 
+                if (Atmosphere.clouds != null && Atmosphere.clouds.useBasicCloudShader)
                     Atmosphere.clouds.cloudsPrefab = CloudPrefabType.Basic;
             }
 
@@ -247,7 +247,8 @@ namespace NewHorizons.External.Configs
                     if (tornado.downwards)
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
 
-            
+            if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
+
             // for each quantum group, verify the following:
             //      this group's id should be unique
             //      if type == sockets, group.sockets should not be null or empty

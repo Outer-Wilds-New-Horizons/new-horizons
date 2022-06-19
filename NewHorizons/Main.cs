@@ -47,11 +47,12 @@ namespace NewHorizons
         public bool IsWarping { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
+        public bool IsChangingStarSystem { get; private set; } = false;
+
         public static bool HasWarpDrive { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
         private string _currentStarSystem = "SolarSystem";
-        private bool _isChangingStarSystem = false;
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
@@ -130,8 +131,9 @@ namespace NewHorizons
 
             Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
+
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
-            NHAssetBundle = ModHelper.Assets.LoadBundle("AssetBundle/xen.newhorizons");
+            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/xen.newhorizons");
 
             ResetConfigs(resetTranslation: false);
 
@@ -149,6 +151,8 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
+
+            AchievementsPlus.AchievementHandler.Init();
         }
 
         public void OnDestroy()
@@ -186,7 +190,7 @@ namespace NewHorizons
             Logger.Log($"Scene Loaded: {scene.name} {mode}");
 
             // Set time loop stuff if its enabled and if we're warping to a new place
-            if (_isChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
+            if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
             {
                 TimeLoop.SetSecondsRemaining(SecondsLeftInLoop);
                 // Prevent the OPC from firing
@@ -207,7 +211,7 @@ namespace NewHorizons
             // Reset this
             SecondsLeftInLoop = -1;
 
-            _isChangingStarSystem = false;
+            IsChangingStarSystem = false;
 
             if (scene.name == "TitleScreen" && _useCustomTitleScreen)
             {
@@ -243,7 +247,7 @@ namespace NewHorizons
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "AssetBundle/", this);
+                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
@@ -295,7 +299,7 @@ namespace NewHorizons
         public void EnableWarpDrive()
         {
             Logger.Log("Setting up warp drive");
-            PlanetCreationHandler.LoadBody(LoadConfig(this, "AssetBundle/WarpDriveConfig.json"));
+            PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             HasWarpDrive = true;
         }
 
@@ -432,14 +436,14 @@ namespace NewHorizons
         #region Change star system
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
         {
-            if (_isChangingStarSystem) return;
+            if (IsChangingStarSystem) return;
 
+            IsWarping = warp;
             OnChangeStarSystem?.Invoke(newStarSystem);
 
             Logger.Log($"Warping to {newStarSystem}");
             if (warp && _shipWarpController) _shipWarpController.WarpOut();
-            _isChangingStarSystem = true;
-            IsWarping = warp;
+            IsChangingStarSystem = true;
             WearingSuit = PlayerState.IsWearingSuit();
 
             // We kill them so they don't move as much
@@ -468,7 +472,7 @@ namespace NewHorizons
         void OnDeath(DeathType _)
         {
             // We reset the solar system on death (unless we just killed the player)
-            if (!_isChangingStarSystem)
+            if (!IsChangingStarSystem)
             {
                 // If the override is a valid system then we go there
                 if (SystemDict.Keys.Contains(_defaultSystemOverride))

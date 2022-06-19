@@ -55,11 +55,11 @@ namespace NewHorizons.Builder.Props
             }
             if (_mainTexture == null)
             {
-                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Tornado_BH_Cyclone_02_d.png");
+                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
             }
             if (_detailTexture == null)
             {
-                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Tornado_BH_CycloneDetail_d.png");
+                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
             }
 
             Vector3 position;
@@ -109,16 +109,20 @@ namespace NewHorizons.Builder.Props
             var audioSpreadController = soundGO.GetComponentInChildren<AudioSpreadController>();
             audioSpreadController.SetSector(sector);
 
-            var audioSource = audioRail._audioTransform.GetComponent<AudioSource>();
+            var audioSource = audioRail._audioTransform.GetComponent<OWAudioSource>();
             audioSource.playOnAwake = true;
 
             var scale = info.height == 0 ? 1 : info.height / 10f;
             tornadoGO.transform.localScale = Vector3.one * scale;
 
             // Resize the distance it can be heard from to match roughly with the size
-            var maxDistance = info.audioDistance == 0 ? 10 * scale : info.audioDistance;
-            audioSource.maxDistance = maxDistance;
-            audioSource.minDistance = maxDistance / 10f;
+            var maxDistance = info.audioDistance;
+            if (maxDistance <= 0) maxDistance = scale * 10f;
+            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            {
+                audioSource.maxDistance = maxDistance;
+                audioSource.minDistance = maxDistance / 10f;
+            });
 
             var controller = tornadoGO.GetComponent<TornadoController>();
             controller.SetSector(sector);

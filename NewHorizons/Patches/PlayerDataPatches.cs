@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+using HarmonyLib;
+using NewHorizons.AchievementsPlus.NH;
 using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.Handlers;
@@ -31,6 +32,7 @@ namespace NewHorizons.Patches
             if (freqString != null && freqString != "")
             {
                 NewHorizonsData.LearnFrequency(freqString);
+                NewFrequencyAchievement.Earn();
                 return false;
             }
             return true;
