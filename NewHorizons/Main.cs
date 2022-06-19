@@ -462,6 +462,11 @@ namespace NewHorizons
             try
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                if (config == null)
+                {
+                    Logger.LogError($"Couldn't load {relativeDirectory}. Is your Json formatted correctly?");
+                    return null;
+                }
 
                 Logger.Log($"Loaded {config.name}");
 
@@ -488,7 +493,7 @@ namespace NewHorizons
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load {relativeDirectory}: {e.Message} {e.StackTrace}, is your Json formatted correctly?");
+                Logger.LogError($"Error encounter when loading {relativeDirectory}: {e.Message} {e.StackTrace}");
             }
 
             return body;
