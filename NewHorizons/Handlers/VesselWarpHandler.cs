@@ -148,6 +148,13 @@ namespace NewHorizons.Handlers
             if (vesselWarpController._targetWarpPlatform != null)
                 vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
+            if (vesselWarpController._whiteHole == null)
+            {
+                GameObject whiteHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WhiteHole");
+                vesselWarpController._whiteHole = whiteHole.GetComponentInChildren<SingularityController>();
+                vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
+            }
+
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
 
             return spawnPoint;
