@@ -7,11 +7,13 @@
   "properties": {
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive"
+      "description": "Whether this system can be warped to via the warp drive",
+      "default": true
     },
     "destroyStockPlanets": {
       "type": "boolean",
-      "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original."
+      "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original.",
+      "default": true
     },
     "enableTimeLoop": {
       "type": "boolean",
@@ -42,6 +44,27 @@
       "type": "string",
       "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with travelAudioClip."
     },
+    "entryPositions": {
+      "type": "array",
+      "description": "Manually layout ship log entries in detective mode",
+      "items": {
+        "$ref": "#/definitions/EntryPositionInfo"
+      }
+    },
+    "initialReveal": {
+      "type": "array",
+      "description": "A list of fact IDs to reveal when the game starts.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "curiosities": {
+      "type": "array",
+      "description": "List colors of curiosity entries",
+      "items": {
+        "$ref": "#/definitions/CuriosityColorInfo"
+      }
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
@@ -63,6 +86,87 @@
         "path": {
           "type": "string",
           "description": "Path to the material within the asset bundle specified by `assetBundle` to use for the skybox"
+        }
+      }
+    },
+    "EntryPositionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The name of the entry to apply the position to."
+        },
+        "position": {
+          "description": "Position of the entry",
+          "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "MVector2": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "CuriosityColorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "The color to apply to entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "highlightColor": {
+          "description": "The color to apply to highlighted entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the curiosity to apply the color to."
+        }
+      }
+    },
+    "MColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "a": {
+          "type": "integer",
+          "description": "The alpha (opacity) component of this colour",
+          "format": "int32",
+          "default": 255.0,
+          "maximum": 255.0,
+          "minimum": 0.0
         }
       }
     }

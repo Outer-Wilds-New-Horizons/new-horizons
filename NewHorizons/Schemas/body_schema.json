@@ -791,6 +791,13 @@
             "$ref": "#/definitions/ProjectionInfo"
           }
         },
+        "quantumGroups": {
+          "type": "array",
+          "description": "A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.",
+          "items": {
+            "$ref": "#/definitions/QuantumGroupInfo"
+          }
+        },
         "tornados": {
           "type": "array",
           "description": "Add tornadoes to this planet",
@@ -851,6 +858,10 @@
           "description": "Scale the prop",
           "format": "float",
           "default": 1.0
+        },
+        "quantumGroupID": {
+          "type": "string",
+          "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
         }
       }
     },
@@ -965,6 +976,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "mirror": {
+          "type": "boolean",
+          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa."
+        },
         "position": {
           "description": "The local position of this object on the wall.",
           "$ref": "#/definitions/MVector2"
@@ -972,6 +987,12 @@
         "type": {
           "description": "The type of text to display.",
           "$ref": "#/definitions/NomaiTextArcType"
+        },
+        "variation": {
+          "type": "integer",
+          "description": "Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.",
+          "format": "int32",
+          "default": -1
         },
         "zRotation": {
           "type": "number",
@@ -1073,6 +1094,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "achievementID": {
+          "type": "string",
+          "description": "An achievement to unlock. Optional."
         }
       }
     },
@@ -1235,6 +1260,74 @@
         "visionTorchTarget",
         "standingVisionTorch"
       ]
+    },
+    "QuantumGroupInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "What type of group this is: does it define a list of states a single quantum object could take or a list of sockets one or more quantum objects could share?",
+          "$ref": "#/definitions/QuantumGroupType"
+        },
+        "id": {
+          "type": "string",
+          "description": "A unique string used by props (that are marked as quantum) use to refer back to this group"
+        },
+        "sockets": {
+          "type": "array",
+          "description": "Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.",
+          "items": {
+            "$ref": "#/definitions/QuantumSocketInfo"
+          }
+        },
+        "hasEmptyState": {
+          "type": "boolean",
+          "description": "Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states."
+        },
+        "sequential": {
+          "type": "boolean",
+          "description": "Optional. Only used if type is `states`. If this is true, then the states will be presented in order, rather than in a random order"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state",
+          "default": true
+        }
+      }
+    },
+    "QuantumGroupType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Sockets",
+        "States",
+        "FailedValidation"
+      ],
+      "enum": [
+        "sockets",
+        "states",
+        "FailedValidation"
+      ]
+    },
+    "QuantumSocketInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this socket",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The rotation the quantum object will take if it's occupying this socket",
+          "$ref": "#/definitions/MVector3"
+        },
+        "probability": {
+          "type": "number",
+          "description": "The probability any props that are part of this group will occupy this socket",
+          "format": "float",
+          "default": 1.0
+        }
+      }
     },
     "TornadoInfo": {
       "type": "object",
@@ -1452,27 +1545,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "curiosities": {
-          "type": "array",
-          "description": "List colors of curiosity entries",
-          "items": {
-            "$ref": "#/definitions/CuriosityColorInfo"
-          }
-        },
-        "entryPositions": {
-          "type": "array",
-          "description": "Manually layout entries in detective mode",
-          "items": {
-            "$ref": "#/definitions/EntryPositionInfo"
-          }
-        },
-        "initialReveal": {
-          "type": "array",
-          "description": "A list of fact IDs to reveal when the game starts.",
-          "items": {
-            "type": "string"
-          }
-        },
         "mapMode": {
           "description": "Describe what this planet looks and like in map mode",
           "$ref": "#/definitions/MapModeInfo"
@@ -1484,38 +1556,6 @@
         "xmlFile": {
           "type": "string",
           "description": "The relative path to the xml file to load ship log entries from."
-        }
-      }
-    },
-    "CuriosityColorInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "color": {
-          "description": "The color to apply to entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "highlightColor": {
-          "description": "The color to apply to highlighted entries with this curiosity.",
-          "$ref": "#/definitions/MColor"
-        },
-        "id": {
-          "type": "string",
-          "description": "The ID of the curiosity to apply the color to."
-        }
-      }
-    },
-    "EntryPositionInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "The name of the entry to apply the position to."
-        },
-        "position": {
-          "description": "Position of the entry",
-          "$ref": "#/definitions/MVector2"
         }
       }
     },

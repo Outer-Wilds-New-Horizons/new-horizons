@@ -1,10 +1,12 @@
 using HarmonyLib;
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
 using OWML.Common;
 using OWML.ModHelper;
@@ -173,7 +175,7 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
-            AchievementsPlus.AchievementHandler.Init();
+            AchievementHandler.Init();
         }
 
         public void OnDestroy()
@@ -182,6 +184,8 @@ namespace NewHorizons
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
             GlobalMessenger.RemoveListener("WakeUp", new Callback(OnWakeUp));
+
+            AchievementHandler.OnDestroy();
         }
 
         private static void OnWakeUp()
@@ -316,7 +320,9 @@ namespace NewHorizons
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugNomaiTextPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+            // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
             if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
             else if (shouldWarpInFromVessel)
@@ -365,8 +371,14 @@ namespace NewHorizons
                             if (name != "SolarSystem") SetDefaultSystem(name);
                         }
 
-                        var system = new NewHorizonsSystem(name, starSystemConfig, mod);
-                        SystemDict[name] = system;
+                        if (SystemDict.ContainsKey(name))
+                        {
+                            SystemDict[name].Config.Merge(starSystemConfig);
+                        }
+                        else
+                        {
+                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, mod);
+                        }
                     }
                 }
                 if (Directory.Exists(folder + "planets"))
@@ -387,10 +399,18 @@ namespace NewHorizons
                         }
                     }
                 }
+                // Has to go before translations for achievements
+                if (File.Exists(folder + "addon-manifest.json"))
+                {
+                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
+
+                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                }
                 if (Directory.Exists(folder + @"translations\"))
                 {
                     LoadTranslations(folder, mod);
                 }
+
             }
             catch (Exception ex)
             {
@@ -416,6 +436,11 @@ namespace NewHorizons
                     foundFile = true;
 
                     TranslationHandler.RegisterTranslation(language, config);
+
+                    if (AchievementHandler.Enabled)
+                    {
+                        AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
+                    }
                 }
             }
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");

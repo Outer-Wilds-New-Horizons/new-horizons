@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.AchievementsPlus;
 using NewHorizons.AchievementsPlus.NH;
 using NewHorizons.Builder.Props;
 using NewHorizons.External;
@@ -58,7 +59,13 @@ namespace NewHorizons.Patches
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
             if (customSignalName != null)
             {
-                if (!NewHorizonsData.KnowsSignal(customSignalName)) NewHorizonsData.LearnSignal(customSignalName);
+                if (!NewHorizonsData.KnowsSignal(customSignalName)) 
+                {
+                    NewHorizonsData.LearnSignal(customSignalName);
+                }
+
+                AchievementHandler.OnLearnSignal();
+
                 return false;
             }
             return true;

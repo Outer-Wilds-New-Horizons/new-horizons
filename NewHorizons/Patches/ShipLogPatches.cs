@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
 using NewHorizons.Handlers;
@@ -30,12 +31,10 @@ namespace NewHorizons.Patches
                 }
             }
 
-            foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            var curiosities = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.curiosities;
+            if (curiosities != null)
             {
-                if (body.Config.ShipLog?.curiosities != null)
-                {
-                    RumorModeBuilder.AddCuriosityColors(body.Config.ShipLog.curiosities);
-                }
+                RumorModeBuilder.AddCuriosityColors(curiosities);
             }
 
             foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
@@ -97,12 +96,10 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Start))]
         public static bool ShipLogManager_Start(ShipLogManager __instance)
         {
-            foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            var initialReveal = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.initialReveal ?? Array.Empty<string>();
+            foreach (string fact in initialReveal)
             {
-                foreach (string fact in body.Config.ShipLog?.initialReveal ?? Array.Empty<string>())
-                {
-                    __instance.RevealFact(fact, false, false);
-                }
+                __instance.RevealFact(fact, false, false);
             }
 
             if (Main.Instance.CurrentStarSystem == "SolarSystem")
@@ -221,6 +218,8 @@ namespace NewHorizons.Patches
         public static void ShipLogManager_RevealFact(string __0)
         {
             StarChartHandler.OnRevealFact(__0);
+
+            AchievementHandler.OnRevealFact();
         }
     }
 }

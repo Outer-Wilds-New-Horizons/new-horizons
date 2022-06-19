@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "Addon Manifest Schema",
+  "type": "object",
+  "description": "Describes the New Horizons addon itself",
+  "additionalProperties": false,
+  "properties": {
+    "achievements": {
+      "type": "array",
+      "description": "Achievements for this mod if the user is playing with Achievements+\nAchievement icons must be put in a folder named \"icons\"\nThe icon for the mod must match the name of the mod (e.g., New Horizons.png)\nThe icons for achievements must match their unique IDs (e.g., NH_WARP_DRIVE.png)",
+      "items": {
+        "$ref": "#/definitions/AchievementInfo"
+      }
+    },
+    "$schema": {
+      "type": "string",
+      "description": "The schema to validate with"
+    }
+  },
+  "definitions": {
+    "AchievementInfo": {
+      "type": "object",
+      "description": "Info for an achievement to be used with the Achievements+ mod.",
+      "additionalProperties": false,
+      "properties": {
+        "ID": {
+          "type": "string",
+          "description": "The unique ID of the achievement. This must be globally unique, meaning all achivements for\nyou mod should start with something to identify the mod they are from. For example, Real Solar System\nuses \"RSS_\" and Signals+ would use \"SIGNALS_PLUS_\"."
+        },
+        "secret": {
+          "type": "boolean",
+          "description": "Should the name and description of the achievement be hidden until it is unlocked. Good for hiding spoilers!"
+        },
+        "factIDs": {
+          "type": "array",
+          "description": "A list of facts that must be discovered before this achievement is unlocked. You can also set the achievement\nto be unlocked by a reveal trigger in Props -> Reveals. Optional.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "signalIDs": {
+          "type": "array",
+          "description": "A list of signals that must be discovered before this achievement is unlocked. Optional.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "conditionIDs": {
+          "type": "array",
+          "description": "A list of conditions that must be true before this achievement is unlocked. Conditions can be set via dialogue. Optional.",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "$docs": {
+    "title": "Addon Manifest Schema",
+    "description": "Schema for an addon manifest in New Horizons"
+  }
+}

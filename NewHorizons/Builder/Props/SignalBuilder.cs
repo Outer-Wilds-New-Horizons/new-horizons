@@ -1,3 +1,4 @@
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
@@ -233,7 +234,7 @@ namespace NewHorizons.Builder.Props
             return customName;
         }
 
-        private static SignalName StringToSignalName(string str)
+        public static SignalName StringToSignalName(string str)
         {
             foreach (SignalName name in Enum.GetValues(typeof(SignalName)))
             {
