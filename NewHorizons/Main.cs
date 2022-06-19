@@ -454,17 +454,16 @@ namespace NewHorizons
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
                 // var config = JsonConvert.DeserializeObject<PlanetConfig>(File.ReadAllText($"{mod.ModHelper.Manifest.ModFolderPath}/{relativeDirectory}"));
 
-                config.MigrateAndValidate();
-
                 Logger.Log($"Loaded {config.name}");
 
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
-                    starSystemConfig.FixCoordinates();
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
+
+                    starSystemConfig.FixCoordinates();
 
                     var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
 
@@ -472,6 +471,9 @@ namespace NewHorizons
 
                     BodyDict.Add(config.starSystem, new List<NewHorizonsBody>());
                 }
+
+                // Has to happen after we make sure theres a system config
+                config.MigrateAndValidate();
 
                 body = new NewHorizonsBody(config, mod, relativeDirectory);
             }
