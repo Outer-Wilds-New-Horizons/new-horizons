@@ -23,33 +23,33 @@
         </xs:complexType>
     </xs:element>
 
-    <xs:complexType name="LocationA"></xs:complexType>
-    <xs:complexType name="LocationB"></xs:complexType>
+    <xs:complexType name="LocationA"/>
+    <xs:complexType name="LocationB"/>
 
     <!-- Text Block Info -->
     <xs:complexType name="TextBlock">
         <xs:sequence>
-            <xs:element name="ID" type="xs:positiveInteger" minOccurs="1" maxOccurs="1">
+            <xs:element name="ID" type="xs:positiveInteger">
                 <xs:annotation>
                     <xs:documentation>
                         The id of this text block
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="ParentID" type="xs:positiveInteger" minOccurs="0" maxOccurs="1">
+            <xs:element name="ParentID" type="xs:positiveInteger" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                         The id of the parent text block
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationA" type="LocationA" minOccurs="0" maxOccurs="1">
+            <xs:element name="LocationA" type="LocationA" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationB" type="LocationB" minOccurs="0" maxOccurs="1" >
+            <xs:element name="LocationB" type="LocationB" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                     </xs:documentation>
@@ -68,13 +68,13 @@
     <!-- Ship Log Conditions Info -->
     <xs:complexType name="ShipLogConditions">
         <xs:sequence>
-            <xs:element name="LocationA" type="LocationA" minOccurs="0" maxOccurs="1">
+            <xs:element name="LocationA" type="LocationA" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="LocationB" type="LocationB" minOccurs="0" maxOccurs="1" >
+            <xs:element name="LocationB" type="LocationB" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
                     </xs:documentation>
@@ -93,14 +93,14 @@
     <!-- Reveal Facts Info -->
     <xs:complexType name="RevealFacts">
         <xs:sequence>
-            <xs:element name="FactID" type="xs:string" minOccurs="1" maxOccurs="1">
+            <xs:element name="FactID" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
                         The ID of a fact to reveal
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>
-            <xs:element name="Condition" type="xs:string" minOccurs="1" maxOccurs="1">
+            <xs:element name="Condition" type="xs:string">
                 <xs:annotation>
                     <xs:documentation>
                         The text block ids (separated by commas) that need to be read to reveal that fact
