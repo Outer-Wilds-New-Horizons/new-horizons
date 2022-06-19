@@ -151,7 +151,6 @@ namespace NewHorizons.Handlers
             VesselObject = vectorSector;
 
             var spawnPoint = vectorSector.GetComponentInChildren<SpawnPoint>();
-            system.SpawnPoint = spawnPoint;
 
             VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
             WarpController = vesselWarpController;
