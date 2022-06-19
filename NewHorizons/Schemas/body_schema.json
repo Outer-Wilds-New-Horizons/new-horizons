@@ -895,6 +895,12 @@
           "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
           "$ref": "#/definitions/MVector3"
         },
+        "interactRange": {
+          "type": "number",
+          "description": "Distance from radius the prompt appears",
+          "format": "float",
+          "default": 2.0
+        },
         "remoteTriggerRadius": {
           "type": "number",
           "description": "The radius of the remote trigger volume.",
