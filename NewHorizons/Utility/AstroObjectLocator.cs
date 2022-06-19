@@ -122,6 +122,7 @@ namespace NewHorizons.Utility
                 case AstroObject.Name.TimberHearth:
                     otherChildren.Add(SearchUtilities.Find("MiningRig_Body"));
                     otherChildren.Add(SearchUtilities.Find("Ship_Body"));
+                    otherChildren.Add(SearchUtilities.Find("ModelRocket_Body"));
                     break;
                 case AstroObject.Name.DreamWorld:
                     otherChildren.Add(SearchUtilities.Find("BackRaft_Body"));
