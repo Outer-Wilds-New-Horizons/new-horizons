@@ -1,3 +1,4 @@
+using NewHorizons.Components.Orbital;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -39,6 +40,12 @@ namespace NewHorizons.Utility.DebugUtilities
         internal void PrintRaycast()
         {
             DebugRaycastData data = Raycast();
+
+            if (!data.hit)
+            {
+                Logger.Log("Debug Raycast Didn't Hit Anything! (Try moving closer)");
+                return;
+            }
 
             var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
             var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
@@ -95,7 +102,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 data.bodyName = o.name;
                 data.bodyPath = SearchUtilities.GetPath(o.transform);
                 data.hitObject = o;
-                data.hitBodyGameObject = hitAstroObject?.gameObject;
+                data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);
             }
             _rb.EnableCollisionDetection();
