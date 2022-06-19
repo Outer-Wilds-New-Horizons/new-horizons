@@ -365,7 +365,7 @@ namespace NewHorizons
                     }
                 }
                 // Has to go before translations for achievements
-                if (File.Exists("addon-manifest.json"))
+                if (File.Exists(folder + "addon-manifest.json"))
                 {
                     var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
 
