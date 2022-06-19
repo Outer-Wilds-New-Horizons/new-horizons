@@ -335,7 +335,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Distance from radius the prompt appears
             /// </summary>
-            [DefaultValue(2f)] public float interactRange = 2f;
+            [DefaultValue(2f)] public float range = 2f;
 
             /// <summary>
             /// The radius of the remote trigger volume.
