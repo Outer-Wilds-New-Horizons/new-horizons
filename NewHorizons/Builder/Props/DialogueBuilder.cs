@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.Props
 
             conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
             
-            if (string.IsNullOrEmpty(info.pathToAnimController))
+            if (!string.IsNullOrEmpty(info.pathToAnimController))
             {
                 conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
             }
