@@ -12,9 +12,9 @@ namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextBuilder
     {
-        internal static List<GameObject> _arcPrefabs;
-        internal static List<GameObject> _childArcPrefabs;
-        internal static List<GameObject> _ghostArcPrefabs;
+        private static List<GameObject> _arcPrefabs;
+        private static List<GameObject> _childArcPrefabs;
+        private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _cairnPrefab;
@@ -36,6 +36,9 @@ namespace NewHorizons.Builder.Props
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
 
+        public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
+        public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static void InitPrefabs()
         {
