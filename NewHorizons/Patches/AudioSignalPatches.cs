@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;

@@ -61,6 +61,11 @@ namespace NewHorizons.External.Modules
         /// Add slideshows (from the DLC) to the planet
         /// </summary>
         public ProjectionInfo[] slideShows;
+        
+        /// <summary>
+        /// A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.
+        /// </summary>
+        public QuantumGroupInfo[] quantumGroups;
 
         /// <summary>
         /// Add tornadoes to this planet
@@ -159,6 +164,11 @@ namespace NewHorizons.External.Modules
             /// Scale the prop
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
+
+            /// <summary>
+            /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
+            /// </summary>
+            public string quantumGroupID;
         }
 
         [JsonObject]
@@ -466,6 +476,11 @@ namespace NewHorizons.External.Modules
             }
 
             /// <summary>
+            /// Whether to flip the spiral from left-curling to right-curling or vice versa.
+            /// </summary>
+            public bool mirror;
+
+            /// <summary>
             /// The local position of this object on the wall.
             /// </summary>
             public MVector2 position;
@@ -474,6 +489,11 @@ namespace NewHorizons.External.Modules
             /// The type of text to display.
             /// </summary>
             public NomaiTextArcType type = NomaiTextArcType.Adult;
+
+            /// <summary>
+            /// Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.
+            /// </summary>
+            [DefaultValue(-1)] public int variation = -1;
 
             /// <summary>
             /// The z euler angle for this arc.
@@ -601,6 +621,72 @@ namespace NewHorizons.External.Modules
             /// Spotlight intensity modifier when viewing this slide.
             /// </summary>
             public float spotIntensityMod;
+        }
+
+
+        
+        
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum QuantumGroupType
+        {
+            [EnumMember(Value = @"sockets")] Sockets = 0,
+
+            [EnumMember(Value = @"states")] States = 1,
+
+            FailedValidation = 10
+        }
+        
+        [JsonObject]
+        public class QuantumGroupInfo 
+        { 
+            /// <summary>
+            /// What type of group this is: does it define a list of states a single quantum object could take or a list of sockets one or more quantum objects could share?
+            /// </summary>
+            public QuantumGroupType type; 
+
+            /// <summary>
+            /// A unique string used by props (that are marked as quantum) use to refer back to this group
+            /// </summary>
+            public string id; 
+
+            /// <summary>
+            /// Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.
+            /// </summary>
+            public QuantumSocketInfo[] sockets; 
+
+            /// <summary>
+            /// Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states.
+            /// </summary>
+            public bool hasEmptyState;
+
+            /// <summary>
+            /// Optional. Only used if type is `states`. If this is true, then the states will be presented in order, rather than in a random order
+            /// </summary>
+            public bool sequential;
+
+            /// <summary>
+            /// Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state
+            /// </summary>
+            [DefaultValue(true)] public bool loop = true;
+        }
+        
+        [JsonObject]
+        public class QuantumSocketInfo 
+        { 
+            /// <summary>
+            /// The location of this socket
+            /// </summary>
+            public MVector3 position; 
+
+            /// <summary>
+            /// The rotation the quantum object will take if it's occupying this socket
+            /// </summary>
+            public MVector3 rotation; 
+
+            /// <summary>
+            /// The probability any props that are part of this group will occupy this socket
+            /// </summary>
+            [DefaultValue(1f)] public float probability = 1f; 
         }
     }
 }

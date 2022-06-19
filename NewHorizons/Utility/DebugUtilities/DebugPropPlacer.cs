@@ -94,9 +94,9 @@ namespace NewHorizons.Utility.DebugUtilities
             // TODO: implement sectors
             // if this hits a sector, store that sector and add a config file option for it
 
-            if (!data.hitObject.name.EndsWith("_Body"))
+            if (!data.hitBodyGameObject.name.EndsWith("_Body"))
             {
-                Logger.Log("Cannot place object on non-body object: " + data.hitObject.name);
+                Logger.Log("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
             }
 
             try 
@@ -106,33 +106,38 @@ namespace NewHorizons.Utility.DebugUtilities
                     SetCurrentObject(DEFAULT_OBJECT);
                 }
 
-                GameObject prop = DetailBuilder.MakeDetail(data.hitObject, data.hitObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
+                GameObject prop = DetailBuilder.MakeDetail(data.hitBodyGameObject, data.hitBodyGameObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
                 PropPlacementData propData = RegisterProp_WithReturn(data.bodyName, prop);
-                
-                // align with surface normal
-                Vector3 alignToSurface = (Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward)).eulerAngles;
-                prop.transform.localEulerAngles = alignToSurface;     
-        
-                // rotate facing dir towards player
-                GameObject g = new GameObject("DebugProp");
-                g.transform.parent = prop.transform.parent;
-                g.transform.localPosition = prop.transform.localPosition;
-                g.transform.localRotation = prop.transform.localRotation;
-                
-                prop.transform.parent = g.transform;
 
-                var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
-                dirTowardsPlayer.y = 0;
-                float rotation = Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.y;
-                prop.transform.localEulerAngles = new Vector3(0, rotation, 0);
-                
-                prop.transform.parent = g.transform.parent;
-                GameObject.Destroy(g);
+                SetGameObjectRotation(prop, data, playerAbsolutePosition);
             } 
             catch 
             {
-                Logger.Log($"Failed to place object {currentObject} on body ${data.hitObject} at location ${data.pos}.");
+                Logger.Log($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
             }
+        }
+
+        public static void SetGameObjectRotation(GameObject prop, DebugRaycastData data, Vector3 playerAbsolutePosition)
+        {
+            // align with surface normal
+            Vector3 alignToSurface = (Quaternion.LookRotation(data.norm) * Quaternion.FromToRotation(Vector3.up, Vector3.forward)).eulerAngles;
+            prop.transform.localEulerAngles = alignToSurface;     
+        
+            // rotate facing dir towards player
+            GameObject g = new GameObject("DebugProp");
+            g.transform.parent = prop.transform.parent;
+            g.transform.localPosition = prop.transform.localPosition;
+            g.transform.localRotation = prop.transform.localRotation;
+                
+            prop.transform.parent = g.transform;
+
+            var dirTowardsPlayer = prop.transform.parent.transform.InverseTransformPoint(playerAbsolutePosition) - prop.transform.localPosition;
+            dirTowardsPlayer.y = 0;
+            float rotation = Quaternion.LookRotation(dirTowardsPlayer).eulerAngles.y;
+            prop.transform.localEulerAngles = new Vector3(0, rotation, 0);
+                
+            prop.transform.parent = g.transform.parent;
+            GameObject.Destroy(g);
         }
 
         public static string GetAstroObjectName(string bodyName)

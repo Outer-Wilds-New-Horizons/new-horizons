@@ -18,6 +18,7 @@ using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Utility.DebugUtilities;
 using Newtonsoft.Json;
+using NewHorizons.Utility.DebugMenu;
 
 namespace NewHorizons
 {
@@ -287,7 +288,9 @@ namespace NewHorizons
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
+            Locator.GetPlayerBody().gameObject.AddComponent<DebugNomaiTextPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
+            // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
@@ -330,8 +333,14 @@ namespace NewHorizons
                             if (name != "SolarSystem") SetDefaultSystem(name);
                         }
 
-                        var system = new NewHorizonsSystem(name, starSystemConfig, mod);
-                        SystemDict[name] = system;
+                        if (SystemDict.ContainsKey(name))
+                        {
+                            SystemDict[name].Config.Merge(starSystemConfig);
+                        }
+                        else
+                        {
+                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, mod);
+                        }
                     }
                 }
                 if (Directory.Exists(folder + "planets"))

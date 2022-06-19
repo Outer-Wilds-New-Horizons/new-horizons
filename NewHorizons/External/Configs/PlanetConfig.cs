@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
@@ -247,6 +249,80 @@ namespace NewHorizons.External.Configs
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
 
             if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
+
+            // for each quantum group, verify the following:
+            //      this group's id should be unique
+            //      if type == sockets, group.sockets should not be null or empty
+            //      if type == sockets, count every prop that references this group. the number should be < group.sockets.Count
+            //      if type == sockets, for each socket, if rotation == null, rotation = Vector3.zero
+            //      if type == sockets, for each socket, position must not be null
+            // for each detail prop,
+            //      if detail.quantumGroupID != null, there exists a quantum group with that id
+
+            if (Props?.quantumGroups != null && Props?.details != null)
+            {
+                Dictionary<string, PropModule.QuantumGroupInfo> existingGroups = new Dictionary<string, PropModule.QuantumGroupInfo>();
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { NewHorizons.Utility.Logger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+
+                    existingGroups[quantumGroup.id] = quantumGroup;
+                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets)
+                    {
+                        if (quantumGroup.sockets?.Length == 0) { NewHorizons.Utility.Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+                        else
+                        {
+                            foreach (var socket in quantumGroup.sockets) 
+                            {
+                                if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
+                                if (socket.position == null) { NewHorizons.Utility.Logger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
+                            }
+                        }
+                    }
+                }
+
+                Dictionary<string, int> existingGroupsPropCounts = new Dictionary<string, int>();
+                foreach (var prop in Props?.details)
+                {
+                    if (prop.quantumGroupID == null) continue;
+                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NewHorizons.Utility.Logger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
+                    else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID)+1;
+                }
+
+                foreach (var quantumGroup in Props.quantumGroups)
+                {
+                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
+                    {
+                        NewHorizons.Utility.Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets."); 
+                        quantumGroup.type = PropModule.QuantumGroupType.FailedValidation;   
+                    }
+                }
+            }
+
+            // Moved a bunch of stuff off of shiplog module to star system module because it didnt exist when we made this
+            if (ShipLog != null)
+            {
+                Main.SystemDict.TryGetValue(starSystem, out var system);
+
+                if (ShipLog.entryPositions != null)
+                {
+                    if (system.Config.entryPositions == null) system.Config.entryPositions = ShipLog.entryPositions;
+                    else system.Config.entryPositions = system.Config.entryPositions.Concat(ShipLog.entryPositions).ToArray();
+                }
+
+                if (ShipLog.curiosities != null)
+                {
+                    if (system.Config.curiosities == null) system.Config.curiosities = ShipLog.curiosities;
+                    else system.Config.curiosities = system.Config.curiosities.Concat(ShipLog.curiosities).ToArray();
+                }
+
+                if (ShipLog.initialReveal != null)
+                {
+                    if (system.Config.initialReveal == null) system.Config.initialReveal = ShipLog.initialReveal;
+                    else system.Config.initialReveal = system.Config.initialReveal.Concat(ShipLog.initialReveal).ToArray();
+                }
+            }
+
         }
     }
 }
