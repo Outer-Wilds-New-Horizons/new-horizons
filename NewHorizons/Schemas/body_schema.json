@@ -1441,6 +1441,11 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Allows the object to be targeted.",
+          "default": true
+        },
         "hideInMap": {
           "type": "boolean",
           "description": "Stop the object from being targeted on the map."
