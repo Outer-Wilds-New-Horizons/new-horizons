@@ -14,12 +14,13 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
 // BUGS THAT REQUIRE REWRITING MOBIUS CODE
-// 1) MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
+// 1) FIXED! MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
 // 2) QuantumShuffleObjects don't respect rotation, they set rotation to 0 on collapse
 // 3) MultiStateQuantumObjects don't get locked by pictures
 
 // New features to support
 // 1) multiState._prerequisiteObjects
+// 2) Socket groups that have an equal number of props and sockets
 
 namespace NewHorizons.Builder.Props
 {
@@ -33,7 +34,7 @@ namespace NewHorizons.Builder.Props
             {
                 case PropModule.QuantumGroupType.Sockets: MakeSocketGroup (go, sector, config, mod, quantumGroup, propsInGroup); return;
                 case PropModule.QuantumGroupType.States:  MakeStateGroup  (go, sector, config, mod, quantumGroup, propsInGroup); return;
-                case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
+                // case PropModule.QuantumGroupType.Shuffle: MakeShuffleGroup(go, sector, config, mod, quantumGroup, propsInGroup); return;
                 // TODO: for quantum socket group allow specifying an _emptySocketObject
             }
         }

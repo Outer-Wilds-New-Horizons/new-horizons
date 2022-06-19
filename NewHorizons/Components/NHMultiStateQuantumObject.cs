@@ -74,22 +74,19 @@ namespace NewHorizons.Components
 
                     indices.Remove(_stateIndex);
                 } while (!CurrentStateIsValid() && indices.Count > 0);
-
-                if (!CurrentStateIsValid())
-                {
-                    if (_stateIndex >= 0 && _stateIndex < _states.Length) _states[_stateIndex].SetVisible(visible: false);
-                    _stateIndex = stateIndex;
-                    _states[_stateIndex].SetVisible(visible: true);
-                    return false;
-                }
 		    }
 
-		    if (stateIndex != _stateIndex && stateIndex >= 0 && stateIndex < _states.Length)
-		    {
-			    _states[stateIndex].SetVisible(visible: false);
-		    }
+            var stateIndexIsValid = stateIndex >= 0 && stateIndex < _states.Length;
+		    if (stateIndexIsValid) _states[stateIndex].SetVisible(visible: false);
 
 		    _states[_stateIndex].SetVisible(visible: true);
+            if (!CurrentStateIsValid() && stateIndexIsValid)
+            {
+		        _states[_stateIndex].SetVisible(visible: false);
+		        _states[stateIndex] .SetVisible(visible: true);
+		        _stateIndex = stateIndex;
+                return false;
+            }
 
 		    if (_sequential && !_loop && _stateIndex == _states.Length - 1)
 		    {
@@ -100,12 +97,6 @@ namespace NewHorizons.Components
 
         public bool CurrentStateIsValid()
         {
-            // This check is stolen from SocketedQuantumObject
-            //if (!((!IsPlayerEntangled()) ? (CheckIllumination() ? CheckVisibilityInstantly() : CheckPointInside(Locator.GetPlayerCamera().transform.position)) : CheckIllumination()))
-            //{
-	           // return true; // this is a valid state
-            //}
-
             var isPlayerEntangled = IsPlayerEntangled();
             var illumination = CheckIllumination();
             var visibility = CheckVisibilityInstantly();
@@ -120,14 +111,7 @@ namespace NewHorizons.Components
                     : playerInside
                 );
 
-            Logger.Log($"isPlayerEntangled: {isPlayerEntangled}, illumination: {illumination}, visibility: {visibility}, playerInside: {playerInside}, isVisible: {isVisible}");
-
-            if (!isVisible)
-            {
-	            return true; // this is a valid state
-            }
-
-            return false;
+            return !isVisible;
         }
 
         public int RollState(int excludeIndex, List<int> indices)
