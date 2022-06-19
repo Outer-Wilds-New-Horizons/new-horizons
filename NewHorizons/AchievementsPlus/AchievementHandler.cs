@@ -9,9 +9,8 @@ namespace NewHorizons.AchievementsPlus
 {
     public static class AchievementHandler
     {
-        public static bool Enabled { get => _enabled; }
+        public static bool Enabled { get; private set; }
 
-        private static bool _enabled;
         private static IAchievements API;
 
         private static List<AchievementInfo> _achievements;
@@ -23,11 +22,11 @@ namespace NewHorizons.AchievementsPlus
             if (API == null)
             {
                 Logger.Log("Achievements+ isn't installed");
-                _enabled = false;
+                Enabled = false;
                 return;
             }
 
-            _enabled = true;
+            Enabled = true;
 
             _achievements = new List<AchievementInfo>();
 
@@ -46,7 +45,7 @@ namespace NewHorizons.AchievementsPlus
 
         public static void OnDestroy()
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             GlobalMessenger<string, bool>.RemoveListener("DialogueConditionChanged", OnDialogueConditionChanged);
         }
@@ -55,7 +54,7 @@ namespace NewHorizons.AchievementsPlus
         {
             if (addon.achievements == null) return;
 
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             foreach (var achievement in addon.achievements)
             {
@@ -69,21 +68,21 @@ namespace NewHorizons.AchievementsPlus
 
         public static void Earn(string unique_id)
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             API.EarnAchievement(unique_id);
         }
 
         public static void Register(string unique_id, bool secret, ModBehaviour mod)
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             API.RegisterAchievement(unique_id, secret, mod);
         }
 
         public static void OnLearnSignal()
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             foreach (var achievement in _achievements.Where(x => x.signalIDs != null))
             {
@@ -93,7 +92,7 @@ namespace NewHorizons.AchievementsPlus
 
         public static void OnRevealFact()
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             foreach (var achievement in _achievements.Where(x => x.factIDs != null))
             {
@@ -105,7 +104,7 @@ namespace NewHorizons.AchievementsPlus
 
         public static void OnSetCondition()
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             foreach (var achievement in _achievements.Where(x => x.conditionIDs != null))
             {
@@ -115,7 +114,7 @@ namespace NewHorizons.AchievementsPlus
 
         private static void CheckAchievement(AchievementInfo achievement)
         {
-            if (!_enabled) return;
+            if (!Enabled) return;
 
             if (API.HasAchievement(achievement.ID)) return;
 
