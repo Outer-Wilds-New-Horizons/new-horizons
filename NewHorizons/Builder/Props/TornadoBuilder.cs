@@ -109,7 +109,7 @@ namespace NewHorizons.Builder.Props
             var audioSpreadController = soundGO.GetComponentInChildren<AudioSpreadController>();
             audioSpreadController.SetSector(sector);
 
-            var audioSource = audioRail._audioTransform.GetComponent<OWAudioSource>();
+            var audioSource = audioRail._audioTransform.GetComponent<AudioSource>();
             audioSource.playOnAwake = true;
 
             var scale = info.height == 0 ? 1 : info.height / 10f;
