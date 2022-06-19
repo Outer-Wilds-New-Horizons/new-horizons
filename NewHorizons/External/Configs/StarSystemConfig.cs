@@ -128,9 +128,12 @@ namespace NewHorizons.External.Configs
 
         public void FixCoordinates()
         {
-            coords.x = coords.x.Distinct().ToArray();
-            coords.y = coords.y.Distinct().ToArray();
-            coords.z = coords.z.Distinct().ToArray();
+            if (coords != null)
+            {
+                coords.x = coords.x.Distinct().ToArray();
+                coords.y = coords.y.Distinct().ToArray();
+                coords.z = coords.z.Distinct().ToArray();
+            }
 		}
 		
         public void Merge(StarSystemConfig otherConfig)
