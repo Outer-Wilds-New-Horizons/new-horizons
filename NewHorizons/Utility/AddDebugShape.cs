@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 namespace NewHorizons.Utility
 {
     public static class AddDebugShape
@@ -6,12 +6,22 @@ namespace NewHorizons.Utility
         public static GameObject AddSphere(GameObject obj, float radius, Color color)
         {
             var sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            sphere.GetComponent<SphereCollider>().enabled = false;
-            sphere.transform.parent = obj.transform;
-            sphere.transform.localScale = new Vector3(radius, radius, radius);
+            sphere.transform.name = "DebugSphere";
 
-            sphere.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
-            sphere.GetComponent<MeshRenderer>().material.color = color;
+            try
+            {
+                sphere.GetComponent<SphereCollider>().enabled = false;
+                sphere.transform.parent = obj.transform;
+                sphere.transform.localScale = new Vector3(radius, radius, radius);
+
+                sphere.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
+                sphere.GetComponent<MeshRenderer>().material.color = color;
+            }
+            catch
+            {
+                // Something went wrong so make sure the sphere is deleted
+                GameObject.Destroy(sphere);
+            }
 
             return sphere.gameObject;
         }

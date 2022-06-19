@@ -7,6 +7,8 @@ namespace NewHorizons.Builder.Body
         public static void Make(GameObject planetGO, Sector sector, float groundScale)
         {
             GameObject groundGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            groundGO.transform.name = "GroundSphere";
+
             groundGO.transform.parent = sector?.transform ?? planetGO.transform;
             groundGO.transform.localScale = new Vector3(groundScale, groundScale, groundScale);
             groundGO.transform.position = planetGO.transform.position;

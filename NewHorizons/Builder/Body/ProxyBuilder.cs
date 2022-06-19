@@ -149,6 +149,8 @@ namespace NewHorizons.Builder.Body
         private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
         {
             GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            sphereGO.transform.name = "ProxySphere";
+
             sphereGO.transform.parent = rootObj.transform;
             sphereGO.transform.localScale = Vector3.one * size;
             sphereGO.transform.position = rootObj.transform.position;
