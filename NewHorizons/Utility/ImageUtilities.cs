@@ -16,6 +16,11 @@ namespace NewHorizons.Utility
 
         public static Texture2D GetTexture(IModBehaviour mod, string filename)
         {
+            return GetTexture(mod, filename, true);
+        }
+
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps)
+        {
             // Copied from OWML but without the print statement lol
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
             if (_loadedTextures.ContainsKey(path))
@@ -28,7 +33,7 @@ namespace NewHorizons.Utility
             try
             {
                 var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2);
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
                 texture.name = Path.GetFileNameWithoutExtension(path);
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
