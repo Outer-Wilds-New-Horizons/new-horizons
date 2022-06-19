@@ -633,8 +633,6 @@ namespace NewHorizons.External.Modules
 
             [EnumMember(Value = @"states")] States = 1,
 
-            [EnumMember(Value = @"shuffle")] Shuffle = 2,
-
             FailedValidation = 10
         }
         
