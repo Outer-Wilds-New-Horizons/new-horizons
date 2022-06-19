@@ -94,7 +94,7 @@ namespace NewHorizons
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
             // Else it doesn't get set idk
-            if (currentScene == "TitleScreen")
+            if (currentScene == "TitleScreen" && SystemDict.Keys.Contains(_defaultSystemOverride))
             {
                 _currentStarSystem = _defaultSystemOverride;
             }
