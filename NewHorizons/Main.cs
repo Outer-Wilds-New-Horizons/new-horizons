@@ -290,7 +290,7 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugNomaiTextPlacer>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
-            DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject);
+            // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
             if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);

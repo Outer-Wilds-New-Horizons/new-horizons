@@ -108,7 +108,7 @@ namespace NewHorizons.Builder.Props
                 var boxShape = empty.AddComponent<BoxShape>();
                 boxShape.center = boxBounds.center;
                 boxShape.extents = boxBounds.size;
-                empty.AddComponent<BoxShapeVisualizer>();
+                if (Main.Debug) empty.AddComponent<BoxShapeVisualizer>();
                 
                 empty.AddComponent<ShapeVisibilityTracker>();
             }
@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Props
             {
                 var box = boxshapeReciever.g.AddComponent<BoxShape>();
                 boxshapeReciever.g.AddComponent<ShapeVisibilityTracker>();
-                boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
+                if (Main.Debug) boxshapeReciever.g.AddComponent<BoxShapeVisualizer>();
 
                 var fixer = boxshapeReciever.g.AddComponent<BoxShapeFixer>();
                 fixer.shape = box;
