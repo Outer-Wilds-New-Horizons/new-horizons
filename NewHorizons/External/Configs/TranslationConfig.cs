@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
@@ -23,14 +24,13 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public Dictionary<string, string> UIDictionary;
 
-
-        // Literally only exists for the schema generation, Achievements+ handles the parsing
         #region Achievements+
-
+        // This only exists for schema generation, Achievements+ handles the parsing
+#pragma warning disable 0169
         /// <summary>
         /// Translation table for achievements. The key is the unique ID of the achievement
         /// </summary>
-        public readonly Dictionary<string, AchievementTranslationInfo> AchievementTranslations;
+        private readonly Dictionary<string, AchievementTranslationInfo> AchievementTranslations;
 
         [JsonObject]
         public class AchievementTranslationInfo 
@@ -38,13 +38,14 @@ namespace NewHorizons.External.Configs
             /// <summary>
             /// The name of the achievement.
             /// </summary>
-            public string Name;
+            private string Name;
 
             /// <summary>
             /// The short description for this achievement.
             /// </summary>
-            public readonly string Description;
+            private readonly string Description;
         }
+#pragma warning restore 0169
         #endregion
 
         public TranslationConfig(string filename)
