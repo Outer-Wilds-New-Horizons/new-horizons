@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using OWML.Common;
 using System.Xml;
@@ -83,6 +83,12 @@ namespace NewHorizons.Builder.Props
             AddTranslation(xml);
 
             conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
+            
+            if (string.IsNullOrEmpty(info.pathToAnimController))
+            {
+                conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
+            }
+            
             conversationZone.transform.position = planetGO.transform.TransformPoint(info.position);
             conversationZone.SetActive(true);
 
