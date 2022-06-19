@@ -333,6 +333,11 @@ namespace NewHorizons.External.Modules
             public MVector3 remoteTriggerPosition;
 
             /// <summary>
+            /// Distance from radius the prompt appears
+            /// </summary>
+            [DefaultValue(2f)] public float interactRange = 2f;
+
+            /// <summary>
             /// The radius of the remote trigger volume.
             /// </summary>
             public float remoteTriggerRadius;
