@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
@@ -120,7 +121,7 @@ namespace NewHorizons.Builder.Props
             }
 
             groupRoot.SetActive(false);
-            var multiState = groupRoot.AddComponent<MultiStateQuantumObject>();
+            var multiState = groupRoot.AddComponent<NHMultiStateQuantumObject>();
             multiState._loop = quantumGroup.loop;
             multiState._sequential = quantumGroup.sequential;
             multiState._states = states.ToArray();
