@@ -1,9 +1,4 @@
 using NewHorizons.AchievementsPlus;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Components.Achievement
@@ -24,7 +19,7 @@ namespace NewHorizons.Components.Achievement
 
         private void OnEntry(GameObject hitObj)
         {
-            if ((!_player || hitObj.CompareTag("PlayerDetector")) && (!_probe || hitObj.CompareTag("ProbeDetector")))
+            if ((!player || hitObj.CompareTag("PlayerDetector")) && (!probe || hitObj.CompareTag("ProbeDetector")))
             {
                 AchievementHandler.Earn(achievementID);
 
@@ -34,8 +29,8 @@ namespace NewHorizons.Components.Achievement
 
         public string achievementID;
 
-        private bool _player = true;
-        private bool _probe;
+        public bool player = true;
+        public bool probe;
 
         private OWTriggerVolume _trigger;
     }
