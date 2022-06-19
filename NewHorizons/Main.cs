@@ -79,15 +79,25 @@ namespace NewHorizons
         {
             Logger.Log("Settings changed");
 
+            var currentScene = SceneManager.GetActiveScene().name;
+
             Debug = config.GetSettingsValue<bool>("Debug");
-            DebugReload.UpdateReloadButton();
-            DebugMenu.UpdatePauseMenuButton();
+
+            if (currentScene == "SolarSystem")
+            {
+                DebugReload.UpdateReloadButton();
+                DebugMenu.UpdatePauseMenuButton();
+            }
+
             Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
             // Else it doesn't get set idk
-            if (SceneManager.GetActiveScene().name == "TitleScreen") _currentStarSystem = _defaultSystemOverride;
+            if (currentScene == "TitleScreen")
+            {
+                _currentStarSystem = _defaultSystemOverride;
+            }
 
             var wasUsingCustomTitleScreen = _useCustomTitleScreen;
             _useCustomTitleScreen = config.GetSettingsValue<bool>("Custom title screen");
