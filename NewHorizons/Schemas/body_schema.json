@@ -1094,6 +1094,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "achievementID": {
+          "type": "string",
+          "description": "An achievement to unlock. Optional."
         }
       }
     },
