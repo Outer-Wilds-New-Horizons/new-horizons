@@ -650,22 +650,22 @@ namespace NewHorizons.External.Modules
             public string id; 
 
             /// <summary>
-            /// Only required if type is "sockets". This lists all the possible locations for any props assigned to this group.
+            /// Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.
             /// </summary>
             public QuantumSocketInfo[] sockets; 
 
             /// <summary>
-            /// Optional. Only used if type is "states". If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states.
+            /// Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states.
             /// </summary>
             public bool hasEmptyState;
 
             /// <summary>
-            /// Optional. Only used if type is "states". If this is true, then the states will be presented in order, rather than in a random order
+            /// Optional. Only used if type is `states`. If this is true, then the states will be presented in order, rather than in a random order
             /// </summary>
             public bool sequential;
 
             /// <summary>
-            /// Optional. Only used if type is "states" and "sequential" is true. If this is false, then after the last state has appeared, the object will no longer change state
+            /// Optional. Only used if type is `states` and `sequential` is true. If this is false, then after the last state has appeared, the object will no longer change state
             /// </summary>
             [DefaultValue(true)] public bool loop = true;
         }
