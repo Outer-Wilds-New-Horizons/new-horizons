@@ -56,22 +56,24 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 Main authors:
 - xen (New Horizons v0.1.0 onwards)
 - [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
-- [Nageld](https://github.com/Nageld): (New Horizons v0.8.0)
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [jtsalomo](https://github.com/jtsalomo)
-- [Raicuparta](https://github.com/Raicuparta)
-- [MegaPiggy](https://github.com/MegaPiggy)
-- [Trifid](https://github.com/TerrificTrifid)
-- [JohnCorby](https://github.com/JohnCorby) 
 - [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
+- [MegaPiggy](https://github.com/MegaPiggy)
+- [JohnCorby](https://github.com/JohnCorby) 
+- [Nageld](https://github.com/Nageld)
+- [Trifid](https://github.com/TerrificTrifid)
+- [Raicuparta](https://github.com/Raicuparta)
+- [jtsalomo](https://github.com/jtsalomo)
+
 - And the Outer Wilds modding server.
 
 Translation credits:
 - Russian: Tlya
 - German: Nolram
 - Spanish: Ciborgm9 and Ink
+- French: xen
 
 Marshmallow was made with help from:
 - TAImatem
