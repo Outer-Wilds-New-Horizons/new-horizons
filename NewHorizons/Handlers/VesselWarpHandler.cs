@@ -54,6 +54,17 @@ namespace NewHorizons.Handlers
             var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
+
+            if (Instance.CurrentStarSystem == "SolarSystem")
+            {
+                // Loads it manually so the player doesn't start falling and then vessel loads in on them.
+                SectorStreaming ss = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_Streaming").GetComponent<SectorStreaming>();
+                ss.enabled = true;
+                ss._streamingGroup.LoadRequiredAssets();
+                ss._streamingGroup.LoadRequiredColliders();
+                ss._streamingGroup.LoadGeneralAssets();
+                StreamingManager.loadingPriority = StreamingManager.LoadingPriority.High;
+            }
         }
 
         public static EyeSpawnPoint CreateVessel()
