@@ -1,5 +1,4 @@
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 
@@ -8,13 +7,19 @@ namespace NewHorizons.External.Modules
     [JsonObject]
     public class ShipLogModule
     {
-        [Obsolete("curiosities is deprecated, please use curiosities in the star system config instead")]
+        /// <summary>
+        /// List colors of curiosity entries
+        /// </summary>
         public CuriosityColorInfo[] curiosities;
 
-        [Obsolete("entryPositions is deprecated, please use entryPositions in the star system config instead")]
+        /// <summary>
+        /// Manually layout entries in detective mode
+        /// </summary>
         public EntryPositionInfo[] entryPositions;
 
-        [Obsolete("initialReveal is deprecated, please use initialReveal in the star system config instead")]
+        /// <summary>
+        /// A list of fact IDs to reveal when the game starts.
+        /// </summary>
         public string[] initialReveal;
 
         /// <summary>

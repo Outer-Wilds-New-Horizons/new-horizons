@@ -1,8 +1,7 @@
-using NewHorizons.Builder.ShipLog;
+﻿using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
@@ -161,33 +160,6 @@ namespace NewHorizons.Builder.Props
                     catch (Exception ex)
                     {
                         Logger.LogError($"Couldn't make slide reel for [{go.name}] : {ex.Message}, {ex.StackTrace}");
-                    }
-                }
-            }
-            if (config.Props.quantumGroups != null)
-            {
-                Dictionary<string, List<GameObject>> propsByGroup = new Dictionary<string, List<GameObject>>();
-                foreach (var detail in config.Props.details)
-                {
-                    if (detail.quantumGroupID != null)
-                    {
-                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<GameObject>();
-                        propsByGroup[detail.quantumGroupID].Add(DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail));
-                    }
-                }
-
-                foreach (var quantumGroup in config.Props.quantumGroups)
-                {
-                    if (!propsByGroup.ContainsKey(quantumGroup.id)) continue;
-                    var propsInGroup = propsByGroup[quantumGroup.id];
-                    
-                    try
-                    {
-                        QuantumBuilder.Make(go, sector, config, mod, quantumGroup, propsInGroup.ToArray());
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
                 }
             }

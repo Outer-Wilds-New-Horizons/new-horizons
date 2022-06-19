@@ -1,5 +1,4 @@
-using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -114,7 +113,7 @@ namespace NewHorizons.Builder.ShipLog
                 if (manager._entryDataDict.ContainsKey(entry._id) == false)
                 {
                     NewHorizonsBody body = ShipLogHandler.GetConfigFromEntryID(entry._id);
-                    Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config);
+                    Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config.ShipLog);
                     Vector2 entryPosition;
                     if (manualEntryPosition == null)
                     {
@@ -220,14 +219,10 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static Vector2? GetManualEntryPosition(string entryId, PlanetConfig config)
+        private static Vector2? GetManualEntryPosition(string entryId, ShipLogModule config)
         {
-            Main.SystemDict.TryGetValue(config.starSystem, out var system);
-            var entryPositions = system?.Config?.entryPositions;
-
-            if (entryPositions == null) return null;
-
-            foreach (ShipLogModule.EntryPositionInfo position in entryPositions)
+            if (config.entryPositions == null) return null;
+            foreach (ShipLogModule.EntryPositionInfo position in config.entryPositions)
             {
                 if (position.id == entryId)
                 {
