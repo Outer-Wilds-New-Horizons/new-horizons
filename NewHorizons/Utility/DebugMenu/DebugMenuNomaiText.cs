@@ -465,12 +465,14 @@ namespace NewHorizons.Utility.DebugMenu
         {
             switch(type)
             {
-                case NomaiTextArcInfo.NomaiTextArcType.Stranger: return NomaiTextBuilder.GetGhostArcPrefabs().Count();
-                case NomaiTextArcInfo.NomaiTextArcType.Child: return NomaiTextBuilder.GetChildArcPrefabs().Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger: 
+                    return NomaiTextBuilder.GetGhostArcPrefabs().Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Child: 
+                    return NomaiTextBuilder.GetChildArcPrefabs().Count();
                 default:
-                case NomaiTextArcInfo.NomaiTextArcType.Adult: return NomaiTextBuilder.GetArcPrefabs().Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Adult: 
+                    return NomaiTextBuilder.GetArcPrefabs().Count();
             }
-            return 0;
         }
 
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
