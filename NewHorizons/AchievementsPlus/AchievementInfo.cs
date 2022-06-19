@@ -39,6 +39,7 @@ namespace NewHorizons.AchievementsPlus
         public string[] conditionIDs;
 
         // Cache signal ids to the enum
+        [JsonIgnore]
         private SignalName[] _signalIDs;
 
         public bool IsUnlocked()
