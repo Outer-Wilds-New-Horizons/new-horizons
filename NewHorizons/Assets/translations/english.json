@@ -35,6 +35,10 @@
 		"NH_WARP_DRIVE": {
 			"Name": "Lore Inaccurate",
 			"Description": "Use your ship's warp drive."
+		},
+		"NH_VESSEL_WARP": {
+			"Name": "Lore Accurate",
+			"Description": "Warp to a star system using the Vessel."
 		}
 	}
 }
