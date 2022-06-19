@@ -385,6 +385,11 @@ namespace NewHorizons.External.Modules
             /// A list of facts to reveal
             /// </summary>
             public string[] reveals;
+
+            /// <summary>
+            /// An achievement to unlock. Optional.
+            /// </summary>
+            public string achievementID;
         }
 
         [JsonObject]
