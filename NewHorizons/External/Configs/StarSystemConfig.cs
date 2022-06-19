@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
 
@@ -60,6 +61,31 @@ namespace NewHorizons.External.Configs
         public string travelAudioFilePath;
 
         /// <summary>
+        /// Coordinates that the vessel can use to warp to your solar system.
+        /// </summary>
+        public NomaiCoordinates coords;
+
+        /// <summary>
+        /// The position in the solar system the vessel will warp to.
+        /// </summary>
+        public MVector3 vesselPosition;
+
+        /// <summary>
+        /// Euler angles by which the vessel will be oriented.
+        /// </summary>
+        public MVector3 vesselRotation;
+
+        /// <summary>
+        /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
+        /// </summary>
+        public MVector3 warpExitPosition;
+
+        /// <summary>
+        /// Euler angles by which the warp exit will be oriented.
+        /// </summary>
+        public MVector3 warpExitRotation;
+
+        /// <summary>
         /// Manually layout ship log entries in detective mode
         /// </summary>
         public EntryPositionInfo[] entryPositions;
@@ -100,6 +126,13 @@ namespace NewHorizons.External.Configs
             public string path;
         }
 
+        public void FixCoordinates()
+        {
+            coords.x = coords.x.Distinct().ToArray();
+            coords.y = coords.y.Distinct().ToArray();
+            coords.z = coords.z.Distinct().ToArray();
+		}
+		
         public void Merge(StarSystemConfig otherConfig)
         {
             // Imagine if this used reflection

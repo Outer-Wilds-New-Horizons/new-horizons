@@ -11,6 +11,11 @@ namespace NewHorizons.External.Modules
     public class ReferenceFrameModule
     {
         /// <summary>
+        /// Allows the object to be targeted.
+        /// </summary>
+        [DefaultValue(true)] public bool enabled = true;
+
+        /// <summary>
         /// Stop the object from being targeted on the map.
         /// </summary>
         public bool hideInMap;

@@ -33,6 +33,7 @@ namespace NewHorizons.AchievementsPlus
 
             // Register base NH achievements
             NH.WarpDriveAchievement.Init();
+            NH.VesselWarpAchievement.Init();
             NH.MultipleSystemAchievement.Init();
             NH.EatenOutsideBrambleAchievement.Init();
             NH.NewFrequencyAchievement.Init();

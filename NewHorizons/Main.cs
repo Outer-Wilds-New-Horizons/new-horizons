@@ -1,10 +1,13 @@
 using HarmonyLib;
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
-using NewHorizons.External.Configs;
 using NewHorizons.External;
+using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.DebugMenu;
+using NewHorizons.Utility.DebugUtilities;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -16,10 +19,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Utility.DebugUtilities;
-using Newtonsoft.Json;
-using NewHorizons.Utility.DebugMenu;
-using NewHorizons.AchievementsPlus;
 
 namespace NewHorizons
 {
@@ -45,7 +44,8 @@ namespace NewHorizons
         public static float FurthestOrbit { get; set; } = 50000f;
 
         public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
-        public bool IsWarping { get; private set; } = false;
+        public bool IsWarpingFromShip { get; private set; } = false;
+        public bool IsWarpingFromVessel { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
@@ -56,6 +56,9 @@ namespace NewHorizons
         private string _currentStarSystem = "SolarSystem";
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
+
+        // Vessel
+        private SpawnPoint _vesselSpawnPoint;
 
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
@@ -110,7 +113,25 @@ namespace NewHorizons
             {
                 Config =
                 {
-                    destroyStockPlanets = false
+                    destroyStockPlanets = false,
+                    coords = new StarSystemConfig.NomaiCoordinates
+                    {
+                        x = new int[5]{ 0,3,2,1,5 },
+                        y = new int[5]{ 4,5,3,2,1 },
+                        z = new int[5]{ 4,1,2,5,0 }
+                    }
+                }
+            };
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), Instance)
+            {
+                Config =
+                {
+                    coords = new StarSystemConfig.NomaiCoordinates
+                    {
+                        x = new int[3]{ 1,5,4 },
+                        y = new int[4]{ 3,0,1,4 },
+                        z = new int[6]{ 1,2,3,0,5,4 }
+                    }
                 }
             };
 
@@ -135,6 +156,7 @@ namespace NewHorizons
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/xen.newhorizons");
+            VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
 
@@ -171,6 +193,7 @@ namespace NewHorizons
             IsSystemReady = true;
             try
             {
+                Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
                 Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
             }
             catch (Exception e)
@@ -222,7 +245,7 @@ namespace NewHorizons
                 TitleSceneHandler.InitSubtitles();
             }
 
-            if (scene.name == "EyeOfTheUniverse" && IsWarping)
+            if (scene.name == "EyeOfTheUniverse" && IsWarpingFromShip)
             {
                 if (_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
                 _ship.transform.position = new Vector3(50, 0, 0);
@@ -249,6 +272,10 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                if (IsWarpingFromVessel)
+                    _vesselSpawnPoint = CurrentStarSystem == "SolarSystem" ? VesselWarpHandler.UpdateVessel() : VesselWarpHandler.CreateVessel();
+                else
+                    _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
@@ -259,10 +286,12 @@ namespace NewHorizons
                 _shipWarpController.Init();
                 if (HasWarpDrive == true) EnableWarpDrive();
 
-                var shouldWarpIn = IsWarping && _shipWarpController != null;
-                Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpIn));
+                var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
+                var shouldWarpInFromVessel = IsWarpingFromVessel && _vesselSpawnPoint != null;
+                Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
-                IsWarping = false;
+                IsWarpingFromShip = false;
+                IsWarpingFromVessel = false;
 
                 var map = GameObject.FindObjectOfType<MapController>();
                 if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
@@ -277,7 +306,7 @@ namespace NewHorizons
                 if (SystemDict.Keys.Contains(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
-                    IsWarping = true; // always do this else sometimes the spawn gets messed up
+                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
                 }
                 else
                 {
@@ -287,7 +316,7 @@ namespace NewHorizons
         }
 
         // Had a bunch of separate unity things firing stuff when the system is ready so I moved it all to here
-        private void OnSystemReady(bool shouldWarpIn)
+        private void OnSystemReady(bool shouldWarpInFromShip, bool shouldWarpInFromVessel)
         {
             Locator.GetPlayerBody().gameObject.AddComponent<DebugRaycaster>();
             Locator.GetPlayerBody().gameObject.AddComponent<DebugPropPlacer>();
@@ -295,7 +324,12 @@ namespace NewHorizons
             Locator.GetPlayerBody().gameObject.AddComponent<DebugMenu>();
             // DebugArrow.CreateArrow(Locator.GetPlayerBody().gameObject); // This is for NH devs mostly. It shouldn't be active in debug mode for now. Someone should make a dev tools submenu for it though.
 
-            if (shouldWarpIn) _shipWarpController.WarpIn(WearingSuit);
+            if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
+            else if (shouldWarpInFromVessel)
+            {
+                FindObjectOfType<PlayerSpawner>().DebugWarp(_vesselSpawnPoint);
+                Builder.General.SpawnPointBuilder.SuitUp();
+            }
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
         }
 
@@ -329,6 +363,7 @@ namespace NewHorizons
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+                        starSystemConfig.FixCoordinates();
 
                         if (starSystemConfig.startHere)
                         {
@@ -418,15 +453,16 @@ namespace NewHorizons
             {
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
                 // var config = JsonConvert.DeserializeObject<PlanetConfig>(File.ReadAllText($"{mod.ModHelper.Manifest.ModFolderPath}/{relativeDirectory}"));
-                
+
                 config.MigrateAndValidate();
 
-                Logger.Log($"Loaded {config.name}"); 
+                Logger.Log($"Loaded {config.name}");
 
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
+                    starSystemConfig.FixCoordinates();
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
@@ -456,11 +492,12 @@ namespace NewHorizons
         #endregion Load
 
         #region Change star system
-        public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false)
+        public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false, bool vessel = false)
         {
             if (IsChangingStarSystem) return;
 
-            IsWarping = warp;
+            IsWarpingFromShip = warp;
+            IsWarpingFromVessel = vessel;
             OnChangeStarSystem?.Invoke(newStarSystem);
 
             Logger.Log($"Warping to {newStarSystem}");
@@ -488,7 +525,7 @@ namespace NewHorizons
 
             _currentStarSystem = newStarSystem;
 
-            LoadManager.LoadSceneAsync(sceneToLoad, true, LoadManager.FadeType.ToBlack, 0.1f, true);
+            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 
         void OnDeath(DeathType _)
@@ -500,14 +537,14 @@ namespace NewHorizons
                 if (SystemDict.Keys.Contains(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
-                    IsWarping = true; // always do this else sometimes the spawn gets messed up
+                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
                 }
                 else
                 {
                     _currentStarSystem = _defaultStarSystem;
                 }
 
-                IsWarping = false;
+                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

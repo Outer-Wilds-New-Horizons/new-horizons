@@ -51,7 +51,6 @@ namespace NewHorizons.Utility
         public static T FindObjectOfTypeAndName<T>(string name) where T : Object
         {
             T[] firstList = GameObject.FindObjectsOfType<T>();
-            List<T> finalList = new List<T>();
 
             for (var i = 0; i < firstList.Length; i++)
             {

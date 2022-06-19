@@ -43,7 +43,8 @@ namespace NewHorizons.Builder.General
 
             owrb.SetAttachedReferenceFrameVolume(RFV);
 
-            rfGO.SetActive(!module.hideInMap);
+            if (!module.enabled) GameObject.Destroy(rfGO);
+            else rfGO.SetActive(!module.hideInMap);
         }
     }
 }
