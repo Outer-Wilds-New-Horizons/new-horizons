@@ -159,13 +159,11 @@ You can load your XML file to your planet by doing adding the following to your 
 ## Entry Layout
 
 By default, entries in rumor mode are laid out by rows, where each row is one planet. This will not make for a perfect
-layout, so you can use the `entryPositions` property to change them  
+layout, so you can use the `entryPositions` property in your star system config to change them  
 For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and another with the ID of `EXAMPLE_ENTRY_2`:
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
     "entryPositions": [
       {
         "id": "EXAMPLE_ENTRY",
@@ -182,9 +180,10 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
         }
       }
     ]
-  }
 }
 ```
+
+To help with this, download the unity explorer mod and manually position entries, then simply use the dev tools to dump all the entries to a json string you can copy and paste into your config.
 
 ![autoDetectiveMode]({{ "images/ship_log/auto_rumor_mode.webp"|static }})
 *A set of entries laid out with auto mode*
