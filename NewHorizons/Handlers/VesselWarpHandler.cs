@@ -57,6 +57,9 @@ namespace NewHorizons.Handlers
 
             if (Instance.CurrentStarSystem == "SolarSystem")
             {
+                // Deactivate village music because for some reason it still plays.
+                SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_Village/Volumes_Village/MusicVolume_Village").GetComponent<VillageMusicVolume>().Deactivate();
+
                 // Loads it manually so the player doesn't start falling and then vessel loads in on them.
                 SectorStreaming ss = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_Streaming").GetComponent<SectorStreaming>();
                 ss.enabled = true;
