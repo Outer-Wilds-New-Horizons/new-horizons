@@ -491,7 +491,7 @@ Can be any of the following:
 
 #### Enter
 
-When the player enters the trigger, reveal the facts
+When the player or probe enters the trigger, reveal the facts
 
 #### Observe
 
