@@ -133,7 +133,7 @@ namespace NewHorizons.Handlers
                 vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.warpExitPosition;
 
             if (system.Config.warpExitRotation != null)
-                vesselObject.transform.localEulerAngles = system.Config.warpExitRotation;
+                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.warpExitRotation;
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
 
