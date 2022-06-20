@@ -14,6 +14,12 @@ namespace NewHorizons.Utility
         private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
         private static List<Texture2D> _generatedTextures = new List<Texture2D>();
 
+        public static bool IsTextureLoaded(IModBehaviour mod, string filename)
+        {
+            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            return _loadedTextures.ContainsKey(path);
+        }
+
         public static Texture2D GetTexture(IModBehaviour mod, string filename)
         {
             return GetTexture(mod, filename, true);
