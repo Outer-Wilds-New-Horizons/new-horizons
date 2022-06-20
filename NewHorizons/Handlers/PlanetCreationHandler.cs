@@ -365,7 +365,7 @@ namespace NewHorizons.Handlers
         {
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.surfaceSize * 2f);
-            var overrideSOI = body.Config.Base.sphereOfInfluence;
+            var overrideSOI = body.Config.Base.soiOverride;
             if (overrideSOI != 0) sphereOfInfluence = overrideSOI;
             return sphereOfInfluence;
         }

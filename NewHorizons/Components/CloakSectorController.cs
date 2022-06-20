@@ -12,9 +12,9 @@ namespace NewHorizons.Components
 
         private List<Renderer> _renderers = null;
 
-        internal static bool isPlayerInside = false;
-        internal static bool isProbeInside = false;
-        internal static bool isShipInside = false;
+        public static bool isPlayerInside = false;
+        public static bool isProbeInside = false;
+        public static bool isShipInside = false;
 
         public void Init(CloakFieldController cloak, GameObject root)
         {
@@ -119,7 +119,7 @@ namespace NewHorizons.Components
             _cloak._cloakVisualsEnabled = false;
         }
 
-        public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume.gameObject.SetActive(active);
+        public void SetReferenceFrameVolumeActive(bool active) => _cloak._referenceFrameVolume?.gameObject.SetActive(active);
         public void EnableReferenceFrameVolume() => SetReferenceFrameVolumeActive(true);
         public void DisableReferenceFrameVolume() => SetReferenceFrameVolumeActive(false);
 

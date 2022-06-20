@@ -506,9 +506,9 @@ namespace NewHorizons.Builder.ShipLog
         {
             Texture2D texture;
 
-            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModeStar.png");
-            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModNoAtmo.png");
-            else texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModePlanet.png");
+            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
+            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
+            else texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
 
             var color = GetDominantPlanetColor(body);
             var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);

@@ -1,4 +1,6 @@
-﻿namespace NewHorizons.Components
+using NewHorizons.AchievementsPlus.NH;
+
+namespace NewHorizons.Components
 {
     public class BlackHoleDestructionVolume : DestructionVolume
     {
@@ -14,6 +16,7 @@
             if (requiredComponent.IsLaunched())
             {
                 UnityEngine.Object.Destroy(requiredComponent.gameObject);
+                ProbeLostAchievement.Earn();
             }
         }
     }

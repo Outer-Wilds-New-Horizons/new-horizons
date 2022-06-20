@@ -1,3 +1,4 @@
+using NewHorizons.AchievementsPlus;
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
@@ -153,17 +154,14 @@ namespace NewHorizons.Builder.Props
             var name = StringToSignalName(info.name);
 
             AudioClip clip = null;
-            if (info.audioClip != null) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
-            else if (info.audioFilePath != null)
+            if (!string.IsNullOrEmpty(info.audioClip)) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
+            else if (!string.IsNullOrEmpty(info.audioFilePath))
             {
                 try
                 {
                     clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
                 }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Couldn't load audio file {info.audioFilePath} : {e.Message}");
-                }
+                catch { }
             }
 
             if (clip == null)
@@ -236,7 +234,7 @@ namespace NewHorizons.Builder.Props
             return customName;
         }
 
-        private static SignalName StringToSignalName(string str)
+        public static SignalName StringToSignalName(string str)
         {
             foreach (SignalName name in Enum.GetValues(typeof(SignalName)))
             {

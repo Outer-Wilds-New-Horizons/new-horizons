@@ -57,8 +57,9 @@ namespace NewHorizons.Builder.Orbital
 
             // Other stuff to make the fake barycenter not interact with anything in any way
             fakeMassConfig.name = config.name + "_FakeBarycenterMass";
-            fakeMassConfig.Base.sphereOfInfluence = 0;
+            fakeMassConfig.Base.soiOverride = 0;
             fakeMassConfig.Base.hasMapMarker = false;
+            fakeMassConfig.ReferenceFrame.enabled = false;
             fakeMassConfig.ReferenceFrame.hideInMap = true;
 
             fakeMassConfig.Orbit = new OrbitModule();

@@ -26,9 +26,18 @@ namespace NewHorizons.Handlers
             _entryIDsToNHBody = new Dictionary<string, NewHorizonsBody>();
             _nhBodyToAstroIDs = new Dictionary<NewHorizonsBody, string>();
 
-            List<GameObject> gameObjects = SearchUtilities.GetAllChildren(SearchUtilities.Find(PAN_ROOT_PATH));
-            _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
-            _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+            GameObject panRoot = SearchUtilities.Find(PAN_ROOT_PATH);
+            if (panRoot != null)
+            {
+                List<GameObject> gameObjects = SearchUtilities.GetAllChildren(panRoot);
+                _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
+                _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
+            }
+            else
+            {
+                _vanillaBodies = new string[0];
+                _vanillaBodyIDs = new string[0];
+            }
         }
 
         public static void CheckForModdedFacts(ShipLogManager manager)

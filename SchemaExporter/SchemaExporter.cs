@@ -27,6 +27,9 @@ public static class SchemaExporter
         var systemSchema =
             new Schema<StarSystemConfig>("Star System Schema", "Schema for a star system in New Horizons", $"{folderName}/star_system_schema", settings);
         systemSchema.Output();
+        var addonSchema = new Schema<AddonConfig>("Addon Manifest Schema",
+            "Schema for an addon manifest in New Horizons", $"{folderName}/addon_manifest_schema", settings);
+        addonSchema.Output();
         var translationSchema =
             new Schema<TranslationConfig>("Translation Schema", "Schema for a translation file in New Horizons", $"{folderName}/translation_schema", settings);
         translationSchema.Output();

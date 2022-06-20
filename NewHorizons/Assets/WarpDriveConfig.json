@@ -8,7 +8,7 @@
 				"position":{"x": -0.3071011, "y": 2.741472, "z": -4.005298},
 				"radius": 0,
 				"remoteTriggerRadius": 1,
-				"xmlFile":"AssetBundle/WarpDriveDialogue.xml",
+				"xmlFile":"Assets/WarpDriveDialogue.xml",
 				"remoteTriggerPosition": {"x": -0.05656214, "y": 0.5362684, "z": 0.5467669},
 				"blockAfterPersistentCondition" : "KnowsAboutWarpDrive"
 			}

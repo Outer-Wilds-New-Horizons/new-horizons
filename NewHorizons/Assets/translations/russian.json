@@ -11,6 +11,8 @@
 		"INTERSTELLAR_MODE" : "Режим Interstellar",
 		"FREQ_STATUE" : "Статуя Номаи",
 		"FREQ_WARP_CORE" : "Гиперядро",
-		"FREQ_UNKNOWN" : "???"
+		"FREQ_UNKNOWN" : "???",
+		"ENGAGE_WARP_PROMPT" : "Телепортироваться к {0}",
+		"WARP_LOCKED" : "АВТОПИЛОТ ЗАКРЕПЛЁН НА:\n{0}"
 	}	
 }

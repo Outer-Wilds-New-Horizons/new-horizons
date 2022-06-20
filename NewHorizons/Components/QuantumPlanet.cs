@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
@@ -15,11 +15,13 @@ namespace NewHorizons.Components
         public List<State> states = new List<State>();
         public State groundState;
 
-        private int _currentIndex;
         private NHAstroObject _astroObject;
         private ConstantForceDetector _detector;
         private AlignWithTargetBody _alignment;
         private OWRigidbody _rb;
+        private OrbitLine _orbitLine;
+
+        public int CurrentIndex { get; private set; }
 
         public override void Awake()
         {
@@ -29,6 +31,7 @@ namespace NewHorizons.Components
             _detector = GetComponentInChildren<ConstantForceDetector>();
             _alignment = GetComponent<AlignWithTargetBody>();
             _rb = GetComponent<OWRigidbody>();
+            _orbitLine = GetComponent<OrbitLine>();
 
             GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
 
@@ -58,21 +61,21 @@ namespace NewHorizons.Components
 
             var canChange = false;
 
-            var oldState = states[_currentIndex];
+            var oldState = states[CurrentIndex];
 
             // This will all get set in the for loop
             State newState = oldState;
-            int newIndex = _currentIndex;
+            int newIndex = CurrentIndex;
             AstroObject primaryBody = null;
             OrbitalParameters orbitalParams = null;
 
             // The QM tries to switch 10 times so we'll do that too
             for (int i = 0; i < 10; i++)
             {
-                newIndex = _currentIndex;
-                while (newIndex == _currentIndex)
+                newIndex = CurrentIndex;
+                while (newIndex == CurrentIndex)
                 {
-                    newIndex = Random.Range(0, states.Count);
+                    newIndex = Random.Range(0, states.Count - 1);
                 }
 
                 newState = states[newIndex];
@@ -106,7 +109,7 @@ namespace NewHorizons.Components
                 if (newState.sector != null && newState.sector != oldState.sector) SetNewSector(oldState, newState);
                 if (newState.orbit != null && newState.orbit != oldState.orbit) SetNewOrbit(primaryBody, orbitalParams);
 
-                _currentIndex = newIndex;
+                CurrentIndex = newIndex;
 
                 GlobalMessenger<OWRigidbody>.FireEvent("QuantumMoonChangeState", _rb);
             }
@@ -141,6 +144,16 @@ namespace NewHorizons.Components
             }
 
             _rb.SetVelocity(orbitalParameters.InitialVelocity + primaryBody.GetAttachedOWRigidbody().GetVelocity());
+
+            if (_orbitLine is NHOrbitLine nhOrbitLine)
+            {
+                nhOrbitLine.SetFromParameters(orbitalParameters);
+            }
+
+            if (_orbitLine is TrackingOrbitLine trackingOrbitLine)
+            {
+                trackingOrbitLine.Reset();
+            }
         }
 
         private void OnPlayerBlink()
@@ -153,7 +166,9 @@ namespace NewHorizons.Components
 
         public override bool IsPlayerEntangled()
         {
-            return states[_currentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
+            if (CurrentIndex >= states.Count) return true;
+
+            return states[CurrentIndex].sector.ContainsAnyOccupants(DynamicOccupant.Player);
         }
 
         public class State

@@ -19,6 +19,26 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _recorderPrefab;
+        private static GameObject _preCrashRecorderPrefab;
+        
+        private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
+        {
+            if (!arcInfoToCorrespondingSpawnedGameObject.ContainsKey(arc)) return null;
+            return arcInfoToCorrespondingSpawnedGameObject[arc];
+        }
+        
+        private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
+        {
+            Logger.Log("retrieving wall text obj for " + convo);
+            if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
+            return conversationInfoToCorrespondingSpawnedGameObject[convo];
+        }
+
+        public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
+        public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static void InitPrefabs()
         {
@@ -65,6 +85,10 @@ namespace NewHorizons.Builder.Props
             _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive();
             _recorderPrefab.name = "Prefab_NOM_Recorder";
             _recorderPrefab.transform.rotation = Quaternion.identity;
+            
+            _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive();
+            _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
+            _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
         }
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
@@ -96,6 +120,7 @@ namespace NewHorizons.Builder.Props
                     }
 
                     nomaiWallTextObj.SetActive(true);
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
@@ -151,6 +176,7 @@ namespace NewHorizons.Builder.Props
                             customScroll.GetComponent<CapsuleCollider>().enabled = true;
                         }
                     );
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = customScroll;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Computer:
@@ -176,6 +202,7 @@ namespace NewHorizons.Builder.Props
                     sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(computerObject));
 
                     computerObject.SetActive(true);
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
                     break;
                 }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
@@ -220,11 +247,13 @@ namespace NewHorizons.Builder.Props
                     // Make sure the computer model is loaded
                     OWAssetHandler.LoadObject(cairnObject);
                     sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(cairnObject));
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
                     break;
                 }
+                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                 {
-                    var recorderObject = _recorderPrefab.InstantiateInactive();
+                    var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
 
                     recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
                     recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
@@ -253,6 +282,7 @@ namespace NewHorizons.Builder.Props
                     recorderObject.SetActive(true);
 
                     recorderObject.transform.Find("InteractSphere").gameObject.GetComponent<SphereShape>().enabled = true;
+                    conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                     break;
                 }
                 default:
@@ -286,12 +316,18 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        private static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
             var dict = MakeNomaiTextDict(xml);
 
             nomaiWallText._dictNomaiTextData = dict;
 
+            RefreshArcs(nomaiWallText, conversationZone, info);
+        }
+
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info) 
+        {
+            var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed);
 
             var arcsByID = new Dictionary<int, GameObject>();
@@ -305,63 +341,88 @@ namespace NewHorizons.Builder.Props
             var i = 0;
             foreach (var textData in dict.Values)
             {
+                var arcInfo = info.arcInfo?.Length > i ? info.arcInfo[i] : null;
                 var textEntryID = textData.ID;
                 var parentID = textData.ParentID;
 
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
-                GameObject arc;
-                var type = info.arcInfo != null ? info.arcInfo[i].type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
-                switch (type)
+                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
+                arc.name = $"Arc {i} - Child of {parentID}";
+        
+                arcsByID.Add(textEntryID, arc);
+
+                i++;
+            }
+        }
+
+        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
+        {
+            GameObject arc;
+            var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+            var variation = arcInfo.variation;
+            switch (type)
+            {
+                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
+                    variation = arcInfo.variation < 0
+                        ? Random.Range(0, _childArcPrefabs.Count())
+                        : (arcInfo.variation % _childArcPrefabs.Count());
+                    arc = _childArcPrefabs[variation].InstantiateInactive();
+                    break;
+                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
+                    variation = arcInfo.variation < 0
+                        ? Random.Range(0, _ghostArcPrefabs.Count())
+                        : (arcInfo.variation % _ghostArcPrefabs.Count());
+                    arc = _ghostArcPrefabs[variation].InstantiateInactive();
+                    break;
+                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
+                default:
+                    variation = arcInfo.variation < 0
+                        ? Random.Range(0, _arcPrefabs.Count())
+                        : (arcInfo.variation % _arcPrefabs.Count());
+                    arc = _arcPrefabs[variation].InstantiateInactive();
+                    break;
+            }
+            arcInfo.variation = variation;
+
+            arc.transform.parent = conversationZone.transform;
+            arc.GetComponent<NomaiTextLine>()._prebuilt = false;
+
+            if (arcInfo != null)
+            {
+                var a = arcInfo;
+                if (a.position == null) arc.transform.localPosition = Vector3.zero;
+                else arc.transform.localPosition = new Vector3(a.position.x, a.position.y, 0);
+
+                arc.transform.localRotation = Quaternion.Euler(0, 0, a.zRotation);
+
+                if (a.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+            }
+            // Try auto I guess
+            else
+            {
+                if (parent == null)
                 {
-                    case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
-                        arc = _childArcPrefabs[Random.Range(0, _childArcPrefabs.Count())].InstantiateInactive();
-                        break;
-                    case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
-                        arc = _ghostArcPrefabs[Random.Range(0, _ghostArcPrefabs.Count())].InstantiateInactive();
-                        break;
-                    case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
-                    default:
-                        arc = _arcPrefabs[Random.Range(0, _arcPrefabs.Count())].InstantiateInactive();
-                        break;
+                    arc.transform.localPosition = Vector3.zero;
                 }
-
-                arc.transform.parent = conversationZone.transform;
-                arc.GetComponent<NomaiTextLine>()._prebuilt = false;
-
-                if (info.arcInfo != null)
-                {
-                    var a = info.arcInfo[i];
-                    if (a.position == null) arc.transform.localPosition = Vector3.zero;
-                    else arc.transform.localPosition = new Vector3(a.position.x, a.position.y, 0);
-
-                    arc.transform.localRotation = Quaternion.Euler(0, 0, a.zRotation);
-                }
-                // Try auto I guess
                 else
                 {
-                    if (parent == null)
-                    {
-                        arc.transform.localPosition = Vector3.zero;
-                    }
-                    else
-                    {
-                        var points = parent.GetComponent<NomaiTextLine>().GetPoints();
-                        var point = points[points.Count() / 2];
+                    var points = parent.GetComponent<NomaiTextLine>().GetPoints();
+                    var point = points[points.Count() / 2];
 
-                        arc.transform.localPosition = point;
-                        arc.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
-                    }
+                    arc.transform.localPosition = point;
+                    arc.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
                 }
-
-                arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
-                arc.GetComponent<MeshRenderer>().enabled = false;
-                arc.name = $"Arc {++i}";
-
-                arc.SetActive(true);
-
-                arcsByID.Add(textEntryID, arc);
             }
+
+            arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
+            arc.GetComponent<MeshRenderer>().enabled = false;
+
+            arc.SetActive(true);
+    
+            arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
+
+            return arc;
         }
 
         private static Dictionary<int, NomaiText.NomaiTextData> MakeNomaiTextDict(string xmlPath)

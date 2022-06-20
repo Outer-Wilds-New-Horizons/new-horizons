@@ -1,5 +1,9 @@
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
+using static NewHorizons.External.Modules.ShipLogModule;
 
 namespace NewHorizons.External.Configs
 {
@@ -12,17 +16,12 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Whether this system can be warped to via the warp drive
         /// </summary>
-        public bool canEnterViaWarpDrive = true;
-
-        /// <summary>
-        /// [DEPRECATED] Not implemented
-        /// </summary>
-        public NomaiCoordinates coords;
+        [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
 
         /// <summary>
         /// Do you want a clean slate for this star system? Or will it be a modified version of the original.
         /// </summary>
-        public bool destroyStockPlanets = true;
+        [DefaultValue(true)] public bool destroyStockPlanets = true;
 
         /// <summary>
         /// Should the time loop be enabled in this system?
@@ -61,6 +60,46 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public string travelAudioFilePath;
 
+        /// <summary>
+        /// Coordinates that the vessel can use to warp to your solar system.
+        /// </summary>
+        public NomaiCoordinates coords;
+
+        /// <summary>
+        /// The position in the solar system the vessel will warp to.
+        /// </summary>
+        public MVector3 vesselPosition;
+
+        /// <summary>
+        /// Euler angles by which the vessel will be oriented.
+        /// </summary>
+        public MVector3 vesselRotation;
+
+        /// <summary>
+        /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
+        /// </summary>
+        public MVector3 warpExitPosition;
+
+        /// <summary>
+        /// Euler angles by which the warp exit will be oriented.
+        /// </summary>
+        public MVector3 warpExitRotation;
+
+        /// <summary>
+        /// Manually layout ship log entries in detective mode
+        /// </summary>
+        public EntryPositionInfo[] entryPositions;
+
+        /// <summary>
+        /// A list of fact IDs to reveal when the game starts.
+        /// </summary>
+        public string[] initialReveal;
+
+        /// <summary>
+        /// List colors of curiosity entries
+        /// </summary>
+        public CuriosityColorInfo[] curiosities;
+
         public class NomaiCoordinates
         {
             public int[] x;
@@ -85,6 +124,46 @@ namespace NewHorizons.External.Configs
             /// Path to the material within the asset bundle specified by `assetBundle` to use for the skybox
             /// </summary>
             public string path;
+        }
+
+        public void FixCoordinates()
+        {
+            if (coords != null)
+            {
+                coords.x = coords.x.Distinct().ToArray();
+                coords.y = coords.y.Distinct().ToArray();
+                coords.z = coords.z.Distinct().ToArray();
+            }
+		}
+		
+        public void Merge(StarSystemConfig otherConfig)
+        {
+            // Imagine if this used reflection
+
+            // True by default so if one is false go false
+            canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
+            destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
+            enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+
+            // If current one is null take the other
+            factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
+            skybox = skybox == null ? otherConfig.skybox : skybox;
+            travelAudioClip = string.IsNullOrEmpty(travelAudioClip) ? otherConfig.travelAudioClip : travelAudioClip;
+            travelAudioFilePath = string.IsNullOrEmpty(travelAudioFilePath) ? otherConfig.travelAudioFilePath : travelAudioFilePath;
+
+            // False by default so if one is true go true
+            mapRestricted = mapRestricted || otherConfig.mapRestricted;
+            mapRestricted = mapRestricted || otherConfig.mapRestricted;
+            startHere = startHere || otherConfig.startHere;
+
+            entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
+            curiosities = Concatenate(curiosities, otherConfig.curiosities);
+            initialReveal = Concatenate(initialReveal, otherConfig.initialReveal);
+        }
+
+        private T[] Concatenate<T>(T[] array1, T[] array2)
+        {
+            return (array1 ?? new T[0]).Concat(array2 ?? new T[0]).ToArray();
         }
     }
 }

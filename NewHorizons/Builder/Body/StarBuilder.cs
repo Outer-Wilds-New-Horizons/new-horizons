@@ -73,9 +73,17 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
             deathVolume.GetComponent<SphereCollider>().radius = 1f;
-            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
+            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = true;
             deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             deathVolume.name = "DestructionVolume";
+
+            var planetDestructionVolume = Object.Instantiate(deathVolume, starGO.transform);
+            planetDestructionVolume.transform.localPosition = Vector3.zero;
+            planetDestructionVolume.transform.localScale = Vector3.one;
+            planetDestructionVolume.GetComponent<SphereCollider>().radius = 0.75f;
+            planetDestructionVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
+            planetDestructionVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
+            planetDestructionVolume.name = "PlanetDestructionVolume";
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
 
@@ -169,7 +177,7 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
         {
-            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/StarColorOverTime.png");
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
 
             var starGO = new GameObject("Star");
             starGO.transform.parent = sector?.transform ?? rootObject.transform;
@@ -245,7 +253,7 @@ namespace NewHorizons.Builder.Body
                 var colour = starModule.supernovaTint.ToColor();
 
                 var supernovaMaterial = new Material(supernova._supernovaMaterial);
-                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "AssetBundle/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);
+                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);
                 supernovaMaterial.SetTexture(ColorRamp, ramp);
                 supernova._supernovaMaterial = supernovaMaterial;
 

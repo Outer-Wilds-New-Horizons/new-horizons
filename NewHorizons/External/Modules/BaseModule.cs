@@ -69,7 +69,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// An override for the radius of the planet's gravitational sphere of influence. Optional
         /// </summary>
-        public float sphereOfInfluence;
+        public float soiOverride;
 
         /// <summary>
         /// The acceleration due to gravity felt as the surfaceSize. Timber Hearth has 12 for reference
@@ -111,6 +111,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("CloakRadius is deprecated, please use CloakModule instead")]
         public float cloakRadius;
+
+        [Obsolete("SphereOfInfluence is deprecated, please use soiOverride instead")]
+        public float sphereOfInfluence;
 
         #endregion Obsolete
     }

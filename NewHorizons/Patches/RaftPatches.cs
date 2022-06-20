@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Components;
 using UnityEngine;
 namespace NewHorizons.Patches
@@ -104,14 +104,5 @@ namespace NewHorizons.Patches
 
             return false;
         }
-
-        /* For debugging
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FluidDetector), nameof(FluidDetector.AddVolume), new Type[] { typeof(EffectVolume) })]
-        public static void FluidDetector_AddVolume(FluidDetector __instance, EffectVolume eVol)
-        {
-            Logger.Log($"[{__instance}] : AddVolume [{eVol}]");
-        }
-        */
     }
 }
