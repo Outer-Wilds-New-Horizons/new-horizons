@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.Orbital
             return initialMotion;
         }
 
-        public static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
+        private static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
         {
             var focalPoint = primaryBody.GetComponent<BinaryFocalPoint>();
             if (focalPoint)

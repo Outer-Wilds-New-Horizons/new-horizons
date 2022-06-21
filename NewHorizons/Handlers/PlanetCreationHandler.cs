@@ -583,7 +583,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Have to do this after setting position
-                InitialMotionBuilder.SetInitialMotion(im, primary, newAO);
+                InitialMotionBuilder.SetInitialMotionFromConfig(im, primary, newAO, body.Config.Orbit);
 
                 // Have to register this new AO to the locator
                 Locator.RegisterAstroObject(newAO);
