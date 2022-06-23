@@ -12,13 +12,22 @@ namespace NewHorizons.Utility.DebugMenu
 {
     class DebugMenuPropPlacer : DebugSubmenu
     {
-        private Vector2 recentPropsScrollPosition = Vector2.zero;
         private HashSet<string> favoriteProps = new HashSet<string>();
+        private List<string> favoritePropsList = new List<string>();
+        private List<string> propsLoadedFromConfig = new List<string>();
         public static readonly char separatorCharacter = '☧'; // since no chars are illegal in game object names, I picked one that's extremely unlikely to be used to be a separator
         private static readonly string favoritePropsPlayerPrefKey = "FavoriteProps";
 
         internal DebugPropPlacer _dpp;
         internal DebugRaycaster _drc;
+
+        // menu params
+        private Vector2 favoritePropsScrollPosition = Vector2.zero;
+        private bool favoritePropsCollapsed = false;
+        private Vector2 recentPropsScrollPosition = Vector2.zero;
+        private bool recentPropsCollapsed = false;
+        private Vector2 configPropsScrollPosition = Vector2.zero;
+        private bool configPropsCollapsed = true;
 
         internal override string SubmenuName()
         {
@@ -55,7 +64,7 @@ namespace NewHorizons.Utility.DebugMenu
         
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)
         {
-            _dpp.FindAndRegisterPropsFromConfig(config);
+            _dpp.FindAndRegisterPropsFromConfig(config, propsLoadedFromConfig);
         }
 
         private void LoadFavoriteProps()
@@ -67,9 +76,11 @@ namespace NewHorizons.Utility.DebugMenu
             var favoritePropPaths = favoritePropsPlayerPref.Split(separatorCharacter);
             foreach (string favoriteProp in favoritePropPaths)
             {
-                DebugPropPlacer.RecentlyPlacedProps.Add(favoriteProp);
+                // DebugPropPlacer.RecentlyPlacedProps.Add(favoriteProp);
                 this.favoriteProps.Add(favoriteProp);
             }
+
+            favoritePropsList = favoriteProps.ToList();
         }
 
         internal override void OnGUI(DebugMenu menu)
@@ -81,45 +92,71 @@ namespace NewHorizons.Utility.DebugMenu
             _dpp.SetCurrentObject(GUILayout.TextArea(_dpp.currentObject));
 
             GUILayout.Space(5);
-
-            // List of recently placed objects
-            GUILayout.Label("Recently placed objects");
-            recentPropsScrollPosition = GUILayout.BeginScrollView(recentPropsScrollPosition, GUILayout.Width(menu.EditorMenuSize.x), GUILayout.Height(500));
-            foreach (string propPath in DebugPropPlacer.RecentlyPlacedProps)
-            {
-                GUILayout.BeginHorizontal();
-
-                var propPathElements = propPath[propPath.Length-1] == '/'
-                    ? propPath.Substring(0, propPath.Length-1).Split('/')
-                    : propPath.Split('/');
-                string propName = propPathElements[propPathElements.Length - 1];
-
-                string favoriteButtonIcon = favoriteProps.Contains(propPath) ? "★" : "☆";
-                if (GUILayout.Button(favoriteButtonIcon, GUILayout.ExpandWidth(false)))
-                {
-                    if (favoriteProps.Contains(propPath))
-                    {
-                        favoriteProps.Remove(propPath);
-                    }
-                    else
-                    {
-                        favoriteProps.Add(propPath);
-                    }
-
-                    string[] favoritePropsArray = favoriteProps.ToArray<string>();
-                    PlayerPrefs.SetString(favoritePropsPlayerPrefKey, string.Join(separatorCharacter + "", favoritePropsArray));
-                }
-
-                if (GUILayout.Button(propName))
-                {
-                    _dpp.SetCurrentObject(propPath);
-                }
-
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.EndScrollView();
-
+            
+            var favoriteMenu = PropsList(menu, favoritePropsList, favoritePropsCollapsed, favoritePropsScrollPosition, "Favorite Props");
+            favoritePropsCollapsed = favoriteMenu.collapsed;
+            favoritePropsScrollPosition = favoriteMenu.scroll;
             GUILayout.Space(5);
+
+            var recentMenu = PropsList(menu, DebugPropPlacer.RecentlyPlacedProps, recentPropsCollapsed, recentPropsScrollPosition, "Recently Placed Props");
+            recentPropsCollapsed= recentMenu.collapsed;
+            recentPropsScrollPosition = recentMenu.scroll;
+            GUILayout.Space(5);
+
+            var configMenu = PropsList(menu, propsLoadedFromConfig, configPropsCollapsed, configPropsScrollPosition, "Props Loaded From Configs");
+            configPropsCollapsed = configMenu.collapsed;
+            configPropsScrollPosition = configMenu.scroll;
+            GUILayout.Space(5);
+
+            
+        }
+
+        private struct PropsListReturn { public bool collapsed; public Vector2 scroll; } 
+        private PropsListReturn PropsList(DebugMenu menu, IEnumerable<string> props, bool collapsed, Vector2 scroll, string title)
+        {
+            GUILayout.BeginVertical(menu._editorMenuStyle);
+                        
+                var arrow = collapsed ? " > " : " v ";
+                if (GUILayout.Button(arrow + title, menu._submenuStyle)) collapsed = !collapsed;
+                if (collapsed) return new PropsListReturn() { collapsed=collapsed, scroll=scroll };
+
+                scroll = GUILayout.BeginScrollView(scroll, GUILayout.Width(menu.EditorMenuSize.x), GUILayout.Height(500));
+                foreach (string propPath in props)
+                {
+                    GUILayout.BeginHorizontal();
+
+                    var propPathElements = propPath[propPath.Length-1] == '/'
+                        ? propPath.Substring(0, propPath.Length-1).Split('/')
+                        : propPath.Split('/');
+                    string propName = propPathElements[propPathElements.Length - 1];
+
+                    string favoriteButtonIcon = favoriteProps.Contains(propPath) ? "★" : "☆";
+                    if (GUILayout.Button(favoriteButtonIcon, GUILayout.ExpandWidth(false)))
+                    {
+                        if (favoriteProps.Contains(propPath))
+                        {
+                            favoriteProps.Remove(propPath);
+                        }
+                        else
+                        {
+                            favoriteProps.Add(propPath);
+                        }
+
+                        string[] favoritePropsArray = favoriteProps.ToArray<string>();
+                        PlayerPrefs.SetString(favoritePropsPlayerPrefKey, string.Join(separatorCharacter + "", favoritePropsArray));
+                    }
+
+                    if (GUILayout.Button(propName, GUILayout.ExpandWidth(true)))
+                    {
+                        _dpp.SetCurrentObject(propPath);
+                    }
+
+                    GUILayout.EndHorizontal();
+                }
+                GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+
+            return new PropsListReturn() { collapsed=collapsed, scroll=scroll };
         }
 
         internal override void PreSave(DebugMenu menu)

@@ -153,7 +153,7 @@ namespace NewHorizons.Utility.DebugUtilities
             return astroObjectName;
         }
 
-        public void FindAndRegisterPropsFromConfig(PlanetConfig config)
+        public void FindAndRegisterPropsFromConfig(PlanetConfig config, List<string> pathsList = null)
         {
             if (config.starSystem != Main.Instance.CurrentStarSystem) return;
 
@@ -180,7 +180,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 // selectable list of placed props
                 if (detail.assetBundle == null && !RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
-                    RecentlyPlacedProps.Add(data.detailInfo.path);
+                    if (pathsList != null) pathsList.Add(data.detailInfo.path);
                 }
             }
         }
