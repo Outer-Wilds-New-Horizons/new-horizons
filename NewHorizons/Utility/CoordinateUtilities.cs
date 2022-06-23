@@ -7,22 +7,22 @@ namespace NewHorizons.Utility
         // Using the phi and theta convention used on https://mathworld.wolfram.com/SphericalCoordinates.html (Mathematics not physics convention)
         public static Vector3 CartesianToSpherical(Vector3 v)
         {
-            float dist = Mathf.Sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+            // y is up in unity
+            var x = v.y;
+            var y = v.z;
+            var z = v.x;
+
+            float dist = Mathf.Sqrt(x * x + y * y + z * z);
 
             // theta
             float longitude = 180f;
-            if (v.x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(v.y / v.x);
-            if (v.x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(v.y / v.x) + Mathf.PI);
+            if (x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(y / x);
+            if (x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(y / x) + Mathf.PI);
 
             // phi
-            float latitude = (Mathf.Rad2Deg * Mathf.Acos(v.z / dist));
+            float latitude = (Mathf.Rad2Deg * Mathf.Acos(z / dist));
 
             return new Vector3(longitude, latitude, dist);
-        }
-
-        public static Vector3 CartesianToSpherical(float x, float y, float z)
-        {
-            return CartesianToSpherical(new Vector3(x, y, z));
         }
 
         public static Vector3 SphericalToCartesian(Vector3 v)
@@ -31,19 +31,14 @@ namespace NewHorizons.Utility
             var latitude = v.y;
             var r = v.z;
 
-            return SphericalToCartesian(longitude, latitude, r);
-        }
-
-        public static Vector3 SphericalToCartesian(float longitude, float latitude, float radius)
-        {
             var theta = Mathf.Deg2Rad * longitude;
             var phi = Mathf.Deg2Rad * latitude;
 
-            var x = radius * Mathf.Cos(theta) * Mathf.Sin(phi);
-            var y = radius * Mathf.Sin(theta) * Mathf.Sin(phi);
-            var z = radius * Mathf.Cos(phi);
+            var x = r * Mathf.Cos(theta) * Mathf.Sin(phi);
+            var y = r * Mathf.Sin(theta) * Mathf.Sin(phi);
+            var z = r * Mathf.Cos(phi);
 
-            return new Vector3(x, y, z);
+            return new Vector3(z, x, y);
         }
     }
 }
