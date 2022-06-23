@@ -39,6 +39,8 @@ namespace NewHorizons.Utility.DebugUtilities
         public static HashSet<string> RecentlyPlacedProps = new HashSet<string>();
 
         public static bool active = false;
+        public GameObject mostRecentlyPlacedPropGO { get { return props.Count() <= 0 ? null : props[props.Count()-1].gameObject; } }
+        public string mostRecentlyPlacedPropPath { get { return props.Count() <= 0 ? "" : props[props.Count()-1].detailInfo.path; } }
 
         private void Awake()
         {
