@@ -21,7 +21,6 @@ namespace NewHorizons.Utility.DebugMenu
         internal DebugRaycaster _drc;
 
         // misc
-        private GameObject sphericalPlacer;
         private GameObject mostRecentlyPlacedProp;
         private Vector3 mostRecentlyPlacedPropSphericalPos;
 
@@ -40,8 +39,6 @@ namespace NewHorizons.Utility.DebugMenu
         {
             _dpp = menu.GetComponent<DebugPropPlacer>();
             _drc = menu.GetComponent<DebugRaycaster>();
-
-            sphericalPlacer = new GameObject("Prop Placer Spherical Coords Helper");
         }
 
         internal override void OnAwake(DebugMenu menu)
@@ -112,9 +109,9 @@ namespace NewHorizons.Utility.DebugMenu
                 string propName = propPathElements[propPathElements.Length - 1];
                 GUILayout.Label($"Reposition {propName}: ");
 
-                Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
-                _dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
-                if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
+                //Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
+                //_dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
+                //if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
 
                 GUILayout.Space(5);
 
@@ -129,41 +126,36 @@ namespace NewHorizons.Utility.DebugMenu
                 if (latestPropSphericalPosDelta != Vector3.zero)
                 {
                     Logger.Log("Prop pos delta "+latestPropSphericalPosDelta);
-                    mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta);
+                    SetSphericalPosition(mostRecentlyPlacedProp, mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta);
+                    mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta;
                 }
             }
         }
 
         private Vector3 DeltaSphericalPosition(GameObject prop, Vector3 deltaSpherical)
         {
-            // note: prop was originally named go
-            //sphericalPlacer.transform.parent = go.transform.parent;
-            //sphericalPlacer.transform.localPosition = Vector3.zero;
-            //sphericalPlacer.transform.LookAt(go.transform.localPosition);
-            //sphericalPlacer.transform.localEulerAngles = new Vector3(sphericalPlacer.transform.localEulerAngles.x, sphericalPlacer.transform.localEulerAngles.y, 0);
-
-            //go.transform.parent = sphericalPlacer.transform;
-
-            //Vector3 currentSpherical = sphericalPlacer.transform.localEulerAngles + new Vector3(0,0, go.transform.localPosition.z); // lat, lon, height
-
-            //sphericalPlacer.transform.localEulerAngles += new Vector3(deltaSpherical.x, deltaSpherical.y, 0);
-            //go.transform.localPosition += new Vector3(0, 0, deltaSpherical.z);
-
-            //go.transform.parent = sphericalPlacer.transform.parent;
-
-            //return currentSpherical+deltaSpherical;
-
-            Vector3 originalLocalPos = prop.transform.parent.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject
+            Transform astroObject = prop.transform.parent.parent; 
+            Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject (what the DetailBuilder asks for)
             Vector3 sphericalPos = CoordinateUtilities.CartesianToSpherical(originalLocalPos);
-            Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(sphericalPos+deltaSpherical);
             
             if (deltaSpherical == Vector3.zero) return sphericalPos;
 
-            Vector3 finalAbsolutePosition = prop.transform.parent.TransformPoint(finalLocalPosition);
-            prop.transform.localPosition = prop.transform.InverseTransformPoint(finalAbsolutePosition);
-            prop.transform.rotation = prop.transform.rotation * Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized);
-        
+            SetSphericalPosition(prop, sphericalPos+deltaSpherical);
             return sphericalPos+deltaSpherical;
+        }
+
+        private void SetSphericalPosition(GameObject prop, Vector3 newSpherical)
+        {
+            Transform astroObject = prop.transform.parent.parent; 
+            Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject
+            Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(newSpherical);
+
+            Vector3 finalAbsolutePosition = astroObject.TransformPoint(finalLocalPosition);
+            prop.transform.localPosition = prop.transform.parent.InverseTransformPoint(finalAbsolutePosition);
+            prop.transform.rotation = prop.transform.rotation * Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized);
+
+            //Logger.Log("Original local: " + originalLocalPos + "  original spherical: " + sphericalPos +  "   delta spherical: " + deltaSpherical  + "   new speherical: " + (sphericalPos+deltaSpherical) + " new local: " + finalLocalPosition);
+            Logger.Log("Original local: " + originalLocalPos + "  new spherical: " + newSpherical + " new local: " + finalLocalPosition);
         }
 
         private Vector3 VectorInput(Vector3 input, Vector3 deltaControls, out Vector3 deltaControlsOut, string labelX, string labelY, string labelZ)
@@ -175,7 +167,10 @@ namespace NewHorizons.Utility.DebugMenu
             // x
             GUILayout.BeginHorizontal();
                 GUILayout.Label(labelX+":     ", GUILayout.Width(50));
-                float deltaX = float.Parse(GUILayout.TextField(input.x+"", GUILayout.Width(50))) - input.x;
+				var xString = input.x+"";
+				var newXString = GUILayout.TextField(xString, GUILayout.Width(50));
+				var parsedXString = input.x; try { parsedXString = float.Parse(newXString); } catch {}
+                float deltaX = xString == newXString ? 0 : parsedXString - input.x;
                 if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
                 if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
                 dx = float.Parse(GUILayout.TextField(dx+"", GUILayout.Width(100)));
@@ -183,7 +178,10 @@ namespace NewHorizons.Utility.DebugMenu
             // y
             GUILayout.BeginHorizontal();
                 GUILayout.Label(labelY+":     ", GUILayout.Width(50));
-                float deltaY = float.Parse(GUILayout.TextField(input.y+"", GUILayout.Width(50))) - input.y;
+				var yString = input.y+"";
+				var newYString = GUILayout.TextField(yString, GUILayout.Width(50));
+				var parsedYString = input.y; try { parsedYString = float.Parse(newYString); } catch {}
+                float deltaY = yString == newYString ? 0 : parsedYString - input.y;
                 if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
                 if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
                 dy = float.Parse(GUILayout.TextField(dy+"", GUILayout.Width(100)));
@@ -191,7 +189,10 @@ namespace NewHorizons.Utility.DebugMenu
             // z
             GUILayout.BeginHorizontal();
                 GUILayout.Label(labelZ+":     ", GUILayout.Width(50));
-                float deltaZ = float.Parse(GUILayout.TextField(input.z+"", GUILayout.Width(50))) - input.z;
+				var zString = input.z+"";
+				var newZString = GUILayout.TextField(zString, GUILayout.Width(50));
+				var parsedZString = input.z; try { parsedZString = float.Parse(newZString); } catch {}
+                float deltaZ = zString == newZString ? 0 : parsedZString - input.z;
                 if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaZ += dz;
                 if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaZ -= dz;
                 dz = float.Parse(GUILayout.TextField(dz+"", GUILayout.Width(100)));
