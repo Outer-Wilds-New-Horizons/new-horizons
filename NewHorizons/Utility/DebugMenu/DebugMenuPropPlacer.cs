@@ -109,9 +109,9 @@ namespace NewHorizons.Utility.DebugMenu
                 string propName = propPathElements[propPathElements.Length - 1];
                 GUILayout.Label($"Reposition {propName}: ");
 
-                //Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
-                //_dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
-                //if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
+                Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
+                _dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
+                if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
 
                 GUILayout.Space(5);
 
@@ -125,8 +125,7 @@ namespace NewHorizons.Utility.DebugMenu
                 Vector3 latestPropSphericalPosDelta = VectorInput(mostRecentlyPlacedPropSphericalPos, propSphericalPosDelta, out propSphericalPosDelta, "lat   ", "lon   ", "height");
                 if (latestPropSphericalPosDelta != Vector3.zero)
                 {
-                    Logger.Log("Prop pos delta "+latestPropSphericalPosDelta);
-                    SetSphericalPosition(mostRecentlyPlacedProp, mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta);
+                    DeltaSphericalPosition(mostRecentlyPlacedProp, latestPropSphericalPosDelta);
                     mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta;
                 }
             }
@@ -135,27 +134,28 @@ namespace NewHorizons.Utility.DebugMenu
         private Vector3 DeltaSphericalPosition(GameObject prop, Vector3 deltaSpherical)
         {
             Transform astroObject = prop.transform.parent.parent; 
+            Transform sector      = prop.transform.parent;
             Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject (what the DetailBuilder asks for)
             Vector3 sphericalPos = CoordinateUtilities.CartesianToSpherical(originalLocalPos);
             
             if (deltaSpherical == Vector3.zero) return sphericalPos;
+            Vector3 newSpherical = sphericalPos+deltaSpherical;
 
-            SetSphericalPosition(prop, sphericalPos+deltaSpherical);
-            return sphericalPos+deltaSpherical;
-        }
-
-        private void SetSphericalPosition(GameObject prop, Vector3 newSpherical)
-        {
-            Transform astroObject = prop.transform.parent.parent; 
-            Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject
             Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(newSpherical);
-
             Vector3 finalAbsolutePosition = astroObject.TransformPoint(finalLocalPosition);
             prop.transform.localPosition = prop.transform.parent.InverseTransformPoint(finalAbsolutePosition);
-            prop.transform.rotation = prop.transform.rotation * Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized);
+            // prop.transform.rotation = Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized) * prop.transform.rotation;
 
-            //Logger.Log("Original local: " + originalLocalPos + "  original spherical: " + sphericalPos +  "   delta spherical: " + deltaSpherical  + "   new speherical: " + (sphericalPos+deltaSpherical) + " new local: " + finalLocalPosition);
-            Logger.Log("Original local: " + originalLocalPos + "  new spherical: " + newSpherical + " new local: " + finalLocalPosition);
+            // first, rotate the object by the astroObject's rotation, that means anything afterwards is relative to this rotation (ie, we can pretend the astroObject has 0 rotation)
+            // then, rotate by the difference in position, basically accounting for the curvature of a sphere
+            // then re-apply the local rotations of the hierarchy down to the prop (apply the sector local rotation, then the prop local rotation)
+
+            // since we're doing all rotation relative to the astro object, we start with its absolute rotation
+            // then we apply the rotation about the astroobject using FromTooRotation
+            // then we reapply the local rotations down through the hierarchy
+            prop.transform.rotation = astroObject.rotation * Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized) * sector.localRotation * prop.transform.localRotation;
+
+            return newSpherical;
         }
 
         private Vector3 VectorInput(Vector3 input, Vector3 deltaControls, out Vector3 deltaControlsOut, string labelX, string labelY, string labelZ)
