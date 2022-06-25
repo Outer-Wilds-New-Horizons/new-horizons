@@ -32,6 +32,7 @@ namespace NewHorizons.Utility.DebugMenu
         private Vector3 propRotDelta = new Vector3(0.1f, 0.1f, 0.1f);
         private Vector3 propSphericalPosDelta = new Vector3(0.1f, 0.1f, 0.1f);
         private float propRotationAboutLocalUpDelta = 0.1f;
+        private float propScaleDelta = 0.1f;
 
         internal override string SubmenuName()
         {
@@ -161,6 +162,24 @@ namespace NewHorizons.Utility.DebugMenu
                     Transform astroObject = mostRecentlyPlacedProp.transform.parent.parent; 
                     mostRecentlyPlacedProp.transform.RotateAround(mostRecentlyPlacedProp.transform.position, mostRecentlyPlacedProp.transform.up, deltaRot);
                 }   
+            GUILayout.EndHorizontal();
+
+            
+            GUILayout.BeginHorizontal();
+                GUILayout.Label("scale: ", GUILayout.Width(50));
+				var scaleString = mostRecentlyPlacedProp.transform.localScale.x+"";
+				var newScaleString = GUILayout.TextField(scaleString , GUILayout.Width(50));
+				var parsedScaleString = mostRecentlyPlacedProp.transform.localScale.x; try { parsedScaleString  = float.Parse(newScaleString); } catch {}
+                float deltaScale = scaleString  == newScaleString ? 0 : parsedScaleString  - mostRecentlyPlacedProp.transform.localScale.x;
+                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaScale += propScaleDelta;
+                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaScale -= propScaleDelta;
+                propScaleDelta = float.Parse(GUILayout.TextField(propScaleDelta+"", GUILayout.Width(100)));
+
+                if (deltaScale != 0)
+                {
+                    float newScale = mostRecentlyPlacedProp.transform.localScale.x + deltaScale;
+                    mostRecentlyPlacedProp.transform.localScale = new Vector3(newScale, newScale, newScale);
+                }
             GUILayout.EndHorizontal();
         }
         private Vector3 DeltaSphericalPosition(GameObject prop, Vector3 deltaSpherical)
