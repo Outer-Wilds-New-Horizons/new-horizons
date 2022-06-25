@@ -27,8 +27,11 @@ namespace NewHorizons.Utility.DebugMenu
         // menu params
         private Vector2 recentPropsScrollPosition = Vector2.zero;
         private bool propsCollapsed = false;
+        private bool propPositioningCollapsed = false;
         private Vector3 propPosDelta = new Vector3(0.1f, 0.1f, 0.1f);
+        private Vector3 propRotDelta = new Vector3(0.1f, 0.1f, 0.1f);
         private Vector3 propSphericalPosDelta = new Vector3(0.1f, 0.1f, 0.1f);
+        private float propRotationAboutLocalUpDelta = 0.1f;
 
         internal override string SubmenuName()
         {
@@ -101,36 +104,65 @@ namespace NewHorizons.Utility.DebugMenu
             
             if (_dpp.mostRecentlyPlacedPropGO != null)
             {
-        
-                var propPath = _dpp.mostRecentlyPlacedPropPath;
-                var propPathElements = propPath[propPath.Length-1] == '/'
-                    ? propPath.Substring(0, propPath.Length-1).Split('/')
-                    : propPath.Split('/');
-                string propName = propPathElements[propPathElements.Length - 1];
-                GUILayout.Label($"Reposition {propName}: ");
-
-                Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
-                _dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
-                if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
-
-                GUILayout.Space(5);
-
-
-                if (mostRecentlyPlacedProp != _dpp.mostRecentlyPlacedPropGO)
-                {
-                    mostRecentlyPlacedProp = _dpp.mostRecentlyPlacedPropGO;
-                    mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);
-                }
-
-                Vector3 latestPropSphericalPosDelta = VectorInput(mostRecentlyPlacedPropSphericalPos, propSphericalPosDelta, out propSphericalPosDelta, "lat   ", "lon   ", "height");
-                if (latestPropSphericalPosDelta != Vector3.zero)
-                {
-                    DeltaSphericalPosition(mostRecentlyPlacedProp, latestPropSphericalPosDelta);
-                    mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta;
-                }
+                arrow = propPositioningCollapsed  ? " > " : " v ";
+                if (GUILayout.Button(arrow + "Position last placed prop", menu._tabBarStyle)) propPositioningCollapsed  = !propPositioningCollapsed;
+                if (!propPositioningCollapsed) DrawPropsAdustmentControls(menu);
             }
         }
 
+        private void DrawPropsAdustmentControls(DebugMenu menu)
+        {
+            var propPath = _dpp.mostRecentlyPlacedPropPath;
+            var propPathElements = propPath[propPath.Length-1] == '/'
+                ? propPath.Substring(0, propPath.Length-1).Split('/')
+                : propPath.Split('/');
+            string propName = propPathElements[propPathElements.Length - 1];
+            GUILayout.Label($"Reposition {propName}: ");
+
+                
+            Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
+            _dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
+            if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
+
+            //GUILayout.Space(5);
+            //Vector3 latestPropRotDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localEulerAngles, propRotDelta, out propRotDelta, "x", "y", "z");
+            //_dpp.mostRecentlyPlacedPropGO.transform.localEulerAngles += latestPropRotDelta;
+
+            GUILayout.Space(5);
+            GUILayout.Space(5);
+
+
+            if (mostRecentlyPlacedProp != _dpp.mostRecentlyPlacedPropGO)
+            {
+                mostRecentlyPlacedProp = _dpp.mostRecentlyPlacedPropGO;
+                mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);
+            }
+
+            Vector3 latestPropSphericalPosDelta = VectorInput(mostRecentlyPlacedPropSphericalPos, propSphericalPosDelta, out propSphericalPosDelta, "lat   ", "lon   ", "height");
+            if (latestPropSphericalPosDelta != Vector3.zero)
+            {
+                DeltaSphericalPosition(mostRecentlyPlacedProp, latestPropSphericalPosDelta);
+                mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta;
+            }
+
+            GUILayout.Space(5);
+            GUILayout.Space(5);
+            
+            
+            GUILayout.BeginHorizontal();
+                GUILayout.Label("Rotate about up: ", GUILayout.Width(50));
+                float deltaRot = 0;
+                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaRot += propRotationAboutLocalUpDelta;
+                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaRot -= propRotationAboutLocalUpDelta;
+                propRotationAboutLocalUpDelta = float.Parse(GUILayout.TextField(propRotationAboutLocalUpDelta+"", GUILayout.Width(100)));
+
+                if (deltaRot != 0) 
+                {
+                    Transform astroObject = mostRecentlyPlacedProp.transform.parent.parent; 
+                    mostRecentlyPlacedProp.transform.RotateAround(mostRecentlyPlacedProp.transform.position, mostRecentlyPlacedProp.transform.up, deltaRot);
+                }   
+            GUILayout.EndHorizontal();
+        }
         private Vector3 DeltaSphericalPosition(GameObject prop, Vector3 deltaSpherical)
         {
             Transform astroObject = prop.transform.parent.parent; 
