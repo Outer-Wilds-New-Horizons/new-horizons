@@ -1411,22 +1411,26 @@
         "maxInterval": {
           "type": "number",
           "description": "Maximum time between meteor launches.",
-          "format": "float"
+          "format": "float",
+          "default": 20.0
         },
         "maxLaunchSpeed": {
           "type": "number",
           "description": "Maximum random speed at which meteors are launched.",
-          "format": "float"
+          "format": "float",
+          "default": 150.0
         },
         "minInterval": {
           "type": "number",
           "description": "Minimum time between meteor launches.",
-          "format": "float"
+          "format": "float",
+          "default": 5.0
         },
         "minLaunchSpeed": {
           "type": "number",
           "description": "Minimum random speed at which meteors are launched.",
-          "format": "float"
+          "format": "float",
+          "default": 50.0
         },
         "position": {
           "description": "Position of this volcano.",

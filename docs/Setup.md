@@ -22,10 +22,8 @@ pipenv install --dev
 
 ## Environment Variables
 - URL_PREFIX: Path to put before all links and static files, see below for recommended values
-  - Production: "/"
-  - Local Build: "" (set as empty string)
+  - Production and Local Builds: "/"
   - PyCharm Development Server: "/outer-wilds-new-horizons/docs/out/"
-
 
 ## Copy Schemas
 Create a folder called `schemas` in the `docs/content/pages/` folder and copy all schemas to generate into it, make sure not to add this folder to git.
@@ -39,5 +37,5 @@ pipenv run menagerie generate
 
 ## Opening
 - Production: Go to the site
-- Local: Open `out/index.html`
+- Local: Go into `docs/out` in a new terminal window and run `py -m http.server 8080` and then connect to http://localhost:8080/
 - PyCharm Development Server: Right click `out/index.html` -> Open In -> Browser -> Default
