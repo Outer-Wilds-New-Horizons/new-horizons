@@ -70,6 +70,7 @@ namespace NewHorizons.Utility
             {
                 Logger.Log($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
+                _customAstroObjectDictionary.Add(ao.name, ao);
             }
         }
 
