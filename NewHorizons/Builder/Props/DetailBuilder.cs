@@ -101,6 +101,12 @@ namespace NewHorizons.Builder.Props
                     {
                         s._parentSector = sector;
                     }
+                    
+                    // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
+                    if (component is ISectorGroup sectorGroup)
+                    {
+                        sectorGroup.SetSector(sector);
+                    }
 
                     // TODO: Make this work or smthng
                     if (component is GhostIK ik) ik.enabled = false;
