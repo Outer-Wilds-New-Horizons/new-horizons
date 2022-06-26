@@ -39,6 +39,8 @@ namespace NewHorizons.Utility.DebugUtilities
         public static HashSet<string> RecentlyPlacedProps = new HashSet<string>();
 
         public static bool active = false;
+        public GameObject mostRecentlyPlacedPropGO { get { return props.Count() <= 0 ? null : props[props.Count()-1].gameObject; } }
+        public string mostRecentlyPlacedPropPath { get { return props.Count() <= 0 ? "" : props[props.Count()-1].detailInfo.path; } }
 
         private void Awake()
         {
@@ -153,7 +155,7 @@ namespace NewHorizons.Utility.DebugUtilities
             return astroObjectName;
         }
 
-        public void FindAndRegisterPropsFromConfig(PlanetConfig config)
+        public void FindAndRegisterPropsFromConfig(PlanetConfig config, List<string> pathsList = null)
         {
             if (config.starSystem != Main.Instance.CurrentStarSystem) return;
 
@@ -180,7 +182,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 // selectable list of placed props
                 if (detail.assetBundle == null && !RecentlyPlacedProps.Contains(data.detailInfo.path))
                 {
-                    RecentlyPlacedProps.Add(data.detailInfo.path);
+                    if (pathsList != null) pathsList.Add(data.detailInfo.path);
                 }
             }
         }
