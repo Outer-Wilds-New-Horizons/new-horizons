@@ -81,12 +81,12 @@ namespace NewHorizons.Utility
 
         public static AstroObject[] GetAllAstroObjects()
         {
-            return _customAstroObjectDictionary.Values.Distinct().ToArray();
+            return _customAstroObjectDictionary.Values.ToArray();
         }
 
         public static GameObject[] GetMoons(AstroObject primary)
         {
-            return _customAstroObjectDictionary.Values.Distinct().Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
+            return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
         }
 
         public static GameObject[] GetChildren(AstroObject primary)
