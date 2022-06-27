@@ -144,13 +144,10 @@ namespace NewHorizons.Utility.DebugUtilities
 
         public static string GetAstroObjectName(string bodyName)
         {
-            if (bodyName.EndsWith("_Body")) bodyName = bodyName.Substring(0, bodyName.Length-"_Body".Length);
-
             var astroObject = AstroObjectLocator.GetAstroObject(bodyName);
             if (astroObject == null) return null;
 
             var astroObjectName = astroObject.name;
-            if (astroObjectName.EndsWith("_Body")) astroObjectName = astroObjectName.Substring(0, astroObjectName.Length-"_Body".Length);
 
             return astroObjectName;
         }
@@ -202,7 +199,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             string bodyName = GetAstroObjectName(bodyGameObjectName);
             
-            Logger.Log("Adding prop to " + Main.Instance.CurrentStarSystem + "::" + bodyName);
+            Logger.Log($"Adding prop to {Main.Instance.CurrentStarSystem}::{bodyName}  (passed name: {bodyGameObjectName})");
             
 
             detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
