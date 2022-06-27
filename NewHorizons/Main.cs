@@ -446,15 +446,15 @@ namespace NewHorizons
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
         }
 
-        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativeDirectory)
+        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativePath)
         {
             NewHorizonsBody body = null;
             try
             {
-                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath);
                 if (config == null)
                 {
-                    Logger.LogError($"Couldn't load {relativeDirectory}. Is your Json formatted correctly?");
+                    Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
                     return null;
                 }
 
@@ -479,11 +479,11 @@ namespace NewHorizons
                 // Has to happen after we make sure theres a system config
                 config.MigrateAndValidate();
 
-                body = new NewHorizonsBody(config, mod, relativeDirectory);
+                body = new NewHorizonsBody(config, mod, relativePath);
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error encounter when loading {relativeDirectory}: {e.Message} {e.StackTrace}");
+                Logger.LogError($"Error encounter when loading {relativePath}: {e.Message} {e.StackTrace}");
             }
 
             return body;
