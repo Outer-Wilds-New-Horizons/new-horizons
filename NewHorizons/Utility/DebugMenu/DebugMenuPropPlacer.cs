@@ -310,7 +310,7 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 Logger.Log("potentially updating copy of config at " + filePath);
                 Logger.Log($"{menu.loadedConfigFiles[filePath].name}    {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
-                Logger.Log($"{menu.loadedConfigFiles[filePath].name}") ;       
+                Logger.Log($"{menu.loadedConfigFiles[filePath]}") ;       
 
                 if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
@@ -335,7 +335,7 @@ namespace NewHorizons.Utility.DebugMenu
                 var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObject.name + ".json";
                 PlanetConfig c = new PlanetConfig();
                 c.starSystem = Main.Instance.CurrentStarSystem;
-                c.name = astroObject.GetCustomName();
+                c.name = astroObject._name == AstroObject.Name.CustomString ? astroObject.GetCustomName() : astroObject._name.ToString();
                 c.Props = new PropModule();
                 c.Props.details = newDetails[astroObject];
 
