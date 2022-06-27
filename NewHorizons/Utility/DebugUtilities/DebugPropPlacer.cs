@@ -199,7 +199,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             string bodyName = GetAstroObjectName(bodyGameObjectName);
             
-            Logger.Log("Adding prop to " + Main.Instance.CurrentStarSystem + "::" + bodyName + "    (passed name: "+bodyGameObjectName+")");
+            Logger.Log($"Adding prop to {Main.Instance.CurrentStarSystem}::{bodyName}  (passed name: {bodyGameObjectName})");
             
 
             detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
