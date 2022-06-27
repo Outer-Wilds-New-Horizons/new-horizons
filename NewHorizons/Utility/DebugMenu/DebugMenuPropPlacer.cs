@@ -226,6 +226,7 @@ namespace NewHorizons.Utility.DebugMenu
             if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
             dx = float.Parse(GUILayout.TextField(dx + "", GUILayout.Width(100)));
             GUILayout.EndHorizontal();
+
             // y
             GUILayout.BeginHorizontal();
             GUILayout.Label(labelY + ":     ", GUILayout.Width(50));
@@ -237,6 +238,7 @@ namespace NewHorizons.Utility.DebugMenu
             if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
             dy = float.Parse(GUILayout.TextField(dy + "", GUILayout.Width(100)));
             GUILayout.EndHorizontal();
+
             // z
             GUILayout.BeginHorizontal();
             GUILayout.Label(labelZ + ":     ", GUILayout.Width(50));
