@@ -534,7 +534,10 @@ namespace NewHorizons.Handlers
                 // Since we destroyed the AO we have to replace links to it in other places
                 newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame._attachedAstroObject = newAO;
 
-                GameObject.Destroy(go.GetComponentInChildren<OrbitLine>().gameObject);
+                // QM and stuff don't have orbit lines
+                var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
+                if (orbitLine != null) GameObject.Destroy(orbitLine);
+
                 var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
                 if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
@@ -563,7 +566,7 @@ namespace NewHorizons.Handlers
                     {
                         if (childAO is NHAstroObject && ExistingAOConfigs.ContainsKey(childAO))
                         {
-                            // If it's already and NH object we repeat the whole process else it doesn't work idk
+                            // If it's already an NH object we repeat the whole process else it doesn't work idk
                             NextPassBodies.Add(ExistingAOConfigs[childAO]);
                         }
                         else

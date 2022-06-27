@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.Props
                 {
                     if (component is Sector s)
                     {
-                        s._parentSector = sector;
+                        s.SetParentSector(sector);
                     }
                     
                     // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
@@ -125,7 +125,10 @@ namespace NewHorizons.Builder.Props
                     else
                     {
                         var sectorField = component?.GetType()?.GetField("_sector");
-                        if (sectorField != null && sectorField.FieldType == typeof(Sector)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
+                        if (sectorField != null && sectorField.FieldType == typeof(Sector))
+                        {
+                            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
+                        }
                     }
 
                     if (component is AnglerfishController angler)
@@ -175,8 +178,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    // Remove things that require sectors. Will just keep extending this as things pop up
-
+                    // Remove things that require sectors if the sector is null. Will just keep extending this as things pop up.
                     if (component is FogLight or SectoredMonoBehaviour)
                     {
                         GameObject.DestroyImmediate(component);

@@ -54,7 +54,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void OnBeginLoadMod(DebugMenu debugMenu)
         {
-            
+
         }
 
         internal override void GainActive()
@@ -66,7 +66,7 @@ namespace NewHorizons.Utility.DebugMenu
         {
             DebugPropPlacer.active = false;
         }
-        
+
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)
         {
             _dpp.FindAndRegisterPropsFromConfig(config, propsLoadedFromConfig);
@@ -96,17 +96,17 @@ namespace NewHorizons.Utility.DebugMenu
 
             GUILayout.Space(5);
             GUILayout.Space(5);
-            
-            
+
+
             var arrow = propsCollapsed ? " > " : " v ";
             if (GUILayout.Button(arrow + "Recently placed objects", menu._tabBarStyle)) propsCollapsed = !propsCollapsed;
-            if (!propsCollapsed) DrawPropsList(menu); 
+            if (!propsCollapsed) DrawPropsList(menu);
             GUILayout.Space(5);
-            
+
             if (_dpp.mostRecentlyPlacedPropGO != null)
             {
-                arrow = propPositioningCollapsed  ? " > " : " v ";
-                if (GUILayout.Button(arrow + "Position last placed prop", menu._tabBarStyle)) propPositioningCollapsed  = !propPositioningCollapsed;
+                arrow = propPositioningCollapsed ? " > " : " v ";
+                if (GUILayout.Button(arrow + "Position last placed prop", menu._tabBarStyle)) propPositioningCollapsed = !propPositioningCollapsed;
                 if (!propPositioningCollapsed) DrawPropsAdustmentControls(menu);
             }
         }
@@ -114,16 +114,16 @@ namespace NewHorizons.Utility.DebugMenu
         private void DrawPropsAdustmentControls(DebugMenu menu)
         {
             var propPath = _dpp.mostRecentlyPlacedPropPath;
-            var propPathElements = propPath[propPath.Length-1] == '/'
-                ? propPath.Substring(0, propPath.Length-1).Split('/')
+            var propPathElements = propPath[propPath.Length - 1] == '/'
+                ? propPath.Substring(0, propPath.Length - 1).Split('/')
                 : propPath.Split('/');
             string propName = propPathElements[propPathElements.Length - 1];
             GUILayout.Label($"Reposition {propName}: ");
 
-                
+
             Vector3 latestPropPosDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localPosition, propPosDelta, out propPosDelta, "x", "y", "z");
             _dpp.mostRecentlyPlacedPropGO.transform.localPosition += latestPropPosDelta;
-            if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);        
+            if (latestPropPosDelta != Vector3.zero) mostRecentlyPlacedPropSphericalPos = DeltaSphericalPosition(mostRecentlyPlacedProp, Vector3.zero);
 
             //GUILayout.Space(5);
             //Vector3 latestPropRotDelta = VectorInput(_dpp.mostRecentlyPlacedPropGO.transform.localEulerAngles, propRotDelta, out propRotDelta, "x", "y", "z");
@@ -143,54 +143,54 @@ namespace NewHorizons.Utility.DebugMenu
             if (latestPropSphericalPosDelta != Vector3.zero)
             {
                 DeltaSphericalPosition(mostRecentlyPlacedProp, latestPropSphericalPosDelta);
-                mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos+latestPropSphericalPosDelta;
+                mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos + latestPropSphericalPosDelta;
             }
 
             GUILayout.Space(5);
             GUILayout.Space(5);
-            
-            
-            GUILayout.BeginHorizontal();
-                GUILayout.Label("Rotate about up: ", GUILayout.Width(50));
-                float deltaRot = 0;
-                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaRot += propRotationAboutLocalUpDelta;
-                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaRot -= propRotationAboutLocalUpDelta;
-                propRotationAboutLocalUpDelta = float.Parse(GUILayout.TextField(propRotationAboutLocalUpDelta+"", GUILayout.Width(100)));
 
-                if (deltaRot != 0) 
-                {
-                    Transform astroObject = mostRecentlyPlacedProp.transform.parent.parent; 
-                    mostRecentlyPlacedProp.transform.RotateAround(mostRecentlyPlacedProp.transform.position, mostRecentlyPlacedProp.transform.up, deltaRot);
-                }   
+
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("Rotate about up: ", GUILayout.Width(50));
+            float deltaRot = 0;
+            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaRot += propRotationAboutLocalUpDelta;
+            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaRot -= propRotationAboutLocalUpDelta;
+            propRotationAboutLocalUpDelta = float.Parse(GUILayout.TextField(propRotationAboutLocalUpDelta + "", GUILayout.Width(100)));
+
+            if (deltaRot != 0)
+            {
+                Transform astroObject = mostRecentlyPlacedProp.transform.parent.parent;
+                mostRecentlyPlacedProp.transform.RotateAround(mostRecentlyPlacedProp.transform.position, mostRecentlyPlacedProp.transform.up, deltaRot);
+            }
             GUILayout.EndHorizontal();
 
-            
-            GUILayout.BeginHorizontal();
-                GUILayout.Label("scale: ", GUILayout.Width(50));
-				var scaleString = mostRecentlyPlacedProp.transform.localScale.x+"";
-				var newScaleString = GUILayout.TextField(scaleString , GUILayout.Width(50));
-				var parsedScaleString = mostRecentlyPlacedProp.transform.localScale.x; try { parsedScaleString  = float.Parse(newScaleString); } catch {}
-                float deltaScale = scaleString  == newScaleString ? 0 : parsedScaleString  - mostRecentlyPlacedProp.transform.localScale.x;
-                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaScale += propScaleDelta;
-                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaScale -= propScaleDelta;
-                propScaleDelta = float.Parse(GUILayout.TextField(propScaleDelta+"", GUILayout.Width(100)));
 
-                if (deltaScale != 0)
-                {
-                    float newScale = mostRecentlyPlacedProp.transform.localScale.x + deltaScale;
-                    mostRecentlyPlacedProp.transform.localScale = new Vector3(newScale, newScale, newScale);
-                }
+            GUILayout.BeginHorizontal();
+            GUILayout.Label("scale: ", GUILayout.Width(50));
+            var scaleString = mostRecentlyPlacedProp.transform.localScale.x + "";
+            var newScaleString = GUILayout.TextField(scaleString, GUILayout.Width(50));
+            var parsedScaleString = mostRecentlyPlacedProp.transform.localScale.x; try { parsedScaleString = float.Parse(newScaleString); } catch { }
+            float deltaScale = scaleString == newScaleString ? 0 : parsedScaleString - mostRecentlyPlacedProp.transform.localScale.x;
+            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaScale += propScaleDelta;
+            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaScale -= propScaleDelta;
+            propScaleDelta = float.Parse(GUILayout.TextField(propScaleDelta + "", GUILayout.Width(100)));
+
+            if (deltaScale != 0)
+            {
+                float newScale = mostRecentlyPlacedProp.transform.localScale.x + deltaScale;
+                mostRecentlyPlacedProp.transform.localScale = new Vector3(newScale, newScale, newScale);
+            }
             GUILayout.EndHorizontal();
         }
         private Vector3 DeltaSphericalPosition(GameObject prop, Vector3 deltaSpherical)
         {
-            Transform astroObject = prop.transform.parent.parent; 
-            Transform sector      = prop.transform.parent;
+            Transform astroObject = prop.transform.parent.parent;
+            Transform sector = prop.transform.parent;
             Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject (what the DetailBuilder asks for)
             Vector3 sphericalPos = CoordinateUtilities.CartesianToSpherical(originalLocalPos);
-            
+
             if (deltaSpherical == Vector3.zero) return sphericalPos;
-            Vector3 newSpherical = sphericalPos+deltaSpherical;
+            Vector3 newSpherical = sphericalPos + deltaSpherical;
 
             Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(newSpherical);
             Vector3 finalAbsolutePosition = astroObject.TransformPoint(finalLocalPosition);
@@ -217,36 +217,38 @@ namespace NewHorizons.Utility.DebugMenu
 
             // x
             GUILayout.BeginHorizontal();
-                GUILayout.Label(labelX+":     ", GUILayout.Width(50));
-				var xString = input.x+"";
-				var newXString = GUILayout.TextField(xString, GUILayout.Width(50));
-				var parsedXString = input.x; try { parsedXString = float.Parse(newXString); } catch {}
-                float deltaX = xString == newXString ? 0 : parsedXString - input.x;
-                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
-                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
-                dx = float.Parse(GUILayout.TextField(dx+"", GUILayout.Width(100)));
+            GUILayout.Label(labelX + ":     ", GUILayout.Width(50));
+            var xString = input.x + "";
+            var newXString = GUILayout.TextField(xString, GUILayout.Width(50));
+            var parsedXString = input.x; try { parsedXString = float.Parse(newXString); } catch { }
+            float deltaX = xString == newXString ? 0 : parsedXString - input.x;
+            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaX += dx;
+            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaX -= dx;
+            dx = float.Parse(GUILayout.TextField(dx + "", GUILayout.Width(100)));
             GUILayout.EndHorizontal();
+
             // y
             GUILayout.BeginHorizontal();
-                GUILayout.Label(labelY+":     ", GUILayout.Width(50));
-				var yString = input.y+"";
-				var newYString = GUILayout.TextField(yString, GUILayout.Width(50));
-				var parsedYString = input.y; try { parsedYString = float.Parse(newYString); } catch {}
-                float deltaY = yString == newYString ? 0 : parsedYString - input.y;
-                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
-                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
-                dy = float.Parse(GUILayout.TextField(dy+"", GUILayout.Width(100)));
+            GUILayout.Label(labelY + ":     ", GUILayout.Width(50));
+            var yString = input.y + "";
+            var newYString = GUILayout.TextField(yString, GUILayout.Width(50));
+            var parsedYString = input.y; try { parsedYString = float.Parse(newYString); } catch { }
+            float deltaY = yString == newYString ? 0 : parsedYString - input.y;
+            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaY += dy;
+            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaY -= dy;
+            dy = float.Parse(GUILayout.TextField(dy + "", GUILayout.Width(100)));
             GUILayout.EndHorizontal();
+
             // z
             GUILayout.BeginHorizontal();
-                GUILayout.Label(labelZ+":     ", GUILayout.Width(50));
-				var zString = input.z+"";
-				var newZString = GUILayout.TextField(zString, GUILayout.Width(50));
-				var parsedZString = input.z; try { parsedZString = float.Parse(newZString); } catch {}
-                float deltaZ = zString == newZString ? 0 : parsedZString - input.z;
-                if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaZ += dz;
-                if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaZ -= dz;
-                dz = float.Parse(GUILayout.TextField(dz+"", GUILayout.Width(100)));
+            GUILayout.Label(labelZ + ":     ", GUILayout.Width(50));
+            var zString = input.z + "";
+            var newZString = GUILayout.TextField(zString, GUILayout.Width(50));
+            var parsedZString = input.z; try { parsedZString = float.Parse(newZString); } catch { }
+            float deltaZ = zString == newZString ? 0 : parsedZString - input.z;
+            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) deltaZ += dz;
+            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) deltaZ -= dz;
+            dz = float.Parse(GUILayout.TextField(dz + "", GUILayout.Width(100)));
             GUILayout.EndHorizontal();
 
             deltaControlsOut = new Vector3(dx, dy, dz);
@@ -261,8 +263,8 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 GUILayout.BeginHorizontal();
 
-                var propPathElements = propPath[propPath.Length-1] == '/'
-                    ? propPath.Substring(0, propPath.Length-1).Split('/')
+                var propPathElements = propPath[propPath.Length - 1] == '/'
+                    ? propPath.Substring(0, propPath.Length - 1).Split('/')
                     : propPath.Split('/');
                 string propName = propPathElements[propPathElements.Length - 1];
 
@@ -289,7 +291,7 @@ namespace NewHorizons.Utility.DebugMenu
 
                 GUILayout.EndHorizontal();
             }
-            GUILayout.EndScrollView();           
+            GUILayout.EndScrollView();
         }
 
         internal override void PreSave(DebugMenu menu)
@@ -301,47 +303,49 @@ namespace NewHorizons.Utility.DebugMenu
         {
             var newDetails = _dpp.GetPropsConfigByBody();
 
-            var newDetailsCountsByPlanet = string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})"));
+            var newDetailsCountsByPlanet = string.Join(", ", newDetails.Keys.Select(x => $"{x.name} ({newDetails[x].Length})"));
             Logger.Log($"Updating config files. New Details Counts by planet: {newDetailsCountsByPlanet}");
 
-            var planetToConfigPath = new Dictionary<string, string>();
+            var planetToConfigPath = new Dictionary<AstroObject, string>();
 
             // Get all configs
             foreach (var filePath in menu.loadedConfigFiles.Keys)
             {
                 Logger.Log($"Potentially updating copy of config at {filePath}");
+                Logger.Log($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
+                Logger.Log($"{menu.loadedConfigFiles[filePath].name}");
 
-                if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
-
+                if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) 
-                {
-                    Logger.Log($"Failed to update copy of config at {filePath}"); 
+                { 
+                    Logger.Log("Failed to update copy of config at " + filePath); 
                     continue; 
                 }
 
-                var astroObjectName = DebugPropPlacer.GetAstroObjectName(menu.loadedConfigFiles[filePath].name);
-                planetToConfigPath[astroObjectName] = filePath;
+                var astroObject = AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name);
+                planetToConfigPath[astroObject] = filePath;
 
-                if (!newDetails.ContainsKey(astroObjectName)) continue;
+                if (!newDetails.ContainsKey(astroObject)) continue;
 
                 if (menu.loadedConfigFiles[filePath].Props == null) menu.loadedConfigFiles[filePath].Props = new PropModule();
-                menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObjectName];
+                menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObject];
 
-                Logger.Log($"Successfully updated copy of config file for {astroObjectName}");
+                Logger.Log($"Successfully updated copy of config file for {astroObject.name}");
             }
 
             // find all new planets that do not yet have config paths
             var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
-            foreach (var astroObjectName in planetsThatDoNotHaveConfigFiles)
+            foreach (var astroObject in planetsThatDoNotHaveConfigFiles)
             {
-                Logger.Log($"Fabricating new config file for {astroObjectName}");
+                Logger.Log("Fabricating new config file for " + astroObject.name);
 
-                var filepath = $"planets/{Main.Instance.CurrentStarSystem}/{astroObjectName}.json";
+                var filepath = $"planets/{Main.Instance.CurrentStarSystem}/{astroObject.name}.json";
+                
                 var config = new PlanetConfig();
                 config.starSystem = Main.Instance.CurrentStarSystem;
-                config.name = astroObjectName;
+                config.name = astroObject._name == AstroObject.Name.CustomString ? astroObject.GetCustomName() : astroObject._name.ToString();
                 config.Props = new PropModule();
-                config.Props.details = newDetails[astroObjectName];
+                config.Props.details = newDetails[astroObject];
 
                 menu.loadedConfigFiles[filepath] = config;
             }
