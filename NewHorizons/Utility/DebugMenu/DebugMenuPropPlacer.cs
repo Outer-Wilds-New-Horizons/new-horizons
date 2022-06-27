@@ -301,41 +301,43 @@ namespace NewHorizons.Utility.DebugMenu
         {
             var newDetails = _dpp.GetPropsConfigByBody();
 
-            Logger.Log("Updating config files. New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => x + $" ({newDetails[x].Length})")));
+            Logger.Log("Updating config files. New Details Counts by planet: " + string.Join(", ", newDetails.Keys.Select(x => $"{x.name} ({newDetails[x].Length})")));
 
-            Dictionary<string, string> planetToConfigPath = new Dictionary<string, string>();
+            Dictionary<AstroObject, string> planetToConfigPath = new Dictionary<AstroObject, string>();
 
             // Get all configs
             foreach (var filePath in menu.loadedConfigFiles.Keys)
             {
                 Logger.Log("potentially updating copy of config at " + filePath);
+                Logger.Log($"{menu.loadedConfigFiles[filePath].name}    {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
+                Logger.Log($"{menu.loadedConfigFiles[filePath].name}") ;       
 
                 if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) { Logger.Log("Failed to update copy of config at " + filePath); continue; }
 
-                var astroObjectName = DebugPropPlacer.GetAstroObjectName(menu.loadedConfigFiles[filePath].name);
-                planetToConfigPath[astroObjectName] = filePath;
+                var astroObject = AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name);
+                planetToConfigPath[astroObject] = filePath;
 
-                if (!newDetails.ContainsKey(astroObjectName)) continue;
+                if (!newDetails.ContainsKey(astroObject)) continue;
 
                 if (menu.loadedConfigFiles[filePath].Props == null) menu.loadedConfigFiles[filePath].Props = new External.Modules.PropModule();
-                menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObjectName];
+                menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObject];
 
-                Logger.Log("successfully updated copy of config file for " + astroObjectName);
+                Logger.Log($"successfully updated copy of config file for {astroObject.name}");
             }
 
             // find all new planets that do not yet have config paths
             var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
-            foreach (var astroObjectName in planetsThatDoNotHaveConfigFiles)
+            foreach (var astroObject in planetsThatDoNotHaveConfigFiles)
             {
-                Logger.Log("Fabricating new config file for " + astroObjectName);
+                Logger.Log("Fabricating new config file for " + astroObject.name);
 
-                var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObjectName + ".json";
+                var filepath = "planets/" + Main.Instance.CurrentStarSystem + "/" + astroObject.name + ".json";
                 PlanetConfig c = new PlanetConfig();
                 c.starSystem = Main.Instance.CurrentStarSystem;
-                c.name = astroObjectName;
+                c.name = astroObject.GetCustomName();
                 c.Props = new PropModule();
-                c.Props.details = newDetails[astroObjectName];
+                c.Props.details = newDetails[astroObject];
 
                 menu.loadedConfigFiles[filepath] = c;
             }

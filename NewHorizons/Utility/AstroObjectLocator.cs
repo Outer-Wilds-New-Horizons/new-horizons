@@ -70,7 +70,6 @@ namespace NewHorizons.Utility
             {
                 Logger.Log($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
-                _customAstroObjectDictionary.Add(ao.name, ao);
             }
         }
 
@@ -78,7 +77,6 @@ namespace NewHorizons.Utility
         {
             var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
             _customAstroObjectDictionary.Remove(key);
-            _customAstroObjectDictionary.Remove(ao.name);
         }
 
         public static AstroObject[] GetAllAstroObjects()
