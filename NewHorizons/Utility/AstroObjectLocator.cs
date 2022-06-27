@@ -78,16 +78,17 @@ namespace NewHorizons.Utility
         {
             var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
             _customAstroObjectDictionary.Remove(key);
+            _customAstroObjectDictionary.Remove(ao.name);
         }
 
         public static AstroObject[] GetAllAstroObjects()
         {
-            return _customAstroObjectDictionary.Values.ToArray();
+            return _customAstroObjectDictionary.Values.Distinct().ToArray();
         }
 
         public static GameObject[] GetMoons(AstroObject primary)
         {
-            return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
+            return _customAstroObjectDictionary.Values.Distinct().Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
         }
 
         public static GameObject[] GetChildren(AstroObject primary)
