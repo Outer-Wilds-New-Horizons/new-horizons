@@ -370,7 +370,11 @@ namespace NewHorizons
                         if (starSystemConfig.startHere)
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem") SetDefaultSystem(name);
+                            if (name != "SolarSystem") 
+                            {
+                                SetDefaultSystem(name);
+                                _currentStarSystem = name;
+                            }
                         }
 
                         if (SystemDict.ContainsKey(name))
@@ -494,7 +498,6 @@ namespace NewHorizons
         public void SetDefaultSystem(string defaultSystem)
         {
             _defaultStarSystem = defaultSystem;
-            _currentStarSystem = defaultSystem;
         }
 
         #endregion Load

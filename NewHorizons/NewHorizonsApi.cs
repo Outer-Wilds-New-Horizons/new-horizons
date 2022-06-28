@@ -1,4 +1,4 @@
-﻿using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.Utils;
@@ -75,6 +75,14 @@ namespace NewHorizons
         public UnityEvent<string> GetStarSystemLoadedEvent()
         {
             return Main.Instance.OnStarSystemLoaded;
+        }
+
+        public bool SetDefaultSystem(string name)
+        {
+            if (!Main.SystemDict.ContainsKey(name)) return false;
+
+            Main.Instance.SetDefaultSystem(name);
+            return true;
         }
 
         public bool ChangeCurrentStarSystem(string name)
