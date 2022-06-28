@@ -77,6 +77,14 @@ public static class SchemaExporter
                 {"title", _title},
                 {"description", _description}
             });
+
+            if (_title == "Star System Schema")
+            {
+                schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
+                schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
+                schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
+            }
+            
             return schema;
         }
     }
