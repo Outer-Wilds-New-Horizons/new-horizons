@@ -101,7 +101,12 @@ namespace NewHorizons.Builder.Props
                     {
                         s.SetParentSector(sector);
                     }
-                    
+
+                    if (component is SectorCullGroup sectorCullGroup)
+                    {
+                        sectorCullGroup._controllingProxy = null;
+                    }
+
                     // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
                     if (component is ISectorGroup sectorGroup)
                     {
@@ -196,6 +201,12 @@ namespace NewHorizons.Builder.Props
                         else if (component is Collider collider) collider.enabled = true;
                         else if (component is Renderer renderer) renderer.enabled = true;
                         else if (component is Shape shape) shape.enabled = true;
+                        else if (component is SectorCullGroup sectorCullGroup)
+                        {
+                            sectorCullGroup._inMapView = false;
+                            sectorCullGroup._isFastForwarding = false;
+                            sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+                        }
                         // If it's not a moving anglerfish make sure the anim controller is regular
                         else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {
