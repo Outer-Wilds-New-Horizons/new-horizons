@@ -331,6 +331,8 @@ namespace NewHorizons
             if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
             else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
+
+            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.coords != null).Select(x => x.Value).ToList());
         }
 
         public void EnableWarpDrive()

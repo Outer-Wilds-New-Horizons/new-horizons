@@ -241,7 +241,7 @@ namespace NewHorizons.Components
             }
         }
 
-        public string UniqueIDToName(string uniqueID)
+        public static string UniqueIDToName(string uniqueID)
         {
             var name = TranslationHandler.GetTranslation(uniqueID, TranslationHandler.TextType.UI);
 

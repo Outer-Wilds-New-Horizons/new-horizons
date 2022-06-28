@@ -387,7 +387,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.HeightMap != null)
             {
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod);
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, 51);
             }
 
             if (body.Config.ProcGen != null)
