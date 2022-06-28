@@ -7,13 +7,6 @@ namespace NewHorizons.Builder.Body.Geometry
     {
         public static Mesh Build(int resolution, Texture2D heightMap, float minHeight, float maxHeight, Vector3 stretch)
         {
-            // It breaks if resolution is greater than 100 I don't know why
-            if (resolution > 100)
-            {
-                Logger.LogWarning($"Can't make CubeSphere's with resolution higher than 100 for some reason");
-                resolution = 100;
-            }
-
             Mesh mesh = new Mesh();
             mesh.name = "CubeSphere";
 
@@ -107,6 +100,12 @@ namespace NewHorizons.Builder.Body.Geometry
                 {
                     SetVertex(vertices, normals, uvs, v++, x, 0, z, resolution, heightMap, minHeight, maxHeight);
                 }
+            }
+
+            // Higher than this and we have to use a different indexFormat
+            if (vertices.Length > 65535)
+            {
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
 
             mesh.vertices = vertices;

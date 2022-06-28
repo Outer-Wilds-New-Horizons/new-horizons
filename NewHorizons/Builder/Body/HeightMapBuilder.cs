@@ -5,14 +5,13 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using Object = UnityEngine.Object;
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution = 51)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution)
         {
             var deleteHeightmapFlag = false;
 

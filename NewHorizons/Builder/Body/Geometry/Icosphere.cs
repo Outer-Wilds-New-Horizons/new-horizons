@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -60,8 +60,7 @@ namespace NewHorizons.Builder.Body.Geometry
         {
             Mesh mesh = new Mesh();
 
-            if (vertices.Count <= subdivisions)
-                RefineFaces(subdivisions);
+            if (vertices.Count <= subdivisions) RefineFaces(subdivisions);
 
             var verticesToCopy = vertices[subdivisions];
 
@@ -87,6 +86,12 @@ namespace NewHorizons.Builder.Body.Geometry
                 var y = latitude / 180f;
 
                 uvs[i] = new Vector2(x, y);
+            }
+
+            // Higher than this and we have to use a different indexFormat
+            if (newVertices.Length > 65535)
+            {
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
             }
 
             mesh.vertices = newVertices;
