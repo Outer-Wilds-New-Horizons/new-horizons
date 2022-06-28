@@ -9,11 +9,16 @@ namespace NewHorizons.Patches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(EyeCoordinatePromptTrigger), nameof(EyeCoordinatePromptTrigger.Update))]
-        public static void EyeCoordinatePromptTrigger_Update(EyeCoordinatePromptTrigger __instance)
+        public static bool EyeCoordinatePromptTrigger_Update(EyeCoordinatePromptTrigger __instance)
         {
             var showPrompts = __instance._warpController.HasPower();
 
+            // In other systems checking if the proper fact is revealed doesn't work, so we just overwrite this function
+            __instance._promptController.SetEyeCoordinatesVisibility(showPrompts && VesselCoordinatePromptHandler.KnowsEyeCoordinates());
+
             VesselCoordinatePromptHandler.SetPromptVisibility(showPrompts);
+
+            return false;
         }
 
         [HarmonyPrefix]

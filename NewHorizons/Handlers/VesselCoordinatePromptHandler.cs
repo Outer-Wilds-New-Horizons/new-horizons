@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml.Linq;
 using UnityEngine;
 using static NewHorizons.External.Configs.StarSystemConfig;
 
@@ -188,6 +189,13 @@ namespace NewHorizons.Handlers
                     }
                 }
             }
+        }
+        
+        public static bool KnowsEyeCoordinates()
+        {
+            // Works normally in the main system, else check save data directly
+            if (Main.Instance.CurrentStarSystem == "SolarSystem") return Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1");
+            else return PlayerData._currentGameSave.shipLogFactSaves.ContainsKey("OPC_EYE_COORDINATES_X1");
         }
     }
 }
