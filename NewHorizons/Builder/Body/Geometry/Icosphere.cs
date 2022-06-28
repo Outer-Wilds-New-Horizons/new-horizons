@@ -59,6 +59,7 @@ namespace NewHorizons.Builder.Body.Geometry
         public static Mesh Build(int subdivisions, float minHeight, float maxHeight)
         {
             Mesh mesh = new Mesh();
+            mesh.name = "Icosphere";
 
             if (vertices.Count <= subdivisions) RefineFaces(subdivisions);
 

@@ -125,6 +125,7 @@ namespace NewHorizons.Utility.DebugUtilities
             }.Select(vIdx => vIdx + topVerts.Length+bottomVerts.Length).ToArray();
 
             Mesh m = new Mesh();
+            m.name = "DebugArrow";
             m.vertices = topVerts.Concat(bottomVerts).Concat(sideVerts).ToArray();
             m.triangles = topTris.Concat(bottomTris).Concat(sideTris).ToArray();
             m.RecalculateNormals();
