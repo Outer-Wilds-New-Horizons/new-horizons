@@ -10,7 +10,7 @@ namespace NewHorizons.Handlers
 {
     public class VesselCoordinatePromptHandler
     {
-        private static List<Tuple<string, ScreenPrompt>> _factPromptPair;
+        private static List<Tuple<string, string, ScreenPrompt>> _factSystemIDPrompt;
         private static List<Texture2D> _textureCache;
 
         public static void RegisterPrompts(List<NewHorizonsSystem> systems)
@@ -25,7 +25,7 @@ namespace NewHorizons.Handlers
             }
 
             _textureCache = new List<Texture2D>();
-            _factPromptPair = new List<Tuple<string, ScreenPrompt>>();
+            _factSystemIDPrompt = new List<Tuple<string, string, ScreenPrompt>>();
 
             foreach (var system in systems)
             {
@@ -33,11 +33,13 @@ namespace NewHorizons.Handlers
                 var fact = system.Config.factRequiredForWarp;
                 var nomaiCoords = system.Config.coords;
 
+                if (system.UniqueID == "EyeOfTheUniverse" || nomaiCoords == null) continue;
+
                 RegisterPrompt(systemName, fact, nomaiCoords);
             }
         }
 
-        private static void RegisterPrompt(string system, string fact, NomaiCoordinates coords)
+        private static void RegisterPrompt(string systemID, string fact, NomaiCoordinates coords)
         {
             var texture = MakeTexture(coords.x, coords.y, coords.z);
             
@@ -45,14 +47,14 @@ namespace NewHorizons.Handlers
 
             var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f));
 
-            var name = ShipLogStarChartMode.UniqueIDToName(system);
+            var name = ShipLogStarChartMode.UniqueIDToName(systemID);
 
-            var prompt = new ScreenPrompt($"{name} <EYE>", sprite, 0);
+            var prompt = new ScreenPrompt($"{name}: <EYE>", sprite, 0);
 
-            _factPromptPair.Add(new (fact, prompt));
+            _factSystemIDPrompt.Add(new (fact, systemID, prompt));
 
             var manager = Locator.GetPromptManager();
-            manager.AddScreenPrompt(prompt, manager.GetScreenPromptList(PromptPosition.LowerLeft), manager.GetTextAnchor(PromptPosition.LowerLeft), -1, true);
+            manager.AddScreenPrompt(prompt, manager.GetScreenPromptList(PromptPosition.LowerLeft), manager.GetTextAnchor(PromptPosition.LowerLeft), -1, false);
         }
 
         private static Texture2D MakeTexture(int[] x, int[] y, int[] z)
@@ -64,14 +66,15 @@ namespace NewHorizons.Handlers
         // Gets called from the patches
         public static void SetPromptVisibility(bool visible)
         {
-            foreach (var pair in _factPromptPair)
+            foreach (var pair in _factSystemIDPrompt)
             {
                 var fact = pair.Item1;
-                var prompt = pair.Item2;
+                var systemID = pair.Item2;
+                var prompt = pair.Item3;
 
                 if (visible)
                 {
-                    if (string.IsNullOrEmpty(fact) || Locator.GetShipLogManager().IsFactRevealed(fact))
+                    if (Main.Instance.CurrentStarSystem != systemID && (string.IsNullOrEmpty(fact) || Locator.GetShipLogManager().IsFactRevealed(fact)))
                     {
                         prompt.SetVisibility(true);
                     }
