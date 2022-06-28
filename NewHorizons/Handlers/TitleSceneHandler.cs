@@ -87,6 +87,7 @@ namespace NewHorizons.Handlers
                 heightMap.heightMap = body.Config.HeightMap.heightMap;
                 heightMap.maxHeight = size;
                 heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
+                heightMap.stretch = body.Config.HeightMap.stretch;
             }
             if (body.Config.Atmosphere?.clouds?.texturePath != null)
             {
