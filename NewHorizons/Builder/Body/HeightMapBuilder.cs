@@ -75,6 +75,7 @@ namespace NewHorizons.Builder.Body
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             // Fix rotation in the end
+            // 90 degree rotation around x is because cube sphere uses Z as up, Unity uses Y
             cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
             cubeSphere.transform.position = planetGO.transform.position;
 

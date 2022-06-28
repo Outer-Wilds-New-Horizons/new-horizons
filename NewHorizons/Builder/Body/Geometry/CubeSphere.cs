@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body.Geometry
@@ -126,7 +126,8 @@ namespace NewHorizons.Builder.Body.Geometry
             v.y = v2.y * Mathf.Sqrt(1f - x2 / 2f - z2 / 2f + x2 * z2 / 3f);
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
-            var sphericals = CoordinateUtilities.CartesianToSpherical(v);
+            // The shader uses real coords
+            var sphericals = CoordinateUtilities.CartesianToSpherical(v, false);
             float longitude = sphericals.x;
             float latitude = sphericals.y;
 
