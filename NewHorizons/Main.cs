@@ -198,15 +198,6 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
-            try
-            {
-                Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
-                Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
-            }
         }
 
         private void OnSceneUnloaded(Scene scene)
@@ -302,6 +293,16 @@ namespace NewHorizons
 
                 // Fix the map satellite
                 SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+
+                try
+                {
+                    Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
+                    Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+                }
             }
             else
             {
