@@ -469,11 +469,6 @@ namespace NewHorizons.Handlers
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
             }
 
-            if (body.Config.Singularity != null)
-            {
-                SingularityBuilder.Make(go, sector, rb, body.Config);
-            }
-
             if (body.Config.Funnel != null)
             {
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);

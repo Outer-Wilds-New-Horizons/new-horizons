@@ -5,6 +5,9 @@ using System;
 using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using System.Collections.Generic;
+using System.Linq;
+
 namespace NewHorizons.Builder.Body
 {
     public static class SingularityBuilder
@@ -18,61 +21,73 @@ namespace NewHorizons.Builder.Body
         private static readonly int DistortFadeDist = Shader.PropertyToID("_DistortFadeDist");
         private static readonly int Color1 = Shader.PropertyToID("_Color");
 
-        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config)
+        private static Dictionary<string, GameObject> _singularitiesByID;
+
+        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config, SingularityModule singularity)
         {
-            var size = config.Singularity.size;
-            var pairedSingularity = config.Singularity.pairedSingularity;
+            // If we've reloaded the first one will now be null so we have to refresh the list
+            if (_singularitiesByID?.Values?.FirstOrDefault() == null) _singularitiesByID = new Dictionary<string, GameObject>();
 
-            var polarity = config.Singularity.type;
+            var size = singularity.size;
+            var pairedSingularity = singularity.pairedSingularity;
 
-            bool isWormHole = config.Singularity?.targetStarSystem != null;
+            var polarity = singularity.type;
+
+            bool isWormHole = singularity?.targetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
-            bool makeZeroGVolume = config.Singularity == null ? true : config.Singularity.makeZeroGVolume;
+            bool makeZeroGVolume = singularity == null ? true : singularity.makeZeroGVolume;
 
-            Vector3 localPosition = config.Singularity?.position == null ? Vector3.zero : (Vector3)config.Singularity.position;
+            Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
 
             GameObject newSingularity = null;
             switch (polarity)
             {
                 case SingularityModule.SingularityType.BlackHole:
-                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, config.Singularity.targetStarSystem);
+                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, singularity.targetStarSystem);
                     break;
                 case SingularityModule.SingularityType.WhiteHole:
                     newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, makeZeroGVolume);
                     break;
             }
 
+            var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
+            _singularitiesByID.Add(uniqueID, newSingularity);
+
             // Try to pair them
-            if (pairedSingularity != null && newSingularity != null)
+            if (!string.IsNullOrEmpty(pairedSingularity) && newSingularity != null)
             {
-                var pairedSingularityAO = AstroObjectLocator.GetAstroObject(pairedSingularity);
-                if (pairedSingularityAO != null)
+                if (_singularitiesByID.TryGetValue(pairedSingularity, out var pairedSingularityGO))
                 {
                     switch (polarity)
                     {
                         case SingularityModule.SingularityType.BlackHole:
-                            PairSingularities(newSingularity, pairedSingularityAO.gameObject);
+                            PairSingularities(uniqueID, pairedSingularity, newSingularity, pairedSingularityGO);
                             break;
                         case SingularityModule.SingularityType.WhiteHole:
-                            PairSingularities(pairedSingularityAO.gameObject, newSingularity);
+                            PairSingularities(pairedSingularity, uniqueID, pairedSingularityGO, newSingularity);
                             break;
                     }
                 }
             }
         }
 
-        public static void PairSingularities(GameObject blackHole, GameObject whiteHole)
+        public static void PairSingularities(string blackHoleID, string whiteHoleID, GameObject blackHole, GameObject whiteHole)
         {
-            Logger.Log($"Pairing singularities {blackHole?.name}, {whiteHole?.name}");
-            try
+            if (blackHole == null || whiteHole == null) return;
+
+            Logger.Log($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
+
+            var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
+            var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
+
+            if (whiteHoleVolume == null || blackHoleVolume == null)
             {
-                blackHole.GetComponentInChildren<BlackHoleVolume>()._whiteHole = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
+                Logger.Log($"[{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities");
+                return;
             }
-            catch (Exception)
-            {
-                Logger.LogError($"Couldn't pair singularities");
-            }
+
+            blackHoleVolume._whiteHole = whiteHoleVolume;
         }
 
         public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, bool hasDestructionVolume, string targetSolarSystem, bool makeAudio = true)

@@ -522,14 +522,6 @@ namespace NewHorizons.Builder.ShipLog
         {
             try
             {
-                switch (body.Config?.Singularity?.type)
-                {
-                    case SingularityModule.SingularityType.BlackHole:
-                        return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
-                        return Color.white;
-                }
-
                 var starColor = body.Config?.Star?.tint;
                 if (starColor != null) return starColor.ToColor();
 
@@ -555,6 +547,14 @@ namespace NewHorizons.Builder.ShipLog
 
                 var sandColor = body.Config.Sand?.tint;
                 if (sandColor != null) return sandColor.ToColor();
+
+                switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
+                {
+                    case SingularityModule.SingularityType.BlackHole:
+                        return Color.black;
+                    case SingularityModule.SingularityType.WhiteHole:
+                        return Color.white;
+                }
             }
             catch (Exception)
             {

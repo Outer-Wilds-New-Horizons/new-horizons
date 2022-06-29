@@ -93,18 +93,21 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
                 // Could improve this to actually use the proper renders and materials
-                if (body.Config.Singularity != null)
+                if (body.Config.Props?.singularities != null)
                 {
-                    if (body.Config.Singularity.type == SingularityModule.SingularityType.BlackHole)
+                    foreach(var singularity in body.Config.Props.singularities)
                     {
-                        MakeBlackHole(newProxy, body.Config.Singularity.size);
-                    }
-                    else
-                    {
-                        MakeWhiteHole(newProxy, body.Config.Singularity.size);
-                    }
+                        if (singularity.type == SingularityModule.SingularityType.BlackHole)
+                        {
+                            MakeBlackHole(newProxy, singularity.size);
+                        }
+                        else
+                        {
+                            MakeWhiteHole(newProxy, singularity.size);
+                        }
 
-                    if (realSize < body.Config.Singularity.size) realSize = body.Config.Singularity.size;
+                        if (realSize < singularity.size) realSize = singularity.size;
+                    }
                 }
                 if (body.Config.Base.hasCometTail)
                 {

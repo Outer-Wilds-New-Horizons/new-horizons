@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.External.Modules
 {
@@ -76,6 +77,11 @@ namespace NewHorizons.External.Modules
         /// Add volcanoes to this planet
         /// </summary>
         public VolcanoInfo[] volcanoes;
+
+        /// <summary>
+        /// Add black/white-holes to this planet
+        /// </summary>
+        public SingularityModule[] singularities;
 
         [JsonObject]
         public class ScatterInfo
