@@ -265,6 +265,35 @@ namespace NewHorizons.Handlers
         // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (body.Config?.Bramble?.dimension != null)
+            {
+                return GenerateBrambleDimensionBody(body);
+            }
+            else
+            {
+                return GenerateStandardBody(body, defaultPrimaryToSun);
+            }
+        }
+
+        public static GameObject GenerateBrambleDimensionBody(NewHorizonsBody body)
+        {
+            var go = BrambleDimensionBuilder.Make(body);
+            var ao = go.GetComponent<AstroObject>();
+            var sector = SearchUtilities.FindChild(go, "Sector").GetComponent<Sector>();
+            var owRigidBody = go.GetComponent<OWRigidbody>();
+
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
+
+            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
+            {
+                AstroObjectLocator.RegisterCustomAstroObject(ao);
+            }
+
+            return go;
+        }
+
+        public static GameObject GenerateStandardBody(NewHorizonsBody body, bool defaultPrimaryToSun = false) 
+        { 
             AstroObject primaryBody;
             if (body.Config.Orbit.primaryBody != null)
             {
@@ -398,6 +427,11 @@ namespace NewHorizons.Handlers
             if (body.Config.Star != null)
             {
                 StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+            }
+
+            if (body.Config?.Bramble?.nodes != null)
+            {
+                BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes);
             }
 
             if (body.Config.Ring != null)

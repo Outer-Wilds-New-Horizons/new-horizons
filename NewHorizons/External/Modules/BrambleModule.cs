@@ -52,6 +52,11 @@ namespace NewHorizons.External.Modules
             public MVector3 rotation;
 
             /// <summary>
+            /// The physical scale of the node
+            /// </summary>
+            public float scale;
+
+            /// <summary>
             /// The name of the planet that hosts the dimension this node links to
             /// </summary>
             public string linksTo;

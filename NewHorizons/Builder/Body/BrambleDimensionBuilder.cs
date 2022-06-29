@@ -5,17 +5,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static NewHorizons.External.Modules.BrambleModule;
 
 namespace NewHorizons.Builder.Body
 {
-    public class BrambleDimensionBuilder
+    public static class BrambleDimensionBuilder
     {
-        public void Make()
+        public static GameObject Make(NewHorizonsBody body)
         {
-            var dimensionPrefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension");
+            var config = body.Config.Bramble.dimension;
+
+            // spawn the dimension body
+            var dimensionPrefab = SearchUtilities.Find("DB_HubDimension_Body");
             var dimension = GameObject.Instantiate(dimensionPrefab);
-            //dimension.name = config.rename ?? "Custom Bramble Dimension";
-            
+            var ao = dimension.GetComponent<AstroObject>();
+
+            // fix name
+            var name = body.Config.name ?? "Custom Bramble Dimension";
+            ao._customName = name;
+            ao._name = AstroObject.Name.CustomString;
+            dimension.name = name.Replace(" ", "").Replace("'", "") + "_Body";
+
+            // TODO: radius (need to determine what the base radius is first)
+
+            // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
             var dimensionSector = SearchUtilities.FindChild(dimension, "Sector_HubDimension");
             dimensionSector.name = "Sector";
             var atmo = SearchUtilities.FindChild(dimension, "Atmosphere_HubDimension");
@@ -25,6 +38,7 @@ namespace NewHorizons.Builder.Body
             var intr = SearchUtilities.FindChild(dimension, "Interactables_HubDimension");
             var exitWarps = SearchUtilities.FindChild(intr, "OuterWarp_Hub");
 
+            exitWarps.name = "OuterWarp";
             exitWarps.transform.parent = dimensionSector.transform;
             atmo.name = "Atmosphere";
             geom.name = "Geometry"; // disable this?
@@ -33,7 +47,9 @@ namespace NewHorizons.Builder.Body
             intr.name = "Interactibles";
             GameObject.Destroy(intr);
 
-            // TODO: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
+            // TODO MAYBE: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
+
+            return dimension;
         }
     }
 }

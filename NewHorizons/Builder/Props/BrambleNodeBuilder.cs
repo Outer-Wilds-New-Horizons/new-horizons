@@ -5,18 +5,64 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using static NewHorizons.External.Modules.BrambleModule;
 
 namespace NewHorizons.Builder.Props
 {
-    public class BrambleNodeBuilder
+    public static class BrambleNodeBuilder
     {
-        
+        private static Dictionary<BrambleNodeInfo, InnerFogWarpVolume> unpairedNodes = new Dictionary<BrambleNodeInfo, InnerFogWarpVolume>();
 
-            // DB_EscapePodDimension_Body/Sector_EscapePodDimension/Interactables_EscapePodDimension/InnerWarp_ToAnglerNest // need to change the light shaft color
-            // DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Interactables_ExitOnlyDimension/InnerWarp_ToExitOnly  // need to change the colors
-            // DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster   // need to delete the child "Signal_Harmonica"
+        public static void PairUnpairedNodes()
+        {
+            // copy the keys since we'll be modifying the dictionary as we loop over it
+            var configsToCheck = unpairedNodes.Keys.ToList();
+            
+            foreach (var config in configsToCheck)
+            {
+                var success = Pair(unpairedNodes[config], config.linksTo);
+                if (success) unpairedNodes.Remove(config);
+            }
+        }
 
-        public void Make(GameObject go, Sector sector, BrambleNodeConfig config)
+        private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
+        {
+            var sector = SearchUtilities.FindChild(go, "Sector");
+            if (sector == null) return null;
+
+            var outerWarpGO = SearchUtilities.FindChild(sector, "OuterWarp");
+            if (outerWarpGO == null) return null;
+
+            var outerFogWarpVolume = outerWarpGO.GetComponent<OuterFogWarpVolume>();
+            return outerFogWarpVolume;
+        }
+
+        private static bool Pair(InnerFogWarpVolume nodeWarp, string destinationName)
+        {
+            var destinationAO = AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
+            if (destinationAO == null) return false;
+
+            var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
+            if (destination == null) return false;
+
+            nodeWarp._linkedOuterWarpVolume = destination;
+            return true;
+        }
+
+
+        // DB_EscapePodDimension_Body/Sector_EscapePodDimension/Interactables_EscapePodDimension/InnerWarp_ToAnglerNest // need to change the light shaft color
+        // DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Interactables_ExitOnlyDimension/InnerWarp_ToExitOnly  // need to change the colors
+        // DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster   // need to delete the child "Signal_Harmonica"
+
+        public static void Make(GameObject go, Sector sector, BrambleNodeInfo[] configs)
+        {
+            foreach(var config in configs)
+            {
+                Make(go, sector, config);
+            }
+        }
+
+        public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config)
         {
             //
             // spawn the bramble node
@@ -45,8 +91,9 @@ namespace NewHorizons.Builder.Props
             var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
             warpController._sector = sector;
             warpController._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
-            // warpController._linkedOuterWarpVolume = the outer warp volume of the dimension this node leads to
-            // warpController._containerWarpVolume = the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
+            warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
+            var success = Pair(warpController, config.linksTo);
+            if (!success) unpairedNodes[config] = warpController;
 
             //var exitPointsParent = SearchUtilities.FindChild(brambleNode, "FogWarpExitPoints"); // "ExitPoint", "ExitPoint (1)" ... "ExitPoint (5)"
             //var exitPointsNames = new string[] 
@@ -68,6 +115,10 @@ namespace NewHorizons.Builder.Props
             //
             // TODO: support adding signals to these nodes
             //
+
+            
+            // Done!
+            return brambleNode;
         }
     }
 }
