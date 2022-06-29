@@ -31,6 +31,11 @@ namespace NewHorizons.External.Configs
         public BaseModule Base;
 
         /// <summary>
+        /// Add bramble nodes to this planet and/or make this planet a bramble dimension
+        /// </summary>
+        public BrambleModule Bramble;
+
+        /// <summary>
         /// Set to a higher number if you wish for this body to be built sooner
         /// </summary>
         [DefaultValue(-1)] public int buildPriority = -1;
