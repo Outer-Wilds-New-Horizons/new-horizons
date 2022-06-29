@@ -1,9 +1,9 @@
 {
   "filename": "NewHorizons.dll",
-  "author": "xen and Bwc9876",
+  "author": "xen, Bwc9876, Clay, MegaPiggy, John, Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "owmlVersion": "2.5.2",
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
