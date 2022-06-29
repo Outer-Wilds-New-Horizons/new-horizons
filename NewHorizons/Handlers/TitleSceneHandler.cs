@@ -87,6 +87,7 @@ namespace NewHorizons.Handlers
                 heightMap.heightMap = body.Config.HeightMap.heightMap;
                 heightMap.maxHeight = size;
                 heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
+                heightMap.stretch = body.Config.HeightMap.stretch;
             }
             if (body.Config.Atmosphere?.clouds?.texturePath != null)
             {
@@ -96,7 +97,7 @@ namespace NewHorizons.Handlers
                 heightMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
             }
 
-            HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod);
+            HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod, 30);
 
             GameObject pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;

@@ -198,15 +198,6 @@ namespace NewHorizons
         private static void OnWakeUp()
         {
             IsSystemReady = true;
-            try
-            {
-                Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
-                Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
-            }
         }
 
         private void OnSceneUnloaded(Scene scene)
@@ -302,6 +293,16 @@ namespace NewHorizons
 
                 // Fix the map satellite
                 SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+
+                try
+                {
+                    Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
+                    Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+                }
             }
             else
             {
@@ -331,6 +332,8 @@ namespace NewHorizons
             if (shouldWarpInFromShip) _shipWarpController.WarpIn(WearingSuit);
             else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
+
+            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.coords != null).Select(x => x.Value).ToList());
         }
 
         public void EnableWarpDrive()
@@ -368,7 +371,11 @@ namespace NewHorizons
                         if (starSystemConfig.startHere)
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem") SetDefaultSystem(name);
+                            if (name != "SolarSystem") 
+                            {
+                                SetDefaultSystem(name);
+                                _currentStarSystem = name;
+                            }
                         }
 
                         if (SystemDict.ContainsKey(name))
@@ -446,15 +453,15 @@ namespace NewHorizons
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
         }
 
-        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativeDirectory)
+        public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativePath)
         {
             NewHorizonsBody body = null;
             try
             {
-                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativeDirectory);
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath);
                 if (config == null)
                 {
-                    Logger.LogError($"Couldn't load {relativeDirectory}. Is your Json formatted correctly?");
+                    Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
                     return null;
                 }
 
@@ -479,11 +486,11 @@ namespace NewHorizons
                 // Has to happen after we make sure theres a system config
                 config.MigrateAndValidate();
 
-                body = new NewHorizonsBody(config, mod, relativeDirectory);
+                body = new NewHorizonsBody(config, mod, relativePath);
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error encounter when loading {relativeDirectory}: {e.Message} {e.StackTrace}");
+                Logger.LogError($"Error encounter when loading {relativePath}: {e.Message} {e.StackTrace}");
             }
 
             return body;
@@ -492,7 +499,6 @@ namespace NewHorizons
         public void SetDefaultSystem(string defaultSystem)
         {
             _defaultStarSystem = defaultSystem;
-            _currentStarSystem = defaultSystem;
         }
 
         #endregion Load

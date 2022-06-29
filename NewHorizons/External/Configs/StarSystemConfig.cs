@@ -1,5 +1,5 @@
-using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -102,8 +102,16 @@ namespace NewHorizons.External.Configs
 
         public class NomaiCoordinates
         {
+            [MinLength(2)]
+            [MaxLength(6)]
             public int[] x;
+            
+            [MinLength(2)]
+            [MaxLength(6)]
             public int[] y;
+            
+            [MinLength(2)]
+            [MaxLength(6)]
             public int[] z;
         }
 

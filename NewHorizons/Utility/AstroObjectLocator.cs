@@ -128,6 +128,9 @@ namespace NewHorizons.Utility
                     otherChildren.Add(SearchUtilities.Find("BackRaft_Body"));
                     otherChildren.Add(SearchUtilities.Find("SealRaft_Body"));
                     break;
+                case AstroObject.Name.MapSatellite:
+                    otherChildren.Add(SearchUtilities.Find("HearthianRecorder_Body"));
+                    break;
                 // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))

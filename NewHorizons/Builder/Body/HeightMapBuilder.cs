@@ -5,14 +5,13 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using Object = UnityEngine.Object;
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution = 51)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution)
         {
             var deleteHeightmapFlag = false;
 
@@ -26,8 +25,9 @@ namespace NewHorizons.Builder.Body
                 else
                 {
                     // If we've loaded a new heightmap we'll delete the texture after
+                    // Only delete it if it wasnt loaded before (something else is using it)
+                    deleteHeightmapFlag = !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
                     heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
-                    deleteHeightmapFlag = true;
                 }
 
                 if (module.textureMap == null)
@@ -74,6 +74,7 @@ namespace NewHorizons.Builder.Body
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             // Fix rotation in the end
+            // 90 degree rotation around x is because cube sphere uses Z as up, Unity uses Y
             cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
             cubeSphere.transform.position = planetGO.transform.position;
 

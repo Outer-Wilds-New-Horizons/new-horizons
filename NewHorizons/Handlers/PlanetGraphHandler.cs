@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
 using System.Collections;
@@ -42,7 +42,7 @@ namespace NewHorizons.Handlers
                 }
                 else
                 {
-                    Logger.LogError("There must be one and only one centerOfSolarSystem!");
+                    Logger.LogError($"There must be one and only one centerOfSolarSystem! Found [{centers.Length}]");
                 }
             }
         }

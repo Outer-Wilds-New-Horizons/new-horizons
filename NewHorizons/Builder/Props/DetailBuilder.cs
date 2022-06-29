@@ -99,7 +99,18 @@ namespace NewHorizons.Builder.Props
                 {
                     if (component is Sector s)
                     {
-                        s._parentSector = sector;
+                        s.SetParentSector(sector);
+                    }
+
+                    if (component is SectorCullGroup sectorCullGroup)
+                    {
+                        sectorCullGroup._controllingProxy = null;
+                    }
+
+                    // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
+                    if (component is ISectorGroup sectorGroup)
+                    {
+                        sectorGroup.SetSector(sector);
                     }
 
                     // TODO: Make this work or smthng
@@ -119,7 +130,10 @@ namespace NewHorizons.Builder.Props
                     else
                     {
                         var sectorField = component?.GetType()?.GetField("_sector");
-                        if (sectorField != null && sectorField.FieldType == typeof(Sector)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
+                        if (sectorField != null && sectorField.FieldType == typeof(Sector))
+                        {
+                            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
+                        }
                     }
 
                     if (component is AnglerfishController angler)
@@ -169,8 +183,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    // Remove things that require sectors. Will just keep extending this as things pop up
-
+                    // Remove things that require sectors if the sector is null. Will just keep extending this as things pop up.
                     if (component is FogLight or SectoredMonoBehaviour)
                     {
                         GameObject.DestroyImmediate(component);
@@ -188,6 +201,12 @@ namespace NewHorizons.Builder.Props
                         else if (component is Collider collider) collider.enabled = true;
                         else if (component is Renderer renderer) renderer.enabled = true;
                         else if (component is Shape shape) shape.enabled = true;
+                        else if (component is SectorCullGroup sectorCullGroup)
+                        {
+                            sectorCullGroup._inMapView = false;
+                            sectorCullGroup._isFastForwarding = false;
+                            sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+                        }
                         // If it's not a moving anglerfish make sure the anim controller is regular
                         else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {

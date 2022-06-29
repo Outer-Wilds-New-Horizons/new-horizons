@@ -1,5 +1,7 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility;
+using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Orbital
@@ -13,7 +15,7 @@ namespace NewHorizons.Builder.Orbital
             return SetInitialMotionFromConfig(initialMotion, primaryBody, secondaryBody, orbit);
         }
 
-        public static InitialMotion SetInitialMotionFromConfig(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OrbitModule orbit)
+        public static InitialMotion SetInitialMotionFromConfig(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody, OrbitModule orbit, bool isCustom = true)
         {
             // This bit makes the initial motion not try to calculate the orbit velocity itself for reasons
             initialMotion._orbitImpulseScalar = 0f;
@@ -21,7 +23,12 @@ namespace NewHorizons.Builder.Orbital
             // Rotation
             initialMotion._initAngularSpeed = orbit.siderealPeriod == 0 ? 0f : 2f * Mathf.PI / (orbit.siderealPeriod * 60f);
             var rotationAxis = Quaternion.AngleAxis(orbit.axialTilt, Vector3.right) * Vector3.up;
-            secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+
+            // For things with children this is broken
+            if (AstroObjectLocator.GetChildren(secondaryBody).Length == 0)
+            {
+                secondaryBody.transform.rotation = Quaternion.FromToRotation(Vector3.up, rotationAxis);
+            }
 
             if (!orbit.isStatic && primaryBody != null)
             {
@@ -36,7 +43,7 @@ namespace NewHorizons.Builder.Orbital
             return initialMotion;
         }
 
-        public static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
+        private static void SetInitialMotion(InitialMotion initialMotion, AstroObject primaryBody, AstroObject secondaryBody)
         {
             var focalPoint = primaryBody.GetComponent<BinaryFocalPoint>();
             if (focalPoint)

@@ -122,11 +122,14 @@ namespace NewHorizons.Utility.DebugMenu
                         id = id
                     };
                     
-                    string regex = @"Arc \d+ - Child of (\d*)"; // $"Arc {i} - Child of {parentID}";
-                    var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
-                    metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
-                    
-                    Logger.Log("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
+                    if (metadata.spiralGo != null)
+                    {
+                        string regex = @"Arc \d+ - Child of (\d*)"; // $"Arc {i} - Child of {parentID}";
+                        var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
+                        metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
+
+                        Logger.Log("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
+                    }
 
                     conversationMetadata.spirals.Add(metadata);
                 }
@@ -216,7 +219,7 @@ namespace NewHorizons.Utility.DebugMenu
                                         conversationMeta.conversation.rotation = null;
                                         UpdateConversationTransform(conversationMeta, sectorObject);
                                     }
-                                    else
+                                    else if (conversationMeta.conversationGo != null)
                                     {
                                         conversationMeta.conversationGo.transform.localPosition = data.pos;
                                         DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
@@ -478,6 +481,7 @@ namespace NewHorizons.Utility.DebugMenu
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
         {
             var nomaiWallTextObj = conversationMetadata.conversationGo;
+            if (nomaiWallTextObj == null) return;
             var planetGO = sectorParent;
             var info = conversationMetadata.conversation;
         
@@ -507,6 +511,7 @@ namespace NewHorizons.Utility.DebugMenu
         {
             conversations.ForEach(metadata =>
             {
+                if (metadata.conversationGo == null) return;
                 metadata.conversation.position = metadata.conversationGo.transform.localPosition;
                 metadata.conversation.rotation = metadata.conversationGo.transform.localEulerAngles;           
             });
