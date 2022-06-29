@@ -169,6 +169,11 @@ namespace NewHorizons.External.Modules
             /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
             /// </summary>
             public string quantumGroupID;
+
+            /// <summary>
+            /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]

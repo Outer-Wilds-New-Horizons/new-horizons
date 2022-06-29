@@ -30,9 +30,14 @@ namespace NewHorizons.Builder.Props
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
-            else detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+            else
+            {
+                detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+            }
 
-            if (detailGO != null && detail.removeChildren != null)
+            if (detailGO == null) return;
+
+            if (detail.removeChildren != null)
             {
                 foreach (var childPath in detail.removeChildren)
                 {
@@ -42,7 +47,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (detailGO != null && detail.removeComponents)
+            if (detail.removeComponents)
             {
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(detailGO.name);
@@ -65,6 +70,15 @@ namespace NewHorizons.Builder.Props
             if (detail.rename != null)
             {
                 detailGO.name = detail.rename;
+            }
+
+            if (!string.IsNullOrEmpty(detail.parentPath))
+            {
+                var newParent = go.transform.Find(detail.parentPath);
+                if (newParent != null)
+                {
+                    detailGO.transform.parent = newParent.transform;
+                }
             }
 
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
