@@ -447,7 +447,7 @@ namespace NewHorizons.Handlers
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);
+                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
                 if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
