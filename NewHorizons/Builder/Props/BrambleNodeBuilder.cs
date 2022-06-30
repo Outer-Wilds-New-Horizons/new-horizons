@@ -194,11 +194,24 @@ namespace NewHorizons.Builder.Props
             // TODO: change the colors
             //
 
-            //var effects = SearchUtilities.FindChild(brambleNode, "Effects");
-            //var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere");
-            //var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
+            var effects = SearchUtilities.FindChild(brambleNode, "Effects");
+            var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere").GetComponent<OWRenderer>();
+            var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
 
-            //var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
+
+            if (config.fogTint != null) fogRenderer.SetColor(config.fogTint.ToColor());
+            if (config.lightTint != null)
+            {
+                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
+                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
+                mat.color = config.lightTint.ToColor();
+                
+                for (int i = 1; i <= 6; i++)
+                {
+                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"BrambleLightShaft{i}");
+                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
+                }
+            }
 
             //
             // set up warps
