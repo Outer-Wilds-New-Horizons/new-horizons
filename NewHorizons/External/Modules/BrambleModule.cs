@@ -2,6 +2,7 @@ using NewHorizons.Utility;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Defines the inner radius of this dimension. Leave blank for the default of 
             /// </summary>
-            public float radius;
+            [DefaultValue(1705f)] public float radius = 1705f;
 
             /// <summary>
             /// The color of the fog inside this dimension. Leave blank for the default yellowish color
@@ -59,7 +60,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The physical scale of the node
             /// </summary>
-            public float scale;
+            [DefaultValue(1f)] public float scale = 1f;
 
             /// <summary>
             /// The name of the planet that hosts the dimension this node links to
@@ -74,7 +75,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Set this to true to make this node a seed instead of a node the player can enter
             /// </summary>
-            public bool isSeed;
+            [DefaultValue(false)] public bool isSeed = false;
 
             /// <summary>
             /// The color of the fog inside the node. Leave blank for the default yellowish color

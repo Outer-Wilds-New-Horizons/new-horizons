@@ -13,6 +13,8 @@ namespace NewHorizons.Builder.Body
 {
     public static class BrambleDimensionBuilder
     {
+        public static readonly float BASE_DIMENSION_RADIUS = 1705f;
+
         // put node here
         //  "position": {"x": 65.2428, "y": -137.305, "z": 198.1078}, "normal": {"x": 0.303696, "y": -0.5609235, "z": 0.7701519}
 
@@ -53,7 +55,9 @@ namespace NewHorizons.Builder.Body
             ao.transform.position = new Vector3(6904.48f, 17048.44f, 5574.479f) + new Vector3(0, 3000, 0)*DIMENSION_COUNTER;
             DIMENSION_COUNTER++;
 
-            // TODO: radius (need to determine what the base radius is first)
+            // radius
+            //if (body.Config.Bramble.dimension.radius != null) 
+            ao.transform.localScale = Vector3.one * (body.Config.Bramble.dimension.radius/BASE_DIMENSION_RADIUS);
 
             // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
             var dimensionSector = SearchUtilities.FindChild(dimension, "Sector_HubDimension");

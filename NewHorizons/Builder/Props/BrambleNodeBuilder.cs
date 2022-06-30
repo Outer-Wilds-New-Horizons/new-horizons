@@ -154,6 +154,10 @@ namespace NewHorizons.Builder.Props
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
 
+            //
+            // TODO: support adding destinationAO's signals to these nodes
+            //
+
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
 
@@ -191,15 +195,20 @@ namespace NewHorizons.Builder.Props
             GameObject.Destroy(SearchUtilities.FindChild(brambleNode, "Signal_Harmonica"));
             
             //
-            // TODO: change the colors
+            // set scale
+            //
+
+            brambleNode.transform.localScale = Vector3.one * config.scale;
+
+            //
+            // change the colors
             //
 
             var effects = SearchUtilities.FindChild(brambleNode, "Effects");
             var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere").GetComponent<OWRenderer>();
             var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
 
-
-            if (config.fogTint != null) fogRenderer.SetColor(config.fogTint.ToColor());
+            if (config.fogTint != null) fogRenderer.SetColor(config.fogTint.ToColor()); // TODO: this doesn't seem to work, but it does work in inspector
             if (config.lightTint != null)
             {
                 var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
@@ -226,27 +235,6 @@ namespace NewHorizons.Builder.Props
 
             warpController.Awake(); // I can't spawn this game object disabled, but Awake needs to run after _sector is set. That means I need to call Awake myself
 
-            //var exitPointsParent = SearchUtilities.FindChild(brambleNode, "FogWarpExitPoints"); // "ExitPoint", "ExitPoint (1)" ... "ExitPoint (5)"
-            //var exitPointsNames = new string[] 
-            //{ 
-            //    "ExitPoint", 
-            //    "ExitPoint (1)", 
-            //    "ExitPoint (2)", 
-            //    "ExitPoint (3)", 
-            //    "ExitPoint (4)", 
-            //    "ExitPoint (5)", 
-            //};
-            //for (int i = 0; i < 6; i++)
-            //{
-            //    var exitPoint = SearchUtilities.FindChild(exitPointsParent, exitPointsNames[i]);
-            //    var sphericalFogWarpExit = exitPoint.GetComponent<SphericalFogWarpExit>();
-            //    // I don't think anything actually needs to be done here
-            //}
-            
-            //
-            // TODO: support adding signals to these nodes
-            //
-            
             //
             // Cleanup for dimension exits
             //
