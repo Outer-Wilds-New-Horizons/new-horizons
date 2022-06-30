@@ -222,7 +222,8 @@ namespace NewHorizons.Handlers
                         GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
-                        _dict.Add(planetObject.GetComponent<NHAstroObject>(), body);
+                        var nhAO = planetObject.GetComponent<NHAstroObject>();
+                        if (nhAO != null) _dict.Add(nhAO, body);
                     }
                     catch (Exception e)
                     {
@@ -288,6 +289,8 @@ namespace NewHorizons.Handlers
             {
                 AstroObjectLocator.RegisterCustomAstroObject(ao);   
             }
+
+            Logger.Log($"returning GO named {go.name}");
 
             return go;
         }

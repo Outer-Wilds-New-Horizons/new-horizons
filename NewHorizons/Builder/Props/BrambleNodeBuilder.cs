@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -20,6 +21,9 @@ namespace NewHorizons.Builder.Props
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null, BrambleDimensionInfo dimensionInfo = null)
         {
+            Logger.Log("Pairing for " + dimensionName);
+            // TODO: I might need to call this on Make: InnerFogWarpVolume.OnOccupantEnterSector
+
             // pair node->dimension (entrances)
             if (unpairedNodes.ContainsKey(dimensionName))
             {
@@ -92,7 +96,8 @@ namespace NewHorizons.Builder.Props
 
             var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
             var brambleNode = DetailBuilder.MakeDetail(go, sector, brambleNodePrefabPath, config.position, config.rotation, config.scale, false);
-            
+            brambleNode.name = "Bramble Node to " + config.linksTo;    
+
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(SearchUtilities.FindChild(brambleNode, "Signal_Harmonica"));
             
@@ -137,7 +142,6 @@ namespace NewHorizons.Builder.Props
             //
             // TODO: support adding signals to these nodes
             //
-
             
             // Done!
             return brambleNode;

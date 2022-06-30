@@ -50,11 +50,11 @@ namespace NewHorizons.Builder.Body
             // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
             var dimensionSector = SearchUtilities.FindChild(dimension, "Sector_HubDimension");
             dimensionSector.name = "Sector";
-            var atmo = SearchUtilities.FindChild(dimension, "Atmosphere_HubDimension");
-            var geom = SearchUtilities.FindChild(dimension, "Geometry_HubDimension");
-            var vols = SearchUtilities.FindChild(dimension, "Volumes_HubDimension");
-            var efxs = SearchUtilities.FindChild(dimension, "Effects_HubDimension");
-            var intr = SearchUtilities.FindChild(dimension, "Interactables_HubDimension");
+            var atmo = SearchUtilities.FindChild(dimensionSector, "Atmosphere_HubDimension");
+            var geom = SearchUtilities.FindChild(dimensionSector, "Geometry_HubDimension");
+            var vols = SearchUtilities.FindChild(dimensionSector, "Volumes_HubDimension");
+            var efxs = SearchUtilities.FindChild(dimensionSector, "Effects_HubDimension");
+            var intr = SearchUtilities.FindChild(dimensionSector, "Interactables_HubDimension");
             var exitWarps = SearchUtilities.FindChild(intr, "OuterWarp_Hub");
 
             exitWarps.name = "OuterWarp";
@@ -66,8 +66,9 @@ namespace NewHorizons.Builder.Body
             intr.name = "Interactibles";
             GameObject.Destroy(intr);
 
-            exitWarps.GetComponent<OuterFogWarpVolume>()._senderWarps.Clear();
-            exitWarps.GetComponent<OuterFogWarpVolume>()._linkedInnerWarpVolume = null;
+            var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
+            outerFogWarpVolume._senderWarps.Clear();
+            outerFogWarpVolume._linkedInnerWarpVolume = null;
 
             // TODO MAYBE: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
 
