@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Builder.Body;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -16,6 +17,45 @@ namespace NewHorizons.Builder.Props
      [HarmonyPatch]
     public static class FogDebuggingPatches
     {
+
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.WarpDetector))]
+	    public static bool FogWarpVolume_WarpDetector(FogWarpVolume __instance, FogWarpDetector detector, FogWarpVolume linkedWarpVolume)
+	    {
+		    bool flag = detector.CompareName(FogWarpDetector.Name.Player);
+		    bool flag2 = detector.CompareName(FogWarpDetector.Name.Ship);
+		    if (!flag || !PlayerState.IsInsideShip())
+		    {
+			    OWRigidbody oWRigidbody = detector.GetOWRigidbody();
+			    if (flag && PlayerState.IsAttached())
+			    {
+				    oWRigidbody = detector.GetOWRigidbody().transform.parent.GetComponentInParent<OWRigidbody>();
+				    MonoBehaviour.print("body to warp: " + oWRigidbody.name);
+			    }
+			    Vector3 localRelVelocity = __instance.transform.InverseTransformDirection(oWRigidbody.GetVelocity() - __instance._attachedBody.GetVelocity());
+			    Vector3 localPos = __instance.transform.InverseTransformPoint(oWRigidbody.transform.position);
+			    Quaternion localRot = Quaternion.Inverse(__instance.transform.rotation) * oWRigidbody.transform.rotation;
+			    if (flag2 && PlayerState.IsInsideShip())
+			    {
+				    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerDetector());
+				    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerCameraDetector());
+			    }
+			    if (flag || (flag2 && PlayerState.IsInsideShip()))
+			    {
+				    GlobalMessenger.FireEvent("PlayerFogWarp");
+			    }
+			    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(detector.gameObject);
+			    linkedWarpVolume.ReceiveWarpedDetector(detector, localRelVelocity, localPos, localRot);
+			    //if (__instance.OnWarpDetector != null)
+			    //{
+				   // __instance.OnWarpDetector(detector);
+			    //}
+		    }
+
+            return false;
+	    }
+
         
         [HarmonyPrefix]
         [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.OnOccupantEnterSector))]
@@ -79,28 +119,16 @@ namespace NewHorizons.Builder.Props
 
         public static Dictionary<string, InnerFogWarpVolume> namedNodes = new();
 
-        public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null, BrambleDimensionInfo dimensionInfo = null)
+        public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
-            Logger.Log("Pairing for " + dimensionName);
-            // TODO: I might need to call this on Make: InnerFogWarpVolume.OnOccupantEnterSector
+            if (!unpairedNodes.ContainsKey(dimensionName)) return;
 
-            // pair node->dimension (entrances)
-            if (unpairedNodes.ContainsKey(dimensionName))
+            foreach (var nodeWarpController in unpairedNodes[dimensionName])
             {
-                foreach (var nodeWarpController in unpairedNodes[dimensionName])
-                {
-                    Pair(nodeWarpController, dimensionName, dimensionAO);    
-                }
-
-                unpairedNodes.Remove(dimensionName);
+                Pair(nodeWarpController, dimensionName, dimensionAO);    
             }
 
-            // pair dimension->node (exit)
-            if (dimensionInfo != null && dimensionAO != null && namedNodes.ContainsKey(dimensionInfo.linksTo))
-            {
-                var dimensionWarpController = dimensionAO.GetComponentInChildren<OuterFogWarpVolume>();
-                dimensionWarpController._linkedInnerWarpVolume = namedNodes[dimensionInfo.linksTo];
-            }
+            unpairedNodes.Remove(dimensionName);
         }
 
         private static void RecordUnpairedNode(InnerFogWarpVolume warpVolume, string linksTo)
@@ -131,7 +159,7 @@ namespace NewHorizons.Builder.Props
             if (destination == null) return false;
 
             nodeWarp._linkedOuterWarpVolume = destination;
-            destination._senderWarps.Add(nodeWarp);
+            destination.RegisterSenderWarp(nodeWarp);
             return true;
         }
 
@@ -207,6 +235,11 @@ namespace NewHorizons.Builder.Props
             // TODO: support adding signals to these nodes
             //
             
+            //
+            // Cleanup for dimension exits
+            //
+            if (config.name != null) BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
+
             // Done!
             return brambleNode;
         }

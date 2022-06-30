@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -25,6 +27,12 @@ namespace NewHorizons.Builder.Body
         //-8716.807 -22786.44 4496.394
 
         private static int DIMENSION_COUNTER = 0;
+
+        
+        // keys are all node names that have been referenced as an exit by at least one dimension but do not (yet) exist
+        // values are all dimensions' warp controllers that link to a given dimension
+        // unpairedNodes[name of node that doesn't exist yet] => List{warp controller for dimension that exits to that node, ...}
+        private static Dictionary<string, List<OuterFogWarpVolume>> unpairedDimensions = new();
 
         public static GameObject Make(NewHorizonsBody body)
         {
@@ -69,10 +77,41 @@ namespace NewHorizons.Builder.Body
             var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
             outerFogWarpVolume._senderWarps.Clear();
             outerFogWarpVolume._linkedInnerWarpVolume = null;
+            outerFogWarpVolume._name = OuterFogWarpVolume.Name.None;
+            //outerFogWarpVolume._sector = dimensionSector.GetComponent<Sector>();
+            //outerFogWarpVolume.Awake(); // I can't spawn this game object disabled, but Awake needs to run after _sector is set. That means I need to call Awake myself
 
-            // TODO MAYBE: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
+            // TODO if I need to: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
+
+            PairExit(config.linksTo, outerFogWarpVolume);
 
             return dimension;
         }
+
+        public static void PairExit(string exitName, OuterFogWarpVolume warpController)
+        {
+            if (!BrambleNodeBuilder.namedNodes.ContainsKey(exitName))
+            {
+                if (!unpairedDimensions.ContainsKey(exitName)) unpairedDimensions[exitName] = new();
+                unpairedDimensions[exitName].Add(warpController);
+                return;
+            }
+
+            warpController._linkedInnerWarpVolume = BrambleNodeBuilder.namedNodes[exitName];
+        }
+
+        public static void FinishPairingDimensionsForExitNode(string nodeName)
+        {
+            if (!unpairedDimensions.ContainsKey(nodeName)) return;
+
+            var warpControllers = unpairedDimensions[nodeName].ToList();
+            foreach (var dimensionWarpController in warpControllers)
+            {
+                PairExit(nodeName, dimensionWarpController);    
+            }
+
+            unpairedDimensions.Remove(nodeName);
+        }
+
     }
 }
