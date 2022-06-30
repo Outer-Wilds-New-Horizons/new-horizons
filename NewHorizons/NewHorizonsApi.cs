@@ -9,9 +9,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons
 {
-    public class NewHorizonsApi
+    public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config)
