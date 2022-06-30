@@ -286,7 +286,7 @@ namespace NewHorizons.Handlers
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
             {
-                AstroObjectLocator.RegisterCustomAstroObject(ao);
+                AstroObjectLocator.RegisterCustomAstroObject(ao);   
             }
 
             return go;
@@ -432,6 +432,11 @@ namespace NewHorizons.Handlers
             if (body.Config?.Bramble?.nodes != null)
             {
                 BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes);
+                
+                if (body.Config.Bramble.dimension != null)
+                {
+                    BrambleNodeBuilder.PairUnpairedNodesForDimension(body.Config.name, body.Object.GetComponent<AstroObject>());
+                }
             }
 
             if (body.Config.Ring != null)

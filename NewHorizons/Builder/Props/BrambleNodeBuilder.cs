@@ -11,18 +11,28 @@ namespace NewHorizons.Builder.Props
 {
     public static class BrambleNodeBuilder
     {
-        private static Dictionary<BrambleNodeInfo, InnerFogWarpVolume> unpairedNodes = new Dictionary<BrambleNodeInfo, InnerFogWarpVolume>();
+        // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
+        // values are all nodes' warp controllers that link to a given dimension
+        // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
+        private static Dictionary<string, List<InnerFogWarpVolume>> unpairedNodes = new();
 
-        public static void PairUnpairedNodes()
+        public static void PairUnpairedNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
-            // copy the keys since we'll be modifying the dictionary as we loop over it
-            var configsToCheck = unpairedNodes.Keys.ToList();
-            
-            foreach (var config in configsToCheck)
+            if (!unpairedNodes.ContainsKey(dimensionName)) return;
+
+            foreach (var warpVolume in unpairedNodes[dimensionName])
             {
-                var success = Pair(unpairedNodes[config], config.linksTo);
-                if (success) unpairedNodes.Remove(config);
+                Pair(warpVolume, dimensionName, dimensionAO);    
             }
+
+            unpairedNodes.Remove(dimensionName);
+        }
+
+        private static void RecordUnpairedNode(InnerFogWarpVolume warpVolume, string linksTo)
+        {
+            if (!unpairedNodes.ContainsKey(linksTo)) unpairedNodes[linksTo] = new();
+            
+            unpairedNodes[linksTo].Add(warpVolume);
         }
 
         private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
@@ -37,9 +47,9 @@ namespace NewHorizons.Builder.Props
             return outerFogWarpVolume;
         }
 
-        private static bool Pair(InnerFogWarpVolume nodeWarp, string destinationName)
+        private static bool Pair(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
         {
-            var destinationAO = AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
+            var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
 
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
@@ -93,7 +103,7 @@ namespace NewHorizons.Builder.Props
             warpController._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
             warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
             var success = Pair(warpController, config.linksTo);
-            if (!success) unpairedNodes[config] = warpController;
+            if (!success) RecordUnpairedNode(warpController, config.linksTo);
 
             //var exitPointsParent = SearchUtilities.FindChild(brambleNode, "FogWarpExitPoints"); // "ExitPoint", "ExitPoint (1)" ... "ExitPoint (5)"
             //var exitPointsNames = new string[] 
