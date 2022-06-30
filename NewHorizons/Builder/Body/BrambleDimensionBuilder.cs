@@ -47,6 +47,9 @@ namespace NewHorizons.Builder.Body
             intr.name = "Interactibles";
             GameObject.Destroy(intr);
 
+            exitWarps.GetComponent<OuterFogWarpVolume>()._senderWarps.Clear();
+            exitWarps.GetComponent<OuterFogWarpVolume>()._linkedInnerWarpVolume = null;
+
             // TODO MAYBE: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
 
             return dimension;

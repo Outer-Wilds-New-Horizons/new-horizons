@@ -16,16 +16,27 @@ namespace NewHorizons.Builder.Props
         // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
         private static Dictionary<string, List<InnerFogWarpVolume>> unpairedNodes = new();
 
-        public static void PairUnpairedNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
-        {
-            if (!unpairedNodes.ContainsKey(dimensionName)) return;
+        public static Dictionary<string, InnerFogWarpVolume> namedNodes = new();
 
-            foreach (var warpVolume in unpairedNodes[dimensionName])
+        public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null, BrambleDimensionInfo dimensionInfo = null)
+        {
+            // pair node->dimension (entrances)
+            if (unpairedNodes.ContainsKey(dimensionName))
             {
-                Pair(warpVolume, dimensionName, dimensionAO);    
+                foreach (var nodeWarpController in unpairedNodes[dimensionName])
+                {
+                    Pair(nodeWarpController, dimensionName, dimensionAO);    
+                }
+
+                unpairedNodes.Remove(dimensionName);
             }
 
-            unpairedNodes.Remove(dimensionName);
+            // pair dimension->node (exit)
+            if (dimensionInfo != null && dimensionAO != null && namedNodes.ContainsKey(dimensionInfo.linksTo))
+            {
+                var dimensionWarpController = dimensionAO.GetComponentInChildren<OuterFogWarpVolume>();
+                dimensionWarpController._linkedInnerWarpVolume = namedNodes[dimensionInfo.linksTo];
+            }
         }
 
         private static void RecordUnpairedNode(InnerFogWarpVolume warpVolume, string linksTo)
@@ -56,6 +67,7 @@ namespace NewHorizons.Builder.Props
             if (destination == null) return false;
 
             nodeWarp._linkedOuterWarpVolume = destination;
+            destination._senderWarps.Add(nodeWarp);
             return true;
         }
 

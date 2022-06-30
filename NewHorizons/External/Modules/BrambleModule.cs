@@ -35,6 +35,11 @@ namespace NewHorizons.External.Modules
             /// The color of the fog inside this dimension. Leave blank for the default yellowish color
             /// </summary>
             public MColor fogTint;
+
+            /// <summary>
+            /// The name of the *node* that the player is taken to when exiting this dimension.
+            /// </summary>
+            public string linksTo;
         }
 
         
@@ -62,9 +67,14 @@ namespace NewHorizons.External.Modules
             public string linksTo;
 
             /// <summary>
+            /// The name of this node. Only required if this node should serve as an exit.
+            /// </summary>
+            public string name;
+
+            /// <summary>
             /// Set this to true to make this node a seed instead of a node the player can enter
             /// </summary>
-            public bool seed;
+            public bool isSeed;
 
             /// <summary>
             /// The color of the fog inside the node. Leave blank for the default yellowish color

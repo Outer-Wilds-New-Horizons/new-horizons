@@ -435,7 +435,7 @@ namespace NewHorizons.Handlers
                 
                 if (body.Config.Bramble.dimension != null)
                 {
-                    BrambleNodeBuilder.PairUnpairedNodesForDimension(body.Config.name, body.Object.GetComponent<AstroObject>());
+                    BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, body.Object.GetComponent<AstroObject>());
                 }
             }
 
