@@ -12,103 +12,102 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
-    // Issue: these nodes aren't getting added to the list PlayerFogWarpDetector._warpVolumes
-    // debugging: try overriding FogWarpDetector.TrackFogWarpVolume(FogWarpVolume volume) to see if it's even getting added to this list at all
-     [HarmonyPatch]
-    public static class FogDebuggingPatches
-    {
+    
+    // [HarmonyPatch]
+    //public static class FogDebuggingPatches
+    //{
 
         
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.WarpDetector))]
-	    public static bool FogWarpVolume_WarpDetector(FogWarpVolume __instance, FogWarpDetector detector, FogWarpVolume linkedWarpVolume)
-	    {
-		    bool flag = detector.CompareName(FogWarpDetector.Name.Player);
-		    bool flag2 = detector.CompareName(FogWarpDetector.Name.Ship);
-		    if (!flag || !PlayerState.IsInsideShip())
-		    {
-			    OWRigidbody oWRigidbody = detector.GetOWRigidbody();
-			    if (flag && PlayerState.IsAttached())
-			    {
-				    oWRigidbody = detector.GetOWRigidbody().transform.parent.GetComponentInParent<OWRigidbody>();
-				    MonoBehaviour.print("body to warp: " + oWRigidbody.name);
-			    }
-			    Vector3 localRelVelocity = __instance.transform.InverseTransformDirection(oWRigidbody.GetVelocity() - __instance._attachedBody.GetVelocity());
-			    Vector3 localPos = __instance.transform.InverseTransformPoint(oWRigidbody.transform.position);
-			    Quaternion localRot = Quaternion.Inverse(__instance.transform.rotation) * oWRigidbody.transform.rotation;
-			    if (flag2 && PlayerState.IsInsideShip())
-			    {
-				    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerDetector());
-				    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerCameraDetector());
-			    }
-			    if (flag || (flag2 && PlayerState.IsInsideShip()))
-			    {
-				    GlobalMessenger.FireEvent("PlayerFogWarp");
-			    }
-			    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(detector.gameObject);
-			    linkedWarpVolume.ReceiveWarpedDetector(detector, localRelVelocity, localPos, localRot);
-			    //if (__instance.OnWarpDetector != null)
-			    //{
-				   // __instance.OnWarpDetector(detector);
-			    //}
-		    }
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.WarpDetector))]
+	   // public static bool FogWarpVolume_WarpDetector(FogWarpVolume __instance, FogWarpDetector detector, FogWarpVolume linkedWarpVolume)
+	   // {
+		  //  bool flag = detector.CompareName(FogWarpDetector.Name.Player);
+		  //  bool flag2 = detector.CompareName(FogWarpDetector.Name.Ship);
+		  //  if (!flag || !PlayerState.IsInsideShip())
+		  //  {
+			 //   OWRigidbody oWRigidbody = detector.GetOWRigidbody();
+			 //   if (flag && PlayerState.IsAttached())
+			 //   {
+				//    oWRigidbody = detector.GetOWRigidbody().transform.parent.GetComponentInParent<OWRigidbody>();
+				//    MonoBehaviour.print("body to warp: " + oWRigidbody.name);
+			 //   }
+			 //   Vector3 localRelVelocity = __instance.transform.InverseTransformDirection(oWRigidbody.GetVelocity() - __instance._attachedBody.GetVelocity());
+			 //   Vector3 localPos = __instance.transform.InverseTransformPoint(oWRigidbody.transform.position);
+			 //   Quaternion localRot = Quaternion.Inverse(__instance.transform.rotation) * oWRigidbody.transform.rotation;
+			 //   if (flag2 && PlayerState.IsInsideShip())
+			 //   {
+				//    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerDetector());
+				//    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerCameraDetector());
+			 //   }
+			 //   if (flag || (flag2 && PlayerState.IsInsideShip()))
+			 //   {
+				//    GlobalMessenger.FireEvent("PlayerFogWarp");
+			 //   }
+			 //   __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(detector.gameObject);
+			 //   linkedWarpVolume.ReceiveWarpedDetector(detector, localRelVelocity, localPos, localRot);
+			 //   //if (__instance.OnWarpDetector != null)
+			 //   //{
+				//   // __instance.OnWarpDetector(detector);
+			 //   //}
+		  //  }
 
-            return false;
-	    }
+    //        return false;
+	   // }
 
         
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.OnOccupantEnterSector))]
-        private static bool FogWarpVolume_OnOccupantEnterSector(FogWarpVolume __instance, SectorDetector detector)
-        {
-            Logger.LogWarning($"Warp volume {__instance.name} is attempting to get sector detector {detector.name} to register it");
-            FogWarpDetector component = detector.GetComponent<FogWarpDetector>();
-		    if (component != null)
-		    {
-                Logger.LogWarning("FogWarpDetector component was found");
-			    component.TrackFogWarpVolume(__instance);
-		    }
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.OnOccupantEnterSector))]
+    //    private static bool FogWarpVolume_OnOccupantEnterSector(FogWarpVolume __instance, SectorDetector detector)
+    //    {
+    //        Logger.LogWarning($"Warp volume {__instance.name} is attempting to get sector detector {detector.name} to register it");
+    //        FogWarpDetector component = detector.GetComponent<FogWarpDetector>();
+		  //  if (component != null)
+		  //  {
+    //            Logger.LogWarning("FogWarpDetector component was found");
+			 //   component.TrackFogWarpVolume(__instance);
+		  //  }
 
-            return false;
-        }
+    //        return false;
+    //    }
 
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FogWarpDetector), nameof(FogWarpDetector.TrackFogWarpVolume))]
-        public static bool FogWarpDetector_TrackFogWarpVolume(FogWarpDetector __instance, FogWarpVolume volume)
-        {
-            Logger.LogWarning($"Detector {__instance.name} is attempting to track fog warp volume {volume.name}");
-            bool flag = false;
-		    if (!__instance._warpVolumes.SafeAdd(volume))
-		    {
-                Logger.LogError("Failed to add warp volume to tracking list");
-			    return false;
-		    }
-		    __instance.enabled = true;
-		    if (volume.IsOuterWarpVolume())
-		    {
-			    if (__instance._outerWarpVolume != null)
-			    {
-				    Logger.LogError("Entering an outer warp volume before leaving the old one!");
-				    //Debug.Break();
-			    }
-			    if (__instance._outerWarpVolume != volume)
-			    {
-				    flag = true;
-			    }
-			    __instance._outerWarpVolume = (OuterFogWarpVolume)volume;
-		    }
-		    //if (__instance.OnTrackFogWarpVolume != null)
-		    //{
-			   // __instance.OnTrackFogWarpVolume(volume);
-		    //}
-		    //if (flag && __instance.OnOuterFogWarpVolumeChange != null)
-		    //{
-			   // __instance.OnOuterFogWarpVolumeChange(__instance._outerWarpVolume);
-		    //}
+    //    [HarmonyPrefix]
+    //    [HarmonyPatch(typeof(FogWarpDetector), nameof(FogWarpDetector.TrackFogWarpVolume))]
+    //    public static bool FogWarpDetector_TrackFogWarpVolume(FogWarpDetector __instance, FogWarpVolume volume)
+    //    {
+    //        Logger.LogWarning($"Detector {__instance.name} is attempting to track fog warp volume {volume.name}");
+    //        bool flag = false;
+		  //  if (!__instance._warpVolumes.SafeAdd(volume))
+		  //  {
+    //            Logger.LogError("Failed to add warp volume to tracking list");
+			 //   return false;
+		  //  }
+		  //  __instance.enabled = true;
+		  //  if (volume.IsOuterWarpVolume())
+		  //  {
+			 //   if (__instance._outerWarpVolume != null)
+			 //   {
+				//    Logger.LogError("Entering an outer warp volume before leaving the old one!");
+				//    //Debug.Break();
+			 //   }
+			 //   if (__instance._outerWarpVolume != volume)
+			 //   {
+				//    flag = true;
+			 //   }
+			 //   __instance._outerWarpVolume = (OuterFogWarpVolume)volume;
+		  //  }
+		  //  //if (__instance.OnTrackFogWarpVolume != null)
+		  //  //{
+			 //  // __instance.OnTrackFogWarpVolume(volume);
+		  //  //}
+		  //  //if (flag && __instance.OnOuterFogWarpVolumeChange != null)
+		  //  //{
+			 //  // __instance.OnOuterFogWarpVolumeChange(__instance._outerWarpVolume);
+		  //  //}
 
-            return false;
-        }
-    }
+    //        return false;
+    //    }
+    //}
 
     public static class BrambleNodeBuilder
     {
@@ -238,7 +237,12 @@ namespace NewHorizons.Builder.Props
             //
             // Cleanup for dimension exits
             //
-            if (config.name != null) BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
+            if (config.name != null)
+            {
+                namedNodes[config.name] = warpController;
+                BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
+            }
+
 
             // Done!
             return brambleNode;

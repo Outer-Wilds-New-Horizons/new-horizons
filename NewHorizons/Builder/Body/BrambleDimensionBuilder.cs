@@ -74,14 +74,11 @@ namespace NewHorizons.Builder.Body
             intr.name = "Interactibles";
             GameObject.Destroy(intr);
 
+            // set up warps
             var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
             outerFogWarpVolume._senderWarps.Clear();
             outerFogWarpVolume._linkedInnerWarpVolume = null;
             outerFogWarpVolume._name = OuterFogWarpVolume.Name.None;
-            //outerFogWarpVolume._sector = dimensionSector.GetComponent<Sector>();
-            //outerFogWarpVolume.Awake(); // I can't spawn this game object disabled, but Awake needs to run after _sector is set. That means I need to call Awake myself
-
-            // TODO if I need to: set "exitWarps/ExitPoint", "exitWarp/ExitPoint (1)", ... "exitWarp/ExitPoint (5)"
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
@@ -90,13 +87,14 @@ namespace NewHorizons.Builder.Body
 
         public static void PairExit(string exitName, OuterFogWarpVolume warpController)
         {
+            Logger.Log($"attempting to pair exit {exitName}");
             if (!BrambleNodeBuilder.namedNodes.ContainsKey(exitName))
             {
                 if (!unpairedDimensions.ContainsKey(exitName)) unpairedDimensions[exitName] = new();
                 unpairedDimensions[exitName].Add(warpController);
                 return;
             }
-
+            Logger.Log($"pairing exit {exitName}");
             warpController._linkedInnerWarpVolume = BrambleNodeBuilder.namedNodes[exitName];
         }
 
@@ -110,7 +108,7 @@ namespace NewHorizons.Builder.Body
                 PairExit(nodeName, dimensionWarpController);    
             }
 
-            unpairedDimensions.Remove(nodeName);
+            //unpairedDimensions.Remove(nodeName);
         }
 
     }
