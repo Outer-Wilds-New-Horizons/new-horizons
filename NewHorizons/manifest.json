@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
   "author": "xen, Bwc9876, clay, MegaPiggy, John, Book",
   "name": "New Horizons",
