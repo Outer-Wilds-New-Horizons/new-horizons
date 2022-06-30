@@ -82,6 +82,15 @@ namespace NewHorizons.Builder.Body
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
+            // change fog color
+            if (body.Config.Bramble.dimension.fogTint != null)
+            {
+                var fogGO = SearchUtilities.FindChild(atmo, "FogSphere_Hub");
+                var fog = fogGO.GetComponent<PlanetaryFogController>();
+                fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
+            }
+            
+
             return dimension;
         }
 
