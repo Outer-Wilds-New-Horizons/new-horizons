@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,65 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
+    // Issue: these nodes aren't getting added to the list PlayerFogWarpDetector._warpVolumes
+    // debugging: try overriding FogWarpDetector.TrackFogWarpVolume(FogWarpVolume volume) to see if it's even getting added to this list at all
+     [HarmonyPatch]
+    public static class FogDebuggingPatches
+    {
+        
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.OnOccupantEnterSector))]
+        private static bool FogWarpVolume_OnOccupantEnterSector(FogWarpVolume __instance, SectorDetector detector)
+        {
+            Logger.LogWarning($"Warp volume {__instance.name} is attempting to get sector detector {detector.name} to register it");
+            FogWarpDetector component = detector.GetComponent<FogWarpDetector>();
+		    if (component != null)
+		    {
+                Logger.LogWarning("FogWarpDetector component was found");
+			    component.TrackFogWarpVolume(__instance);
+		    }
+
+            return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FogWarpDetector), nameof(FogWarpDetector.TrackFogWarpVolume))]
+        public static bool FogWarpDetector_TrackFogWarpVolume(FogWarpDetector __instance, FogWarpVolume volume)
+        {
+            Logger.LogWarning($"Detector {__instance.name} is attempting to track fog warp volume {volume.name}");
+            bool flag = false;
+		    if (!__instance._warpVolumes.SafeAdd(volume))
+		    {
+                Logger.LogError("Failed to add warp volume to tracking list");
+			    return false;
+		    }
+		    __instance.enabled = true;
+		    if (volume.IsOuterWarpVolume())
+		    {
+			    if (__instance._outerWarpVolume != null)
+			    {
+				    Logger.LogError("Entering an outer warp volume before leaving the old one!");
+				    //Debug.Break();
+			    }
+			    if (__instance._outerWarpVolume != volume)
+			    {
+				    flag = true;
+			    }
+			    __instance._outerWarpVolume = (OuterFogWarpVolume)volume;
+		    }
+		    //if (__instance.OnTrackFogWarpVolume != null)
+		    //{
+			   // __instance.OnTrackFogWarpVolume(volume);
+		    //}
+		    //if (flag && __instance.OnOuterFogWarpVolumeChange != null)
+		    //{
+			   // __instance.OnOuterFogWarpVolumeChange(__instance._outerWarpVolume);
+		    //}
+
+            return false;
+        }
+    }
+
     public static class BrambleNodeBuilder
     {
         // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
@@ -90,6 +150,8 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config)
         {
+            Logger.LogError($"Building node {config.name}");
+
             //
             // spawn the bramble node
             //
@@ -121,6 +183,8 @@ namespace NewHorizons.Builder.Props
             warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
             var success = Pair(warpController, config.linksTo);
             if (!success) RecordUnpairedNode(warpController, config.linksTo);
+
+            warpController.Awake(); // I can't spawn this game object disabled, but Awake needs to run after _sector is set. That means I need to call Awake myself
 
             //var exitPointsParent = SearchUtilities.FindChild(brambleNode, "FogWarpExitPoints"); // "ExitPoint", "ExitPoint (1)" ... "ExitPoint (5)"
             //var exitPointsNames = new string[] 
