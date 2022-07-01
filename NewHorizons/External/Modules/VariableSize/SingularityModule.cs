@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
@@ -24,10 +24,15 @@ namespace NewHorizons.External.Modules.VariableSize
         [DefaultValue(true)] public bool makeZeroGVolume = true;
 
         /// <summary>
-        /// The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill
+        /// The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill
         /// the player
         /// </summary>
         public string pairedSingularity;
+
+        /// <summary>
+        /// The uniqueID of this white hole or black hole. If not set it will default to the name of the planet
+        /// </summary>
+        public string uniqueID;
 
         /// <summary>
         /// Position of the singularity

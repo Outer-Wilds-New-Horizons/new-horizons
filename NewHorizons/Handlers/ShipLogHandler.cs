@@ -29,7 +29,7 @@ namespace NewHorizons.Handlers
             GameObject panRoot = SearchUtilities.Find(PAN_ROOT_PATH);
             if (panRoot != null)
             {
-                List<GameObject> gameObjects = SearchUtilities.GetAllChildren(panRoot);
+                List<GameObject> gameObjects = panRoot.GetAllChildren();
                 _vanillaBodies = gameObjects.ConvertAll(g => g.name).ToArray();
                 _vanillaBodyIDs = gameObjects.ConvertAll(g => g.GetComponent<ShipLogAstroObject>()?.GetID()).ToArray();
             }

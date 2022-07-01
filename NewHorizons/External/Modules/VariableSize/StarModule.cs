@@ -57,6 +57,11 @@ namespace NewHorizons.External.Modules.VariableSize
         public MColor tint;
 
         /// <summary>
+        /// Path to the texture to put as the star ramp. Optional.
+        /// </summary>
+        public string starRampTexture;
+
+        /// <summary>
         /// How far the light from the star can reach.
         /// </summary>
         [DefaultValue(50000f)] [Range(0f, double.MaxValue)]

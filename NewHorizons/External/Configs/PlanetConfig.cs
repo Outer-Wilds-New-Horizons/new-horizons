@@ -50,6 +50,9 @@ namespace NewHorizons.External.Configs
         [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
         public string[] childrenToDestroy;
 
+        [Obsolete("Singularity is deprecated, please use Props->singularities")]
+        public SingularityModule Singularity;
+
         #endregion Obsolete
 
         /// <summary>
@@ -137,11 +140,6 @@ namespace NewHorizons.External.Configs
         /// Add signals that can be heard via the signal-scope to this planet
         /// </summary>
         public SignalModule Signal;
-
-        /// <summary>
-        /// Add a black or white hole to this planet
-        /// </summary>
-        public SingularityModule Singularity;
 
         /// <summary>
         /// Spawn the player at this planet
@@ -329,6 +327,13 @@ namespace NewHorizons.External.Configs
                 }
             }
 
+            // Singularity is now a list in props so you can have many per planet
+            if (Singularity != null)
+            {
+                if (Props == null) Props = new PropModule();
+                if (Props.singularities == null) Props.singularities = new SingularityModule[0];
+                Props.singularities = Props.singularities.Append(Singularity).ToArray();
+            }
         }
     }
 }

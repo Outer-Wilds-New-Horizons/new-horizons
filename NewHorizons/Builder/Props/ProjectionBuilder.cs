@@ -265,7 +265,7 @@ namespace NewHorizons.Builder.Props
             
             // setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
-            var visionBeamEffect = SearchUtilities.FindChild(standingTorch, "VisionBeam");
+            var visionBeamEffect = standingTorch.FindChild("VisionBeam");
             visionBeamEffect.SetActive(false);
 
             //

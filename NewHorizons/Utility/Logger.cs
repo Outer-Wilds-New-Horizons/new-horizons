@@ -36,7 +36,7 @@ namespace NewHorizons.Utility
         public static void LogPath(GameObject go)
         {
             if (go == null) Log("Can't print path: GameObject is null");
-            else Log($"{SearchUtilities.GetPath(go.transform)}");
+            else Log($"{go.transform.GetPath()}");
         }
 
         public static void Log(string text, LogType type)

@@ -269,7 +269,9 @@ namespace NewHorizons.Handlers
             {
                 foreach (var child in body.Config.removeChildren)
                 {
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SearchUtilities.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
+                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 
@@ -456,7 +458,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
             }
 
             if (body.Config?.Bramble?.nodes != null)
@@ -516,7 +518,7 @@ namespace NewHorizons.Handlers
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);
+                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
                 if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
@@ -536,11 +538,6 @@ namespace NewHorizons.Handlers
             if (body.Config.Signal != null)
             {
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
-            }
-
-            if (body.Config.Singularity != null)
-            {
-                SingularityBuilder.Make(go, sector, rb, body.Config);
             }
 
             if (body.Config.Funnel != null)

@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -45,7 +45,7 @@ namespace NewHorizons.Builder.Body
             var trigger = ringVolume.AddComponent<OWTriggerVolume>();
             trigger._shape = ringShape;
 
-            var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
+            var sfv = ringVolume.AddComponent<RingFluidVolume>();
             var fluidType = FluidVolume.Type.NONE;
 
             try

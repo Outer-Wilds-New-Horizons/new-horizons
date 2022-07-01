@@ -30,19 +30,27 @@ namespace NewHorizons.Builder.Props
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
-            else detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
-
-            if (detailGO != null && detail.removeChildren != null)
+            else
             {
+                detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+            }
+
+            if (detailGO == null) return;
+
+            if (detail.removeChildren != null)
+            {
+                var detailPath = detailGO.transform.GetPath();
                 foreach (var childPath in detail.removeChildren)
                 {
-                    var childObj = detailGO.transform.Find(childPath);
+                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
+                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
+                    var childObj = GameObject.Find($"{detailPath}/{childPath}");
                     if (childObj != null) childObj.gameObject.SetActive(false);
                     else Logger.LogWarning($"Couldn't find {childPath}");
                 }
             }
 
-            if (detailGO != null && detail.removeComponents)
+            if (detail.removeComponents)
             {
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(detailGO.name);
@@ -65,6 +73,15 @@ namespace NewHorizons.Builder.Props
             if (detail.rename != null)
             {
                 detailGO.name = detail.rename;
+            }
+
+            if (!string.IsNullOrEmpty(detail.parentPath))
+            {
+                var newParent = go.transform.Find(detail.parentPath);
+                if (newParent != null)
+                {
+                    detailGO.transform.parent = newParent.transform;
+                }
             }
 
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
