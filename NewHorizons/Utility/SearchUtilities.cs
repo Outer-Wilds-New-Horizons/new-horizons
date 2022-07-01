@@ -83,7 +83,7 @@ namespace NewHorizons.Utility
             return current.parent.GetPath() + "/" + current.name;
         }
 
-        public static GameObject FindChild(this GameObject g, string path) => g?.transform?.Find(path)?.gameObject;
+        public static GameObject FindChild(this GameObject g, string path) => g.transform.Find(path)?.gameObject;
 
         public static GameObject Find(string path, bool warn = true)
         {
