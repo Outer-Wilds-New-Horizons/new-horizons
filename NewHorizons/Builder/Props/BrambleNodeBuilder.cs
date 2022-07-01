@@ -76,6 +76,7 @@ namespace NewHorizons.Builder.Props
                     signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
                     signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = nodeWarp.transform.position;
+                    signalGO.transform.parent = nodeWarp.transform;
                 }        
             }
 
