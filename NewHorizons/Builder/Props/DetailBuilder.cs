@@ -39,11 +39,12 @@ namespace NewHorizons.Builder.Props
 
             if (detail.removeChildren != null)
             {
+                var detailPath = SearchUtilities.GetPath(detailGO.transform);
                 foreach (var childPath in detail.removeChildren)
                 {
                     // We purposefully use GameObject.Find here because we don't want to find inactive things.
                     // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    var childObj = GameObject.Find($"{SearchUtilities.GetPath(detailGO.transform)}/{childPath}");
+                    var childObj = GameObject.Find($"{detailPath}/{childPath}");
                     if (childObj != null) childObj.gameObject.SetActive(false);
                     else Logger.LogWarning($"Couldn't find {childPath}");
                 }
