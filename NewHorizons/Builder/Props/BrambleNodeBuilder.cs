@@ -104,8 +104,6 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config)
         {
-            Logger.LogError($"Building node {config.name}");
-
             //
             // spawn the bramble node
             //
@@ -116,6 +114,7 @@ namespace NewHorizons.Builder.Props
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
             var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, config.scale, false);
             brambleNode.name = "Bramble Node to " + config.linksTo;    
+            var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(SearchUtilities.FindChild(brambleNode, "Signal_Harmonica"));
@@ -125,6 +124,8 @@ namespace NewHorizons.Builder.Props
             //
 
             brambleNode.transform.localScale = Vector3.one * config.scale;
+            warpController._warpRadius *= config.scale;
+            warpController._exitRadius *= config.scale;
 
             //
             // change the colors
@@ -137,7 +138,6 @@ namespace NewHorizons.Builder.Props
             // set up warps
             //
 
-            var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
             warpController._sector = sector;
             warpController._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
             warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
