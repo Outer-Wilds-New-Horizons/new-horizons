@@ -252,6 +252,8 @@ namespace NewHorizons.Handlers
             {
                 foreach (var child in body.Config.removeChildren)
                 {
+                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
+                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
                     Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
