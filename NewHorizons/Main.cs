@@ -8,6 +8,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
+using NewHorizons.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -183,6 +184,7 @@ namespace NewHorizons
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             AchievementHandler.Init();
+            VoiceHandler.Init();
         }
 
         public void OnDestroy()

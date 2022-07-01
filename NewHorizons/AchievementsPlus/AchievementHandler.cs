@@ -1,7 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.ModHelper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
