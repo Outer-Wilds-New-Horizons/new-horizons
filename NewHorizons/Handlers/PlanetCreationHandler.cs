@@ -399,7 +399,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
             }
 
             if (body.Config.Ring != null)
