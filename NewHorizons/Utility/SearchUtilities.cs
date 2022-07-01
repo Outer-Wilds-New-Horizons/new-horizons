@@ -92,6 +92,9 @@ namespace NewHorizons.Utility
         {
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
+            go = GameObject.Find(path);
+            if (go != null) return go;
+            
             var names = path.Split('/');
             var rootName = names[0];
             var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
