@@ -5,6 +5,8 @@ using OWML.Utils;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Logger = NewHorizons.Utility.Logger;
+using OWML.ModHelper;
+using OWML.Common;
 
 namespace NewHorizons.Builder.Body
 {
@@ -19,9 +21,9 @@ namespace NewHorizons.Builder.Body
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
-        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
+        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod)
         {
-            var starGO = MakeStarGraphics(planetGO, sector, starModule);
+            var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
 
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
@@ -152,9 +154,9 @@ namespace NewHorizons.Builder.Body
             return starController;
         }
 
-        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule)
+        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod)
         {
-            var starGO = MakeStarGraphics(proxyGO, null, starModule);
+            var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
 
             var supernova = MakeSupernova(starGO, starModule);
 
@@ -175,7 +177,7 @@ namespace NewHorizons.Builder.Body
             return proxyGO;
         }
 
-        public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
+        public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule, IModBehaviour mod)
         {
             if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
 
@@ -208,10 +210,10 @@ namespace NewHorizons.Builder.Body
             starGO.transform.position = rootObject.transform.position;
             starGO.transform.localScale = starModule.size * Vector3.one;
 
+            TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
+
             if (starModule.tint != null)
             {
-                TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
-
                 var colour = starModule.tint.ToColor();
 
                 var sun = SearchUtilities.Find("Sun_Body");
@@ -219,8 +221,8 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>()._endSurfaceMaterial;
 
                 surface.sharedMaterial = new Material(starModule.size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));
-                var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
+                var modifier = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));
+                var adjustedColour = new Color(colour.r * modifier, colour.g * modifier, colour.b * modifier);
                 surface.sharedMaterial.color = adjustedColour;
 
                 Color.RGBToHSV(adjustedColour, out var h, out var s, out var v);
@@ -229,10 +231,19 @@ namespace NewHorizons.Builder.Body
                 if (starModule.endTint != null)
                 {
                     var endColour = starModule.endTint.ToColor();
-                    darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
+                    darkenedColor = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
                 }
 
                 surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+            }
+
+            if (!string.IsNullOrEmpty(starModule.starRampTexture))
+            {
+                var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
+                if (ramp != null)
+                {
+                    surface.sharedMaterial.SetTexture(ColorRamp, ramp);
+                }
             }
 
             return starGO;

@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Star != null)
                 {
-                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star);
+                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star, body.Mod);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
