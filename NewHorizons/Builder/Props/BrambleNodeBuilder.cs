@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Builder.Body;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -66,7 +67,7 @@ namespace NewHorizons.Builder.Props
             if (destinationAO == null) return false;
             
             // add the destination dimension's signals to this node
-            var dimensionNewHorizonsBody = destinationAO.GetComponent<NewHorizonsBody>();
+            var dimensionNewHorizonsBody = PlanetCreationHandler.GetNewHorizonsBody(destinationAO);
             if (dimensionNewHorizonsBody != null && dimensionNewHorizonsBody.Config?.Signal?.signals != null)
             {
                 var body = nodeWarp.GetComponentInParent<AstroObject>().gameObject;
@@ -76,6 +77,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var signalGO = SignalBuilder.Make(body, sector, signalConfig, dimensionNewHorizonsBody.Mod);
                     signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
+                    signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
                     signalGO.transform.position = nodeWarp.transform.position;
                 }        
             }

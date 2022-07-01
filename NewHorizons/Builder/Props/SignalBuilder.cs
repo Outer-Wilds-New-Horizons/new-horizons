@@ -181,6 +181,7 @@ namespace NewHorizons.Builder.Props
             audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
+            audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
 
             source.clip = clip;
             source.loop = true;

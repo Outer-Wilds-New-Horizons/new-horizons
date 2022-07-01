@@ -23,6 +23,19 @@ namespace NewHorizons.Handlers
         private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
 
         private static Dictionary<NHAstroObject, NewHorizonsBody> _dict;
+        private static Dictionary<AstroObject,   NewHorizonsBody> _dimensions;
+
+        public static NewHorizonsBody GetNewHorizonsBody(AstroObject ao)
+        {
+            if (ao is NHAstroObject nhAO)
+            {
+                if (_dict.ContainsKey(nhAO)) return _dict[nhAO];
+            }
+
+            if (!_dimensions.ContainsKey(ao)) return null;
+            
+            return _dimensions[ao];
+        }
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -30,6 +43,7 @@ namespace NewHorizons.Handlers
 
             ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
             _dict = new Dictionary<NHAstroObject, NewHorizonsBody>();
+            _dimensions = new Dictionary<AstroObject, NewHorizonsBody>();
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -223,7 +237,9 @@ namespace NewHorizons.Handlers
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
                         var nhAO = planetObject.GetComponent<NHAstroObject>();
+                        var owAO = planetObject.GetComponent<AstroObject>();
                         if (nhAO != null) _dict.Add(nhAO, body);
+                        else if (owAO != null) _dimensions.Add(owAO, body);
                     }
                     catch (Exception e)
                     {
@@ -290,6 +306,7 @@ namespace NewHorizons.Handlers
             var owRigidBody = go.GetComponent<OWRigidbody>();
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
+            body.Object = go;
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
             {
