@@ -304,7 +304,7 @@ namespace NewHorizons.Handlers
         {
             var go = BrambleDimensionBuilder.Make(body);
             var ao = go.GetComponent<AstroObject>();
-            var sector = SearchUtilities.FindChild(go, "Sector").GetComponent<Sector>();
+            var sector = go.FindChild("Sector").GetComponent<Sector>();
             var owRigidBody = go.GetComponent<OWRigidbody>();
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);

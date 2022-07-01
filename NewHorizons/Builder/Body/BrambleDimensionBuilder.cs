@@ -50,14 +50,14 @@ namespace NewHorizons.Builder.Body
             ao.transform.position = body.Config.Orbit.staticPosition;
 
             // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
-            var dimensionSector = SearchUtilities.FindChild(dimension, "Sector_HubDimension");
+            var dimensionSector = dimension.FindChild("Sector_HubDimension");
             dimensionSector.name = "Sector";
-            var atmo = SearchUtilities.FindChild(dimensionSector, "Atmosphere_HubDimension");
-            var geom = SearchUtilities.FindChild(dimensionSector, "Geometry_HubDimension");
-            var vols = SearchUtilities.FindChild(dimensionSector, "Volumes_HubDimension");
-            var efxs = SearchUtilities.FindChild(dimensionSector, "Effects_HubDimension");
-            var intr = SearchUtilities.FindChild(dimensionSector, "Interactables_HubDimension");
-            var exitWarps = SearchUtilities.FindChild(intr, "OuterWarp_Hub");
+            var atmo = dimensionSector.FindChild("Atmosphere_HubDimension");
+            var geom = dimensionSector.FindChild("Geometry_HubDimension");
+            var vols = dimensionSector.FindChild("Volumes_HubDimension");
+            var efxs = dimensionSector.FindChild("Effects_HubDimension");
+            var intr = dimensionSector.FindChild("Interactables_HubDimension");
+            var exitWarps = intr.FindChild("OuterWarp_Hub");
 
             exitWarps.name = "OuterWarp";
             exitWarps.transform.parent = dimensionSector.transform;
@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.Body
             // change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
-                var fogGO = SearchUtilities.FindChild(atmo, "FogSphere_Hub");
+                var fogGO = atmo.FindChild("FogSphere_Hub");
                 var fog = fogGO.GetComponent<PlanetaryFogController>();
                 fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
             }

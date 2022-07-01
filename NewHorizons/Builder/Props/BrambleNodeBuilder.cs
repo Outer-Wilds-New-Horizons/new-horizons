@@ -48,10 +48,10 @@ namespace NewHorizons.Builder.Props
 
         private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
         {
-            var sector = SearchUtilities.FindChild(go, "Sector");
+            var sector = go.FindChild("Sector");
             if (sector == null) return null;
 
-            var outerWarpGO = SearchUtilities.FindChild(sector, "OuterWarp");
+            var outerWarpGO = sector.FindChild("OuterWarp");
             if (outerWarpGO == null) return null;
 
             var outerFogWarpVolume = outerWarpGO.GetComponent<OuterFogWarpVolume>();
@@ -117,7 +117,7 @@ namespace NewHorizons.Builder.Props
             var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
             // this node comes with Feldspar's signal, we don't want that though
-            GameObject.Destroy(SearchUtilities.FindChild(brambleNode, "Signal_Harmonica"));
+            GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
 
             //
             // change the colors
@@ -155,8 +155,8 @@ namespace NewHorizons.Builder.Props
         public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
         {
             var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
-            var effects = SearchUtilities.FindChild(brambleNode, "Effects");
-            var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
+            var effects = brambleNode.FindChild("Effects");
+            var lightShafts = effects.FindChild("DB_BrambleLightShafts");
 
             if (fogTint != null) 
             { 
@@ -166,13 +166,13 @@ namespace NewHorizons.Builder.Props
 
             if (lightTint != null)
             {
-                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
+                var lightShaft1 = lightShafts.FindChild("BrambleLightShaft1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
                 mat.color = lightTint;
                 
                 for (int i = 1; i <= 6; i++)
                 {
-                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"BrambleLightShaft{i}");
+                    var lightShaft = lightShafts.FindChild($"BrambleLightShaft{i}");
                     lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
                 }
             }
@@ -180,9 +180,9 @@ namespace NewHorizons.Builder.Props
 
         public static void SetSeedColors(GameObject brambleSeed, Color fogTint, Color lightTint)
         {
-            var fogRenderer = SearchUtilities.FindChild(brambleSeed, "VolumetricFogSphere (2)");
-            var effects = SearchUtilities.FindChild(brambleSeed, "Terrain_DB_BrambleSphere_Seed_V2 (2)");
-            var lightShafts = SearchUtilities.FindChild(effects, "DB_SeedLightShafts");
+            var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
+            var effects = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)");
+            var lightShafts = effects.FindChild("DB_SeedLightShafts");
 
             if (fogTint != null) 
             { 
@@ -194,13 +194,13 @@ namespace NewHorizons.Builder.Props
             
             if (lightTint != null)
             {
-                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "DB_SeedLightShafts1");
+                var lightShaft1 = lightShafts.FindChild("DB_SeedLightShafts1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
                 mat.color = lightTint;
                 
                 for (int i = 1; i <= 6; i++)
                 {
-                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"DB_SeedLightShafts{i}");
+                    var lightShaft = lightShafts.FindChild($"DB_SeedLightShafts{i}");
                     lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
                 }
             }
