@@ -112,20 +112,12 @@ namespace NewHorizons.Builder.Props
             var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
             
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
-            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, config.scale, false);
+            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, 1, false);
             brambleNode.name = "Bramble Node to " + config.linksTo;    
             var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(SearchUtilities.FindChild(brambleNode, "Signal_Harmonica"));
-            
-            //
-            // set scale
-            //
-
-            brambleNode.transform.localScale = Vector3.one * config.scale;
-            warpController._warpRadius *= config.scale;
-            warpController._exitRadius *= config.scale;
 
             //
             // change the colors

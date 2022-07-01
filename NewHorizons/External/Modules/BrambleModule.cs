@@ -28,11 +28,6 @@ namespace NewHorizons.External.Modules
         public class BrambleDimensionInfo
         {
             /// <summary>
-            /// Defines the inner radius of this dimension. Leave blank for the default of 
-            /// </summary>
-            [DefaultValue(1705f)] public float radius = 1705f;
-
-            /// <summary>
             /// The color of the fog inside this dimension. Leave blank for the default yellowish color
             /// </summary>
             public MColor fogTint;
@@ -56,11 +51,6 @@ namespace NewHorizons.External.Modules
             /// The physical rotation of the node
             /// </summary>
             public MVector3 rotation;
-
-            /// <summary>
-            /// The physical scale of the node
-            /// </summary>
-            [DefaultValue(1f)] public float scale = 1f;
 
             /// <summary>
             /// The name of the planet that hosts the dimension this node links to
