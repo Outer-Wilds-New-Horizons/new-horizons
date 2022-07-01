@@ -78,7 +78,7 @@ namespace NewHorizons.External.Modules
             [DefaultValue(false)] public bool isSeed = false;
 
             /// <summary>
-            /// The color of the fog inside the node. Leave blank for the default yellowish color
+            /// The color of the fog inside the node. Leave blank for the default yellowish color (default: 131, 124, 105, 255)
             /// </summary>
             public MColor fogTint;
 

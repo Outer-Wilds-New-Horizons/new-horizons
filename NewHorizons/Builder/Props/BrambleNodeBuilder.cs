@@ -187,8 +187,11 @@ namespace NewHorizons.Builder.Props
             // spawn the bramble node
             //
 
+            var brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
             var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
-            var brambleNode = DetailBuilder.MakeDetail(go, sector, brambleNodePrefabPath, config.position, config.rotation, config.scale, false);
+            
+            var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
+            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, config.scale, false);
             brambleNode.name = "Bramble Node to " + config.linksTo;    
 
             // this node comes with Feldspar's signal, we don't want that though
@@ -203,24 +206,9 @@ namespace NewHorizons.Builder.Props
             //
             // change the colors
             //
-
-            var effects = SearchUtilities.FindChild(brambleNode, "Effects");
-            var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere").GetComponent<OWRenderer>();
-            var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
-
-            if (config.fogTint != null) fogRenderer.SetColor(config.fogTint.ToColor()); // TODO: this doesn't seem to work, but it does work in inspector
-            if (config.lightTint != null)
-            {
-                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
-                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
-                mat.color = config.lightTint.ToColor();
-                
-                for (int i = 1; i <= 6; i++)
-                {
-                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"BrambleLightShaft{i}");
-                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
-                }
-            }
+            
+            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
+            else               SetNodeColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
 
             //
             // set up warps
@@ -247,6 +235,64 @@ namespace NewHorizons.Builder.Props
 
             // Done!
             return brambleNode;
+        }
+
+        public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
+        {
+            var effects = SearchUtilities.FindChild(brambleNode, "Effects");
+            var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere").GetComponent<OWRenderer>();
+            var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
+
+            if (fogTint != null) 
+            { 
+                //var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
+                //var mat = fogMeshRenderer.material;
+                //mat.color = config.fogTint.ToColor();
+                //fogMeshRenderer.sharedMaterial = mat;
+                
+                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => fogRenderer.SetColor(fogTint), 10); 
+            } 
+
+            if (lightTint != null)
+            {
+                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "BrambleLightShaft1");
+                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
+                mat.color = lightTint;
+                
+                for (int i = 1; i <= 6; i++)
+                {
+                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"BrambleLightShaft{i}");
+                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
+                }
+            }
+        }
+
+        public static void SetSeedColors(GameObject brambleSeed, Color fogTint, Color lightTint)
+        {
+            var fogRenderer = SearchUtilities.FindChild(brambleSeed, "VolumetricFogSphere (2)");
+            var effects = SearchUtilities.FindChild(brambleSeed, "Terrain_DB_BrambleSphere_Seed_V2 (2)");
+            var lightShafts = SearchUtilities.FindChild(effects, "DB_SeedLightShafts");
+
+            if (fogTint != null) 
+            { 
+                var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
+                var mat = fogMeshRenderer.material;
+                mat.color = fogTint;
+                fogMeshRenderer.sharedMaterial = mat;
+            } 
+            
+            if (lightTint != null)
+            {
+                var lightShaft1 = SearchUtilities.FindChild(lightShafts, "DB_SeedLightShafts1");
+                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
+                mat.color = lightTint;
+                
+                for (int i = 1; i <= 6; i++)
+                {
+                    var lightShaft = SearchUtilities.FindChild(lightShafts, $"DB_SeedLightShafts{i}");
+                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
+                }
+            }
         }
     }
 }
