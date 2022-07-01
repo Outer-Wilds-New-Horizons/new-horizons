@@ -151,17 +151,18 @@ namespace NewHorizons.Builder.Props
 
         public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
         {
-            var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
-            var lightShafts = brambleNode.FindChild("Effects/DB_BrambleLightShafts");
-
             if (fogTint != null) 
             { 
+                var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
+                
                 fogRenderer._fogColor = fogTint;
                 fogRenderer._useFarFogColor = false;
             } 
 
             if (lightTint != null)
             {
+                var lightShafts = brambleNode.FindChild("Effects/DB_BrambleLightShafts");
+                
                 var lightShaft1 = lightShafts.FindChild("BrambleLightShaft1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
                 mat.color = lightTint;
@@ -176,11 +177,10 @@ namespace NewHorizons.Builder.Props
 
         public static void SetSeedColors(GameObject brambleSeed, Color fogTint, Color lightTint)
         {
-            var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
-            var lightShafts = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)/DB_SeedLightShafts");
-
             if (fogTint != null) 
             { 
+                var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
+                
                 var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
                 var mat = fogMeshRenderer.material;
                 mat.color = fogTint;
@@ -189,6 +189,8 @@ namespace NewHorizons.Builder.Props
             
             if (lightTint != null)
             {
+                var lightShafts = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)/DB_SeedLightShafts");
+                
                 var lightShaft1 = lightShafts.FindChild("DB_SeedLightShafts1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
                 mat.color = lightTint;
