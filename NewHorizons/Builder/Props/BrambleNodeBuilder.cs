@@ -15,10 +15,7 @@ namespace NewHorizons.Builder.Props
 {
 
     // TODO
-    //2) test size setting for nodes/seeds and radius for dimensions
-    //2) test that when a dimension has normal fog color and you shoot your probe through a seed leading to that dimension, the pictures look normal
     //3) support for existing dimensions?
-    //4) signals
     //5) test whether nodes can lead to vanilla dimensions
 
     public static class BrambleNodeBuilder
