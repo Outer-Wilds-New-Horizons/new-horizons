@@ -182,6 +182,7 @@ namespace NewHorizons.External.Configs
             // Validate
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
+            if (Bramble?.dimension != null && Orbit?.staticPosition == null) NewHorizons.Utility.Logger.LogError($"Dimension {name} must have Orbit.staticPosition defined.");
 
             // Backwards compatability
             // Should be the only place that obsolete things are referenced
