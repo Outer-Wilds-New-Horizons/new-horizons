@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (info.isRaining)
             {
-                var rainGO = GameObject.Instantiate(SearchUtilities.CachedFind("/GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
+                var rainGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
                 rainGO.transform.position = planetGO.transform.position;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Atmosphere
                 snowGO.transform.position = planetGO.transform.position;
                 for (int i = 0; i < 5; i++)
                 {
-                    var snowEmitter = GameObject.Instantiate(SearchUtilities.CachedFind("/BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
+                    var snowEmitter = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
                     snowEmitter.name = "SnowEmitter";
                     snowEmitter.transform.position = planetGO.transform.position;
 

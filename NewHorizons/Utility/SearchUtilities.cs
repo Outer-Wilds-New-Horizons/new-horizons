@@ -15,23 +15,6 @@ namespace NewHorizons.Utility
             CachedGameObjects.Clear();
         }
 
-        public static GameObject CachedFind(string path)
-        {
-            if (CachedGameObjects.ContainsKey(path))
-            {
-                return CachedGameObjects[path];
-            }
-            else
-            {
-                GameObject foundObject = GameObject.Find(path);
-                if (foundObject != null)
-                {
-                    CachedGameObjects.Add(path, foundObject);
-                }
-                return foundObject;
-            }
-        }
-
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
         {
             T[] firstList = GameObject.FindObjectsOfType<T>();
