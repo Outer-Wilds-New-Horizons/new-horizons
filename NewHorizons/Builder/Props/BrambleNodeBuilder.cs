@@ -48,10 +48,7 @@ namespace NewHorizons.Builder.Props
 
         private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
         {
-            var sector = go.FindChild("Sector");
-            if (sector == null) return null;
-
-            var outerWarpGO = sector.FindChild("OuterWarp");
+            var outerWarpGO = go.FindChild("Sector/OuterWarp");
             if (outerWarpGO == null) return null;
 
             var outerFogWarpVolume = outerWarpGO.GetComponent<OuterFogWarpVolume>();
@@ -155,8 +152,7 @@ namespace NewHorizons.Builder.Props
         public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
         {
             var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
-            var effects = brambleNode.FindChild("Effects");
-            var lightShafts = effects.FindChild("DB_BrambleLightShafts");
+            var lightShafts = brambleNode.FindChild("Effects/DB_BrambleLightShafts");
 
             if (fogTint != null) 
             { 
@@ -181,8 +177,7 @@ namespace NewHorizons.Builder.Props
         public static void SetSeedColors(GameObject brambleSeed, Color fogTint, Color lightTint)
         {
             var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
-            var effects = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)");
-            var lightShafts = effects.FindChild("DB_SeedLightShafts");
+            var lightShafts = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)/DB_SeedLightShafts");
 
             if (fogTint != null) 
             { 
