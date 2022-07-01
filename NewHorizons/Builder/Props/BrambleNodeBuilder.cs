@@ -14,7 +14,6 @@ namespace NewHorizons.Builder.Props
 {
 
     // TODO
-    //1) fix node fog color 
     //2) test size setting for nodes/seeds and radius for dimensions
     //2) test that when a dimension has normal fog color and you shoot your probe through a seed leading to that dimension, the pictures look normal
     //3) support for existing dimensions?
@@ -163,18 +162,14 @@ namespace NewHorizons.Builder.Props
 
         public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
         {
+            var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
             var effects = SearchUtilities.FindChild(brambleNode, "Effects");
-            var fogRenderer = SearchUtilities.FindChild(effects, "InnerWarpFogSphere").GetComponent<OWRenderer>();
             var lightShafts = SearchUtilities.FindChild(effects, "DB_BrambleLightShafts");
 
             if (fogTint != null) 
             { 
-                //var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
-                //var mat = fogMeshRenderer.material;
-                //mat.color = config.fogTint.ToColor();
-                //fogMeshRenderer.sharedMaterial = mat;
-                
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => fogRenderer.SetColor(fogTint), 10); 
+                fogRenderer._fogColor = fogTint;
+                fogRenderer._useFarFogColor = false;
             } 
 
             if (lightTint != null)
