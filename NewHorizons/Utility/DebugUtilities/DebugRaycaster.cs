@@ -100,7 +100,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
 
                 data.bodyName = o.name;
-                data.bodyPath = SearchUtilities.GetPath(o.transform);
+                data.bodyPath = o.transform.GetPath();
                 data.hitObject = o;
                 data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);

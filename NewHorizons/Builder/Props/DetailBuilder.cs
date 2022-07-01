@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Props
 
             if (detail.removeChildren != null)
             {
-                var detailPath = SearchUtilities.GetPath(detailGO.transform);
+                var detailPath = detailGO.transform.GetPath();
                 foreach (var childPath in detail.removeChildren)
                 {
                     // We purposefully use GameObject.Find here because we don't want to find inactive things.

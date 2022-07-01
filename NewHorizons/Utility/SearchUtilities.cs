@@ -77,29 +77,11 @@ namespace NewHorizons.Utility
             return null;
         }
 
-        public static string GetPath(Transform current)
+        public static string GetPath(this Transform current)
         {
             if (current.parent == null) return current.name;
-            return GetPath(current.parent) + "/" + current.name;
+            return current.parent.GetPath() + "/" + current.name;
         }
-
-        /*
-        public static GameObject Find(string path)
-        {
-            var go = GameObject.Find(path);
-            if (go != null) return go;
-
-            var names = path.Split(new char[] { '\\', '/' });
-
-            foreach (var possibleMatch in FindObjectsOfTypeAndName<GameObject>(names.Last()))
-            {
-                Logger.LogPath(possibleMatch);
-                if (GetPath(possibleMatch.transform) == path) return possibleMatch;
-            }
-
-            return null;
-        }
-        */
 
         public static GameObject FindChild(this GameObject g, string path) => g?.transform?.Find(path)?.gameObject;
 
