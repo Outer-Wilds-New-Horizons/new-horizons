@@ -1,3 +1,4 @@
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -84,25 +85,29 @@ namespace NewHorizons.Utility
             return current.parent.GetPath() + "/" + current.name;
         }
 
-        public static GameObject FindChild(this GameObject g, string path) =>
-            g.transform.Find(path)?.gameObject;
+        public static GameObject FindChild(this GameObject g, string childPath) =>
+            g.transform.Find(childPath)?.gameObject;
 
         public static GameObject Find(string path, bool warn = true)
         {
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
-            var paths = path.Split(new[] { '/' }, 1);
-            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == paths[0]);
+            var names = path.Split('/');
+            var rootName = names[0];
+            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
             if (root == null)
             {
                 if (warn) Logger.LogWarning($"Couldn't find root object in path ({path})");
                 return null;
             }
 
-            go = root.FindChild(paths[1]);
+            var childPath = names.Skip(1).Join(delimiter: "/");
+            go = root.FindChild(childPath);
             if (go == null)
             {
-                if (warn) Logger.LogWarning($"Couldn't find object in path ({path})");
+                var name = names.Last();
+                if (warn) Logger.LogWarning($"Couldn't find object in path ({path}), will look for potential matches for name {name}");
+                go = FindObjectOfTypeAndName<GameObject>(name);
             }
 
             CachedGameObjects.Add(path, go);
@@ -111,7 +116,7 @@ namespace NewHorizons.Utility
 
         public static List<GameObject> GetAllChildren(this GameObject parent)
         {
-            List<GameObject> children = new List<GameObject>();
+            var children = new List<GameObject>();
             foreach (Transform child in parent.transform)
             {
                 children.Add(child.gameObject);
