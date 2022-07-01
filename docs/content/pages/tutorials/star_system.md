@@ -34,13 +34,13 @@ A star system config file will look something like this:
 
 To see all the different things you can put into a config file check out the [Star System Schema]({{ 'Star System Schema'|route}}).
 
-# Vessel Coordinates
+## Vessel Coordinates
 
 You can warp to custom star systems via the Nomai vessel. Each coordinate has to be 2-6 points long. 
 These are the points for each coordinate node. When making your unique coordinate you should only use each point once.
 ![nomaiCoordinateIndexes]({{ "images/star_system/nomai_coordinate_indexes.webp"|static }})
 
-## Hearthian Solar System Vessel Coordinates
+### Hearthian Solar System Vessel Coordinates
 
 You can use these coordinates to warp back to the hearthian solar system.
 ![hearthianSolarSystemCoordinates]({{ "images/star_system/hearthian_solar_system_coordinates.webp"|static }})
