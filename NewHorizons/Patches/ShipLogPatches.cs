@@ -145,7 +145,7 @@ namespace NewHorizons.Patches
                 __instance._startingAstroObjectID = navMatrix[1][0].GetID();
                 if (Main.Instance.CurrentStarSystem != "SolarSystem")
                 {
-                    List<GameObject> delete = SearchUtilities.GetAllChildren(panRoot).Where(g => g.name.Contains("_ShipLog") == false).ToList();
+                    List<GameObject> delete = panRoot.GetAllChildren().Where(g => g.name.Contains("_ShipLog") == false).ToList();
                     foreach (GameObject gameObject in delete)
                     {
                         Object.Destroy(SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + gameObject.name));
@@ -182,7 +182,7 @@ namespace NewHorizons.Patches
             Transform detailsParent = __instance.transform.Find("Details");
             if (detailsParent != null)
             {
-                foreach (GameObject child in SearchUtilities.GetAllChildren(detailsParent.gameObject))
+                foreach (GameObject child in detailsParent.gameObject.GetAllChildren())
                 {
                     if (child.TryGetComponent(typeof(ShipLogDetail), out Component detail))
                     {

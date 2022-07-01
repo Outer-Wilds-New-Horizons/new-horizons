@@ -160,7 +160,7 @@ namespace NewHorizons.Utility
             }
         }
 
-        public static List<GameObject> GetAllChildren(GameObject parent)
+        public static List<GameObject> GetAllChildren(this GameObject parent)
         {
             List<GameObject> children = new List<GameObject>();
             foreach (Transform child in parent.transform)
