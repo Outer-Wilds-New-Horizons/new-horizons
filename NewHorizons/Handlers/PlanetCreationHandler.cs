@@ -268,6 +268,12 @@ namespace NewHorizons.Handlers
         {
             if (body.Config?.Bramble?.dimension != null)
             {
+                if (body.Config?.Orbit?.staticPosition == null)
+                {
+                    Logger.LogError($"Unable to build bramble dimension {body.Config?.name} because it does not have Orbit.staticPosition defined.");
+                    return null;
+                }
+
                 return GenerateBrambleDimensionBody(body);
             }
             else
@@ -378,6 +384,10 @@ namespace NewHorizons.Handlers
             if (!body.Config.Orbit.isStatic)
             {
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
+            }
+            else if (body.Config.Orbit.staticPosition != null)
+            {
+                ao.transform.position = body.Config.Orbit.staticPosition;
             }
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)

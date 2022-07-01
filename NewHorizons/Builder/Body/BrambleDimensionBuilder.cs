@@ -25,9 +25,7 @@ namespace NewHorizons.Builder.Body
         //-11096.95 -22786.44 4657.534
         //-8716.807 -22786.44 4496.394
 
-        private static int DIMENSION_COUNTER = 0;
 
-        
         // keys are all node names that have been referenced as an exit by at least one dimension but do not (yet) exist
         // values are all dimensions' warp controllers that link to a given dimension
         // unpairedNodes[name of node that doesn't exist yet] => List{warp controller for dimension that exits to that node, ...}
@@ -49,8 +47,7 @@ namespace NewHorizons.Builder.Body
             dimension.name = name.Replace(" ", "").Replace("'", "") + "_Body";
 
             // set position
-            ao.transform.position = new Vector3(6904.48f, 17048.44f, 5574.479f) + new Vector3(0, 3000, 0)*DIMENSION_COUNTER;
-            DIMENSION_COUNTER++;
+            ao.transform.position = body.Config.Orbit.staticPosition;
 
             // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
             var dimensionSector = SearchUtilities.FindChild(dimension, "Sector_HubDimension");
