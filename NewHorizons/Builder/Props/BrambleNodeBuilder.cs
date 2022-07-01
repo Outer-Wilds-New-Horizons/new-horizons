@@ -12,102 +12,14 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
-    
-    // [HarmonyPatch]
-    //public static class FogDebuggingPatches
-    //{
 
-        
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.WarpDetector))]
-	   // public static bool FogWarpVolume_WarpDetector(FogWarpVolume __instance, FogWarpDetector detector, FogWarpVolume linkedWarpVolume)
-	   // {
-		  //  bool flag = detector.CompareName(FogWarpDetector.Name.Player);
-		  //  bool flag2 = detector.CompareName(FogWarpDetector.Name.Ship);
-		  //  if (!flag || !PlayerState.IsInsideShip())
-		  //  {
-			 //   OWRigidbody oWRigidbody = detector.GetOWRigidbody();
-			 //   if (flag && PlayerState.IsAttached())
-			 //   {
-				//    oWRigidbody = detector.GetOWRigidbody().transform.parent.GetComponentInParent<OWRigidbody>();
-				//    MonoBehaviour.print("body to warp: " + oWRigidbody.name);
-			 //   }
-			 //   Vector3 localRelVelocity = __instance.transform.InverseTransformDirection(oWRigidbody.GetVelocity() - __instance._attachedBody.GetVelocity());
-			 //   Vector3 localPos = __instance.transform.InverseTransformPoint(oWRigidbody.transform.position);
-			 //   Quaternion localRot = Quaternion.Inverse(__instance.transform.rotation) * oWRigidbody.transform.rotation;
-			 //   if (flag2 && PlayerState.IsInsideShip())
-			 //   {
-				//    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerDetector());
-				//    __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(Locator.GetPlayerCameraDetector());
-			 //   }
-			 //   if (flag || (flag2 && PlayerState.IsInsideShip()))
-			 //   {
-				//    GlobalMessenger.FireEvent("PlayerFogWarp");
-			 //   }
-			 //   __instance._sector.GetTriggerVolume().RemoveObjectFromVolume(detector.gameObject);
-			 //   linkedWarpVolume.ReceiveWarpedDetector(detector, localRelVelocity, localPos, localRot);
-			 //   //if (__instance.OnWarpDetector != null)
-			 //   //{
-				//   // __instance.OnWarpDetector(detector);
-			 //   //}
-		  //  }
-
-    //        return false;
-	   // }
-
-        
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch(typeof(FogWarpVolume), nameof(FogWarpVolume.OnOccupantEnterSector))]
-    //    private static bool FogWarpVolume_OnOccupantEnterSector(FogWarpVolume __instance, SectorDetector detector)
-    //    {
-    //        Logger.LogWarning($"Warp volume {__instance.name} is attempting to get sector detector {detector.name} to register it");
-    //        FogWarpDetector component = detector.GetComponent<FogWarpDetector>();
-		  //  if (component != null)
-		  //  {
-    //            Logger.LogWarning("FogWarpDetector component was found");
-			 //   component.TrackFogWarpVolume(__instance);
-		  //  }
-
-    //        return false;
-    //    }
-
-    //    [HarmonyPrefix]
-    //    [HarmonyPatch(typeof(FogWarpDetector), nameof(FogWarpDetector.TrackFogWarpVolume))]
-    //    public static bool FogWarpDetector_TrackFogWarpVolume(FogWarpDetector __instance, FogWarpVolume volume)
-    //    {
-    //        Logger.LogWarning($"Detector {__instance.name} is attempting to track fog warp volume {volume.name}");
-    //        bool flag = false;
-		  //  if (!__instance._warpVolumes.SafeAdd(volume))
-		  //  {
-    //            Logger.LogError("Failed to add warp volume to tracking list");
-			 //   return false;
-		  //  }
-		  //  __instance.enabled = true;
-		  //  if (volume.IsOuterWarpVolume())
-		  //  {
-			 //   if (__instance._outerWarpVolume != null)
-			 //   {
-				//    Logger.LogError("Entering an outer warp volume before leaving the old one!");
-				//    //Debug.Break();
-			 //   }
-			 //   if (__instance._outerWarpVolume != volume)
-			 //   {
-				//    flag = true;
-			 //   }
-			 //   __instance._outerWarpVolume = (OuterFogWarpVolume)volume;
-		  //  }
-		  //  //if (__instance.OnTrackFogWarpVolume != null)
-		  //  //{
-			 //  // __instance.OnTrackFogWarpVolume(volume);
-		  //  //}
-		  //  //if (flag && __instance.OnOuterFogWarpVolumeChange != null)
-		  //  //{
-			 //  // __instance.OnOuterFogWarpVolumeChange(__instance._outerWarpVolume);
-		  //  //}
-
-    //        return false;
-    //    }
-    //}
+    // TODO
+    //1) fix node fog color 
+    //2) test size setting for nodes/seeds and radius for dimensions
+    //2) test that when a dimension has normal fog color and you shoot your probe through a seed leading to that dimension, the pictures look normal
+    //3) support for existing dimensions?
+    //4) signals
+    //5) test whether nodes can lead to vanilla dimensions
 
     public static class BrambleNodeBuilder
     {
@@ -124,7 +36,7 @@ namespace NewHorizons.Builder.Props
 
             foreach (var nodeWarpController in unpairedNodes[dimensionName])
             {
-                Pair(nodeWarpController, dimensionName, dimensionAO);    
+                PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
             unpairedNodes.Remove(dimensionName);
@@ -149,15 +61,27 @@ namespace NewHorizons.Builder.Props
             return outerFogWarpVolume;
         }
 
-        private static bool Pair(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
+        private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
         {
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
+            
+            // add the destination dimension's signals to this node
+            var dimensionNewHorizonsBody = destinationAO.GetComponent<NewHorizonsBody>();
+            if (dimensionNewHorizonsBody != null && dimensionNewHorizonsBody.Config?.Signal?.signals != null)
+            {
+                var body = nodeWarp.GetComponentInParent<AstroObject>().gameObject;
+                var sector = nodeWarp.GetComponentInParent<Sector>();
+                
+                foreach(var signalConfig in dimensionNewHorizonsBody.Config?.Signal?.signals)
+                {
+                    var signalGO = SignalBuilder.Make(body, sector, signalConfig, dimensionNewHorizonsBody.Mod);
+                    signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
+                    signalGO.transform.position = nodeWarp.transform.position;
+                }        
+            }
 
-            //
-            // TODO: support adding destinationAO's signals to these nodes
-            //
-
+            // link the node's warp volume to the destination's
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
 
@@ -218,7 +142,7 @@ namespace NewHorizons.Builder.Props
             warpController._sector = sector;
             warpController._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
             warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
-            var success = Pair(warpController, config.linksTo);
+            var success = PairEntrance(warpController, config.linksTo);
             if (!success) RecordUnpairedNode(warpController, config.linksTo);
 
             warpController.Awake(); // I can't spawn this game object disabled, but Awake needs to run after _sector is set. That means I need to call Awake myself

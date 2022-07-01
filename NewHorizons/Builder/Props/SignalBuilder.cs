@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Props
             if (clip == null)
             {
                 Logger.LogError($"Couldn't find AudioClip {info.audioClip} or AudioFile {info.audioFilePath}");
-                return;
+                return null;
             }
 
             audioSignal.SetSector(sector);
@@ -219,6 +219,8 @@ namespace NewHorizons.Builder.Props
 
             signalGO.SetActive(true);
             signalDetectionGO.SetActive(true);
+
+            return signalGO;
         }
 
         private static SignalFrequency StringToFrequency(string str)
