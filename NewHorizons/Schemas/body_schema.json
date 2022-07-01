@@ -1870,6 +1870,10 @@
           "description": "Colour of the star.",
           "$ref": "#/definitions/MColor"
         },
+        "starRampTexture": {
+          "type": "string",
+          "description": "Path to the texture to put as the star ramp. Optional."
+        },
         "lightRadius": {
           "type": "number",
           "description": "How far the light from the star can reach.",
