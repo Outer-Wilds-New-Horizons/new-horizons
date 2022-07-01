@@ -252,7 +252,7 @@ namespace NewHorizons.Handlers
             {
                 foreach (var child in body.Config.removeChildren)
                 {
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SearchUtilities.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 
