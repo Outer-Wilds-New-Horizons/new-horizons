@@ -61,76 +61,41 @@ namespace NewHorizons.Builder.Props
             return outerFogWarpVolume;
         }
 
-        //private static void PropogateSignals(NewHorizonsBody destinationDimensionNewHorizonsBody, GameObject body, Sector sector, GameObject node, HashSet<NewHorizonsBody> dimensionsConsidered)
-        //{
-        //    dimensionsConsidered.Add(destinationDimensionNewHorizonsBody);
-                
-        //    foreach(var signalConfig in destinationDimensionNewHorizonsBody.Config?.Signal?.signals)
-        //    {
-        //        var signalGO = SignalBuilder.Make(body, sector, signalConfig, destinationDimensionNewHorizonsBody.Mod);
-        //        signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
-        //        signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
-        //        signalGO.transform.position = node.transform.position;
-        //        signalGO.transform.parent = node.transform;
-        //    }   
-                
-        //    // if the destination contains a node leading to another dimension (which may not be built yet)
-        //    // (make sure not to consider it if the node leads to the same dimension or any other dimension already considered, or we'll get unwanted duplicate signals) 
-        //    // add that dimension's signals too and repeat this check
-
-        //    foreach (var nodeConfig in destinationDimensionNewHorizonsBody.Config?.Bramble?.nodes)
-        //    {
-                
-        //    }
-        //}
-
         private static void PropogateSignals()
         {
-            Dictionary<BrambleNodeInfo, HashSet<PlanetConfig>> eventualDestinationDimensionsPerNode = new();
+            // The purpose of this function is to determine which signals any given node should play, based on which dimension it links to
+            // you know how the main dark bramble node, the one that forms the core of the planet, plays Feldspar's harmonica signal, even though Feldspar isn't in the dimension that the node links directly to?
+            // that's what this function is for. it would determine that the main node should play Feldspar's signal
             
-            // strategy:
-            // 1) get a list of all PlanetConfigs that have a defined bramble dimension (make it a list of clones so that modifying any of these won't modify the actual configs)
-            // 2) find all cycles - collapse each cycle into a single dimension containing all signals of its component dimensions (make sure to give it a unique name and update all nodes everywhere that referenced a component dimension to now reference this dimension)
-            // 3) toposort the dimensions (treat dimensions as vertices and nodes as edges)
-            // 4) reverse (so the dimensions with no outbound nodes are at the front and the dimensions with no inbound nodes (not counting nodes that are on regular planets) are at the end)
-            // 5) flat propogation - iterate over the list and for each dimension, iterate through the nodes inside it - for each node, add the signals from its destination dimension to this dimension's list of signals
-            // 6) explode composite dimensions - any dimensions that were created by merging a cycle should be deleted the dimensions making it up should be re-added, and each should be given the list of signals the composite had
-            // 7) turn this into a Dictionary<dimension name, List<Signal>>
-            // 8) you now have a dictionary of node signals - to find out what signals a node should have, check the node's destination dimension in the above dictionary. the returned list of signals are the signals this node should have
-
-
             // New Strategy (thanks Damian):
             // 1) Run Floyd-Warshall on the dimensions (where each dimension is a vertex and each node is an edge)
             // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propogatedSignals[A]
 
-
-            var allDimensions = new List<PlanetConfig>();
+            var allDimensions = new List<PlanetConfig>(); // TODO: grab this list from Main or something, idk
 
             //
             // Floyd Warshall
             //
 
-            // access will be our final answer - if access[i, j], then dimension i should "contain" all of dimension j's signals
+            // access will be our final answer - if access[i, j], then nodes linking to dimension i should display all of dimension j's signals
             var access = new bool[allDimensions.Count(), allDimensions.Count()];
 
             var dimensionNameToIndex = new Dictionary<string, int>();
             for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) dimensionNameToIndex[allDimensions[dimensionIndex].name] = dimensionIndex;
             
-            // set up the direct links (ie, if dimension 0 contains a node leading to dimension 3, set access[0, 3] = true)
+            // set up the direct links (ie, if dimension 0 contains a node that links to dimension 3, set access[0, 3] = true)
             for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) 
             {
                 var dimension = allDimensions[dimensionIndex];
                 if (dimension.Bramble.nodes == null) continue;
                 foreach (var node in dimension.Bramble.nodes)
                 {
-                    var destinationDimensionName = node.linksTo;
-                    var destinationDimensionIndex = dimensionNameToIndex[destinationDimensionName];
-                    
+                    var destinationDimensionIndex = dimensionNameToIndex[node.linksTo];   
                     access[dimensionIndex, destinationDimensionIndex] = true;
                 }
             }   
 
-            // we consider all dimensions to connect to themselves for the purpose of this function
+            // a node that links to dimension A should display all of dimension A's signals, so for the purposes of our function, we need to say that dimension A links to dimension A
             for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) access[dimensionIndex, dimensionIndex] = true;
 
             // The actual Floyd-Warshall - determine whether each pair of dimensions link indirectly (eg if A->B->C, then after this step, access[A, C] = true)
