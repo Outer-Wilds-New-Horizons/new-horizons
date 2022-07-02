@@ -463,7 +463,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config?.Bramble?.nodes != null)
             {
-                BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes);
+                BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
                 
                 if (body.Config.Bramble.dimension != null)
                 {
