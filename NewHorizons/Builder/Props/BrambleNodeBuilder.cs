@@ -18,6 +18,68 @@ namespace NewHorizons.Builder.Props
     //3) support for existing dimensions?
     //5) test whether nodes can lead to vanilla dimensions
 
+
+    
+    [HarmonyPatch]
+    public static class TestPatches
+    {
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(PlayerFogWarpDetector), nameof(PlayerFogWarpDetector.LateUpdate))]
+        private static void PlayerFogWarpDetector_LateUpdate(PlayerFogWarpDetector __instance)
+        {
+	        if (!(PlanetaryFogController.GetActiveFogSphere() != null))
+	        {
+		        return;
+	        }
+	        float num = __instance._targetFogFraction;
+	        if (PlayerState.IsInsideShip())
+	        {
+		        num = Mathf.Max(__instance._shipFogDetector.GetTargetFogFraction(), num);
+	        }
+	        if (num < __instance._fogFraction)
+	        {
+		        float num2 = (__instance._closestFogWarp.UseFastFogFade() ? 1f : 0.2f);
+		        __instance._fogFraction = Mathf.MoveTowards(__instance._fogFraction, num, Time.deltaTime * num2);
+	        }
+	        else
+	        {
+		        __instance._fogFraction = num;
+	        }
+	        if (__instance._targetFogColorWarpVolume != __instance._closestFogWarp)
+	        {
+		        __instance._targetFogColorWarpVolume = __instance._closestFogWarp;
+		        __instance._startColorCrossfadeTime = Time.time;
+		        __instance._startCrossfadeColor = __instance._fogColor;
+	        }
+	        if (__instance._targetFogColorWarpVolume != null)
+	        {
+		        Color fogColor = __instance._targetFogColorWarpVolume.GetFogColor();
+		        if (__instance._fogFraction <= 0f)
+		        {
+			        __instance._fogColor = fogColor;
+		        }
+		        else
+		        {
+			        float t = Mathf.InverseLerp(__instance._startColorCrossfadeTime, __instance._startColorCrossfadeTime + 1f, Time.time);
+			        __instance._fogColor = Color.Lerp(__instance._startCrossfadeColor, fogColor, t);
+		        }
+	        }
+	        if (__instance._playerEffectBubbleController != null)
+	        {
+		        __instance._playerEffectBubbleController.SetFogFade(__instance._fogFraction, __instance._fogColor);
+	        }
+	        if (__instance._shipLandingCamEffectBubbleController != null)
+	        {
+		        __instance._shipLandingCamEffectBubbleController.SetFogFade(__instance._fogFraction, __instance._fogColor);
+	        }
+        }
+    }
+
+
+
+
+
+
     public static class BrambleNodeBuilder
     {
         // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
@@ -115,6 +177,15 @@ namespace NewHorizons.Builder.Props
 
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
+                
+
+            //
+            // Set the scale
+            //
+            brambleNode.transform.localScale = Vector3.one * config.scale;
+            warpController._warpRadius *= config.scale;
+            warpController._exitRadius *= config.scale;
+            
 
             //
             // change the colors
