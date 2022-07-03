@@ -25,6 +25,8 @@ namespace NewHorizons.Handlers
         private static Dictionary<NHAstroObject, NewHorizonsBody> _dict;
         private static Dictionary<AstroObject,   NewHorizonsBody> _dimensions;
 
+        public static List<NewHorizonsBody> allBodies;
+
         public static NewHorizonsBody GetNewHorizonsBody(AstroObject ao)
         {
             if (ao is NHAstroObject nhAO)
@@ -44,6 +46,7 @@ namespace NewHorizons.Handlers
             ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
             _dict = new Dictionary<NHAstroObject, NewHorizonsBody>();
             _dimensions = new Dictionary<AstroObject, NewHorizonsBody>();
+            allBodies = bodies;
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -461,13 +464,16 @@ namespace NewHorizons.Handlers
                 StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
             }
 
-            if (body.Config?.Bramble?.nodes != null)
+            if (body.Config?.Bramble != null)
             {
-                BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
+                if (body.Config.Bramble.nodes != null)
+                {
+                    BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
+                }
                 
                 if (body.Config.Bramble.dimension != null)
                 {
-                    BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, body.Object.GetComponent<AstroObject>());
+                    BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, go.GetComponent<AstroObject>());
                 }
             }
 

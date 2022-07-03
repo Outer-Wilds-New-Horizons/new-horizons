@@ -35,10 +35,13 @@ namespace NewHorizons.Builder.Props
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
+            Logger.Log("finishing paring nodes for dimension " + dimensionName);
             if (!unpairedNodes.ContainsKey(dimensionName)) return;
 
+            Logger.Log("continuing to paring nodes for dimension " + dimensionName);
             foreach (var nodeWarpController in unpairedNodes[dimensionName])
             {
+                Logger.Log(".    paring node for dimension" + dimensionName);
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
@@ -49,6 +52,7 @@ namespace NewHorizons.Builder.Props
         {
             if (!unpairedNodes.ContainsKey(linksTo)) unpairedNodes[linksTo] = new();
             
+            Logger.Log("recording entrance for " + linksTo);
             unpairedNodes[linksTo].Add(warpVolume);
         }
 
@@ -71,7 +75,7 @@ namespace NewHorizons.Builder.Props
             // 1) Run Floyd-Warshall on the dimensions (where each dimension is a vertex and each node is an edge)
             // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propogatedSignals[A]
 
-            var allDimensions = new List<PlanetConfig>(); // TODO: grab this list from Main or something, idk
+            var allDimensions = PlanetCreationHandler.allBodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
 
             //
             // Floyd Warshall
@@ -132,6 +136,7 @@ namespace NewHorizons.Builder.Props
 
         private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
         {
+            Logger.Log("Attempting to pair entrance to " + destinationName);
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
 
@@ -139,6 +144,7 @@ namespace NewHorizons.Builder.Props
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
 
+            Logger.Log("Pairing entrance to " + destinationName);
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
             return true;
