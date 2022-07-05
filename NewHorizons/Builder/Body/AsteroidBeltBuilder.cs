@@ -14,9 +14,9 @@ namespace NewHorizons.Builder.Body
         {
             var belt = parentConfig.AsteroidBelt;
 
-            float minSize = belt.minSize;
-            float maxSize = belt.maxSize;
-            int count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
+            var minSize = belt.minSize;
+            var maxSize = belt.maxSize;
+            var count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
             if (belt.amount >= 0) count = belt.amount;
             if (count > 200) count = 200;
 
