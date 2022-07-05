@@ -42,17 +42,17 @@ namespace NewHorizons.Builder.Props
                 var detailPath = detailGO.transform.GetPath();
                 foreach (var childPath in detail.removeChildren)
                 {
-                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
-                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    var childObj = GameObject.Find($"{detailPath}/{childPath}");
-                    if (childObj == null)
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{detailPath}/{childPath}";
+                    
+                    var flag = true;
+                    foreach (var childObj in detailGO.GetComponentsInChildren<Transform>().Where(x => x.GetPath() == path))
                     {
-                        Logger.LogWarning($"Couldn't find \"{childPath}\". Including disabled game objects in search.");
-                        childObj = SearchUtilities.Find($"{detailPath}/{childPath}");
+                        flag = false;
+                        childObj.gameObject.SetActive(false);
                     }
 
-                    if (childObj != null) childObj.gameObject.SetActive(false);
-                    else Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
