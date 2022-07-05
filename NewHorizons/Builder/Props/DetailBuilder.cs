@@ -45,8 +45,14 @@ namespace NewHorizons.Builder.Props
                     // We purposefully use GameObject.Find here because we don't want to find inactive things.
                     // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
                     var childObj = GameObject.Find($"{detailPath}/{childPath}");
+                    if (childObj == null)
+                    {
+                        Logger.LogWarning($"Couldn't find \"{childPath}\". Including disabled game objects in search.", true);
+                        childObj = SearchUtilities.Find($"{detailPath}/{childPath}");
+                    }
+
                     if (childObj != null) childObj.gameObject.SetActive(false);
-                    else Logger.LogWarning($"Couldn't find {childPath}");
+                    else Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
