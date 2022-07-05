@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules;
+using NewHorizons.Components;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -20,7 +21,7 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
+        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
         {
             if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
             if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
@@ -65,8 +66,10 @@ namespace NewHorizons.Builder.Atmosphere
             bottomTSR.LODBias = 0;
             bottomTSR.LODRadius = 1f;
 
-            TessSphereSectorToggle bottomTSST = cloudsBottomGO.AddComponent<TessSphereSectorToggle>();
-            bottomTSST._sector = sector;
+            if (cloaked)
+                cloudsBottomGO.AddComponent<CloakedTessSphereSectorToggle>()._sector = sector;
+            else
+                cloudsBottomGO.AddComponent<TessSphereSectorToggle>()._sector = sector;
 
             GameObject cloudsFluidGO = new GameObject("CloudsFluid");
             cloudsFluidGO.SetActive(false);
