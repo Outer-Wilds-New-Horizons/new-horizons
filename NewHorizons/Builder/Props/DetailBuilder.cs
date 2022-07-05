@@ -233,7 +233,7 @@ namespace NewHorizons.Builder.Props
                         // If it's not a moving anglerfish make sure the anim controller is regular
                         else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {
-                            Logger.Log("Enabling anglerfish animation");
+                            Logger.LogVerbose("Enabling anglerfish animation");
                             // Remove any reference to its angler
                             if (angler._anglerfishController)
                             {

@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;

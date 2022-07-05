@@ -26,18 +26,18 @@ namespace NewHorizons.External
                 if (!_saveFile.Profiles.ContainsKey(_activeProfileName))
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                 _activeProfile = _saveFile.Profiles[_activeProfileName];
-                Logger.Log($"Loaded save data for {_activeProfileName}");
+                Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
             }
             catch (Exception)
             {
                 try
                 {
-                    Logger.Log($"Couldn't load save data from {FileName}, creating a new file");
+                    Logger.LogVerbose($"Couldn't load save data from {FileName}, creating a new file");
                     _saveFile = new NewHorizonsSaveFile();
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                     _activeProfile = _saveFile.Profiles[_activeProfileName];
                     Main.Instance.ModHelper.Storage.Save(_saveFile, FileName);
-                    Logger.Log($"Loaded save data for {_activeProfileName}");
+                    Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
                 }
                 catch (Exception e)
                 {
@@ -55,7 +55,7 @@ namespace NewHorizons.External
         public static void Reset()
         {
             if (_saveFile == null || _activeProfile == null) Load();
-            Logger.Log($"Resetting save data for {_activeProfileName}");
+            Logger.LogVerbose($"Resetting save data for {_activeProfileName}");
             _activeProfile = new NewHorizonsProfile();
             _saveFile.Profiles[_activeProfileName] = _activeProfile;
 

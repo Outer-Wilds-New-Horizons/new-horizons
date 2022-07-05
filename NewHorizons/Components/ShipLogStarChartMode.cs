@@ -133,7 +133,7 @@ namespace NewHorizons.Components
                 else
                 {
                     var path = $"planets/{uniqueID}.png";
-                    Logger.Log($"Trying to load {path}");
+                    Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
             }

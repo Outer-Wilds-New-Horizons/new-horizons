@@ -311,14 +311,14 @@ namespace NewHorizons.Utility.DebugMenu
             // Get all configs
             foreach (var filePath in menu.loadedConfigFiles.Keys)
             {
-                Logger.Log($"Potentially updating copy of config at {filePath}");
-                Logger.Log($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
-                Logger.Log($"{menu.loadedConfigFiles[filePath].name}");
+                Logger.LogVerbose($"Potentially updating copy of config at {filePath}");
+                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
+                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name}");
 
                 if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) 
                 { 
-                    Logger.Log("Failed to update copy of config at " + filePath); 
+                    Logger.LogWarning("Failed to update copy of config at " + filePath); 
                     continue; 
                 }
 

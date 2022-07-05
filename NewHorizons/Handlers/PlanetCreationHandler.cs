@@ -278,8 +278,8 @@ namespace NewHorizons.Handlers
                 {
                     if (defaultPrimaryToSun)
                     {
-                        Logger.Log($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to Sun");
-                        primaryBody = AstroObjectLocator.GetAstroObject("Sun");
+                        Logger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
+                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -292,8 +292,6 @@ namespace NewHorizons.Handlers
             {
                 primaryBody = null;
             }
-
-            Logger.Log($"Begin generation sequence of [{body.Config.name}]");
 
             var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
@@ -339,7 +337,7 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                Logger.Log("Doing spawn point thing");
+                Logger.LogVerbose("Making spawn point");
                 Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
@@ -606,7 +604,7 @@ namespace NewHorizons.Handlers
 
         public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
         {
-            Logger.Log($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
+            Logger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
             go.transform.parent = Locator.GetRootTransform();
 

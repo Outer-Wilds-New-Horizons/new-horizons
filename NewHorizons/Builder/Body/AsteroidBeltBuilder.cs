@@ -69,7 +69,7 @@ namespace NewHorizons.Builder.Body
                 }
 
                 var asteroid = new NewHorizonsBody(config, mod);
-                PlanetCreationHandler.NextPassBodies.Add(asteroid);
+                PlanetCreationHandler.GenerateBody(asteroid);
             }
         }
     }

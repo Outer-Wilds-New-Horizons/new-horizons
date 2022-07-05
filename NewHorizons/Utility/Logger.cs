@@ -14,53 +14,17 @@ namespace NewHorizons.Utility
             _logLevel = newLevel;
         }
 
-        public static void LogProperties(UnityEngine.Object obj)
-        {
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
-            {
-                string name = descriptor?.Name;
-                object value;
-                try
-                {
-                    value = descriptor.GetValue(obj);
-                }
-                catch (Exception)
-                {
-                    value = null;
-                }
-
-                Log($"{obj.name} {name}={value}");
-            }
-        }
-
-        public static void LogPath(GameObject go)
-        {
-            if (go == null) Log("Can't print path: GameObject is null");
-            else Log($"{go.transform.GetPath()}");
-        }
-
         public static void Log(string text, LogType type)
         {
             if ((int)type < (int)_logLevel) return;
-            Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
+            Main.Instance.ModHelper.Console.WriteLine($"{Enum.GetName(typeof(LogType), type)} : {text}", LogTypeToMessageType(type));
         }
 
-        public static void LogVerbose(string text)
-        {
-            Log(text, LogType.Verbose);
-        }
-        public static void Log(string text)
-        {
-            Log(text, LogType.Log);
-        }
-        public static void LogError(string text)
-        {
-            Log(text, LogType.Error);
-        }
-        public static void LogWarning(string text)
-        {
-            Log(text, LogType.Warning);
-        }
+        public static void Log(string text) => Log(text, LogType.Log);
+        public static void LogVerbose(string text) => Log(text, LogType.Verbose);
+        public static void LogError(string text) => Log(text, LogType.Error);
+        public static void LogWarning(string text) => Log(text, LogType.Warning);
+
         public enum LogType
         {
             Todo,
@@ -69,6 +33,7 @@ namespace NewHorizons.Utility
             Warning,
             Error,
         }
+
         private static MessageType LogTypeToMessageType(LogType t)
         {
             switch (t)

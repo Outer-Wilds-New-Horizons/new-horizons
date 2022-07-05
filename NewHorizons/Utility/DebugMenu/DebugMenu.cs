@@ -200,7 +200,7 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 if (body.RelativePath == null)
                 {
-                    Logger.Log($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
+                    Logger.LogWarning($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
                     continue;
                 }
 
@@ -219,7 +219,7 @@ namespace NewHorizons.Utility.DebugMenu
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                Logger.Log($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
+                Logger.LogVerbose($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
 
                 if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
 

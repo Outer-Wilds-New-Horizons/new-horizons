@@ -36,7 +36,7 @@ namespace NewHorizons.Handlers
             var selectionCount = Mathf.Min(eligibleCount, 3);
             var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            Logger.Log($"Displaying {selectionCount} bodies on the title screen");
+            Logger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
             GameObject body1, body2, body3;
 
@@ -74,7 +74,7 @@ namespace NewHorizons.Handlers
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.Log($"Displaying {body.Config.name} on the title screen");
+            Logger.LogVerbose($"Displaying {body.Config.name} on the title screen");
             GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
             HeightMapModule heightMap = new HeightMapModule();
             var minSize = 15;
