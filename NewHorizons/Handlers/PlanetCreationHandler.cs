@@ -267,6 +267,9 @@ namespace NewHorizons.Handlers
         // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            // Focal points are weird
+            if (body.Config.FocalPoint != null) FocalPointBuilder.ValidateConfig(body.Config);
+
             AstroObject primaryBody;
             if (body.Config.Orbit.primaryBody != null)
             {

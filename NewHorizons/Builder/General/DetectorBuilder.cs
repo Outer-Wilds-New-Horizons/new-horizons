@@ -44,45 +44,41 @@ namespace NewHorizons.Builder.General
 
         public static void SetDetector(AstroObject primaryBody, AstroObject astroObject, ConstantForceDetector forceDetector)
         {
-            GravityVolume parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
-            if (parentGravityVolume != null)
+            var binaryFocalPoint = primaryBody?.gameObject?.GetComponent<BinaryFocalPoint>();
+            var parentGravityVolume = primaryBody?.GetAttachedOWRigidbody()?.GetAttachedGravityVolume();
+
+            if (binaryFocalPoint != null)
             {
-                forceDetector._detectableFields = new ForceVolume[] { parentGravityVolume };
-            }
-            else if (astroObject != null)
-            {
-                // It's probably a focal point (or its just broken)
-                var binaryFocalPoint = primaryBody?.gameObject?.GetComponent<BinaryFocalPoint>();
-                if (binaryFocalPoint != null)
+                if (astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName))
                 {
-                    if (astroObject.GetCustomName().Equals(binaryFocalPoint.PrimaryName))
+                    binaryFocalPoint.Primary = astroObject;
+                    if (binaryFocalPoint.Secondary != null)
                     {
-                        binaryFocalPoint.Primary = astroObject;
-                        if (binaryFocalPoint.Secondary != null)
-                        {
-                            var secondaryRB = binaryFocalPoint.Secondary.GetAttachedOWRigidbody();
-                            SetBinaryForceDetectableFields(binaryFocalPoint, forceDetector, (ConstantForceDetector)secondaryRB.GetAttachedForceDetector());
-                        }
-                    }
-                    else if (astroObject.GetCustomName().Equals(binaryFocalPoint.SecondaryName))
-                    {
-                        binaryFocalPoint.Secondary = astroObject;
-                        if (binaryFocalPoint.Primary != null)
-                        {
-                            var primaryRB = binaryFocalPoint.Primary.GetAttachedOWRigidbody();
-                            SetBinaryForceDetectableFields(binaryFocalPoint, (ConstantForceDetector)primaryRB.GetAttachedForceDetector(), forceDetector);
-                        }
-                    }
-                    else
-                    {
-                        // It's a planet
-                        if (binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
-                        {
-                            var fakeBarycenterGravityVolume = binaryFocalPoint.FakeMassBody.GetComponent<AstroObject>().GetGravityVolume();
-                            forceDetector._detectableFields = new ForceVolume[] { fakeBarycenterGravityVolume };
-                        }
+                        var secondaryRB = binaryFocalPoint.Secondary.GetAttachedOWRigidbody();
+                        SetBinaryForceDetectableFields(binaryFocalPoint, forceDetector, (ConstantForceDetector)secondaryRB.GetAttachedForceDetector());
                     }
                 }
+                else if (astroObject.GetCustomName().Equals(binaryFocalPoint.SecondaryName))
+                {
+                    binaryFocalPoint.Secondary = astroObject;
+                    if (binaryFocalPoint.Primary != null)
+                    {
+                        var primaryRB = binaryFocalPoint.Primary.GetAttachedOWRigidbody();
+                        SetBinaryForceDetectableFields(binaryFocalPoint, (ConstantForceDetector)primaryRB.GetAttachedForceDetector(), forceDetector);
+                    }
+                }
+                else
+                {
+                    // It's a planet
+                    if (binaryFocalPoint.Primary != null && binaryFocalPoint.Secondary != null)
+                    {
+                        forceDetector._detectableFields = new ForceVolume[] { parentGravityVolume };
+                    }
+                }
+            }
+            else
+            {
+                forceDetector._detectableFields = new ForceVolume[] { parentGravityVolume };
             }
         }
 

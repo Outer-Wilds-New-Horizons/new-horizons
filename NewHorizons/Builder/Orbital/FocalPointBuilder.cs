@@ -4,6 +4,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
+using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Orbital
@@ -18,12 +19,10 @@ namespace NewHorizons.Builder.Orbital
             binary.PrimaryName = module.primary;
             binary.SecondaryName = module.secondary;
 
-            // Below is the stupid fix for making circumbinary planets or wtv
-
             // Grab the bodies from the main dictionary
             NewHorizonsBody primary = null;
             NewHorizonsBody secondary = null;
-            foreach (var body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            foreach (var body in Main.BodyDict[config.starSystem])
             {
                 if (body.Config.name == module.primary)
                 {
@@ -44,28 +43,26 @@ namespace NewHorizons.Builder.Orbital
                 Logger.LogError($"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
                 return;
             }
+        }
+
+        public static void ValidateConfig(PlanetConfig config)
+        {
+            var primary = Main.BodyDict[config.starSystem].Where(x => x.Config.name == config.FocalPoint.primary).FirstOrDefault();
+            var secondary = Main.BodyDict[config.starSystem].Where(x => x.Config.name == config.FocalPoint.secondary).FirstOrDefault();
 
             var gravitationalMass = GetGravitationalMass(primary.Config) + GetGravitationalMass(secondary.Config);
 
-            // Copying it because I don't want to modify the actual config
-            var fakeMassConfig = new PlanetConfig();
-
             // Now need to fake the 3 values to make it return this mass
-            fakeMassConfig.Base.surfaceSize = 1;
-            fakeMassConfig.Base.surfaceGravity = gravitationalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
-            fakeMassConfig.Base.gravityFallOff = primary.Config.Base.gravityFallOff;
+            config.Base.surfaceSize = 1;
+            config.Base.surfaceGravity = gravitationalMass * GravityVolume.GRAVITATIONAL_CONSTANT;
+            config.Base.gravityFallOff = primary.Config.Base.gravityFallOff;
 
-            // Other stuff to make the fake barycenter not interact with anything in any way
-            fakeMassConfig.name = config.name + "_FakeBarycenterMass";
-            fakeMassConfig.Base.soiOverride = 0;
-            fakeMassConfig.Base.hasMapMarker = false;
-            fakeMassConfig.ReferenceFrame.enabled = false;
-            fakeMassConfig.ReferenceFrame.hideInMap = true;
+            // Other stuff to make the barycenter not interact with anything in any way
+            config.Base.soiOverride = 0;
 
-            fakeMassConfig.Orbit = new OrbitModule();
-            fakeMassConfig.Orbit.CopyPropertiesFrom(config.Orbit);
-
-            binary.FakeMassBody = PlanetCreationHandler.GenerateBody(new NewHorizonsBody(fakeMassConfig, mod));
+            var separation = primary.Config.Orbit.semiMajorAxis + secondary.Config.Orbit.semiMajorAxis;
+            config.ReferenceFrame.bracketRadius = separation;
+            config.ReferenceFrame.targetColliderRadius = separation;
         }
 
         private static float GetGravitationalMass(PlanetConfig config)

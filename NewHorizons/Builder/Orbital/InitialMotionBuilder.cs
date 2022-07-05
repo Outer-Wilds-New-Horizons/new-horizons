@@ -70,8 +70,8 @@ namespace NewHorizons.Builder.Orbital
                 else
                 {
                     // It's a circumbinary moon/planet
-                    var fakePrimaryBody = focalPoint.FakeMassBody.GetComponent<AstroObject>();
-                    SetMotionFromPrimary(fakePrimaryBody, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
+                    var focalPointAO = focalPoint.GetComponent<AstroObject>();
+                    SetMotionFromPrimary(focalPointAO, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
                 }
             }
             else if (primaryBody.GetGravityVolume())
@@ -107,11 +107,11 @@ namespace NewHorizons.Builder.Orbital
             // Might make binaries with binaries with binaries work 
             if (primaryBody.GetGravityVolume() == null)
             {
-                primaryGravity = new Gravity(primaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+                primaryGravity = new Gravity(primaryBody.GetGravityVolume());
             }
             if (secondaryBody.GetGravityVolume() == null)
             {
-                secondaryGravity = new Gravity(secondaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+                secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
             }
 
             // Update the positions
