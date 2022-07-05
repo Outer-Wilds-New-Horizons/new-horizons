@@ -31,6 +31,7 @@ namespace NewHorizons
 
         // Settings
         public static bool Debug { get; private set; }
+        public static bool VerboseLogs { get; private set; }
         private static bool _useCustomTitleScreen;
         private static bool _wasConfigured = false;
         private static string _defaultSystemOverride;
@@ -80,6 +81,7 @@ namespace NewHorizons
             var currentScene = SceneManager.GetActiveScene().name;
 
             Debug = config.GetSettingsValue<bool>("Debug");
+            VerboseLogs = config.GetSettingsValue<bool>("Verbose Logs");
 
             if (currentScene == "SolarSystem")
             {
@@ -87,7 +89,9 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
+            if (Debug && VerboseLogs) Logger.UpdateLogLevel(Logger.LogType.Verbose);
+            else if (Debug)           Logger.UpdateLogLevel(Logger.LogType.Log);
+            else                      Logger.UpdateLogLevel(Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
@@ -168,7 +172,7 @@ namespace NewHorizons
 
             ResetConfigs(resetTranslation: false);
 
-            Logger.Log("Begin load of config files...", Logger.LogType.Log);
+            Logger.Log("Begin load of config files...");
 
             try
             {

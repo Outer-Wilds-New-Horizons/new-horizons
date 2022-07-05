@@ -1,4 +1,4 @@
-﻿using OWML.Common;
+using OWML.Common;
 using System;
 using System.ComponentModel;
 using UnityEngine;
@@ -45,6 +45,10 @@ namespace NewHorizons.Utility
             Main.Instance.ModHelper.Console.WriteLine(Enum.GetName(typeof(LogType), type) + " : " + text, LogTypeToMessageType(type));
         }
 
+        public static void LogVerbose(string text)
+        {
+            Log(text, LogType.Verbose);
+        }
         public static void Log(string text)
         {
             Log(text, LogType.Log);
@@ -53,13 +57,14 @@ namespace NewHorizons.Utility
         {
             Log(text, LogType.Error);
         }
-        public static void LogWarning(string text)
+        public static void LogWarning(string text, bool isVerbose=false)
         {
             Log(text, LogType.Warning);
         }
         public enum LogType
         {
             Todo,
+            Verbose,
             Log,
             Warning,
             Error,

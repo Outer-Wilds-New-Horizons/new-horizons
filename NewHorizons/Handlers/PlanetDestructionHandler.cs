@@ -49,7 +49,7 @@ namespace NewHorizons.Handlers
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
-            Logger.Log($"Removing [{ao.name}]");
+            Logger.LogVerbose($"Removing [{ao.name}]");
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
@@ -208,7 +208,7 @@ namespace NewHorizons.Handlers
         {
             if (go == null) return;
 
-            Logger.Log($"Removing [{go.name}]");
+            Logger.LogVerbose($"Removing [{go.name}]");
 
             if (delete)
             {
