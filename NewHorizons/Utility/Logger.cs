@@ -57,7 +57,7 @@ namespace NewHorizons.Utility
         {
             Log(text, LogType.Error);
         }
-        public static void LogWarning(string text, bool isVerbose=false)
+        public static void LogWarning(string text)
         {
             Log(text, LogType.Warning);
         }
