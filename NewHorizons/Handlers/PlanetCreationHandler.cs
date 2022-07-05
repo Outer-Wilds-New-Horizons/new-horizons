@@ -435,6 +435,8 @@ namespace NewHorizons.Handlers
                 SandBuilder.Make(go, sector, rb, body.Config.Sand);
             }
 
+            var willHaveCloak = body.Config.Cloak != null && body.Config.Cloak.radius != 0f;
+
             if (body.Config.Atmosphere != null)
             {
                 var airInfo = new AtmosphereModule.AirInfo()
@@ -451,7 +453,7 @@ namespace NewHorizons.Handlers
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
+                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, willHaveCloak, body.Mod);
                     SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
@@ -480,7 +482,7 @@ namespace NewHorizons.Handlers
             }
 
             // Has to go last probably
-            if (body.Config.Cloak != null && body.Config.Cloak.radius != 0f)
+            if (willHaveCloak)
             {
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
