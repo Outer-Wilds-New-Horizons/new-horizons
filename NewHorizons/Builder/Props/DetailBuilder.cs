@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Props
                     var path = $"{detailPath}/{childPath}";
                     
                     var flag = true;
-                    foreach (var childObj in detailGO.GetComponentsInChildren<Transform>().Where(x => x.GetPath() == path))
+                    foreach (var childObj in detailGO.GetComponentsInChildren<Transform>(true).Where(x => x.GetPath() == path))
                     {
                         flag = false;
                         childObj.gameObject.SetActive(false);
