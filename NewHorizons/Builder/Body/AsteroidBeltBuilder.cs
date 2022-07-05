@@ -5,6 +5,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body
 {
     public static class AsteroidBeltBuilder
@@ -18,6 +19,8 @@ namespace NewHorizons.Builder.Body
             int count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
             if (belt.amount >= 0) count = belt.amount;
             if (count > 200) count = 200;
+
+            Logger.Log($"Generating {count} asteroid belt around {bodyName}");
 
             Random.InitState(belt.randomSeed);
 

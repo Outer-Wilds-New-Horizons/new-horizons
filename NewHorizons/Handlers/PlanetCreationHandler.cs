@@ -219,7 +219,8 @@ namespace NewHorizons.Handlers
                 {
                     try
                     {
-                        GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
+                        Logger.Log($"Creating [{body.Config.name}]");
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun);
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
                         _dict.Add(planetObject.GetComponent<NHAstroObject>(), body);
@@ -360,6 +361,8 @@ namespace NewHorizons.Handlers
             {
                 ProxyBuilder.Make(go, body);
             });
+
+            Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
             return go;
         }
