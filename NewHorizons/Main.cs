@@ -89,7 +89,7 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            if (Debug && VerboseLogs) Logger.UpdateLogLevel(Logger.LogType.Verbose);
+            if (VerboseLogs)          Logger.UpdateLogLevel(Logger.LogType.Verbose);
             else if (Debug)           Logger.UpdateLogLevel(Logger.LogType.Log);
             else                      Logger.UpdateLogLevel(Logger.LogType.Error);
 
