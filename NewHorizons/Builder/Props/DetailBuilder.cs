@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.Props
                     var childObj = GameObject.Find($"{detailPath}/{childPath}");
                     if (childObj == null)
                     {
-                        Logger.LogWarning($"Couldn't find \"{childPath}\". Including disabled game objects in search.", true);
+                        Logger.LogWarning($"Couldn't find \"{childPath}\". Including disabled game objects in search.");
                         childObj = SearchUtilities.Find($"{detailPath}/{childPath}");
                     }
 
