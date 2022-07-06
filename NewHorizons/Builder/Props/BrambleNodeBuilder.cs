@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Builder.Body;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
@@ -26,30 +26,37 @@ namespace NewHorizons.Builder.Props
         // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
         // values are all nodes' warp controllers that link to a given dimension
         // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
-        private static Dictionary<string, List<InnerFogWarpVolume>> unpairedNodes = new();
+        private static Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
+        private static Dictionary<string, List<SignalInfo>> _propogatedSignals = null;
 
-        public static Dictionary<string, InnerFogWarpVolume> namedNodes = new();
-        public static Dictionary<BrambleNodeInfo, GameObject> builtBrambleNodes = new();
+        public static readonly Dictionary<string, InnerFogWarpVolume> namedNodes = new();
+        public static readonly Dictionary<BrambleNodeInfo, GameObject> builtBrambleNodes = new();
 
-        public static Dictionary<string, List<SignalInfo>> propogatedSignals = null;
+        public static void Init()
+        {
+            _unpairedNodes.Clear();
+            _propogatedSignals.Clear();
+            namedNodes.Clear();
+            builtBrambleNodes.Clear();
+        }
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
-            if (!unpairedNodes.ContainsKey(dimensionName)) return;
+            if (!_unpairedNodes.ContainsKey(dimensionName)) return;
 
-            foreach (var nodeWarpController in unpairedNodes[dimensionName])
+            foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
-            unpairedNodes.Remove(dimensionName);
+            _unpairedNodes.Remove(dimensionName);
         }
 
         private static void RecordUnpairedNode(InnerFogWarpVolume warpVolume, string linksTo)
         {
-            if (!unpairedNodes.ContainsKey(linksTo)) unpairedNodes[linksTo] = new();
+            if (!_unpairedNodes.ContainsKey(linksTo)) _unpairedNodes[linksTo] = new();
             
-            unpairedNodes[linksTo].Add(warpVolume);
+            _unpairedNodes[linksTo].Add(warpVolume);
         }
 
         private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
@@ -111,10 +118,10 @@ namespace NewHorizons.Builder.Props
 
             // this dictionary lists all the signals a given node should have, depending on the dimension it links to
             // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propogatedSignals["dimension1"]
-            propogatedSignals = new Dictionary<string, List<SignalInfo>>();
+            _propogatedSignals = new Dictionary<string, List<SignalInfo>>();
             foreach (var dimension in allDimensions)
             {
-                propogatedSignals[dimension.name] = new();
+                _propogatedSignals[dimension.name] = new();
                 var dimensionIndex = dimensionNameToIndex[dimension.name];
                 
                 foreach (var destinationDimension in allDimensions)
@@ -124,7 +131,7 @@ namespace NewHorizons.Builder.Props
                     var destinationIndex = dimensionNameToIndex[destinationDimension.name];
                     if (access[dimensionIndex, destinationIndex])
                     {
-                        propogatedSignals[dimension.name].AddRange(destinationDimension.Signal.signals);
+                        _propogatedSignals[dimension.name].AddRange(destinationDimension.Signal.signals);
                     }
                 }
             }
@@ -205,8 +212,8 @@ namespace NewHorizons.Builder.Props
             //
             // Make signals
             //
-            if (propogatedSignals == null) PropogateSignals();
-            foreach (var signalConfig in propogatedSignals[config.linksTo])
+            if (_propogatedSignals == null) PropogateSignals();
+            foreach (var signalConfig in _propogatedSignals[config.linksTo])
             {
                 var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
                 signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;

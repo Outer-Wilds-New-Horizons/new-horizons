@@ -271,6 +271,7 @@ namespace NewHorizons
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
+                BrambleNodeBuilder.Init();
                 AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
