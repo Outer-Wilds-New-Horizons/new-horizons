@@ -10,6 +10,7 @@ For physical objects there are currently two ways of setting them up: specify an
 - Use "Object Explorer" to search
 - Do not use the search functionality on Scene Explorer, it is really, really slow. Use the "Object Search" tab instead.
 - Generally you can find planets by writing their name with no spaces/punctuation followed by "_Body".
+- There's also [this community-maintained list of props](https://docs.google.com/spreadsheets/d/1VJaglB1kRL0VqaXhvXepIeymo93zqhWex-j7_QDm6NE/edit?usp=sharing) which you can use to find interesting props and check to see if they have collision.
 
 ## Using the Prop Placer
 
