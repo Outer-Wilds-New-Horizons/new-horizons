@@ -1,18 +1,12 @@
-using HarmonyLib;
 using NewHorizons.Builder.Body;
-using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
 using static NewHorizons.External.Modules.SignalModule;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
