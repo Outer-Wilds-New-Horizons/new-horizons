@@ -75,10 +75,10 @@ namespace NewHorizons.Handlers
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
-            Logger.Log("Checking for Vessel Prefab");
+            Logger.LogVerbose("Checking for Vessel Prefab");
             if (VesselPrefab == null) return null;
 
-            Logger.Log("Creating Vessel");
+            Logger.LogVerbose("Creating Vessel");
             var vesselObject = GameObject.Instantiate(VesselPrefab);
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
@@ -159,7 +159,7 @@ namespace NewHorizons.Handlers
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
-            Logger.Log("Updating DB Vessel");
+            Logger.LogVerbose("Updating DB Vessel");
             var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
             VesselObject = vectorSector;
 

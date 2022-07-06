@@ -31,6 +31,7 @@ namespace NewHorizons
 
         // Settings
         public static bool Debug { get; private set; }
+        public static bool VerboseLogs { get; private set; }
         private static bool _useCustomTitleScreen;
         private static bool _wasConfigured = false;
         private static string _defaultSystemOverride;
@@ -75,11 +76,12 @@ namespace NewHorizons
 
         public override void Configure(IModConfig config)
         {
-            Logger.Log("Settings changed");
+            Logger.LogVerbose("Settings changed");
 
             var currentScene = SceneManager.GetActiveScene().name;
 
             Debug = config.GetSettingsValue<bool>("Debug");
+            VerboseLogs = config.GetSettingsValue<bool>("Verbose Logs");
 
             if (currentScene == "SolarSystem")
             {
@@ -87,7 +89,9 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            Logger.UpdateLogLevel(Debug ? Logger.LogType.Log : Logger.LogType.Error);
+            if (VerboseLogs)          Logger.UpdateLogLevel(Logger.LogType.Verbose);
+            else if (Debug)           Logger.UpdateLogLevel(Logger.LogType.Log);
+            else                      Logger.UpdateLogLevel(Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
@@ -103,7 +107,7 @@ namespace NewHorizons
             // Don't reload if we haven't configured yet (called on game start)
             if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
-                Logger.Log("Reloading");
+                Logger.LogVerbose("Reloading");
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             }
 
@@ -168,7 +172,7 @@ namespace NewHorizons
 
             ResetConfigs(resetTranslation: false);
 
-            Logger.Log("Begin load of config files...", Logger.LogType.Log);
+            Logger.Log("Begin load of config files...");
 
             try
             {
@@ -213,7 +217,7 @@ namespace NewHorizons
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.Log($"Scene Loaded: {scene.name} {mode}");
+            Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
 
             // Set time loop stuff if its enabled and if we're warping to a new place
             if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
@@ -254,11 +258,6 @@ namespace NewHorizons
 
             if (scene.name == "SolarSystem")
             {
-                foreach (var body in GameObject.FindObjectsOfType<AstroObject>())
-                {
-                    Logger.Log($"{body.name}, {body.transform.rotation}");
-                }
-
                 if (_ship != null)
                 {
                     _ship = SearchUtilities.Find("Ship_Body").InstantiateInactive();
@@ -298,7 +297,7 @@ namespace NewHorizons
 
                 try
                 {
-                    Logger.Log($"Star system loaded [{Instance.CurrentStarSystem}]");
+                    Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
                     Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
                 }
                 catch (Exception e)
@@ -340,7 +339,7 @@ namespace NewHorizons
 
         public void EnableWarpDrive()
         {
-            Logger.Log("Setting up warp drive");
+            Logger.LogVerbose("Setting up warp drive");
             PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             HasWarpDrive = true;
         }
@@ -364,7 +363,7 @@ namespace NewHorizons
                     {
                         var name = Path.GetFileNameWithoutExtension(file);
 
-                        Logger.Log($"Loading system {name}");
+                        Logger.LogVerbose($"Loading system {name}");
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
@@ -438,7 +437,7 @@ namespace NewHorizons
 
                 if (File.Exists($"{folder}{relativeFile}"))
                 {
-                    Logger.Log($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
+                    Logger.LogVerbose($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
 
                     var config = new TranslationConfig($"{folder}{relativeFile}");
 
@@ -467,7 +466,7 @@ namespace NewHorizons
                     return null;
                 }
 
-                Logger.Log($"Loaded {config.name}");
+                Logger.LogVerbose($"Loaded {config.name}");
 
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {

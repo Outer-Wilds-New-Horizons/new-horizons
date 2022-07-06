@@ -28,13 +28,13 @@ namespace NewHorizons.Components
         {
             if (star == null) return;
 
-            Logger.Log($"Adding new star to list: {star.gameObject.name}");
+            Logger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
             Instance._stars.Add(star);
         }
 
         public static void RemoveStar(StarController star)
         {
-            Logger.Log($"Removing star from list: {star?.gameObject?.name}");
+            Logger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
                 if (Instance._activeStar != null && Instance._activeStar.Equals(star))
@@ -85,7 +85,7 @@ namespace NewHorizons.Components
 
             if (_activeStar != null) _activeStar.Disable();
 
-            Logger.Log($"Switching active star: {star.gameObject.name}");
+            Logger.LogVerbose($"Switching active star: {star.gameObject.name}");
 
             _activeStar = star;
 

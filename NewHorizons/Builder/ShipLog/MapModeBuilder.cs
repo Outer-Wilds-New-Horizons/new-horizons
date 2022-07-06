@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.ShipLog
         {
             const float unviewedIconOffset = 15;
 
-            Logger.Log($"Adding ship log astro object for {body.Config.name}");
+            Logger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
 
             GameObject unviewedReference = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
 

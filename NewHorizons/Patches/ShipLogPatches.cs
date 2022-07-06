@@ -21,7 +21,7 @@ namespace NewHorizons.Patches
         {
             RumorModeBuilder.Init();
             ShipLogHandler.Init();
-            Logger.Log("Beginning Ship Log Generation For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
+            Logger.Log($"Beginning Ship Log Generation For: {Main.Instance.CurrentStarSystem}");
             if (Main.Instance.CurrentStarSystem != "SolarSystem")
             {
                 __instance._shipLogXmlAssets = new TextAsset[] { };
@@ -58,7 +58,7 @@ namespace NewHorizons.Patches
                 RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
             }
 
-            Logger.Log("Ship Log Generation Complete For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
+            Logger.Log($"Ship Log Generation Complete For: {Main.Instance.CurrentStarSystem}");
         }
 
         [HarmonyPrefix]
@@ -157,7 +157,7 @@ namespace NewHorizons.Patches
                 }
             }
 
-            Logger.Log("Map Mode Construction Complete", Logger.LogType.Log);
+            Logger.Log("Map Mode Construction Complete");
         }
 
         [HarmonyPrefix]

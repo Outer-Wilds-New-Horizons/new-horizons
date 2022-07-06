@@ -40,13 +40,20 @@ namespace NewHorizons.Builder.Props
             if (detail.removeChildren != null)
             {
                 var detailPath = detailGO.transform.GetPath();
+                var transforms = detailGO.GetComponentsInChildren<Transform>(true);
                 foreach (var childPath in detail.removeChildren)
                 {
-                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
-                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    var childObj = GameObject.Find($"{detailPath}/{childPath}");
-                    if (childObj != null) childObj.gameObject.SetActive(false);
-                    else Logger.LogWarning($"Couldn't find {childPath}");
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{detailPath}/{childPath}";
+
+                    var flag = true;
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    {
+                        flag = false;
+                        childObj.gameObject.SetActive(false);
+                    }
+
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
@@ -227,7 +234,7 @@ namespace NewHorizons.Builder.Props
                         // If it's not a moving anglerfish make sure the anim controller is regular
                         else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {
-                            Logger.Log("Enabling anglerfish animation");
+                            Logger.LogVerbose("Enabling anglerfish animation");
                             // Remove any reference to its angler
                             if (angler._anglerfishController)
                             {

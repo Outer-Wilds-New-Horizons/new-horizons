@@ -16,7 +16,7 @@ namespace NewHorizons.VoiceActing
 
             if (API == null)
             {
-                Logger.Log("VoiceMod isn't installed");
+                Logger.LogVerbose("VoiceMod isn't installed");
                 Enabled = false;
                 return;
             }
@@ -33,7 +33,7 @@ namespace NewHorizons.VoiceActing
                 }
                 else
                 {
-                    Logger.Log($"Didn't find VoiceMod audio for {mod.ModHelper.Manifest.Name} at {folder}");
+                    Logger.LogVerbose($"Didn't find VoiceMod audio for {mod.ModHelper.Manifest.Name} at {folder}");
                 }
             }
         }

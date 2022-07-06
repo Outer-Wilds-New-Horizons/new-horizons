@@ -76,14 +76,14 @@ namespace NewHorizons.Builder.Body
         {
             if (blackHole == null || whiteHole == null) return;
 
-            Logger.Log($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
+            Logger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
 
             var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
             var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
 
             if (whiteHoleVolume == null || blackHoleVolume == null)
             {
-                Logger.Log($"[{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities");
+                Logger.LogWarning($"[{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities");
                 return;
             }
 

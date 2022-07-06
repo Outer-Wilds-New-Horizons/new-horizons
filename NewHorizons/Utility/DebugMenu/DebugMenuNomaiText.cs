@@ -101,7 +101,7 @@ namespace NewHorizons.Utility.DebugMenu
                     collapsed = true
                 };
 
-                Logger.Log("adding go " + conversationMetadata.conversationGo);
+                Logger.LogVerbose("Adding conversation Game Object " + conversationMetadata.conversationGo);
 
                 conversations.Add(conversationMetadata);
 
@@ -128,7 +128,7 @@ namespace NewHorizons.Utility.DebugMenu
                         var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
                         metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
 
-                        Logger.Log("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
+                        Logger.LogVerbose("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
                     }
 
                     conversationMetadata.spirals.Add(metadata);
@@ -190,7 +190,7 @@ namespace NewHorizons.Utility.DebugMenu
                         if (GUILayout.Button(arrow + conversationMeta.planetConfig.name + " - " + i, menu._submenuStyle)) 
                         {
                             conversationMeta.collapsed = !conversationMeta.collapsed;
-                            Logger.Log("BUTTON " + i);
+                            Logger.LogVerbose("BUTTON " + i);
                         }
 
                         if (!conversationMeta.collapsed)
@@ -204,7 +204,7 @@ namespace NewHorizons.Utility.DebugMenu
                                 //conversationMeta.conversation.type == PropModule.NomaiTextInfo.NomaiTextType.Wall &&
                                 GUILayout.Button("Place conversation with G")
                             ) {
-                                Logger.Log(conversationMeta.conversationGo+" 0");
+                                Logger.LogVerbose(conversationMeta.conversationGo+" 0");
                                 DebugNomaiTextPlacer.active = true;
                                 _dnp.onRaycast = (DebugRaycastData data) =>
                                 {
@@ -423,7 +423,7 @@ namespace NewHorizons.Utility.DebugMenu
             SpiralMetadata parentSpiralMeta = GetParent(spiralMetadata);
             var parentPoints = parentSpiralMeta.spiralGo.GetComponent<NomaiTextLine>()._points;
             
-            Logger.Log("got parent and parent points");
+            Logger.Log("Got parent and parent points");
 
             var prevPointOnParent = parentPoints[Mathf.Max(0,                      spiralMetadata.pointOnParent-1)];
             var nextPointOnParent = parentPoints[Mathf.Min(parentPoints.Count()-1, spiralMetadata.pointOnParent+1)];
@@ -432,14 +432,14 @@ namespace NewHorizons.Utility.DebugMenu
             var newRotationRelativeToParent = parentTangent + 90;
             spiralMetadata.spiral.zRotation = parentSpiralMeta.spiral.zRotation + newRotationRelativeToParent;
 
-            Logger.Log("got zRotation: " + newRotationRelativeToParent + " -=- " + spiralMetadata.spiral.zRotation);
+            Logger.Log("Got zRotation: " + newRotationRelativeToParent + " -=- " + spiralMetadata.spiral.zRotation);
 
             var pointOnParent = parentPoints[spiralMetadata.pointOnParent];
             var selfBasePoint = spiralMetadata.spiralGo.GetComponent<NomaiTextLine>()._points[0];
             var newPointRelativeToParent = -selfBasePoint + pointOnParent;
             spiralMetadata.spiral.position = parentSpiralMeta.spiral.position + new Vector2(newPointRelativeToParent.x, newPointRelativeToParent.y);
 
-            Logger.Log("got position " + newPointRelativeToParent + " -=- " + spiralMetadata.spiral.position);
+            Logger.Log("Got position " + newPointRelativeToParent + " -=- " + spiralMetadata.spiral.position);
 
             spiralMetadata.spiralGo.transform.localPosition = new Vector3(spiralMetadata.spiral.position.x, spiralMetadata.spiral.position.y, 0);
             spiralMetadata.spiralGo.transform.localEulerAngles = new Vector3(0, 0, spiralMetadata.spiral.zRotation);
@@ -450,9 +450,9 @@ namespace NewHorizons.Utility.DebugMenu
 
         private void UpdateChildrenLocations(SpiralMetadata parentSprialMetadata)
         {
-            Logger.Log("updating children");
+            Logger.Log("Updating children");
             ConversationMetadata convoMeta = conversations.Where(m => m.conversation == parentSprialMetadata.conversation).First();
-            Logger.Log("got convo meta");
+            Logger.Log("Got conversation metadata");
 
             convoMeta.spirals
                 .Where(spiralMeta => spiralMeta.parentID == parentSprialMetadata.id && spiralMeta.id != parentSprialMetadata.id)
@@ -482,15 +482,10 @@ namespace NewHorizons.Utility.DebugMenu
         {
             var nomaiWallTextObj = conversationMetadata.conversationGo;
             if (nomaiWallTextObj == null) return;
+
             var planetGO = sectorParent;
             var info = conversationMetadata.conversation;
         
-            Logger.Log(nomaiWallTextObj + " 1");
-            Logger.Log(nomaiWallTextObj?.transform + " 2");
-            Logger.Log(planetGO + " 3");
-            Logger.Log(planetGO?.transform + " 4");
-            Logger.Log(info + " 5");
-            Logger.Log(info?.position + " 6");
             nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
             if (info.normal != null)
             {
