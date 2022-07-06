@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.AchievementsPlus;
+using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External;
@@ -268,6 +269,8 @@ namespace NewHorizons
 
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
+                BrambleDimensionBuilder.Init();
+                BrambleNodeBuilder.Init();
                 AstroObjectLocator.Init();
                 OWAssetHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
@@ -485,7 +488,8 @@ namespace NewHorizons
                 }
 
                 // Has to happen after we make sure theres a system config
-                config.MigrateAndValidate();
+                config.Validate();
+                config.Migrate();
 
                 body = new NewHorizonsBody(config, mod, relativePath);
             }

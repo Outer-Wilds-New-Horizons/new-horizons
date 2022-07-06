@@ -23,6 +23,21 @@ namespace NewHorizons.Handlers
         private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
 
         private static Dictionary<NHAstroObject, NewHorizonsBody> _dict;
+        private static Dictionary<AstroObject,   NewHorizonsBody> _dimensions;
+
+        public static List<NewHorizonsBody> allBodies;
+
+        public static NewHorizonsBody GetNewHorizonsBody(AstroObject ao)
+        {
+            if (ao is NHAstroObject nhAO)
+            {
+                if (_dict.ContainsKey(nhAO)) return _dict[nhAO];
+            }
+
+            if (!_dimensions.ContainsKey(ao)) return null;
+            
+            return _dimensions[ao];
+        }
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -30,6 +45,8 @@ namespace NewHorizons.Handlers
 
             ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
             _dict = new Dictionary<NHAstroObject, NewHorizonsBody>();
+            _dimensions = new Dictionary<AstroObject, NewHorizonsBody>();
+            allBodies = bodies;
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -223,7 +240,11 @@ namespace NewHorizons.Handlers
                         var planetObject = GenerateBody(body, defaultPrimaryToSun);
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
-                        _dict.Add(planetObject.GetComponent<NHAstroObject>(), body);
+
+                        var ao = planetObject.GetComponent<NHAstroObject>();
+
+                        if (!ao.IsDimension) _dict.Add(ao, body);
+                        else _dimensions.Add(ao, body);
                     }
                     catch (Exception e)
                     {
@@ -268,6 +289,44 @@ namespace NewHorizons.Handlers
         // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (body.Config?.Bramble?.dimension != null)
+            {
+                if (body.Config?.Orbit?.staticPosition == null)
+                {
+                    Logger.LogError($"Unable to build bramble dimension {body.Config?.name} because it does not have Orbit.staticPosition defined.");
+                    return null;
+                }
+
+                return GenerateBrambleDimensionBody(body);
+            }
+            else
+            {
+                return GenerateStandardBody(body, defaultPrimaryToSun);
+            }
+        }
+
+        public static GameObject GenerateBrambleDimensionBody(NewHorizonsBody body)
+        {
+            var go = BrambleDimensionBuilder.Make(body);
+            var ao = go.GetComponent<NHAstroObject>();
+            var sector = go.FindChild("Sector").GetComponent<Sector>();
+            var owRigidBody = go.GetComponent<OWRigidbody>();
+
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
+            body.Object = go;
+
+            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
+            {
+                AstroObjectLocator.RegisterCustomAstroObject(ao);   
+            }
+
+            Logger.Log($"returning GO named {go.name}");
+
+            return go;
+        }
+
+        public static GameObject GenerateStandardBody(NewHorizonsBody body, bool defaultPrimaryToSun = false) 
+        { 
             // Focal points are weird
             if (body.Config.FocalPoint != null) FocalPointBuilder.ValidateConfig(body.Config);
 
@@ -351,6 +410,10 @@ namespace NewHorizons.Handlers
             {
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
             }
+            else if (body.Config.Orbit.staticPosition != null)
+            {
+                ao.transform.position = body.Config.Orbit.staticPosition;
+            }
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
             {
@@ -404,6 +467,19 @@ namespace NewHorizons.Handlers
             if (body.Config.Star != null)
             {
                 StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
+            }
+
+            if (body.Config?.Bramble != null)
+            {
+                if (body.Config.Bramble.nodes != null)
+                {
+                    BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
+                }
+                
+                if (body.Config.Bramble.dimension != null)
+                {
+                    BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, go.GetComponent<AstroObject>());
+                }
             }
 
             if (body.Config.Ring != null)

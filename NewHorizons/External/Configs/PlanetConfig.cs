@@ -7,6 +7,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
 {
@@ -30,6 +31,11 @@ namespace NewHorizons.External.Configs
         /// Base Properties of this Body
         /// </summary>
         public BaseModule Base;
+
+        /// <summary>
+        /// Add bramble nodes to this planet and/or make this planet a bramble dimension
+        /// </summary>
+        public BrambleModule Bramble;
 
         /// <summary>
         /// Set to a higher number if you wish for this body to be built sooner
@@ -171,12 +177,18 @@ namespace NewHorizons.External.Configs
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
         }
 
-        public void MigrateAndValidate()
+        public void Validate()
         {
-            // Validate
+            // If we can correct a part of the config, do it
+            // If it cannot be solved, throw an exception
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
+            if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
+            if (Orbit?.staticPosition != null) Orbit.isStatic = true;
+        }
 
+        public void Migrate()
+        {
             // Backwards compatability
             // Should be the only place that obsolete things are referenced
 #pragma warning disable 612, 618
