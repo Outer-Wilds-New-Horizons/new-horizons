@@ -68,7 +68,7 @@ namespace NewHorizons.Utility
             }
             else
             {
-                Logger.Log($"Registering [{ao.name}] as [{key}]");
+                Logger.LogVerbose($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
             }
         }

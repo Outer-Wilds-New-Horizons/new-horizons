@@ -29,7 +29,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private static void ReloadConfigs()
         {
-            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
+            Logger.Log("Begin reload of config files...");
 
             Main.ResetConfigs();
 

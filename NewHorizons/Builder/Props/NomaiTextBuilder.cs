@@ -30,9 +30,10 @@ namespace NewHorizons.Builder.Props
         }
 
         private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        
         public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
         {
-            Logger.Log("retrieving wall text obj for " + convo);
+            Logger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
@@ -168,7 +169,7 @@ namespace NewHorizons.Builder.Props
                             () => Main.IsSystemReady,
                             () =>
                             {
-                                Logger.Log("Fixing scroll!");
+                                Logger.LogVerbose("Fixing scroll!");
                                 scrollItem._nomaiWallText = nomaiWallText;
                                 scrollItem.SetSector(sector);
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;

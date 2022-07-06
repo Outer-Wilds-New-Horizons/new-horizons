@@ -19,7 +19,6 @@ namespace NewHorizons.Builder.Atmosphere
             // Going to copy from dark bramble
             var dbFog = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
             var dbPlanetaryFogController = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB").GetComponent<PlanetaryFogController>();
-            var brambleLODFog = SearchUtilities.Find("DarkBramble_Body/Sector_DB/Proxy_DB/LOD_DB_VolumeticFog");
 
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
             MF.mesh = dbFog.GetComponent<MeshFilter>().mesh;
@@ -37,30 +36,9 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogColorRampIntensity = 1f;
             PFC.fogTint = atmo.fogTint.ToColor();
 
-            GameObject lodFogGO = new GameObject("LODFogSphere");
-            lodFogGO.SetActive(false);
-            lodFogGO.transform.parent = fogGO.transform;
-            lodFogGO.transform.localScale = Vector3.one * atmo.size / 320f;
-
-            MeshFilter lodMF = lodFogGO.AddComponent<MeshFilter>();
-            lodMF.mesh = brambleLODFog.GetComponent<MeshFilter>().mesh;
-
-            MeshRenderer lodMR = lodFogGO.AddComponent<MeshRenderer>();
-            lodMR.material = new Material(brambleLODFog.GetComponent<MeshRenderer>().material);
-            lodMR.material.color = atmo.fogTint.ToColor();
-            lodMR.material.renderQueue = 1000;
-
-            /*
-            SectorProxy lodFogSectorProxy = lodFogGO.AddComponent<SectorProxy>();
-            lodFogSectorProxy._renderers = new List<Renderer> { lodMR };
-            lodFogSectorProxy.SetSector(sector);
-            */
-
             fogGO.transform.position = planetGO.transform.position;
-            lodFogGO.transform.position = planetGO.transform.position;
 
             fogGO.SetActive(true);
-            lodFogGO.SetActive(true);
         }
     }
 }

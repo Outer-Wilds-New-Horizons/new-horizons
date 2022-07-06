@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Init()
         {
-            Logger.Log($"Initializing SignalBuilder");
+            Logger.LogVerbose($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
             _availableSignalNames = new Stack<SignalName>(new SignalName[]
             {

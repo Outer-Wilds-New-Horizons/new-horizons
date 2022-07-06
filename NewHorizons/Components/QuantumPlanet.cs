@@ -52,7 +52,7 @@ namespace NewHorizons.Components
 
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
-            Logger.Log($"Trying to change quantum state");
+            Logger.LogVerbose($"QuantumPlanet - Trying to change quantum state");
 
             if (states.Count <= 1) return false;
 

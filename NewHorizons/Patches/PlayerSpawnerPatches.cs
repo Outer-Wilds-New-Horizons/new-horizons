@@ -9,7 +9,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(PlayerSpawner), nameof(PlayerSpawner.SpawnPlayer))]
         public static void PlayerSpawner_SpawnPlayer(PlayerSpawner __instance)
         {
-            Logger.Log("Player spawning");
+            Logger.LogVerbose("Player spawning");
             __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
         }
     }

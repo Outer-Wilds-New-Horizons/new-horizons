@@ -1,15 +1,12 @@
-using HarmonyLib;
 using NewHorizons.Builder.Body;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using System;
+using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
-using Logger = NewHorizons.Utility.Logger;
+using static NewHorizons.External.Modules.SignalModule;
 
 namespace NewHorizons.Builder.Props
 {
@@ -85,27 +82,37 @@ namespace NewHorizons.Builder.Props
         // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
         // values are all nodes' warp controllers that link to a given dimension
         // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
-        private static Dictionary<string, List<InnerFogWarpVolume>> unpairedNodes = new();
+        private static Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
+        private static Dictionary<string, List<SignalInfo>> _propogatedSignals = null;
 
-        public static Dictionary<string, InnerFogWarpVolume> namedNodes = new();
+        public static Dictionary<string, InnerFogWarpVolume> NamedNodes { get; private set; }
+        public static Dictionary<BrambleNodeInfo, GameObject> BuiltBrambleNodes { get; private set; }
+
+        public static void Init()
+        {
+            _unpairedNodes = new();
+            _propogatedSignals = null;
+            NamedNodes = new();
+            BuiltBrambleNodes = new();
+        }
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
-            if (!unpairedNodes.ContainsKey(dimensionName)) return;
+            if (!_unpairedNodes.ContainsKey(dimensionName)) return;
 
-            foreach (var nodeWarpController in unpairedNodes[dimensionName])
+            foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
-            unpairedNodes.Remove(dimensionName);
+            _unpairedNodes.Remove(dimensionName);
         }
 
         private static void RecordUnpairedNode(InnerFogWarpVolume warpVolume, string linksTo)
         {
-            if (!unpairedNodes.ContainsKey(linksTo)) unpairedNodes[linksTo] = new();
+            if (!_unpairedNodes.ContainsKey(linksTo)) _unpairedNodes[linksTo] = new();
             
-            unpairedNodes[linksTo].Add(warpVolume);
+            _unpairedNodes[linksTo].Add(warpVolume);
         }
 
         private static OuterFogWarpVolume GetOuterFogWarpVolumeFromAstroObject(GameObject go)
@@ -117,27 +124,79 @@ namespace NewHorizons.Builder.Props
             return outerFogWarpVolume;
         }
 
+        private static void PropogateSignals()
+        {
+            // The purpose of this function is to determine which signals any given node should play, based on which dimension it links to
+            // you know how the main dark bramble node, the one that forms the core of the planet, plays Feldspar's harmonica signal, even though Feldspar isn't in the dimension that the node links directly to?
+            // that's what this function is for. it would determine that the main node should play Feldspar's signal
+            
+            // New Strategy (thanks Damian):
+            // 1) Run Floyd-Warshall on the dimensions (where each dimension is a vertex and each node is an edge)
+            // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propogatedSignals[A]
+
+            var allDimensions = PlanetCreationHandler.allBodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
+
+            //
+            // Floyd Warshall
+            //
+
+            // access will be our final answer - if access[i, j], then nodes linking to dimension i should display all of dimension j's signals
+            var access = new bool[allDimensions.Count(), allDimensions.Count()];
+
+            var dimensionNameToIndex = new Dictionary<string, int>();
+            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) dimensionNameToIndex[allDimensions[dimensionIndex].name] = dimensionIndex;
+            
+            // set up the direct links (ie, if dimension 0 contains a node that links to dimension 3, set access[0, 3] = true)
+            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) 
+            {
+                var dimension = allDimensions[dimensionIndex];
+                if (dimension.Bramble.nodes == null) continue;
+                foreach (var node in dimension.Bramble.nodes)
+                {
+                    var destinationDimensionIndex = dimensionNameToIndex[node.linksTo];   
+                    access[dimensionIndex, destinationDimensionIndex] = true;
+                }
+            }   
+
+            // a node that links to dimension A should display all of dimension A's signals, so for the purposes of our function, we need to say that dimension A links to dimension A
+            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++) access[dimensionIndex, dimensionIndex] = true;
+
+            // The actual Floyd-Warshall - determine whether each pair of dimensions link indirectly (eg if A->B->C, then after this step, access[A, C] = true)
+            for (int k = 0; k < allDimensions.Count(); k++)
+                for (int i = 0; i < allDimensions.Count(); i++)
+                    for (int j = 0; j < allDimensions.Count(); j++)
+                        if (access[i, k] && access[k, j]) 
+                            access[i, j] = true;
+
+            //
+            // Build the list of dimensionName -> List<SignalInfo>
+            //
+
+            // this dictionary lists all the signals a given node should have, depending on the dimension it links to
+            // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propogatedSignals["dimension1"]
+            _propogatedSignals = new Dictionary<string, List<SignalInfo>>();
+            foreach (var dimension in allDimensions)
+            {
+                _propogatedSignals[dimension.name] = new();
+                var dimensionIndex = dimensionNameToIndex[dimension.name];
+                
+                foreach (var destinationDimension in allDimensions)
+                {
+                    if (destinationDimension.Signal?.signals == null) continue;
+
+                    var destinationIndex = dimensionNameToIndex[destinationDimension.name];
+                    if (access[dimensionIndex, destinationIndex])
+                    {
+                        _propogatedSignals[dimension.name].AddRange(destinationDimension.Signal.signals);
+                    }
+                }
+            }
+        }
+
         private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
         {
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
-            
-            // add the destination dimension's signals to this node
-            var dimensionNewHorizonsBody = PlanetCreationHandler.GetNewHorizonsBody(destinationAO);
-            if (dimensionNewHorizonsBody != null && dimensionNewHorizonsBody.Config?.Signal?.signals != null)
-            {
-                var body = nodeWarp.GetComponentInParent<AstroObject>().gameObject;
-                var sector = nodeWarp.GetComponentInParent<Sector>();
-                
-                foreach(var signalConfig in dimensionNewHorizonsBody.Config?.Signal?.signals)
-                {
-                    var signalGO = SignalBuilder.Make(body, sector, signalConfig, dimensionNewHorizonsBody.Mod);
-                    signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
-                    signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
-                    signalGO.transform.position = nodeWarp.transform.position;
-                    signalGO.transform.parent = nodeWarp.transform;
-                }        
-            }
 
             // link the node's warp volume to the destination's
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
@@ -153,15 +212,15 @@ namespace NewHorizons.Builder.Props
         // DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Interactables_ExitOnlyDimension/InnerWarp_ToExitOnly  // need to change the colors
         // DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster   // need to delete the child "Signal_Harmonica"
 
-        public static void Make(GameObject go, Sector sector, BrambleNodeInfo[] configs)
+        public static void Make(GameObject go, Sector sector, BrambleNodeInfo[] configs, IModBehaviour mod)
         {
             foreach(var config in configs)
             {
-                Make(go, sector, config);
+                Make(go, sector, config, mod);
             }
         }
 
-        public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config)
+        public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config, IModBehaviour mod)
         {
             //
             // spawn the bramble node
@@ -211,10 +270,22 @@ namespace NewHorizons.Builder.Props
             //
             if (config.name != null)
             {
-                namedNodes[config.name] = warpController;
+                NamedNodes[config.name] = warpController;
                 BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
             }
 
+            //
+            // Make signals
+            //
+            if (_propogatedSignals == null) PropogateSignals();
+            foreach (var signalConfig in _propogatedSignals[config.linksTo])
+            {
+                var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
+                signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
+                signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
+                signalGO.transform.position = brambleNode.transform.position;
+                signalGO.transform.parent = brambleNode.transform;
+            }
 
             // Done!
             return brambleNode;

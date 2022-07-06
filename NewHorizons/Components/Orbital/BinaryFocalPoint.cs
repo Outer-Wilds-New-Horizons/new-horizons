@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 namespace NewHorizons.Components.Orbital
 {
     public class BinaryFocalPoint : MonoBehaviour
@@ -8,14 +8,6 @@ namespace NewHorizons.Components.Orbital
 
         public AstroObject Primary { get; set; }
         public AstroObject Secondary { get; set; }
-
-        public GameObject FakeMassBody { get; set; }
-
-        void Start()
-        {
-            // Make sure its active but maybe it hasn't been set yet
-            if (FakeMassBody) FakeMassBody.SetActive(true);
-        }
 
         void Update()
         {
@@ -48,8 +40,6 @@ namespace NewHorizons.Components.Orbital
             {
                 component2.DisableMarker();
             }
-
-            FakeMassBody.SetActive(false);
         }
     }
 }

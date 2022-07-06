@@ -49,11 +49,11 @@ namespace NewHorizons.Handlers
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
-            Logger.Log($"Removing [{ao.name}]");
+            Logger.LogVerbose($"Removing [{ao.name}]");
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
-                Logger.Log($"[{ao.name}] was already removed");
+                Logger.LogVerbose($"[{ao.name}] was already removed");
                 return;
             }
 
@@ -61,7 +61,7 @@ namespace NewHorizons.Handlers
 
             if (toDestroy.Contains(ao))
             {
-                Logger.LogError($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
+                Logger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
                 return;
             }
 
@@ -133,7 +133,7 @@ namespace NewHorizons.Handlers
 
                         foreach (var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
                         {
-                            Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
+                            Logger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
                             GameObject.Destroy(sunProxy.gameObject);
                         }
 
@@ -143,12 +143,12 @@ namespace NewHorizons.Handlers
                 }
 
                 // Always delete the children
-                Logger.Log($"Removing Children of [{ao._name}], [{ao._customName}]");
+                Logger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
                 foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
                     if (child == null) continue;
 
-                    Logger.Log($"Removing child [{child.name}] of [{ao._name}]");
+                    Logger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
 
                     // Ship starts as a child of TH but obvious we want to keep that
                     if (child.name == "Ship_Body") continue;
@@ -208,7 +208,7 @@ namespace NewHorizons.Handlers
         {
             if (go == null) return;
 
-            Logger.Log($"Removing [{go.name}]");
+            Logger.LogVerbose($"Removing [{go.name}]");
 
             if (delete)
             {
@@ -236,7 +236,7 @@ namespace NewHorizons.Handlers
             if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
 
             if (distantProxy == null && distantProxyClone == null)
-                Logger.Log($"Couldn't find proxy for {name}");
+                Logger.LogVerbose($"Couldn't find proxy for {name}");
         }
     }
 }
