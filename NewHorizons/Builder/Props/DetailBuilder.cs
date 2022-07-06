@@ -40,13 +40,14 @@ namespace NewHorizons.Builder.Props
             if (detail.removeChildren != null)
             {
                 var detailPath = detailGO.transform.GetPath();
+                var transforms = detailGO.GetComponentsInChildren<Transform>(true);
                 foreach (var childPath in detail.removeChildren)
                 {
                     // Multiple children can have the same path so we delete all that match
                     var path = $"{detailPath}/{childPath}";
-                    
+
                     var flag = true;
-                    foreach (var childObj in detailGO.GetComponentsInChildren<Transform>(true).Where(x => x.GetPath() == path))
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
                     {
                         flag = false;
                         childObj.gameObject.SetActive(false);
