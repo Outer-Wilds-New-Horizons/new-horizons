@@ -179,8 +179,8 @@ namespace NewHorizons.Builder.Props
             // change the colors
             //
             
-            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
-            else               SetNodeColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
+            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
+            else               SetNodeColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
 
             //
             // set up warps
