@@ -29,7 +29,13 @@ namespace NewHorizons.Builder.Body
         // keys are all node names that have been referenced as an exit by at least one dimension but do not (yet) exist
         // values are all dimensions' warp controllers that link to a given dimension
         // unpairedNodes[name of node that doesn't exist yet] => List{warp controller for dimension that exits to that node, ...}
-        private static Dictionary<string, List<OuterFogWarpVolume>> unpairedDimensions = new();
+        private static Dictionary<string, List<OuterFogWarpVolume>> _unpairedDimensions = new();
+
+        public static void Init()
+        {
+            // Just in case something went wrong and a dimension never got paired last time
+            _unpairedDimensions.Clear();
+        }
 
         public static GameObject Make(NewHorizonsBody body)
         {
@@ -92,8 +98,8 @@ namespace NewHorizons.Builder.Body
         {
             if (!BrambleNodeBuilder.namedNodes.ContainsKey(exitName))
             {
-                if (!unpairedDimensions.ContainsKey(exitName)) unpairedDimensions[exitName] = new();
-                unpairedDimensions[exitName].Add(warpController);
+                if (!_unpairedDimensions.ContainsKey(exitName)) _unpairedDimensions[exitName] = new();
+                _unpairedDimensions[exitName].Add(warpController);
                 return;
             }
             
@@ -102,9 +108,9 @@ namespace NewHorizons.Builder.Body
 
         public static void FinishPairingDimensionsForExitNode(string nodeName)
         {
-            if (!unpairedDimensions.ContainsKey(nodeName)) return;
+            if (!_unpairedDimensions.ContainsKey(nodeName)) return;
 
-            var warpControllers = unpairedDimensions[nodeName].ToList();
+            var warpControllers = _unpairedDimensions[nodeName].ToList();
             foreach (var dimensionWarpController in warpControllers)
             {
                 PairExit(nodeName, dimensionWarpController);    
