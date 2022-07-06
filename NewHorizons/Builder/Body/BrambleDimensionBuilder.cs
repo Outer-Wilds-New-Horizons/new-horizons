@@ -1,4 +1,6 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Components.Orbital;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -43,10 +45,13 @@ namespace NewHorizons.Builder.Body
 
             // spawn the dimension body
             var dimensionPrefab = SearchUtilities.Find("DB_HubDimension_Body");
-            var dimension = GameObject.Instantiate(dimensionPrefab);
-            var ao = dimension.GetComponent<AstroObject>();
+            var dimension = dimensionPrefab.InstantiateInactive();
+            
+            PlanetCreationHandler.UpdateBodyOrbit(body, dimension);
 
             // fix name
+            var ao = dimension.GetComponent<NHAstroObject>();
+            ao.IsDimension = true;
             var name = body.Config.name ?? "Custom Bramble Dimension";
             ao._customName = name;
             ao._name = AstroObject.Name.CustomString;
@@ -89,7 +94,8 @@ namespace NewHorizons.Builder.Body
                 var fog = fogGO.GetComponent<PlanetaryFogController>();
                 fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
             }
-            
+
+            dimension.SetActive(true);
 
             return dimension;
         }

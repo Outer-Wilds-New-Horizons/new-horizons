@@ -239,10 +239,11 @@ namespace NewHorizons.Handlers
                         GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
-                        var nhAO = planetObject.GetComponent<NHAstroObject>();
-                        var owAO = planetObject.GetComponent<AstroObject>();
-                        if (nhAO != null) _dict.Add(nhAO, body);
-                        else if (owAO != null) _dimensions.Add(owAO, body);
+
+                        var ao = planetObject.GetComponent<NHAstroObject>();
+
+                        if (!ao.IsDimension) _dict.Add(ao, body);
+                        else _dimensions.Add(ao, body);
                     }
                     catch (Exception e)
                     {
@@ -306,7 +307,7 @@ namespace NewHorizons.Handlers
         public static GameObject GenerateBrambleDimensionBody(NewHorizonsBody body)
         {
             var go = BrambleDimensionBuilder.Make(body);
-            var ao = go.GetComponent<AstroObject>();
+            var ao = go.GetComponent<NHAstroObject>();
             var sector = go.FindChild("Sector").GetComponent<Sector>();
             var owRigidBody = go.GetComponent<OWRigidbody>();
 

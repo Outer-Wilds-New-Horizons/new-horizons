@@ -489,7 +489,8 @@ namespace NewHorizons
                 }
 
                 // Has to happen after we make sure theres a system config
-                config.MigrateAndValidate();
+                config.Validate();
+                config.Migrate();
 
                 body = new NewHorizonsBody(config, mod, relativePath);
             }
