@@ -16,7 +16,7 @@ namespace NewHorizons.Utility
 
         private static void Log(string text, LogType type)
         {
-            if ((int)type < (int)_logLevel) return;
+            if (type < _logLevel) return;
             Main.Instance.ModHelper.Console.WriteLine($"{Enum.GetName(typeof(LogType), type)} : {text}", LogTypeToMessageType(type));
         }
 
