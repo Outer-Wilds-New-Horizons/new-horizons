@@ -14,37 +14,31 @@ namespace NewHorizons.Utility
             _logLevel = newLevel;
         }
 
-        public static void Log(string text, LogType type)
+        private static void Log(string text, LogType type)
         {
             if ((int)type < (int)_logLevel) return;
             Main.Instance.ModHelper.Console.WriteLine($"{Enum.GetName(typeof(LogType), type)} : {text}", LogTypeToMessageType(type));
         }
 
-        public static void Log(string text) => Log(text, LogType.Log);
         public static void LogVerbose(string text) => Log(text, LogType.Verbose);
-        public static void LogError(string text) => Log(text, LogType.Error);
+        public static void Log(string text) => Log(text, LogType.Log);
         public static void LogWarning(string text) => Log(text, LogType.Warning);
+        public static void LogError(string text) => Log(text, LogType.Error);
 
         public enum LogType
         {
-            Todo,
             Verbose,
             Log,
             Warning,
             Error,
         }
 
-        private static MessageType LogTypeToMessageType(LogType t)
-        {
-            switch (t)
+        private static MessageType LogTypeToMessageType(LogType t) =>
+            t switch
             {
-                case LogType.Error:
-                    return MessageType.Error;
-                case LogType.Warning:
-                    return MessageType.Warning;
-                default:
-                    return MessageType.Info;
-            }
-        }
+                LogType.Error => MessageType.Error,
+                LogType.Warning => MessageType.Warning,
+                _ => MessageType.Info
+            };
     }
 }
