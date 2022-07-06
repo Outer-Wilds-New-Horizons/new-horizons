@@ -23,15 +23,15 @@ namespace NewHorizons.Builder.Props
         private static Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
         private static Dictionary<string, List<SignalInfo>> _propogatedSignals = null;
 
-        public static readonly Dictionary<string, InnerFogWarpVolume> namedNodes = new();
-        public static readonly Dictionary<BrambleNodeInfo, GameObject> builtBrambleNodes = new();
+        public static Dictionary<string, InnerFogWarpVolume> NamedNodes { get; private set; }
+        public static Dictionary<BrambleNodeInfo, GameObject> BuiltBrambleNodes { get; private set; }
 
         public static void Init()
         {
-            _unpairedNodes.Clear();
-            _propogatedSignals.Clear();
-            namedNodes.Clear();
-            builtBrambleNodes.Clear();
+            _unpairedNodes = new();
+            _propogatedSignals = null;
+            NamedNodes = new();
+            BuiltBrambleNodes = new();
         }
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
@@ -199,7 +199,7 @@ namespace NewHorizons.Builder.Props
             //
             if (config.name != null)
             {
-                namedNodes[config.name] = warpController;
+                NamedNodes[config.name] = warpController;
                 BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
             }
 

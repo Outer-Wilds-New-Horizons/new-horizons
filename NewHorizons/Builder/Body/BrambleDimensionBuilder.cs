@@ -26,12 +26,12 @@ namespace NewHorizons.Builder.Body
         // keys are all node names that have been referenced as an exit by at least one dimension but do not (yet) exist
         // values are all dimensions' warp controllers that link to a given dimension
         // unpairedNodes[name of node that doesn't exist yet] => List{warp controller for dimension that exits to that node, ...}
-        private static Dictionary<string, List<OuterFogWarpVolume>> _unpairedDimensions = new();
+        private static Dictionary<string, List<OuterFogWarpVolume>> _unpairedDimensions;
 
         public static void Init()
         {
             // Just in case something went wrong and a dimension never got paired last time
-            _unpairedDimensions.Clear();
+            _unpairedDimensions = new();
         }
 
         public static GameObject Make(NewHorizonsBody body)
@@ -42,18 +42,17 @@ namespace NewHorizons.Builder.Body
             var dimensionPrefab = SearchUtilities.Find("DB_HubDimension_Body");
             var dimension = dimensionPrefab.InstantiateInactive();
             
-            PlanetCreationHandler.UpdateBodyOrbit(body, dimension);
+            // Fix AO
+            var ao = dimension.GetComponent<AstroObject>();
+            var nhao = dimension.AddComponent<NHAstroObject>();
+            nhao.CopyPropertiesFrom(ao);
+            Component.Destroy(ao);
 
-            // fix name
-            var ao = dimension.GetComponent<NHAstroObject>();
-            ao.IsDimension = true;
+            nhao.IsDimension = true;
             var name = body.Config.name ?? "Custom Bramble Dimension";
-            ao._customName = name;
-            ao._name = AstroObject.Name.CustomString;
+            nhao._customName = name;
+            nhao._name = AstroObject.Name.CustomString;
             dimension.name = name.Replace(" ", "").Replace("'", "") + "_Body";
-
-            // set position
-            ao.transform.position = body.Config.Orbit.staticPosition;
 
             // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
             var dimensionSector = dimension.FindChild("Sector_HubDimension");
@@ -74,9 +73,9 @@ namespace NewHorizons.Builder.Body
             intr.name = "Interactibles";
             GameObject.Destroy(intr);
 
-            // set up warps
+            // Set up warps
             var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
-            outerFogWarpVolume._senderWarps.Clear();
+            outerFogWarpVolume._senderWarps = new List<InnerFogWarpVolume>();
             outerFogWarpVolume._linkedInnerWarpVolume = null;
             outerFogWarpVolume._name = OuterFogWarpVolume.Name.None;
 
@@ -97,14 +96,14 @@ namespace NewHorizons.Builder.Body
 
         public static void PairExit(string exitName, OuterFogWarpVolume warpController)
         {
-            if (!BrambleNodeBuilder.namedNodes.ContainsKey(exitName))
+            if (!BrambleNodeBuilder.NamedNodes.ContainsKey(exitName))
             {
                 if (!_unpairedDimensions.ContainsKey(exitName)) _unpairedDimensions[exitName] = new();
                 _unpairedDimensions[exitName].Add(warpController);
                 return;
             }
             
-            warpController._linkedInnerWarpVolume = BrambleNodeBuilder.namedNodes[exitName];
+            warpController._linkedInnerWarpVolume = BrambleNodeBuilder.NamedNodes[exitName];
         }
 
         public static void FinishPairingDimensionsForExitNode(string nodeName)

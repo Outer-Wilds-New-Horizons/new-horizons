@@ -611,7 +611,8 @@ namespace NewHorizons.Handlers
                 newAO._primaryBody = primary;
 
                 // Since we destroyed the AO we have to replace links to it in other places
-                newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame._attachedAstroObject = newAO;
+                var referenceFrame = newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame;
+                if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
