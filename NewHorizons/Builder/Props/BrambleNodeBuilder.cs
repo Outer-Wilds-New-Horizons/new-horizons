@@ -264,7 +264,7 @@ namespace NewHorizons.Builder.Props
                 fogRenderer._useFarFogColor = false;
 
                 var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2")?.FindChild("fogbackdrop_v2");
-                if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = fogTint;
+                if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = (Color)fogTint;
             } 
 
             if (lightTint != null)
