@@ -69,6 +69,7 @@ namespace NewHorizons.Builder.Orbital
             */
 
             orbitLine._color = color;
+            orbitLine._lineRenderer.endColor = new Color(color.r, color.g, color.b, 0f);
 
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;

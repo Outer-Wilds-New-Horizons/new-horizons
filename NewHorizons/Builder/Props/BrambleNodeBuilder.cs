@@ -213,8 +213,8 @@ namespace NewHorizons.Builder.Props
             // change the colors
             //
             
-            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
-            else               SetNodeColors(brambleNode, config.fogTint.ToColor(), config.lightTint.ToColor());
+            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
+            else               SetNodeColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
 
             //
             // set up warps
@@ -254,13 +254,13 @@ namespace NewHorizons.Builder.Props
             return brambleNode;
         }
 
-        public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color lightTint)
+        public static void SetNodeColors(GameObject brambleNode, Color? fogTint, Color? lightTint)
         {
             if (fogTint != null) 
             { 
                 var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
                 
-                fogRenderer._fogColor = fogTint;
+                fogRenderer._fogColor = fogTint.Value;
                 fogRenderer._useFarFogColor = false;
 
                 var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2")?.FindChild("fogbackdrop_v2");
@@ -273,7 +273,7 @@ namespace NewHorizons.Builder.Props
                 
                 var lightShaft1 = lightShafts.FindChild("BrambleLightShaft1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
-                mat.color = lightTint;
+                mat.color = lightTint.Value;
                 
                 for (int i = 1; i <= 6; i++)
                 {
@@ -283,7 +283,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void SetSeedColors(GameObject brambleSeed, Color fogTint, Color lightTint)
+        public static void SetSeedColors(GameObject brambleSeed, Color? fogTint, Color? lightTint)
         {
             if (fogTint != null) 
             { 
@@ -291,7 +291,7 @@ namespace NewHorizons.Builder.Props
                 
                 var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
                 var mat = fogMeshRenderer.material;
-                mat.color = fogTint;
+                mat.color = fogTint.Value;
                 fogMeshRenderer.sharedMaterial = mat;
             } 
             
@@ -301,7 +301,7 @@ namespace NewHorizons.Builder.Props
                 
                 var lightShaft1 = lightShafts.FindChild("DB_SeedLightShafts1");
                 var mat = lightShaft1.GetComponent<MeshRenderer>().material;
-                mat.color = lightTint;
+                mat.color = lightTint.Value;
                 
                 for (int i = 1; i <= 6; i++)
                 {
