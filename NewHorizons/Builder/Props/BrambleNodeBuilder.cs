@@ -142,6 +142,9 @@ namespace NewHorizons.Builder.Props
 
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
+
+            var fogLight = nodeWarp.GetComponent<FogLight>();
+            fogLight._linkedSector = destinationAO._rootSector;
             return true;
         }
 
@@ -175,6 +178,19 @@ namespace NewHorizons.Builder.Props
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
                 
+
+            //
+            // Fix some components
+            //
+
+            var fogLight = brambleNode.GetComponent<FogLight>();
+            fogLight._parentBody = go.GetComponent<OWRigidbody>();
+            fogLight._sector = sector;
+            fogLight._linkedFogLights.Clear();
+            fogLight._linkedLightData.Clear();
+            fogLight._linkedSector = null;
+            
+            sector.RegisterFogLight(fogLight);
 
             //
             // Set the scale
