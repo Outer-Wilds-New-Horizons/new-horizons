@@ -182,11 +182,32 @@ namespace NewHorizons.Builder.Props
             brambleNode.transform.localScale = Vector3.one * config.scale;
             warpController._warpRadius *= config.scale;
             warpController._exitRadius *= config.scale;
-            // Effects/InnerWarpFogSphere.transform.localScale /= config.scale;
-            // Effects/InnerWarpFogSphere.MeshRenderer.material.SetFloat("_Radius",  GetFloat("_Radius")  * scale)
-            // Effects/InnerWarpFogSphere.MeshRenderer.material.SetFloat("_Density", GetFloat("_Density") / scale)
-
             
+            // seed fog works differently, so it doesn't need to be fixed (it's also located on a different child path, so the below FindChild calls wouldn't work)
+            if (!config.isSeed)
+            {
+                var fog = brambleNode.FindChild("Effects").FindChild("InnerWarpFogSphere");
+                var fogMaterial = fog.GetComponent<MeshRenderer>().sharedMaterial;
+                fog.transform.localScale /= config.scale;
+                fogMaterial.SetFloat("_Radius",  fogMaterial.GetFloat("_Radius")  * config.scale);
+                fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
+            }
+
+            // issue: when exiting a scaled bramblenode, the screen fog effect uses the original bramble node radius
+            // it's controlled by this class FogWarpEffectBubbleController which is on a game object under Player_Camera
+
+            // found under PlayerFogWarpDetector.LateUpdate()
+            // _playerEffectBubbleController.SetFogFade(_fogFraction, _fogColor); // where _fogFraction is basically _targetFogFraction, but lerped into over time
+
+            // found under FogWarpDetector.FixedUpdate()
+            // FogWarpVolume fogWarpVolume = _warpVolumes[i];
+			// float num2 = Mathf.Abs(fogWarpVolume.CheckWarpProximity(this));
+			// float b = Mathf.Clamp01(1f - Mathf.Abs(num2) / fogWarpVolume.GetFogThickness());
+			// _targetFogFraction = Mathf.Max(_targetFogFraction, b);
+
+            // this means that either CheckWarpProximity() or GetFogThickness() is incorrect for the InnerWarpFogSpheres.
+            // most likely it's CheckWarpProximity()
+
 
             //
             // change the colors
