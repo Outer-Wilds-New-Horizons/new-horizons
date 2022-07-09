@@ -90,7 +90,7 @@ namespace NewHorizons.Utility
 
         /// <summary>
         /// finds active or inactive object by path,
-        /// or recursively finds an active object by name
+        /// or recursively finds an active or inactive object by name
         /// </summary>
         public static GameObject Find(string path, bool warn = true)
         {
@@ -113,8 +113,11 @@ namespace NewHorizons.Utility
                 go = root.FindChild(childPath);
                 if (go == null)
                 {
-                    if (warn) Logger.LogWarning($"Couldn't find child object in path ({path})");
-                    return null;
+                    var name = names.Last();
+                    if (warn) Logger.LogWarning($"Couldn't find object in path ({path}), will look for potential matches for name {name}");
+                    // find resource to include inactive objects
+                    // also includes prefabs but hopefully thats okay
+                    go = FindResourceOfTypeAndName<GameObject>(name);
                 }
             }
 
