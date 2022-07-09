@@ -50,7 +50,6 @@ namespace NewHorizons.Builder.General
             if (config.Base.centerOfSolarSystem)
             {
                 Logger.Log($"Setting center of universe to {config.name}");
-                // By the time it runs we'll be able to get the OWRB with the method
 
                 Main.Instance.ModHelper.Events.Unity.RunWhen(
                     () => Locator._centerOfTheUniverse != null,
