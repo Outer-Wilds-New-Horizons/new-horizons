@@ -94,14 +94,14 @@ namespace NewHorizons.Builder.Props
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool leaveInactive=false)
+        public static GameObject MakeDetail(GameObject go, Sector sector, string propToClone, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             var prefab = SearchUtilities.Find(propToClone);
             if (prefab == null) Logger.LogError($"Couldn't find detail {propToClone}");
-            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal, leaveInactive);
+            return MakeDetail(go, sector, prefab, position, rotation, scale, alignWithNormal);
         }
 
-        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal, bool leaveInactive=false)
+        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, MVector3 position, MVector3 rotation, float scale, bool alignWithNormal)
         {
             if (prefab == null) return null;
 
@@ -271,7 +271,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = scale != 0 ? Vector3.one * scale : prefab.transform.localScale;
 
-            if (!leaveInactive) prop.SetActive(true);
+            prop.SetActive(true);
 
             return prop;
         }

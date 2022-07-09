@@ -389,7 +389,14 @@ namespace NewHorizons.Handlers
             body.Object = go;
 
             // Now that we're done move the planet into place
-            UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+            if (body.Config.Orbit?.staticPosition != null)
+            {
+                SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+            }
+            else
+            {
+                UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+            }
 
             // Have to do this after setting position
             var initialMotion = InitialMotionBuilder.Make(go, primaryBody, ao, owRigidBody, body.Config.Orbit);
@@ -409,11 +416,6 @@ namespace NewHorizons.Handlers
             if (!body.Config.Orbit.isStatic)
             {
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
-            }
-            else if (body.Config.Orbit.staticPosition != null)
-            {
-                // NH doesn't set the value of _centerOfTheUniverse for a few frames
-                ao.transform.position = body.Config.Orbit.staticPosition + Locator._centerOfTheUniverse._staticReferenceFrame._lastPosition;
             }
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
@@ -687,19 +689,24 @@ namespace NewHorizons.Handlers
         {
             Logger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
-            go.transform.parent = Locator.GetRootTransform();
-
             if (primaryBody != null)
             {
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
-                go.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+                var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+                SetPositionFromVector(go, pos);
             }
             else
             {
-                go.transform.position = Vector3.zero;
+                SetPositionFromVector(go, Vector3.zero);
             }
+        }
+
+        public static void SetPositionFromVector(GameObject go, Vector3 position)
+        {
+            go.transform.parent = Locator.GetRootTransform();
+            go.transform.position = position;
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {
