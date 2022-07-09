@@ -88,29 +88,34 @@ namespace NewHorizons.Utility
         public static GameObject FindChild(this GameObject g, string childPath) =>
             g.transform.Find(childPath)?.gameObject;
 
+        /// <summary>
+        /// finds active or inactive object by path,
+        /// or recursively finds an active object by name
+        /// </summary>
         public static GameObject Find(string path, bool warn = true)
         {
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
             go = GameObject.Find(path);
-            if (go != null) return go;
-            
-            var names = path.Split('/');
-            var rootName = names[0];
-            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
-            if (root == null)
-            {
-                if (warn) Logger.LogWarning($"Couldn't find root object in path ({path})");
-                return null;
-            }
-
-            var childPath = names.Skip(1).Join(delimiter: "/");
-            go = root.FindChild(childPath);
             if (go == null)
             {
-                var name = names.Last();
-                if (warn) Logger.LogWarning($"Couldn't find object in path ({path}), will look for potential matches for name {name}");
-                go = FindObjectOfTypeAndName<GameObject>(name);
+                // find inactive use root + transform.find
+                var names = path.Split('/');
+                var rootName = names[0];
+                var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
+                if (root == null)
+                {
+                    if (warn) Logger.LogWarning($"Couldn't find root object in path ({path})");
+                    return null;
+                }
+
+                var childPath = names.Skip(1).Join(delimiter: "/");
+                go = root.FindChild(childPath);
+                if (go == null)
+                {
+                    if (warn) Logger.LogWarning($"Couldn't find child object in path ({path})");
+                    return null;
+                }
             }
 
             CachedGameObjects.Add(path, go);
