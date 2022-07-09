@@ -92,7 +92,7 @@ namespace NewHorizons.Builder.Body
             // Set up repel volume to only contain this dimension
             // The base game one is on the HUB dimension and encompasses all bramble dimensions and their sectors
             var cloak = repelVolume.gameObject.GetComponentInChildren<DarkBrambleCloakSphere>();
-            cloak.transform.localScale = Vector3.one * 3000f;
+            cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
 
             atmo.SetActive(true);
