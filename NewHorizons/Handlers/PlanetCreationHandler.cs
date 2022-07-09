@@ -291,12 +291,6 @@ namespace NewHorizons.Handlers
         {
             if (body.Config?.Bramble?.dimension != null)
             {
-                if (body.Config?.Orbit?.staticPosition == null)
-                {
-                    Logger.LogError($"Unable to build bramble dimension {body.Config?.name} because it does not have Orbit.staticPosition defined.");
-                    return null;
-                }
-
                 return GenerateBrambleDimensionBody(body);
             }
             else
@@ -307,20 +301,30 @@ namespace NewHorizons.Handlers
 
         public static GameObject GenerateBrambleDimensionBody(NewHorizonsBody body)
         {
-            var go = BrambleDimensionBuilder.Make(body);
-            var ao = go.GetComponent<NHAstroObject>();
-            var sector = go.FindChild("Sector").GetComponent<Sector>();
-            var owRigidBody = go.GetComponent<OWRigidbody>();
+            var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
+            go.SetActive(false);
+
+            body.Config.Base.showMinimap = false;
+            body.Config.Base.hasMapMarker = false;
+
+            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            var ao = AstroObjectBuilder.Make(go, null, body.Config);
+
+            var sector = MakeSector.Make(go, owRigidBody, 2000f);
+            ao._rootSector = sector;
+            ao._type = AstroObject.Type.None;
+
+            BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
 
             go = SharedGenerateBody(body, go, sector, owRigidBody);
             body.Object = go;
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
-            {
-                AstroObjectLocator.RegisterCustomAstroObject(ao);   
-            }
+            AstroObjectLocator.RegisterCustomAstroObject(ao);
 
-            Logger.Log($"returning GO named {go.name}");
+            // Now that we're done move the planet into place
+            SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+
+            Logger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
 
             return go;
         }
@@ -418,10 +422,7 @@ namespace NewHorizons.Handlers
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
             }
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
-            {
-                AstroObjectLocator.RegisterCustomAstroObject(ao);
-            }
+            AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
             {

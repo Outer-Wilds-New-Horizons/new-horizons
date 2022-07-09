@@ -34,54 +34,54 @@ namespace NewHorizons.Builder.Body
             _unpairedDimensions = new();
         }
 
-        public static GameObject Make(NewHorizonsBody body)
+        public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
         {
             var config = body.Config.Bramble.dimension;
 
-            // spawn the dimension body
-            var dimensionPrefab = SearchUtilities.Find("DB_HubDimension_Body");
-            var dimension = dimensionPrefab.InstantiateInactive();
-            
-            // Fix AO
-            var ao = dimension.GetComponent<AstroObject>();
-            var nhao = dimension.AddComponent<NHAstroObject>();
-            nhao.CopyPropertiesFrom(ao);
-            Component.Destroy(ao);
+            ao.IsDimension = true;
+            sector._name = Sector.Name.BrambleDimension;
 
-            nhao.IsDimension = true;
-            var name = body.Config.name ?? "Custom Bramble Dimension";
-            nhao._customName = name;
-            nhao._name = AstroObject.Name.CustomString;
-            dimension.name = name.Replace(" ", "").Replace("'", "") + "_Body";
+            var atmo = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive();
+            var volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive();
+            var effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive();
+            var geometry = DetailBuilder.MakeDetail(go, sector, "DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension", Vector3.zero, Vector3.zero, 1, false);
+            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/OuterWarp_Hub").InstantiateInactive();
+            var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();
 
-            // fix children's names and remove base game props (mostly just bramble nodes that are children to Interactibles) and set up the OuterWarp child
-            var dimensionSector = dimension.FindChild("Sector_HubDimension");
-            dimensionSector.name = "Sector";
-            var atmo = dimensionSector.FindChild("Atmosphere_HubDimension");
-            var geom = dimensionSector.FindChild("Geometry_HubDimension");
-            var vols = dimensionSector.FindChild("Volumes_HubDimension");
-            var efxs = dimensionSector.FindChild("Effects_HubDimension");
-            var intr = dimensionSector.FindChild("Interactables_HubDimension");
-            var exitWarps = intr.FindChild("OuterWarp_Hub");
+            atmo.name = "Atmosphere";
+            atmo.transform.parent = sector.transform;
+            atmo.transform.localPosition = Vector3.zero;
+
+            volumes.name = "Volumes";
+            volumes.transform.parent = sector.transform;
+            volumes.transform.localPosition = Vector3.zero;
+
+            effects.name = "Effects";
+            effects.transform.parent = sector.transform;
+            effects.transform.localPosition = Vector3.zero;
+
+            geometry.name = "Geometry";
+            geometry.transform.parent = sector.transform;
+            geometry.transform.localPosition = Vector3.zero;
 
             exitWarps.name = "OuterWarp";
-            exitWarps.transform.parent = dimensionSector.transform;
-            atmo.name = "Atmosphere";
-            geom.name = "Geometry"; // disable this?
-            vols.name = "Volumes";
-            efxs.name = "Effects";
-            intr.name = "Interactibles";
-            GameObject.Destroy(intr);
+            exitWarps.transform.parent = sector.transform;
+            exitWarps.transform.localPosition = Vector3.zero;
+
+            repelVolume.name = "BrambleRepelVolume";
+            repelVolume.transform.parent = sector.transform;
+            repelVolume.transform.localPosition = Vector3.zero;
 
             // Set up warps
             var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
             outerFogWarpVolume._senderWarps = new List<InnerFogWarpVolume>();
             outerFogWarpVolume._linkedInnerWarpVolume = null;
             outerFogWarpVolume._name = OuterFogWarpVolume.Name.None;
+            outerFogWarpVolume._sector = sector;
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
-            // change fog color
+            // Change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
                 var fogGO = atmo.FindChild("FogSphere_Hub");
@@ -89,12 +89,20 @@ namespace NewHorizons.Builder.Body
                 fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
             }
 
-            // clear base game fog lights
-            dimensionSector.GetComponent<Sector>()._fogLightsInSector = null;
+            // Set up repel volume to only contain this dimension
+            // The base game one is on the HUB dimension and encompasses all bramble dimensions and their sectors
+            var cloak = repelVolume.gameObject.GetComponentInChildren<DarkBrambleCloakSphere>();
+            cloak.transform.localScale = Vector3.one * 3000f;
+            cloak._sectors = new Sector[] { sector };
 
-            dimension.SetActive(true);
+            atmo.SetActive(true);
+            volumes.SetActive(true);
+            effects.SetActive(true);
+            geometry.SetActive(true);
+            exitWarps.SetActive(true);
+            repelVolume.SetActive(true);
 
-            return dimension;
+            return go;
         }
 
         public static void PairExit(string exitName, OuterFogWarpVolume warpController)
