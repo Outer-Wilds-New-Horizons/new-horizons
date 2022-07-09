@@ -25,7 +25,6 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- /TOC -->
 
 ## Incompatible mods
-- Autoresume.
 - Quantum Space Buddies.
 - OW Randomizer.
 
