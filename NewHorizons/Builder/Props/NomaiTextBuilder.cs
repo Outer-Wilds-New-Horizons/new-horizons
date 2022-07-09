@@ -201,8 +201,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the computer model is loaded
-                        OWAssetHandler.LoadObject(computerObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(computerObject));
+                        StreamingHandler.HookStreaming(computerObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(computerObject));
 
                         computerObject.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
@@ -249,8 +249,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the computer model is loaded
-                        OWAssetHandler.LoadObject(cairnObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(cairnObject));
+                        StreamingHandler.HookStreaming(cairnObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(cairnObject));
                         conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
                         break;
                     }
@@ -281,8 +281,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the recorder model is loaded
-                        OWAssetHandler.LoadObject(recorderObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(recorderObject));
+                        StreamingHandler.HookStreaming(recorderObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(recorderObject));
 
                         recorderObject.SetActive(true);
 

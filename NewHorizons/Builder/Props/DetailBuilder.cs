@@ -109,8 +109,8 @@ namespace NewHorizons.Builder.Props
             prop.transform.parent = sector?.transform ?? planetGO.transform;
             prop.SetActive(false);
 
-            if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
-            OWAssetHandler.LoadObject(prop);
+            if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingHandler.OnOccupantEnterSector(prop, sd, sector);
+            StreamingHandler.HookStreaming(prop);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {

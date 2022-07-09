@@ -272,7 +272,7 @@ namespace NewHorizons
                 BrambleDimensionBuilder.Init();
                 BrambleNodeBuilder.Init();
                 AstroObjectLocator.Init();
-                OWAssetHandler.Init();
+                StreamingHandler.Init();
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);

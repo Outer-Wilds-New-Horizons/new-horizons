@@ -195,7 +195,7 @@ namespace NewHorizons.Handlers
 
                             var rb = existingPlanet.GetComponent<OWRigidbody>();
 
-                            var sector = MakeSector.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
                             sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
 
                             SharedGenerateBody(body, existingPlanet, sector, rb);
@@ -310,7 +310,7 @@ namespace NewHorizons.Handlers
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
             var ao = AstroObjectBuilder.Make(go, null, body.Config);
 
-            var sector = MakeSector.Make(go, owRigidBody, 2000f);
+            var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
             ao._rootSector = sector;
             ao._type = AstroObject.Type.None;
 
@@ -365,7 +365,7 @@ namespace NewHorizons.Handlers
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
-            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
 
             if (body.Config.Base.surfaceGravity != 0)

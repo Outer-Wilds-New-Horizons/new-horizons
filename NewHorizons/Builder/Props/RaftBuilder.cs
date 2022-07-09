@@ -29,8 +29,8 @@ namespace NewHorizons.Builder.Props
             raftObject.transform.position = planetGO.transform.TransformPoint(info.position);
             raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
 
-            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.OnOccupantEnterSector(raftObject, sd, sector);
-            OWAssetHandler.LoadObject(raftObject);
+            sector.OnOccupantEnterSector += (sd) => StreamingHandler.OnOccupantEnterSector(raftObject, sd, sector);
+            StreamingHandler.HookStreaming(raftObject);
 
             var raftController = raftObject.GetComponent<RaftController>();
             // Since awake already ran we have to unhook these events

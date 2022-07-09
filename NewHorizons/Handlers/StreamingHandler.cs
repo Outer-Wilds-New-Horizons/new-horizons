@@ -6,7 +6,7 @@ namespace NewHorizons.Handlers
     /// <summary>
     /// handles streaming meshes so they stay loaded
     /// </summary>
-    public static class OWAssetHandler
+    public static class StreamingHandler
     {
         private static Dictionary<Material, string> _materialCache;
         private static Dictionary<GameObject, List<string>> _objectCache;
@@ -19,7 +19,7 @@ namespace NewHorizons.Handlers
 
         public static void OnOccupantEnterSector(GameObject obj, SectorDetector sd, Sector sector)
         {
-            LoadObject(obj);
+            HookStreaming(obj);
 
             // If its too laggy put this back idk
             /*
@@ -30,7 +30,10 @@ namespace NewHorizons.Handlers
             */
         }
 
-        public static void LoadObject(GameObject obj)
+        /// <summary>
+        /// makes it so that this object's streaming stuff will be connected to the given sector
+        /// </summary>
+        public static void HookStreaming(GameObject obj, Sector sector = null)
         {
             var assetBundles = new List<string>();
 
