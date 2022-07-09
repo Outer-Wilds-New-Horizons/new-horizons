@@ -136,8 +136,7 @@ namespace NewHorizons.Builder.Props
             controller._midBone.localPosition = controller._midStartPos;
             controller._topBone.localPosition = controller._topStartPos;
 
-            StreamingHandler.SetUpStreaming(tornadoGO);
-            sector.OnOccupantEnterSector += (sd) => StreamingHandler.SetUpStreaming(tornadoGO);
+            StreamingHandler.SetUpStreaming(tornadoGO, sector);
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 

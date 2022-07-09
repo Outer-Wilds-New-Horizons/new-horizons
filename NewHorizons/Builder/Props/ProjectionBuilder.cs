@@ -129,8 +129,7 @@ namespace NewHorizons.Builder.Props
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
-            StreamingHandler.SetUpStreaming(slideReelObj);
-            sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.SetUpStreaming(slideReelObj));
+            StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
             slideReelObj.SetActive(true);
         }
@@ -180,8 +179,7 @@ namespace NewHorizons.Builder.Props
 
             slideCollectionContainer.slideCollection = slideCollection;
 
-            StreamingHandler.SetUpStreaming(projectorObj);
-            sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.SetUpStreaming(projectorObj));
+            StreamingHandler.SetUpStreaming(projectorObj, sector);
 
             // Change the picture on the lens
             var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();

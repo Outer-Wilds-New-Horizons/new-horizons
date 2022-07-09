@@ -109,8 +109,7 @@ namespace NewHorizons.Builder.Props
             prop.transform.parent = sector?.transform ?? planetGO.transform;
             prop.SetActive(false);
 
-            if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingHandler.OnOccupantEnterSector(prop, sd, sector);
-            StreamingHandler.SetUpStreaming(prop);
+            StreamingHandler.SetUpStreaming(prop, sector);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {

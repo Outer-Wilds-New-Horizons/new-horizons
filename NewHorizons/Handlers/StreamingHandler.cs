@@ -17,23 +17,10 @@ namespace NewHorizons.Handlers
             _objectCache = new Dictionary<GameObject, List<string>>();
         }
 
-        public static void OnOccupantEnterSector(GameObject obj, SectorDetector sd, Sector sector)
-        {
-            SetUpStreaming(obj);
-
-            // If its too laggy put this back idk
-            /*
-            if (sector.GetOccupants().Count > 0 || sd._occupantType == DynamicOccupant.Player)
-            {
-                LoadObject(obj);
-            }
-            */
-        }
-
         /// <summary>
         /// makes it so that this object's streaming stuff will be connected to the given sector
         /// </summary>
-        public static void SetUpStreaming(GameObject obj, Sector sector = null)
+        public static void SetUpStreaming(GameObject obj, Sector sector)
         {
             List<string> assetBundles;
             if (_objectCache.ContainsKey(obj))
