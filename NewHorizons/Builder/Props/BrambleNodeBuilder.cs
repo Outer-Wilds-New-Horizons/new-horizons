@@ -163,11 +163,8 @@ namespace NewHorizons.Builder.Props
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
 
-            var fogLight = nodeWarp.GetComponent<FogLight>();
-            fogLight._linkedSector = destinationAO._rootSector;
             return true;
         }
-
 
         // DB_EscapePodDimension_Body/Sector_EscapePodDimension/Interactables_EscapePodDimension/InnerWarp_ToAnglerNest // need to change the light shaft color
         // DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Interactables_ExitOnlyDimension/InnerWarp_ToExitOnly  // need to change the colors
@@ -189,6 +186,10 @@ namespace NewHorizons.Builder.Props
 
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
             var brambleNode = SearchUtilities.Find(path).InstantiateInactive();
+
+            OWAssetHandler.LoadObject(brambleNode);
+            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.OnOccupantEnterSector(brambleNode, sd, sector);
+
             brambleNode.transform.parent = sector.transform;
             brambleNode.transform.position = go.transform.TransformPoint(config.position);
             brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation));
@@ -202,9 +203,10 @@ namespace NewHorizons.Builder.Props
             var fogLight = brambleNode.GetComponent<FogLight>();
             fogLight._parentBody = go.GetComponent<OWRigidbody>();
             fogLight._sector = sector;
-            fogLight._linkedFogLights.Clear();
-            fogLight._linkedLightData.Clear();
             fogLight._linkedSector = null;
+            fogLight._innerWarp = warpController;
+            fogLight._linkedFogLights = new List<FogLight>();
+            fogLight._linkedLightData = new List<FogLight.LightData>();
 
             sector.RegisterFogLight(fogLight);
 
