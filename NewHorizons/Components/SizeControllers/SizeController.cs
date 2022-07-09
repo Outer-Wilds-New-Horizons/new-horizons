@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+using NewHorizons.External.Modules.VariableSize;
+using UnityEngine;
 namespace NewHorizons.Components.SizeControllers
 {
     public class SizeController : MonoBehaviour
@@ -19,6 +20,15 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             base.transform.localScale = Vector3.one * CurrentScale;
+        }
+
+        public void SetScaleCurve(VariableSizeModule.TimeValuePair[] curve)
+        {
+            scaleCurve = new AnimationCurve();
+            foreach (var pair in curve)
+            {
+                scaleCurve.AddKey(new Keyframe(pair.time, pair.value));
+            }
         }
     }
 }
