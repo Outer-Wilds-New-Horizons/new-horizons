@@ -22,6 +22,7 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
+            // find the asset bundles to load
             List<string> assetBundles;
             if (_objectCache.ContainsKey(obj))
             {
@@ -69,9 +70,42 @@ namespace NewHorizons.Handlers
                 _objectCache[obj] = assetBundles;
             }
 
-            foreach (var assetBundle in assetBundles)
+            if (sector)
             {
-                StreamingManager.LoadStreamingAssets(assetBundle);
+                // load it if ur already in the sector
+                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                {
+                    foreach (var assetBundle in assetBundles)
+                    {
+                        StreamingManager.LoadStreamingAssets(assetBundle);
+                    }
+                }
+
+                sector.OnSectorOccupantsUpdated += () =>
+                {
+                    if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                    {
+                        foreach (var assetBundle in assetBundles)
+                        {
+                            StreamingManager.LoadStreamingAssets(assetBundle);
+                        }
+                    }
+                    else
+                    {
+                        foreach (var assetBundle in assetBundles)
+                        {
+                            StreamingManager.UnloadStreamingAssets(assetBundle);
+                        }
+                    }
+                };
+            }
+            else
+            {
+                // just load it immediately and hope for the best
+                foreach (var assetBundle in assetBundles)
+                {
+                    StreamingManager.LoadStreamingAssets(assetBundle);
+                }
             }
         }
     }
