@@ -113,6 +113,7 @@ namespace NewHorizons.Builder.Props
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
                 // Enable all children or something
+                // BUG doesnt work because enabled is a property, not a field
                 var enabledField = component?.GetType()?.GetField("enabled");
                 if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
 
@@ -151,6 +152,7 @@ namespace NewHorizons.Builder.Props
                     }
                     else
                     {
+                        // BUG: this doesnt find the field cuz _sector is private
                         var sectorField = component?.GetType()?.GetField("_sector");
                         if (sectorField != null && sectorField.FieldType == typeof(Sector))
                         {
