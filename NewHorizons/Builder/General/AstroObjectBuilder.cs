@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.General
             {
                 Logger.Log($"Setting center of universe to {config.name}");
                 // By the time it runs we'll be able to get the OWRB with the method
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
+                Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.gameObject.GetComponent<OWRigidbody>();
             }
 
             return astroObject;

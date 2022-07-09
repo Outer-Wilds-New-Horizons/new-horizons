@@ -412,7 +412,8 @@ namespace NewHorizons.Handlers
             }
             else if (body.Config.Orbit.staticPosition != null)
             {
-                ao.transform.position = body.Config.Orbit.staticPosition;
+                // NH doesn't set the value of _centerOfTheUniverse for a few frames
+                ao.transform.position = body.Config.Orbit.staticPosition + Locator._centerOfTheUniverse._staticReferenceFrame._lastPosition;
             }
 
             if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)

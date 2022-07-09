@@ -89,6 +89,9 @@ namespace NewHorizons.Builder.Body
                 fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
             }
 
+            // clear base game fog lights
+            dimensionSector.GetComponent<Sector>()._fogLightsInSector = null;
+
             dimension.SetActive(true);
 
             return dimension;
