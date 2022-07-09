@@ -201,8 +201,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the computer model is loaded
-                        StreamingHandler.HookStreaming(computerObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(computerObject));
+                        StreamingHandler.SetUpStreaming(computerObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.SetUpStreaming(computerObject));
 
                         computerObject.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
@@ -249,8 +249,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the computer model is loaded
-                        StreamingHandler.HookStreaming(cairnObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(cairnObject));
+                        StreamingHandler.SetUpStreaming(cairnObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.SetUpStreaming(cairnObject));
                         conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
                         break;
                     }
@@ -281,8 +281,8 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make sure the recorder model is loaded
-                        StreamingHandler.HookStreaming(recorderObject);
-                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.HookStreaming(recorderObject));
+                        StreamingHandler.SetUpStreaming(recorderObject);
+                        sector.OnOccupantEnterSector.AddListener((x) => StreamingHandler.SetUpStreaming(recorderObject));
 
                         recorderObject.SetActive(true);
 

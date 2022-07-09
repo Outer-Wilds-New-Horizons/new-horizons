@@ -110,7 +110,7 @@ namespace NewHorizons.Builder.Props
             prop.SetActive(false);
 
             if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => StreamingHandler.OnOccupantEnterSector(prop, sd, sector);
-            StreamingHandler.HookStreaming(prop);
+            StreamingHandler.SetUpStreaming(prop);
 
             foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
             {

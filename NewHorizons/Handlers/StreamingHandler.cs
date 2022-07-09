@@ -19,7 +19,7 @@ namespace NewHorizons.Handlers
 
         public static void OnOccupantEnterSector(GameObject obj, SectorDetector sd, Sector sector)
         {
-            HookStreaming(obj);
+            SetUpStreaming(obj);
 
             // If its too laggy put this back idk
             /*
@@ -33,7 +33,7 @@ namespace NewHorizons.Handlers
         /// <summary>
         /// makes it so that this object's streaming stuff will be connected to the given sector
         /// </summary>
-        public static void HookStreaming(GameObject obj, Sector sector = null)
+        public static void SetUpStreaming(GameObject obj, Sector sector = null)
         {
             List<string> assetBundles;
             if (_objectCache.ContainsKey(obj))

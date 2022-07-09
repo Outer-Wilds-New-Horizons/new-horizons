@@ -187,7 +187,7 @@ namespace NewHorizons.Builder.Props
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
             var brambleNode = SearchUtilities.Find(path).InstantiateInactive();
 
-            StreamingHandler.HookStreaming(brambleNode);
+            StreamingHandler.SetUpStreaming(brambleNode);
             sector.OnOccupantEnterSector += (sd) => StreamingHandler.OnOccupantEnterSector(brambleNode, sd, sector);
 
             brambleNode.transform.parent = sector.transform;
