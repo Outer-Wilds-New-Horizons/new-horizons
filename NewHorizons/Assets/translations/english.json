@@ -6,15 +6,14 @@
 		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "You can use the new \"Interstellar Mode\" page in the ship log to lock-on your autopilot to another star system.",
 		"NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "Then just buckle up and engage the autopilot to warp there!"
 	},
-	"UIDictionary": 
-	{
-		"INTERSTELLAR_MODE" : "Interstellar Mode",
-		"FREQ_STATUE" : "Nomai Statue",
-		"FREQ_WARP_CORE" : "Anti-Graviton Flux",
-		"FREQ_UNKNOWN" : "???",
-		"ENGAGE_WARP_PROMPT" : "Engage Warp To {0}",
-		"WARP_LOCKED" : "AUTOPILOT LOCKED TO:\n{0}"
-	},
+  "UIDictionary": {
+    "INTERSTELLAR_MODE": "Interstellar Mode",
+    "FREQ_STATUE": "Nomai Statue",
+    "FREQ_WARP_CORE": "Anti-Graviton Flux",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "Engage Warp To {0}",
+    "WARP_LOCKED": "AUTOPILOT LOCKED TO:\n{0}"
+  },
 	"AchievementTranslations": {
 		"NH_EATEN_OUTSIDE_BRAMBLE" : {
 			"Name": "Containment Breach",
