@@ -35,14 +35,15 @@ namespace NewHorizons.Handlers
         /// </summary>
         public static void HookStreaming(GameObject obj, Sector sector = null)
         {
-            var assetBundles = new List<string>();
-
+            List<string> assetBundles;
             if (_objectCache.ContainsKey(obj))
             {
                 assetBundles = _objectCache[obj];
             }
             else
             {
+                assetBundles = new List<string>();
+
                 var tables = Resources.FindObjectsOfTypeAll<StreamingMaterialTable>();
                 foreach (var streamingHandle in obj.GetComponentsInChildren<StreamingMeshHandle>())
                 {
