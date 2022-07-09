@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
 using static NewHorizons.External.Modules.SignalModule;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -34,12 +35,23 @@ namespace NewHorizons.Builder.Props
             BuiltBrambleNodes = new();
         }
 
+
+        // how warping works
+        // every frame, each FogWarpDetector loops over all FogWarpVolume instances it has in _warpVolumes. Each instance gets CheckWarpProximity called
+        // (pretty much every FogWarpVolume in the game is a SphericalFogWarpVolume. that's where CheckWarpProximity is called)
+        // if CheckWarpProximity would return 0, it calls its own WarpDetector() function
+        // 
+
+
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
+            Logger.LogWarning($"Pairing missed for {dimensionName}");
             if (!_unpairedNodes.ContainsKey(dimensionName)) return;
-
+            
+            Logger.LogWarning("proceeding");
             foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
+                Logger.LogWarning($"Pairing node {nodeWarpController.gameObject.name} links to {dimensionName}");
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
@@ -50,6 +62,8 @@ namespace NewHorizons.Builder.Props
         {
             if (!_unpairedNodes.ContainsKey(linksTo)) _unpairedNodes[linksTo] = new();
             
+            Logger.LogWarning($"Recording node {warpVolume.gameObject.name} links to {linksTo}");
+
             _unpairedNodes[linksTo].Add(warpVolume);
         }
 
@@ -132,16 +146,25 @@ namespace NewHorizons.Builder.Props
         }
 
         private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
-        {
+        {    
+            Logger.LogWarning($"Pairing node {nodeWarp.gameObject.name} to {destinationName}");
+
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
+
+            Logger.LogWarning($"Found {destinationName} as gameobject {destinationAO.gameObject.name} (was passed in: {dimensionAO != null})");
 
             // link the node's warp volume to the destination's
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
+                
+            Logger.LogWarning($"Proceeding with pairing node {nodeWarp.gameObject.name} to {destinationName}. Path to outer fog warp volume: {destination.transform.GetPath()}");
 
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
+
+            var fogLight = nodeWarp.GetComponent<FogLight>();
+            fogLight._linkedSector = destinationAO._rootSector;
             return true;
         }
 
@@ -168,12 +191,59 @@ namespace NewHorizons.Builder.Props
             var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
             
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
-            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, 1, false);
+            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, 1, false, leaveInactive:true);
             brambleNode.name = "Bramble Node to " + config.linksTo;    
             var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
             // this node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
+                
+
+            //
+            // Fix some components
+            //
+
+            var fogLight = brambleNode.GetComponent<FogLight>();
+            fogLight._parentBody = go.GetComponent<OWRigidbody>();
+            fogLight._sector = sector;
+            fogLight._linkedFogLights.Clear();
+            fogLight._linkedLightData.Clear();
+            fogLight._linkedSector = null;
+            
+            sector.RegisterFogLight(fogLight);
+
+            //
+            // Set the scale
+            //
+            brambleNode.transform.localScale = Vector3.one * config.scale;
+            warpController._warpRadius *= config.scale;
+            warpController._exitRadius *= config.scale;
+            
+            // seed fog works differently, so it doesn't need to be fixed (it's also located on a different child path, so the below FindChild calls wouldn't work)
+            if (!config.isSeed)
+            {
+                var fog = brambleNode.FindChild("Effects").FindChild("InnerWarpFogSphere");
+                var fogMaterial = fog.GetComponent<MeshRenderer>().sharedMaterial;
+                fog.transform.localScale /= config.scale;
+                fogMaterial.SetFloat("_Radius",  fogMaterial.GetFloat("_Radius")  * config.scale);
+                fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
+            }
+
+            // issue: when exiting a scaled bramblenode, the screen fog effect uses the original bramble node radius
+            // it's controlled by this class FogWarpEffectBubbleController which is on a game object under Player_Camera
+
+            // found under PlayerFogWarpDetector.LateUpdate()
+            // _playerEffectBubbleController.SetFogFade(_fogFraction, _fogColor); // where _fogFraction is basically _targetFogFraction, but lerped into over time
+
+            // found under FogWarpDetector.FixedUpdate()
+            // FogWarpVolume fogWarpVolume = _warpVolumes[i];
+			// float num2 = Mathf.Abs(fogWarpVolume.CheckWarpProximity(this));
+			// float b = Mathf.Clamp01(1f - Mathf.Abs(num2) / fogWarpVolume.GetFogThickness());
+			// _targetFogFraction = Mathf.Max(_targetFogFraction, b);
+
+            // this means that either CheckWarpProximity() or GetFogThickness() is incorrect for the InnerWarpFogSpheres.
+            // most likely it's CheckWarpProximity()
+
 
             //
             // change the colors
@@ -217,6 +287,7 @@ namespace NewHorizons.Builder.Props
             }
 
             // Done!
+            brambleNode.SetActive(true);
             return brambleNode;
         }
 
@@ -228,6 +299,9 @@ namespace NewHorizons.Builder.Props
                 
                 fogRenderer._fogColor = fogTint.Value;
                 fogRenderer._useFarFogColor = false;
+
+                var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2")?.FindChild("fogbackdrop_v2");
+                if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = (Color)fogTint;
             } 
 
             if (lightTint != null)

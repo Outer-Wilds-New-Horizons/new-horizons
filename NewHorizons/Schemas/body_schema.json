@@ -531,6 +531,12 @@
           "description": "The physical rotation of the node",
           "$ref": "#/definitions/MVector3"
         },
+        "scale": {
+          "type": "number",
+          "description": "The physical scale of the node",
+          "format": "float",
+          "default": 1.0
+        },
         "linksTo": {
           "type": "string",
           "description": "The name of the planet that hosts the dimension this node links to"
