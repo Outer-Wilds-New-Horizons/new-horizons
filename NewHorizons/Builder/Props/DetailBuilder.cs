@@ -111,7 +111,7 @@ namespace NewHorizons.Builder.Props
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
-            foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
+            foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
                 // Enable all children or something
                 var enabledField = component?.GetType()?.GetField("enabled");
