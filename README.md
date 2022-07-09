@@ -70,7 +70,7 @@ New Horizons was made with help from:
 Translation credits:
 - Russian: Tlya
 - German: Nolram
-- Spanish: Ciborgm9 and Ink
+- Spanish: Ciborgm9, Ink, GayCoffee
 - French: xen
 
 Marshmallow was made with help from:
