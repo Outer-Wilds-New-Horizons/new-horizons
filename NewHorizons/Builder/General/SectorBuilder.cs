@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
-    public static class MakeSector
+    public static class SectorBuilder
     {
         public static Sector Make(GameObject planetBody, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
