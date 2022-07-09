@@ -3,6 +3,9 @@ using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Handlers
 {
+    /// <summary>
+    /// handles streaming meshes so they stay loaded
+    /// </summary>
     public static class OWAssetHandler
     {
         private static Dictionary<Material, string> _materialCache;
@@ -45,7 +48,7 @@ namespace NewHorizons.Handlers
                     {
                         assetBundles.Add(assetBundle);
                     }
-                    if (streamingHandle is StreamingRenderMeshHandle || streamingHandle is StreamingSkinnedMeshHandle)
+                    if (streamingHandle is StreamingRenderMeshHandle or StreamingSkinnedMeshHandle)
                     {
                         var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
 
