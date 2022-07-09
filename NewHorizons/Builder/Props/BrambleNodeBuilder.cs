@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using static NewHorizons.External.Modules.BrambleModule;
 using static NewHorizons.External.Modules.SignalModule;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -34,12 +35,23 @@ namespace NewHorizons.Builder.Props
             BuiltBrambleNodes = new();
         }
 
+
+        // how warping works
+        // every frame, each FogWarpDetector loops over all FogWarpVolume instances it has in _warpVolumes. Each instance gets CheckWarpProximity called
+        // (pretty much every FogWarpVolume in the game is a SphericalFogWarpVolume. that's where CheckWarpProximity is called)
+        // if CheckWarpProximity would return 0, it calls its own WarpDetector() function
+        // 
+
+
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
         {
+            Logger.LogWarning($"Pairing missed for {dimensionName}");
             if (!_unpairedNodes.ContainsKey(dimensionName)) return;
-
+            
+            Logger.LogWarning("proceeding");
             foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
+                Logger.LogWarning($"Pairing node {nodeWarpController.gameObject.name} links to {dimensionName}");
                 PairEntrance(nodeWarpController, dimensionName, dimensionAO);    
             }
 
@@ -50,6 +62,8 @@ namespace NewHorizons.Builder.Props
         {
             if (!_unpairedNodes.ContainsKey(linksTo)) _unpairedNodes[linksTo] = new();
             
+            Logger.LogWarning($"Recording node {warpVolume.gameObject.name} links to {linksTo}");
+
             _unpairedNodes[linksTo].Add(warpVolume);
         }
 
@@ -132,13 +146,19 @@ namespace NewHorizons.Builder.Props
         }
 
         private static bool PairEntrance(InnerFogWarpVolume nodeWarp, string destinationName, AstroObject dimensionAO = null)
-        {
+        {    
+            Logger.LogWarning($"Pairing node {nodeWarp.gameObject.name} to {destinationName}");
+
             var destinationAO = dimensionAO ?? AstroObjectLocator.GetAstroObject(destinationName); // find child "Sector/OuterWarp"
             if (destinationAO == null) return false;
+
+            Logger.LogWarning($"Found {destinationName} as gameobject {destinationAO.gameObject.name} (was passed in: {dimensionAO != null})");
 
             // link the node's warp volume to the destination's
             var destination = GetOuterFogWarpVolumeFromAstroObject(destinationAO.gameObject);
             if (destination == null) return false;
+                
+            Logger.LogWarning($"Proceeding with pairing node {nodeWarp.gameObject.name} to {destinationName}. Path to outer fog warp volume: {destination.transform.GetPath()}");
 
             nodeWarp._linkedOuterWarpVolume = destination;
             destination.RegisterSenderWarp(nodeWarp);
@@ -171,7 +191,7 @@ namespace NewHorizons.Builder.Props
             var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
             
             var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
-            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, 1, false);
+            var brambleNode = DetailBuilder.MakeDetail(go, sector, path, config.position, config.rotation, 1, false, leaveInactive:true);
             brambleNode.name = "Bramble Node to " + config.linksTo;    
             var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
@@ -267,6 +287,7 @@ namespace NewHorizons.Builder.Props
             }
 
             // Done!
+            brambleNode.SetActive(true);
             return brambleNode;
         }
 
