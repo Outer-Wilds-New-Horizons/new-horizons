@@ -159,7 +159,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Cloud textures for [{rootObject.name}], {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}], {e.Message}, {e.StackTrace}");
                 return null;
             }
 
