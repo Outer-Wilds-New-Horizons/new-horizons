@@ -97,7 +97,7 @@ namespace NewHorizons.Handlers
         {
             if (_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
             {
-                Logger.LogVerbose($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
+                Logger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
                 if (!Main.HasWarpDrive) Main.Instance.EnableWarpDrive();
                 ShipLogStarChartMode.AddSystemCard(systemUnlocked);
             }
