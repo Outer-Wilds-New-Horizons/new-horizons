@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     /// <summary>
@@ -8,13 +10,13 @@ namespace NewHorizons.Handlers
     /// </summary>
     public static class StreamingHandler
     {
-        private static Dictionary<Material, string> _materialCache;
-        private static Dictionary<GameObject, List<string>> _objectCache;
+        private static readonly Dictionary<Material, string> _materialCache = new();
+        private static readonly Dictionary<GameObject, string[]> _objectCache = new();
 
         public static void Init()
         {
-            _materialCache = new Dictionary<Material, string>();
-            _objectCache = new Dictionary<GameObject, List<string>>();
+            _materialCache.Clear();
+            _objectCache.Clear();
         }
 
         /// <summary>
@@ -23,23 +25,17 @@ namespace NewHorizons.Handlers
         public static void SetUpStreaming(GameObject obj, Sector sector)
         {
             // find the asset bundles to load
-            List<string> assetBundles;
-            if (_objectCache.ContainsKey(obj))
+            // tries the cache first, then builds
+            if (!_objectCache.TryGetValue(obj, out var assetBundles))
             {
-                assetBundles = _objectCache[obj];
-            }
-            else
-            {
-                assetBundles = new List<string>();
+                var assetBundlesList = new List<string>();
 
                 var tables = Resources.FindObjectsOfTypeAll<StreamingMaterialTable>();
                 foreach (var streamingHandle in obj.GetComponentsInChildren<StreamingMeshHandle>())
                 {
                     var assetBundle = streamingHandle.assetBundle;
-                    if (!assetBundles.Contains(assetBundle))
-                    {
-                        assetBundles.Add(assetBundle);
-                    }
+                    assetBundlesList.SafeAdd(assetBundle);
+
                     if (streamingHandle is StreamingRenderMeshHandle or StreamingSkinnedMeshHandle)
                     {
                         var materials = streamingHandle.GetComponent<Renderer>().sharedMaterials;
@@ -49,7 +45,7 @@ namespace NewHorizons.Handlers
                         // Gonna assume that if theres more than one material its probably in the same asset bundle anyway right
                         if (_materialCache.TryGetValue(materials[0], out assetBundle))
                         {
-                            assetBundles.Add(assetBundle);
+                            assetBundlesList.SafeAdd(assetBundle);
                         }
                         else
                         {
@@ -60,13 +56,15 @@ namespace NewHorizons.Handlers
                                     if (materials.Contains(x.material))
                                     {
                                         _materialCache.SafeAdd(x.material, table.assetBundle);
-                                        assetBundles.SafeAdd(table.assetBundle);
+                                        assetBundlesList.SafeAdd(table.assetBundle);
                                     }
                                 }
                             }
                         }
                     }
                 }
+
+                assetBundles = assetBundlesList.ToArray();
                 _objectCache[obj] = assetBundles;
             }
 
@@ -77,6 +75,7 @@ namespace NewHorizons.Handlers
                 {
                     foreach (var assetBundle in assetBundles)
                     {
+                        Logger.LogVerbose($"loading bundle {assetBundle}");
                         StreamingManager.LoadStreamingAssets(assetBundle);
                     }
                 }
@@ -87,6 +86,7 @@ namespace NewHorizons.Handlers
                     {
                         foreach (var assetBundle in assetBundles)
                         {
+                            Logger.LogVerbose($"loading bundle {assetBundle}");
                             StreamingManager.LoadStreamingAssets(assetBundle);
                         }
                     }
@@ -94,6 +94,7 @@ namespace NewHorizons.Handlers
                     {
                         foreach (var assetBundle in assetBundles)
                         {
+                            Logger.LogVerbose($"UNloading bundle {assetBundle}");
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                         }
                     }
@@ -104,6 +105,7 @@ namespace NewHorizons.Handlers
                 // just load it immediately and hope for the best
                 foreach (var assetBundle in assetBundles)
                 {
+                    Logger.LogVerbose($"loading bundle {assetBundle}");
                     StreamingManager.LoadStreamingAssets(assetBundle);
                 }
             }
