@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
