@@ -747,7 +747,7 @@
         },
         "isStatic": {
           "type": "boolean",
-          "description": "Is the body meant to stay in one place without moving?"
+          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
         },
         "tint": {
           "description": "Colour of the orbit-line in the map view.",
