@@ -67,41 +67,20 @@ namespace NewHorizons.Handlers
                 _objectCache[obj] = assetBundles;
             }
 
+            foreach (var assetBundle in assetBundles)
+            {
+                StreamingManager.LoadStreamingAssets(assetBundle);
+            }
+
             if (sector)
             {
-                // load it if ur already in the sector
-                if (sector.ContainsOccupant(DynamicOccupant.Player))
+                sector.OnOccupantEnterSector += _ =>
                 {
                     foreach (var assetBundle in assetBundles)
                     {
                         StreamingManager.LoadStreamingAssets(assetBundle);
                     }
-                }
-
-                sector.OnOccupantEnterSector += sectorDetector =>
-                {
-                    if (sectorDetector.GetOccupantType() != DynamicOccupant.Player) return;
-                    foreach (var assetBundle in assetBundles)
-                    {
-                        StreamingManager.LoadStreamingAssets(assetBundle);
-                    }
                 };
-                sector.OnOccupantExitSector += sectorDetector =>
-                {
-                    if (sectorDetector.GetOccupantType() != DynamicOccupant.Player) return;
-                    foreach (var assetBundle in assetBundles)
-                    {
-                        StreamingManager.UnloadStreamingAssets(assetBundle);
-                    }
-                };
-            }
-            else
-            {
-                // just load it immediately and hope for the best
-                foreach (var assetBundle in assetBundles)
-                {
-                    StreamingManager.LoadStreamingAssets(assetBundle);
-                }
             }
         }
     }
