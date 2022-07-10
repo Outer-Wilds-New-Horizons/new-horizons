@@ -94,6 +94,39 @@ namespace NewHorizons.Utility
             }
         }
 
+        public static void CopyFieldsFrom(this object destination, object source)
+        {
+            // If any this null throw an exception
+            if (source == null || destination == null)
+                throw new Exception("Source or/and Destination Objects are null");
+            // Getting the Types of the objects
+            var typeDest = destination.GetType();
+            var typeSrc = source.GetType();
+
+            foreach (var srcField in typeSrc.GetFields())
+            {
+                var targetField = typeDest.GetField(srcField.Name);
+                if (targetField == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    targetField.SetValue(destination, srcField.GetValue(source));
+                }
+                catch (Exception)
+                {
+                    Logger.LogWarning($"Couldn't copy field {targetField.Name} from {source} to {destination}");
+                }
+            }
+        }
+
+        public static void CopyFrom(this object destination, object source)
+        {
+            destination.CopyPropertiesFrom(source);
+            destination.CopyFieldsFrom(source);
+        }
+
         public static string SplitCamelCase(this string str)
         {
             return Regex.Replace(
