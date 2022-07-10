@@ -510,12 +510,18 @@
       "additionalProperties": false,
       "properties": {
         "fogTint": {
-          "description": "The color of the fog inside this dimension. Leave blank for the default yellowish color",
+          "description": "The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)",
           "$ref": "#/definitions/MColor"
         },
         "linksTo": {
           "type": "string",
           "description": "The name of the *node* that the player is taken to when exiting this dimension."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The internal radius (in meters) of the dimension. The default is 1705.",
+          "format": "float",
+          "default": 1705.0
         }
       }
     },
@@ -551,11 +557,11 @@
           "default": false
         },
         "fogTint": {
-          "description": "The color of the fog inside the node. Leave blank for the default yellowish color (default: 131, 124, 105, 255)",
+          "description": "The color of the fog inside the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
           "$ref": "#/definitions/MColor"
         },
         "lightTint": {
-          "description": "The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color",
+          "description": "The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
           "$ref": "#/definitions/MColor"
         }
       }
