@@ -27,6 +27,9 @@ namespace NewHorizons.Builder.Props
         public static Dictionary<string, InnerFogWarpVolume> NamedNodes { get; private set; }
         public static Dictionary<BrambleNodeInfo, GameObject> BuiltBrambleNodes { get; private set; }
 
+        private static string _brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
+        private static string _brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
+
         public static void Init()
         {
             _unpairedNodes = new();
@@ -180,30 +183,32 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config, IModBehaviour mod)
         {
+            var prefab = SearchUtilities.Find(config.isSeed ? _brambleSeedPrefabPath : _brambleNodePrefabPath);
+
             // Spawn the bramble node
-            var brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
-            var brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
+            var brambleNode = prefab.InstantiateInactive();
+            foreach (var component in brambleNode.GetComponentsInChildren<Component>(true))
+            {
+                if (component is Collider collider) collider.enabled = true; 
+            }
 
-            var path = config.isSeed ? brambleSeedPrefabPath : brambleNodePrefabPath;
-            var brambleNode = SearchUtilities.Find(path).InstantiateInactive();
-
-            StreamingHandler.SetUpStreaming(brambleNode, sector);
+            var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
+            //brambleNode.AddComponent<FogWarpHUDMarker>();
+            var fogLight = brambleNode.GetComponent<FogLight>();
 
             brambleNode.transform.parent = sector.transform;
             brambleNode.transform.position = go.transform.TransformPoint(config.position);
             brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation));
             brambleNode.name = "Bramble Node to " + config.linksTo;
-            var warpController = brambleNode.GetComponent<InnerFogWarpVolume>();
 
             // This node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
 
             // Fix some components
-            var fogLight = brambleNode.GetComponent<FogLight>();
             fogLight._parentBody = go.GetComponent<OWRigidbody>();
             fogLight._sector = sector;
             fogLight._linkedSector = null;
-            fogLight._innerWarp = warpController;
+            fogLight._innerWarp = innerFogWarpVolume;
             fogLight._linkedFogLights = new List<FogLight>();
             fogLight._linkedLightData = new List<FogLight.LightData>();
 
@@ -211,8 +216,8 @@ namespace NewHorizons.Builder.Props
 
             // Set the scale
             brambleNode.transform.localScale = Vector3.one * config.scale;
-            warpController._warpRadius *= config.scale;
-            warpController._exitRadius *= config.scale;
+            innerFogWarpVolume._warpRadius *= config.scale;
+            innerFogWarpVolume._exitRadius *= config.scale;
 
             // Seed fog works differently, so it doesn't need to be fixed (it's also located on a different child path, so the below FindChild calls wouldn't work)
             if (!config.isSeed)
@@ -244,16 +249,16 @@ namespace NewHorizons.Builder.Props
             else SetNodeColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
 
             // Set up warps
-            warpController._sector = sector;
-            warpController._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
-            warpController._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
-            var success = PairEntrance(warpController, config.linksTo);
-            if (!success) RecordUnpairedNode(warpController, config.linksTo);
+            innerFogWarpVolume._sector = sector;
+            innerFogWarpVolume._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
+            innerFogWarpVolume._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); // the OuterFogWarpVolume of the dimension this node is inside of (null if this node is not inside of a bramble dimension (eg it's sitting on a planet or something))
+            var success = PairEntrance(innerFogWarpVolume, config.linksTo);
+            if (!success) RecordUnpairedNode(innerFogWarpVolume, config.linksTo);
 
             // Cleanup for dimension exits
             if (config.name != null)
             {
-                NamedNodes[config.name] = warpController;
+                NamedNodes[config.name] = innerFogWarpVolume;
                 BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
             }
 
