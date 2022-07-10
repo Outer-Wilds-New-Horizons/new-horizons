@@ -197,8 +197,8 @@ namespace NewHorizons.Builder.Props
             var fogLight = brambleNode.GetComponent<FogLight>();
 
             brambleNode.transform.parent = sector.transform;
-            brambleNode.transform.position = go.transform.TransformPoint(config.position);
-            brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation));
+            brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
+            brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
             brambleNode.name = "Bramble Node to " + config.linksTo;
 
             // This node comes with Feldspar's signal, we don't want that though
