@@ -53,7 +53,7 @@ namespace NewHorizons.External.Modules
             public MVector3 rotation;
 
             /// <summary>
-            /// The physical scale of the node
+            /// The physical scale of the node, as a multiplier of the original size
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
 
