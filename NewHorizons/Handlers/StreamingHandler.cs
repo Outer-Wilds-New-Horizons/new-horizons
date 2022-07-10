@@ -71,22 +71,20 @@ namespace NewHorizons.Handlers
             if (sector)
             {
                 // load it if ur already in the sector
-                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                if (sector.ContainsOccupant(DynamicOccupant.Player))
                 {
                     foreach (var assetBundle in assetBundles)
                     {
-                        Logger.LogVerbose($"loading bundle {assetBundle}");
                         StreamingManager.LoadStreamingAssets(assetBundle);
                     }
                 }
 
                 sector.OnSectorOccupantsUpdated += () =>
                 {
-                    if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                    if (sector.ContainsOccupant(DynamicOccupant.Player))
                     {
                         foreach (var assetBundle in assetBundles)
                         {
-                            Logger.LogVerbose($"loading bundle {assetBundle}");
                             StreamingManager.LoadStreamingAssets(assetBundle);
                         }
                     }
@@ -94,7 +92,6 @@ namespace NewHorizons.Handlers
                     {
                         foreach (var assetBundle in assetBundles)
                         {
-                            Logger.LogVerbose($"UNloading bundle {assetBundle}");
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                         }
                     }
@@ -105,7 +102,6 @@ namespace NewHorizons.Handlers
                 // just load it immediately and hope for the best
                 foreach (var assetBundle in assetBundles)
                 {
-                    Logger.LogVerbose($"loading bundle {assetBundle}");
                     StreamingManager.LoadStreamingAssets(assetBundle);
                 }
             }
