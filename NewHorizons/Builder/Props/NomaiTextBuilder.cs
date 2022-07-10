@@ -308,6 +308,8 @@ namespace NewHorizons.Builder.Props
             var nomaiWallText = nomaiWallTextObj.AddComponent<NomaiWallText>();
 
             var text = new TextAsset(xmlPath);
+
+            // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
             BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info);

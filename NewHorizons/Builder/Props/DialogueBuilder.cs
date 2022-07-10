@@ -79,6 +79,8 @@ namespace NewHorizons.Builder.Props
 
             var xml = File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
+
+            // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
             dialogueTree.SetTextXml(text);
