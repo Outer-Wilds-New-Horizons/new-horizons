@@ -374,5 +374,6 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
+        public OWEvent.OWCallback onSlidesComplete;
     }
 }
