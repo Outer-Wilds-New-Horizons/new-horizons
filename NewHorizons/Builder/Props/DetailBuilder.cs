@@ -112,10 +112,12 @@ namespace NewHorizons.Builder.Props
 
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
+                /*
                 // Enable all children or something
                 // BUG doesnt work because enabled is a property, not a field
                 var enabledField = component?.GetType()?.GetField("enabled");
                 if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
+                */
 
                 // Fix a bunch of sector stuff
                 if (sector != null)
@@ -150,6 +152,7 @@ namespace NewHorizons.Builder.Props
                     {
                         behaviour.SetSector(sector);
                     }
+                    /*
                     else
                     {
                         // BUG: this doesnt find the field cuz _sector is private
@@ -159,6 +162,7 @@ namespace NewHorizons.Builder.Props
                             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                         }
                     }
+                    */
 
                     if (component is AnglerfishController angler)
                     {
