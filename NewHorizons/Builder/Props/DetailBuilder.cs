@@ -110,6 +110,15 @@ namespace NewHorizons.Builder.Props
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
+            var torchItem = prop.GetComponent<VisionTorchItem>();
+            // Fix vision torch
+            if (torchItem)
+            {
+                torchItem.enabled = true;
+                torchItem.mindProjectorTrigger.enabled = true;
+                torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+            }
+
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
                 /*
@@ -176,7 +185,8 @@ namespace NewHorizons.Builder.Props
                     }
 
                     // Fix slide reel
-                    if (component is SlideCollectionContainer container)
+                    // softlocks if this object is a vision torch
+                    if (!torchItem && component is SlideCollectionContainer container)
                     {
                         sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
                     }
@@ -184,14 +194,6 @@ namespace NewHorizons.Builder.Props
                     if (component is OWItemSocket socket)
                     {
                         socket._sector = sector;
-                    }
-
-                    // Fix vision torch
-                    if (component is VisionTorchItem torchItem)
-                    {
-                        torchItem.enabled = true;
-                        torchItem.mindProjectorTrigger.enabled = true;
-                        torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
 
                     // fix campfires
