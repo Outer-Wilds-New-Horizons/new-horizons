@@ -118,6 +118,7 @@ namespace NewHorizons.Utility
                     // find resource to include inactive objects
                     // also includes prefabs but hopefully thats okay
                     go = FindResourceOfTypeAndName<GameObject>(name);
+                    if (go == null) return null;
                 }
             }
 
