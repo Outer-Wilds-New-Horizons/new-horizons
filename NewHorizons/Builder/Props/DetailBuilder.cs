@@ -138,7 +138,6 @@ namespace NewHorizons.Builder.Props
                         sectorGroup.SetSector(sector);
                     }
 
-                    // TODO: Make this work or smthng
                     if (component is GhostIK ik) ik.enabled = false;
                     if (component is GhostEffects effects) effects.enabled = false;
 
