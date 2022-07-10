@@ -109,19 +109,22 @@ namespace NewHorizons.Handlers
             GameObject sourceBH = GameObject.Instantiate(warpBH, vesselWarpController._sourceWarpPlatform.transform, false);
             sourceBH.name = "BlackHole";
             vesselWarpController._sourceWarpPlatform._blackHole = sourceBH.GetComponentInChildren<SingularityController>();
-            
+            vesselWarpController._sourceWarpPlatform._blackHole.OnCollapse += vesselWarpController._sourceWarpPlatform.OnBlackHoleCollapse;
 
             GameObject sourceWH = GameObject.Instantiate(warpWH, vesselWarpController._sourceWarpPlatform.transform, false);
             sourceWH.name = "WhiteHole";
             vesselWarpController._sourceWarpPlatform._whiteHole = sourceWH.GetComponentInChildren<SingularityController>();
+            vesselWarpController._sourceWarpPlatform._whiteHole.OnCollapse += vesselWarpController._sourceWarpPlatform.OnWhiteHoleCollapse;
 
             GameObject targetBH = GameObject.Instantiate(warpBH, vesselWarpController._targetWarpPlatform.transform, false);
             targetBH.name = "BlackHole";
             vesselWarpController._targetWarpPlatform._blackHole = targetBH.GetComponentInChildren<SingularityController>();
+            vesselWarpController._targetWarpPlatform._blackHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnBlackHoleCollapse;
 
             GameObject targetWH = GameObject.Instantiate(warpWH, vesselWarpController._targetWarpPlatform.transform, false);
             targetWH.name = "WhiteHole";
             vesselWarpController._targetWarpPlatform._whiteHole = targetWH.GetComponentInChildren<SingularityController>();
+            vesselWarpController._targetWarpPlatform._whiteHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnWhiteHoleCollapse;
 
             GameObject blackHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/BlackHole");
             GameObject newBlackHole = GameObject.Instantiate(blackHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
