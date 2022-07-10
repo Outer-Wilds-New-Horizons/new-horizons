@@ -374,6 +374,9 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
+
+        // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events after the mind slide show is complete.
         public OWEvent.OWCallback onSlidesComplete;
     }
 }
