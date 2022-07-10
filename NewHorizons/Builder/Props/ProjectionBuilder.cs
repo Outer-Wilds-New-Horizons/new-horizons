@@ -313,9 +313,6 @@ namespace NewHorizons.Builder.Props
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
             // make sure that these slides play when the player wanders into the beam
-            // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
-            mindSlideProjector._mindSlideCollection = mindSlideCollection;
-            mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 
