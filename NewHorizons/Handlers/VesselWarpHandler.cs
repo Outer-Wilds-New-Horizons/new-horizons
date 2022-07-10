@@ -89,7 +89,7 @@ namespace NewHorizons.Handlers
             vesselOrbLocker.AddLocks();
 
             if (system.Config.vesselPosition != null)
-                vesselObject.transform.position += system.Config.vesselPosition;
+                vesselObject.transform.position = system.Config.vesselPosition;
 
             if (system.Config.vesselRotation != null)
                 vesselObject.transform.eulerAngles = system.Config.vesselRotation;
