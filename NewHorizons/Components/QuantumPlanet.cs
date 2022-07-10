@@ -5,6 +5,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
@@ -50,6 +51,13 @@ namespace NewHorizons.Components
             ChangeQuantumState(true);
         }
 
+        public int GetRandomNewState()
+        {
+            var range = Enumerable.Range(0, states.Count - 1).Where(i => i != CurrentIndex);
+            var index = Random.Range(0, range.Count());
+            return range.ElementAt(index);
+        }
+
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
             Logger.LogVerbose($"QuantumPlanet - Trying to change quantum state");
@@ -72,11 +80,7 @@ namespace NewHorizons.Components
             // The QM tries to switch 10 times so we'll do that too
             for (int i = 0; i < 10; i++)
             {
-                newIndex = CurrentIndex;
-                while (newIndex == CurrentIndex)
-                {
-                    newIndex = Random.Range(0, states.Count - 1);
-                }
+                newIndex = GetRandomNewState();
 
                 newState = states[newIndex];
 
