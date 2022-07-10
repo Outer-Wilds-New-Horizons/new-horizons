@@ -81,11 +81,20 @@ namespace NewHorizons.Builder.Body
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
+            // Set the scale
+            var scale = config.radius / BASE_DIMENSION_RADIUS;
+            geometry.transform.localScale = Vector3.one * scale;
+            outerFogWarpVolume._warpRadius *= scale;
+            outerFogWarpVolume._exitRadius *= scale;
+            
+            var fogGO = atmo.FindChild("FogSphere_Hub");
+            var fog = fogGO.GetComponent<PlanetaryFogController>();
+            fog._fogRadius *= scale;
+            fog._fogDensity *= scale;
+
             // Change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
-                var fogGO = atmo.FindChild("FogSphere_Hub");
-                var fog = fogGO.GetComponent<PlanetaryFogController>();
                 fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
             }
 

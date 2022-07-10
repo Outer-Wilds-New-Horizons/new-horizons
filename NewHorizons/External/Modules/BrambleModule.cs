@@ -28,7 +28,7 @@ namespace NewHorizons.External.Modules
         public class BrambleDimensionInfo
         {
             /// <summary>
-            /// The color of the fog inside this dimension. Leave blank for the default yellowish color
+            /// The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)
             /// </summary>
             public MColor fogTint;
 
@@ -36,6 +36,11 @@ namespace NewHorizons.External.Modules
             /// The name of the *node* that the player is taken to when exiting this dimension.
             /// </summary>
             public string linksTo;
+
+            /// <summary>
+            /// The internal radius (in meters) of the dimension. The default is 1705.
+            /// </summary>
+            [DefaultValue(1705f)] public float radius = 1705f;
         }
 
         
@@ -73,12 +78,12 @@ namespace NewHorizons.External.Modules
             [DefaultValue(false)] public bool isSeed = false;
 
             /// <summary>
-            /// The color of the fog inside the node. Leave blank for the default yellowish color (default: 131, 124, 105, 255)
+            /// The color of the fog inside the node. Leave blank for the default yellowish color: (131, 124, 105, 255)
             /// </summary>
             public MColor fogTint;
 
             /// <summary>
-            /// The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color
+            /// The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)
             /// </summary>
             public MColor lightTint;
         }
