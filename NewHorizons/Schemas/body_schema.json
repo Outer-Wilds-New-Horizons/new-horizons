@@ -533,7 +533,7 @@
         },
         "scale": {
           "type": "number",
-          "description": "The physical scale of the node",
+          "description": "The physical scale of the node, as a multiplier of the original size",
           "format": "float",
           "default": 1.0
         },
