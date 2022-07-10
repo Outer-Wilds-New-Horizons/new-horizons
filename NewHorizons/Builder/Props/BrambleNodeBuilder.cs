@@ -187,9 +187,9 @@ namespace NewHorizons.Builder.Props
 
             // Spawn the bramble node
             var brambleNode = prefab.InstantiateInactive();
-            foreach (var component in brambleNode.GetComponentsInChildren<Component>(true))
+            foreach (var collider in brambleNode.GetComponentsInChildren<Collider>(true))
             {
-                if (component is Collider collider) collider.enabled = true; 
+                collider.enabled = true; 
             }
 
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
