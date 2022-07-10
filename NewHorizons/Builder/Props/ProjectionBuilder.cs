@@ -231,7 +231,6 @@ namespace NewHorizons.Builder.Props
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
-            target.slideCollectionContainer = slideCollectionContainer;
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
@@ -378,7 +377,5 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
-        public SlideCollectionContainer slideCollectionContainer;
-        public OWEvent.OWCallback onSlidesComplete;
     }
 }
