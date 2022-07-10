@@ -202,7 +202,8 @@ namespace NewHorizons.Builder.Body
                 foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
                 {
                     // It multiplies color by tint but wants something very bright idk
-                    controller._color = new Color(20, 20, 20);
+                    controller._color = new Color(11, 11, 11);
+                    controller.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Color", controller._color);
                     controller._tint = flareTint;
                 }
             }
