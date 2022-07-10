@@ -126,12 +126,7 @@ namespace NewHorizons.Builder.Body
             if (ring.curve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in ring.curve)
-                {
-                    curve.AddKey(new Keyframe(pair.time, pair.value));
-                }
-                levelController.scaleCurve = curve;
+                levelController.SetScaleCurve(ring.curve);
             }
 
             return ringGO;

@@ -4,7 +4,7 @@ namespace NewHorizons.Components.SizeControllers
 {
     public class SizeController : MonoBehaviour
     {
-        public AnimationCurve scaleCurve;
+        public AnimationCurve scaleCurve { get; protected set; }
         public float CurrentScale { get; protected set; }
         public float size = 1f;
 

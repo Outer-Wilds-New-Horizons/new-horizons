@@ -132,7 +132,7 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;

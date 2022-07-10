@@ -170,12 +170,7 @@ namespace NewHorizons.Builder.Body
         private static void AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
-            var animCurve = new AnimationCurve();
-            foreach (var pair in curve)
-            {
-                animCurve.AddKey(new Keyframe(pair.time, pair.value));
-            }
-            sizeController.scaleCurve = animCurve;
+            sizeController.SetScaleCurve(curve);
             sizeController.size = size;
         }
 
