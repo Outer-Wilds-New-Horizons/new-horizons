@@ -51,11 +51,11 @@ namespace NewHorizons.Handlers
                         {
                             foreach (var table in tables)
                             {
-                                foreach (var x in table._materialPropertyLookups)
+                                foreach (var lookup in table._materialPropertyLookups)
                                 {
-                                    if (materials.Contains(x.material))
+                                    if (materials.Contains(lookup.material))
                                     {
-                                        _materialCache.SafeAdd(x.material, table.assetBundle);
+                                        _materialCache.SafeAdd(lookup.material, table.assetBundle);
                                         assetBundlesList.SafeAdd(table.assetBundle);
                                     }
                                 }
