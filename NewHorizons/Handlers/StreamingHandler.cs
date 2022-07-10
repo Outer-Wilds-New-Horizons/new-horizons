@@ -78,21 +78,20 @@ namespace NewHorizons.Handlers
                     }
                 }
 
-                sector.OnSectorOccupantsUpdated += () =>
+                sector.OnOccupantEnterSector += sectorDetector =>
                 {
-                    if (sector.ContainsOccupant(DynamicOccupant.Player))
+                    if (sectorDetector.GetOccupantType() != DynamicOccupant.Player) return;
+                    foreach (var assetBundle in assetBundles)
                     {
-                        foreach (var assetBundle in assetBundles)
-                        {
-                            StreamingManager.LoadStreamingAssets(assetBundle);
-                        }
+                        StreamingManager.LoadStreamingAssets(assetBundle);
                     }
-                    else
+                };
+                sector.OnOccupantExitSector += sectorDetector =>
+                {
+                    if (sectorDetector.GetOccupantType() != DynamicOccupant.Player) return;
+                    foreach (var assetBundle in assetBundles)
                     {
-                        foreach (var assetBundle in assetBundles)
-                        {
-                            StreamingManager.UnloadStreamingAssets(assetBundle);
-                        }
+                        StreamingManager.UnloadStreamingAssets(assetBundle);
                     }
                 };
             }
