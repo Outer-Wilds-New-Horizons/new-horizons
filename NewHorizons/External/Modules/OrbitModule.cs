@@ -57,7 +57,8 @@ namespace NewHorizons.External.Modules
         public bool dottedOrbitLine;
 
         /// <summary>
-        /// Is the body meant to stay in one place without moving?
+        /// Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position
+        /// will be determined using its orbital parameters.
         /// </summary>
         public bool isStatic;
 
