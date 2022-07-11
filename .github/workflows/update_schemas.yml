@@ -7,7 +7,6 @@ on:
         required: true
         description: 'Name of the artifact to download and check against'
         type: string
-    secrets: inherit
 
 jobs:
   update_schemas:

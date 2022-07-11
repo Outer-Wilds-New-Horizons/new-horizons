@@ -17,7 +17,6 @@ on:
         required: false
         default: "Debug"
         type: string
-    secrets: inherit
 
   
 jobs:
