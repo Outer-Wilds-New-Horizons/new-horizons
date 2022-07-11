@@ -20,12 +20,6 @@ jobs:
         with:
           name: ${{ inputs.artifact_name }}
           path: NewHorizons/Schemas/
-
-      - name: Verify Changed Schemas
-        uses: tj-actions/verify-changed-files@v9.1
-        id: changed_files
-        with:
-          files: NewHorizons/Schemas/**
           
       - name: Commit Schemas
         if: steps.changed_files.outputs.files_changed == 'true'
@@ -36,7 +30,6 @@ jobs:
           git commit -m "Updated Schemas"
           
       - name: Push Schemas
-        if: ${{ (steps.changed_files.outputs.files_changed == 'true') && (github.event_name != 'pull_request') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.github_token }}

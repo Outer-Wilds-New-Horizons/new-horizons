@@ -17,11 +17,18 @@ on:
         required: false
         default: "Debug"
         type: string
+    outputs:
+      schemas_changed:
+        description: 'Have the schemas been updated?'
+        value: ${{ jobs.Build.outputs.schemas_changed }}
+
 
   
 jobs:
   Build:
     runs-on: windows-latest
+    outputs:
+      schemas_changed: ${{ steps.changed_files.outputs.files_changed }}
     steps:
 
     - name: Checkout Repo
@@ -57,4 +64,10 @@ jobs:
       with:
         name: NewHorizons-Schemas-${{ inputs.build_type }}
         path: .\NewHorizons\Schemas
+
+    - name: Verify Changed Schemas
+      uses: tj-actions/verify-changed-files@v9.1
+      id: changed_files
+      with:
+        files: NewHorizons/Schemas/**
       
