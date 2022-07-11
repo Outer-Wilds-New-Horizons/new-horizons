@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.General
 
                 if (Main.Instance.IsWarpingFromShip)
                 {
-                    Logger.Log("Overriding player spawn to be inside ship");
+                    Logger.LogVerbose("Overriding player spawn to be inside ship");
                     GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
                     playerSpawnGO.transform.parent = ship.transform;
                     playerSpawnGO.layer = 8;
@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.General
                 Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
             }
 
-            Logger.Log("Made spawnpoint on [" + planetGO.name + "]");
+            Logger.Log($"Made spawnpoint on [{planetGO.name}]");
 
             return playerSpawn;
         }

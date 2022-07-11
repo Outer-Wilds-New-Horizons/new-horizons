@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using OWML.Common;
+using System.IO;
 using System.Xml;
 using UnityEngine;
 namespace NewHorizons.Builder.Props
@@ -76,8 +77,11 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 
-            var xml = System.IO.File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
+            var xml = File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
+
+            // Text assets need a name to be used with VoiceMod
+            text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);

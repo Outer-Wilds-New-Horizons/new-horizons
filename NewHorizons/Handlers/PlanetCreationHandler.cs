@@ -23,6 +23,21 @@ namespace NewHorizons.Handlers
         private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
 
         private static Dictionary<NHAstroObject, NewHorizonsBody> _dict;
+        private static Dictionary<AstroObject,   NewHorizonsBody> _dimensions;
+
+        public static List<NewHorizonsBody> allBodies;
+
+        public static NewHorizonsBody GetNewHorizonsBody(AstroObject ao)
+        {
+            if (ao is NHAstroObject nhAO)
+            {
+                if (_dict.ContainsKey(nhAO)) return _dict[nhAO];
+            }
+
+            if (!_dimensions.ContainsKey(ao)) return null;
+            
+            return _dimensions[ao];
+        }
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
@@ -30,6 +45,8 @@ namespace NewHorizons.Handlers
 
             ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
             _dict = new Dictionary<NHAstroObject, NewHorizonsBody>();
+            _dimensions = new Dictionary<AstroObject, NewHorizonsBody>();
+            allBodies = bodies;
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -178,7 +195,7 @@ namespace NewHorizons.Handlers
 
                             var rb = existingPlanet.GetComponent<OWRigidbody>();
 
-                            var sector = MakeSector.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
                             sector.name = $"Sector-{existingPlanet.GetComponentsInChildren<Sector>().Count()}";
 
                             SharedGenerateBody(body, existingPlanet, sector, rb);
@@ -219,10 +236,15 @@ namespace NewHorizons.Handlers
                 {
                     try
                     {
-                        GameObject planetObject = GenerateBody(body, defaultPrimaryToSun);
+                        Logger.Log($"Creating [{body.Config.name}]");
+                        var planetObject = GenerateBody(body, defaultPrimaryToSun);
                         if (planetObject == null) return false;
                         planetObject.SetActive(true);
-                        _dict.Add(planetObject.GetComponent<NHAstroObject>(), body);
+
+                        var ao = planetObject.GetComponent<NHAstroObject>();
+
+                        if (!ao.IsDimension) _dict.Add(ao, body);
+                        else _dimensions.Add(ao, body);
                     }
                     catch (Exception e)
                     {
@@ -252,7 +274,9 @@ namespace NewHorizons.Handlers
             {
                 foreach (var child in body.Config.removeChildren)
                 {
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => SearchUtilities.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
+                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 
@@ -265,6 +289,51 @@ namespace NewHorizons.Handlers
         // Only called when making new planets
         public static GameObject GenerateBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            if (body.Config?.Bramble?.dimension != null)
+            {
+                return GenerateBrambleDimensionBody(body);
+            }
+            else
+            {
+                return GenerateStandardBody(body, defaultPrimaryToSun);
+            }
+        }
+
+        public static GameObject GenerateBrambleDimensionBody(NewHorizonsBody body)
+        {
+            var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
+            go.SetActive(false);
+
+            body.Config.Base.showMinimap = false;
+            body.Config.Base.hasMapMarker = false;
+
+            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            var ao = AstroObjectBuilder.Make(go, null, body.Config);
+
+            var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
+            ao._rootSector = sector;
+            ao._type = AstroObject.Type.None;
+
+            BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
+
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
+            body.Object = go;
+
+            AstroObjectLocator.RegisterCustomAstroObject(ao);
+
+            // Now that we're done move the planet into place
+            SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+
+            Logger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
+
+            return go;
+        }
+
+        public static GameObject GenerateStandardBody(NewHorizonsBody body, bool defaultPrimaryToSun = false) 
+        { 
+            // Focal points are weird
+            if (body.Config.FocalPoint != null) FocalPointBuilder.ValidateConfig(body.Config);
+
             AstroObject primaryBody;
             if (body.Config.Orbit.primaryBody != null)
             {
@@ -273,8 +342,8 @@ namespace NewHorizons.Handlers
                 {
                     if (defaultPrimaryToSun)
                     {
-                        Logger.Log($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to Sun");
-                        primaryBody = AstroObjectLocator.GetAstroObject("Sun");
+                        Logger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
+                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
                     }
                     else
                     {
@@ -288,8 +357,6 @@ namespace NewHorizons.Handlers
                 primaryBody = null;
             }
 
-            Logger.Log($"Begin generation sequence of [{body.Config.name}]");
-
             var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
@@ -298,7 +365,7 @@ namespace NewHorizons.Handlers
 
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
-            var sector = MakeSector.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
             ao._rootSector = sector;
 
             if (body.Config.Base.surfaceGravity != 0)
@@ -326,7 +393,14 @@ namespace NewHorizons.Handlers
             body.Object = go;
 
             // Now that we're done move the planet into place
-            UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+            if (body.Config.Orbit?.staticPosition != null)
+            {
+                SetPositionFromVector(go, body.Config.Orbit.staticPosition);
+            }
+            else
+            {
+                UpdatePosition(go, body.Config.Orbit, primaryBody, ao);
+            }
 
             // Have to do this after setting position
             var initialMotion = InitialMotionBuilder.Make(go, primaryBody, ao, owRigidBody, body.Config.Orbit);
@@ -334,7 +408,7 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                Logger.Log("Doing spawn point thing");
+                Logger.LogVerbose("Making spawn point");
                 Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
@@ -348,15 +422,14 @@ namespace NewHorizons.Handlers
                 DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
             }
 
-            if (ao.GetAstroObjectName() == AstroObject.Name.CustomString)
-            {
-                AstroObjectLocator.RegisterCustomAstroObject(ao);
-            }
+            AstroObjectLocator.RegisterCustomAstroObject(ao);
 
             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
             {
                 ProxyBuilder.Make(go, body);
             });
+
+            Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
             return go;
         }
@@ -397,7 +470,20 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star));
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
+            }
+
+            if (body.Config?.Bramble != null)
+            {
+                if (body.Config.Bramble.nodes != null)
+                {
+                    BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
+                }
+                
+                if (body.Config.Bramble.dimension != null)
+                {
+                    BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, go.GetComponent<AstroObject>());
+                }
             }
 
             if (body.Config.Ring != null)
@@ -430,6 +516,8 @@ namespace NewHorizons.Handlers
                 SandBuilder.Make(go, sector, rb, body.Config.Sand);
             }
 
+            var willHaveCloak = body.Config.Cloak != null && body.Config.Cloak.radius != 0f;
+
             if (body.Config.Atmosphere != null)
             {
                 var airInfo = new AtmosphereModule.AirInfo()
@@ -446,7 +534,7 @@ namespace NewHorizons.Handlers
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
-                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, body.Mod);
+                    CloudsBuilder.Make(go, sector, body.Config.Atmosphere, willHaveCloak, body.Mod);
                     SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
@@ -469,18 +557,13 @@ namespace NewHorizons.Handlers
                 SignalBuilder.Make(go, sector, body.Config.Signal, body.Mod);
             }
 
-            if (body.Config.Singularity != null)
-            {
-                SingularityBuilder.Make(go, sector, rb, body.Config);
-            }
-
             if (body.Config.Funnel != null)
             {
                 FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
             }
 
             // Has to go last probably
-            if (body.Config.Cloak != null && body.Config.Cloak.radius != 0f)
+            if (willHaveCloak)
             {
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
@@ -532,7 +615,8 @@ namespace NewHorizons.Handlers
                 newAO._primaryBody = primary;
 
                 // Since we destroyed the AO we have to replace links to it in other places
-                newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame._attachedAstroObject = newAO;
+                var referenceFrame = newAO.gameObject.GetComponentInChildren<ReferenceFrameVolume>()._referenceFrame;
+                if (referenceFrame != null) referenceFrame._attachedAstroObject = newAO;
 
                 // QM and stuff don't have orbit lines
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
@@ -604,21 +688,26 @@ namespace NewHorizons.Handlers
 
         public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
         {
-            Logger.Log($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
-
-            go.transform.parent = Locator.GetRootTransform();
+            Logger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
             if (primaryBody != null)
             {
                 var primaryGravity = new Gravity(primaryBody.GetGravityVolume());
                 var secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
 
-                go.transform.position = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+                var pos = orbit.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition + primaryBody.transform.position;
+                SetPositionFromVector(go, pos);
             }
             else
             {
-                go.transform.position = Vector3.zero;
+                SetPositionFromVector(go, Vector3.zero);
             }
+        }
+
+        public static void SetPositionFromVector(GameObject go, Vector3 position)
+        {
+            go.transform.parent = Locator.GetRootTransform();
+            go.transform.position = position;
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {

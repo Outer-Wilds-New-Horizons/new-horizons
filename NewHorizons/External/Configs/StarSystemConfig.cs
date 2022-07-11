@@ -134,13 +134,18 @@ namespace NewHorizons.External.Configs
             public string path;
         }
 
+        /// <summary>
+        /// Makes sure they are all numbers are unique and between 0 and 5.
+        /// </summary>
+        private static int[] FixAxis(int[] axis) => axis.Distinct().Where(i => (i >= 0 && i <= 5)).ToArray();
+
         public void FixCoordinates()
         {
             if (coords != null)
             {
-                coords.x = coords.x.Distinct().ToArray();
-                coords.y = coords.y.Distinct().ToArray();
-                coords.z = coords.z.Distinct().ToArray();
+                coords.x = FixAxis(coords.x);
+                coords.y = FixAxis(coords.y);
+                coords.z = FixAxis(coords.z);
             }
 		}
 		

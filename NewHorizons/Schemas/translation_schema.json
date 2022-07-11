@@ -25,9 +25,32 @@
         "type": "string"
       }
     },
+    "AchievementTranslations": {
+      "type": "object",
+      "description": "Translation table for achievements. The key is the unique ID of the achievement",
+      "additionalProperties": {
+        "$ref": "#/definitions/AchievementTranslationInfo"
+      }
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
+    }
+  },
+  "definitions": {
+    "AchievementTranslationInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "Name": {
+          "type": "string",
+          "description": "The name of the achievement."
+        },
+        "Description": {
+          "type": "string",
+          "description": "The short description for this achievement."
+        }
+      }
     }
   },
   "$docs": {

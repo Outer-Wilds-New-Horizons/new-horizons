@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
+using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.External.Modules
 {
@@ -76,6 +77,11 @@ namespace NewHorizons.External.Modules
         /// Add volcanoes to this planet
         /// </summary>
         public VolcanoInfo[] volcanoes;
+
+        /// <summary>
+        /// Add black/white-holes to this planet
+        /// </summary>
+        public SingularityModule[] singularities;
 
         [JsonObject]
         public class ScatterInfo
@@ -169,6 +175,11 @@ namespace NewHorizons.External.Modules
             /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
             /// </summary>
             public string quantumGroupID;
+
+            /// <summary>
+            /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]

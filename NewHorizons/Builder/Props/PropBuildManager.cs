@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
 using OWML.Common;
@@ -189,6 +190,13 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
+                }
+            }
+            if (config.Props.singularities != null)
+            {
+                foreach (var singularity in config.Props.singularities)
+                {
+                    SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
                 }
             }
         }

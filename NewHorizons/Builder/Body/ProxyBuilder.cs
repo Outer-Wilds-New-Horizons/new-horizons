@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
                 }
                 if (body.Config.Star != null)
                 {
-                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star);
+                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star, body.Mod);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
@@ -93,18 +93,21 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
                 // Could improve this to actually use the proper renders and materials
-                if (body.Config.Singularity != null)
+                if (body.Config.Props?.singularities != null)
                 {
-                    if (body.Config.Singularity.type == SingularityModule.SingularityType.BlackHole)
+                    foreach(var singularity in body.Config.Props.singularities)
                     {
-                        MakeBlackHole(newProxy, body.Config.Singularity.size);
-                    }
-                    else
-                    {
-                        MakeWhiteHole(newProxy, body.Config.Singularity.size);
-                    }
+                        if (singularity.type == SingularityModule.SingularityType.BlackHole)
+                        {
+                            MakeBlackHole(newProxy, singularity.size);
+                        }
+                        else
+                        {
+                            MakeWhiteHole(newProxy, singularity.size);
+                        }
 
-                    if (realSize < body.Config.Singularity.size) realSize = body.Config.Singularity.size;
+                        if (realSize < singularity.size) realSize = singularity.size;
+                    }
                 }
                 if (body.Config.Base.hasCometTail)
                 {
@@ -167,12 +170,7 @@ namespace NewHorizons.Builder.Body
         private static void AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
-            var animCurve = new AnimationCurve();
-            foreach (var pair in curve)
-            {
-                animCurve.AddKey(new Keyframe(pair.time, pair.value));
-            }
-            sizeController.scaleCurve = animCurve;
+            sizeController.SetScaleCurve(curve);
             sizeController.size = size;
         }
 

@@ -30,19 +30,34 @@ namespace NewHorizons.Builder.Props
 
                 detailGO = MakeDetail(go, sector, prefab, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
             }
-            else detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
-
-            if (detailGO != null && detail.removeChildren != null)
+            else
             {
+                detailGO = MakeDetail(go, sector, detail.path, detail.position, detail.rotation, detail.scale, detail.alignToNormal);
+            }
+
+            if (detailGO == null) return;
+
+            if (detail.removeChildren != null)
+            {
+                var detailPath = detailGO.transform.GetPath();
+                var transforms = detailGO.GetComponentsInChildren<Transform>(true);
                 foreach (var childPath in detail.removeChildren)
                 {
-                    var childObj = detailGO.transform.Find(childPath);
-                    if (childObj != null) childObj.gameObject.SetActive(false);
-                    else Logger.LogWarning($"Couldn't find {childPath}");
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{detailPath}/{childPath}";
+
+                    var flag = true;
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    {
+                        flag = false;
+                        childObj.gameObject.SetActive(false);
+                    }
+
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
-            if (detailGO != null && detail.removeComponents)
+            if (detail.removeComponents)
             {
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(detailGO.name);
@@ -67,6 +82,15 @@ namespace NewHorizons.Builder.Props
                 detailGO.name = detail.rename;
             }
 
+            if (!string.IsNullOrEmpty(detail.parentPath))
+            {
+                var newParent = go.transform.Find(detail.parentPath);
+                if (newParent != null)
+                {
+                    detailGO.transform.parent = newParent.transform;
+                }
+            }
+
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
@@ -83,16 +107,26 @@ namespace NewHorizons.Builder.Props
 
             GameObject prop = prefab.InstantiateInactive();
             prop.transform.parent = sector?.transform ?? planetGO.transform;
-            prop.SetActive(false);
 
-            if (sector != null) sector.OnOccupantEnterSector += (SectorDetector sd) => OWAssetHandler.OnOccupantEnterSector(prop, sd, sector);
-            OWAssetHandler.LoadObject(prop);
+            StreamingHandler.SetUpStreaming(prop, sector);
 
-            foreach (var component in prop.GetComponents<Component>().Concat(prop.GetComponentsInChildren<Component>()))
+            var torchItem = prop.GetComponent<VisionTorchItem>();
+            // Fix vision torch
+            if (torchItem)
             {
+                torchItem.enabled = true;
+                torchItem.mindProjectorTrigger.enabled = true;
+                torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+            }
+
+            foreach (var component in prop.GetComponentsInChildren<Component>(true))
+            {
+                /*
                 // Enable all children or something
+                // BUG doesnt work because enabled is a property, not a field
                 var enabledField = component?.GetType()?.GetField("enabled");
                 if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
+                */
 
                 // Fix a bunch of sector stuff
                 if (sector != null)
@@ -113,7 +147,6 @@ namespace NewHorizons.Builder.Props
                         sectorGroup.SetSector(sector);
                     }
 
-                    // TODO: Make this work or smthng
                     if (component is GhostIK ik) ik.enabled = false;
                     if (component is GhostEffects effects) effects.enabled = false;
 
@@ -127,14 +160,17 @@ namespace NewHorizons.Builder.Props
                     {
                         behaviour.SetSector(sector);
                     }
+                    /*
                     else
                     {
+                        // BUG: this doesnt find the field cuz _sector is private
                         var sectorField = component?.GetType()?.GetField("_sector");
                         if (sectorField != null && sectorField.FieldType == typeof(Sector))
                         {
                             Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                         }
                     }
+                    */
 
                     if (component is AnglerfishController angler)
                     {
@@ -149,7 +185,8 @@ namespace NewHorizons.Builder.Props
                     }
 
                     // Fix slide reel
-                    if (component is SlideCollectionContainer container)
+                    // softlocks if this object is a vision torch
+                    if (!torchItem && component is SlideCollectionContainer container)
                     {
                         sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
                     }
@@ -157,14 +194,6 @@ namespace NewHorizons.Builder.Props
                     if (component is OWItemSocket socket)
                     {
                         socket._sector = sector;
-                    }
-
-                    // Fix vision torch
-                    if (component is VisionTorchItem torchItem)
-                    {
-                        torchItem.enabled = true;
-                        torchItem.mindProjectorTrigger.enabled = true;
-                        torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
                     }
 
                     // fix campfires
@@ -210,7 +239,7 @@ namespace NewHorizons.Builder.Props
                         // If it's not a moving anglerfish make sure the anim controller is regular
                         else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
                         {
-                            Logger.Log("Enabling anglerfish animation");
+                            Logger.LogVerbose("Enabling anglerfish animation");
                             // Remove any reference to its angler
                             if (angler._anglerfishController)
                             {

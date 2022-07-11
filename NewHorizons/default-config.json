@@ -3,6 +3,7 @@
 	"settings": {
 		"Debug": false,
 		"Custom title screen": true,
-		"Default System Override": ""
+		"Default System Override": "",
+		"Verbose Logs": false
 	}
 }

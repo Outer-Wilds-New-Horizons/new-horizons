@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Init()
         {
-            Logger.Log($"Initializing SignalBuilder");
+            Logger.LogVerbose($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
             _availableSignalNames = new Stack<SignalName>(new SignalName[]
             {
@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Props
             if (clip == null)
             {
                 Logger.LogError($"Couldn't find AudioClip {info.audioClip} or AudioFile {info.audioFilePath}");
-                return;
+                return null;
             }
 
             audioSignal.SetSector(sector);
@@ -181,6 +181,7 @@ namespace NewHorizons.Builder.Props
             audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
+            audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
 
             source.clip = clip;
             source.loop = true;
@@ -219,6 +220,8 @@ namespace NewHorizons.Builder.Props
 
             signalGO.SetActive(true);
             signalDetectionGO.SetActive(true);
+
+            return signalGO;
         }
 
         private static SignalFrequency StringToFrequency(string str)

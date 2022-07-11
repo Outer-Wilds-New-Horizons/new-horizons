@@ -68,7 +68,7 @@ namespace NewHorizons.Utility
             }
             else
             {
-                Logger.Log($"Registering [{ao.name}] as [{key}]");
+                Logger.LogVerbose($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
             }
         }
@@ -130,6 +130,17 @@ namespace NewHorizons.Utility
                     break;
                 case AstroObject.Name.MapSatellite:
                     otherChildren.Add(SearchUtilities.Find("HearthianRecorder_Body"));
+                    break;
+                case AstroObject.Name.DarkBramble:
+                    otherChildren.Add(SearchUtilities.Find("DB_ClusterDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_VesselDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_PioneerDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_HubDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_ExitOnlyDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_EscapePodDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_AnglerNestDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_SmallNest_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_Elsinore_Body"));
                     break;
                 // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
                 case AstroObject.Name.CustomString:

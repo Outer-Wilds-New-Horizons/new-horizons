@@ -20,6 +20,10 @@
       "description": "Base Properties of this Body",
       "$ref": "#/definitions/BaseModule"
     },
+    "Bramble": {
+      "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
+      "$ref": "#/definitions/BrambleModule"
+    },
     "buildPriority": {
       "type": "integer",
       "description": "Set to a higher number if you wish for this body to be built sooner",
@@ -101,10 +105,6 @@
     "Signal": {
       "description": "Add signals that can be heard via the signal-scope to this planet",
       "$ref": "#/definitions/SignalModule"
-    },
-    "Singularity": {
-      "description": "Add a black or white hole to this planet",
-      "$ref": "#/definitions/SingularityModule"
     },
     "Spawn": {
       "description": "Spawn the player at this planet",
@@ -488,6 +488,84 @@
         "inverseSquared"
       ]
     },
+    "BrambleModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dimension": {
+          "description": "Defining this value will make this body a bramble dimension. Leave it null to not do that.",
+          "$ref": "#/definitions/BrambleDimensionInfo"
+        },
+        "nodes": {
+          "type": "array",
+          "description": "Place nodes/seeds that take you to other bramble dimensions",
+          "items": {
+            "$ref": "#/definitions/BrambleNodeInfo"
+          }
+        }
+      }
+    },
+    "BrambleDimensionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fogTint": {
+          "description": "The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)",
+          "$ref": "#/definitions/MColor"
+        },
+        "linksTo": {
+          "type": "string",
+          "description": "The name of the *node* that the player is taken to when exiting this dimension."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The internal radius (in meters) of the dimension. The default is 1705.",
+          "format": "float",
+          "default": 1705.0
+        }
+      }
+    },
+    "BrambleNodeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The physical position of the node",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The physical rotation of the node",
+          "$ref": "#/definitions/MVector3"
+        },
+        "scale": {
+          "type": "number",
+          "description": "The physical scale of the node, as a multiplier of the original size",
+          "format": "float",
+          "default": 1.0
+        },
+        "linksTo": {
+          "type": "string",
+          "description": "The name of the planet that hosts the dimension this node links to"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of this node. Only required if this node should serve as an exit."
+        },
+        "isSeed": {
+          "type": "boolean",
+          "description": "Set this to true to make this node a seed instead of a node the player can enter",
+          "default": false
+        },
+        "fogTint": {
+          "description": "The color of the fog inside the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
+          "$ref": "#/definitions/MColor"
+        },
+        "lightTint": {
+          "description": "The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
+          "$ref": "#/definitions/MColor"
+        }
+      }
+    },
     "CloakModule": {
       "type": "object",
       "additionalProperties": false,
@@ -634,6 +712,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "staticPosition": {
+          "description": "Specify this if you want the body to remain stationary at a given location (ie not orbit its parent). Required for Bramble dimensions",
+          "$ref": "#/definitions/MVector3"
+        },
         "primaryBody": {
           "type": "string",
           "description": "The name of the body this one will orbit around"
@@ -671,7 +753,7 @@
         },
         "isStatic": {
           "type": "boolean",
-          "description": "Is the body meant to stay in one place without moving?"
+          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
         },
         "tint": {
           "description": "Colour of the orbit-line in the map view.",
@@ -811,6 +893,13 @@
           "items": {
             "$ref": "#/definitions/VolcanoInfo"
           }
+        },
+        "singularities": {
+          "type": "array",
+          "description": "Add black/white-holes to this planet",
+          "items": {
+            "$ref": "#/definitions/SingularityModule"
+          }
         }
       }
     },
@@ -862,6 +951,10 @@
         "quantumGroupID": {
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
         }
       }
     },
@@ -1447,6 +1540,62 @@
         }
       }
     },
+    "SingularityModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
+        },
+        "makeZeroGVolume": {
+          "type": "boolean",
+          "description": "Only for White Holes. Should this white hole repel the player from it.",
+          "default": true
+        },
+        "pairedSingularity": {
+          "type": "string",
+          "description": "The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
+        },
+        "uniqueID": {
+          "type": "string",
+          "description": "The uniqueID of this white hole or black hole. If not set it will default to the name of the planet"
+        },
+        "position": {
+          "description": "Position of the singularity",
+          "$ref": "#/definitions/MVector3"
+        },
+        "size": {
+          "type": "number",
+          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "If you want a black hole to load a new star system scene, put its name here."
+        },
+        "type": {
+          "description": "Type of singularity (white hole or black hole)",
+          "$ref": "#/definitions/SingularityType"
+        }
+      }
+    },
+    "SingularityType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "BlackHole",
+        "WhiteHole"
+      ],
+      "enum": [
+        "blackHole",
+        "whiteHole"
+      ]
+    },
     "ReferenceFrameModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1725,58 +1874,6 @@
         }
       }
     },
-    "SingularityModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "curve": {
-          "type": "array",
-          "description": "Scale this module over time",
-          "items": {
-            "$ref": "#/definitions/TimeValuePair"
-          }
-        },
-        "makeZeroGVolume": {
-          "type": "boolean",
-          "description": "Only for White Holes. Should this white hole repel the player from it.",
-          "default": true
-        },
-        "pairedSingularity": {
-          "type": "string",
-          "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
-        },
-        "position": {
-          "description": "Position of the singularity",
-          "$ref": "#/definitions/MVector3"
-        },
-        "size": {
-          "type": "number",
-          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "targetStarSystem": {
-          "type": "string",
-          "description": "If you want a black hole to load a new star system scene, put its name here."
-        },
-        "type": {
-          "description": "Type of singularity (white hole or black hole)",
-          "$ref": "#/definitions/SingularityType"
-        }
-      }
-    },
-    "SingularityType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "BlackHole",
-        "WhiteHole"
-      ],
-      "enum": [
-        "blackHole",
-        "whiteHole"
-      ]
-    },
     "SpawnModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1858,6 +1955,10 @@
         "tint": {
           "description": "Colour of the star.",
           "$ref": "#/definitions/MColor"
+        },
+        "starRampTexture": {
+          "type": "string",
+          "description": "Path to the texture to put as the star ramp. Optional."
         },
         "lightRadius": {
           "type": "number",

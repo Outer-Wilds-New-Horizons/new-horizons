@@ -129,8 +129,7 @@ namespace NewHorizons.Builder.Props
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
-            OWAssetHandler.LoadObject(slideReelObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(slideReelObj));
+            StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
             slideReelObj.SetActive(true);
         }
@@ -180,8 +179,7 @@ namespace NewHorizons.Builder.Props
 
             slideCollectionContainer.slideCollection = slideCollection;
 
-            OWAssetHandler.LoadObject(projectorObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(projectorObj));
+            StreamingHandler.SetUpStreaming(projectorObj, sector);
 
             // Change the picture on the lens
             var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();
@@ -233,7 +231,6 @@ namespace NewHorizons.Builder.Props
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
-            target.slideCollectionContainer = slideCollectionContainer;
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
@@ -265,7 +262,7 @@ namespace NewHorizons.Builder.Props
             
             // setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
-            var visionBeamEffect = SearchUtilities.FindChild(standingTorch, "VisionBeam");
+            var visionBeamEffect = standingTorch.FindChild("VisionBeam");
             visionBeamEffect.SetActive(false);
 
             //
@@ -316,9 +313,6 @@ namespace NewHorizons.Builder.Props
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
             // make sure that these slides play when the player wanders into the beam
-            // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
-            mindSlideProjector._mindSlideCollection = mindSlideCollection;
-            mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 
@@ -380,7 +374,9 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
-        public SlideCollectionContainer slideCollectionContainer;
+
+        // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events after the mind slide show is complete.
         public OWEvent.OWCallback onSlidesComplete;
     }
 }

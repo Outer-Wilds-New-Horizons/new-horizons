@@ -31,11 +31,11 @@ namespace NewHorizons.Utility
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
             if (_loadedTextures.ContainsKey(path))
             {
-                Logger.Log($"Already loaded image at path: {path}");
+                Logger.LogVerbose($"Already loaded image at path: {path}");
                 return _loadedTextures[path];
             }
 
-            Logger.Log($"Loading image at path: {path}");
+            Logger.LogVerbose($"Loading image at path: {path}");
             try
             {
                 var data = File.ReadAllBytes(path);
@@ -48,7 +48,8 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
+                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
                 return null;
             }
         }
@@ -70,7 +71,7 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
-            Logger.Log("Clearing image cache");
+            Logger.LogVerbose("Clearing image cache");
 
             foreach (var texture in _loadedTextures.Values)
             {
@@ -368,7 +369,7 @@ namespace NewHorizons.Utility
             {
                 if (_loadedTextures.ContainsKey(url))
                 {
-                    Logger.Log($"Already loaded image at path: {url}");
+                    Logger.LogVerbose($"Already loaded image at path: {url}");
                     var texture = _loadedTextures[url];
                     imageLoadedEvent.Invoke(texture, index);
                     yield break;
@@ -390,7 +391,7 @@ namespace NewHorizons.Utility
 
                         if (_loadedTextures.ContainsKey(url))
                         {
-                            Logger.Log($"Already loaded image at path: {url}");
+                            Logger.LogVerbose($"Already loaded image at path: {url}");
                             Destroy(texture);
                             texture = _loadedTextures[url];
                         }

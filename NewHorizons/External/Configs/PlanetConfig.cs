@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using NewHorizons.Builder.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
 {
@@ -31,6 +33,11 @@ namespace NewHorizons.External.Configs
         public BaseModule Base;
 
         /// <summary>
+        /// Add bramble nodes to this planet and/or make this planet a bramble dimension
+        /// </summary>
+        public BrambleModule Bramble;
+
+        /// <summary>
         /// Set to a higher number if you wish for this body to be built sooner
         /// </summary>
         [DefaultValue(-1)] public int buildPriority = -1;
@@ -44,6 +51,9 @@ namespace NewHorizons.External.Configs
 
         [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
         public string[] childrenToDestroy;
+
+        [Obsolete("Singularity is deprecated, please use Props->singularities")]
+        public SingularityModule Singularity;
 
         #endregion Obsolete
 
@@ -134,11 +144,6 @@ namespace NewHorizons.External.Configs
         public SignalModule Signal;
 
         /// <summary>
-        /// Add a black or white hole to this planet
-        /// </summary>
-        public SingularityModule Singularity;
-
-        /// <summary>
         /// Spawn the player at this planet
         /// </summary>
         public SpawnModule Spawn;
@@ -172,12 +177,18 @@ namespace NewHorizons.External.Configs
             if (ReferenceFrame == null) ReferenceFrame = new ReferenceFrameModule();
         }
 
-        public void MigrateAndValidate()
+        public void Validate()
         {
-            // Validate
+            // If we can correct a part of the config, do it
+            // If it cannot be solved, throw an exception
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
+            if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
+            if (Orbit?.staticPosition != null) Orbit.isStatic = true;
+        }
 
+        public void Migrate()
+        {
             // Backwards compatability
             // Should be the only place that obsolete things are referenced
 #pragma warning disable 612, 618
@@ -323,6 +334,13 @@ namespace NewHorizons.External.Configs
                 }
             }
 
+            // Singularity is now a list in props so you can have many per planet
+            if (Singularity != null)
+            {
+                if (Props == null) Props = new PropModule();
+                if (Props.singularities == null) Props.singularities = new SingularityModule[0];
+                Props.singularities = Props.singularities.Append(Singularity).ToArray();
+            }
         }
     }
 }
