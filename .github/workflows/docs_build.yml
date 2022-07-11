@@ -7,15 +7,10 @@ on:
       - docs/**
       - NewHorizons/Schemas/**
 
-  pull_request:
-    paths:
-      - docs/**
-      - NewHorizons/Schemas/**
-
   workflow_dispatch:
     inputs:
       relative_path:
-        description: "Path to set for relative files, set to a blank string for local builds"
+        description: "Path to set for relative files"
         required: false
         default: "/"
 
