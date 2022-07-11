@@ -100,6 +100,9 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public CuriosityColorInfo[] curiosities;
 
+        /// <summary> Test Property to see if the action works, will delete later </summary>
+        public string coolField = "hola";
+
         public class NomaiCoordinates
         {
             [MinLength(2)]
