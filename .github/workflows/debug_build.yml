@@ -19,7 +19,7 @@ jobs:
   Update_Schemas:
     name: 'Update Schemas'
     needs: Build
-    if: ${{ needs.Build.outputs.schemas_changed }}
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' }}
     uses: './.github/workflows/update_schemas.yml'
     with:
       artifact_name: NewHorizons-Schemas-Debug

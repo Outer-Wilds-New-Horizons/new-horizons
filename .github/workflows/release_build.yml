@@ -28,7 +28,7 @@ jobs:
   Update_Schemas:
     name: 'Update Schemas'
     needs: Build
-    if: ${{ needs.Build.outputs.schemas_changed && github.ref != 'refs/heads/dev' }} # Debug build will update schemas on dev, so don't run if we're on dev
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref != 'refs/heads/dev' }} # Debug build will update schemas on dev, so don't run if we're on dev
     uses: ./.github/workflows/update_schemas.yml
     with:
       artifact_name: NewHorizons-Schemas-Release
