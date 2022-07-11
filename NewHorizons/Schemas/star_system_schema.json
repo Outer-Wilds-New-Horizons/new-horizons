@@ -85,10 +85,6 @@
         "$ref": "#/definitions/CuriosityColorInfo"
       }
     },
-    "coolField": {
-      "type": "string",
-      "description": "Test Property to see if the action works, will delete later "
-    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"
