@@ -139,6 +139,8 @@ namespace NewHorizons.Utility
                     otherChildren.Add(SearchUtilities.Find("DB_ExitOnlyDimension_Body"));
                     otherChildren.Add(SearchUtilities.Find("DB_EscapePodDimension_Body"));
                     otherChildren.Add(SearchUtilities.Find("DB_AnglerNestDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_SmallNest_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_Elsinore_Body"));
                     break;
                 // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
                 case AstroObject.Name.CustomString:
