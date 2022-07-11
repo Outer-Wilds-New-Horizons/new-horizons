@@ -2,11 +2,11 @@ name: Debug Build
 
 on:
   push:
-    branches-ignore: [main]
+    branches-ignore: [main, gh-pages]
     paths-ignore:
       - "docs/**"
       - "*.md"
-      - "NewHorizons/Schemas/**"
+      - "NewHorizons/Schemas/*.json"
       - "LICENSE"
       - ".gitignore"
   workflow_dispatch:
@@ -23,3 +23,10 @@ jobs:
     uses: './.github/workflows/update_schemas.yml'
     with:
       artifact_name: NewHorizons-Schemas-Debug
+  Update_Docs:
+    name: 'Update Docs'
+    needs: Build
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' }}
+    uses: './.github/workflows/docs_build.yml'
+    with:
+      schemas_artifact: NewHorizons-Schemas-Debug

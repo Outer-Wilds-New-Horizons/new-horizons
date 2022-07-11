@@ -11,11 +11,10 @@ on:
 jobs:
     Update_Release:
         name: Create/Update Release
-        if: ${{ github.event.type == 'PullRequest' && github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
+        if: ${{ github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
         runs-on: ubuntu-latest
         steps:
-            - name: Create/Update Draft Release
-              if: contains(github.event.pull_request.labels.*.name, 'version-pr')
+            - name: Create/Update Release
               uses: ncipollo/release-action@v1
               with:
                   allowUpdates: true
