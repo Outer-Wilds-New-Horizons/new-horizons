@@ -1,0 +1,63 @@
+name: Release Build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
+  pull_request:
+    branches: [main]
+    types:
+      - synchronize
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore" 
+
+jobs:
+  Build:
+    uses: ./.github/workflows/build.yaml
+    with:
+      build_type: Release
+  Update_Schemas:
+    name: 'Update Schemas'
+    needs: Build
+    uses: ./.github/workflows/update_schemas.yml
+    with:
+      artifact_name: NewHorizons-Schemas-Release
+  Update_Release:
+    name: 'Create/Update Release Asset'
+    needs: Build
+    if: ${{ github.event.name == 'pull_request' && github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Asset
+        uses: actions/download-artifact@v3
+        with:
+          name: xen.NewHorizons.Release
+          path: xen.NewHorizons
+
+      - name: Zip Asset
+        uses: montudor/action-zip@v1
+        with:
+          args: zip -qq -r xen.NewHorizons.zip xen.NewHorizons
+
+      - name: Upload Asset
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: main
+          tag: v${{ github.event.pull_request.title }}
+          name: Version ${{ github.event.pull_request.title }}
+          omitBodyDuringUpdate: true
+          artifacts: "xen.NewHorizons.zip"
+          draft: true
+          prerelease: false
+
+
