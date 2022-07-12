@@ -30,7 +30,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [DefaultValue(true)] public bool hasAtmosphere = true;
 
         /// <summary>
-        /// Colour of the light given off.
+        /// Colour of the light given off. Defaults to yellowish.
         /// </summary>
         public MColor lightTint;
 

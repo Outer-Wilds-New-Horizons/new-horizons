@@ -145,7 +145,7 @@ namespace NewHorizons.External.Modules
             public string texturePath;
 
             /// <summary>
-            /// Colour of the inner cloud layer.
+            /// Colour of the inner cloud layer. Defaults to white.
             /// </summary>
             public MColor tint;
 
