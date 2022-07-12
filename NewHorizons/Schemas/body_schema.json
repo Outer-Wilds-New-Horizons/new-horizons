@@ -1931,7 +1931,7 @@
           "default": true
         },
         "lightTint": {
-          "description": "Colour of the light given off.",
+          "description": "Colour of the light given off. Defaults to yellowish.",
           "$ref": "#/definitions/MColor"
         },
         "size": {
