@@ -212,8 +212,8 @@ namespace NewHorizons.Builder.Props
 
                     if (component is NomaiInterfaceOrb orb)
                     {
-                        orb._parentAstroObject = planetGO.GetComponentInChildren<AstroObject>();
-                        orb._parentBody = planetGO.GetComponentInChildren<OWRigidbody>();
+                        orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
+                        orb._parentBody = planetGO.GetComponent<OWRigidbody>();
                     }
                 }
                 else
