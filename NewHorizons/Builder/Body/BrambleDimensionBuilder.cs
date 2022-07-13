@@ -238,7 +238,9 @@ namespace NewHorizons.Builder.Body
             // Change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
-                fog.fogTint = body.Config.Bramble.dimension.fogTint.ToColor();
+                var color = body.Config.Bramble.dimension.fogTint.ToColor();
+                fog.fogTint = color;
+                outerFogWarpVolume._fogColor = color;
             }
 
             // Set up repel volume to only contain this dimension

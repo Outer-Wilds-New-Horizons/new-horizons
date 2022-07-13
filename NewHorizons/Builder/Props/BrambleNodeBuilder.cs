@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Components;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -233,7 +234,7 @@ namespace NewHorizons.Builder.Props
                 fogEffectRuleset._material = GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material;
             }
 
-            //TODO: replace InnerFogWarpVolume with NHInnerFogWarpVolume, which overrides GetFogDensity to account for scale
+            //TODO: replace InnerFogWarpVolume with NHInnerFogWarpVolume, which overrides GetFogDensity to account for scale (this will fix the issue with screen fog caused by scaled down nodes)
 
             // Set the scale
             brambleNode.transform.localScale = Vector3.one * config.scale;
