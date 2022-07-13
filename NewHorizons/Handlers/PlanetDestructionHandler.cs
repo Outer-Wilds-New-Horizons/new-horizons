@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Handlers
@@ -30,11 +31,25 @@ namespace NewHorizons.Handlers
             "White Hole"
         };
 
+        private static readonly string[] _suspendBlacklist = new string[]
+        {
+            "Player_Body",
+            "Ship_Body"
+        };
+
         public static void RemoveSolarSystem()
         {
             // Stop the sun from killing the player
             var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
+
+            foreach (var ow in GameObject.FindObjectsOfType<OWRigidbody>())
+            {
+                if (ow._origParent != null && (ow._origParentBody != null || ow._simulateInSector != null) && ow.transform.GetComponent<AstroObject>() == null && !ow._suspended && !_suspendBlacklist.Contains(ow.gameObject.name))
+                {
+                    ow.Suspend();
+                }
+            }
 
             foreach (var name in _solarSystemBodies)
             {
