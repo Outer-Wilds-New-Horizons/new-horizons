@@ -29,9 +29,11 @@ namespace NewHorizons.Builder.Body
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.size * 2f;
-            var surfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
+            var sunSurfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
+            var surfaceAudio = sunSurfaceAudio.gameObject.AddComponent<StarSurfaceAudioController>();
+            GameObject.Destroy(sunSurfaceAudio);
             surfaceAudio.SetSector(sector);
-            surfaceAudio._sunController = null;
+            surfaceAudio.SetSurfaceRadius(starModule.size);
 
             sunAudio.name = "Audio_Star";
 
