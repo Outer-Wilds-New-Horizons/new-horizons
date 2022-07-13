@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 namespace NewHorizons.Utility
 {
@@ -25,5 +25,12 @@ namespace NewHorizons.Utility
         {
             return new Vector3(vec.x, vec.y, vec.z);
         }
+
+        public static MVector3 zero => Vector3.zero;
+        public static MVector3 one => Vector3.one;
+        public static MVector3 left => Vector3.left;
+        public static MVector3 right => Vector3.right;
+        public static MVector3 up => Vector3.up;   
+        public static MVector3 down => Vector3.down;
     }
 }
