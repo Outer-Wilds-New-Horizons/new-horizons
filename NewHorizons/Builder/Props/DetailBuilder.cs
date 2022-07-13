@@ -209,6 +209,12 @@ namespace NewHorizons.Builder.Props
                         playerAttachPoint._playerTransform = playerBody.transform;
                         playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
                     }
+
+                    if (component is NomaiInterfaceOrb orb)
+                    {
+                        orb._parentAstroObject = planetGO.GetComponentInChildren<AstroObject>();
+                        orb._parentBody = planetGO.GetComponentInChildren<OWRigidbody>();
+                    }
                 }
                 else
                 {
