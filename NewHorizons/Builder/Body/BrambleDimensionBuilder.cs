@@ -195,18 +195,16 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.localPosition = Vector3.zero;
 
             // Set up rulesets
-            var sectorTriggerVolume = sector.gameObject.GetComponent<OWTriggerVolume>();
-
             var thrustRuleset = sector.gameObject.AddComponent<ThrustRuleset>();
             thrustRuleset._attachedBody = owRigidBody;
-            thrustRuleset._triggerVolume = sectorTriggerVolume;
+            thrustRuleset._triggerVolume = sector.GetTriggerVolume();
             thrustRuleset._nerfDuration = 0.5f;
             thrustRuleset._nerfJetpackBooster = false;
             thrustRuleset._thrustLimit = 20;
 
             var effectRuleset = sector.gameObject.AddComponent<EffectRuleset>();
             effectRuleset._attachedBody = owRigidBody;
-            effectRuleset._triggerVolume = sectorTriggerVolume;
+            effectRuleset._triggerVolume = sector.GetTriggerVolume();
             effectRuleset._type = EffectRuleset.BubbleType.FogWarp;
             effectRuleset._underwaterDistortScale = 0.001f;
             effectRuleset._underwaterMaxDistort = 0.1f;
@@ -215,7 +213,7 @@ namespace NewHorizons.Builder.Body
 
             var antiTravelMusicRuleset = sector.gameObject.AddComponent<AntiTravelMusicRuleset>();
             antiTravelMusicRuleset._attachedBody = owRigidBody;
-            antiTravelMusicRuleset._triggerVolume = sectorTriggerVolume;
+            antiTravelMusicRuleset._triggerVolume = sector.GetTriggerVolume();
 
             // Set up warps
             var outerFogWarpVolume = exitWarps.GetComponent<OuterFogWarpVolume>();
