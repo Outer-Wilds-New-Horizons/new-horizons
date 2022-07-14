@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -50,10 +51,10 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool startHere;
 
-        [System.Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
+        [Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;
 
-        [System.Obsolete("travelAudioFilePath is deprecated, please use travelAudio instead")]
+        [Obsolete("travelAudioFilePath is deprecated, please use travelAudio instead")]
         public string travelAudioFilePath;
 
         /// <summary>
