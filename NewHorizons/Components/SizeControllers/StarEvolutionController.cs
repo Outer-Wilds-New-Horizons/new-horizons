@@ -63,7 +63,6 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
-            var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture(ColorRamp);
             if (normalRamp == null)
             {
                 _normalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
@@ -147,7 +146,7 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
-            supernova._surface._materials[0].SetTexture(ColorRamp, _collapseRamp);
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
 
             if (_proxy != null) _proxy.Die();
         }
