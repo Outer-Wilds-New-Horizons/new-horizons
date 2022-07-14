@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using OWML.Common;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -8,6 +10,34 @@ namespace NewHorizons.Utility
     public static class AudioUtilities
     {
         private static Dictionary<string, AudioClip> _loadedAudioClips = new Dictionary<string, AudioClip>();
+
+        public static void SetAudioClip(OWAudioSource source, string audio, IModBehaviour mod)
+        {
+            if (audio.Contains(".wav") || audio.Contains(".ogg"))
+            {
+                try
+                {
+                    var clip = LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audio);
+                    source.clip = clip;
+                }
+                catch
+                {
+                    Logger.LogError($"Could not load file {audio}");
+                }
+            }
+
+            try
+            {
+                var audioType = (AudioType)Enum.Parse(typeof(AudioType), audio);
+                source._audioLibraryClip = audioType;
+            }
+            catch
+            {
+                var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
+                if (audioClip == null) Logger.Log($"Couldn't find audio clip {audio}");
+                else source.clip = audioClip;
+            }
+        }
 
         public static AudioClip LoadAudio(string path)
         {
