@@ -682,7 +682,7 @@
           "format": "int32",
           "default": 200,
           "maximum": 2000.0,
-          "minimum": 50.0
+          "minimum": 4.0
         }
       }
     },
