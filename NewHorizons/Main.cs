@@ -273,7 +273,10 @@ namespace NewHorizons
                 BrambleNodeBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
+                AudioTypeHandler.Init();
+
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+
                 VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
