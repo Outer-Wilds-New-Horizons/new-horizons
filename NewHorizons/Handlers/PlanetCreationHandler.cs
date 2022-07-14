@@ -243,6 +243,9 @@ namespace NewHorizons.Handlers
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 
+                        var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot").transform;
+                        planetObject.GetComponent<OWRigidbody>()._origParent = ao.IsDimension ? solarSystemRoot.Find("Dimensions") : solarSystemRoot;
+
                         if (!ao.IsDimension) _dict.Add(ao, body);
                         else _dimensions.Add(ao, body);
                     }

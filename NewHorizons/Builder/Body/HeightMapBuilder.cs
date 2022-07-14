@@ -70,6 +70,9 @@ namespace NewHorizons.Builder.Body
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = mesh;
 
+            var cubeSphereSC = cubeSphere.AddComponent<SphereCollider>();
+            cubeSphereSC.radius = Mathf.Min(module.minHeight, module.maxHeight);
+
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 

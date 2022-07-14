@@ -33,7 +33,6 @@ namespace NewHorizons.Builder.Body
             var surfaceAudio = sunSurfaceAudio.gameObject.AddComponent<StarSurfaceAudioController>();
             GameObject.Destroy(sunSurfaceAudio);
             surfaceAudio.SetSector(sector);
-            surfaceAudio.SetSurfaceRadius(starModule.size);
 
             sunAudio.name = "Audio_Star";
 
@@ -141,6 +140,7 @@ namespace NewHorizons.Builder.Body
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.WillExplode = starModule.goSupernova;
+            surfaceAudio.SetStarEvolutionController(controller);
             starGO.SetActive(true);
 
             // It fucking insists on this existing and its really annoying

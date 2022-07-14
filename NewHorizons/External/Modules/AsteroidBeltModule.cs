@@ -10,7 +10,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Amount of asteroids to create.
         /// </summary>
-        [Range(0, 200)] [DefaultValue(-1)] public int amount = -1;
+        [Range(-1, 200)] [DefaultValue(-1)] public int amount = -1;
 
         /// <summary>
         /// Angle between the rings and the equatorial plane of the planet.
