@@ -341,6 +341,16 @@ namespace NewHorizons.External.Configs
                 if (Props.singularities == null) Props.singularities = new SingularityModule[0];
                 Props.singularities = Props.singularities.Append(Singularity).ToArray();
             }
+
+            // Signal
+            if (Signal?.signals != null)
+            {
+                foreach (var signal in Signal.signals)
+                {
+                    if (!string.IsNullOrEmpty(signal.audioClip)) signal.audio = signal.audioClip;
+                    if (!string.IsNullOrEmpty(signal.audioFilePath)) signal.audio = signal.audioFilePath;
+                }
+            }
         }
     }
 }
