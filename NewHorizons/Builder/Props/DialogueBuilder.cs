@@ -8,21 +8,26 @@ namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
+        // Returns the character dialogue tree and remote dialogue trigger, if applicable.
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
         {
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
             if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
-            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+            
+            RemoteDialogueTrigger remoteTrigger = null;
+            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, dialogue);
 
             // Make the character look at the player
             // Useful for dialogue replacement
             if (!string.IsNullOrEmpty(info.pathToAnimController)) MakePlayerTrackingZone(go, dialogue, info);
+
+            return (dialogue, remoteTrigger);
         }
 
-        public static void MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
             GameObject conversationTrigger = new GameObject("ConversationTrigger");
             conversationTrigger.SetActive(false);
@@ -50,9 +55,11 @@ namespace NewHorizons.Builder.Props
             conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
             conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
+
+            return remoteDialogueTrigger;
         }
 
-        public static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
@@ -99,7 +106,7 @@ namespace NewHorizons.Builder.Props
             return dialogueTree;
         }
 
-        public static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
+        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
 
