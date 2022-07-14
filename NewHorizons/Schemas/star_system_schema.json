@@ -234,7 +234,7 @@
           "type": "integer",
           "description": "The alpha (opacity) component of this colour",
           "format": "int32",
-          "default": 255.0,
+          "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
         }

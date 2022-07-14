@@ -231,7 +231,7 @@
           "type": "integer",
           "description": "The alpha (opacity) component of this colour",
           "format": "int32",
-          "default": 255.0,
+          "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
         }
@@ -675,6 +675,14 @@
         "textureMap": {
           "type": "string",
           "description": "Relative filepath to the texture used for the terrain."
+        },
+        "resolution": {
+          "type": "integer",
+          "description": "Resolution of the heightmap.\nHigher values means more detail but also more memory/cpu/gpu usage.",
+          "format": "int32",
+          "default": 51,
+          "maximum": 2147483647.0,
+          "minimum": 0.0
         }
       }
     },
