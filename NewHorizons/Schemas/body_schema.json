@@ -1847,7 +1847,7 @@
       "properties": {
         "audio": {
           "type": "string",
-          "description": "The audio to use. Can be a path to a .wav or .ogg file, or taken from the AudioClip list."
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
         "detectionRadius": {
           "type": "number",
