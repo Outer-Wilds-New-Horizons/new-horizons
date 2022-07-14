@@ -678,7 +678,7 @@
         },
         "resolution": {
           "type": "integer",
-          "description": "Resolution of the heightmap.\nHigher values means more detail but also more memory/cpu/gpu usage.\nThis value will be 1:1 with the heightmap texture, but only at the equator.",
+          "description": "Resolution of the heightmap.\nHigher values means more detail but also more memory/cpu/gpu usage.\nThis value will be 1:1 with the heightmap texture width, but only at the equator.",
           "format": "int32",
           "default": 256,
           "maximum": 2147483647.0,
