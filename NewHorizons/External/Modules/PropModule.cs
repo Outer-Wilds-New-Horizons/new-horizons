@@ -88,6 +88,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public AudioVolumeInfo[] audioVolumes;
 
+        /// <summary>
+        /// Add signalscope signals to this planet
+        /// </summary>
+        public SignalModule.SignalInfo[] signals;
+
         [JsonObject]
         public class ScatterInfo
         {

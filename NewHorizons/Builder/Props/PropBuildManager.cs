@@ -213,6 +213,13 @@ namespace NewHorizons.Builder.Props
                     AudioVolumeBuilder.Make(go, sector, audioVolume, mod);
                 }
             }
+            if (config.Props.signals != null)
+            {
+                foreach (var signal in config.Props.signals)
+                {
+                    SignalBuilder.Make(go, sector, signal, mod);
+                }
+            }
         }
     }
 }
