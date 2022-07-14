@@ -427,10 +427,13 @@ namespace NewHorizons.Handlers
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f))
             {
-                ProxyBuilder.Make(go, body);
-            });
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                {
+                    ProxyBuilder.Make(go, body);
+                });
+            }
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
