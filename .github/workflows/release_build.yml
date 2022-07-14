@@ -28,14 +28,14 @@ jobs:
   Update_Schemas:
     name: 'Update Schemas'
     needs: Build
-    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.event.name != 'pull_request' }} # Debug build will update schemas on push, so don't run if we're on pull request
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Debug build will update schemas on push, so don't run if we're on pull request
     uses: ./.github/workflows/update_schemas.yml
     with:
       artifact_name: NewHorizons-Schemas-Release
   Update_Docs:
     name: 'Update Docs'
     needs: Build
-    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.event.name != 'pull_request' }} # Same thing with docs
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Same thing with docs
     uses: './.github/workflows/docs_build.yml'
     with:
       schemas_artifact: NewHorizons-Schemas-Debug
