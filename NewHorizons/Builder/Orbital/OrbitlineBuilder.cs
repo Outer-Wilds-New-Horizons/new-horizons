@@ -78,7 +78,7 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.semiMajorAxis / 1000f, numVerts, 4096);
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+            Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
             return orbitLine;
         }

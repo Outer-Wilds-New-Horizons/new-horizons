@@ -346,7 +346,7 @@ namespace NewHorizons.External.Configs
                 if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
-            // Signals no longer use two differen variables for audio
+            // Signals no longer use two different variables for audio
             if (Props?.signals != null)
             {
                 foreach (var signal in Props.signals)

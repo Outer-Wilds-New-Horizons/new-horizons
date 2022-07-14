@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Body
             OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
             
             // trigger sector enter
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            Delay.FireOnNextUpdate(() =>
             {
                 OEC._active = true;
                 OEC.enabled = true;

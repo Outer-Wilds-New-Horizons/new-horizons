@@ -54,12 +54,12 @@ namespace NewHorizons.Handlers
             foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(ao, false), 2);
+                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
                 else Logger.LogError($"Couldn't find [{name}]");
             }
 
             // Bring the sun back because why not
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
         }
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
@@ -198,7 +198,7 @@ namespace NewHorizons.Handlers
             }
             RemoveProxy(ao.name.Replace("_Body", ""));
 
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
+            Delay.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
 
             foreach (ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
             {

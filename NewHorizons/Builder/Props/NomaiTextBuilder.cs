@@ -165,7 +165,7 @@ namespace NewHorizons.Builder.Props
                         customScroll.SetActive(true);
 
                         // Enable the collider and renderer
-                        Main.Instance.ModHelper.Events.Unity.RunWhen(
+                        Delay.RunWhen(
                             () => Main.IsSystemReady,
                             () =>
                             {

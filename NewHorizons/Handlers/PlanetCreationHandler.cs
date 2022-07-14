@@ -138,7 +138,7 @@ namespace NewHorizons.Handlers
 
             Logger.Log("Done loading bodies");
 
-            // Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
+            // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveSolarSystem();
         }
@@ -164,8 +164,8 @@ namespace NewHorizons.Handlers
                     if (body.Config.destroy)
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
-                        if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
-                        else Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
+                        if (ao != null) Delay.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
+                        else Delay.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
                     }
                     else if (body.Config.isQuantumState)
                     {
@@ -279,7 +279,7 @@ namespace NewHorizons.Handlers
                 {
                     // We purposefully use GameObject.Find here because we don't want to find inactive things.
                     // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    Delay.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
                 }
             }
 
@@ -417,7 +417,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
+                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
             }
 
             if (!body.Config.Orbit.isStatic)
@@ -429,7 +429,7 @@ namespace NewHorizons.Handlers
 
             if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                Delay.FireOnNextUpdate(() =>
                 {
                     ProxyBuilder.Make(go, body);
                 });

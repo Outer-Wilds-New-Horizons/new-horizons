@@ -83,7 +83,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -171,7 +171,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -218,7 +218,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -282,7 +282,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -322,20 +322,20 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
-        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide)
+        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
             if (!String.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule();
-                audioBeat._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.beatAudio);
+                audioBeat._audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod);
                 audioBeat._delay = slideInfo.beatDelay;
                 modules.Add(audioBeat);
             }
             if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule();
-                audioBackdrop._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.backdropAudio);
+                audioBackdrop._audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod);
                 audioBackdrop._fadeTime = slideInfo.backdropFadeTime;
                 modules.Add(audioBackdrop);
             }

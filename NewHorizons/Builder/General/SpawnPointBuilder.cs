@@ -78,7 +78,7 @@ namespace NewHorizons.Builder.General
             if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && module.startWithSuit)) && !suitUpQueued)
             {
                 suitUpQueued = true;
-                Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => SuitUp());
+                Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());
             }
 
             Logger.Log($"Made spawnpoint on [{planetGO.name}]");

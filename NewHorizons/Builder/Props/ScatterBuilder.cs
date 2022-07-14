@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Props
                 {
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
                     // defer remove texture to next frame
-                    Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
+                    Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
                 }
                 catch (Exception) { }
                 if (heightMapTexture == null)

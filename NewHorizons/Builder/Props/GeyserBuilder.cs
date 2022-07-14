@@ -32,7 +32,7 @@ namespace NewHorizons.Builder.Props
             var geyserFluidVolume = geyserGO.GetComponentInChildren<GeyserFluidVolume>();
 
             // Do this after awake
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => geyserFluidVolume._maxHeight = 1);
+            Delay.FireOnNextUpdate(() => geyserFluidVolume._maxHeight = 1);
 
             geyserFluidVolume.enabled = true;
             geyserGO.transform.Find("FluidVolume_Geyser").GetComponent<CapsuleShape>().enabled = true;

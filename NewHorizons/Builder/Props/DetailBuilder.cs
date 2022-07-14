@@ -125,7 +125,7 @@ namespace NewHorizons.Builder.Props
                 // Enable all children or something
                 // BUG doesnt work because enabled is a property, not a field
                 var enabledField = component?.GetType()?.GetField("enabled");
-                if (enabledField != null && enabledField.FieldType == typeof(bool)) Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => enabledField.SetValue(component, true));
+                if (enabledField != null && enabledField.FieldType == typeof(bool)) Events.FireOnNextUpdate(() => enabledField.SetValue(component, true));
                 */
 
                 // Fix a bunch of sector stuff
@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Props
                         var sectorField = component?.GetType()?.GetField("_sector");
                         if (sectorField != null && sectorField.FieldType == typeof(Sector))
                         {
-                            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
+                            Events.FireOnNextUpdate(() => sectorField.SetValue(component, sector));
                         }
                     }
                     */
@@ -227,7 +227,7 @@ namespace NewHorizons.Builder.Props
                 }
 
                 // Fix a bunch of stuff when done loading
-                Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () =>
+                Delay.RunWhen(() => Main.IsSystemReady, () =>
                 {
                     try
                     {
