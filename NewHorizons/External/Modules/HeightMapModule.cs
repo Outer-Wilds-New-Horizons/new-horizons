@@ -38,8 +38,8 @@ namespace NewHorizons.External.Modules
         /// Higher values means more detail but also more memory/cpu/gpu usage.
         /// This value will be 1:1 with the heightmap texture width, but only at the equator.
         /// </summary>
-        [Range(50, 2000)]
-        [DefaultValue(200)]
-        public int resolution = 200;
+        [Range(1 * 4, 500 * 4)]
+        [DefaultValue(50 * 4)]
+        public int resolution = 50 * 4;
     }
 }
