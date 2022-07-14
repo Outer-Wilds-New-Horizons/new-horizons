@@ -466,7 +466,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.HeightMap != null)
             {
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, body.Config.HeightMap.resolution);
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, (int)(body.Config.HeightMap.resolution / HeightMapModule.RESOLUTION_RATIO));
             }
 
             if (body.Config.ProcGen != null)

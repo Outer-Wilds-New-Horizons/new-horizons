@@ -33,11 +33,15 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public string textureMap;
 
+        // blame trifid if this ratio is wrong
+        public const float RESOLUTION_RATIO = 256 / 51f;
+
         /// <summary>
         /// Resolution of the heightmap.
         /// Higher values means more detail but also more memory/cpu/gpu usage.
+        /// This value will be 1:1 with the heightmap texture, but only at the equator.
         /// </summary>
-        [Range(0, int.MaxValue)] [DefaultValue(51)]
-        public int resolution = 51;
+        [Range(0, int.MaxValue)] [DefaultValue((int)(51 * RESOLUTION_RATIO))]
+        public int resolution = (int)(51 * RESOLUTION_RATIO);
     }
 }
