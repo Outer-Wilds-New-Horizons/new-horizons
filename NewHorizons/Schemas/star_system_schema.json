@@ -36,13 +36,9 @@
       "type": "boolean",
       "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
     },
-    "travelAudioClip": {
+    "travelAudio": {
       "type": "string",
-      "description": "Name of an existing AudioClip in the game that will play when travelling in space."
-    },
-    "travelAudioFilePath": {
-      "type": "string",
-      "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with travelAudioClip."
+      "description": "The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
     },
     "coords": {
       "description": "Coordinates that the vessel can use to warp to your solar system.",

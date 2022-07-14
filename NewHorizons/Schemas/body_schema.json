@@ -575,13 +575,9 @@
           "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
           "format": "float"
         },
-        "audioClip": {
+        "audio": {
           "type": "string",
-          "description": "Name of an existing AudioClip in the game that will play when entering the cloaking field."
-        },
-        "audioFilePath": {
-          "type": "string",
-          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
+          "description": "The audio that will play when entering the cloaking field. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         }
       }
     },
