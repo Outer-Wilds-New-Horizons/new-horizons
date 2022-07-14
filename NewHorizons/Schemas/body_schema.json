@@ -143,7 +143,7 @@
           "format": "int32",
           "default": -1,
           "maximum": 200.0,
-          "minimum": 0.0
+          "minimum": -1.0
         },
         "inclination": {
           "type": "number",
@@ -900,6 +900,13 @@
           "items": {
             "$ref": "#/definitions/SingularityModule"
           }
+        },
+        "audioVolumes": {
+          "type": "array",
+          "description": "Add audio volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/AudioVolumeInfo"
+          }
         }
       }
     },
@@ -1596,6 +1603,25 @@
         "whiteHole"
       ]
     },
+    "AudioVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this audio volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this audio volume",
+          "format": "float"
+        },
+        "audio": {
+          "type": "string",
+          "description": "The radius of this audio volume"
+        }
+      }
+    },
     "ReferenceFrameModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1819,13 +1845,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "audioClip": {
+        "audio": {
           "type": "string",
-          "description": "Name of an existing AudioClip in the game that will player over the signal."
-        },
-        "audioFilePath": {
-          "type": "string",
-          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
+          "description": "The audio to use. Can be a path to a .wav or .ogg file, or taken from the AudioClip list."
         },
         "detectionRadius": {
           "type": "number",
