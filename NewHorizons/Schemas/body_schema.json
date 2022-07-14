@@ -102,10 +102,6 @@
       "description": "Add ship log entries to this planet and describe how it looks in map mode",
       "$ref": "#/definitions/ShipLogModule"
     },
-    "Signal": {
-      "description": "Add signals that can be heard via the signal-scope to this planet",
-      "$ref": "#/definitions/SignalModule"
-    },
     "Spawn": {
       "description": "Spawn the player at this planet",
       "$ref": "#/definitions/SpawnModule"
@@ -903,6 +899,13 @@
           "items": {
             "$ref": "#/definitions/AudioVolumeInfo"
           }
+        },
+        "signals": {
+          "type": "array",
+          "description": "Add signalscope signals to this planet",
+          "items": {
+            "$ref": "#/definitions/SignalInfo"
+          }
         }
       }
     },
@@ -1618,6 +1621,61 @@
         }
       }
     },
+    "SignalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "detectionRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "frequency": {
+          "type": "string",
+          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
+        },
+        "identificationRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
+          "format": "float",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "insideCloak": {
+          "type": "boolean",
+          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
+        },
+        "name": {
+          "type": "string",
+          "description": "The unique ID of the signal."
+        },
+        "onlyAudibleToScope": {
+          "type": "boolean",
+          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
+          "default": true
+        },
+        "position": {
+          "description": "Position of the signal's source",
+          "$ref": "#/definitions/MVector3"
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the signal is identified.",
+          "default": ""
+        },
+        "sourceRadius": {
+          "type": "number",
+          "description": "Radius of the sphere giving off the signal.",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
     "ReferenceFrameModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1821,74 +1879,6 @@
         "scale": {
           "description": "The amount to scale the x and y-axis of the detail by.",
           "$ref": "#/definitions/MVector2"
-        }
-      }
-    },
-    "SignalModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "signals": {
-          "type": "array",
-          "description": "List of signals to add (Why did xen do it like this)",
-          "items": {
-            "$ref": "#/definitions/SignalInfo"
-          }
-        }
-      }
-    },
-    "SignalInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "audio": {
-          "type": "string",
-          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "detectionRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
-        },
-        "identificationRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
-          "format": "float",
-          "default": 10.0,
-          "minimum": 0.0
-        },
-        "insideCloak": {
-          "type": "boolean",
-          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
-        },
-        "name": {
-          "type": "string",
-          "description": "The unique ID of the signal."
-        },
-        "onlyAudibleToScope": {
-          "type": "boolean",
-          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
-          "default": true
-        },
-        "position": {
-          "description": "Position of the signal's source",
-          "$ref": "#/definitions/MVector3"
-        },
-        "reveals": {
-          "type": "string",
-          "description": "A ship log fact to reveal when the signal is identified.",
-          "default": ""
-        },
-        "sourceRadius": {
-          "type": "number",
-          "description": "Radius of the sphere giving off the signal.",
-          "format": "float",
-          "default": 1.0
         }
       }
     },
