@@ -39,7 +39,7 @@ namespace NewHorizons.External.Modules
         /// This value will be 1:1 with the heightmap texture width, but only at the equator.
         /// </summary>
         [Range(1 * 4, 500 * 4)]
-        [DefaultValue(50 * 4)]
-        public int resolution = 50 * 4;
+        [DefaultValue(51 * 4)]
+        public int resolution = 51 * 4;
     }
 }
