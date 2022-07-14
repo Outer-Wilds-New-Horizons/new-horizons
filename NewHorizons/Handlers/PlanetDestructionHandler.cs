@@ -43,7 +43,7 @@ namespace NewHorizons.Handlers
             var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
-            foreach (var ow in GameObject.FindObjectsOfType<OWRigidbody>())
+            foreach (var ow in CenterOfTheUniverse.s_rigidbodies)
             {
                 if (ow._origParent != null && (ow._origParentBody != null || ow._simulateInSector != null) && ow.transform.GetComponent<AstroObject>() == null && !ow._suspended && !_suspendBlacklist.Contains(ow.gameObject.name))
                 {
