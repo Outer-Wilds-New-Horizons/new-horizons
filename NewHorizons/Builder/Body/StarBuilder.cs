@@ -153,13 +153,13 @@ namespace NewHorizons.Builder.Body
             supernovaVolume.AddComponent<OWCollider>();
             supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
 
-            ShockLayerRuleset shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
+            var shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Radial;
             shockLayerRuleset._trailLength = 50;
             shockLayerRuleset._radialCenter = deathVolume.transform;
             shockLayerRuleset._innerRadius = starModule.size;
-            shockLayerRuleset._outerRadius = starModule.size * 1.5f;
-            shockLayerRuleset._color = shockLayerRuleset._color * starModule.tint.ToColor();
+            shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
+            if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
 
             return starController;
         }
