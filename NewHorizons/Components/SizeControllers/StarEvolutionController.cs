@@ -147,6 +147,7 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
+            supernova._surface._materials[0].SetTexture(ColorRamp, _collapseRamp);
 
             if (_proxy != null) _proxy.Die();
         }
@@ -189,7 +190,6 @@ namespace NewHorizons.Components.SizeControllers
                     var t = ageValue;
                     if (maxScale > 0) t = CurrentScale / maxScale;
                     currentColour = Color.Lerp(_startColour, _endColour, t);
-                    supernova._surface._materials[0].SetTexture(ColorRamp, _normalRamp);
                     supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
                 }
                 else
@@ -209,7 +209,6 @@ namespace NewHorizons.Components.SizeControllers
 
                 currentColour = Color.Lerp(_endColour, Color.white, t);
 
-                supernova._surface._materials[0].SetTexture(ColorRamp, _collapseRamp);
                 supernova._surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
                 // After the collapse is done we go supernova
