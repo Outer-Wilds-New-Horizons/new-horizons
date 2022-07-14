@@ -18,7 +18,12 @@ namespace NewHorizons.Utility
                 try
                 {
                     var clip = LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audio);
+                    source._audioLibraryClip = AudioType.None;
+                    source._clipArrayIndex = 0;
+                    source._clipArrayLength = 0;
+                    source._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
                     source.clip = clip;
+                    return;
                 }
                 catch
                 {

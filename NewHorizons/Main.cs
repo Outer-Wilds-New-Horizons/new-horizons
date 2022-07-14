@@ -370,6 +370,7 @@ namespace NewHorizons
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+                        starSystemConfig.Migrate();
                         starSystemConfig.FixCoordinates();
 
                         if (starSystemConfig.startHere)
@@ -478,6 +479,7 @@ namespace NewHorizons
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
+                    starSystemConfig.Migrate();
                     starSystemConfig.FixCoordinates();
 
                     var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
