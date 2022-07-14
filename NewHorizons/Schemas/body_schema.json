@@ -1968,7 +1968,7 @@
           "type": "string",
           "description": "Path to the texture to put as the star ramp. Optional."
         },
-        "starRampCollapseTexture": {
+        "starCollapseRampTexture": {
           "type": "string",
           "description": "Path to the texture to put as the star ramp while it is collapsing. Optional."
         },
