@@ -165,7 +165,7 @@ namespace NewHorizons.Handlers
                     {
                         var ao = existingPlanet.GetComponent<AstroObject>();
                         if (ao != null) Delay.FireInNUpdates(() => PlanetDestructionHandler.RemoveBody(ao), 2);
-                        else Delay.FireInNUpdates(() => existingPlanet.SetActive(false), 2);
+                        else Delay.FireInNUpdates(() => PlanetDestructionHandler.DisableBody(existingPlanet, false), 2);
                     }
                     else if (body.Config.isQuantumState)
                     {
