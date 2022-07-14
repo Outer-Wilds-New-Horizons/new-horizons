@@ -121,7 +121,7 @@ namespace NewHorizons.Components
         {
             if (_isWarpingIn && LateInitializerManager.isDoneInitializing)
             {
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => StartWarpInEffect(), 1);
+                Delay.FireInNUpdates(() => StartWarpInEffect(), 1);
                 _isWarpingIn = false;
             }
 
@@ -139,7 +139,7 @@ namespace NewHorizons.Components
             // Idk whats making this work but now it works and idc
             if (_waitingToBeSeated && PlayerState.IsInsideShip() && _eyesOpen)
             {
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => FinishWarpIn(), 1);
+                Delay.FireInNUpdates(() => FinishWarpIn(), 1);
                 _waitingToBeSeated = false;
             }
         }
@@ -174,7 +174,7 @@ namespace NewHorizons.Components
             Logger.LogVerbose("Finishing warp");
             Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
             _waitingToBeSeated = false;
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => _whitehole.Collapse(), 30);
+            Delay.FireInNUpdates(() => _whitehole.Collapse(), 30);
 
             var resources = Locator.GetPlayerTransform().GetComponent<PlayerResources>();
 

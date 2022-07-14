@@ -30,7 +30,7 @@ namespace NewHorizons.Handlers
 
             if (!string.IsNullOrEmpty(system.Config.travelAudio))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
             }
         }
     }

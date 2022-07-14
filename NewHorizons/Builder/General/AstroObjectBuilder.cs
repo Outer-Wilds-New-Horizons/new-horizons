@@ -1,5 +1,6 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -51,7 +52,7 @@ namespace NewHorizons.Builder.General
             {
                 Logger.Log($"Setting center of universe to {config.name}");
 
-                Main.Instance.ModHelper.Events.Unity.RunWhen(
+                Delay.RunWhen(
                     () => Locator._centerOfTheUniverse != null,
                     () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
                     );

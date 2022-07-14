@@ -159,7 +159,7 @@ namespace NewHorizons.Builder.Body
             funnelSizeController.anchor = planetGO.transform;
 
             // Finish up next tick
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
+            Delay.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
         }
 
         private static void PostMake(GameObject funnelGO, FunnelController funnelSizeController, FunnelModule module)

@@ -19,7 +19,7 @@ namespace NewHorizons.Handlers
             _customAudioTypes = new Dictionary<string, AudioType>();
             _audioEntries = new List<AudioLibrary.AudioEntry>();
 
-            Main.Instance.ModHelper.Events.Unity.RunWhen(
+            Delay.RunWhen(
                 () => Locator.GetAudioManager()?._libraryAsset != null,
                 PostInit
             );

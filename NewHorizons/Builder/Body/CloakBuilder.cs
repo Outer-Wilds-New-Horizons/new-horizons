@@ -44,9 +44,9 @@ namespace NewHorizons.Builder.Body
             cloakSectorController.EnableCloak();
 
             // To cloak from the start
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(hasCustomAudio ? cloakSectorController.TurnOnMusic : cloakSectorController.TurnOffMusic);
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(keepReferenceFrame ? cloakSectorController.EnableReferenceFrameVolume : cloakSectorController.DisableReferenceFrameVolume);
+            Delay.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
+            Delay.FireOnNextUpdate(hasCustomAudio ? cloakSectorController.TurnOnMusic : cloakSectorController.TurnOffMusic);
+            Delay.FireOnNextUpdate(keepReferenceFrame ? cloakSectorController.EnableReferenceFrameVolume : cloakSectorController.DisableReferenceFrameVolume);
         }
     }
 }

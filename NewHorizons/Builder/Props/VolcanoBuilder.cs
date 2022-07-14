@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.Props
             launcherGO.SetActive(true);
 
             // Have to null check else it breaks on reload configs
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
+            Delay.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
             {
                 foreach (var meteor in meteorLauncher._meteorPool)
                 {

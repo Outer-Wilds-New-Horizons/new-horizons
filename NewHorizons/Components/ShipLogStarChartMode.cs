@@ -114,7 +114,7 @@ namespace NewHorizons.Components
             if (name.Length > 17) textComponent.fontSize = 10;
             // Do it next frame
             var fontPath = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot/TH_VILLAGE/EntryCardRoot/NameBackground/Name";
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
+            Delay.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
 
             newCard.SetActive(true);
             newCard.transform.name = uniqueID;
