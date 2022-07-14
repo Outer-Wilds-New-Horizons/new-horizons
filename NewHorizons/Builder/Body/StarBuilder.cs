@@ -137,9 +137,19 @@ namespace NewHorizons.Builder.Body
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
-            controller.StartColour = starModule.tint;
-            controller.EndColour = starModule.endTint;
-            controller.WillExplode = starModule.goSupernova;
+            controller.startColour = starModule.tint?.ToColor();
+            controller.endColour = starModule.tint != null ? starModule.tint.ToColor() * 4.5948f : null;
+            controller.willExplode = starModule.goSupernova;
+            if (!string.IsNullOrEmpty(starModule.starRampTexture))
+            {
+                var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
+                controller.normalRamp = ramp;
+            }
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                var ramp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+                controller.collapseRamp = ramp;
+            }
             surfaceAudio.SetStarEvolutionController(controller);
             starGO.SetActive(true);
 
@@ -177,8 +187,8 @@ namespace NewHorizons.Builder.Body
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.supernova = supernova;
-            controller.StartColour = starModule.tint;
-            controller.EndColour = starModule.endTint;
+            controller.startColour = starModule.tint?.ToColor();
+            controller.endColour = starModule.tint != null ? starModule.tint.ToColor() * 4.5948f : null;
             controller.enabled = true;
             starGO.SetActive(true);
 

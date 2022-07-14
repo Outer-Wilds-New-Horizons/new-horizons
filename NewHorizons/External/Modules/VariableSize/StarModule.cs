@@ -62,6 +62,11 @@ namespace NewHorizons.External.Modules.VariableSize
         public string starRampTexture;
 
         /// <summary>
+        /// Path to the texture to put as the star ramp while it is collapsing. Optional.
+        /// </summary>
+        public string starCollapseRampTexture;
+
+        /// <summary>
         /// How far the light from the star can reach.
         /// </summary>
         [DefaultValue(50000f)] [Range(0f, double.MaxValue)]

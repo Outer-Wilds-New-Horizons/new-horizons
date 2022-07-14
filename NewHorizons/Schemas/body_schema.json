@@ -1968,6 +1968,10 @@
           "type": "string",
           "description": "Path to the texture to put as the star ramp. Optional."
         },
+        "starRampCollapseTexture": {
+          "type": "string",
+          "description": "Path to the texture to put as the star ramp while it is collapsing. Optional."
+        },
         "lightRadius": {
           "type": "number",
           "description": "How far the light from the star can reach.",
