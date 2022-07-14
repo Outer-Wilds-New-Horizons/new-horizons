@@ -39,7 +39,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Resolution of the heightmap.
         /// Higher values means more detail but also more memory/cpu/gpu usage.
-        /// This value will be 1:1 with the heightmap texture, but only at the equator.
+        /// This value will be 1:1 with the heightmap texture width, but only at the equator.
         /// </summary>
         [Range(0, int.MaxValue)] [DefaultValue((int)(51 * RESOLUTION_RATIO))]
         public int resolution = (int)(51 * RESOLUTION_RATIO);
