@@ -199,6 +199,13 @@ namespace NewHorizons.Builder.Props
                     SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
                 }
             }
+            if (config.Props.audioVolumes != null)
+            {
+                foreach (var audioVolume in config.Props.audioVolumes)
+                {
+                    AudioVolumeBuilder.Make(go, sector, audioVolume, mod);
+                }
+            }
         }
     }
 }

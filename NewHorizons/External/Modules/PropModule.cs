@@ -83,6 +83,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public SingularityModule[] singularities;
 
+        /// <summary>
+        /// Add audio volumes to this planet
+        /// </summary>
+        public AudioVolumeInfo[] audioVolumes;
+
         [JsonObject]
         public class ScatterInfo
         {
@@ -712,6 +717,25 @@ namespace NewHorizons.External.Modules
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
             [DefaultValue(1f)] public float probability = 1f; 
+        }
+
+        [JsonObject]
+        public class AudioVolumeInfo
+        {
+            /// <summary>
+            /// The location of this audio volume. Optional (will default to 0,0,0).
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The radius of this audio volume
+            /// </summary>
+            public float radius;
+
+            /// <summary>
+            /// The radius of this audio volume
+            /// </summary>
+            public string audio;
         }
     }
 }
