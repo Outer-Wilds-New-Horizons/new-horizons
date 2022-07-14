@@ -153,23 +153,6 @@ namespace NewHorizons.Builder.Props
             var frequency = StringToFrequency(info.frequency);
             var name = StringToSignalName(info.name);
 
-            AudioClip clip = null;
-            if (!string.IsNullOrEmpty(info.audioClip)) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
-            else if (!string.IsNullOrEmpty(info.audioFilePath))
-            {
-                try
-                {
-                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
-                }
-                catch { }
-            }
-
-            if (clip == null)
-            {
-                Logger.LogError($"Couldn't find AudioClip {info.audioClip} or AudioFile {info.audioFilePath}");
-                return null;
-            }
-
             audioSignal.SetSector(sector);
 
             if (name == SignalName.Default) audioSignal._preventIdentification = true;
@@ -182,8 +165,7 @@ namespace NewHorizons.Builder.Props
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
             audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
-
-            source.clip = clip;
+            
             source.loop = true;
             source.minDistance = 0;
             source.maxDistance = 30;
@@ -201,6 +183,7 @@ namespace NewHorizons.Builder.Props
             source.dopplerLevel = 0;
 
             owAudioSource.SetTrack(OWAudioMixer.TrackName.Signal);
+            AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             // Frequency detection trigger volume
 
