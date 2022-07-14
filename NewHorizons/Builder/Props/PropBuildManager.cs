@@ -196,7 +196,14 @@ namespace NewHorizons.Builder.Props
             {
                 foreach (var singularity in config.Props.singularities)
                 {
-                    SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
+                    try
+                    {
+                        SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                    }
                 }
             }
         }
