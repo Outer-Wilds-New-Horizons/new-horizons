@@ -17,14 +17,14 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class SignalInfo
         {
-            [Obsolete("audioClip is deprecated, please use RemoveChildren instead")]
+            [Obsolete("audioClip is deprecated, please use audio instead")]
             public string audioClip;
 
-            [Obsolete("audioFilePath is deprecated, please use RemoveChildren instead")]
+            [Obsolete("audioFilePath is deprecated, please use audio instead")]
             public string audioFilePath;
 
             /// <summary>
-            /// The audio to use. Can be a path to a .wav or .ogg file, or taken from the AudioClip list.
+            /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string audio;
 

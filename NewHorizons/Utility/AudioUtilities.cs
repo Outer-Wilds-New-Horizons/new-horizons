@@ -13,7 +13,7 @@ namespace NewHorizons.Utility
 
         public static void SetAudioClip(OWAudioSource source, string audio, IModBehaviour mod)
         {
-            if (audio.Contains(".wav") || audio.Contains(".ogg"))
+            if (audio.Contains(".wav") || audio.Contains(".ogg") || audio.Contains(".mp3"))
             {
                 try
                 {
