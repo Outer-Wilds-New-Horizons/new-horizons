@@ -16,14 +16,15 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public float radius;
 
-        /// <summary>
-        /// Name of an existing AudioClip in the game that will play when entering the cloaking field.
-        /// </summary>
+        [Obsolete("audioClip is deprecated, please use audio instead")]
         public string audioClip;
 
-        /// <summary>
-        /// Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip.
-        /// </summary>
+        [Obsolete("audioFilePath is deprecated, please use audio instead")]
         public string audioFilePath;
+
+        /// <summary>
+        /// The audio that will play when entering the cloaking field. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string audio;
     }
 }

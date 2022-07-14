@@ -50,15 +50,16 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool startHere;
 
-        /// <summary>
-        /// Name of an existing AudioClip in the game that will play when travelling in space.
-        /// </summary>
+        [System.Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;
 
-        /// <summary>
-        /// Relative filepath to the .wav file to use as the audio. Mutually exclusive with travelAudioClip.
-        /// </summary>
+        [System.Obsolete("travelAudioFilePath is deprecated, please use travelAudio instead")]
         public string travelAudioFilePath;
+
+        /// <summary>
+        /// The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+        /// </summary>
+        public string travelAudio;
 
         /// <summary>
         /// Coordinates that the vessel can use to warp to your solar system.
@@ -161,8 +162,7 @@ namespace NewHorizons.External.Configs
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
             skybox = skybox == null ? otherConfig.skybox : skybox;
-            travelAudioClip = string.IsNullOrEmpty(travelAudioClip) ? otherConfig.travelAudioClip : travelAudioClip;
-            travelAudioFilePath = string.IsNullOrEmpty(travelAudioFilePath) ? otherConfig.travelAudioFilePath : travelAudioFilePath;
+            travelAudio = string.IsNullOrEmpty(travelAudio) ? otherConfig.travelAudio : travelAudio;
 
             // False by default so if one is true go true
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
@@ -177,6 +177,15 @@ namespace NewHorizons.External.Configs
         private T[] Concatenate<T>(T[] array1, T[] array2)
         {
             return (array1 ?? new T[0]).Concat(array2 ?? new T[0]).ToArray();
+        }
+        
+        public void Migrate()
+        {
+            // Backwards compatability
+            // Should be the only place that obsolete things are referenced
+#pragma warning disable 612, 618
+            if (!string.IsNullOrEmpty(travelAudioClip)) travelAudio = travelAudioClip;
+            if (!string.IsNullOrEmpty(travelAudioFilePath)) travelAudio = travelAudioFilePath;
         }
     }
 }

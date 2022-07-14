@@ -28,41 +28,9 @@ namespace NewHorizons.Handlers
                 timeLoopController.AddComponent<TimeLoopController>();
             }
 
-            AudioClip clip = null;
-            if (!string.IsNullOrEmpty(system.Config.travelAudioClip))
+            if (!string.IsNullOrEmpty(system.Config.travelAudio))
             {
-                clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
-
-                if (clip == null)
-                {
-                    Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}]");
-                }
-            }
-            else if (!string.IsNullOrEmpty(system.Config.travelAudioFilePath))
-            {
-                try
-                {
-                    clip = AudioUtilities.LoadAudio(system.Mod.ModHelper.Manifest.ModFolderPath + "/" + system.Config.travelAudioFilePath);
-                }
-                catch { }
-
-                if (clip == null)
-                {
-                    Logger.LogError($"Couldn't get audio from file [{system.Config.travelAudioFilePath}]");
-                }
-            }
-
-            if (clip != null)
-            {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
-                {
-                    var travelSource = Locator.GetGlobalMusicController()._travelSource;
-                    travelSource._audioLibraryClip = AudioType.None;
-                    travelSource._clipArrayIndex = 0;
-                    travelSource._clipArrayLength = 0;
-                    travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
-                    travelSource.clip = clip;
-                });
+                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
             }
         }
     }
