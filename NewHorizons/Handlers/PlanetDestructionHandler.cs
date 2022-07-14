@@ -43,14 +43,6 @@ namespace NewHorizons.Handlers
             var sunVolumes = SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN");
             sunVolumes.SetActive(false);
 
-            foreach (var ow in CenterOfTheUniverse.s_rigidbodies)
-            {
-                if (ow._origParent != null && (ow._origParentBody != null || ow._simulateInSector != null) && ow.transform.GetComponent<AstroObject>() == null && !ow._suspended && !_suspendBlacklist.Contains(ow.gameObject.name))
-                {
-                    ow.Suspend();
-                }
-            }
-
             foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
@@ -219,11 +211,43 @@ namespace NewHorizons.Handlers
             }
         }
 
-        private static void DisableBody(GameObject go, bool delete)
+        private static bool CanSuspend(OWRigidbody rigidbody, string name)
+        {
+            if (rigidbody.transform.name == name) return true;
+            if (rigidbody._origParentBody == null) return false;
+            return CanSuspend(rigidbody._origParentBody, name);
+        }
+
+        internal static void DisableBody(GameObject go, bool delete)
         {
             if (go == null) return;
 
             Logger.LogVerbose($"Removing [{go.name}]");
+
+            OWRigidbody rigidbody = go.GetComponent<OWRigidbody>();
+            if (rigidbody != null)
+            {
+                string name = rigidbody.transform.name;
+                foreach (var ow in CenterOfTheUniverse.s_rigidbodies)
+                {
+                    if (_suspendBlacklist.Contains(ow.transform.name)) continue;
+                    if (ow.GetComponent<AstroObject>() != null) continue;
+                    if (ow._origParentBody != null)
+                    {
+                        if (CanSuspend(ow, name))
+                        {
+                            ow.Suspend();
+                        }
+                    }
+                    else if (ow._simulateInSector != null)
+                    {
+                        if (CanSuspend(ow._simulateInSector.GetAttachedOWRigidbody(), name))
+                        {
+                            ow.Suspend();
+                        }
+                    }
+                }
+            }
 
             if (delete)
             {
