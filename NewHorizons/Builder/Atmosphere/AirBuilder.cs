@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -22,6 +22,12 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._fluidType = FluidVolume.Type.AIR;
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
+
+            ShockLayerRuleset shockLayerRuleset = planetGO.GetComponentInChildren<PlanetoidRuleset>().gameObject.AddComponent<ShockLayerRuleset>();
+            shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
+            shockLayerRuleset._radialCenter = airGO.transform;
+            shockLayerRuleset._innerRadius = 0;
+            shockLayerRuleset._outerRadius = info.scale;
 
             if (info.hasOxygen)
             {
