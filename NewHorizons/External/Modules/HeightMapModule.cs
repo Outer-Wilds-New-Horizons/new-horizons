@@ -1,6 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using NewHorizons.Utility;
+﻿using NewHorizons.Utility;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules
 {
@@ -31,5 +32,12 @@ namespace NewHorizons.External.Modules
         /// Relative filepath to the texture used for the terrain.
         /// </summary>
         public string textureMap;
+
+        /// <summary>
+        /// Resolution of the heightmap.
+        /// Higher values means more detail but also more memory/cpu/gpu usage.
+        /// </summary>
+        [Range(0, int.MaxValue)] [DefaultValue(51)]
+        public int resolution = 51;
     }
 }
