@@ -157,7 +157,7 @@ namespace NewHorizons.Builder.Body
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Radial;
             shockLayerRuleset._trailLength = 50;
             shockLayerRuleset._radialCenter = deathVolume.transform;
-            shockLayerRuleset._innerRadius = starModule.size;
+            shockLayerRuleset._innerRadius = 0;
             shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
             if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
 
