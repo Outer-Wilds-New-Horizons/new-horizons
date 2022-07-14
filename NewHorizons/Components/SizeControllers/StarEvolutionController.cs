@@ -66,14 +66,14 @@ namespace NewHorizons.Components.SizeControllers
             var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture(ColorRamp);
             if (normalRamp == null)
             {
-                _normalRamp = supernovaSurfaceColorRamp;
+                _normalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
             } else
             {
                 _normalRamp = normalRamp;
             }
             if (collapseRamp == null)
             {
-                _collapseRamp = supernovaSurfaceColorRamp;
+                _collapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
             } else
             {
                 _collapseRamp = collapseRamp;
