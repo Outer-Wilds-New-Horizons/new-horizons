@@ -466,13 +466,10 @@ namespace NewHorizons.Handlers
 
             if (body.Config.HeightMap != null)
             {
-                /*
                 // resolution = tris on edge per face
                 // divide by 4 to account for all the way around the equator
                 var res = body.Config.HeightMap.resolution / 4;
                 HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res);
-                */
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, 51);
             }
 
             if (body.Config.ProcGen != null)
