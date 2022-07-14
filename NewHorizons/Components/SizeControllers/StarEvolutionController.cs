@@ -15,9 +15,11 @@ namespace NewHorizons.Components.SizeControllers
     {
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
-        public bool WillExplode { get; set; }
-        public MColor StartColour { get; set; }
-        public MColor EndColour { get; set; }
+        public bool willExplode;
+        public Color? startColour;
+        public Color? endColour;
+        public Texture normalRamp;
+        public Texture collapseRamp;
 
         private Color _startColour;
         private Color _endColour;
@@ -43,6 +45,8 @@ namespace NewHorizons.Components.SizeControllers
         private Material _collapseEndSurfaceMaterial;
         private Material _startSurfaceMaterial;
         private Material _endSurfaceMaterial;
+        private Texture _normalRamp;
+        private Texture _collapseRamp;
 
         private StarEvolutionController _proxy;
 
@@ -59,32 +63,45 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
-            var supernovaSurfaceColorRamp = supernova._surface.sharedMaterial.GetTexture(ColorRamp);
+            if (normalRamp == null)
+            {
+                _normalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
+            } else
+            {
+                _normalRamp = normalRamp;
+            }
+            if (collapseRamp == null)
+            {
+                _collapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
+            } else
+            {
+                _collapseRamp = collapseRamp;
+            }
 
             // Copy over the material that was set in star builder
-            _collapseStartSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
-            _collapseEndSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
-            _startSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
-            _endSurfaceMaterial.SetTexture(ColorRamp, supernovaSurfaceColorRamp);
+            _collapseStartSurfaceMaterial.SetTexture(ColorRamp, _collapseRamp);
+            _collapseEndSurfaceMaterial.SetTexture(ColorRamp, _collapseRamp);
+            _startSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
+            _endSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
 
-            if (StartColour == null)
+            if (startColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = StartColour.ToColor();
+                _startColour = startColour.Value;
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (EndColour == null)
+            if (endColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = EndColour.ToColor();
+                _endColour = endColour.Value;
                 _endSurfaceMaterial.color = _endColour;
             }
 
@@ -97,7 +114,7 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
             if (scaleCurve != null)
             {
@@ -115,7 +132,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (willExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -129,6 +146,7 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
 
             if (_proxy != null) _proxy.Die();
         }
@@ -165,7 +183,7 @@ namespace NewHorizons.Components.SizeControllers
                 base.FixedUpdate();
 
                 // Only do colour transition stuff if they set an end colour
-                if (EndColour != null)
+                if (endColour != null)
                 {
                     // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                     var t = ageValue;
