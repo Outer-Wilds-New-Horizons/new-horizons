@@ -270,8 +270,6 @@ namespace NewHorizons.Components.SizeControllers
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
                     
                     // These break once it reaches endColour and I have no idea why
-                    //lod.material.SetColor("_AtmosFar", _currentColour);
-                    //lod.material.SetColor("_AtmosNear", _currentColour);
                     //lod.material.SetColor("_SkyColor", _currentColour);
                 }
             }
