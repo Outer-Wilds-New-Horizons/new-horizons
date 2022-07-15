@@ -15,9 +15,9 @@ namespace NewHorizons.Components.SizeControllers
     {
         public GameObject atmosphere;
         public SupernovaEffectController supernova;
-        public bool willExplode;
-        public Color? startColour;
-        public Color? endColour;
+        public bool WillExplode { get; set; }
+        public MColor StartColour { get; set; }
+        public MColor EndColour { get; set; }
         public Texture normalRamp;
         public Texture collapseRamp;
 
@@ -84,24 +84,24 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
             _endSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
 
-            if (startColour == null)
+            if (StartColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = startColour.Value;
+                _startColour = StartColour.ToColor();
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (endColour == null)
+            if (EndColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = endColour.Value;
+                _endColour = EndColour.ToColor();
                 _endSurfaceMaterial.color = _endColour;
             }
 
@@ -114,7 +114,7 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (willExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
 
             if (scaleCurve != null)
             {
@@ -132,7 +132,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (willExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -183,7 +183,7 @@ namespace NewHorizons.Components.SizeControllers
                 base.FixedUpdate();
 
                 // Only do colour transition stuff if they set an end colour
-                if (endColour != null)
+                if (EndColour != null)
                 {
                     // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                     var t = ageValue;
