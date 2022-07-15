@@ -235,6 +235,11 @@ namespace NewHorizons.Builder.Body
             fog._fogRadius *= scale;
             fog._fogDensity *= scale;
 
+            var volumesShape = volumes.FindChild("ZeroG_Fluid_Audio_Volume");
+            var sphereShape = volumesShape.GetComponent<SphereShape>();
+            sphereShape.enabled = true; // this starts disabled for some fucking reason
+            sphereShape.radius *= scale;
+
             // Change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
@@ -248,7 +253,13 @@ namespace NewHorizons.Builder.Body
             var cloak = repelVolume.gameObject.GetComponentInChildren<DarkBrambleCloakSphere>();
             cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
+            cloak.GetComponent<Renderer>().enabled = true;
 
+            // fix the fog backdrop
+            atmo.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
+
+            // finalize
             atmo.SetActive(true);
             volumes.SetActive(true);
             effects.SetActive(true);

@@ -16,8 +16,6 @@ namespace NewHorizons.Builder.Body
         private static Texture2D _colorOverTime;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
-        private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
-        private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
         private static readonly int Tint = Shader.PropertyToID("_Tint");
         private static readonly int Radius = Shader.PropertyToID("_Radius");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
@@ -54,8 +52,6 @@ namespace NewHorizons.Builder.Body
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
                         lod.material.SetColor(SkyColor, starModule.tint.ToColor());
-                        lod.material.SetColor(AtmosFar, starModule.tint.ToColor());
-                        lod.material.SetColor(AtmosNear, starModule.tint.ToColor());
                         lod.material.SetFloat(InnerRadius, starModule.size);
                         lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
                     }

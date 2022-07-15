@@ -1,10 +1,11 @@
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AirBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule.AirInfo info)
+        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
         {
             GameObject airGO = new GameObject("Air");
             airGO.SetActive(false);
@@ -13,7 +14,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             SphereCollider sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
-            sc.radius = info.scale;
+            sc.radius = config.Atmosphere.size;
 
             SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
@@ -26,15 +27,29 @@ namespace NewHorizons.Builder.Atmosphere
             ShockLayerRuleset shockLayerRuleset = planetGO.GetComponentInChildren<PlanetoidRuleset>().gameObject.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
             shockLayerRuleset._radialCenter = airGO.transform;
-            shockLayerRuleset._innerRadius = 0;
-            shockLayerRuleset._outerRadius = info.scale;
+            shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+            shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
 
-            if (info.hasOxygen)
+            if (config.Atmosphere.clouds != null)
+            {
+                shockLayerRuleset._innerRadius = config.Atmosphere.clouds.innerCloudRadius;
+                shockLayerRuleset._outerRadius = config.Atmosphere.clouds.outerCloudRadius;
+            }
+            else
+            {
+                var bottom = config.Base.surfaceSize;
+                var top = config.Atmosphere.size;
+
+                shockLayerRuleset._innerRadius = (bottom + top) / 2f;
+                shockLayerRuleset._outerRadius = top;
+            }
+
+            if (config.Atmosphere.hasOxygen)
             {
                 airGO.AddComponent<OxygenVolume>();
             }
 
-            if (info.isRaining)
+            if (config.Atmosphere.hasRain)
             {
                 var vref = airGO.AddComponent<VisorRainEffectVolume>();
                 vref._rainDirection = VisorRainEffectVolume.RainDirection.Radial;

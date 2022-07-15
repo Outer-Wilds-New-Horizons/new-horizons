@@ -22,7 +22,7 @@ on:
 
 jobs:
   Build:
-    if: ${{ github.ref == 'refs/heads/main' || (github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr'))  }}
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-pr')  }}
     uses: ./.github/workflows/build.yaml
     with:
       build_type: Release
@@ -43,7 +43,7 @@ jobs:
   Update_Release:
     name: 'Create/Update Release Asset'
     needs: Build
-    if: ${{ github.ref != 'refs/heads/main' && github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
+    if: ${{ github.ref != 'refs/heads/main' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
     runs-on: ubuntu-latest
     steps:
       - name: Download Asset

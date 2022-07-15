@@ -529,17 +529,9 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Atmosphere != null)
             {
-                var airInfo = new AtmosphereModule.AirInfo()
-                {
-                    hasOxygen = body.Config.Atmosphere.hasOxygen,
-                    isRaining = body.Config.Atmosphere.hasRain,
-                    isSnowing = body.Config.Atmosphere.hasSnow,
-                    scale = body.Config.Atmosphere.size
-                };
-
                 var surfaceSize = body.Config.Base.surfaceSize;
 
-                AirBuilder.Make(go, sector, airInfo);
+                AirBuilder.Make(go, sector, body.Config);
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
@@ -548,7 +540,7 @@ namespace NewHorizons.Handlers
                 }
 
                 if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)
-                    EffectsBuilder.Make(go, sector, airInfo, surfaceSize);
+                    EffectsBuilder.Make(go, sector, body.Config, surfaceSize);
 
                 if (body.Config.Atmosphere.fogSize != 0)
                     FogBuilder.Make(go, sector, body.Config.Atmosphere);
