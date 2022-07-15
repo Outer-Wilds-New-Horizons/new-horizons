@@ -116,7 +116,7 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", StartCollapse);
 
             if (scaleCurve != null)
             {
@@ -134,39 +134,13 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", StartCollapse);
         }
 
         public void SetProxy(StarEvolutionController proxy)
         {
             _proxy = proxy;
             _proxy.supernova.SetIsProxy(true);
-        }
-
-        public void Die()
-        {
-            _isCollapsing = true;
-            _collapseStartSize = CurrentScale;
-            _collapseTimer = 0f;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
-
-            if (_proxy != null) _proxy.Die();
-        }
-
-        private void UpdateSupernova()
-        {
-            // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
-            transform.localScale = Vector3.one;
-
-            // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
-            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
-
-            if (Time.time > _supernovaStartTime + 45f)
-            {
-                // Just turn off the star entirely
-                base.gameObject.SetActive(false);
-            }
         }
 
         private void UpdateMainSequence()
@@ -203,15 +177,47 @@ namespace NewHorizons.Components.SizeControllers
             supernova._surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
             // After the collapse is done we go supernova
-            if (_collapseTimer > collapseTime)
+            if (_collapseTimer > collapseTime) StartSupernova();
+        }
+
+        private void UpdateSupernova()
+        {
+            // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
+            transform.localScale = Vector3.one;
+
+            // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
+            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+
+            if (Time.time > _supernovaStartTime + 45f)
             {
-                SupernovaStart.Invoke();
-                supernova.enabled = true;
-                _isSupernova = true;
-                _supernovaStartTime = Time.time;
-                if (atmosphere != null) atmosphere.SetActive(false);
-                if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+                // Just turn off the star entirely
+                base.gameObject.SetActive(false);
             }
+        }
+
+        public void StartCollapse()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
+
+            _isCollapsing = true;
+            _collapseStartSize = CurrentScale;
+            _collapseTimer = 0f;
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
+
+            if (_proxy != null) _proxy.StartCollapse();
+        }
+
+        private void StartSupernova()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
+
+            SupernovaStart.Invoke();
+            supernova.enabled = true;
+            _isSupernova = true;
+            _supernovaStartTime = Time.time;
+            if (atmosphere != null) atmosphere.SetActive(false);
+            if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
         }
 
         protected new void FixedUpdate()
