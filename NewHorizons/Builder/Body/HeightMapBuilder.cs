@@ -74,11 +74,11 @@ namespace NewHorizons.Builder.Body
                 LODGroup.SetLODs(new LOD[]
                 {
                     new LOD(0.5f, new Renderer[] { level1 }),
-                    new LOD(0.33f, new Renderer[] { level2 })
+                    new LOD(0.0f, new Renderer[] { level2 })
                 });
 
-                level1.transform.name += "1";
-                level2.transform.name += "2";
+                level1.transform.name += "0";
+                level2.transform.name += "1";
 
                 LODGroup.RecalculateBounds();
             }
