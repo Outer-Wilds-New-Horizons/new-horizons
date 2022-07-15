@@ -27,6 +27,8 @@ namespace NewHorizons.Builder.Atmosphere
             ShockLayerRuleset shockLayerRuleset = planetGO.GetComponentInChildren<PlanetoidRuleset>().gameObject.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
             shockLayerRuleset._radialCenter = airGO.transform;
+            shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+            shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
 
             if (config.Atmosphere.clouds != null)
             {
