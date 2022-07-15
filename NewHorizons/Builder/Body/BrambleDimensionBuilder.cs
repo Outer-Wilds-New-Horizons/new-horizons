@@ -242,6 +242,19 @@ namespace NewHorizons.Builder.Body
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
+            // If the config says only certain entrances are allowed, enforce that
+            if (config.allowedEntrances != null)
+            {
+                var entrances = outerFogWarpVolume._exits;
+                var newEntrances = new List<SphericalFogWarpExit>();
+                foreach (var index in config.allowedEntrances)
+                {
+                    if(index < 0 || 5 < index) continue;
+                    newEntrances.Add(entrances[index]);
+                }
+                outerFogWarpVolume._exits = newEntrances.ToArray();
+            }
+
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
             geometry.transform.localScale = Vector3.one * scale;

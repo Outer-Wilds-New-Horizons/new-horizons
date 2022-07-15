@@ -41,6 +41,11 @@ namespace NewHorizons.External.Modules
             /// The internal radius (in meters) of the dimension. The default is 1705.
             /// </summary>
             [DefaultValue(1705f)] public float radius = 1705f;
+
+            /// <summary>
+            /// An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.
+            /// </summary>
+            public int[] allowedEntrances;
         }
 
         
@@ -86,6 +91,11 @@ namespace NewHorizons.External.Modules
             /// The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)
             /// </summary>
             public MColor lightTint;
+
+            /// <summary>
+            /// An array of integers from 0-5. By default, all entrances are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
+            /// </summary>
+            public int[] possibleExits;
         }
     }
 }
