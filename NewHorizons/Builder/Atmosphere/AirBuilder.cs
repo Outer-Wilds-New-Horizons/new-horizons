@@ -27,12 +27,22 @@ namespace NewHorizons.Builder.Atmosphere
             ShockLayerRuleset shockLayerRuleset = planetGO.GetComponentInChildren<PlanetoidRuleset>().gameObject.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
             shockLayerRuleset._radialCenter = airGO.transform;
+            shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+            shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
 
-            var bottom = config.Base.surfaceSize;
-            var top = config.Atmosphere.size;
+            if (config.Atmosphere.clouds != null)
+            {
+                shockLayerRuleset._innerRadius = config.Atmosphere.clouds.innerCloudRadius;
+                shockLayerRuleset._outerRadius = config.Atmosphere.clouds.outerCloudRadius;
+            }
+            else
+            {
+                var bottom = config.Base.surfaceSize;
+                var top = config.Atmosphere.size;
 
-            shockLayerRuleset._innerRadius = (bottom + top) / 2f;
-            shockLayerRuleset._outerRadius = top;
+                shockLayerRuleset._innerRadius = (bottom + top) / 2f;
+                shockLayerRuleset._outerRadius = top;
+            }
 
             if (config.Atmosphere.hasOxygen)
             {

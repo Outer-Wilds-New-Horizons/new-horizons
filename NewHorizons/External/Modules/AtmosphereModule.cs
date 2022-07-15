@@ -86,6 +86,16 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public bool useAtmosphereShader;
 
+        /// <summary>
+        /// Minimum speed that your ship can go in the atmosphere where flames will appear.
+        /// </summary>
+        [DefaultValue(100f)] public float minShockSpeed = 100f;
+
+        /// <summary>
+        /// Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.
+        /// </summary>
+        [DefaultValue(300f)] public float maxShockSpeed = 300f;
+
         [JsonObject]
         public class CloudInfo
         {

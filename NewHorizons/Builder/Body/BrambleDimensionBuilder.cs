@@ -235,6 +235,9 @@ namespace NewHorizons.Builder.Body
             fog._fogRadius *= scale;
             fog._fogDensity *= scale;
 
+            var volumesShape = volumes.FindChild("ZeroG_Fluid_Audio_Volume");
+            volumesShape.GetComponent<SphereShape>().radius *= scale;
+
             // Change fog color
             if (body.Config.Bramble.dimension.fogTint != null)
             {
