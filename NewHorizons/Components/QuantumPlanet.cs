@@ -53,7 +53,7 @@ namespace NewHorizons.Components
 
         public int GetRandomNewState()
         {
-            var range = Enumerable.Range(0, states.Count - 1).Where(i => i != CurrentIndex);
+            var range = Enumerable.Range(0, states.Count).Where(i => i != CurrentIndex);
             var index = Random.Range(0, range.Count());
             return range.ElementAt(index);
         }
