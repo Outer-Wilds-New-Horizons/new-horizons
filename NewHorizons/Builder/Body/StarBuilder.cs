@@ -18,6 +18,8 @@ namespace NewHorizons.Builder.Body
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
         private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
         private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
+        private static readonly int Tint = Shader.PropertyToID("_Tint");
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
@@ -44,9 +46,11 @@ namespace NewHorizons.Builder.Body
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
                 var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
+                var fogFar = fog.fogImpostor.material;
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint.ToColor();
+                    fog.fogImpostor.material.SetColor(Tint, starModule.tint.ToColor());
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
@@ -60,6 +64,7 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
             }
 
             var ambientLightGO = Object.Instantiate(SearchUtilities.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
