@@ -87,7 +87,7 @@ namespace NewHorizons.Handlers
             possibleSubtitles.Add(sprite);
         }
 
-        public void Update()
+        public void FixedUpdate()
         {
             CheckForEOTE();
 
