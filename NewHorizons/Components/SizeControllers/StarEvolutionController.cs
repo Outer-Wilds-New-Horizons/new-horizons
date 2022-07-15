@@ -102,7 +102,7 @@ namespace NewHorizons.Components.SizeControllers
             else
             {
                 _endColour = EndColour.ToColor();
-                _endSurfaceMaterial.color = _endColour;
+                _endSurfaceMaterial.color = _startColour * 4.5948f;
             }
 
             _heatVolume = GetComponentInChildren<HeatHazardVolume>();
