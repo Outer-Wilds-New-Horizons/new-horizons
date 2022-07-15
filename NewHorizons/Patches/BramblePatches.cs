@@ -10,6 +10,12 @@ namespace NewHorizons.Patches
     [HarmonyPatch]
     public class BramblePatches
     {
+        //
+        // this file is not great. the real solution to the issues these patches address should be solved by replacing bramble nodes' InnerFogWarpVolume
+        // components with a custom NHInnerFogWarpVolume component, and implement the below functions as overrides in the NHInnerFogWarpVolume class
+        // that would fix the issue of seeds having inappropriate screen fog
+        //
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SphericalFogWarpVolume), nameof(SphericalFogWarpVolume.IsProbeOnly))]
         public static bool SphericalFogWarpVolume_IsProbeOnly(SphericalFogWarpVolume __instance, ref bool __result)
