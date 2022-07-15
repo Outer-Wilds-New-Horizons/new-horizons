@@ -194,6 +194,24 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
+            // remove default vines
+            var geoBatchedGroup = geometry.FindChild("BatchedGroup");
+            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_1");
+            collider.transform.parent = geometry.transform;
+            GameObject.Destroy(geoBatchedGroup);
+
+            var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
+            var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
+            dimensionWalls.transform.parent = geometry.transform;
+            GameObject.Destroy(geoOtherComponentsGroup);
+
+            // fix some cull groups
+            volumes.GetComponent<SectorCollisionGroup>()._sector = sector;
+            volumes.FindChild("SunOverrideVolume").GetComponent<SunOverrideVolume>()._sector = sector;
+            effects.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
+            
             // Set up rulesets
             var thrustRuleset = sector.gameObject.AddComponent<ThrustRuleset>();
             thrustRuleset._attachedBody = owRigidBody;
@@ -252,10 +270,6 @@ namespace NewHorizons.Builder.Body
             cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
-
-            // fix the fog backdrop
-            atmo.GetComponent<SectorCullGroup>()._sector = sector;
-            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
 
             // finalize
             atmo.SetActive(true);
