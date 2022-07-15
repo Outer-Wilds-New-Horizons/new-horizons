@@ -248,6 +248,7 @@ namespace NewHorizons.Builder.Body
             var cloak = repelVolume.gameObject.GetComponentInChildren<DarkBrambleCloakSphere>();
             cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
+            cloak.GetComponent<Renderer>().enabled = true;
 
             atmo.SetActive(true);
             volumes.SetActive(true);
