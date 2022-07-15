@@ -151,7 +151,9 @@ namespace NewHorizons.Components.SizeControllers
                 // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                 var t = _age / (lifespan * 60f);
                 if (maxScale > 0) t = CurrentScale / maxScale;
-                if (t < 1f)
+
+                // Only go to 98% else if it reaches the endSurfaceMaterial it'll morb
+                if (t < 0.98f)
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
                     supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
@@ -268,9 +270,7 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    
-                    // These break once it reaches endColour and I have no idea why
-                    //lod.material.SetColor("_SkyColor", _currentColour);
+                    lod.material.SetColor("_SkyColor", _currentColour);
                 }
             }
         }
