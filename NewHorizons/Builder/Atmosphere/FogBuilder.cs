@@ -38,6 +38,7 @@ namespace NewHorizons.Builder.Atmosphere
             PFC._fogImpostor = MR;
             PFC.fogLookupTexture = dbPlanetaryFogController.fogLookupTexture;
             PFC.fogRadius = atmo.fogSize;
+            PFC.lodFadeDistance = PFC.fogRadius * 0.5f;
             PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
@@ -45,7 +46,6 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogColorRampIntensity = 1f;
             PFC.fogTint = atmo.fogTint.ToColor();
 
-            MR.material.SetTexture(FogTexture, dbPlanetaryFogController.fogLookupTexture);
             MR.material.SetColor(Tint, atmo.fogTint.ToColor());
             MR.material.SetFloat(Radius, atmo.fogSize);
             MR.material.SetFloat(Density, atmo.fogDensity);
