@@ -26,8 +26,6 @@ namespace NewHorizons.Handlers
         public Sprite eoteSprite;
         public int subtitleIndex;
 
-        public System.Random randomizer;
-
         public static readonly int PAUSE_TIMER_MAX = 50;
         public int pauseTimer = PAUSE_TIMER_MAX;
 
@@ -45,8 +43,6 @@ namespace NewHorizons.Handlers
 
         public void Start()
         {
-            randomizer = new System.Random();
-
             GetComponent<CanvasGroup>().alpha = 1;
             graphic = GetComponent<Graphic>();
             image =   GetComponent<UnityEngine.UI.Image>();
@@ -132,14 +128,7 @@ namespace NewHorizons.Handlers
 
         public void ChangeSubtitle()
         {
-            // to pick a new random subtitle without requiring retries, we generate a random offset less than the length of the possible subtitles array
-            // we then add that offset to the current index, modulo NUMBER_OF_POSSIBLE_SUBTITLES
-            // since the offset can never be NUMBER_OF_POSSIBLE_SUBTITLES, it will never wrap all the way back around to the initial subtitleIndex
-
-            // note, this makes the code more confusing, but Random.Next(min, max) generates a random number on the range [min, max)
-            // that is, the below code will generate numbers up to and including Count-1, not Count.
-            var newIndexOffset = randomizer.Next(1, possibleSubtitles.Count);
-            subtitleIndex = (subtitleIndex + newIndexOffset) % possibleSubtitles.Count;
+            subtitleIndex = (subtitleIndex + 1) % possibleSubtitles.Count;
             
             image.sprite = possibleSubtitles[subtitleIndex];
         }
