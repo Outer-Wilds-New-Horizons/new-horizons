@@ -253,6 +253,11 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
+            // fix the fog backdrop
+            atmo.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
+
+            // finalize
             atmo.SetActive(true);
             volumes.SetActive(true);
             effects.SetActive(true);
