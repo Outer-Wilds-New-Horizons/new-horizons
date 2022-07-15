@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Atmosphere
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
             fogGO.transform.parent = sector?.transform ?? planetGO.transform;
-            fogGO.transform.localScale = Vector3.one;
+            fogGO.transform.localScale = Vector3.one * atmo.fogSize;
 
             // Going to copy from dark bramble
             var dbFog = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
