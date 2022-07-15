@@ -46,7 +46,6 @@ namespace NewHorizons.Builder.Body
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
                 var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
-                var fogFar = fog.fogImpostor.material;
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint.ToColor();
