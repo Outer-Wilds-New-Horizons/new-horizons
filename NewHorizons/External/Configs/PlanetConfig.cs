@@ -181,6 +181,7 @@ namespace NewHorizons.External.Configs
             if (Base.centerOfSolarSystem) Orbit.isStatic = true;
             if (Atmosphere?.clouds?.lightningGradient != null) Atmosphere.clouds.hasLightning = true;
             if (Bramble?.dimension != null && Orbit?.staticPosition == null) throw new Exception($"Dimension {name} must have Orbit.staticPosition defined.");
+            if (Bramble?.dimension != null) canShowOnTitle = false; 
             if (Orbit?.staticPosition != null) Orbit.isStatic = true;
 
             // For each quantum group, verify the following:
