@@ -586,7 +586,7 @@
         },
         "possibleExits": {
           "type": "array",
-          "description": "An array of integers from 0-5. By default, all entrances are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.",
+          "description": "An array of integers from 0-5. By default, all exits are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.",
           "items": {
             "type": "integer",
             "format": "int32"
