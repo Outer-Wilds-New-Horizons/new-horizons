@@ -145,16 +145,21 @@ namespace NewHorizons.Components.SizeControllers
 
         private void UpdateMainSequence()
         {
-            var ageValue = _age / (lifespan * 60f);
-
             // Only do colour transition stuff if they set an end colour
             if (EndColour != null)
             {
                 // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
-                var t = ageValue;
+                var t = _age / (lifespan * 60f);
                 if (maxScale > 0) t = CurrentScale / maxScale;
-                _currentColour = Color.Lerp(_startColour, _endColour, t);
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                if (t < 1f)
+                {
+                    _currentColour = Color.Lerp(_startColour, _endColour, t);
+                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                }
+                else
+                {
+                    _currentColour = _endColour;
+                }
             }
             else
             {
@@ -231,7 +236,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateSupernova();
                 return;
             }
-
+            
             if (!_isCollapsing)
             {
                 base.FixedUpdate();
@@ -242,7 +247,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateCollapse();
                 if (_isSupernova) return;
             }
-
+            
             // This is just all the scales stuff for the atmosphere effects
             if (_fog != null)
             {
@@ -263,9 +268,11 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    lod.material.SetColor("_AtmosFar", _currentColour);
-                    lod.material.SetColor("_AtmosNear", _currentColour);
-                    lod.material.SetColor("_SkyColor", _currentColour);
+                    
+                    // These break once it reaches endColour and I have no idea why
+                    //lod.material.SetColor("_AtmosFar", _currentColour);
+                    //lod.material.SetColor("_AtmosNear", _currentColour);
+                    //lod.material.SetColor("_SkyColor", _currentColour);
                 }
             }
         }
