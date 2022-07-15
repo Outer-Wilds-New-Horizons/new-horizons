@@ -11,7 +11,7 @@ on:
 jobs:
     Update_Release:
         name: Create/Update Release
-        if: github.event.pull_request.draft == 'false' && contains(github.event.pull_request.labels.*.name, 'update-pr')
+        if: contains(github.event.pull_request.labels.*.name, 'update-pr')
         runs-on: ubuntu-latest
         steps:
             - name: Create/Update Release
