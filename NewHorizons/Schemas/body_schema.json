@@ -286,6 +286,18 @@
         "useAtmosphereShader": {
           "type": "boolean",
           "description": "Whether we use an atmospheric shader on the planet. Doesn't affect clouds, fog, rain, snow, oxygen, etc. Purely\nvisual."
+        },
+        "minShockSpeed": {
+          "type": "number",
+          "description": "Minimum speed that your ship can go in the atmosphere where flames will appear.",
+          "format": "float",
+          "default": 100.0
+        },
+        "maxShockSpeed": {
+          "type": "number",
+          "description": "Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.",
+          "format": "float",
+          "default": 300.0
         }
       }
     },
