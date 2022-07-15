@@ -18,6 +18,8 @@ namespace NewHorizons.Builder.Body
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
         private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
         private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
+        private static readonly int Tint = Shader.PropertyToID("_Tint");
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
@@ -47,6 +49,7 @@ namespace NewHorizons.Builder.Body
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint.ToColor();
+                    fog.fogImpostor.material.SetColor(Tint, starModule.tint.ToColor());
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
@@ -60,6 +63,7 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
             }
 
             var ambientLightGO = Object.Instantiate(SearchUtilities.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -137,9 +141,9 @@ namespace NewHorizons.Builder.Body
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
-            controller.startColour = starModule.tint?.ToColor();
-            controller.endColour = starModule.tint != null ? starModule.tint.ToColor() * 4.5948f : null;
-            controller.willExplode = starModule.goSupernova;
+            controller.StartColour = starModule.tint;
+            controller.EndColour = starModule.endTint;
+            controller.WillExplode = starModule.goSupernova;
             if (!string.IsNullOrEmpty(starModule.starRampTexture))
             {
                 var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
@@ -187,8 +191,8 @@ namespace NewHorizons.Builder.Body
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.supernova = supernova;
-            controller.startColour = starModule.tint?.ToColor();
-            controller.endColour = starModule.tint != null ? starModule.tint.ToColor() * 4.5948f : null;
+            controller.StartColour = starModule.tint;
+            controller.EndColour = starModule.endTint;
             controller.enabled = true;
             starGO.SetActive(true);
 
