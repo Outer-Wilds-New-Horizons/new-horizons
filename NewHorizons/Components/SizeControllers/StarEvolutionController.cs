@@ -116,7 +116,7 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", StartCollapse);
 
             if (scaleCurve != null)
             {
@@ -134,7 +134,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", Die);
+            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", StartCollapse);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -143,44 +143,23 @@ namespace NewHorizons.Components.SizeControllers
             _proxy.supernova.SetIsProxy(true);
         }
 
-        public void Die()
-        {
-            _isCollapsing = true;
-            _collapseStartSize = CurrentScale;
-            _collapseTimer = 0f;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
-
-            if (_proxy != null) _proxy.Die();
-        }
-
-        private void UpdateSupernova()
-        {
-            // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
-            transform.localScale = Vector3.one;
-
-            // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
-            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
-
-            if (Time.time > _supernovaStartTime + 45f)
-            {
-                // Just turn off the star entirely
-                base.gameObject.SetActive(false);
-            }
-        }
-
         private void UpdateMainSequence()
         {
-            var ageValue = _age / (lifespan * 60f);
-
             // Only do colour transition stuff if they set an end colour
             if (EndColour != null)
             {
                 // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
-                var t = ageValue;
+                var t = _age / (lifespan * 60f);
                 if (maxScale > 0) t = CurrentScale / maxScale;
-                _currentColour = Color.Lerp(_startColour, _endColour, t);
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                if (t < 1f)
+                {
+                    _currentColour = Color.Lerp(_startColour, _endColour, t);
+                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                }
+                else
+                {
+                    _currentColour = _endColour;
+                }
             }
             else
             {
@@ -203,15 +182,47 @@ namespace NewHorizons.Components.SizeControllers
             supernova._surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
             // After the collapse is done we go supernova
-            if (_collapseTimer > collapseTime)
+            if (_collapseTimer > collapseTime) StartSupernova();
+        }
+
+        private void UpdateSupernova()
+        {
+            // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
+            transform.localScale = Vector3.one;
+
+            // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
+            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+
+            if (Time.time > _supernovaStartTime + 45f)
             {
-                SupernovaStart.Invoke();
-                supernova.enabled = true;
-                _isSupernova = true;
-                _supernovaStartTime = Time.time;
-                if (atmosphere != null) atmosphere.SetActive(false);
-                if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+                // Just turn off the star entirely
+                base.gameObject.SetActive(false);
             }
+        }
+
+        public void StartCollapse()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
+
+            _isCollapsing = true;
+            _collapseStartSize = CurrentScale;
+            _collapseTimer = 0f;
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
+
+            if (_proxy != null) _proxy.StartCollapse();
+        }
+
+        private void StartSupernova()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
+
+            SupernovaStart.Invoke();
+            supernova.enabled = true;
+            _isSupernova = true;
+            _supernovaStartTime = Time.time;
+            if (atmosphere != null) atmosphere.SetActive(false);
+            if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
         }
 
         protected new void FixedUpdate()
@@ -225,7 +236,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateSupernova();
                 return;
             }
-
+            
             if (!_isCollapsing)
             {
                 base.FixedUpdate();
@@ -236,7 +247,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateCollapse();
                 if (_isSupernova) return;
             }
-
+            
             // This is just all the scales stuff for the atmosphere effects
             if (_fog != null)
             {
@@ -257,9 +268,11 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    lod.material.SetColor("_AtmosFar", _currentColour);
-                    lod.material.SetColor("_AtmosNear", _currentColour);
-                    lod.material.SetColor("_SkyColor", _currentColour);
+                    
+                    // These break once it reaches endColour and I have no idea why
+                    //lod.material.SetColor("_AtmosFar", _currentColour);
+                    //lod.material.SetColor("_AtmosNear", _currentColour);
+                    //lod.material.SetColor("_SkyColor", _currentColour);
                 }
             }
         }
