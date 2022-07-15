@@ -214,6 +214,19 @@ namespace NewHorizons.Builder.Props
             fogLight._linkedLightData = new List<FogLight.LightData>();
 
             sector.RegisterFogLight(fogLight);
+        
+            // If the config says only certain entrances are allowed, enforce that
+            if (config.possibleExits != null)
+            {
+                var exits = innerFogWarpVolume._exits;
+                var newExits = new List<SphericalFogWarpExit>();
+                foreach (var index in config.possibleExits)
+                {
+                    if(index < 0 || 5 < index) continue;
+                    newExits.Add(exits[index]);
+                }
+                innerFogWarpVolume._exits = newExits.ToArray();
+            }
 
             // set up screen fog effect 
             // (in the base game, any sector that contains a bramble node needs an EffectRuleset with type FogWarp)
