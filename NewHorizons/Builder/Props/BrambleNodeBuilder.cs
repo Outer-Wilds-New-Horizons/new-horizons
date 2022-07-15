@@ -268,6 +268,13 @@ namespace NewHorizons.Builder.Props
             if (config.isSeed) SetSeedColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
             else SetNodeColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
 
+            innerFogWarpVolume._useFarFogColor = false;
+            if (config.farFogTint != null)
+            {
+                innerFogWarpVolume._useFarFogColor = true;
+                innerFogWarpVolume._farFogColor = config.farFogTint.ToColor();
+            }
+
             // Set up warps
             innerFogWarpVolume._sector = sector;
             innerFogWarpVolume._attachedBody = go.GetComponent<OWRigidbody>(); // I don't think this is necessary, it seems to be set correctly on its own
@@ -305,7 +312,6 @@ namespace NewHorizons.Builder.Props
                 var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
 
                 fogRenderer._fogColor = fogTint.Value;
-                fogRenderer._useFarFogColor = false;
 
                 var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2")?.FindChild("fogbackdrop_v2");
                 if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = (Color)fogTint;

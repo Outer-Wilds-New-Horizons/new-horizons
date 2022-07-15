@@ -93,6 +93,11 @@ namespace NewHorizons.External.Modules
             public MColor lightTint;
 
             /// <summary>
+            /// The color a dimension's background fog turns when you approach this node (if it's in a dimension). If this node is not in a dimension, this does nothing. Leave blank for the default yellowish white color: (255, 245, 217, 255)
+            /// </summary>
+            public MColor farFogTint;
+
+            /// <summary>
             /// An array of integers from 0-5. By default, all entrances are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] possibleExits;
