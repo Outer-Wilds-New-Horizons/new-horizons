@@ -365,43 +365,42 @@ namespace NewHorizons.Builder.Props
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
-            var variation = arcInfo.variation;
+            var variation = arcInfo == null ? arcInfo.variation : -1;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
-                    variation = arcInfo.variation < 0
+                    variation = variation < 0
                         ? Random.Range(0, _childArcPrefabs.Count())
-                        : (arcInfo.variation % _childArcPrefabs.Count());
+                        : (variation % _childArcPrefabs.Count());
                     arc = _childArcPrefabs[variation].InstantiateInactive();
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
-                    variation = arcInfo.variation < 0
+                    variation = variation < 0
                         ? Random.Range(0, _ghostArcPrefabs.Count())
-                        : (arcInfo.variation % _ghostArcPrefabs.Count());
+                        : (variation % _ghostArcPrefabs.Count());
                     arc = _ghostArcPrefabs[variation].InstantiateInactive();
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
-                    variation = arcInfo.variation < 0
+                    variation = variation < 0
                         ? Random.Range(0, _arcPrefabs.Count())
-                        : (arcInfo.variation % _arcPrefabs.Count());
+                        : (variation % _arcPrefabs.Count());
                     arc = _arcPrefabs[variation].InstantiateInactive();
                     break;
             }
-            arcInfo.variation = variation;
 
             arc.transform.parent = conversationZone.transform;
             arc.GetComponent<NomaiTextLine>()._prebuilt = false;
 
             if (arcInfo != null)
             {
-                var a = arcInfo;
-                if (a.position == null) arc.transform.localPosition = Vector3.zero;
-                else arc.transform.localPosition = new Vector3(a.position.x, a.position.y, 0);
+                arcInfo.variation = variation;
+                if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
+                else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                arc.transform.localRotation = Quaternion.Euler(0, 0, a.zRotation);
+                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
 
-                if (a.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
             }
             // Try auto I guess
             else
@@ -425,7 +424,7 @@ namespace NewHorizons.Builder.Props
 
             arc.SetActive(true);
 
-            arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
+            if (arcInfo != null) arcInfoToCorrespondingSpawnedGameObject[arcInfo] = arc;
 
             return arc;
         }
