@@ -98,7 +98,7 @@ namespace NewHorizons.External.Modules
             public MColor farFogTint;
 
             /// <summary>
-            /// An array of integers from 0-5. By default, all entrances are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
+            /// An array of integers from 0-5. By default, all exits are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] possibleExits;
         }
