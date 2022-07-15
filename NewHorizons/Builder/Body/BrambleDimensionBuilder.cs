@@ -249,7 +249,7 @@ namespace NewHorizons.Builder.Body
                 var newEntrances = new List<SphericalFogWarpExit>();
                 foreach (var index in config.allowedEntrances)
                 {
-                    if(index < 0 || 5 < index) continue;
+                    if(index is < 0 or > 5) continue;
                     newEntrances.Add(entrances[index]);
                 }
                 outerFogWarpVolume._exits = newEntrances.ToArray();

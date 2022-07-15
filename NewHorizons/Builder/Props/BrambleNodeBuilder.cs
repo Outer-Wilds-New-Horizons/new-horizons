@@ -215,14 +215,14 @@ namespace NewHorizons.Builder.Props
 
             sector.RegisterFogLight(fogLight);
         
-            // If the config says only certain entrances are allowed, enforce that
+            // If the config says only certain exits are allowed, enforce that
             if (config.possibleExits != null)
             {
                 var exits = innerFogWarpVolume._exits;
                 var newExits = new List<SphericalFogWarpExit>();
                 foreach (var index in config.possibleExits)
                 {
-                    if(index < 0 || 5 < index) continue;
+                    if(index is < 0 or > 5) continue;
                     newExits.Add(exits[index]);
                 }
                 innerFogWarpVolume._exits = newExits.ToArray();
@@ -233,8 +233,7 @@ namespace NewHorizons.Builder.Props
             // (this isn't jank I swear, this is how it's supposed to work)
             var sectorHasFogEffectRuleset = sector
                 .GetComponents<EffectRuleset>()
-                .Where(effectRuleset => effectRuleset._type == EffectRuleset.BubbleType.FogWarp)
-                .Count() > 0;
+                .Any(effectRuleset => effectRuleset._type == EffectRuleset.BubbleType.FogWarp);
             if (!sectorHasFogEffectRuleset)
             {
                 var fogEffectRuleset = sector.gameObject.AddComponent<EffectRuleset>();
@@ -257,7 +256,7 @@ namespace NewHorizons.Builder.Props
             // Seed fog works differently, so it doesn't need to be fixed (it's also located on a different child path, so the below FindChild calls wouldn't work)
             if (!config.isSeed)
             {
-                var fog = brambleNode.FindChild("Effects").FindChild("InnerWarpFogSphere");
+                var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
                 var fogMaterial = fog.GetComponent<MeshRenderer>().sharedMaterial;
                 fog.transform.localScale /= config.scale;
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
@@ -313,7 +312,7 @@ namespace NewHorizons.Builder.Props
 
                 fogRenderer._fogColor = fogTint.Value;
 
-                var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2")?.FindChild("fogbackdrop_v2");
+                var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2/fogbackdrop_v2");
                 if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = (Color)fogTint;
             }
 
