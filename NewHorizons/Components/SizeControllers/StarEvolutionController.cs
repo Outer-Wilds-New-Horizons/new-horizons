@@ -155,8 +155,7 @@ namespace NewHorizons.Components.SizeControllers
                 var t = _age / (lifespan * 60f);
                 if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
 
-                // Only go to 98% else if it reaches the endSurfaceMaterial it'll morb
-                if (t < 0.98f)
+                if (t < 1f)
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
                     supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
