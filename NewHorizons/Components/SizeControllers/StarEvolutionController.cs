@@ -53,6 +53,7 @@ namespace NewHorizons.Components.SizeControllers
         public UnityEvent SupernovaStart = new UnityEvent();
 
         private float maxScale;
+        private float minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         private Color _currentColour;
@@ -121,10 +122,12 @@ namespace NewHorizons.Components.SizeControllers
             if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+                minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
             }
             else
             {
                 maxScale = 0;
+                minScale = 0;
                 scaleCurve = new AnimationCurve();
                 scaleCurve.AddKey(0, 1);
             }
@@ -150,7 +153,7 @@ namespace NewHorizons.Components.SizeControllers
             {
                 // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                 var t = _age / (lifespan * 60f);
-                if (maxScale > 0) t = CurrentScale / maxScale;
+                if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
 
                 // Only go to 98% else if it reaches the endSurfaceMaterial it'll morb
                 if (t < 0.98f)
