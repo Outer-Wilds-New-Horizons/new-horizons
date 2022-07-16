@@ -34,7 +34,7 @@ namespace NewHorizons.Components.SizeControllers
         private float _collapseStartSize;
         private float _collapseTimer;
 
-        public float collapseTime = 5f; // seconds
+        public float collapseTime = 10f; // seconds
         public float lifespan = 22f; // minutes
         private float _age;
 
