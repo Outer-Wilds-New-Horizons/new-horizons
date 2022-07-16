@@ -53,6 +53,7 @@ namespace NewHorizons.Components.SizeControllers
         public UnityEvent SupernovaStart = new UnityEvent();
 
         private float maxScale;
+        private float minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         private Color _currentColour;
@@ -121,10 +122,12 @@ namespace NewHorizons.Components.SizeControllers
             if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+                minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
             }
             else
             {
                 maxScale = 0;
+                minScale = 0;
                 scaleCurve = new AnimationCurve();
                 scaleCurve.AddKey(0, 1);
             }
@@ -150,7 +153,8 @@ namespace NewHorizons.Components.SizeControllers
             {
                 // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
                 var t = _age / (lifespan * 60f);
-                if (maxScale > 0) t = CurrentScale / maxScale;
+                if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
+
                 if (t < 1f)
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
@@ -268,9 +272,7 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     lod.material.SetFloat("_InnerRadius", CurrentScale);
                     lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    
-                    // These break once it reaches endColour and I have no idea why
-                    //lod.material.SetColor("_SkyColor", _currentColour);
+                    lod.material.SetColor("_SkyColor", _currentColour);
                 }
             }
         }

@@ -20,12 +20,7 @@ namespace NewHorizons.Utility
             return _loadedTextures.ContainsKey(path);
         }
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename)
-        {
-            return GetTexture(mod, filename, true);
-        }
-
-        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps)
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true)
         {
             // Copied from OWML but without the print statement lol
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
@@ -41,6 +36,7 @@ namespace NewHorizons.Utility
                 var data = File.ReadAllBytes(path);
                 var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
                 texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.wrapMode = TextureWrapMode.Clamp; // this is apparently repeat by default
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
 

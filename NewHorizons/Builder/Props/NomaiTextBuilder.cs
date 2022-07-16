@@ -69,7 +69,7 @@ namespace NewHorizons.Builder.Props
             foreach (var existingArc in existingGhostArcs)
             {
                 var arc = existingArc.InstantiateInactive();
-                arc.name = "Arc";
+                arc.name = "Arc (Ghost)";
                 _ghostArcPrefabs.Add(arc);
             }
 

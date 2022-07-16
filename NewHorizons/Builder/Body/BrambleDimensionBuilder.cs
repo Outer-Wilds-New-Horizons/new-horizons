@@ -10,117 +10,6 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
-    [HarmonyPatch]
-    static class Patch
-    {
-        // SkinnedMeshRenderer.SetBlendShapeWeight
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(PlayerFogWarpDetector), nameof(PlayerFogWarpDetector.LateUpdate))]
-        public static bool LateUpdate(PlayerFogWarpDetector __instance)
-        {
-      //      if (PlanetaryFogController.GetActiveFogSphere() == null)
-		    //{
-			   // return false;
-		    //}
-		    float num = __instance._targetFogFraction;
-		    if (PlayerState.IsInsideShip())
-		    {
-			    num = Mathf.Max(__instance._shipFogDetector.GetTargetFogFraction(), num);
-		    }
-		    if (num < __instance._fogFraction)
-		    {
-			    float num2 = (__instance._closestFogWarp.UseFastFogFade() ? 1f : 0.2f);
-			    __instance._fogFraction = Mathf.MoveTowards(__instance._fogFraction, num, Time.deltaTime * num2);
-		    }
-		    else
-		    {
-			    __instance._fogFraction = num;
-		    }
-		    if (__instance._targetFogColorWarpVolume != __instance._closestFogWarp)
-		    {
-			    __instance._targetFogColorWarpVolume = __instance._closestFogWarp;
-			    __instance._startColorCrossfadeTime = Time.time;
-			    __instance._startCrossfadeColor = __instance._fogColor;
-		    }
-		    if (__instance._targetFogColorWarpVolume != null)
-		    {
-			    Color fogColor = __instance._targetFogColorWarpVolume.GetFogColor();
-			    if (__instance._fogFraction <= 0f)
-			    {
-				    __instance._fogColor = fogColor;
-			    }
-			    else
-			    {
-				    float t = Mathf.InverseLerp(__instance._startColorCrossfadeTime, __instance._startColorCrossfadeTime + 1f, Time.time);
-				    __instance._fogColor = Color.Lerp(__instance._startCrossfadeColor, fogColor, t);
-			    }
-                __instance._fogColor = new Color(__instance._fogColor.r, __instance._fogColor.g, __instance._fogColor.b);
-		    }
-		    if (__instance._playerEffectBubbleController != null)
-		    {
-			    __instance._playerEffectBubbleController.SetFogFade(__instance._fogFraction, __instance._fogColor);
-		    }
-		    if (__instance._shipLandingCamEffectBubbleController != null)
-		    {
-			    __instance._shipLandingCamEffectBubbleController.SetFogFade(__instance._fogFraction, __instance._fogColor);
-		    }
-
-            return false;
-        }
-
-
-        // FogWarpBubbleController.SetFogFade
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FogWarpEffectBubbleController), nameof(FogWarpEffectBubbleController.SetFogFade))]
-	    public static bool FogWarpBubbleController_SetFogFade(FogWarpEffectBubbleController __instance, float fogAlpha, Color fogColor)
-	    {
-		    if (__instance._effectBubbleRenderer.sharedMaterial != null)
-		    {
-			    Color value = fogColor;
-			    value.a = fogAlpha;
-			    __instance._matPropBlock.SetColor(__instance._propID_Color, value);
-			    __instance._effectBubbleRenderer.SetPropertyBlock(__instance._matPropBlock);
-		    }
-		    __instance._visible = __instance._effectBubbleRenderer.sharedMaterial != null && fogAlpha > 0f;
-		    if (__instance._targetCamera == null)
-		    {
-			    __instance._effectBubbleRenderer.enabled = __instance._visible;
-                Logger.Log($"Setting camera effect renderer to {__instance._visible}");
-		    }
-
-            // Logger.Log($"{__instance.gameObject.transform.GetPath()}        _visible: {__instance._visible}  set alpha to {fogAlpha}  and set color ot {fogColor}");
-
-            return false;
-	    }
-
-        
-        // note: I would just make this a one line postfix function, but CheckWarpProximity() does extra stuff that we really don't want to run twice
-        // so we have to completely override this function to support scaling ;-;
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FogWarpDetector), nameof(FogWarpDetector.FixedUpdate))]
-	    public static void FixedUpdate(FogWarpDetector __instance)
-	    {
-		    __instance._targetFogFraction = 0f;
-		    __instance._closestFogWarp = null;
-		    float num = float.PositiveInfinity;
-		    for (int i = 0; i < __instance._warpVolumes.Count; i++)
-		    {
-			    if (!__instance._warpVolumes[i].IsProbeOnly() || __instance._name == FogWarpDetector.Name.Probe)
-			    {
-				    FogWarpVolume fogWarpVolume = __instance._warpVolumes[i];
-				    float num2 = Mathf.Abs(fogWarpVolume.CheckWarpProximity(__instance)); 
-				    float b = Mathf.Clamp01(1f - Mathf.Abs(num2) / fogWarpVolume.GetFogThickness());
-				    __instance._targetFogFraction = Mathf.Max(__instance._targetFogFraction, b);
-				    if (num2 < num)
-				    {
-					    num = num2;
-					    __instance._closestFogWarp = fogWarpVolume;
-				    }
-			    }
-		    }
-	    }
-    }
-
     // TODO: in order to fix fog screen effect for scaling nodes, I need to replace all InnerFogWarpVolume and OuterFogWarpVolume instances with NHInner/OuterFogWarpVolume and on those two classes, implement GetFogThickness(){ return 50*scale; }}
     // TODO: StreamingHandler.SetUpStreaming() for all FogWarpEffectBubbleController objects
     // TODO: add the "don't see me" effect 
@@ -194,6 +83,24 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
+            // remove default vines
+            var geoBatchedGroup = geometry.FindChild("BatchedGroup");
+            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_1");
+            collider.transform.parent = geometry.transform;
+            GameObject.Destroy(geoBatchedGroup);
+
+            var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
+            var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
+            dimensionWalls.transform.parent = geometry.transform;
+            GameObject.Destroy(geoOtherComponentsGroup);
+
+            // fix some cull groups
+            volumes.GetComponent<SectorCollisionGroup>()._sector = sector;
+            volumes.FindChild("SunOverrideVolume").GetComponent<SunOverrideVolume>()._sector = sector;
+            effects.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorCullGroup>()._sector = sector;
+            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
+            
             // Set up rulesets
             var thrustRuleset = sector.gameObject.AddComponent<ThrustRuleset>();
             thrustRuleset._attachedBody = owRigidBody;
@@ -223,6 +130,19 @@ namespace NewHorizons.Builder.Body
             outerFogWarpVolume._sector = sector;
 
             PairExit(config.linksTo, outerFogWarpVolume);
+
+            // If the config says only certain entrances are allowed, enforce that
+            if (config.allowedEntrances != null)
+            {
+                var entrances = outerFogWarpVolume._exits;
+                var newEntrances = new List<SphericalFogWarpExit>();
+                foreach (var index in config.allowedEntrances)
+                {
+                    if(index is < 0 or > 5) continue;
+                    newEntrances.Add(entrances[index]);
+                }
+                outerFogWarpVolume._exits = newEntrances.ToArray();
+            }
 
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
@@ -254,10 +174,6 @@ namespace NewHorizons.Builder.Body
             cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
-
-            // fix the fog backdrop
-            atmo.GetComponent<SectorCullGroup>()._sector = sector;
-            atmo.GetComponent<SectorLightsCullGroup>()._sector = sector;
 
             // finalize
             atmo.SetActive(true);
