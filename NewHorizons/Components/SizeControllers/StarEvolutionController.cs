@@ -159,15 +159,18 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
                     supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                    supernova._surface._materials[0].SetFloat("_ColorTime", t);
                 }
                 else
                 {
                     _currentColour = _endColour;
+                    supernova._surface._materials[0].SetFloat("_ColorTime", 1);
                 }
             }
             else
             {
                 _currentColour = _startColour;
+                supernova._surface._materials[0].SetFloat("_ColorTime", 0);
             }
 
             if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
