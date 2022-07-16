@@ -36,6 +36,7 @@ namespace NewHorizons.Utility
                 var data = File.ReadAllBytes(path);
                 var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
                 texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.wrapMode = TextureWrapMode.Clamp; // this is apparently repeat by default
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
 
