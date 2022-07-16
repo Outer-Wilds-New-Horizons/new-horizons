@@ -20,12 +20,7 @@ namespace NewHorizons.Utility
             return _loadedTextures.ContainsKey(path);
         }
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename)
-        {
-            return GetTexture(mod, filename, true);
-        }
-
-        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps)
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true)
         {
             // Copied from OWML but without the print statement lol
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
