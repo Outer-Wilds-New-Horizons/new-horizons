@@ -275,7 +275,7 @@ namespace NewHorizons.Components.SizeControllers
                 _fog._fogTint = fogColour;
             }
 
-            if (_atmosphereRenderers != null && _atmosphereRenderers.Count() > 0)
+            if (_atmosphereRenderers != null)
             {
                 foreach (var lod in _atmosphereRenderers)
                 {
