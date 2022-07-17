@@ -45,6 +45,7 @@ namespace NewHorizons.Components.SizeControllers
         private Material _collapseEndSurfaceMaterial;
         private Material _startSurfaceMaterial;
         private Material _endSurfaceMaterial;
+        private Material _surfaceMaterial;
         private Texture _normalRamp;
         private Texture _collapseRamp;
 
@@ -62,7 +63,7 @@ namespace NewHorizons.Components.SizeControllers
 
         private Color _currentColour;
 
-        void Start()
+        private void Start()
         {
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
@@ -137,6 +138,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
+            _surfaceMaterial = supernova._surface._materials[0];
         }
 
         public void OnDestroy()
@@ -226,7 +228,17 @@ namespace NewHorizons.Components.SizeControllers
             if (_proxy != null) _proxy.StartCollapse();
         }
 
-        private void StartSupernova()
+        public void StopCollapse()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
+
+            _isCollapsing = false;
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
+
+            if (_proxy != null) _proxy.StopCollapse();
+        }
+
+        public void StartSupernova()
         {
             Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
 
@@ -236,6 +248,25 @@ namespace NewHorizons.Components.SizeControllers
             _supernovaStartTime = Time.time;
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+        }
+
+        public void StopSupernova()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
+
+            supernova.enabled = false;
+            _isSupernova = false;
+            if (atmosphere != null) atmosphere.SetActive(true);
+            if (_destructionVolume != null)
+            {
+                _destructionVolume._deathType = DeathType.Energy;
+                _destructionVolume.transform.localScale = Vector3.one;
+            }
+            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
+            gameObject.SetActive(true);
+            transform.localScale = Vector3.one;
+            supernova._surface._materials[0] = _surfaceMaterial;
+            supernova._surface.transform.localScale = Vector3.one;
         }
 
         protected new void FixedUpdate()
