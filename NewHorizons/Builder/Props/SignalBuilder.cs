@@ -103,6 +103,8 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
+            // Can happen if NH not initialized because we loaded into Eye first or smth
+            if (_customFrequencyNames == null) return null;
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
