@@ -56,6 +56,9 @@ namespace NewHorizons.Components.SizeControllers
         private float minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int ColorTime = Shader.PropertyToID("_ColorTime");
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
+        private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
 
         private Color _currentColour;
 
@@ -276,9 +279,9 @@ namespace NewHorizons.Components.SizeControllers
             {
                 foreach (var lod in _atmosphereRenderers)
                 {
-                    lod.material.SetFloat("_InnerRadius", CurrentScale);
-                    lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    lod.material.SetColor("_SkyColor", _currentColour);
+                    lod.material.SetFloat(InnerRadius, CurrentScale);
+                    lod.material.SetFloat(OuterRadius, CurrentScale * StarBuilder.OuterRadiusRatio);
+                    lod.material.SetColor(SkyColor, _currentColour);
                 }
             }
         }
