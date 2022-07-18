@@ -315,6 +315,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "default": "Cloud",
           "$ref": "#/definitions/CloudFluidType"
         },
         "hasLightning": {
@@ -420,6 +421,7 @@
         },
         "gravityFallOff": {
           "description": "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.",
+          "default": "Linear",
           "$ref": "#/definitions/GravityFallOff"
         },
         "groundSize": {
@@ -644,6 +646,7 @@
         },
         "type": {
           "description": "Type of fluid the funnel transfers",
+          "default": "Sand",
           "$ref": "#/definitions/FunnelType"
         }
       }
@@ -1101,6 +1104,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "Wall",
           "$ref": "#/definitions/NomaiTextType"
         },
         "xmlFile": {
@@ -1123,6 +1127,7 @@
         },
         "type": {
           "description": "The type of text to display.",
+          "default": "Adult",
           "$ref": "#/definitions/NomaiTextArcType"
         },
         "variation": {
@@ -1223,6 +1228,7 @@
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
+          "default": "Enter",
           "$ref": "#/definitions/RevealVolumeType"
         },
         "reveals": {
@@ -1317,6 +1323,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "SlideReel",
           "$ref": "#/definitions/SlideShowType"
         }
       }
@@ -1491,6 +1498,7 @@
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
+          "default": "Downwards",
           "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
@@ -1653,6 +1661,7 @@
         },
         "track": {
           "description": "The audio track of this audio volume",
+          "default": "Environment",
           "$ref": "#/definitions/AudioMixerTrackName"
         }
       }
