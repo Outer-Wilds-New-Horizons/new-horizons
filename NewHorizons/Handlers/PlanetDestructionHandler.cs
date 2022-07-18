@@ -92,9 +92,6 @@ namespace NewHorizons.Handlers
                         DisableBody(SearchUtilities.Find("FocalBody"), delete);
                         DisableBody(SearchUtilities.Find("SandFunnel_Body"), delete);
                         break;
-                    case AstroObject.Name.MapSatellite:
-                        DisableBody(SearchUtilities.Find("MapSatellite_Body"), delete);
-                        break;
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
                         // Might also prevent people from using their own jellyfish however
