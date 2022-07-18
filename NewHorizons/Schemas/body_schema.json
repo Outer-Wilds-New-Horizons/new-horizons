@@ -1650,8 +1650,52 @@
         "audio": {
           "type": "string",
           "description": "The radius of this audio volume"
+        },
+        "track": {
+          "description": "The audio track of this audio volume",
+          "$ref": "#/definitions/AudioMixerTrackName"
         }
       }
+    },
+    "AudioMixerTrackName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Undefined",
+        "Menu",
+        "Music",
+        "Environment",
+        "Environment_Unfiltered",
+        "EndTimes_SFX",
+        "Signal",
+        "Death",
+        "Player",
+        "Player_External",
+        "Ship",
+        "Map",
+        "EndTimes_Music",
+        "MuffleWhileRafting",
+        "MuffleIndoors",
+        "SlideReelMusic"
+      ],
+      "enum": [
+        "undefined",
+        "menu",
+        "music",
+        "environment",
+        "environmentUnfiltered",
+        "endTimesSfx",
+        "signal",
+        "death",
+        "player",
+        "playerExternal",
+        "ship",
+        "map",
+        "endTimesMusic",
+        "muffleWhileRafting",
+        "muffleIndoors",
+        "slideReelMusic"
+      ]
     },
     "SignalInfo": {
       "type": "object",
