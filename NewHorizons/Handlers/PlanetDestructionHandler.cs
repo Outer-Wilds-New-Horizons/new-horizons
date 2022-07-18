@@ -90,7 +90,7 @@ namespace NewHorizons.Handlers
                     case AstroObject.Name.CaveTwin:
                     case AstroObject.Name.TowerTwin:
                         DisableBody(SearchUtilities.Find("FocalBody"), delete);
-                        DisableBody(SearchUtilities.Find("SandFunnel_Body"), delete);
+                        DisableBody(SearchUtilities.Find("SandFunnel_Body", false), delete);
                         break;
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
