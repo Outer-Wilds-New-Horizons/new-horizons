@@ -34,6 +34,6 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Type of fluid the funnel transfers
         /// </summary>
-        [DefaultValue(FunnelType.Sand)] public FunnelType type = FunnelType.Sand;
+        [DefaultValue("sand")] public FunnelType type = FunnelType.Sand;
     }
 }
