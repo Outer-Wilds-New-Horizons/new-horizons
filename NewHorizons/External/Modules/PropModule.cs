@@ -741,6 +741,11 @@ namespace NewHorizons.External.Modules
             /// The radius of this audio volume
             /// </summary>
             public string audio;
+
+            /// <summary>
+            /// The audio track of this audio volume
+            /// </summary>
+            public OWAudioMixer.TrackName track = OWAudioMixer.TrackName.Environment;
         }
     }
 }

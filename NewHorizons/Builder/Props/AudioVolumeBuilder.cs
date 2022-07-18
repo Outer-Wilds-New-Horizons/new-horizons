@@ -27,6 +27,7 @@ namespace NewHorizons.Builder.Props
             var owAudioSource = go.AddComponent<OWAudioSource>();
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = true;
+            owAudioSource.SetTrack(info.track);
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();
