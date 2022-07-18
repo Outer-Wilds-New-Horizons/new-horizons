@@ -38,7 +38,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.
         /// </summary>
-        public GravityFallOff gravityFallOff = GravityFallOff.Linear;
+        [DefaultValue(GravityFallOff.Linear)] public GravityFallOff gravityFallOff = GravityFallOff.Linear;
 
         /// <summary>
         /// Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as

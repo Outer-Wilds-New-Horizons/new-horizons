@@ -248,7 +248,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            public TornadoType type = TornadoType.Downwards;
+            [DefaultValue(TornadoType.Downwards)] public TornadoType type = TornadoType.Downwards;
 
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.
@@ -409,7 +409,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
-            public RevealVolumeType revealOn = RevealVolumeType.Enter;
+            [DefaultValue(RevealVolumeType.Enter)] public RevealVolumeType revealOn = RevealVolumeType.Enter;
 
             /// <summary>
             /// A list of facts to reveal
@@ -489,7 +489,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            public NomaiTextType type = NomaiTextType.Wall;
+            [DefaultValue(NomaiTextType.Wall)] public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
             /// The relative path to the xml file for this object.
@@ -523,7 +523,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of text to display.
             /// </summary>
-            public NomaiTextArcType type = NomaiTextArcType.Adult;
+            [DefaultValue(NomaiTextArcType.Adult)] public NomaiTextArcType type = NomaiTextArcType.Adult;
 
             /// <summary>
             /// Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.
@@ -575,7 +575,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            public SlideShowType type = SlideShowType.SlideReel;
+            [DefaultValue(SlideShowType.SlideReel)] public SlideShowType type = SlideShowType.SlideReel;
         }
 
         [JsonObject]
@@ -745,7 +745,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The audio track of this audio volume
             /// </summary>
-            public AudioMixerTrackName track = AudioMixerTrackName.Environment;
+            [DefaultValue(AudioMixerTrackName.Environment)] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
         }
     }
 
