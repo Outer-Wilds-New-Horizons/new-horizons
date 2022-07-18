@@ -106,6 +106,7 @@ namespace NewHorizons.Builder.Props
             if (prefab == null) return null;
 
             GameObject prop = prefab.InstantiateInactive();
+            prop.name = prefab.name;
             prop.transform.parent = sector?.transform ?? planetGO.transform;
 
             StreamingHandler.SetUpStreaming(prop, sector);
