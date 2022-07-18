@@ -103,8 +103,6 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
-            // Can happen if NH not initialized because we loaded into Eye first or smth
-            if (_customFrequencyNames == null) return null;
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
@@ -167,7 +165,15 @@ namespace NewHorizons.Builder.Props
             source.rolloffMode = AudioRolloffMode.Custom;
 
             if (_customCurve == null)
-                _customCurve = SearchUtilities.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
+            {
+                _customCurve = new AnimationCurve(
+                    new Keyframe(0.0333f, 1f, -30.012f, -30.012f, 0.3333f, 0.3333f),
+                    new Keyframe(0.0667f, 0.5f, -7.503f, -7.503f, 0.3333f, 0.3333f),
+                    new Keyframe(0.1333f, 0.25f, -1.8758f, -1.8758f, 0.3333f, 0.3333f),
+                    new Keyframe(0.2667f, 0.125f, -0.4689f, -0.4689f, 0.3333f, 0.3333f),
+                    new Keyframe(0.5333f, 0.0625f, -0.1172f, -0.1172f, 0.3333f, 0.3333f),
+                    new Keyframe(1f, 0f, -0.0333f, -0.0333f, 0.3333f, 0.3333f));
+            }
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately
