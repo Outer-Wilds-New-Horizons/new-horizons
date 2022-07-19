@@ -1657,7 +1657,7 @@
         },
         "audio": {
           "type": "string",
-          "description": "The radius of this audio volume"
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
         "track": {
           "description": "The audio track of this audio volume",
