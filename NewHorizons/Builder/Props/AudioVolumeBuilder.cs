@@ -37,6 +37,7 @@ namespace NewHorizons.Builder.Props
 
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
+            audioVolume._triggerVolumeOverride = owTriggerVolume;
 
             go.SetActive(true);
 
