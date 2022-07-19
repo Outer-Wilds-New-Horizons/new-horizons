@@ -738,7 +738,7 @@ namespace NewHorizons.External.Modules
             public float radius;
 
             /// <summary>
-            /// The radius of this audio volume
+            /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string audio;
 
