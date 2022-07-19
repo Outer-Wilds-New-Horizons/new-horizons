@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.General
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = true;
+                alignment._usePhysicsToRotate = !config.Orbit.isStatic;
                 if (config.Orbit.alignmentAxis == null)
                 {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
