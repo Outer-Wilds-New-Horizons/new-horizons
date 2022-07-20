@@ -1071,6 +1071,18 @@
         "position": {
           "description": "Position of the geyser",
           "$ref": "#/definitions/MVector3"
+        },
+        "disableBubbles": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableShaft": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableSpout": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
         }
       }
     },
