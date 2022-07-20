@@ -23,7 +23,7 @@ namespace NewHorizons.Builder.Props
         // values are all nodes' warp controllers that link to a given dimension
         // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
         private static Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
-        private static Dictionary<string, List<SignalInfo>> _propogatedSignals = null;
+        private static Dictionary<string, List<SignalInfo>> _propagatedSignals = null;
 
         public static Dictionary<string, InnerFogWarpVolume> NamedNodes { get; private set; }
         public static Dictionary<BrambleNodeInfo, GameObject> BuiltBrambleNodes { get; private set; }
@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Props
         public static void Init()
         {
             _unpairedNodes = new();
-            _propogatedSignals = null;
+            _propagatedSignals = null;
             NamedNodes = new();
             BuiltBrambleNodes = new();
         }
@@ -88,7 +88,7 @@ namespace NewHorizons.Builder.Props
 
             // New Strategy (thanks Damian):
             // 1) Run Floyd-Warshall on the dimensions (where each dimension is a vertex and each node is an edge)
-            // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propogatedSignals[A]
+            // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propagatedSignals[A]
 
             var allDimensions = PlanetCreationHandler.allBodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
 
@@ -129,11 +129,11 @@ namespace NewHorizons.Builder.Props
             //
 
             // this dictionary lists all the signals a given node should have, depending on the dimension it links to
-            // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propogatedSignals["dimension1"]
-            _propogatedSignals = new Dictionary<string, List<SignalInfo>>();
+            // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propagatedSignals["dimension1"]
+            _propagatedSignals = new Dictionary<string, List<SignalInfo>>();
             foreach (var dimension in allDimensions)
             {
-                _propogatedSignals[dimension.name] = new();
+                _propagatedSignals[dimension.name] = new();
                 var dimensionIndex = dimensionNameToIndex[dimension.name];
 
                 foreach (var destinationDimension in allDimensions)
@@ -143,7 +143,7 @@ namespace NewHorizons.Builder.Props
                     var destinationIndex = dimensionNameToIndex[destinationDimension.name];
                     if (access[dimensionIndex, destinationIndex])
                     {
-                        _propogatedSignals[dimension.name].AddRange(destinationDimension.Props.signals);
+                        _propagatedSignals[dimension.name].AddRange(destinationDimension.Props.signals);
                     }
                 }
             }
@@ -289,8 +289,8 @@ namespace NewHorizons.Builder.Props
             }
 
             // Make signals
-            if (_propogatedSignals == null) PropagateSignals();
-            foreach (var signalConfig in _propogatedSignals[config.linksTo])
+            if (_propagatedSignals == null) PropagateSignals();
+            foreach (var signalConfig in _propagatedSignals[config.linksTo])
             {
                 var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
                 signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
