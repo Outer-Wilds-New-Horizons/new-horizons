@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Props
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
             geyserGO.name = "Geyser";
 
-            var pos = ((Vector3)info.position);
+            var pos = (Vector3)info.position;
 
             // Want half of it to be underground
             var length = pos.magnitude - 65;
