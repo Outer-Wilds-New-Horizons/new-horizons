@@ -80,7 +80,7 @@ namespace NewHorizons.Builder.Props
             return outerFogWarpVolume;
         }
 
-        private static void PropogateSignals()
+        private static void PropagateSignals()
         {
             // The purpose of this function is to determine which signals any given node should play, based on which dimension it links to
             // you know how the main dark bramble node, the one that forms the core of the planet, plays Feldspar's harmonica signal, even though Feldspar isn't in the dimension that the node links directly to?
@@ -289,7 +289,7 @@ namespace NewHorizons.Builder.Props
             }
 
             // Make signals
-            if (_propogatedSignals == null) PropogateSignals();
+            if (_propogatedSignals == null) PropagateSignals();
             foreach (var signalConfig in _propogatedSignals[config.linksTo])
             {
                 var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
