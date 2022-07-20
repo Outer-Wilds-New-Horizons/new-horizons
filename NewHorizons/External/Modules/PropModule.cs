@@ -208,6 +208,11 @@ namespace NewHorizons.External.Modules
             /// Position of the geyser
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// Disable the individual particle systems of the geyser
+            /// </summary>
+            public bool disableBubbles, disableShaft, disableSpout;
         }
 
         [JsonObject]

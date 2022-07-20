@@ -7,8 +7,7 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
         {
-            var original = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village");
-            GameObject geyserGO = original.InstantiateInactive();
+            var geyserGO = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive();
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
             geyserGO.name = "Geyser";
 
@@ -25,7 +24,9 @@ namespace NewHorizons.Builder.Props
             var up = planetGO.transform.TransformPoint(pos) - planetGO.transform.position;
             geyserGO.transform.rotation = Quaternion.FromToRotation(geyserGO.transform.up, up) * geyserGO.transform.rotation;
 
-            var controller = geyserGO.GetComponent<GeyserController>();
+            if (info.disableBubbles) geyserGO.FindChild("GeyserParticles/GeyserBubbles").SetActive(false);
+            if (info.disableShaft) geyserGO.FindChild("GeyserParticles/GeyserShaft").SetActive(false);
+            if (info.disableSpout) geyserGO.FindChild("GeyserParticles/GeyserSpout").SetActive(false);
 
             geyserGO.SetActive(true);
 
@@ -34,8 +35,8 @@ namespace NewHorizons.Builder.Props
             // Do this after awake
             Delay.FireOnNextUpdate(() => geyserFluidVolume._maxHeight = 1);
 
-            geyserFluidVolume.enabled = true;
-            geyserGO.transform.Find("FluidVolume_Geyser").GetComponent<CapsuleShape>().enabled = true;
+            geyserFluidVolume.enabled = true; // why do we enable this? idk
+            geyserFluidVolume.GetComponent<CapsuleShape>().enabled = true; // i think this is already enabled but wtv
         }
     }
 }
