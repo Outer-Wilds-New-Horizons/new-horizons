@@ -39,5 +39,10 @@ namespace NewHorizons.External.Modules
         /// The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.
         /// </summary>
         public float targetColliderRadius;
+
+        /// <summary>
+        /// Position that the reference frame relative to the object.
+        /// </summary>
+        public MVector3 localPosition;
     }
 }
