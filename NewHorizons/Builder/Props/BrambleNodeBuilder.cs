@@ -90,7 +90,7 @@ namespace NewHorizons.Builder.Props
             // 1) Run Floyd-Warshall on the dimensions (where each dimension is a vertex and each node is an edge)
             // 2) For each dimension A, if it's possible to reach dimension B, add dimension B's signals to the list propagatedSignals[A]
 
-            var allDimensions = PlanetCreationHandler.allBodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
+            var allDimensions = PlanetCreationHandler.Bodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
 
             //
             // Floyd Warshall
