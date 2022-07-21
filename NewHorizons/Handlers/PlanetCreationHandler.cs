@@ -273,7 +273,8 @@ namespace NewHorizons.Handlers
                     foreach (var childObj in transforms.Where(x => x.GetPath() == path))
                     {
                         flag = false;
-                        childObj.gameObject.SetActive(false);
+                        // idk why we wait here but we do
+                        Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
                     }
 
                     if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
