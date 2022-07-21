@@ -104,10 +104,7 @@ namespace NewHorizons.Builder.Body
         {
             var LODCubeSphere = new GameObject("LODCubeSphere");
 
-            Mesh mesh = CubeSphere.Build(resolution, heightMap, minHeight, maxHeight, stretch);
-
-            LODCubeSphere.AddComponent<MeshFilter>();
-            LODCubeSphere.GetComponent<MeshFilter>().mesh = mesh;
+            LODCubeSphere.AddComponent<MeshFilter>().mesh = CubeSphere.Build(resolution, heightMap, minHeight, maxHeight, stretch);
 
             var cubeSphereMR = LODCubeSphere.AddComponent<MeshRenderer>();
             var material = new Material(PlanetShader);
