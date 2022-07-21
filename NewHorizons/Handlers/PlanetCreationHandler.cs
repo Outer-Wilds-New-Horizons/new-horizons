@@ -260,13 +260,23 @@ namespace NewHorizons.Handlers
                 UpdateBodyOrbit(body, go);
             }
 
-            if (body.Config.removeChildren != null && body.Config.removeChildren.Length > 0)
+            if (body.Config.removeChildren != null)
             {
-                foreach (var child in body.Config.removeChildren)
+                var goPath = go.transform.GetPath();
+                var transforms = go.GetComponentsInChildren<Transform>(true);
+                foreach (var childPath in body.Config.removeChildren)
                 {
-                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
-                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    Delay.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{goPath}/{childPath}";
+
+                    var flag = true;
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    {
+                        flag = false;
+                        childObj.gameObject.SetActive(false);
+                    }
+
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
