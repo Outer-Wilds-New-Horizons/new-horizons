@@ -73,7 +73,7 @@ namespace NewHorizons.Builder.Body
 
                 LODGroup.SetLODs(new LOD[]
                 {
-                    new LOD(0.5f, new Renderer[] { level1 }),
+                    new LOD(0.33f, new Renderer[] { level1 }),
                     new LOD(0.0f, new Renderer[] { level2 })
                 });
 
