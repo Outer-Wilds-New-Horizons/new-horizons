@@ -41,7 +41,7 @@ namespace NewHorizons.External.Modules
         public float targetColliderRadius;
 
         /// <summary>
-        /// Position that the reference frame relative to the object.
+        /// Position of the reference frame relative to the object.
         /// </summary>
         public MVector3 localPosition;
     }
