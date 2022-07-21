@@ -35,6 +35,18 @@ namespace NewHorizons.Patches
 
             return true;
         }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(MindProjectorTrigger), nameof(MindProjectorTrigger.OnTriggerVolumeExit))]
+        private static bool MindProjectorTrigger_OnTriggerVolumeExit(MindProjectorTrigger __instance, GameObject hitObj)
+        {
+            var t = hitObj.GetComponent<VisionTorchTarget>();
+            if (t != null) //(hitObj.CompareTag("PrisonerDetector"))
+            {
+                __instance._mindProjector.OnProjectionComplete -= t.onSlidesComplete;
+            }
+            return true;
+        }
     }
 
 	[HarmonyPatch]

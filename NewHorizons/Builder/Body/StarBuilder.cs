@@ -24,6 +24,7 @@ namespace NewHorizons.Builder.Body
         public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod)
         {
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
+            var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
@@ -140,15 +141,10 @@ namespace NewHorizons.Builder.Body
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.WillExplode = starModule.goSupernova;
-            if (!string.IsNullOrEmpty(starModule.starRampTexture))
-            {
-                var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
-                controller.normalRamp = ramp;
-            }
+            controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
-                var ramp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
-                controller.collapseRamp = ramp;
+                controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
             }
             surfaceAudio.SetStarEvolutionController(controller);
             starGO.SetActive(true);

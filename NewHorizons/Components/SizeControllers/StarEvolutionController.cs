@@ -34,7 +34,7 @@ namespace NewHorizons.Components.SizeControllers
         private float _collapseStartSize;
         private float _collapseTimer;
 
-        public float collapseTime = 5f; // seconds
+        public float collapseTime = 10f; // seconds
         public float lifespan = 22f; // minutes
         private float _age;
 
@@ -45,6 +45,7 @@ namespace NewHorizons.Components.SizeControllers
         private Material _collapseEndSurfaceMaterial;
         private Material _startSurfaceMaterial;
         private Material _endSurfaceMaterial;
+        private Material _surfaceMaterial;
         private Texture _normalRamp;
         private Texture _collapseRamp;
 
@@ -55,10 +56,14 @@ namespace NewHorizons.Components.SizeControllers
         private float maxScale;
         private float minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
+        private static readonly int ColorTime = Shader.PropertyToID("_ColorTime");
+        private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
+        private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
+        private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
 
         private Color _currentColour;
 
-        void Start()
+        private void Start()
         {
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
@@ -133,6 +138,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
+            _surfaceMaterial = supernova._surface._materials[0];
         }
 
         public void OnDestroy()
@@ -159,15 +165,20 @@ namespace NewHorizons.Components.SizeControllers
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
                     supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                    supernova._surface._materials[0].SetFloat(ColorTime, t);
                 }
                 else
                 {
                     _currentColour = _endColour;
+                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 1);
+                    supernova._surface._materials[0].SetFloat(ColorTime, 1);
                 }
             }
             else
             {
                 _currentColour = _startColour;
+                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 0);
+                supernova._surface._materials[0].SetFloat(ColorTime, 0);
             }
 
             if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
@@ -217,7 +228,17 @@ namespace NewHorizons.Components.SizeControllers
             if (_proxy != null) _proxy.StartCollapse();
         }
 
-        private void StartSupernova()
+        public void StopCollapse()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
+
+            _isCollapsing = false;
+            supernova._surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
+
+            if (_proxy != null) _proxy.StopCollapse();
+        }
+
+        public void StartSupernova()
         {
             Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
 
@@ -227,6 +248,25 @@ namespace NewHorizons.Components.SizeControllers
             _supernovaStartTime = Time.time;
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+        }
+
+        public void StopSupernova()
+        {
+            Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
+
+            supernova.enabled = false;
+            _isSupernova = false;
+            if (atmosphere != null) atmosphere.SetActive(true);
+            if (_destructionVolume != null)
+            {
+                _destructionVolume._deathType = DeathType.Energy;
+                _destructionVolume.transform.localScale = Vector3.one;
+            }
+            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
+            gameObject.SetActive(true);
+            transform.localScale = Vector3.one;
+            supernova._surface._materials[0] = _surfaceMaterial;
+            supernova._surface.transform.localScale = Vector3.one;
         }
 
         protected new void FixedUpdate()
@@ -266,13 +306,13 @@ namespace NewHorizons.Components.SizeControllers
                 _fog._fogTint = fogColour;
             }
 
-            if (_atmosphereRenderers != null && _atmosphereRenderers.Count() > 0)
+            if (_atmosphereRenderers != null)
             {
                 foreach (var lod in _atmosphereRenderers)
                 {
-                    lod.material.SetFloat("_InnerRadius", CurrentScale);
-                    lod.material.SetFloat("_OuterRadius", CurrentScale * StarBuilder.OuterRadiusRatio);
-                    lod.material.SetColor("_SkyColor", _currentColour);
+                    lod.material.SetFloat(InnerRadius, CurrentScale);
+                    lod.material.SetFloat(OuterRadius, CurrentScale * StarBuilder.OuterRadiusRatio);
+                    lod.material.SetColor(SkyColor, _currentColour);
                 }
             }
         }

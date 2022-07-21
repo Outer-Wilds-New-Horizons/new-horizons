@@ -41,6 +41,13 @@ namespace NewHorizons.Builder.General
             RFV._isPrimaryVolume = true;
             RFV._isCloseRangeVolume = false;
 
+            if (module.localPosition != null)
+            {
+                rfGO.transform.localPosition = module.localPosition;
+                RV._localPosition = module.localPosition;
+                RV._useCenterOfMass = false;
+            }
+
             owrb.SetAttachedReferenceFrameVolume(RFV);
 
             if (!module.enabled) GameObject.Destroy(rfGO);

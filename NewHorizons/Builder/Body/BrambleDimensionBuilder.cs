@@ -85,7 +85,7 @@ namespace NewHorizons.Builder.Body
 
             // remove default vines
             var geoBatchedGroup = geometry.FindChild("BatchedGroup");
-            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_1");
+            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_0");
             collider.transform.parent = geometry.transform;
             GameObject.Destroy(geoBatchedGroup);
 
