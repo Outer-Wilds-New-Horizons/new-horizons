@@ -275,22 +275,25 @@ namespace NewHorizons.Handlers
 
             if (body.Config.removeChildren != null)
             {
-                var goPath = go.transform.GetPath();
-                var transforms = go.GetComponentsInChildren<Transform>(true);
-                foreach (var childPath in body.Config.removeChildren)
+                Delay.FireInNUpdates(() =>
                 {
-                    // Multiple children can have the same path so we delete all that match
-                    var path = $"{goPath}/{childPath}";
-
-                    var flag = true;
-                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    var goPath = go.transform.GetPath();
+                    var transforms = go.GetComponentsInChildren<Transform>(true);
+                    foreach (var childPath in body.Config.removeChildren)
                     {
-                        flag = false;
-                        childObj.gameObject.SetActive(false);
-                    }
+                        // Multiple children can have the same path so we delete all that match
+                        var path = $"{goPath}/{childPath}";
 
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
+                        var flag = true;
+                        foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                        {
+                            flag = false;
+                            childObj.gameObject.SetActive(false);
+                        }
+
+                        if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                    }
+                }, 2);
             }
 
             // Do stuff that's shared between generating new planets and updating old ones
