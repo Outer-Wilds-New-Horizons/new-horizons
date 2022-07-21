@@ -113,7 +113,7 @@ namespace NewHorizons.Handlers
             Logger.Log("Loading Deferred Bodies");
 
             // Make a copy of the next pass of bodies so that the array can be edited while we load them
-            toLoad = _nextPassBodies.Select(x => x).ToList();
+            toLoad = _nextPassBodies.ToList();
             while (_nextPassBodies.Count != 0)
             {
                 foreach (var body in toLoad)
