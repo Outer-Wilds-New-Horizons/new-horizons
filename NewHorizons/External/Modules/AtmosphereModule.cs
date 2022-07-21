@@ -112,7 +112,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            public CloudFluidType fluidType = CloudFluidType.Cloud;
+            [DefaultValue("cloud")] public CloudFluidType fluidType = CloudFluidType.Cloud;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.

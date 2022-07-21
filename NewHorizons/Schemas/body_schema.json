@@ -315,6 +315,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "default": "cloud",
           "$ref": "#/definitions/CloudFluidType"
         },
         "hasLightning": {
@@ -420,6 +421,7 @@
         },
         "gravityFallOff": {
           "description": "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.",
+          "default": "linear",
           "$ref": "#/definitions/GravityFallOff"
         },
         "groundSize": {
@@ -644,6 +646,7 @@
         },
         "type": {
           "description": "Type of fluid the funnel transfers",
+          "default": "sand",
           "$ref": "#/definitions/FunnelType"
         }
       }
@@ -1068,6 +1071,18 @@
         "position": {
           "description": "Position of the geyser",
           "$ref": "#/definitions/MVector3"
+        },
+        "disableBubbles": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableShaft": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableSpout": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
         }
       }
     },
@@ -1101,6 +1116,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "wall",
           "$ref": "#/definitions/NomaiTextType"
         },
         "xmlFile": {
@@ -1123,6 +1139,7 @@
         },
         "type": {
           "description": "The type of text to display.",
+          "default": "adult",
           "$ref": "#/definitions/NomaiTextArcType"
         },
         "variation": {
@@ -1223,6 +1240,7 @@
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
+          "default": "enter",
           "$ref": "#/definitions/RevealVolumeType"
         },
         "reveals": {
@@ -1317,6 +1335,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
         }
       }
@@ -1491,6 +1510,7 @@
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
+          "default": "downwards",
           "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
@@ -1649,9 +1669,54 @@
         },
         "audio": {
           "type": "string",
-          "description": "The radius of this audio volume"
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "track": {
+          "description": "The audio track of this audio volume",
+          "default": "environment",
+          "$ref": "#/definitions/AudioMixerTrackName"
         }
       }
+    },
+    "AudioMixerTrackName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Undefined",
+        "Menu",
+        "Music",
+        "Environment",
+        "Environment_Unfiltered",
+        "EndTimes_SFX",
+        "Signal",
+        "Death",
+        "Player",
+        "Player_External",
+        "Ship",
+        "Map",
+        "EndTimes_Music",
+        "MuffleWhileRafting",
+        "MuffleIndoors",
+        "SlideReelMusic"
+      ],
+      "enum": [
+        "undefined",
+        "menu",
+        "music",
+        "environment",
+        "environmentUnfiltered",
+        "endTimesSfx",
+        "signal",
+        "death",
+        "player",
+        "playerExternal",
+        "ship",
+        "map",
+        "endTimesMusic",
+        "muffleWhileRafting",
+        "muffleIndoors",
+        "slideReelMusic"
+      ]
     },
     "SignalInfo": {
       "type": "object",
@@ -1740,6 +1805,10 @@
           "type": "number",
           "description": "The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.",
           "format": "float"
+        },
+        "localPosition": {
+          "description": "Position of the reference frame relative to the object.",
+          "$ref": "#/definitions/MVector3"
         }
       }
     },

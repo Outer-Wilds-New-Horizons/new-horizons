@@ -365,7 +365,7 @@ namespace NewHorizons.Builder.Props
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
-            var variation = arcInfo == null ? arcInfo.variation : -1;
+            var variation = arcInfo != null ? arcInfo.variation : -1;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
