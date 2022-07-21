@@ -1805,6 +1805,10 @@
           "type": "number",
           "description": "The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.",
           "format": "float"
+        },
+        "localPosition": {
+          "description": "Position that the reference frame relative to the object.",
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
