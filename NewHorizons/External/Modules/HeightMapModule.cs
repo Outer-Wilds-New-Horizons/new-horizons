@@ -33,7 +33,6 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public string textureMap;
 
-        /*
         /// <summary>
         /// Resolution of the heightmap.
         /// Higher values means more detail but also more memory/cpu/gpu usage.
@@ -42,6 +41,5 @@ namespace NewHorizons.External.Modules
         [Range(1 * 4, 500 * 4)]
         [DefaultValue(51 * 4)]
         public int resolution = 51 * 4;
-        */
     }
 }
