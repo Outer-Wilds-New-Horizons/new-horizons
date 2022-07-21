@@ -97,7 +97,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_scrollPrefab == null) InitPrefabs();
 
-            var xmlPath = System.IO.File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xmlPath = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
 
             switch (info.type)
             {
