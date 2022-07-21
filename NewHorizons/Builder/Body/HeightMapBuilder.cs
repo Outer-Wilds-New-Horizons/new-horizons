@@ -64,8 +64,8 @@ namespace NewHorizons.Builder.Body
             cubeSphereMC.sharedMesh = level1.gameObject.GetComponent<MeshFilter>().mesh;
 
             if (useLOD)
-            { 
-                var level2Res = (int)Mathf.Clamp(resolution / 2f, 35, 100);
+            {
+                var level2Res = (int)Mathf.Clamp(resolution / 2f, 1 /*cube moment*/, 100);
                 var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch);
 
                 var LODGroup = cubeSphere.AddComponent<LODGroup>();
