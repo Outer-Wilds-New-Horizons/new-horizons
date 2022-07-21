@@ -1807,7 +1807,7 @@
           "format": "float"
         },
         "localPosition": {
-          "description": "Position that the reference frame relative to the object.",
+          "description": "Position of the reference frame relative to the object.",
           "$ref": "#/definitions/MVector3"
         }
       }
