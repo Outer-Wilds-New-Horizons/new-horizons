@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Components;
+using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -30,14 +31,14 @@ namespace NewHorizons.Builder.Props
         private static string _brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
         private static string _brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
 
-        public static void Init()
+        public static void Init(PlanetConfig[] dimensionConfigs)
         {
             _unpairedNodes.Clear();
             _propagatedSignals.Clear();
             namedNodes.Clear();
             builtBrambleNodes.Clear();
 
-            PropagateSignals();
+            PropagateSignals(dimensionConfigs);
         }
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
@@ -75,23 +76,21 @@ namespace NewHorizons.Builder.Props
 
         // Makes signals inside dimensions appear on the nodes as well
         // Runs Floyd-Warshall algorithm on dimensions and nodes.
-        private static void PropagateSignals()
+        private static void PropagateSignals(PlanetConfig[] dimensionConfigs)
         {
-            var allDimensions = PlanetCreationHandler.Bodies.Where(body => body?.Config?.Bramble?.dimension != null).Select(body => body.Config).ToList();
-
             // Access will be our final answer - if access[i, j], then nodes linking to dimension i should display all of dimension j's signals
-            var access = new bool[allDimensions.Count(), allDimensions.Count()];
+            var access = new bool[dimensionConfigs.Count(), dimensionConfigs.Count()];
 
             var dimensionNameToIndex = new Dictionary<string, int>();
-            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++)
+            for (int dimensionIndex = 0; dimensionIndex < dimensionConfigs.Count(); dimensionIndex++)
             {
-                dimensionNameToIndex[allDimensions[dimensionIndex].name] = dimensionIndex;
+                dimensionNameToIndex[dimensionConfigs[dimensionIndex].name] = dimensionIndex;
             }
 
             // Set up the direct links (ie, if dimension 0 contains a node that links to dimension 3, set access[0, 3] = true)
-            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++)
+            for (int dimensionIndex = 0; dimensionIndex < dimensionConfigs.Count(); dimensionIndex++)
             {
-                var dimension = allDimensions[dimensionIndex];
+                var dimension = dimensionConfigs[dimensionIndex];
                 if (dimension.Bramble.nodes == null) continue;
                 foreach (var node in dimension.Bramble.nodes)
                 {
@@ -102,27 +101,27 @@ namespace NewHorizons.Builder.Props
 
             // A node that links to dimension A should display all of dimension A's signals, so for the purposes of our function,
             // we need to say that dimension A links to dimension A
-            for (int dimensionIndex = 0; dimensionIndex < allDimensions.Count(); dimensionIndex++)
+            for (int dimensionIndex = 0; dimensionIndex < dimensionConfigs.Count(); dimensionIndex++)
             {
                 access[dimensionIndex, dimensionIndex] = true;
             }
 
             // The actual Floyd-Warshall - determine whether each pair of dimensions link indirectly (eg if A->B->C,
             // then after this step, access[A, C] = true)
-            for (int k = 0; k < allDimensions.Count(); k++)
-                for (int i = 0; i < allDimensions.Count(); i++)
-                    for (int j = 0; j < allDimensions.Count(); j++)
+            for (int k = 0; k < dimensionConfigs.Count(); k++)
+                for (int i = 0; i < dimensionConfigs.Count(); i++)
+                    for (int j = 0; j < dimensionConfigs.Count(); j++)
                         if (access[i, k] && access[k, j])
                             access[i, j] = true;
 
             // This dictionary lists all the signals a given node should have, depending on the dimension it links to
             // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propagatedSignals["dimension1"]
-            foreach (var dimension in allDimensions)
+            foreach (var dimension in dimensionConfigs)
             {
                 _propagatedSignals[dimension.name] = new();
                 var dimensionIndex = dimensionNameToIndex[dimension.name];
 
-                foreach (var destinationDimension in allDimensions)
+                foreach (var destinationDimension in dimensionConfigs)
                 {
                     if (destinationDimension.Props?.signals == null) continue;
 

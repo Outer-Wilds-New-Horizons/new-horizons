@@ -17,8 +17,6 @@ namespace NewHorizons.Handlers
 {
     public static class PlanetCreationHandler
     {
-        public static List<NewHorizonsBody> Bodies { get; private set; }
-
         private static List<NewHorizonsBody> _nextPassBodies = new List<NewHorizonsBody>();
 
         // Stock bodies being updated
@@ -33,8 +31,6 @@ namespace NewHorizons.Handlers
 
             _existingBodyDict = new();
             _customBodyDict = new();
-
-            Bodies = bodies;
 
             // Set up stars
             // Need to manage this when there are multiple stars

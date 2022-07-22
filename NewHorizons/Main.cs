@@ -273,11 +273,9 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
+                BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
-
-                // Relies on the list of bodies from PlanetCreationHandler so it must run after
-                BrambleNodeBuilder.Init();
 
                 VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
