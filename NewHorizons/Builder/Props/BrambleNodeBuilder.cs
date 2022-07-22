@@ -21,21 +21,21 @@ namespace NewHorizons.Builder.Props
         // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
         // values are all nodes' warp controllers that link to a given dimension
         // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
-        private static Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
-        private static Dictionary<string, List<SignalInfo>> _propagatedSignals = null;
+        private static readonly Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
+        private static readonly Dictionary<string, List<SignalInfo>> _propagatedSignals = new();
 
-        public static Dictionary<string, InnerFogWarpVolume> NamedNodes { get; private set; }
-        public static Dictionary<BrambleNodeInfo, GameObject> BuiltBrambleNodes { get; private set; }
+        public static readonly Dictionary<string, InnerFogWarpVolume> namedNodes = new();
+        public static readonly Dictionary<BrambleNodeInfo, GameObject> builtBrambleNodes = new();
 
         private static string _brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
         private static string _brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
 
         public static void Init()
         {
-            _unpairedNodes = new();
-            _propagatedSignals = null;
-            NamedNodes = new();
-            BuiltBrambleNodes = new();
+            _unpairedNodes.Clear();
+            _propagatedSignals.Clear();
+            namedNodes.Clear();
+            builtBrambleNodes.Clear();
 
             PropagateSignals();
         }
@@ -117,7 +117,6 @@ namespace NewHorizons.Builder.Props
 
             // This dictionary lists all the signals a given node should have, depending on the dimension it links to
             // ie, if a node links to "dimension1", then that node should spawn all of the signals in the list propagatedSignals["dimension1"]
-            _propagatedSignals = new Dictionary<string, List<SignalInfo>>();
             foreach (var dimension in allDimensions)
             {
                 _propagatedSignals[dimension.name] = new();
@@ -274,18 +273,21 @@ namespace NewHorizons.Builder.Props
             // Cleanup for dimension exits
             if (config.name != null)
             {
-                NamedNodes[config.name] = innerFogWarpVolume;
+                namedNodes[config.name] = innerFogWarpVolume;
                 BrambleDimensionBuilder.FinishPairingDimensionsForExitNode(config.name);
             }
 
             // Make signals
-            foreach (var signalConfig in _propagatedSignals[config.linksTo])
+            if (_propagatedSignals.TryGetValue(config.linksTo, out var connectedSignals))
             {
-                var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
-                signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
-                signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
-                signalGO.transform.position = brambleNode.transform.position;
-                signalGO.transform.parent = brambleNode.transform;
+                foreach (var signalConfig in connectedSignals)
+                {
+                    var signalGO = SignalBuilder.Make(go, sector, signalConfig, mod);
+                    signalGO.GetComponent<AudioSignal>()._identificationDistance = 0;
+                    signalGO.GetComponent<AudioSignal>()._sourceRadius = 1;
+                    signalGO.transform.position = brambleNode.transform.position;
+                    signalGO.transform.parent = brambleNode.transform;
+                }
             }
 
             // Done!
