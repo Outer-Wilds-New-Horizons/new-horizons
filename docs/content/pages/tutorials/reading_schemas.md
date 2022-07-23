@@ -39,7 +39,7 @@ Badges can also show stuff such as the default value, the minimum and maximum va
 
 ![The Base object on the celestial body schema]({{ "images/reading_schemas/body_schema_3.webp"|static }})
 
-Next let's look at an `object` withing our root `object`, let's use `Base` as the example.
+Next let's look at an `object` within our root `object`, let's use `Base` as the example.
 
 Here we can see it's similar to our root object, in that it doesn't allow additional properties.
 We can also see all of its properties listed out.

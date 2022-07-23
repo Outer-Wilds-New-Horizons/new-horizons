@@ -248,8 +248,8 @@ It can get annoying when you have to keep closing and opening the game over and 
 To enable it, head to your Mods menu and select New Horizons and check the box that says Debug, this will cause a "Reload Configs" option to appear in your pause menu which will reload changes from your filesystem.
 You may also notice blue and yellow logs start appearing in your console, this is New Horizons providing additional info on what it's currently doing, it can be helpful when you're trying to track down an issue.
 
-## More Objects
+## Modules
 
-Base, Atmosphere, and Orbit aren't all the objects (or "modules") there are to use, to learn about these other objects, you'll need to learn how to use the "Schemas" section of this site, which lists every possible property you can put in your files.
+Base, Atmosphere, and Orbit are all modules, which define the different aspects of your planet represented by objects
 
 **Next Up: [Reading Schemas]({{ "Reading Schemas"|route }})**
