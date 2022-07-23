@@ -12,15 +12,27 @@ namespace NewHorizons.Handlers
         {
             var skybox = SearchUtilities.Find("Skybox/Starfield");
 
-            if (system.Config.skybox?.destroyStarField ?? false)
+            if (system.Config.Skybox?.destroyStarField ?? false)
             {
                 Object.Destroy(skybox);
             }
 
+            if (system.Config.Skybox?.rightPath != null ||
+                system.Config.Skybox?.leftPath != null ||
+                system.Config.Skybox?.topPath != null ||
+                system.Config.Skybox?.bottomPath != null ||
+                system.Config.Skybox?.frontPath != null ||
+                system.Config.Skybox?.bottomPath != null)
+            {
+                SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
+            }
+
+#pragma warning disable CS0618, CS0612 // Type or member is obsolete
             if (system.Config.skybox?.assetBundle != null && system.Config.skybox?.path != null)
             {
                 SkyboxBuilder.Make(system.Config.skybox, system.Mod);
             }
+#pragma warning restore CS0618, CS0612 // Type or member is obsolete
 
             if (system.Config.enableTimeLoop)
             {

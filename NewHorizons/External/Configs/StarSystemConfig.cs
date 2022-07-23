@@ -43,7 +43,13 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Customize the skybox for this system
         /// </summary>
+        [Obsolete("skybox is deprecated, please use Skybox instead")]
         public SkyboxConfig skybox;
+
+        /// <summary>
+        /// Customize the skybox for this system
+        /// </summary>
+        public SkyboxModule Skybox;
 
         /// <summary>
         /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star
@@ -117,6 +123,7 @@ namespace NewHorizons.External.Configs
             public int[] z;
         }
 
+        [Obsolete("SkyboxConfig is deprecated, please use SkyboxModule instead")]
         [JsonObject]
         public class SkyboxConfig
         {
@@ -134,6 +141,52 @@ namespace NewHorizons.External.Configs
             /// Path to the material within the asset bundle specified by `assetBundle` to use for the skybox
             /// </summary>
             public string path;
+
+        }
+
+        [JsonObject]
+        public class SkyboxModule
+        {
+
+            /// <summary>
+            /// Whether to destroy the star field around the player
+            /// </summary>
+            public bool destroyStarField;
+
+            /// <summary>
+            /// Whether to use a cube for the skybox instead of a smooth sphere
+            /// </summary>
+            public bool useCube;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's positive X direction
+            /// </summary>
+            public string rightPath;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's negative X direction
+            /// </summary>
+            public string leftPath;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's positive Y direction
+            /// </summary>
+            public string topPath;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's negative Y direction
+            /// </summary>
+            public string bottomPath;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's positive Z direction
+            /// </summary>
+            public string frontPath;
+
+            /// <summary>
+            /// Relative filepath to the texture to use for the skybox's negative Z direction
+            /// </summary>
+            public string backPath;
         }
 
         /// <summary>
@@ -162,7 +215,10 @@ namespace NewHorizons.External.Configs
 
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
+#pragma warning disable CS0618 // Type or member is obsolete
             skybox = skybox == null ? otherConfig.skybox : skybox;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
             travelAudio = string.IsNullOrEmpty(travelAudio) ? otherConfig.travelAudio : travelAudio;
 
             // False by default so if one is true go true
@@ -187,6 +243,14 @@ namespace NewHorizons.External.Configs
 #pragma warning disable 612, 618
             if (!string.IsNullOrEmpty(travelAudioClip)) travelAudio = travelAudioClip;
             if (!string.IsNullOrEmpty(travelAudioFilePath)) travelAudio = travelAudioFilePath;
+            if (skybox != null)
+            {
+                if (Skybox == null)
+                {
+                    Skybox = new SkyboxModule();
+                    Skybox.destroyStarField = skybox.destroyStarField;
+                }
+            }
         }
     }
 }
