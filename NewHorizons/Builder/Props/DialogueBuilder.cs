@@ -4,6 +4,9 @@ using OWML.Common;
 using System.IO;
 using System.Xml;
 using UnityEngine;
+using NewHorizons.Utility;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
@@ -109,6 +112,12 @@ namespace NewHorizons.Builder.Props
         private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
+
+            if (character == null)
+            {
+                Logger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
+                return;
+            }
 
             // At most one of these should ever not be null
             var nomaiController = character.GetComponent<SolanumAnimController>();

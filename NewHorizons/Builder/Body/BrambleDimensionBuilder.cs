@@ -188,14 +188,14 @@ namespace NewHorizons.Builder.Body
 
         public static void PairExit(string exitName, OuterFogWarpVolume warpController)
         {
-            if (!BrambleNodeBuilder.NamedNodes.ContainsKey(exitName))
+            if (!BrambleNodeBuilder.namedNodes.ContainsKey(exitName))
             {
                 if (!_unpairedDimensions.ContainsKey(exitName)) _unpairedDimensions[exitName] = new();
                 _unpairedDimensions[exitName].Add(warpController);
                 return;
             }
             
-            warpController._linkedInnerWarpVolume = BrambleNodeBuilder.NamedNodes[exitName];
+            warpController._linkedInnerWarpVolume = BrambleNodeBuilder.namedNodes[exitName];
         }
 
         public static void FinishPairingDimensionsForExitNode(string nodeName)

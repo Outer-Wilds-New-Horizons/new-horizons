@@ -208,6 +208,11 @@ namespace NewHorizons.External.Modules
             /// Position of the geyser
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// Disable the individual particle systems of the geyser
+            /// </summary>
+            public bool disableBubbles, disableShaft, disableSpout;
         }
 
         [JsonObject]
@@ -248,7 +253,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            public TornadoType type = TornadoType.Downwards;
+            [DefaultValue("downwards")] public TornadoType type = TornadoType.Downwards;
 
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.
@@ -409,7 +414,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
-            public RevealVolumeType revealOn = RevealVolumeType.Enter;
+            [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
 
             /// <summary>
             /// A list of facts to reveal
@@ -489,7 +494,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            public NomaiTextType type = NomaiTextType.Wall;
+            [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
             /// The relative path to the xml file for this object.
@@ -523,7 +528,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of text to display.
             /// </summary>
-            public NomaiTextArcType type = NomaiTextArcType.Adult;
+            [DefaultValue("adult")] public NomaiTextArcType type = NomaiTextArcType.Adult;
 
             /// <summary>
             /// Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.
@@ -575,7 +580,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of object this is.
             /// </summary>
-            public SlideShowType type = SlideShowType.SlideReel;
+            [DefaultValue("slideReel")] public SlideShowType type = SlideShowType.SlideReel;
         }
 
         [JsonObject]
@@ -738,9 +743,35 @@ namespace NewHorizons.External.Modules
             public float radius;
 
             /// <summary>
-            /// The radius of this audio volume
+            /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
             public string audio;
+
+            /// <summary>
+            /// The audio track of this audio volume
+            /// </summary>
+            [DefaultValue("environment")] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
         }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum AudioMixerTrackName
+    {
+        [EnumMember(Value = @"undefined")] Undefined = 0,
+        [EnumMember(Value = @"menu")] Menu = 1,
+        [EnumMember(Value = @"music")] Music = 2,
+        [EnumMember(Value = @"environment")] Environment = 4,
+        [EnumMember(Value = @"environmentUnfiltered")] Environment_Unfiltered = 5,
+        [EnumMember(Value = @"endTimesSfx")] EndTimes_SFX = 8,
+        [EnumMember(Value = @"signal")] Signal = 16,
+        [EnumMember(Value = @"death")] Death = 32,
+        [EnumMember(Value = @"player")] Player = 64,
+        [EnumMember(Value = @"playerExternal")] Player_External = 65,
+        [EnumMember(Value = @"ship")] Ship = 128,
+        [EnumMember(Value = @"map")] Map = 256,
+        [EnumMember(Value = @"endTimesMusic")] EndTimes_Music = 512,
+        [EnumMember(Value = @"muffleWhileRafting")] MuffleWhileRafting = 1024,
+        [EnumMember(Value = @"muffleIndoors")] MuffleIndoors = 2048,
+        [EnumMember(Value = @"slideReelMusic")] SlideReelMusic = 4096,
     }
 }

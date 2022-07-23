@@ -1,5 +1,7 @@
 using NewHorizons.Builder.Body.Geometry;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -11,7 +13,7 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution)
+        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
             var deleteHeightmapFlag = false;
 
@@ -51,24 +53,35 @@ namespace NewHorizons.Builder.Body
             GameObject cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
-            cubeSphere.transform.rotation = Quaternion.Euler(90, 0, 0);
-
-            Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
-            Mesh mesh = CubeSphere.Build(resolution, heightMap, module.minHeight, module.maxHeight, stretch);
-
-            cubeSphere.AddComponent<MeshFilter>();
-            cubeSphere.GetComponent<MeshFilter>().mesh = mesh;
 
             if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
 
-            var cubeSphereMR = cubeSphere.AddComponent<MeshRenderer>();
-            var material = new Material(PlanetShader);
-            cubeSphereMR.material = material;
-            material.name = textureMap.name;
-            material.mainTexture = textureMap;
+            Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
+
+            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch);
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
-            cubeSphereMC.sharedMesh = mesh;
+            cubeSphereMC.sharedMesh = level1.gameObject.GetComponent<MeshFilter>().mesh;
+
+            if (useLOD)
+            {
+                var level2Res = (int)Mathf.Clamp(resolution / 2f, 1 /*cube moment*/, 100);
+                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch);
+
+                var LODGroup = cubeSphere.AddComponent<LODGroup>();
+                LODGroup.size = module.maxHeight;
+
+                LODGroup.SetLODs(new LOD[]
+                {
+                    new LOD(1 / 3f, new Renderer[] { level1 }),
+                    new LOD(0, new Renderer[] { level2 })
+                });
+
+                level1.name += "0";
+                level2.name += "1";
+
+                LODGroup.RecalculateBounds();
+            }
 
             var cubeSphereSC = cubeSphere.AddComponent<SphereCollider>();
             cubeSphereSC.radius = Mathf.Min(module.minHeight, module.maxHeight);
@@ -85,6 +98,24 @@ namespace NewHorizons.Builder.Body
 
             // Now that we've made the mesh we can delete the heightmap texture
             if (deleteHeightmapFlag) ImageUtilities.DeleteTexture(mod, module.heightMap, heightMap);
+        }
+
+        public static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch)
+        {
+            var LODCubeSphere = new GameObject("LODCubeSphere");
+
+            LODCubeSphere.AddComponent<MeshFilter>().mesh = CubeSphere.Build(resolution, heightMap, minHeight, maxHeight, stretch);
+
+            var cubeSphereMR = LODCubeSphere.AddComponent<MeshRenderer>();
+            var material = new Material(PlanetShader);
+            cubeSphereMR.material = material;
+            material.name = textureMap.name;
+            material.mainTexture = textureMap;
+
+            LODCubeSphere.transform.parent = root.transform;
+            LODCubeSphere.transform.localPosition = Vector3.zero;
+
+            return cubeSphereMR;
         }
     }
 }

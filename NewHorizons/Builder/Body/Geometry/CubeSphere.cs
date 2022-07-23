@@ -132,7 +132,7 @@ namespace NewHorizons.Builder.Body.Geometry
 
             float sampleX = heightMap.width * longitude / 360f;
             float sampleY = heightMap.height * latitude / 180f;
-            if (sampleX > heightMap.width) sampleX -= heightMap.width;
+            if (sampleX > heightMap.width) sampleX -= heightMap.width; // TODO: find out if this actually does anything
 
             float relativeHeight = heightMap.GetPixel((int)sampleX, (int)sampleY).r;
 

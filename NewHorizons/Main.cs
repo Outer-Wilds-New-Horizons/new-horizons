@@ -270,10 +270,10 @@ namespace NewHorizons
                 NewHorizonsData.Load();
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
-                BrambleNodeBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
+                BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
 

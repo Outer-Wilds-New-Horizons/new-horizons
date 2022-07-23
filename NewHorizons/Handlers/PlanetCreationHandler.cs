@@ -17,36 +17,20 @@ namespace NewHorizons.Handlers
 {
     public static class PlanetCreationHandler
     {
-        public static List<NewHorizonsBody> NextPassBodies = new List<NewHorizonsBody>();
+        private static List<NewHorizonsBody> _nextPassBodies = new List<NewHorizonsBody>();
 
-        // I literally forget what this is for
-        private static Dictionary<AstroObject, NewHorizonsBody> ExistingAOConfigs;
+        // Stock bodies being updated
+        private static Dictionary<NHAstroObject, NewHorizonsBody> _existingBodyDict;
 
-        private static Dictionary<NHAstroObject, NewHorizonsBody> _dict;
-        private static Dictionary<AstroObject,   NewHorizonsBody> _dimensions;
-
-        public static List<NewHorizonsBody> allBodies;
-
-        public static NewHorizonsBody GetNewHorizonsBody(AstroObject ao)
-        {
-            if (ao is NHAstroObject nhAO)
-            {
-                if (_dict.ContainsKey(nhAO)) return _dict[nhAO];
-            }
-
-            if (!_dimensions.ContainsKey(ao)) return null;
-            
-            return _dimensions[ao];
-        }
+        // Custom bodies being created
+        private static Dictionary<NHAstroObject, NewHorizonsBody> _customBodyDict;
 
         public static void Init(List<NewHorizonsBody> bodies)
         {
             Main.FurthestOrbit = 30000;
 
-            ExistingAOConfigs = new Dictionary<AstroObject, NewHorizonsBody>();
-            _dict = new Dictionary<NHAstroObject, NewHorizonsBody>();
-            _dimensions = new Dictionary<AstroObject, NewHorizonsBody>();
-            allBodies = bodies;
+            _existingBodyDict = new();
+            _customBodyDict = new();
 
             // Set up stars
             // Need to manage this when there are multiple stars
@@ -125,15 +109,15 @@ namespace NewHorizons.Handlers
             Logger.Log("Loading Deferred Bodies");
 
             // Make a copy of the next pass of bodies so that the array can be edited while we load them
-            toLoad = NextPassBodies.Select(x => x).ToList();
-            while (NextPassBodies.Count != 0)
+            toLoad = _nextPassBodies.ToList();
+            while (_nextPassBodies.Count != 0)
             {
                 foreach (var body in toLoad)
                 {
                     LoadBody(body, true);
                 }
-                toLoad = NextPassBodies;
-                NextPassBodies = new List<NewHorizonsBody>();
+                toLoad = _nextPassBodies;
+                _nextPassBodies = new List<NewHorizonsBody>();
             }
 
             Logger.Log("Done loading bodies");
@@ -179,7 +163,7 @@ namespace NewHorizons.Handlers
                                 var ao = quantumPlanet.GetComponent<NHAstroObject>();
 
                                 var rootSector = quantumPlanet.GetComponentInChildren<Sector>();
-                                var groundOrbit = _dict[ao].Config.Orbit;
+                                var groundOrbit = _customBodyDict[ao].Config.Orbit;
 
                                 quantumPlanet.groundState = new QuantumPlanet.State(rootSector, groundOrbit);
                                 quantumPlanet.states.Add(quantumPlanet.groundState);
@@ -188,7 +172,7 @@ namespace NewHorizons.Handlers
                                 visibilityTracker.transform.parent = existingPlanet.transform;
                                 visibilityTracker.transform.localPosition = Vector3.zero;
                                 var sphere = visibilityTracker.AddComponent<SphereShape>();
-                                sphere.radius = GetSphereOfInfluence(_dict[ao]);
+                                sphere.radius = GetSphereOfInfluence(_customBodyDict[ao]);
                                 var tracker = visibilityTracker.AddComponent<ShapeVisibilityTracker>();
                                 quantumPlanet._visibilityTrackers = new VisibilityTracker[] { tracker };
                             }
@@ -230,7 +214,7 @@ namespace NewHorizons.Handlers
                 if (body.Config.isQuantumState)
                 {
                     // If the ground state object isn't made yet do it later
-                    NextPassBodies.Add(body);
+                    _nextPassBodies.Add(body);
                 }
                 else
                 {
@@ -246,8 +230,7 @@ namespace NewHorizons.Handlers
                         var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot").transform;
                         planetObject.GetComponent<OWRigidbody>()._origParent = ao.IsDimension ? solarSystemRoot.Find("Dimensions") : solarSystemRoot;
 
-                        if (!ao.IsDimension) _dict.Add(ao, body);
-                        else _dimensions.Add(ao, body);
+                        _customBodyDict.Add(ao, body);
                     }
                     catch (Exception e)
                     {
@@ -273,13 +256,24 @@ namespace NewHorizons.Handlers
                 UpdateBodyOrbit(body, go);
             }
 
-            if (body.Config.removeChildren != null && body.Config.removeChildren.Length > 0)
+            if (body.Config.removeChildren != null)
             {
-                foreach (var child in body.Config.removeChildren)
+                var goPath = go.transform.GetPath();
+                var transforms = go.GetComponentsInChildren<Transform>(true);
+                foreach (var childPath in body.Config.removeChildren)
                 {
-                    // We purposefully use GameObject.Find here because we don't want to find inactive things.
-                    // If you were to try and disable two children with the same name, if we were finding inactive then we'd disable the first one twice
-                    Delay.FireInNUpdates(() => GameObject.Find(go.name + "/" + child)?.SetActive(false), 2);
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{goPath}/{childPath}";
+
+                    var flag = true;
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    {
+                        flag = false;
+                        // idk why we wait here but we do
+                        Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                    }
+
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
@@ -332,8 +326,8 @@ namespace NewHorizons.Handlers
             return go;
         }
 
-        public static GameObject GenerateStandardBody(NewHorizonsBody body, bool defaultPrimaryToSun = false) 
-        { 
+        public static GameObject GenerateStandardBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
+        {
             // Focal points are weird
             if (body.Config.FocalPoint != null) FocalPointBuilder.ValidateConfig(body.Config);
 
@@ -350,7 +344,7 @@ namespace NewHorizons.Handlers
                     }
                     else
                     {
-                        NextPassBodies.Add(body);
+                        _nextPassBodies.Add(body);
                         return null;
                     }
                 }
@@ -466,13 +460,10 @@ namespace NewHorizons.Handlers
 
             if (body.Config.HeightMap != null)
             {
-                /*
                 // resolution = tris on edge per face
                 // divide by 4 to account for all the way around the equator
                 var res = body.Config.HeightMap.resolution / 4;
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res);
-                */
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, 51);
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res, true);
             }
 
             if (body.Config.ProcGen != null)
@@ -491,7 +482,7 @@ namespace NewHorizons.Handlers
                 {
                     BrambleNodeBuilder.Make(go, sector, body.Config.Bramble.nodes, body.Mod);
                 }
-                
+
                 if (body.Config.Bramble.dimension != null)
                 {
                     BrambleNodeBuilder.FinishPairingNodesForDimension(body.Config.name, go.GetComponent<AstroObject>());
@@ -647,10 +638,10 @@ namespace NewHorizons.Handlers
                     var childAO = child.GetComponent<NHAstroObject>() ?? child.GetComponent<AstroObject>();
                     if (childAO != null)
                     {
-                        if (childAO is NHAstroObject && ExistingAOConfigs.ContainsKey(childAO))
+                        if (childAO is NHAstroObject childNHAO && _existingBodyDict.ContainsKey(childNHAO))
                         {
                             // If it's already an NH object we repeat the whole process else it doesn't work idk
-                            NextPassBodies.Add(ExistingAOConfigs[childAO]);
+                            _nextPassBodies.Add(_existingBodyDict[childNHAO]);
                         }
                         else
                         {
@@ -674,7 +665,7 @@ namespace NewHorizons.Handlers
                 // Have to register this new AO to the locator
                 Locator.RegisterAstroObject(newAO);
 
-                ExistingAOConfigs.Add(newAO, body);
+                _existingBodyDict.Add(newAO, body);
             }
             catch (Exception ex)
             {
