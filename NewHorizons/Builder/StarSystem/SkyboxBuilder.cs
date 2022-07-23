@@ -6,7 +6,7 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.StarSystem
 {
-    public class SkyboxBuilder
+    public static class SkyboxBuilder
     {
         private static readonly int _skyboxLayer = LayerMask.NameToLayer("Skybox");
         private static readonly Shader _unlitShader = Shader.Find("Unlit/Texture");
