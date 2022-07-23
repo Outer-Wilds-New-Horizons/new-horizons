@@ -8,8 +8,8 @@ namespace NewHorizons.Builder.StarSystem
 {
     public class SkyboxBuilder
     {
-        private static int _skyboxLayer = -1;
-        private static Shader _unlitShader;
+        private static readonly int _skyboxLayer = LayerMask.NameToLayer("Skybox");
+        private static readonly Shader _unlitShader = Shader.Find("Unlit/Texture");
 
         [Obsolete]
         public static void Make(StarSystemConfig.SkyboxConfig info, IModBehaviour mod)
@@ -39,9 +39,6 @@ namespace NewHorizons.Builder.StarSystem
             var bottomTex = ImageUtilities.GetTexture(mod, module.bottomPath);
             var frontTex = ImageUtilities.GetTexture(mod, module.frontPath);
             var backTex = ImageUtilities.GetTexture(mod, module.backPath);
-
-            if (_skyboxLayer == -1) _skyboxLayer = LayerMask.NameToLayer("Skybox");
-            if (!_unlitShader) _unlitShader = Shader.Find("Unlit/Texture");
 
             var mesh = BuildSkySphereFaceMesh(module.useCube ? 1 : 32);
 
