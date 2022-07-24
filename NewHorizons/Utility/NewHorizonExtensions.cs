@@ -158,11 +158,11 @@ namespace NewHorizons.Utility
             return transform.rotation * localRotation;
         }
 
-        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface) => Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)).Any(system => nomaiCoordinateInterface.CheckCoordinates(system.Key, system.Value));
+        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface) => Main.SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.Vessel.coords)).Any(system => nomaiCoordinateInterface.CheckCoordinates(system.Key, system.Value));
 
         public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface, out string selectedSystem)
         {
-            foreach (KeyValuePair<string, NomaiCoordinates> cbs in Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)))
+            foreach (KeyValuePair<string, NomaiCoordinates> cbs in Main.SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.Vessel.coords)))
             {
                 if (CheckCoordinates(nomaiCoordinateInterface, cbs.Key, cbs.Value))
                 {

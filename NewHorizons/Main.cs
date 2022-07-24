@@ -127,11 +127,14 @@ namespace NewHorizons
                 Config =
                 {
                     destroyStockPlanets = false,
-                    coords = new StarSystemConfig.NomaiCoordinates
+                    Vessel = new StarSystemConfig.VesselModule()
                     {
-                        x = new int[5]{ 0,3,2,1,5 },
-                        y = new int[5]{ 4,5,3,2,1 },
-                        z = new int[5]{ 4,1,2,5,0 }
+                        coords = new StarSystemConfig.NomaiCoordinates
+                        {
+                            x = new int[5]{ 0,3,2,1,5 },
+                            y = new int[5]{ 4,5,3,2,1 },
+                            z = new int[5]{ 4,1,2,5,0 }
+                        }
                     }
                 }
             };
@@ -139,11 +142,14 @@ namespace NewHorizons
             {
                 Config =
                 {
-                    coords = new StarSystemConfig.NomaiCoordinates
+                    Vessel = new StarSystemConfig.VesselModule()
                     {
-                        x = new int[3]{ 1,5,4 },
-                        y = new int[4]{ 3,0,1,4 },
-                        z = new int[6]{ 1,2,3,0,5,4 }
+                        coords = new StarSystemConfig.NomaiCoordinates
+                        {
+                            x = new int[3]{ 1,5,4 },
+                            y = new int[4]{ 3,0,1,4 },
+                            z = new int[6]{ 1,2,3,0,5,4 }
+                        }
                     }
                 }
             };
@@ -340,7 +346,7 @@ namespace NewHorizons
             else if (shouldWarpInFromVessel) VesselWarpHandler.TeleportToVessel();
             else FindObjectOfType<PlayerSpawner>().DebugWarp(SystemDict[_currentStarSystem].SpawnPoint);
 
-            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.coords != null).Select(x => x.Value).ToList());
+            VesselCoordinatePromptHandler.RegisterPrompts(SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(x => x.Value).ToList());
         }
 
         public void EnableWarpDrive()
