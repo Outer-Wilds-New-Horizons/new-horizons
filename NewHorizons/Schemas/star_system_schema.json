@@ -40,25 +40,9 @@
       "type": "string",
       "description": "The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
     },
-    "coords": {
-      "description": "Coordinates that the vessel can use to warp to your solar system.",
-      "$ref": "#/definitions/NomaiCoordinates"
-    },
-    "vesselPosition": {
-      "description": "The position in the solar system the vessel will warp to.",
-      "$ref": "#/definitions/MVector3"
-    },
-    "vesselRotation": {
-      "description": "Euler angles by which the vessel will be oriented.",
-      "$ref": "#/definitions/MVector3"
-    },
-    "warpExitPosition": {
-      "description": "The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.",
-      "$ref": "#/definitions/MVector3"
-    },
-    "warpExitRotation": {
-      "description": "Euler angles by which the warp exit will be oriented.",
-      "$ref": "#/definitions/MVector3"
+    "Vessel": {
+      "description": "Configure warping to this system with the vessel",
+      "$ref": "#/definitions/VesselModule"
     },
     "entryPositions": {
       "type": "array",
@@ -122,6 +106,32 @@
         "backPath": {
           "type": "string",
           "description": "Relative filepath to the texture to use for the skybox's negative Z direction"
+        }
+      }
+    },
+    "VesselModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coords": {
+          "description": "Coordinates that the vessel can use to warp to your solar system.",
+          "$ref": "#/definitions/NomaiCoordinates"
+        },
+        "vesselPosition": {
+          "description": "The position in the solar system the vessel will warp to.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "vesselRotation": {
+          "description": "Euler angles by which the vessel will be oriented.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "warpExitPosition": {
+          "description": "The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "warpExitRotation": {
+          "description": "Euler angles by which the warp exit will be oriented.",
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
