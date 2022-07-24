@@ -40,11 +40,13 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool mapRestricted;
 
+#pragma warning disable CS0618
         /// <summary>
         /// Customize the skybox for this system
         /// </summary>
         [Obsolete("skybox is deprecated, please use Skybox instead")]
         public SkyboxConfig skybox;
+#pragma warning restore CS0618
 
         /// <summary>
         /// Customize the skybox for this system
