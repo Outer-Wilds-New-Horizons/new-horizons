@@ -32,7 +32,7 @@ namespace NewHorizons.Handlers
             {
                 var systemName = system.UniqueID;
                 var fact = system.Config.factRequiredForWarp;
-                var nomaiCoords = system.Config.coords;
+                var nomaiCoords = system.Config.Vessel?.coords;
 
                 if (system.UniqueID == "EyeOfTheUniverse" || nomaiCoords == null) continue;
 

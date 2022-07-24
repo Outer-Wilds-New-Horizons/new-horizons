@@ -40,11 +40,13 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool mapRestricted;
 
+#pragma warning disable CS0618
         /// <summary>
         /// Customize the skybox for this system
         /// </summary>
         [Obsolete("skybox is deprecated, please use Skybox instead")]
         public SkyboxConfig skybox;
+#pragma warning restore CS0618
 
         /// <summary>
         /// Customize the skybox for this system
@@ -69,28 +71,23 @@ namespace NewHorizons.External.Configs
         public string travelAudio;
 
         /// <summary>
-        /// Coordinates that the vessel can use to warp to your solar system.
+        /// Configure warping to this system with the vessel
         /// </summary>
+        public VesselModule Vessel;
+
+        [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
 
-        /// <summary>
-        /// The position in the solar system the vessel will warp to.
-        /// </summary>
+        [Obsolete("vesselPosition is deprecated, please use Vessel.vesselPosition instead")]
         public MVector3 vesselPosition;
 
-        /// <summary>
-        /// Euler angles by which the vessel will be oriented.
-        /// </summary>
+        [Obsolete("vesselRotation is deprecated, please use Vessel.vesselRotation instead")]
         public MVector3 vesselRotation;
 
-        /// <summary>
-        /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
-        /// </summary>
+        [Obsolete("warpExitPosition is deprecated, please use Vessel.warpExitPosition instead")]
         public MVector3 warpExitPosition;
 
-        /// <summary>
-        /// Euler angles by which the warp exit will be oriented.
-        /// </summary>
+        [Obsolete("warpExitRotation is deprecated, please use Vessel.warpExitRotation instead")]
         public MVector3 warpExitRotation;
 
         /// <summary>
@@ -189,6 +186,35 @@ namespace NewHorizons.External.Configs
             public string backPath;
         }
 
+        [JsonObject]
+        public class VesselModule
+        {
+            /// <summary>
+            /// Coordinates that the vessel can use to warp to your solar system.
+            /// </summary>
+            public NomaiCoordinates coords;
+
+            /// <summary>
+            /// The position in the solar system the vessel will warp to.
+            /// </summary>
+            public MVector3 vesselPosition;
+
+            /// <summary>
+            /// Euler angles by which the vessel will be oriented.
+            /// </summary>
+            public MVector3 vesselRotation;
+
+            /// <summary>
+            /// The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.
+            /// </summary>
+            public MVector3 warpExitPosition;
+
+            /// <summary>
+            /// Euler angles by which the warp exit will be oriented.
+            /// </summary>
+            public MVector3 warpExitRotation;
+        }
+
         /// <summary>
         /// Makes sure they are all numbers are unique and between 0 and 5.
         /// </summary>
@@ -196,11 +222,11 @@ namespace NewHorizons.External.Configs
 
         public void FixCoordinates()
         {
-            if (coords != null)
+            if (Vessel?.coords != null)
             {
-                coords.x = FixAxis(coords.x);
-                coords.y = FixAxis(coords.y);
-                coords.z = FixAxis(coords.z);
+                Vessel.coords.x = FixAxis(Vessel.coords.x);
+                Vessel.coords.y = FixAxis(Vessel.coords.y);
+                Vessel.coords.z = FixAxis(Vessel.coords.z);
             }
 		}
 		
@@ -226,6 +252,8 @@ namespace NewHorizons.External.Configs
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
             startHere = startHere || otherConfig.startHere;
 
+            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
+
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
             initialReveal = Concatenate(initialReveal, otherConfig.initialReveal);
@@ -250,6 +278,18 @@ namespace NewHorizons.External.Configs
                     Skybox = new SkyboxModule();
                     Skybox.destroyStarField = skybox.destroyStarField;
                 }
+            }
+            if (coords != null || vesselPosition != null || vesselRotation != null || warpExitPosition != null || warpExitRotation != null)
+            {
+                if (Vessel == null)
+                {
+                    Vessel = new VesselModule();
+                }
+                Vessel.coords = Vessel.coords ?? coords;
+                Vessel.vesselPosition = Vessel.vesselPosition ?? vesselPosition;
+                Vessel.vesselRotation = Vessel.vesselRotation ?? vesselRotation;
+                Vessel.warpExitPosition = Vessel.warpExitPosition ?? warpExitPosition;
+                Vessel.warpExitRotation = Vessel.warpExitRotation ?? warpExitRotation;
             }
         }
     }

@@ -88,11 +88,11 @@ namespace NewHorizons.Handlers
             vesselOrbLocker.InitializeOrbs();
             vesselOrbLocker.AddLocks();
 
-            if (system.Config.vesselPosition != null)
-                vesselObject.transform.position = system.Config.vesselPosition;
+            if (system.Config.Vessel?.vesselPosition != null)
+                vesselObject.transform.position = system.Config.Vessel.vesselPosition;
 
-            if (system.Config.vesselRotation != null)
-                vesselObject.transform.eulerAngles = system.Config.vesselRotation;
+            if (system.Config.Vessel?.vesselRotation != null)
+                vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
 
             vesselOrbLocker.RemoveLocks();
             vesselOrbLocker.AddLockToWarpOrb();
@@ -142,11 +142,11 @@ namespace NewHorizons.Handlers
 
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
-            if (system.Config.warpExitPosition != null)
-                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.warpExitPosition;
+            if (system.Config.Vessel?.warpExitPosition != null)
+                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.Vessel.warpExitPosition;
 
-            if (system.Config.warpExitRotation != null)
-                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.warpExitRotation;
+            if (system.Config.Vessel?.warpExitRotation != null)
+                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
 
