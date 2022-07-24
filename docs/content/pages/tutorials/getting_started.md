@@ -72,7 +72,7 @@ All JSON files start out with an `object`, or a set of key value mappings, for e
 }
 ```
 
-Those braces (`{}`) denote an object, and by doing `"name": "Jim"` we're saying that the name of this person is Jim
+Those braces (`{}`) denote an object, and by doing `"name": "Jim"` we're saying that the name of this person is Jim;
 `"name"` is the key, and `"Jim"` is the value.
 
 Objects can have multiple keys as well, as long as you separate them by commas:
