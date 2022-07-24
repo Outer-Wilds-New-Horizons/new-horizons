@@ -5,30 +5,15 @@ Sort_Priority: 80
 
 # Planet Generation
 
-The first thing you'll need to create on a planet is its surface, this can be done in a variety of ways
+This guide covers some aspects of generating your planet, a lot of stuff is already explained in [the celestial body schema]({{ "Celestial Body Schema"|route }}).
 
-## Surface
-
-Ground of the planet
-
-### Ground Size
-
-`groundSize` is the absolute simplest way to make a planet's surface, you simply specify a radius and New Horizons will make a sphere for you.
-
-```json
-{
-    "name": "My Cool Planet",
-    "Base": {
-        "groundSize": 100
-    }
-}
-```
-
-### Heightmaps
+## Heightmaps
 
 Heightmaps are a way to generate unique terrain on your planet. First you specify a maximum and minimum height, and then specify a [heightMap]({{ "Celestial Body Schema"|route }}#HeightMap_heightMap) image. The more white a section of that image is, the closer to `maxHeight` that part of the terrain will be. Finally, you specify a `textureMap` which is an image that gets applied to the terrain.
 
-<!-- TODO: ADD HEIGHTMAP EXAMPLES -->
+Here's an example heightmap or earth from the Real Solar System addon.
+
+![Earth's Heightmap]({{ "images/planet_gen/earth_heightmap.webp"|static }})
 
 ```json
 {
@@ -103,7 +88,7 @@ This makes the second planet a quantum state of the first, anything you specify 
 }
 ```
 
-## Barycenter (Focal Point)
+## Barycenters (Focal Points)
 
 To create a binary system of planets (like ash twin and ember twin), first create a config with `FocalPoint` set
 

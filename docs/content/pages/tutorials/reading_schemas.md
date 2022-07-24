@@ -52,6 +52,12 @@ Now let's take a look over at [removeChildren]({{ "Celestial Body Schema"|route 
 
 Here we can see that the type is an `array`, and each item in this array must be a `string`
 
+## Enum Properties
+
+Enum properties simply mean that they must be of one of the values shown, for example [Ring fluid type]({{ "Celestial Body Schema"|route }}#Ring_fluidType) has to be one of these values.
+
+![The enum values of fluidType]({{ "images/reading_schemas/body_schema_5.webp"|static }})
+
 ## Some Vocabulary
 
 - GameObject: Essentially just any object in, well, the game. You can view these object in a tree-like structure with the [Unity Explorer](https://outerwildsmods.com/mods/unityexplorer) mod. Every GameObject has a path, which is sort of like a file path in that it's a list of parent GameObjects seperated by forward slashes followed by the GameObject's name.
@@ -75,4 +81,4 @@ There are other schemas available, some are for JSON, and some are for XML.
 
 Now that you know how to read the schema pages, you can understand the rest of this site.  A lot of the other tutorials here will often tell you to take a look at schemas to explain what certain properties do.
 
-**Next Up: [Planet Generation]({{ "Planet Generation"|route }})**
+**Next Up: [Creating An Addon]({{ "Creating An Addon"|route }})**
