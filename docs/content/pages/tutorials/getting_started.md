@@ -19,7 +19,7 @@ To get started, navigate to your mod manager and click the ⋮ symbol, then sele
 
 ![Select "Show in explorer"]({{ "images/getting_started/mod_manager_show_in_explorer.webp"|static }})
 
-Now, in explorer and create a new folder named "planets".  As the name suggests, New Horizons will search the files in this folder for planets to generate.
+Now, create a new folder named "planets".  As the name suggests, New Horizons will search the files in this folder for planets to generate.
 
 ## Making Your First Planet
 
@@ -64,7 +64,7 @@ It's a common way to convey data in many programs.
 
 ## Understanding JSON
 
-All JSON files start out with an `object`, or a set of key value mappings, for example is we represent a person as JSON it might look like:
+All JSON files start out with an `object`, or a set of key value mappings, for example if we represent a person as JSON it might look like:
 
 ```json
 {
@@ -72,7 +72,7 @@ All JSON files start out with an `object`, or a set of key value mappings, for e
 }
 ```
 
-Those braces (`{}`) denote an object, and by doing `"name": "Jim"` we're saying that the name of this object (in this case person) is Jim
+Those braces (`{}`) denote an object, and by doing `"name": "Jim"` we're saying that the name of this person is Jim
 `"name"` is the key, and `"Jim"` is the value.
 
 Objects can have multiple keys as well, as long as you separate them by commas:
@@ -84,10 +84,10 @@ Objects can have multiple keys as well, as long as you separate them by commas:
 }
 ```
 
-But wait! why is `Jim` in quotation marks while `23` isn't? that's because of a little something called data types. 
+But wait! why is `Jim` in quotation marks while `23` isn't? that's because of something called data types. 
 Each value has a datatype, in this case `"Jim"` is a `string`, because it represents a *string* of characters.
 Age is a `number`, it represents a numerical value.  If we put 23 in quotation marks, its data type switches from a number to a string.
-And if we remove the quotation marks from `"Jim"` we get a syntax error.  Datatypes are a common source of errors, which is why we recommend using an editor like VSCode.
+And if we remove the quotation marks from `"Jim"` we get a syntax error (a red underline).  Datatypes are a common source of errors, which is why we recommend using an editor like VSCode.
 
 ### JSON Data Types
 
@@ -95,7 +95,7 @@ Here's a list of data types you'll use when making your addons:
 
 #### String
 
-A string of characters surrounded in quotation marks
+A set of characters surrounded in quotation marks
 
 ```json
 "Im a string!"
@@ -117,15 +117,19 @@ A numerical value, can be negative and have decimals, **not** surrounded in quot
 
 #### Boolean
 
-A `true` or `false` value, think of it like an on or off switch
+A `true` or `false` value, think of it like an on or off switch, also not surrounded in quotation marks
 
 ```json
 true
 ```
 
+```json
+false
+```
+
 #### Array
 
-A set of values, values can be of any data type. Items are seperated by commas
+A set of values, values can be of any data type. Items are seperated by commas.
 
 ```json
 [23, 45, 56]
@@ -250,6 +254,6 @@ You may also notice blue and yellow logs start appearing in your console, this i
 
 ## Modules
 
-Base, Atmosphere, and Orbit are all modules, which define the different aspects of your planet represented by objects
+Base, Atmosphere, and Orbit are all modules, which define the different aspects of your planet, modules are represented by JSON objects
 
 **Next Up: [Reading Schemas]({{ "Reading Schemas"|route }})**
