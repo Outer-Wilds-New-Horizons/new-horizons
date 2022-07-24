@@ -10,11 +10,9 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-            var skybox = SearchUtilities.Find("Skybox/Starfield");
-
             if (system.Config.Skybox?.destroyStarField ?? false)
             {
-                Object.Destroy(skybox);
+                Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
             }
 
             if (system.Config.Skybox?.rightPath != null ||
