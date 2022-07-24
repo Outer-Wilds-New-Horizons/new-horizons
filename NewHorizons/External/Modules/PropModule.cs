@@ -462,7 +462,9 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"recorder")] Recorder = 4,
                 
-                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5
+                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
+
+                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6
             }
 
             /// <summary>

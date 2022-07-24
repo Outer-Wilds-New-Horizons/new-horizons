@@ -18,6 +18,7 @@ namespace NewHorizons.Builder.Props
         private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
+        private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
@@ -79,6 +80,10 @@ namespace NewHorizons.Builder.Props
             _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive();
             _computerPrefab.name = "Prefab_NOM_Computer";
             _computerPrefab.transform.rotation = Quaternion.identity;
+
+            _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive();
+            _preCrashComputerPrefab.name = "Prefab_NOM_Vessel_Computer";
+            _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
 
             _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive();
             _cairnPrefab.name = "Prefab_NOM_Cairn";
@@ -193,6 +198,35 @@ namespace NewHorizons.Builder.Props
                         computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
+                        computer.SetSector(sector);
+
+                        computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
+                        computer._nomaiTextAsset = new TextAsset(xmlPath);
+                        computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
+                        AddTranslation(xmlPath);
+
+                        // Make sure the computer model is loaded
+                        StreamingHandler.SetUpStreaming(computerObject, sector);
+
+                        computerObject.SetActive(true);
+                        conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
+                        break;
+                    }
+                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
+                    {
+                        var computerObject = _preCrashComputerPrefab.InstantiateInactive();
+
+                        computerObject.transform.parent = sector?.transform ?? planetGO.transform;
+                        computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+                        var up = computerObject.transform.position - planetGO.transform.position;
+                        if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
+                        computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
+
+                        // Move it slightly up more
+                        computerObject.transform.position += up.normalized * 0.1f;
+
+                        var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
 
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
