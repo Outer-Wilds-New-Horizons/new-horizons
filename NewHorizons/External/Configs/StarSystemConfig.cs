@@ -40,14 +40,6 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public bool mapRestricted;
 
-#pragma warning disable CS0618
-        /// <summary>
-        /// Customize the skybox for this system
-        /// </summary>
-        [Obsolete("skybox is deprecated, please use Skybox instead")]
-        public SkyboxConfig skybox;
-#pragma warning restore CS0618
-
         /// <summary>
         /// Customize the skybox for this system
         /// </summary>
@@ -118,27 +110,6 @@ namespace NewHorizons.External.Configs
             [MinLength(2)]
             [MaxLength(6)]
             public int[] z;
-        }
-
-        [Obsolete("SkyboxConfig is deprecated, please use SkyboxModule instead")]
-        [JsonObject]
-        public class SkyboxConfig
-        {
-            /// <summary>
-            /// Path to the Unity asset bundle to load the skybox material from
-            /// </summary>
-            public string assetBundle;
-
-            /// <summary>
-            /// Whether to destroy the star field around the player
-            /// </summary>
-            public bool destroyStarField;
-
-            /// <summary>
-            /// Path to the material within the asset bundle specified by `assetBundle` to use for the skybox
-            /// </summary>
-            public string path;
-
         }
 
         [JsonObject]
@@ -241,9 +212,6 @@ namespace NewHorizons.External.Configs
 
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;
-#pragma warning disable CS0618 // Type or member is obsolete
-            skybox = skybox == null ? otherConfig.skybox : skybox;
-#pragma warning restore CS0618 // Type or member is obsolete
             Skybox = Skybox == null ? otherConfig.Skybox : Skybox;
             travelAudio = string.IsNullOrEmpty(travelAudio) ? otherConfig.travelAudio : travelAudio;
 
@@ -271,14 +239,6 @@ namespace NewHorizons.External.Configs
 #pragma warning disable 612, 618
             if (!string.IsNullOrEmpty(travelAudioClip)) travelAudio = travelAudioClip;
             if (!string.IsNullOrEmpty(travelAudioFilePath)) travelAudio = travelAudioFilePath;
-            if (skybox != null)
-            {
-                if (Skybox == null)
-                {
-                    Skybox = new SkyboxModule();
-                    Skybox.destroyStarField = skybox.destroyStarField;
-                }
-            }
             if (coords != null || vesselPosition != null || vesselRotation != null || warpExitPosition != null || warpExitRotation != null)
             {
                 if (Vessel == null)

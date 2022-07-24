@@ -11,18 +11,6 @@ namespace NewHorizons.Builder.StarSystem
         private static readonly int _skyboxLayer = LayerMask.NameToLayer("Skybox");
         private static readonly Shader _unlitShader = Shader.Find("Unlit/Texture");
 
-        [Obsolete]
-        public static void Make(StarSystemConfig.SkyboxConfig info, IModBehaviour mod)
-        {
-            Logger.Log("Building Skybox");
-            var skyBoxMaterial = AssetBundleUtilities.Load<Material>(info.assetBundle, info.path, mod);
-            RenderSettings.skybox = skyBoxMaterial;
-            foreach (var camera in Resources.FindObjectsOfTypeAll<OWCamera>())
-            {
-                camera.clearFlags = CameraClearFlags.Skybox;
-            }
-        }
-
         public static void Make(StarSystemConfig.SkyboxModule module, IModBehaviour mod)
         {
             Logger.Log("Building Skybox");

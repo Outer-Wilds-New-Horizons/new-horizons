@@ -27,13 +27,6 @@ namespace NewHorizons.Handlers
                 SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
             }
 
-#pragma warning disable CS0618, CS0612 // Type or member is obsolete
-            if (system.Config.skybox?.assetBundle != null && system.Config.skybox?.path != null)
-            {
-                SkyboxBuilder.Make(system.Config.skybox, system.Mod);
-            }
-#pragma warning restore CS0618, CS0612 // Type or member is obsolete
-
             if (system.Config.enableTimeLoop)
             {
                 var timeLoopController = new GameObject("TimeLoopController");
