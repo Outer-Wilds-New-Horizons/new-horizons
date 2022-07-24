@@ -12,7 +12,7 @@ This is the official documentation for [New Horizons](https://github.com/xen-42/
 
 ## Getting Started
 
-For a guide on getting started an getting familiar with New Horizons, go to the [Getting Started]({{ "Getting Started"|route }}) page.
+For a guide on getting started with New Horizons, go to the [Getting Started]({{ "Getting Started"|route }}) page.
 
 ## Helpful Resources
 
