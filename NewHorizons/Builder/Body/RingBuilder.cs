@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]:\n{ex}");
             }
 
             sfv._fluidType = fluidType;
@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Ring texture:\n{e}");
                 return null;
             }
 

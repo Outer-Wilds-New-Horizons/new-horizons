@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]:\n{ex}");
             }
 
             fluidCLFV._fluidType = fluidType;
@@ -159,7 +159,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}], {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}]:\n{e}");
                 return null;
             }
 

@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load HeightMap textures, {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load HeightMap textures:\n{e}");
                 return;
             }
 

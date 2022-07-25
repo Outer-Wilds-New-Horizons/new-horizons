@@ -49,7 +49,7 @@ namespace NewHorizons.Utility
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir} : {e.Message}");
+                Logger.LogError($"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir}:\n{e}");
                 return null;
             }
 

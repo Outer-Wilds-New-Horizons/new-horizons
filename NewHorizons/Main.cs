@@ -318,7 +318,7 @@ namespace NewHorizons
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
             }
             else
@@ -441,7 +441,7 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError($"{ex.Message}, {ex.StackTrace}");
+                Logger.LogError(ex.ToString());
             }
         }
 
@@ -512,7 +512,7 @@ namespace NewHorizons
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error encounter when loading {relativePath}: {e.Message} {e.StackTrace}");
+                Logger.LogError($"Error encounter when loading {relativePath}:\n{e}");
             }
 
             return body;

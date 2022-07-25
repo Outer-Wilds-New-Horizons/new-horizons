@@ -45,7 +45,7 @@ namespace NewHorizons.Utility
             catch (Exception ex)
             {
                 // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
-                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
             }
         }
