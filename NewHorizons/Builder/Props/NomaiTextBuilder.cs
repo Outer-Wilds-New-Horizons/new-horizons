@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Props
             _computerPrefab.name = "Prefab_NOM_Computer";
             _computerPrefab.transform.rotation = Quaternion.identity;
 
-            _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive();
+            _preCrashComputerPrefab = SearchUtilities.Find("DB_EscapePodDimension_Body/Sector_EscapePodDimension/Sector_EscapePodBody/Interactables_EscapePodBody/Prefab_NOM_Vessel_Computer").InstantiateInactive();
             _preCrashComputerPrefab.name = "Prefab_NOM_Vessel_Computer";
             _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
 
