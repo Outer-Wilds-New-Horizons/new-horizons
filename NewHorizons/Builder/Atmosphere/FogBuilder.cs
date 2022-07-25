@@ -44,9 +44,12 @@ namespace NewHorizons.Builder.Atmosphere
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
             PFC.fogColorRampTexture = colorRampTexture;
             PFC.fogColorRampIntensity = 1f;
-            PFC.fogTint = atmo.fogTint.ToColor();
+            if (atmo.fogTint != null)
+            {
+                PFC.fogTint = atmo.fogTint.ToColor();
 
-            MR.material.SetColor(Tint, atmo.fogTint.ToColor());
+                MR.material.SetColor(Tint, atmo.fogTint.ToColor());
+            }
             MR.material.SetFloat(Radius, atmo.fogSize);
             MR.material.SetFloat(Density, atmo.fogDensity);
             MR.material.SetFloat(DensityExponent, 1);
