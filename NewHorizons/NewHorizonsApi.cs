@@ -127,7 +127,7 @@ namespace NewHorizons
                 insideCloak = insideCloak,
                 name = name,
                 onlyAudibleToScope = onlyAudibleToScope,
-                position = MVector3.zero,
+                position = Vector3.zero,
                 reveals = reveals,
                 sourceRadius = sourceRadius
             };
