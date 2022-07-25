@@ -28,7 +28,7 @@ namespace NewHorizons.VoiceActing
                 var folder = $"{mod.ModHelper.Manifest.ModFolderPath}voicemod";
                 if (!Directory.Exists(folder)) {
                     // Fallback to PascalCase bc it used to be like that
-                    folder = $"{mod.ModHelper.Manifest.ModFolderPath}VoiceMod"
+                    folder = $"{mod.ModHelper.Manifest.ModFolderPath}VoiceMod";
                 }
                 if (Directory.Exists(folder))
                 {
