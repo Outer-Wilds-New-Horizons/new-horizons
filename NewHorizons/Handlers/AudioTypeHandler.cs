@@ -30,7 +30,18 @@ namespace NewHorizons.Handlers
             Logger.LogVerbose($"Adding all custom AudioTypes to the library");
 
             var library = Locator.GetAudioManager()._libraryAsset;
-            library.audioEntries = library.audioEntries.Concat(_audioEntries).ToArray();
+
+            foreach (var entry in _audioEntries)
+            {
+                try
+                {
+                    library.audioEntries = library.audioEntries.Append(entry).ToArray();
+                }
+                catch(Exception ex)
+                {
+                    Logger.LogError($"Couldn't add audio entry {entry.clips[0].name} to libary: {ex}");
+                }
+            }
 
             Locator.GetAudioManager()._audioLibraryDict = library.BuildAudioEntryDictionary();
         }
