@@ -245,6 +245,12 @@
           "description": "Colour of atmospheric shader on the planet.",
           "$ref": "#/definitions/MColor"
         },
+        "atmosphereSunIntensity": {
+          "type": "number",
+          "description": "How intense should the sun appear in the sky.\nAlso affects general atmosphere brightness.\nDefault value of 1 matches Timber Hearth.\nIf not set, this will be determined based off the distance to the sun.",
+          "format": "float",
+          "minimum": 0.0
+        },
         "clouds": {
           "description": "Describes the clouds in the atmosphere",
           "$ref": "#/definitions/CloudInfo"
