@@ -55,7 +55,7 @@ jobs:
       - name: Zip Asset
         uses: montudor/action-zip@v1
         with:
-          args: zip -qq -r xen.NewHorizons.zip xen.NewHorizons
+          args: zip -qq -r xen.NewHorizons.zip xen.NewHorizons/*
 
       - name: Upload Asset
         uses: ncipollo/release-action@v1
