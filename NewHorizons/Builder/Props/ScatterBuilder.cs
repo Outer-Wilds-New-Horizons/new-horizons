@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.Props
                     var height = radius;
                     if (heightMapTexture != null)
                     {
-                        var sphericals = CoordinateUtilities.CartesianToSpherical(point);
+                        var sphericals = CoordinateUtilities.CartesianToSpherical(point, false);
                         float longitude = sphericals.x;
                         float latitude = sphericals.y;
 
@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Props
                         if (config.Water != null && height - 1f < config.Water.size) continue;
 
                         // Move it slightly into the ground
-                        height -= 0.1f;
+                        height -= 0.01f;
                     }
 
                     var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true);
