@@ -77,7 +77,7 @@ namespace NewHorizons.Components
                 var shader = atmo.Item2;
 
                 var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
-                var intensity = Mathf.Min(_activeStar.Light.intensity / (sqrDist / hearthSunDistanceSqr), 2f);
+                var intensity = _activeStar.Light.intensity / (sqrDist / hearthSunDistanceSqr);
 
                 shader.SetFloat(SunIntensity, intensity);
             }
