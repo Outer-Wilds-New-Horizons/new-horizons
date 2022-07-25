@@ -19,9 +19,9 @@ namespace NewHorizons.Builder.Props
 
     public static class BrambleNodeBuilder
     {
-        // keys are all dimension names that have been referenced by at least one node but do not (yet) exist
-        // values are all nodes' warp controllers that link to a given dimension
-        // unpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
+        // Keys are all dimension names that have been referenced by at least one node but do not (yet) exist
+        // Values are all nodes' warp controllers that link to a given dimension
+        // UnpairedNodes[name of dimension that doesn't exist yet] => List{warp controller for node that links to that dimension, ...}
         private static readonly Dictionary<string, List<InnerFogWarpVolume>> _unpairedNodes = new();
         private static readonly Dictionary<string, List<SignalInfo>> _propagatedSignals = new();
 
@@ -46,7 +46,6 @@ namespace NewHorizons.Builder.Props
             Logger.LogVerbose($"Pairing missed for {dimensionName}");
             if (!_unpairedNodes.ContainsKey(dimensionName)) return;
 
-            Logger.LogVerbose("proceeding");
             foreach (var nodeWarpController in _unpairedNodes[dimensionName])
             {
                 Logger.LogVerbose($"Pairing node {nodeWarpController.gameObject.name} links to {dimensionName}");
