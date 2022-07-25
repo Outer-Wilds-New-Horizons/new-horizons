@@ -210,23 +210,14 @@ namespace NewHorizons.Builder.Props
             }
 
             // Set up screen fog effect 
-            // (in the base game, any sector that contains a bramble node needs an EffectRuleset with type FogWarp)
-            // (this isn't jank I swear, this is how it's supposed to work)
-            var sectorHasFogEffectRuleset = sector
-                .GetComponents<EffectRuleset>()
-                .Any(effectRuleset => effectRuleset._type == EffectRuleset.BubbleType.FogWarp);
-
-            if (!sectorHasFogEffectRuleset)
-            {
-                var fogEffectRuleset = sector.gameObject.AddComponent<EffectRuleset>();
-                fogEffectRuleset._attachedBody = sector.GetAttachedOWRigidbody();
-                fogEffectRuleset._triggerVolume = sector.GetTriggerVolume();
-                fogEffectRuleset._type = EffectRuleset.BubbleType.FogWarp;
-                fogEffectRuleset._underwaterDistortScale = 0.001f;
-                fogEffectRuleset._underwaterMaxDistort = 0.1f;
-                fogEffectRuleset._underwaterMinDistort = 0.005f;
-                fogEffectRuleset._material = GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material;
-            }
+            var fogEffectRuleset = sector.gameObject.GetAddComponent<EffectRuleset>();
+            fogEffectRuleset._attachedBody = sector.GetAttachedOWRigidbody();
+            fogEffectRuleset._triggerVolume = sector.GetTriggerVolume();
+            fogEffectRuleset._type = EffectRuleset.BubbleType.FogWarp;
+            fogEffectRuleset._underwaterDistortScale = 0.001f;
+            fogEffectRuleset._underwaterMaxDistort = 0.1f;
+            fogEffectRuleset._underwaterMinDistort = 0.005f;
+            fogEffectRuleset._material = GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material;
 
             // TODO: replace InnerFogWarpVolume with NHInnerFogWarpVolume, which overrides GetFogDensity to
             // account for scale (this will fix the issue with screen fog caused by scaled down nodes)
@@ -241,7 +232,9 @@ namespace NewHorizons.Builder.Props
             if (!config.isSeed)
             {
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
-                var fogMaterial = fog.GetComponent<MeshRenderer>().sharedMaterial;
+                var fogMR = fog.GetComponent<MeshRenderer>();
+                var fogMaterial = new Material(fogMR.sharedMaterial);
+                fogMR.material = fogMaterial;
                 fog.transform.localScale /= config.scale;
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
                 fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
