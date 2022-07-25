@@ -235,11 +235,14 @@ namespace NewHorizons.Builder.Props
                         computerObject.SetActive(true);
 
                         // All rings are rendered by detail builder so dont do that (have to wait for entries to be set)
-                        for (var i = computer.GetNumTextBlocks(); i < 5; i++)
+                        Delay.FireOnNextUpdate(() =>
                         {
-                            var ring = computer._computerRings[i];
-                            ring.gameObject.SetActive(false);
-                        }
+                            for (var i = computer.GetNumTextBlocks(); i < 5; i++)
+                            {
+                                var ring = computer._computerRings[i];
+                                ring.gameObject.SetActive(false);
+                            }
+                        });
 
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
                         break;
