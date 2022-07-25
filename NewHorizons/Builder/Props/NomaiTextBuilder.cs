@@ -214,10 +214,8 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = _preCrashComputerPrefab.InstantiateInactive();
-
-                        computerObject.transform.parent = sector?.transform ?? planetGO.transform;
-                        computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+                        var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, MVector3.zero, 1, false);
+                        computerObject.SetActive(false);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
@@ -234,10 +232,15 @@ namespace NewHorizons.Builder.Props
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlPath);
 
-                        // Make sure the computer model is loaded
-                        StreamingHandler.SetUpStreaming(computerObject, sector);
-
                         computerObject.SetActive(true);
+
+                        // All rings are rendered by detail builder so dont do that (have to wait for entries to be set)
+                        for (var i = computer.GetNumTextBlocks(); i < 5; i++)
+                        {
+                            var ring = computer._computerRings[i];
+                            ring.gameObject.SetActive(false);
+                        }
+
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
                         break;
                     }
