@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.AchievementsPlus;
+using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
@@ -274,11 +275,14 @@ namespace NewHorizons
                 IsSystemReady = false;
 
                 NewHorizonsData.Load();
+
+                // Some builders have to be reset each loop
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
+                AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
