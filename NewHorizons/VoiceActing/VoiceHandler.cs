@@ -25,7 +25,11 @@ namespace NewHorizons.VoiceActing
 
             foreach (var mod in Main.Instance.GetDependants().Append(Main.Instance))
             {
-                var folder = $"{mod.ModHelper.Manifest.ModFolderPath}VoiceMod";
+                var folder = $"{mod.ModHelper.Manifest.ModFolderPath}voicemod";
+                if (!Directory.Exists(folder)) {
+                    // Fallback to PascalCase bc it used to be like that
+                    folder = $"{mod.ModHelper.Manifest.ModFolderPath}VoiceMod"
+                }
                 if (Directory.Exists(folder))
                 {
                     Logger.Log($"Registering VoiceMod audio for {mod.ModHelper.Manifest.Name} from {folder}");
