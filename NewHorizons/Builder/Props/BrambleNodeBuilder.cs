@@ -294,7 +294,8 @@ namespace NewHorizons.Builder.Props
                 fogRenderer._fogColor = fogTint.Value;
 
                 var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2/fogbackdrop_v2");
-                if (fogBackdrop != null) fogBackdrop.GetComponent<MeshRenderer>().sharedMaterial.color = (Color)fogTint;
+                if (fogBackdrop != null) 
+                    fogBackdrop.GetComponent<MeshRenderer>().material.color = fogTint.Value;
             }
 
             if (lightTint != null)
@@ -320,9 +321,7 @@ namespace NewHorizons.Builder.Props
                 var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
 
                 var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
-                var mat = fogMeshRenderer.material;
-                mat.color = fogTint.Value;
-                fogMeshRenderer.sharedMaterial = mat;
+                fogMeshRenderer.material.color = fogTint.Value;
             }
 
             if (lightTint != null)
