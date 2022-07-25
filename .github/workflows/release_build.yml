@@ -53,9 +53,11 @@ jobs:
           path: xen.NewHorizons
 
       - name: Zip Asset
-        uses: montudor/action-zip@v1
-        with:
-          args: zip -qq -r xen.NewHorizons.zip xen.NewHorizons/*
+        run: |
+          cd xen.NewHorizons/
+          zip -r xen.NewHorizons.zip *
+          mv xen.NewHorizons.zip ..
+          cd ..
 
       - name: Upload Asset
         uses: ncipollo/release-action@v1

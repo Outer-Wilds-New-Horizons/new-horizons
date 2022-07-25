@@ -61,25 +61,21 @@ namespace NewHorizons.Components
                 if (_stars.Count > 0) ChangeActiveStar(_stars[0]);
                 else gameObject.SetActive(false);
 
-                foreach (var atmo in AtmosphereBuilder.Skys)
+                foreach (var (_, material) in AtmosphereBuilder.Skys)
                 {
-                    var shader = atmo.Item2;
-                    shader.SetFloat(SunIntensity, 0);
+                    material.SetFloat(SunIntensity, 0);
                 }
 
                 return;
             }
 
             // Update atmo shaders
-            foreach (var atmo in AtmosphereBuilder.Skys)
+            foreach (var (planet, material) in AtmosphereBuilder.Skys)
             {
-                var planet = atmo.Item1;
-                var shader = atmo.Item2;
-
                 var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
                 var intensity = Mathf.Min(_activeStar.Light.intensity / (sqrDist / hearthSunDistanceSqr), 1f);
 
-                shader.SetFloat(SunIntensity, intensity);
+                material.SetFloat(SunIntensity, intensity);
             }
 
             foreach (var star in _stars)

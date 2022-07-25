@@ -30,18 +30,18 @@ namespace NewHorizons.Builder.Atmosphere
                 atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
 
                 var renderers = atmo.GetComponentsInChildren<MeshRenderer>();
-                var sharedMaterial = new Material(renderers[0].material);
-                foreach (var meshRenderer in renderers)
+                var material = renderers[0].material; // makes a new material
+                foreach (var renderer in renderers)
                 {
-                    meshRenderer.sharedMaterial = sharedMaterial;
+                    renderer.sharedMaterial = material;
                 }
-                sharedMaterial.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
-                sharedMaterial.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
-                if (atmosphereModule.atmosphereTint != null) sharedMaterial.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
+                material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
+                if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
 
                 atmo.SetActive(true);
 
-                Skys.Add((planetGO, sharedMaterial));
+                Skys.Add((planetGO, material));
             }
 
             atmoGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
