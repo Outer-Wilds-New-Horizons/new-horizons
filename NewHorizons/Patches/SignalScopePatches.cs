@@ -7,9 +7,9 @@ namespace NewHorizons.Patches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Signalscope), nameof(Signalscope.Awake))]
-        public static bool Signalscope_Awake(Signalscope __instance, ref AudioSignal[] ____strongestSignals)
+        public static bool Signalscope_Awake(Signalscope __instance)
         {
-            ____strongestSignals = new AudioSignal[8];
+            __instance._strongestSignals = new AudioSignal[8];
             return true;
         }
 

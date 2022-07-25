@@ -5,6 +5,8 @@ using OWML.Utils;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Logger = NewHorizons.Utility.Logger;
+using OWML.ModHelper;
+using OWML.Common;
 
 namespace NewHorizons.Builder.Body
 {
@@ -14,22 +16,24 @@ namespace NewHorizons.Builder.Body
         private static Texture2D _colorOverTime;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
-        private static readonly int AtmosFar = Shader.PropertyToID("_AtmosFar");
-        private static readonly int AtmosNear = Shader.PropertyToID("_AtmosNear");
+        private static readonly int Tint = Shader.PropertyToID("_Tint");
+        private static readonly int Radius = Shader.PropertyToID("_Radius");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
-        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule)
+        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod)
         {
-            var starGO = MakeStarGraphics(planetGO, sector, starModule);
+            var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
+            var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.size * 2f;
-            var surfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
+            var sunSurfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
+            var surfaceAudio = sunSurfaceAudio.gameObject.AddComponent<StarSurfaceAudioController>();
+            GameObject.Destroy(sunSurfaceAudio);
             surfaceAudio.SetSector(sector);
-            surfaceAudio._sunController = null;
 
             sunAudio.name = "Audio_Star";
 
@@ -44,12 +48,11 @@ namespace NewHorizons.Builder.Body
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint.ToColor();
+                    fog.fogImpostor.material.SetColor(Tint, starModule.tint.ToColor());
                     sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
                     foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
                     {
                         lod.material.SetColor(SkyColor, starModule.tint.ToColor());
-                        lod.material.SetColor(AtmosFar, starModule.tint.ToColor());
-                        lod.material.SetColor(AtmosNear, starModule.tint.ToColor());
                         lod.material.SetFloat(InnerRadius, starModule.size);
                         lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
                     }
@@ -57,6 +60,7 @@ namespace NewHorizons.Builder.Body
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.size * OuterRadiusRatio;
                 fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
             }
 
             var ambientLightGO = Object.Instantiate(SearchUtilities.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -130,13 +134,19 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.WillExplode = starModule.goSupernova;
+            controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+            }
+            surfaceAudio.SetStarEvolutionController(controller);
             starGO.SetActive(true);
 
             // It fucking insists on this existing and its really annoying
@@ -149,12 +159,20 @@ namespace NewHorizons.Builder.Body
             supernovaVolume.AddComponent<OWCollider>();
             supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
 
+            var shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
+            shockLayerRuleset._type = ShockLayerRuleset.ShockType.Radial;
+            shockLayerRuleset._trailLength = 50;
+            shockLayerRuleset._radialCenter = deathVolume.transform;
+            shockLayerRuleset._innerRadius = 0;
+            shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
+            if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
+
             return starController;
         }
 
-        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule)
+        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod)
         {
-            var starGO = MakeStarGraphics(proxyGO, null, starModule);
+            var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
 
             var supernova = MakeSupernova(starGO, starModule);
 
@@ -162,7 +180,7 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.curve != null) controller.scaleCurve = starModule.GetAnimationCurve();
+            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
@@ -175,7 +193,7 @@ namespace NewHorizons.Builder.Body
             return proxyGO;
         }
 
-        public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule)
+        public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule, IModBehaviour mod)
         {
             if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
 
@@ -200,7 +218,8 @@ namespace NewHorizons.Builder.Body
                 foreach (var controller in solarFlareEmitter.GetComponentsInChildren<SolarFlareController>())
                 {
                     // It multiplies color by tint but wants something very bright idk
-                    controller._color = new Color(20, 20, 20);
+                    controller._color = new Color(1, 1, 1);
+                    controller.GetComponent<MeshRenderer>().sharedMaterial.SetColor("_Color", controller._color);
                     controller._tint = flareTint;
                 }
             }
@@ -208,10 +227,10 @@ namespace NewHorizons.Builder.Body
             starGO.transform.position = rootObject.transform.position;
             starGO.transform.localScale = starModule.size * Vector3.one;
 
+            TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
+
             if (starModule.tint != null)
             {
-                TessellatedSphereRenderer surface = sunSurface.GetComponent<TessellatedSphereRenderer>();
-
                 var colour = starModule.tint.ToColor();
 
                 var sun = SearchUtilities.Find("Sun_Body");
@@ -219,8 +238,8 @@ namespace NewHorizons.Builder.Body
                 var giantMaterial = sun.GetComponent<SunController>()._endSurfaceMaterial;
 
                 surface.sharedMaterial = new Material(starModule.size >= 3000 ? giantMaterial : mainSequenceMaterial);
-                var mod = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));
-                var adjustedColour = new Color(colour.r * mod, colour.g * mod, colour.b * mod);
+                var modifier = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));
+                var adjustedColour = new Color(colour.r * modifier, colour.g * modifier, colour.b * modifier);
                 surface.sharedMaterial.color = adjustedColour;
 
                 Color.RGBToHSV(adjustedColour, out var h, out var s, out var v);
@@ -229,10 +248,19 @@ namespace NewHorizons.Builder.Body
                 if (starModule.endTint != null)
                 {
                     var endColour = starModule.endTint.ToColor();
-                    darkenedColor = new Color(endColour.r * mod, endColour.g * mod, endColour.b * mod);
+                    darkenedColor = new Color(endColour.r * modifier, endColour.g * modifier, endColour.b * modifier);
                 }
 
                 surface.sharedMaterial.SetTexture(ColorRamp, ImageUtilities.LerpGreyscaleImage(_colorOverTime, adjustedColour, darkenedColor));
+            }
+
+            if (!string.IsNullOrEmpty(starModule.starRampTexture))
+            {
+                var ramp = ImageUtilities.GetTexture(mod, starModule.starRampTexture);
+                if (ramp != null)
+                {
+                    surface.sharedMaterial.SetTexture(ColorRamp, ramp);
+                }
             }
 
             return starGO;

@@ -8,12 +8,12 @@ namespace NewHorizons.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MapController), nameof(MapController.Awake))]
-        public static void MapController_Awake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
+        public static void MapController_Awake(MapController __instance)
         {
-            ____maxPanDistance = Main.FurthestOrbit * 1.5f;
-            ____maxZoomDistance *= 6f;
-            ____minPitchAngle = -90f;
-            ____zoomSpeed *= 4f;
+            __instance._maxPanDistance = Main.FurthestOrbit * 1.5f;
+            __instance._maxZoomDistance *= 6f;
+            __instance._minPitchAngle = -90f;
+            __instance._zoomSpeed *= 4f;
             __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
         }
 

@@ -70,8 +70,8 @@ namespace NewHorizons.Builder.Orbital
                 else
                 {
                     // It's a circumbinary moon/planet
-                    var fakePrimaryBody = focalPoint.FakeMassBody.GetComponent<AstroObject>();
-                    SetMotionFromPrimary(fakePrimaryBody, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
+                    var focalPointAO = focalPoint.GetComponent<AstroObject>();
+                    SetMotionFromPrimary(focalPointAO, secondaryBody, secondaryBody as NHAstroObject, initialMotion);
                 }
             }
             else if (primaryBody.GetGravityVolume())
@@ -80,7 +80,7 @@ namespace NewHorizons.Builder.Orbital
             }
             else
             {
-                Logger.Log($"No primary gravity or focal point for {primaryBody}");
+                Logger.LogError($"No primary gravity or focal point for {primaryBody}");
             }
         }
 
@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.Orbital
 
         private static void SetBinaryInitialMotion(AstroObject baryCenter, NHAstroObject primaryBody, NHAstroObject secondaryBody)
         {
-            Logger.Log($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
+            Logger.LogVerbose($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
 
             var primaryGravity = new Gravity(primaryBody._gravityVolume);
             var secondaryGravity = new Gravity(secondaryBody._gravityVolume);
@@ -107,11 +107,11 @@ namespace NewHorizons.Builder.Orbital
             // Might make binaries with binaries with binaries work 
             if (primaryBody.GetGravityVolume() == null)
             {
-                primaryGravity = new Gravity(primaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+                primaryGravity = new Gravity(primaryBody.GetGravityVolume());
             }
             if (secondaryBody.GetGravityVolume() == null)
             {
-                secondaryGravity = new Gravity(secondaryBody.GetComponent<BinaryFocalPoint>()?.FakeMassBody?.GetComponent<AstroObject>()?.GetGravityVolume());
+                secondaryGravity = new Gravity(secondaryBody.GetGravityVolume());
             }
 
             // Update the positions
@@ -172,7 +172,7 @@ namespace NewHorizons.Builder.Orbital
             secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity + secondaryVelocity;
             secondaryInitialMotion._isInitVelocityDirty = false;
 
-            Logger.Log($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
+            Logger.LogVerbose($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
         }
     }
 }

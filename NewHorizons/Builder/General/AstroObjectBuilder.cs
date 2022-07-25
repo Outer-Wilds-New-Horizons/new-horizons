@@ -1,5 +1,6 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -36,7 +37,7 @@ namespace NewHorizons.Builder.General
             {
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = true;
+                alignment._usePhysicsToRotate = !config.Orbit.isStatic;
                 if (config.Orbit.alignmentAxis == null)
                 {
                     alignment._localAlignmentAxis = new Vector3(0, -1, 0);
@@ -50,8 +51,11 @@ namespace NewHorizons.Builder.General
             if (config.Base.centerOfSolarSystem)
             {
                 Logger.Log($"Setting center of universe to {config.name}");
-                // By the time it runs we'll be able to get the OWRB with the method
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
+
+                Delay.RunWhen(
+                    () => Locator._centerOfTheUniverse != null,
+                    () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
+                    );
             }
 
             return astroObject;

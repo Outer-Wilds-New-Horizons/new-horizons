@@ -105,7 +105,7 @@ namespace NewHorizons.Handlers
 
         public static void RegisterFactForSystem(string factID, string system)
         {
-            Logger.Log($"Need to know [{factID}] to unlock [{system}]");
+            Logger.LogVerbose($"Need to know [{factID}] to unlock [{system}]");
             _starSystemToFactID.Add(system, factID);
             _factIDToStarSystem.Add(factID, system);
         }

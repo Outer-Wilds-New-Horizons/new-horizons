@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 using UnityEngine;
 
 namespace NewHorizons.External.Modules.VariableSize
@@ -10,15 +10,6 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Scale this module over time
         /// </summary>
         public TimeValuePair[] curve;
-
-        public AnimationCurve GetAnimationCurve(float size = 1f)
-        {
-            var curve = new AnimationCurve();
-            if (this.curve != null)
-                foreach (var pair in this.curve)
-                    curve.AddKey(new Keyframe(pair.time, size * pair.value));
-            return curve;
-        }
 
         [JsonObject]
         public class TimeValuePair

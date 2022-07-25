@@ -20,6 +20,10 @@
       "description": "Base Properties of this Body",
       "$ref": "#/definitions/BaseModule"
     },
+    "Bramble": {
+      "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
+      "$ref": "#/definitions/BrambleModule"
+    },
     "buildPriority": {
       "type": "integer",
       "description": "Set to a higher number if you wish for this body to be built sooner",
@@ -98,14 +102,6 @@
       "description": "Add ship log entries to this planet and describe how it looks in map mode",
       "$ref": "#/definitions/ShipLogModule"
     },
-    "Signal": {
-      "description": "Add signals that can be heard via the signal-scope to this planet",
-      "$ref": "#/definitions/SignalModule"
-    },
-    "Singularity": {
-      "description": "Add a black or white hole to this planet",
-      "$ref": "#/definitions/SingularityModule"
-    },
     "Spawn": {
       "description": "Spawn the player at this planet",
       "$ref": "#/definitions/SpawnModule"
@@ -143,7 +139,7 @@
           "format": "int32",
           "default": -1,
           "maximum": 200.0,
-          "minimum": 0.0
+          "minimum": -1.0
         },
         "inclination": {
           "type": "number",
@@ -235,7 +231,7 @@
           "type": "integer",
           "description": "The alpha (opacity) component of this colour",
           "format": "int32",
-          "default": 255.0,
+          "default": 255,
           "maximum": 255.0,
           "minimum": 0.0
         }
@@ -290,6 +286,18 @@
         "useAtmosphereShader": {
           "type": "boolean",
           "description": "Whether we use an atmospheric shader on the planet. Doesn't affect clouds, fog, rain, snow, oxygen, etc. Purely\nvisual."
+        },
+        "minShockSpeed": {
+          "type": "number",
+          "description": "Minimum speed that your ship can go in the atmosphere where flames will appear.",
+          "format": "float",
+          "default": 100.0
+        },
+        "maxShockSpeed": {
+          "type": "number",
+          "description": "Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.",
+          "format": "float",
+          "default": 300.0
         }
       }
     },
@@ -307,6 +315,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
+          "default": "cloud",
           "$ref": "#/definitions/CloudFluidType"
         },
         "hasLightning": {
@@ -412,6 +421,7 @@
         },
         "gravityFallOff": {
           "description": "How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.",
+          "default": "linear",
           "$ref": "#/definitions/GravityFallOff"
         },
         "groundSize": {
@@ -488,6 +498,104 @@
         "inverseSquared"
       ]
     },
+    "BrambleModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "dimension": {
+          "description": "Defining this value will make this body a bramble dimension. Leave it null to not do that.",
+          "$ref": "#/definitions/BrambleDimensionInfo"
+        },
+        "nodes": {
+          "type": "array",
+          "description": "Place nodes/seeds that take you to other bramble dimensions",
+          "items": {
+            "$ref": "#/definitions/BrambleNodeInfo"
+          }
+        }
+      }
+    },
+    "BrambleDimensionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "fogTint": {
+          "description": "The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)",
+          "$ref": "#/definitions/MColor"
+        },
+        "linksTo": {
+          "type": "string",
+          "description": "The name of the *node* that the player is taken to when exiting this dimension."
+        },
+        "radius": {
+          "type": "number",
+          "description": "The internal radius (in meters) of the dimension. The default is 1705.",
+          "format": "float",
+          "default": 1705.0
+        },
+        "allowedEntrances": {
+          "type": "array",
+          "description": "An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
+    "BrambleNodeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The physical position of the node",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The physical rotation of the node",
+          "$ref": "#/definitions/MVector3"
+        },
+        "scale": {
+          "type": "number",
+          "description": "The physical scale of the node, as a multiplier of the original size",
+          "format": "float",
+          "default": 1.0
+        },
+        "linksTo": {
+          "type": "string",
+          "description": "The name of the planet that hosts the dimension this node links to"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of this node. Only required if this node should serve as an exit."
+        },
+        "isSeed": {
+          "type": "boolean",
+          "description": "Set this to true to make this node a seed instead of a node the player can enter",
+          "default": false
+        },
+        "fogTint": {
+          "description": "The color of the fog inside the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
+          "$ref": "#/definitions/MColor"
+        },
+        "lightTint": {
+          "description": "The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)",
+          "$ref": "#/definitions/MColor"
+        },
+        "farFogTint": {
+          "description": "The color a dimension's background fog turns when you approach this node (if it's in a dimension). If this node is not in a dimension, this does nothing. Leave blank for the default yellowish white color: (255, 245, 217, 255)",
+          "$ref": "#/definitions/MColor"
+        },
+        "possibleExits": {
+          "type": "array",
+          "description": "An array of integers from 0-5. By default, all exits are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.",
+          "items": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      }
+    },
     "CloakModule": {
       "type": "object",
       "additionalProperties": false,
@@ -497,13 +605,9 @@
           "description": "Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you\ndon't want a cloak, leave this as 0.",
           "format": "float"
         },
-        "audioClip": {
+        "audio": {
           "type": "string",
-          "description": "Name of an existing AudioClip in the game that will play when entering the cloaking field."
-        },
-        "audioFilePath": {
-          "type": "string",
-          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
+          "description": "The audio that will play when entering the cloaking field. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         }
       }
     },
@@ -542,6 +646,7 @@
         },
         "type": {
           "description": "Type of fluid the funnel transfers",
+          "default": "sand",
           "$ref": "#/definitions/FunnelType"
         }
       }
@@ -605,6 +710,14 @@
         "textureMap": {
           "type": "string",
           "description": "Relative filepath to the texture used for the terrain."
+        },
+        "resolution": {
+          "type": "integer",
+          "description": "Resolution of the heightmap.\nHigher values means more detail but also more memory/cpu/gpu usage.\nThis value will be 1:1 with the heightmap texture width, but only at the equator.",
+          "format": "int32",
+          "default": 204,
+          "maximum": 2000.0,
+          "minimum": 4.0
         }
       }
     },
@@ -634,6 +747,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "staticPosition": {
+          "description": "Specify this if you want the body to remain stationary at a given location (ie not orbit its parent). Required for Bramble dimensions",
+          "$ref": "#/definitions/MVector3"
+        },
         "primaryBody": {
           "type": "string",
           "description": "The name of the body this one will orbit around"
@@ -671,7 +788,7 @@
         },
         "isStatic": {
           "type": "boolean",
-          "description": "Is the body meant to stay in one place without moving?"
+          "description": "Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position\nwill be determined using its orbital parameters."
         },
         "tint": {
           "description": "Colour of the orbit-line in the map view.",
@@ -811,6 +928,27 @@
           "items": {
             "$ref": "#/definitions/VolcanoInfo"
           }
+        },
+        "singularities": {
+          "type": "array",
+          "description": "Add black/white-holes to this planet",
+          "items": {
+            "$ref": "#/definitions/SingularityModule"
+          }
+        },
+        "audioVolumes": {
+          "type": "array",
+          "description": "Add audio volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/AudioVolumeInfo"
+          }
+        },
+        "signals": {
+          "type": "array",
+          "description": "Add signalscope signals to this planet",
+          "items": {
+            "$ref": "#/definitions/SignalInfo"
+          }
         }
       }
     },
@@ -862,6 +1000,10 @@
         "quantumGroupID": {
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
         }
       }
     },
@@ -937,6 +1079,18 @@
         "position": {
           "description": "Position of the geyser",
           "$ref": "#/definitions/MVector3"
+        },
+        "disableBubbles": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableShaft": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
+        },
+        "disableSpout": {
+          "type": "boolean",
+          "description": "Disable the individual particle systems of the geyser"
         }
       }
     },
@@ -970,6 +1124,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "wall",
           "$ref": "#/definitions/NomaiTextType"
         },
         "xmlFile": {
@@ -992,6 +1147,7 @@
         },
         "type": {
           "description": "The type of text to display.",
+          "default": "adult",
           "$ref": "#/definitions/NomaiTextArcType"
         },
         "variation": {
@@ -1046,7 +1202,8 @@
         "Computer",
         "Cairn",
         "Recorder",
-        "PreCrashRecorder"
+        "PreCrashRecorder",
+        "PreCrashComputer"
       ],
       "enum": [
         "wall",
@@ -1054,7 +1211,8 @@
         "computer",
         "cairn",
         "recorder",
-        "preCrashRecorder"
+        "preCrashRecorder",
+        "preCrashComputer"
       ]
     },
     "RaftInfo": {
@@ -1092,6 +1250,7 @@
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
+          "default": "enter",
           "$ref": "#/definitions/RevealVolumeType"
         },
         "reveals": {
@@ -1186,6 +1345,7 @@
         },
         "type": {
           "description": "The type of object this is.",
+          "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
         }
       }
@@ -1360,6 +1520,7 @@
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
+          "default": "downwards",
           "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
@@ -1447,6 +1608,181 @@
         }
       }
     },
+    "SingularityModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "curve": {
+          "type": "array",
+          "description": "Scale this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
+        },
+        "makeZeroGVolume": {
+          "type": "boolean",
+          "description": "Only for White Holes. Should this white hole repel the player from it.",
+          "default": true
+        },
+        "pairedSingularity": {
+          "type": "string",
+          "description": "The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
+        },
+        "uniqueID": {
+          "type": "string",
+          "description": "The uniqueID of this white hole or black hole. If not set it will default to the name of the planet"
+        },
+        "position": {
+          "description": "Position of the singularity",
+          "$ref": "#/definitions/MVector3"
+        },
+        "size": {
+          "type": "number",
+          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "If you want a black hole to load a new star system scene, put its name here."
+        },
+        "type": {
+          "description": "Type of singularity (white hole or black hole)",
+          "$ref": "#/definitions/SingularityType"
+        }
+      }
+    },
+    "SingularityType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "BlackHole",
+        "WhiteHole"
+      ],
+      "enum": [
+        "blackHole",
+        "whiteHole"
+      ]
+    },
+    "AudioVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this audio volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this audio volume",
+          "format": "float"
+        },
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "track": {
+          "description": "The audio track of this audio volume",
+          "default": "environment",
+          "$ref": "#/definitions/AudioMixerTrackName"
+        }
+      }
+    },
+    "AudioMixerTrackName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Undefined",
+        "Menu",
+        "Music",
+        "Environment",
+        "Environment_Unfiltered",
+        "EndTimes_SFX",
+        "Signal",
+        "Death",
+        "Player",
+        "Player_External",
+        "Ship",
+        "Map",
+        "EndTimes_Music",
+        "MuffleWhileRafting",
+        "MuffleIndoors",
+        "SlideReelMusic"
+      ],
+      "enum": [
+        "undefined",
+        "menu",
+        "music",
+        "environment",
+        "environmentUnfiltered",
+        "endTimesSfx",
+        "signal",
+        "death",
+        "player",
+        "playerExternal",
+        "ship",
+        "map",
+        "endTimesMusic",
+        "muffleWhileRafting",
+        "muffleIndoors",
+        "slideReelMusic"
+      ]
+    },
+    "SignalInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "detectionRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "frequency": {
+          "type": "string",
+          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
+        },
+        "identificationRadius": {
+          "type": "number",
+          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
+          "format": "float",
+          "default": 10.0,
+          "minimum": 0.0
+        },
+        "insideCloak": {
+          "type": "boolean",
+          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
+        },
+        "name": {
+          "type": "string",
+          "description": "The unique ID of the signal."
+        },
+        "onlyAudibleToScope": {
+          "type": "boolean",
+          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
+          "default": true
+        },
+        "position": {
+          "description": "Position of the signal's source",
+          "$ref": "#/definitions/MVector3"
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the signal is identified.",
+          "default": ""
+        },
+        "sourceRadius": {
+          "type": "number",
+          "description": "Radius of the sphere giving off the signal.",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
     "ReferenceFrameModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1479,6 +1815,10 @@
           "type": "number",
           "description": "The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.",
           "format": "float"
+        },
+        "localPosition": {
+          "description": "Position of the reference frame relative to the object.",
+          "$ref": "#/definitions/MVector3"
         }
       }
     },
@@ -1653,130 +1993,6 @@
         }
       }
     },
-    "SignalModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "signals": {
-          "type": "array",
-          "description": "List of signals to add (Why did xen do it like this)",
-          "items": {
-            "$ref": "#/definitions/SignalInfo"
-          }
-        }
-      }
-    },
-    "SignalInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "audioClip": {
-          "type": "string",
-          "description": "Name of an existing AudioClip in the game that will player over the signal."
-        },
-        "audioFilePath": {
-          "type": "string",
-          "description": "Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip."
-        },
-        "detectionRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to detect it. This is when you get the \"Unknown Signal Detected\"\nnotification.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "frequency": {
-          "type": "string",
-          "description": "The frequency ID of the signal. The built-in game values are `Default`, `Traveler`, `Quantum`, `EscapePod`,\n`Statue`, `WarpCore`, `HideAndSeek`, and `Radio`. You can also put a custom value."
-        },
-        "identificationRadius": {
-          "type": "number",
-          "description": "How close the player must get to the signal to identify it. This is when you learn its name.",
-          "format": "float",
-          "default": 10.0,
-          "minimum": 0.0
-        },
-        "insideCloak": {
-          "type": "boolean",
-          "description": "Only set to `true` if you are putting this signal inside a cloaking field."
-        },
-        "name": {
-          "type": "string",
-          "description": "The unique ID of the signal."
-        },
-        "onlyAudibleToScope": {
-          "type": "boolean",
-          "description": "`false` if the player can hear the signal without equipping the signal-scope.",
-          "default": true
-        },
-        "position": {
-          "description": "Position of the signal's source",
-          "$ref": "#/definitions/MVector3"
-        },
-        "reveals": {
-          "type": "string",
-          "description": "A ship log fact to reveal when the signal is identified.",
-          "default": ""
-        },
-        "sourceRadius": {
-          "type": "number",
-          "description": "Radius of the sphere giving off the signal.",
-          "format": "float",
-          "default": 1.0
-        }
-      }
-    },
-    "SingularityModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "curve": {
-          "type": "array",
-          "description": "Scale this module over time",
-          "items": {
-            "$ref": "#/definitions/TimeValuePair"
-          }
-        },
-        "makeZeroGVolume": {
-          "type": "boolean",
-          "description": "Only for White Holes. Should this white hole repel the player from it.",
-          "default": true
-        },
-        "pairedSingularity": {
-          "type": "string",
-          "description": "The name of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
-        },
-        "position": {
-          "description": "Position of the singularity",
-          "$ref": "#/definitions/MVector3"
-        },
-        "size": {
-          "type": "number",
-          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
-          "format": "float",
-          "minimum": 0.0
-        },
-        "targetStarSystem": {
-          "type": "string",
-          "description": "If you want a black hole to load a new star system scene, put its name here."
-        },
-        "type": {
-          "description": "Type of singularity (white hole or black hole)",
-          "$ref": "#/definitions/SingularityType"
-        }
-      }
-    },
-    "SingularityType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "BlackHole",
-        "WhiteHole"
-      ],
-      "enum": [
-        "blackHole",
-        "whiteHole"
-      ]
-    },
     "SpawnModule": {
       "type": "object",
       "additionalProperties": false,
@@ -1834,7 +2050,7 @@
           "default": true
         },
         "lightTint": {
-          "description": "Colour of the light given off.",
+          "description": "Colour of the light given off. Defaults to yellowish.",
           "$ref": "#/definitions/MColor"
         },
         "size": {
@@ -1858,6 +2074,14 @@
         "tint": {
           "description": "Colour of the star.",
           "$ref": "#/definitions/MColor"
+        },
+        "starRampTexture": {
+          "type": "string",
+          "description": "Path to the texture to put as the star ramp. Optional."
+        },
+        "starCollapseRampTexture": {
+          "type": "string",
+          "description": "Path to the texture to put as the star ramp while it is collapsing. Optional."
         },
         "lightRadius": {
           "type": "number",

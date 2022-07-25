@@ -70,7 +70,7 @@ namespace NewHorizons.Components
                     if (previousIndex >= 0 && previousIndex < _states.Length) _states[previousIndex].SetVisible(visible: false);
                     _states[_stateIndex].SetVisible(visible: true);
         
-                    Logger.Log("trying state " + _stateIndex);
+                    Logger.LogVerbose($"MultiStateQuantumObject - Trying to change state {_stateIndex}");
 
                     indices.Remove(_stateIndex);
                 } while (!CurrentStateIsValid() && indices.Count > 0);

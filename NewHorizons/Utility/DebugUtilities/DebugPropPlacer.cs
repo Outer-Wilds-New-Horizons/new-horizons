@@ -98,7 +98,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             if (!data.hitBodyGameObject.name.EndsWith("_Body"))
             {
-                Logger.Log("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
+                Logger.LogWarning("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
             }
 
             try
@@ -115,7 +115,7 @@ namespace NewHorizons.Utility.DebugUtilities
             }
             catch
             {
-                Logger.Log($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
+                Logger.LogError($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
             }
         }
 
@@ -198,7 +198,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             //var body = AstroObjectLocator.GetAstroObject(bodyGameObjectName);
 
-            Logger.Log($"Adding prop to {Main.Instance.CurrentStarSystem}::{body.name}");
+            Logger.LogVerbose($"Adding prop to {Main.Instance.CurrentStarSystem}::{body.name}");
 
 
             detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
@@ -230,7 +230,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 if (bodyProps == null || bodyProps.Count == 0) continue;
                 if (bodyProps[0].body == null) continue;
                 var body = bodyProps[0].body;
-                Logger.Log("getting prop group for body " + body.name);
+                Logger.LogVerbose("getting prop group for body " + body.name);
                 //string bodyName = GetAstroObjectName(bodyProps[0].body);
 
                 DetailInfo[] infoArray = new DetailInfo[bodyProps.Count];

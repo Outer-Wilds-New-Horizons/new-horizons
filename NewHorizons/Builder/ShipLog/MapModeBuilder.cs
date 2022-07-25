@@ -99,9 +99,9 @@ namespace NewHorizons.Builder.ShipLog
         {
             const float unviewedIconOffset = 15;
 
-            Logger.Log($"Adding ship log astro object for {body.Config.name}");
+            Logger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
 
-            GameObject unviewedReference = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
+            GameObject unviewedReference = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
 
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
@@ -249,7 +249,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
-                    GameObject gameObject = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
+                    GameObject gameObject = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
                     if (body.Config.destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
                     {
                         ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();
@@ -522,14 +522,6 @@ namespace NewHorizons.Builder.ShipLog
         {
             try
             {
-                switch (body.Config?.Singularity?.type)
-                {
-                    case SingularityModule.SingularityType.BlackHole:
-                        return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
-                        return Color.white;
-                }
-
                 var starColor = body.Config?.Star?.tint;
                 if (starColor != null) return starColor.ToColor();
 
@@ -555,6 +547,14 @@ namespace NewHorizons.Builder.ShipLog
 
                 var sandColor = body.Config.Sand?.tint;
                 if (sandColor != null) return sandColor.ToColor();
+
+                switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
+                {
+                    case SingularityModule.SingularityType.BlackHole:
+                        return Color.black;
+                    case SingularityModule.SingularityType.WhiteHole:
+                        return Color.white;
+                }
             }
             catch (Exception)
             {

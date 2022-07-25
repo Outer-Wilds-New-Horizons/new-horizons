@@ -30,7 +30,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [DefaultValue(true)] public bool hasAtmosphere = true;
 
         /// <summary>
-        /// Colour of the light given off.
+        /// Colour of the light given off. Defaults to yellowish.
         /// </summary>
         public MColor lightTint;
 
@@ -55,6 +55,16 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Colour of the star.
         /// </summary>
         public MColor tint;
+
+        /// <summary>
+        /// Path to the texture to put as the star ramp. Optional.
+        /// </summary>
+        public string starRampTexture;
+
+        /// <summary>
+        /// Path to the texture to put as the star ramp while it is collapsing. Optional.
+        /// </summary>
+        public string starCollapseRampTexture;
 
         /// <summary>
         /// How far the light from the star can reach.

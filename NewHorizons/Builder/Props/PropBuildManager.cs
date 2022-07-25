@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
 using OWML.Common;
@@ -189,6 +190,34 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}] : {ex.Message}, {ex.StackTrace}");
                     }
+                }
+            }
+            if (config.Props.singularities != null)
+            {
+                foreach (var singularity in config.Props.singularities)
+                {
+                    try
+                    {
+                        SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                    }
+                }
+            }
+            if (config.Props.audioVolumes != null)
+            {
+                foreach (var audioVolume in config.Props.audioVolumes)
+                {
+                    AudioVolumeBuilder.Make(go, sector, audioVolume, mod);
+                }
+            }
+            if (config.Props.signals != null)
+            {
+                foreach (var signal in config.Props.signals)
+                {
+                    SignalBuilder.Make(go, sector, signal, mod);
                 }
             }
         }

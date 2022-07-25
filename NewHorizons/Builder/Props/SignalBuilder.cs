@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Init()
         {
-            Logger.Log($"Initializing SignalBuilder");
+            Logger.LogVerbose($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
             _availableSignalNames = new Stack<SignalName>(new SignalName[]
             {
@@ -125,15 +125,7 @@ namespace NewHorizons.Builder.Props
             return name;
         }
 
-        public static void Make(GameObject body, Sector sector, SignalModule module, IModBehaviour mod)
-        {
-            foreach (var info in module.signals)
-            {
-                Make(body, sector, info, mod);
-            }
-        }
-
-        public static void Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
@@ -153,23 +145,6 @@ namespace NewHorizons.Builder.Props
             var frequency = StringToFrequency(info.frequency);
             var name = StringToSignalName(info.name);
 
-            AudioClip clip = null;
-            if (!string.IsNullOrEmpty(info.audioClip)) clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(info.audioClip);
-            else if (!string.IsNullOrEmpty(info.audioFilePath))
-            {
-                try
-                {
-                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + info.audioFilePath);
-                }
-                catch { }
-            }
-
-            if (clip == null)
-            {
-                Logger.LogError($"Couldn't find AudioClip {info.audioClip} or AudioFile {info.audioFilePath}");
-                return;
-            }
-
             audioSignal.SetSector(sector);
 
             if (name == SignalName.Default) audioSignal._preventIdentification = true;
@@ -181,8 +156,8 @@ namespace NewHorizons.Builder.Props
             audioSignal._onlyAudibleToScope = info.onlyAudibleToScope;
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
-
-            source.clip = clip;
+            audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
+            
             source.loop = true;
             source.minDistance = 0;
             source.maxDistance = 30;
@@ -190,7 +165,15 @@ namespace NewHorizons.Builder.Props
             source.rolloffMode = AudioRolloffMode.Custom;
 
             if (_customCurve == null)
-                _customCurve = SearchUtilities.Find("Moon_Body/Sector_THM/Characters_THM/Villager_HEA_Esker/Signal_Whistling").GetComponent<AudioSource>().GetCustomCurve(AudioSourceCurveType.CustomRolloff);
+            {
+                _customCurve = new AnimationCurve(
+                    new Keyframe(0.0333f, 1f, -30.012f, -30.012f, 0.3333f, 0.3333f),
+                    new Keyframe(0.0667f, 0.5f, -7.503f, -7.503f, 0.3333f, 0.3333f),
+                    new Keyframe(0.1333f, 0.25f, -1.8758f, -1.8758f, 0.3333f, 0.3333f),
+                    new Keyframe(0.2667f, 0.125f, -0.4689f, -0.4689f, 0.3333f, 0.3333f),
+                    new Keyframe(0.5333f, 0.0625f, -0.1172f, -0.1172f, 0.3333f, 0.3333f),
+                    new Keyframe(1f, 0f, -0.0333f, -0.0333f, 0.3333f, 0.3333f));
+            }
 
             source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately
@@ -200,6 +183,7 @@ namespace NewHorizons.Builder.Props
             source.dopplerLevel = 0;
 
             owAudioSource.SetTrack(OWAudioMixer.TrackName.Signal);
+            AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             // Frequency detection trigger volume
 
@@ -219,6 +203,8 @@ namespace NewHorizons.Builder.Props
 
             signalGO.SetActive(true);
             signalDetectionGO.SetActive(true);
+
+            return signalGO;
         }
 
         private static SignalFrequency StringToFrequency(string str)

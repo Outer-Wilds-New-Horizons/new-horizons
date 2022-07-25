@@ -94,6 +94,39 @@ namespace NewHorizons.Utility
             }
         }
 
+        public static void CopyFieldsFrom(this object destination, object source)
+        {
+            // If any this null throw an exception
+            if (source == null || destination == null)
+                throw new Exception("Source or/and Destination Objects are null");
+            // Getting the Types of the objects
+            var typeDest = destination.GetType();
+            var typeSrc = source.GetType();
+
+            foreach (var srcField in typeSrc.GetFields())
+            {
+                var targetField = typeDest.GetField(srcField.Name);
+                if (targetField == null)
+                {
+                    continue;
+                }
+                try
+                {
+                    targetField.SetValue(destination, srcField.GetValue(source));
+                }
+                catch (Exception)
+                {
+                    Logger.LogWarning($"Couldn't copy field {targetField.Name} from {source} to {destination}");
+                }
+            }
+        }
+
+        public static void CopyFrom(this object destination, object source)
+        {
+            destination.CopyPropertiesFrom(source);
+            destination.CopyFieldsFrom(source);
+        }
+
         public static string SplitCamelCase(this string str)
         {
             return Regex.Replace(
@@ -125,11 +158,11 @@ namespace NewHorizons.Utility
             return transform.rotation * localRotation;
         }
 
-        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface) => Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)).Any(system => nomaiCoordinateInterface.CheckCoordinates(system.Key, system.Value));
+        public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface) => Main.SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.Vessel.coords)).Any(system => nomaiCoordinateInterface.CheckCoordinates(system.Key, system.Value));
 
         public static bool CheckAllCoordinates(this NomaiCoordinateInterface nomaiCoordinateInterface, out string selectedSystem)
         {
-            foreach (KeyValuePair<string, NomaiCoordinates> cbs in Main.SystemDict.Where(system => system.Value.Config.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.coords)))
+            foreach (KeyValuePair<string, NomaiCoordinates> cbs in Main.SystemDict.Where(system => system.Value.Config.Vessel?.coords != null).Select(system => new KeyValuePair<string, NomaiCoordinates>(system.Key, system.Value.Config.Vessel.coords)))
             {
                 if (CheckCoordinates(nomaiCoordinateInterface, cbs.Key, cbs.Value))
                 {
@@ -146,7 +179,7 @@ namespace NewHorizons.Utility
             bool xCorrect = nomaiCoordinateInterface._nodeControllers[0].CheckCoordinate(coordinates.x);
             bool yCorrect = nomaiCoordinateInterface._nodeControllers[1].CheckCoordinate(coordinates.y);
             bool zCorrect = nomaiCoordinateInterface._nodeControllers[2].CheckCoordinate(coordinates.z);
-            Utility.Logger.Log($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
+            Utility.Logger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
             return xCorrect && yCorrect && zCorrect;
         }
     }

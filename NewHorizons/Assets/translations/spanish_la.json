@@ -1,16 +1,42 @@
 {
-    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/master/NewHorizons/translation_schema.json",
-    "DialogueDictionary": 
-    {
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1" : "¡Tu nave ahora tiene un motor de curvatura!",
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2" : "Puedes usar la nueva página de \"modo interestelar\" en el registro de la nave para fijar el piloto automático a otro sistema solar.",
-        "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3" : "¡Después abróchate el cinturón y enciende el piloto automático para teletransportarte allí!"
+  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "¡Tu nave ahora tiene un motor de curvatura!",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Puedes usar la nueva página de \"modo interestelar\" en el registro de la nave para fijar el piloto automático a otro sistema solar.",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "¡Después abróchate el cinturón y enciende el piloto automático para teletransportarte allí!"
+  },
+  "UIDictionary": {
+    "INTERSTELLAR_MODE": "Modo Interestelar",
+    "FREQ_STATUE": "Estatua Nomai",
+    "FREQ_WARP_CORE": "Flujo De Anti-Gravitones",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "Iniciar teletransporte a {0}",
+    "WARP_LOCKED": "Piloto automático fijado en:\n{0}"
+  },
+  "AchievementTranslations": {
+    "NH_EATEN_OUTSIDE_BRAMBLE": {
+      "Name": "Brecha de contención",
+      "Description": "Sé devorado fuera de Espinoscuro"
     },
-    "UIDictionary": 
-    {
-        "INTERSTELLAR_MODE" : "Modo Interestelar",
-        "FREQ_STATUE" : "Estatua Nomai",
-        "FREQ_WARP_CORE" : "Flujo De Anti-Gravitones",
-        "FREQ_UNKNOWN" : "???"
+    "NH_MULTIPLE_SYSTEM": {
+      "Name": "Viajero",
+      "Description": "Visita 5 sistemas estelares seguidos"
+    },
+    "NH_NEW_FREQ": {
+      "Name": "Frecuencias Anómalas",
+      "Description": "Descubre una nueva frecuencia"
+    },
+    "NH_PROBE_LOST": {
+      "Name": "Conexión Perdida",
+      "Description": "Pierde tu miniexplorador"
+    },
+    "NH_WARP_DRIVE": {
+      "Name": "Inexacto al Lore",
+      "Description": "Usa el motor de distorsiones de tu nave"
+    },
+    "NH_VESSEL_WARP": {
+      "Name": "Como lo dice la ciencia",
+      "Description": "Teletranspórtate a otro sistema estelar usando la Nave"
     }
+  }
 }

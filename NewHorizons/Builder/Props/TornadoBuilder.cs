@@ -118,7 +118,7 @@ namespace NewHorizons.Builder.Props
             // Resize the distance it can be heard from to match roughly with the size
             var maxDistance = info.audioDistance;
             if (maxDistance <= 0) maxDistance = scale * 10f;
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            Delay.FireOnNextUpdate(() =>
             {
                 audioSource.maxDistance = maxDistance;
                 audioSource.minDistance = maxDistance / 10f;
@@ -136,8 +136,7 @@ namespace NewHorizons.Builder.Props
             controller._midBone.localPosition = controller._midStartPos;
             controller._topBone.localPosition = controller._topStartPos;
 
-            OWAssetHandler.LoadObject(tornadoGO);
-            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.LoadObject(tornadoGO);
+            StreamingHandler.SetUpStreaming(tornadoGO, sector);
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 

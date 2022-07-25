@@ -86,14 +86,15 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public bool useAtmosphereShader;
 
-        // not an actual config thing, rip 
-        public class AirInfo
-        {
-            public bool hasOxygen;
-            public bool isRaining;
-            public bool isSnowing;
-            public float scale;
-        }
+        /// <summary>
+        /// Minimum speed that your ship can go in the atmosphere where flames will appear.
+        /// </summary>
+        [DefaultValue(100f)] public float minShockSpeed = 100f;
+
+        /// <summary>
+        /// Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.
+        /// </summary>
+        [DefaultValue(300f)] public float maxShockSpeed = 300f;
 
         [JsonObject]
         public class CloudInfo
@@ -111,7 +112,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            public CloudFluidType fluidType = CloudFluidType.Cloud;
+            [DefaultValue("cloud")] public CloudFluidType fluidType = CloudFluidType.Cloud;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.

@@ -1,7 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.ModHelper;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,7 +20,7 @@ namespace NewHorizons.AchievementsPlus
 
             if (API == null)
             {
-                Logger.Log("Achievements+ isn't installed");
+                Logger.LogVerbose("Achievements+ isn't installed");
                 Enabled = false;
                 return;
             }

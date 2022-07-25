@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.Utils;
@@ -9,9 +10,10 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons
 {
-    public class NewHorizonsApi
+    public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
         public void Create(Dictionary<string, object> config)
@@ -106,9 +108,51 @@ namespace NewHorizons
             }
         }
 
-        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles, float scale, bool alignWithNormal)
+        public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
+            float scale, bool alignWithNormal)
         {
             return DetailBuilder.MakeDetail(planet, sector, propToCopyPath, position, eulerAngles, scale, alignWithNormal);
+        }
+
+        public AudioSignal SpawnSignal(IModBehaviour mod, GameObject root, string audio, string name, string frequency,
+            float sourceRadius = 1f, float detectionRadius = 20f, float identificationRadius = 10f, bool insideCloak = false,
+            bool onlyAudibleToScope = true, string reveals = "")
+        {
+            var info = new SignalModule.SignalInfo()
+            {
+                audio = audio,
+                detectionRadius = detectionRadius,
+                frequency = frequency,
+                identificationRadius = identificationRadius,
+                insideCloak = insideCloak,
+                name = name,
+                onlyAudibleToScope = onlyAudibleToScope,
+                position = Vector3.zero,
+                reveals = reveals,
+                sourceRadius = sourceRadius
+            };
+
+            return SignalBuilder.Make(root, null, info, mod).GetComponent<AudioSignal>();
+        }
+
+        public (CharacterDialogueTree, RemoteDialogueTrigger) SpawnDialogue(IModBehaviour mod, GameObject root, string xmlFile, float radius = 1f, 
+            float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
+            float remoteTriggerRadius = 0f)
+        {
+            var info = new PropModule.DialogueInfo()
+            {
+                blockAfterPersistentCondition = blockAfterPersistentCondition,
+                lookAtRadius = lookAtRadius,
+                pathToAnimController = pathToAnimController,
+                position = Vector3.zero,
+                radius = radius,
+                remoteTriggerPosition = null,
+                range = range,
+                remoteTriggerRadius = remoteTriggerRadius,
+                xmlFile = xmlFile
+            };
+
+            return DialogueBuilder.Make(root, null, info, mod);
         }
     }
 }
