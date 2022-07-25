@@ -83,7 +83,8 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
-            // remove default vines
+            // TODO: Remove default vines (once we create an asset bundle version of the outer sphere that has collisions
+            /*
             var geoBatchedGroup = geometry.FindChild("BatchedGroup");
             var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_0");
             collider.transform.parent = geometry.transform;
@@ -93,6 +94,7 @@ namespace NewHorizons.Builder.Body
             var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
             dimensionWalls.transform.parent = geometry.transform;
             GameObject.Destroy(geoOtherComponentsGroup);
+            */
 
             // fix some cull groups
             volumes.GetComponent<SectorCollisionGroup>()._sector = sector;
