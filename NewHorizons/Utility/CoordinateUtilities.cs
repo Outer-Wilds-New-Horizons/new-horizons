@@ -28,7 +28,7 @@ namespace NewHorizons.Utility
             var longitude = Mathf.Rad2Deg * Mathf.Atan2(y, x);
 
             // phi
-            float latitude = (Mathf.Rad2Deg * Mathf.Acos(z / dist));
+            float latitude = Mathf.Rad2Deg * Mathf.Acos(z / dist);
 
             return new Vector3(longitude, latitude, dist);
         }
