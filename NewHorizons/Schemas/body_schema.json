@@ -1320,6 +1320,22 @@
           "type": "integer",
           "description": "The number used as entropy for scattering the props",
           "format": "int32"
+        },
+        "minHeight": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The lowest height that these object will be placed at (only relevant if there's a heightmap)",
+          "format": "float"
+        },
+        "maxHeight": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The highest height that these objects will be placed at (only relevant if there's a heightmap)",
+          "format": "float"
         }
       }
     },
