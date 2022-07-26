@@ -75,6 +75,11 @@ namespace NewHorizons.External.Modules
             /// Radius of the sphere giving off the signal.
             /// </summary>
             [DefaultValue(1f)] public float sourceRadius = 1f;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this signal. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
     }
 }
