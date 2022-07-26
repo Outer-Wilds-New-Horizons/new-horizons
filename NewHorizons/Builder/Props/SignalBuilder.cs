@@ -136,6 +136,12 @@ namespace NewHorizons.Builder.Props
             var signalGO = new GameObject($"Signal_{info.name}");
             signalGO.SetActive(false);
             signalGO.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                signalGO.transform.parent = planetGO.transform.Find(info.parentPath);
+            }
+
             signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
