@@ -1810,6 +1810,10 @@
           "description": "Radius of the sphere giving off the signal.",
           "format": "float",
           "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
         }
       }
     },
