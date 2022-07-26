@@ -52,6 +52,9 @@ namespace NewHorizons.Builder.Props
                 else prefab = SearchUtilities.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
+                    // Failsafe
+                    if (points.Count == 0) break;
+
                     var randomInd = (int)Random.Range(0, points.Count - 1);
                     var point = points[randomInd];
 
@@ -63,19 +66,25 @@ namespace NewHorizons.Builder.Props
                         float latitude = sphericals.y;
 
                         float sampleX = heightMapTexture.width * longitude / 360f;
+
+                        // Fix wrapping issue
+                        if (sampleX > heightMapTexture.width) sampleX -= heightMapTexture.width;
+                        if (sampleX < 0) sampleX += heightMapTexture.width;
+
                         float sampleY = heightMapTexture.height * latitude / 180f;
 
                         float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
                         height = (relativeHeight * (heightMap.maxHeight - heightMap.minHeight) + heightMap.minHeight);
 
+                        if ((propInfo.minHeight != null && height < propInfo.minHeight) || (propInfo.maxHeight != null && height > propInfo.maxHeight))
+                        {
+                            // Try this point again
+                            i--;
+                            continue;
+                        }
+
                         // Because heightmaps are dumb gotta rotate it 90 degrees around the x axis bc UHHHHHHHHHHHHH
                         point = Quaternion.Euler(90, 0, 0) * point;
-
-                        // Keep things mostly above water
-                        if (config.Water != null && height - 1f < config.Water.size) continue;
-
-                        // Move it slightly into the ground
-                        height -= 0.01f;
                     }
 
                     var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true);

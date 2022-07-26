@@ -130,6 +130,16 @@ namespace NewHorizons.External.Modules
             /// The number used as entropy for scattering the props
             /// </summary>
             public int seed;
+
+            /// <summary>
+            /// The lowest height that these object will be placed at (only relevant if there's a heightmap)
+            /// </summary>
+            public float? minHeight;
+
+            /// <summary>
+            /// The highest height that these objects will be placed at (only relevant if there's a heightmap)
+            /// </summary>
+            public float? maxHeight;
         }
 
         [JsonObject]
