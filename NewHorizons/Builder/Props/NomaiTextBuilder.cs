@@ -111,6 +111,12 @@ namespace NewHorizons.Builder.Props
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
                         nomaiWallTextObj.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            nomaiWallTextObj.transform.parent = planetGO.transform.Find(info.parentPath);
+                        }
+
                         nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
                         if (info.normal != null)
                         {
@@ -163,6 +169,12 @@ namespace NewHorizons.Builder.Props
 
                         // Place scroll
                         customScroll.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            customScroll.transform.parent = planetGO.transform.Find(info.parentPath);
+                        }
+
                         customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
@@ -193,6 +205,12 @@ namespace NewHorizons.Builder.Props
                         var computerObject = _computerPrefab.InstantiateInactive();
 
                         computerObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            computerObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                        }
+
                         computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
@@ -219,6 +237,11 @@ namespace NewHorizons.Builder.Props
                     {
                         var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, Vector3.zero, 1, false);
                         computerObject.SetActive(false);
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            computerObject.transform.SetParent(planetGO.transform.Find(info.parentPath), true);
+                        }
 
                         var up = computerObject.transform.position - planetGO.transform.position;
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
@@ -256,6 +279,12 @@ namespace NewHorizons.Builder.Props
                         var cairnObject = _cairnPrefab.InstantiateInactive();
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            cairnObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                        }
+
                         cairnObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         if (info.rotation != null)
@@ -303,6 +332,12 @@ namespace NewHorizons.Builder.Props
                         var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
 
                         recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            recorderObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                        }
+
                         recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         if (info.rotation != null)
@@ -335,7 +370,6 @@ namespace NewHorizons.Builder.Props
                 default:
                     Logger.LogError($"Unsupported NomaiText type {info.type}");
                     return null;
-                    break;
             }
         }
 

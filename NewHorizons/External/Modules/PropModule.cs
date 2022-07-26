@@ -512,6 +512,11 @@ namespace NewHorizons.External.Modules
             /// The relative path to the xml file for this object.
             /// </summary>
             public string xmlFile;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]
