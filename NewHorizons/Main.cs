@@ -47,7 +47,8 @@ namespace NewHorizons
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
 
-        public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
+        public string DefaultStarSystem => SystemDict.Keys.Contains(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
+        public string CurrentStarSystem => _currentStarSystem;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
@@ -226,6 +227,12 @@ namespace NewHorizons
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
+
+            if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
+            {
+                Logger.LogError($"System \"{_currentStarSystem}\" does not exist!");
+                _currentStarSystem = DefaultStarSystem;
+            }
 
             // Set time loop stuff if its enabled and if we're warping to a new place
             if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
