@@ -191,22 +191,15 @@ namespace NewHorizons.Builder.Props
 
             // Frequency detection trigger volume
 
-            var signalDetectionGO = new GameObject($"SignalDetectionTrigger_{info.name}");
-            signalDetectionGO.SetActive(false);
-            signalDetectionGO.transform.parent = sector?.transform ?? planetGO.transform;
-            signalDetectionGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
-            signalDetectionGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
-
-            var sphereShape = signalDetectionGO.AddComponent<SphereShape>();
-            var owTriggerVolume = signalDetectionGO.AddComponent<OWTriggerVolume>();
-            var audioSignalDetectionTrigger = signalDetectionGO.AddComponent<AudioSignalDetectionTrigger>();
+            var sphereShape = signalGO.AddComponent<SphereShape>();
+            var owTriggerVolume = signalGO.AddComponent<OWTriggerVolume>();
+            var audioSignalDetectionTrigger = signalGO.AddComponent<AudioSignalDetectionTrigger>();
 
             sphereShape.radius = info.detectionRadius == 0 ? info.sourceRadius + 30 : info.detectionRadius;
             audioSignalDetectionTrigger._signal = audioSignal;
             audioSignalDetectionTrigger._trigger = owTriggerVolume;
 
             signalGO.SetActive(true);
-            signalDetectionGO.SetActive(true);
 
             // Track certain special signal things
             if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) QMSignals.Add(name);
