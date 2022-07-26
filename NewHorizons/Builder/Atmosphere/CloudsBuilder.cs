@@ -183,7 +183,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
                 var material = new Material(_sphereShader);
-                if (atmo.clouds.unlit) material.renderQueue = 2550;
+                if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "BasicCloud" : "BasicShadowCloud";
 
                 tempArray[0] = material;
@@ -191,7 +191,7 @@ namespace NewHorizons.Builder.Atmosphere
             else
             {
                 var material = new Material(prefabMaterials[0]);
-                if (atmo.clouds.unlit) material.renderQueue = 2550;
+                if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "AdvancedCloud" : "AdvancedShadowCloud";
                 tempArray[0] = material;
             }
