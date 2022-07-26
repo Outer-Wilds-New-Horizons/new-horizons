@@ -20,7 +20,12 @@ namespace NewHorizons.Builder.Props
             var heightMap = config.HeightMap;
 
             var area = 4f * Mathf.PI * radius * radius;
-            var points = RandomUtility.FibonacciSphere((int)(area * 10));
+
+            // To not use more than 0.5GB of RAM while doing this 
+            // Works up to planets with 575 radius before capping
+            var numPoints = Math.Min((int)(area * 10), 41666666);
+
+            var points = RandomUtility.FibonacciSphere(numPoints);
 
             Texture2D heightMapTexture = null;
             if (heightMap != null)
