@@ -604,6 +604,11 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             [DefaultValue("slideReel")] public SlideShowType type = SlideShowType.SlideReel;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]
