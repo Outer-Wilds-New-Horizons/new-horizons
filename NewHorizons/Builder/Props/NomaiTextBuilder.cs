@@ -98,7 +98,7 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
         {
             if (_scrollPrefab == null) InitPrefabs();
 
@@ -128,7 +128,8 @@ namespace NewHorizons.Builder.Props
 
                         nomaiWallTextObj.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
-                        break;
+                        
+                        return nomaiWallTextObj;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
                     {
@@ -184,7 +185,8 @@ namespace NewHorizons.Builder.Props
                             }
                         );
                         conversationInfoToCorrespondingSpawnedGameObject[info] = customScroll;
-                        break;
+                        
+                        return customScroll;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Computer:
                     {
@@ -210,7 +212,8 @@ namespace NewHorizons.Builder.Props
 
                         computerObject.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
-                        break;
+                        
+                        return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
@@ -245,7 +248,8 @@ namespace NewHorizons.Builder.Props
                         });
 
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
-                        break;
+                        
+                        return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
                     {
@@ -290,7 +294,8 @@ namespace NewHorizons.Builder.Props
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(cairnObject, sector);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
-                        break;
+
+                        return cairnObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
@@ -325,10 +330,11 @@ namespace NewHorizons.Builder.Props
 
                         recorderObject.transform.Find("InteractSphere").gameObject.GetComponent<SphereShape>().enabled = true;
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
-                        break;
+                        return recorderObject;
                     }
                 default:
                     Logger.LogError($"Unsupported NomaiText type {info.type}");
+                    return null;
                     break;
             }
         }
