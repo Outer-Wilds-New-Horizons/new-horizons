@@ -21,8 +21,17 @@ namespace NewHorizons.Patches
         {
             RumorModeBuilder.Init();
             ShipLogHandler.Init();
-            Logger.Log($"Beginning Ship Log Generation For: {Main.Instance.CurrentStarSystem}");
-            if (Main.Instance.CurrentStarSystem != "SolarSystem")
+
+            var currentStarSystem = Main.Instance.CurrentStarSystem;
+
+            if (!Main.SystemDict.ContainsKey(currentStarSystem) || !Main.BodyDict.ContainsKey(currentStarSystem))
+            {
+                currentStarSystem = Main.Instance.DefaultStarSystem;
+            }
+
+            Logger.Log($"Beginning Ship Log Generation For: {currentStarSystem}");
+
+            if (currentStarSystem != "SolarSystem")
             {
                 __instance._shipLogXmlAssets = new TextAsset[] { };
                 foreach (ShipLogEntryLocation logEntryLocation in GameObject.FindObjectsOfType<ShipLogEntryLocation>())
@@ -31,13 +40,13 @@ namespace NewHorizons.Patches
                 }
             }
 
-            var curiosities = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.curiosities;
+            var curiosities = Main.SystemDict[currentStarSystem].Config.curiosities;
             if (curiosities != null)
             {
                 RumorModeBuilder.AddCuriosityColors(curiosities);
             }
 
-            foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            foreach (NewHorizonsBody body in Main.BodyDict[currentStarSystem])
             {
                 if (body.Config.ShipLog?.xmlFile != null)
                 {
