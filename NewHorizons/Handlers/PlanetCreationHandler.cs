@@ -612,7 +612,7 @@ namespace NewHorizons.Handlers
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
                 if (orbitLine != null) GameObject.Destroy(orbitLine);
 
-                var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
+                var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite || newAO.GetAstroObjectType() == AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
