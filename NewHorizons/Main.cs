@@ -405,7 +405,7 @@ namespace NewHorizons
 
                         if (SystemDict.ContainsKey(name))
                         {
-                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio))
+                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) || SystemDict[name].Config.Skybox == null)
                                 SystemDict[name].Mod = mod;
                             SystemDict[name].Config.Merge(starSystemConfig);
                         }
