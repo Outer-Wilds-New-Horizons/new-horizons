@@ -94,7 +94,7 @@ namespace NewHorizons.Builder.Props
                     // Rotate around normal
                     prop.transform.localRotation *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up);
 
-                    points.RemoveAt(randomInd);
+                    points.QuickRemoveAt(randomInd);
                     if (points.Count == 0) return;
                 }
             }
