@@ -110,6 +110,11 @@ namespace NewHorizons.Builder.Props
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            nomaiWallTextObj.name = info.rename;
+                        }
+
                         nomaiWallTextObj.transform.parent = sector?.transform ?? planetGO.transform;
 
                         if (!string.IsNullOrEmpty(info.parentPath))
@@ -140,6 +145,11 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
                     {
                         var customScroll = _scrollPrefab.InstantiateInactive();
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            customScroll.name = info.rename;
+                        }
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath);
                         nomaiWallText.transform.parent = customScroll.transform;
@@ -204,6 +214,11 @@ namespace NewHorizons.Builder.Props
                     {
                         var computerObject = _computerPrefab.InstantiateInactive();
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            computerObject.name = info.rename;
+                        }
+
                         computerObject.transform.parent = sector?.transform ?? planetGO.transform;
 
                         if (!string.IsNullOrEmpty(info.parentPath))
@@ -237,6 +252,11 @@ namespace NewHorizons.Builder.Props
                     {
                         var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, Vector3.zero, 1, false);
                         computerObject.SetActive(false);
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            computerObject.name = info.rename;
+                        }
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
@@ -277,6 +297,11 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
                     {
                         var cairnObject = _cairnPrefab.InstantiateInactive();
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            cairnObject.name = info.rename;
+                        }
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
 
@@ -330,6 +355,11 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                     {
                         var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            recorderObject.name = info.rename;
+                        }
 
                         recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
 
