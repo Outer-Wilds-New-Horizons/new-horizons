@@ -150,7 +150,8 @@ namespace NewHorizons.Builder.Atmosphere
 
             try
             {
-                image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath);
+                // qm cloud type = should wrap, otherwise clamp like normal
+                image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
                 if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
                 else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
