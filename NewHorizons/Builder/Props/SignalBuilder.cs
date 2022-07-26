@@ -139,7 +139,11 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
-                signalGO.transform.parent = planetGO.transform.Find(info.parentPath);
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    signalGO.transform.parent = newParent;
+                }
             }
 
             signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);

@@ -119,7 +119,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            nomaiWallTextObj.transform.parent = planetGO.transform.Find(info.parentPath);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                nomaiWallTextObj.transform.parent = newParent;
+                            }
                         }
 
                         nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
@@ -182,7 +186,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            customScroll.transform.parent = planetGO.transform.Find(info.parentPath);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                customScroll.transform.parent = newParent;
+                            }
                         }
 
                         customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
@@ -223,7 +231,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            computerObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                computerObject.transform.parent = newParent;
+                            }
                         }
 
                         computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
@@ -260,7 +272,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            computerObject.transform.SetParent(planetGO.transform.Find(info.parentPath), true);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                computerObject.transform.SetParent(newParent, true);
+                            }
                         }
 
                         var up = computerObject.transform.position - planetGO.transform.position;
@@ -307,7 +323,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            cairnObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                cairnObject.transform.parent = newParent;
+                            }
                         }
 
                         cairnObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
@@ -365,7 +385,11 @@ namespace NewHorizons.Builder.Props
 
                         if (!string.IsNullOrEmpty(info.parentPath))
                         {
-                            recorderObject.transform.parent = planetGO.transform.Find(info.parentPath);
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                recorderObject.transform.parent = newParent;
+                            }
                         }
 
                         recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);

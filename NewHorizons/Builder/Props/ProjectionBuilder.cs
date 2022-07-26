@@ -68,7 +68,11 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
-                slideReelObj.transform.parent = planetGO.transform.Find(info.parentPath);
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    slideReelObj.transform.parent = newParent;
+                }
             }
 
             slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
@@ -165,7 +169,11 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
-                autoProjector.transform.parent = planetGO.transform.Find(info.parentPath);
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    autoProjector.transform.parent = newParent;
+                }
             }
 
             autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
@@ -210,7 +218,11 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
-                g.transform.SetParent(planetGO.transform.Find(info.parentPath), true);
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    g.transform.SetParent(newParent, true);
+                }
             }
 
             if (g == null)
@@ -265,7 +277,11 @@ namespace NewHorizons.Builder.Props
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
-                standingTorch.transform.SetParent(planetGO.transform.Find(info.parentPath), true);
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    standingTorch.transform.SetParent(newParent, true);
+                }
             }
 
             if (standingTorch == null)
