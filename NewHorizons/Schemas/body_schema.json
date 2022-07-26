@@ -1136,6 +1136,10 @@
         "xmlFile": {
           "type": "string",
           "description": "The relative path to the xml file for this object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         }
       }
     },
