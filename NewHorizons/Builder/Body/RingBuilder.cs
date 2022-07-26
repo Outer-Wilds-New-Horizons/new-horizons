@@ -75,8 +75,7 @@ namespace NewHorizons.Builder.Body
             Texture2D ringTexture;
             try
             {
-                // wrap or else seam
-                ringTexture = ImageUtilities.GetTexture(mod, ring.texture, wrap: true);
+                ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
             }
             catch (Exception e)
             {
