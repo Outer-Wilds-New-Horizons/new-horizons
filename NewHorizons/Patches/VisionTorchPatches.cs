@@ -19,7 +19,8 @@ namespace NewHorizons.Patches
         {
 			var t = hitObj.GetComponent<VisionTorchTarget>();
             if (t != null) //(hitObj.CompareTag("PrisonerDetector"))
-		    {
+            {
+                __instance._mindProjector.OnProjectionStart += t.onSlidesStart;
                 __instance._mindProjector.OnProjectionComplete += t.onSlidesComplete;
                 __instance._mindProjector.SetMindSlideCollection(t.slideCollection);
 
