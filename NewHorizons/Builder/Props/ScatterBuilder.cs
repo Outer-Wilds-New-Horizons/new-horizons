@@ -76,6 +76,14 @@ namespace NewHorizons.Builder.Props
                         float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
                         height = (relativeHeight * (heightMap.maxHeight - heightMap.minHeight) + heightMap.minHeight);
 
+                        if (config.Water != null && propInfo.minHeight == null && height < config.Water.size - 1f)
+                        {
+                            // Don't put underwater
+                            // Silly 1 meter thing is for backwards compat
+                            i--;
+                            continue;
+                        }
+
                         if ((propInfo.minHeight != null && height < propInfo.minHeight) || (propInfo.maxHeight != null && height > propInfo.maxHeight))
                         {
                             // Try this point again
