@@ -18,8 +18,18 @@ env:
   URL_PREFIX: '/'
   PIPENV_VENV_IN_PROJECT: 1
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   build:
+    name: Build Docs
     runs-on: ubuntu-latest
     
     steps:
@@ -68,7 +78,16 @@ jobs:
         with:
           path: out/
           
-      - name: Deploy To Pages
-        if: success() && github.ref == 'refs/heads/main'
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    name: Deploy Docs
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v1
           
