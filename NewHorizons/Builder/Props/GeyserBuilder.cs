@@ -13,10 +13,10 @@ namespace NewHorizons.Builder.Props
 
             var pos = (Vector3)info.position;
 
-            // Want half of it to be underground
-            var length = pos.magnitude - 65;
+            // Offset height, default -97.5 pushes it underground so the spout is at the surface
+            var length = pos.magnitude + info.offset;
 
-            // About 130 high and the surface is at 65
+            // About 130 high, bubbles start at 10, shaft starts at 67, spout starts at 97.5
             geyserGO.transform.position = planetGO.transform.TransformPoint(pos.normalized * length);
 
             geyserGO.transform.localScale = Vector3.one;

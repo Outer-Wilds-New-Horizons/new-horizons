@@ -220,6 +220,11 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
+            /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
+            /// </summary>
+            [DefaultValue(-97.5f)] public float offset = -97.5f;
+
+            /// <summary>
             /// Disable the individual particle systems of the geyser
             /// </summary>
             public bool disableBubbles, disableShaft, disableSpout;
