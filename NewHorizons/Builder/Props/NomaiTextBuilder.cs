@@ -124,6 +124,10 @@ namespace NewHorizons.Builder.Props
                             {
                                 nomaiWallTextObj.transform.parent = newParent;
                             }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
                         }
 
                         nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
@@ -191,6 +195,10 @@ namespace NewHorizons.Builder.Props
                             {
                                 customScroll.transform.parent = newParent;
                             }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
                         }
 
                         customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
@@ -236,6 +244,10 @@ namespace NewHorizons.Builder.Props
                             {
                                 computerObject.transform.parent = newParent;
                             }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
                         }
 
                         computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
@@ -276,6 +288,10 @@ namespace NewHorizons.Builder.Props
                             if (newParent != null)
                             {
                                 computerObject.transform.SetParent(newParent, true);
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -327,6 +343,10 @@ namespace NewHorizons.Builder.Props
                             if (newParent != null)
                             {
                                 cairnObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -389,6 +409,10 @@ namespace NewHorizons.Builder.Props
                             if (newParent != null)
                             {
                                 recorderObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
