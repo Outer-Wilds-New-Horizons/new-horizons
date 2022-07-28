@@ -109,6 +109,10 @@ namespace NewHorizons.Builder.Body
             ringMR.receiveShadows = !ring.unlit;
 
             mat.mainTexture = texture;
+
+            // Black holes vanish behind rings
+            // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
+            // Vanishing black holes is the lesser bug
             mat.renderQueue = 3000;
             ringMR.material = mat;
 
