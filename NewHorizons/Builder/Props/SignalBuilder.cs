@@ -144,6 +144,10 @@ namespace NewHorizons.Builder.Props
                 {
                     signalGO.transform.parent = newParent;
                 }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
             }
 
             signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
