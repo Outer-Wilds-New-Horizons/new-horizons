@@ -46,16 +46,24 @@ namespace NewHorizons.Utility
 
         public static AudioClip LoadAudio(string path)
         {
-            if (_loadedAudioClips.ContainsKey(path))
+            try
             {
-                Logger.LogVerbose($"Already loaded audio at path: {path}");
-                return _loadedAudioClips[path];
+                if (_loadedAudioClips.ContainsKey(path))
+                {
+                    Logger.LogVerbose($"Already loaded audio at path: {path}");
+                    return _loadedAudioClips[path];
+                }
+                Logger.LogVerbose($"Loading audio at path: {path}");
+                var task = Task.Run(async () => await GetAudioClip(path));
+                task.Wait();
+                _loadedAudioClips.Add(path, task.Result);
+                return task.Result;
             }
-            Logger.LogVerbose($"Loading audio at path: {path}");
-            var task = Task.Run(async () => await GetAudioClip(path));
-            task.Wait();
-            _loadedAudioClips.Add(path, task.Result);
-            return task.Result;
+            catch(Exception ex)
+            {
+                Logger.LogError($"Couldn't load Audio at {path} : {ex}");
+                return null;
+            }
         }
 
         public static void ClearCache()

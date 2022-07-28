@@ -41,7 +41,7 @@ namespace NewHorizons.External
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't create save data {e.Message}, {e.StackTrace}");
+                    Logger.LogError($"Couldn't create save data:\n{e}");
                 }
             }
         }

@@ -240,7 +240,7 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to save file {relativePath}:\n{e.Message}\n{e.StackTrace}");
+                    Logger.LogError($"Failed to save file {relativePath}:\n{e}");
                 }
 
                 try
@@ -253,7 +253,7 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e.Message}\n{e.StackTrace}");
+                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
                 }
             }
         }

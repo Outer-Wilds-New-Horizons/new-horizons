@@ -144,7 +144,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
                 GameObject.Destroy(newProxy);
             }
         }

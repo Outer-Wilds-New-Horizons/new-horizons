@@ -194,7 +194,7 @@ namespace NewHorizons.Handlers
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError($"Couldn't make quantum state for [{body.Config.name}] : {ex.Message}, {ex.StackTrace}");
+                            Logger.LogError($"Couldn't make quantum state for [{body.Config.name}]:\n{ex}");
                             return false;
                         }
                     }
@@ -205,7 +205,7 @@ namespace NewHorizons.Handlers
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't update body {body.Config?.name}: {e.Message}, {e.StackTrace}");
+                    Logger.LogError($"Couldn't update body {body.Config?.name}:\n{e}");
                     return false;
                 }
             }
@@ -234,7 +234,7 @@ namespace NewHorizons.Handlers
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError($"Couldn't generate body {body.Config?.name}: {e.Message}, {e.StackTrace}");
+                        Logger.LogError($"Couldn't generate body {body.Config?.name}:\n{e}");
                         return false;
                     }
                 }
@@ -612,7 +612,7 @@ namespace NewHorizons.Handlers
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
                 if (orbitLine != null) GameObject.Destroy(orbitLine);
 
-                var isMoon = newAO.GetAstroObjectType() == AstroObject.Type.Moon || newAO.GetAstroObjectType() == AstroObject.Type.Satellite;
+                var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);
 
                 DetectorBuilder.SetDetector(primary, newAO, go.GetComponentInChildren<ConstantForceDetector>());
@@ -669,7 +669,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't update orbit of [{body.Config.name}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't update orbit of [{body.Config.name}]:\n{ex}");
                 // If it doesn't work here there's no point trying again so we'll still return true
             }
 

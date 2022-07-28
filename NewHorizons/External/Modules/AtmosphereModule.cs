@@ -41,6 +41,15 @@ namespace NewHorizons.External.Modules
         public MColor atmosphereTint;
 
         /// <summary>
+        /// How intense should the sun appear in the sky.
+        /// Also affects general atmosphere brightness.
+        /// Default value of 1 matches Timber Hearth.
+        /// If not set, this will be determined based off the distance to the sun.
+        /// </summary>
+        [Range(0f, double.MaxValue)]
+        public float atmosphereSunIntensity;
+
+        /// <summary>
         /// Describes the clouds in the atmosphere
         /// </summary>
         public CloudInfo clouds;
@@ -155,6 +164,10 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public bool unlit;
 
+            /// <summary>
+            /// How fast the clouds will rotate in degrees per second.
+            /// </summary>
+            [DefaultValue(10f)] public float rotationSpeed = 10f;
 
             
             #region Obsolete

@@ -199,8 +199,8 @@ namespace NewHorizons.External.Configs
                 Vessel.coords.y = FixAxis(Vessel.coords.y);
                 Vessel.coords.z = FixAxis(Vessel.coords.z);
             }
-		}
-		
+        }
+        
         public void Merge(StarSystemConfig otherConfig)
         {
             // Imagine if this used reflection

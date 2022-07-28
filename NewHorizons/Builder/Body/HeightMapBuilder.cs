@@ -5,6 +5,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
+using System.IO;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body
@@ -20,6 +21,17 @@ namespace NewHorizons.Builder.Body
             Texture2D heightMap, textureMap;
             try
             {
+                if (module.heightMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
+                {
+                    Logger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
+                    module.heightMap = null;
+                }
+                if (module.textureMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap ?? "")))
+                {
+                    Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
+                    module.textureMap = null;
+                }
+
                 if (module.heightMap == null)
                 {
                     heightMap = Texture2D.whiteTexture;
@@ -46,7 +58,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load HeightMap textures, {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load HeightMap textures:\n{e}");
                 return;
             }
 

@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]:\n{ex}");
             }
 
             sfv._fluidType = fluidType;
@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Ring texture:\n{e}");
                 return null;
             }
 
@@ -109,6 +109,10 @@ namespace NewHorizons.Builder.Body
             ringMR.receiveShadows = !ring.unlit;
 
             mat.mainTexture = texture;
+
+            // Black holes vanish behind rings
+            // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
+            // Vanishing black holes is the lesser bug
             mat.renderQueue = 3000;
             ringMR.material = mat;
 

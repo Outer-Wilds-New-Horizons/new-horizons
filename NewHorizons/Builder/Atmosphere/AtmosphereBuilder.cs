@@ -9,6 +9,7 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
+        private static readonly int SunIntensity = Shader.PropertyToID("_SunIntensity");
 
         public static readonly List<(GameObject, Material)> Skys = new();
 
@@ -41,7 +42,16 @@ namespace NewHorizons.Builder.Atmosphere
 
                 atmo.SetActive(true);
 
-                Skys.Add((planetGO, material));
+                if (atmosphereModule.atmosphereSunIntensity == 0)
+                {
+                    // do it based on distance
+                    Skys.Add((planetGO, material));
+                }
+                else
+                {
+                    // use the override instead
+                    material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
+                }
             }
 
             atmoGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);

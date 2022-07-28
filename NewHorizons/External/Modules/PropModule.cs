@@ -130,6 +130,16 @@ namespace NewHorizons.External.Modules
             /// The number used as entropy for scattering the props
             /// </summary>
             public int seed;
+
+            /// <summary>
+            /// The lowest height that these object will be placed at (only relevant if there's a heightmap)
+            /// </summary>
+            public float? minHeight;
+
+            /// <summary>
+            /// The highest height that these objects will be placed at (only relevant if there's a heightmap)
+            /// </summary>
+            public float? maxHeight;
         }
 
         [JsonObject]
@@ -502,6 +512,17 @@ namespace NewHorizons.External.Modules
             /// The relative path to the xml file for this object.
             /// </summary>
             public string xmlFile;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
+
         }
 
         [JsonObject]
@@ -583,6 +604,11 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             [DefaultValue("slideReel")] public SlideShowType type = SlideShowType.SlideReel;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]

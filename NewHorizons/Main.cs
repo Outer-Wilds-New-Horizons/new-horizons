@@ -47,7 +47,8 @@ namespace NewHorizons
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
 
-        public string CurrentStarSystem { get { return Instance._currentStarSystem; } }
+        public string DefaultStarSystem => SystemDict.Keys.Contains(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
+        public string CurrentStarSystem => _currentStarSystem;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
@@ -227,6 +228,12 @@ namespace NewHorizons
         {
             Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
 
+            if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
+            {
+                Logger.LogError($"System \"{_currentStarSystem}\" does not exist!");
+                _currentStarSystem = DefaultStarSystem;
+            }
+
             // Set time loop stuff if its enabled and if we're warping to a new place
             if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
             {
@@ -318,7 +325,7 @@ namespace NewHorizons
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}] : {e.GetType().FullName} {e.Message} {e.StackTrace}");
+                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
             }
             else
@@ -398,7 +405,7 @@ namespace NewHorizons
 
                         if (SystemDict.ContainsKey(name))
                         {
-                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio))
+                            if (string.IsNullOrEmpty(SystemDict[name].Config.travelAudio) && SystemDict[name].Config.Skybox == null)
                                 SystemDict[name].Mod = mod;
                             SystemDict[name].Config.Merge(starSystemConfig);
                         }
@@ -441,7 +448,7 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError($"{ex.Message}, {ex.StackTrace}");
+                Logger.LogError(ex.ToString());
             }
         }
 
@@ -512,7 +519,7 @@ namespace NewHorizons
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error encounter when loading {relativePath}: {e.Message} {e.StackTrace}");
+                Logger.LogError($"Error encounter when loading {relativePath}:\n{e}");
             }
 
             return body;

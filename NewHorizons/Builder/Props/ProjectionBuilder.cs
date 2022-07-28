@@ -65,6 +65,20 @@ namespace NewHorizons.Builder.Props
             }
 
             slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    slideReelObj.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
             slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
@@ -156,6 +170,20 @@ namespace NewHorizons.Builder.Props
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
 
             autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    autoProjector.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
             autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
@@ -196,6 +224,19 @@ namespace NewHorizons.Builder.Props
             var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
             var g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
 
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    g.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             if (g == null)
             {
                 Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
@@ -224,8 +265,7 @@ namespace NewHorizons.Builder.Props
             }
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
 
-
-            // attatch a component to store all the data for the slides that play when a vision torch scans this target
+            // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
             var slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
@@ -246,6 +286,19 @@ namespace NewHorizons.Builder.Props
 
             var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
             var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    standingTorch.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             if (standingTorch == null)
             {
@@ -374,6 +427,10 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
+
+        // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events when the mind slide show starts.
+        public OWEvent.OWCallback onSlidesStart;
 
         // This Callback is never used in NH itself.
         // It exists for addons that want to trigger events after the mind slide show is complete.

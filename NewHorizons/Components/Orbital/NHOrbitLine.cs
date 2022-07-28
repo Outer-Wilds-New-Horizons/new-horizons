@@ -85,7 +85,7 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
         }

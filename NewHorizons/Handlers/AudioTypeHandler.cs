@@ -51,7 +51,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load AudioType {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load AudioType:\n{e}");
                 return AudioType.None;
             }
         }

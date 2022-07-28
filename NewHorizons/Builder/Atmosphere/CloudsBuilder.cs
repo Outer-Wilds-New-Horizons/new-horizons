@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]: {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]:\n{ex}");
             }
 
             fluidCLFV._fluidType = fluidType;
@@ -150,7 +150,8 @@ namespace NewHorizons.Builder.Atmosphere
 
             try
             {
-                image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath);
+                // qm cloud type = should wrap, otherwise clamp like normal
+                image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
                 if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
                 else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
@@ -159,7 +160,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}], {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}]:\n{e}");
                 return null;
             }
 
@@ -182,7 +183,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
                 var material = new Material(_sphereShader);
-                if (atmo.clouds.unlit) material.renderQueue = 2550;
+                if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "BasicCloud" : "BasicShadowCloud";
 
                 tempArray[0] = material;
@@ -190,7 +191,7 @@ namespace NewHorizons.Builder.Atmosphere
             else
             {
                 var material = new Material(prefabMaterials[0]);
-                if (atmo.clouds.unlit) material.renderQueue = 2550;
+                if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "AdvancedCloud" : "AdvancedShadowCloud";
                 tempArray[0] = material;
             }
@@ -217,7 +218,7 @@ namespace NewHorizons.Builder.Atmosphere
             RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
             // Idk why but the axis is weird
             topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
-            topRT._degreesPerSecond = 10;
+            topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
             topRT._randomizeRotationRate = false;
 
             cloudsTopGO.transform.localPosition = Vector3.zero;

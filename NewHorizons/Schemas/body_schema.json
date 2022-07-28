@@ -245,6 +245,12 @@
           "description": "Colour of atmospheric shader on the planet.",
           "$ref": "#/definitions/MColor"
         },
+        "atmosphereSunIntensity": {
+          "type": "number",
+          "description": "How intense should the sun appear in the sky.\nAlso affects general atmosphere brightness.\nDefault value of 1 matches Timber Hearth.\nIf not set, this will be determined based off the distance to the sun.",
+          "format": "float",
+          "minimum": 0.0
+        },
         "clouds": {
           "description": "Describes the clouds in the atmosphere",
           "$ref": "#/definitions/CloudInfo"
@@ -354,6 +360,12 @@
         "unlit": {
           "type": "boolean",
           "description": "If the top layer shouldn't have shadows. Set to true if you're making a brown dwarf for example."
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "description": "How fast the clouds will rotate in degrees per second.",
+          "format": "float",
+          "default": 10.0
         }
       }
     },
@@ -1130,6 +1142,14 @@
         "xmlFile": {
           "type": "string",
           "description": "The relative path to the xml file for this object."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1314,6 +1334,22 @@
           "type": "integer",
           "description": "The number used as entropy for scattering the props",
           "format": "int32"
+        },
+        "minHeight": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The lowest height that these object will be placed at (only relevant if there's a heightmap)",
+          "format": "float"
+        },
+        "maxHeight": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The highest height that these objects will be placed at (only relevant if there's a heightmap)",
+          "format": "float"
         }
       }
     },
@@ -1347,6 +1383,10 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
         }
       }
     },
@@ -1780,6 +1820,10 @@
           "description": "Radius of the sphere giving off the signal.",
           "format": "float",
           "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
         }
       }
     },

@@ -98,7 +98,7 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
         {
             if (_scrollPrefab == null) InitPrefabs();
 
@@ -110,7 +110,26 @@ namespace NewHorizons.Builder.Props
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            nomaiWallTextObj.name = info.rename;
+                        }
+
                         nomaiWallTextObj.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                nomaiWallTextObj.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
                         nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
                         if (info.normal != null)
                         {
@@ -128,11 +147,17 @@ namespace NewHorizons.Builder.Props
 
                         nomaiWallTextObj.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
-                        break;
+                        
+                        return nomaiWallTextObj;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
                     {
                         var customScroll = _scrollPrefab.InstantiateInactive();
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            customScroll.name = info.rename;
+                        }
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath);
                         nomaiWallText.transform.parent = customScroll.transform;
@@ -162,6 +187,20 @@ namespace NewHorizons.Builder.Props
 
                         // Place scroll
                         customScroll.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                customScroll.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
                         customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
@@ -184,13 +223,33 @@ namespace NewHorizons.Builder.Props
                             }
                         );
                         conversationInfoToCorrespondingSpawnedGameObject[info] = customScroll;
-                        break;
+                        
+                        return customScroll;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Computer:
                     {
                         var computerObject = _computerPrefab.InstantiateInactive();
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            computerObject.name = info.rename;
+                        }
+
                         computerObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                computerObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
                         computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
@@ -210,12 +269,31 @@ namespace NewHorizons.Builder.Props
 
                         computerObject.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
-                        break;
+                        
+                        return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
                         var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, Vector3.zero, 1, false);
                         computerObject.SetActive(false);
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            computerObject.name = info.rename;
+                        }
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                computerObject.transform.SetParent(newParent, true);
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
 
                         var up = computerObject.transform.position - planetGO.transform.position;
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
@@ -245,13 +323,33 @@ namespace NewHorizons.Builder.Props
                         });
 
                         conversationInfoToCorrespondingSpawnedGameObject[info] = computerObject;
-                        break;
+                        
+                        return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
                     {
                         var cairnObject = _cairnPrefab.InstantiateInactive();
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            cairnObject.name = info.rename;
+                        }
+
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                cairnObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
                         cairnObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         if (info.rotation != null)
@@ -290,14 +388,34 @@ namespace NewHorizons.Builder.Props
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(cairnObject, sector);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = cairnObject;
-                        break;
+
+                        return cairnObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                     {
                         var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
 
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            recorderObject.name = info.rename;
+                        }
+
                         recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                recorderObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
                         recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         if (info.rotation != null)
@@ -325,11 +443,11 @@ namespace NewHorizons.Builder.Props
 
                         recorderObject.transform.Find("InteractSphere").gameObject.GetComponent<SphereShape>().enabled = true;
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
-                        break;
+                        return recorderObject;
                     }
                 default:
                     Logger.LogError($"Unsupported NomaiText type {info.type}");
-                    break;
+                    return null;
             }
         }
 

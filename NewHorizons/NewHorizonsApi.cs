@@ -50,7 +50,7 @@ namespace NewHorizons
             }
             catch(Exception ex)
             {
-                Logger.LogError($"Error in Create API: {ex.Message} {ex.StackTrace}");
+                Logger.LogError($"Error in Create API:\n{ex}");
             }
         }
 
@@ -103,7 +103,7 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't get installed addons {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Couldn't get installed addons:\n{ex}");
                 return new string[] { };
             }
         }
