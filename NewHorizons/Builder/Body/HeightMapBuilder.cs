@@ -21,12 +21,12 @@ namespace NewHorizons.Builder.Body
             Texture2D heightMap, textureMap;
             try
             {
-                if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap ?? "")))
+                if (module.heightMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
                     module.heightMap = null;
                 }
-                if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap ?? "")))
+                if (module.textureMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap ?? "")))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
                     module.textureMap = null;
