@@ -73,6 +73,10 @@ namespace NewHorizons.Builder.Props
                 {
                     slideReelObj.transform.parent = newParent;
                 }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
             }
 
             slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
@@ -174,6 +178,10 @@ namespace NewHorizons.Builder.Props
                 {
                     autoProjector.transform.parent = newParent;
                 }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
             }
 
             autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
@@ -222,6 +230,10 @@ namespace NewHorizons.Builder.Props
                 if (newParent != null)
                 {
                     g.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 
@@ -281,6 +293,10 @@ namespace NewHorizons.Builder.Props
                 if (newParent != null)
                 {
                     standingTorch.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 

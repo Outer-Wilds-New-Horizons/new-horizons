@@ -47,6 +47,10 @@ namespace NewHorizons.Builder.Props
             {
                 Random.InitState(propInfo.seed);
 
+                // By default don't put underwater more than a mater
+                // this is a backward compat thing lol
+                if (config.Water != null && propInfo.minHeight == null) propInfo.minHeight = config.Water.size - 1f;
+
                 GameObject prefab;
                 if (propInfo.assetBundle != null) prefab = AssetBundleUtilities.LoadPrefab(propInfo.assetBundle, propInfo.path, mod);
                 else prefab = SearchUtilities.Find(propInfo.path);

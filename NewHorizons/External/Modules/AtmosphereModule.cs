@@ -164,6 +164,10 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public bool unlit;
 
+            /// <summary>
+            /// How fast the clouds will rotate in degrees per second.
+            /// </summary>
+            [DefaultValue(10f)] public float rotationSpeed = 10f;
 
             
             #region Obsolete
