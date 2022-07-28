@@ -413,6 +413,10 @@ namespace NewHorizons.Builder.Props
         public MindSlideCollection slideCollection;
 
         // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events when the mind slide show starts.
+        public OWEvent.OWCallback onSlidesStart;
+
+        // This Callback is never used in NH itself.
         // It exists for addons that want to trigger events after the mind slide show is complete.
         public OWEvent.OWCallback onSlidesComplete;
     }
