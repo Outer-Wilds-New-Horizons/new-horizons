@@ -1092,6 +1092,12 @@
           "description": "Position of the geyser",
           "$ref": "#/definitions/MVector3"
         },
+        "offset": {
+          "type": "number",
+          "description": "Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.",
+          "format": "float",
+          "default": -97.5
+        },
         "disableBubbles": {
           "type": "boolean",
           "description": "Disable the individual particle systems of the geyser"
