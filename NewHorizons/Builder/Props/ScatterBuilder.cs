@@ -47,6 +47,10 @@ namespace NewHorizons.Builder.Props
             {
                 Random.InitState(propInfo.seed);
 
+                // By default don't put underwater more than a mater
+                // this is a backward compat thing lol
+                if (config.Water != null && propInfo.minHeight == null) propInfo.minHeight = config.Water.size - 1f;
+
                 GameObject prefab;
                 if (propInfo.assetBundle != null) prefab = AssetBundleUtilities.LoadPrefab(propInfo.assetBundle, propInfo.path, mod);
                 else prefab = SearchUtilities.Find(propInfo.path);
@@ -75,9 +79,6 @@ namespace NewHorizons.Builder.Props
 
                         float relativeHeight = heightMapTexture.GetPixel((int)sampleX, (int)sampleY).r;
                         height = (relativeHeight * (heightMap.maxHeight - heightMap.minHeight) + heightMap.minHeight);
-
-                        // By default don't put underwater more than a mater
-                        if (config.Water != null && propInfo.minHeight == null) propInfo.minHeight = config.Water.size - 1f;
 
                         if ((propInfo.minHeight != null && height < propInfo.minHeight) || (propInfo.maxHeight != null && height > propInfo.maxHeight))
                         {
