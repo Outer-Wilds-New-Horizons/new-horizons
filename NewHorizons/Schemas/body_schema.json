@@ -360,6 +360,12 @@
         "unlit": {
           "type": "boolean",
           "description": "If the top layer shouldn't have shadows. Set to true if you're making a brown dwarf for example."
+        },
+        "rotationSpeed": {
+          "type": "number",
+          "description": "How fast the clouds will rotate in degrees per second.",
+          "format": "float",
+          "default": 10.0
         }
       }
     },
