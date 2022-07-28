@@ -35,17 +35,20 @@ namespace NewHorizons.Builder.General
 
             if (config.Orbit.isTidallyLocked)
             {
+                var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
+
+                // Start it off facing the right way
+                var facing = body.transform.TransformDirection(alignmentAxis);
+                body.transform.rotation = Quaternion.FromToRotation(facing, alignmentAxis) * body.transform.rotation;
+
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = !config.Orbit.isStatic;
-                if (config.Orbit.alignmentAxis == null)
-                {
-                    alignment._localAlignmentAxis = new Vector3(0, -1, 0);
-                }
-                else
-                {
-                    alignment._localAlignmentAxis = config.Orbit.alignmentAxis;
-                }
+                alignment._usePhysicsToRotate = false;
+                alignment._localAlignmentAxis = alignmentAxis;
+
+                // Static bodies won't update rotation with physics for some reason
+                // Have to set it next tick else it flings the player into deep space on spawn (#171)
+                if (!config.Orbit.isStatic) Delay.FireOnNextUpdate(() => alignment._usePhysicsToRotate = true);
             }
 
             if (config.Base.centerOfSolarSystem)
