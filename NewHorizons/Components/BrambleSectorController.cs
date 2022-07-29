@@ -8,10 +8,10 @@ namespace NewHorizons.Components
     {
         private Sector _sector;
 
-        private List<Renderer> _renderers = null;
-        private List<TessellatedRenderer> _tessellatedRenderers = null;
-        private List<Collider> _colliders = null;
-        private List<Light> _lights = null;
+        private Renderer[] _renderers = null;
+        private TessellatedRenderer[] _tessellatedRenderers = null;
+        private Collider[] _colliders = null;
+        private Light[] _lights = null;
 
         public static bool isPlayerInside = false;
         public static bool isProbeInside = false;
@@ -36,10 +36,10 @@ namespace NewHorizons.Components
 
         private void Start()
         {
-            _renderers = gameObject.GetComponentsInChildren<Renderer>().ToList();
-            _tessellatedRenderers = gameObject.GetComponentsInChildren<TessellatedRenderer>().ToList();
-            _colliders = gameObject.GetComponentsInChildren<Collider>().ToList();
-            _lights = gameObject.GetComponentsInChildren<Light>().ToList();
+            _renderers = gameObject.GetComponentsInChildren<Renderer>();
+            _tessellatedRenderers = gameObject.GetComponentsInChildren<TessellatedRenderer>();
+            _colliders = gameObject.GetComponentsInChildren<Collider>();
+            _lights = gameObject.GetComponentsInChildren<Light>();
 
             DisableRenderers();
         }
