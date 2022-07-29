@@ -2,6 +2,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
+using Enum = System.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -259,6 +260,7 @@ namespace NewHorizons.Builder.Props
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
 
+                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -305,6 +307,7 @@ namespace NewHorizons.Builder.Props
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
 
+                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -380,6 +383,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiWallText = cairnObject.transform.Find("Props_TH_ClutterSmall/Arc_Short").GetComponent<NomaiWallText>();
                         nomaiWallText.SetSector(sector);
 
+                        nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -431,6 +435,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
                         nomaiText.SetSector(sector);
 
+                        nomaiText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         nomaiText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -463,7 +468,10 @@ namespace NewHorizons.Builder.Props
             box.isTrigger = true;
 
             nomaiWallTextObj.AddComponent<OWCollider>();
+
             var nomaiWallText = nomaiWallTextObj.AddComponent<NomaiWallText>();
+
+            nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
 
             var text = new TextAsset(xmlPath);
 

@@ -476,10 +476,20 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"cairn")] Cairn = 3,
 
                 [EnumMember(Value = @"recorder")] Recorder = 4,
-                
+
                 [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
 
                 [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum NomaiTextLocation
+            {
+                [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
+
+                [EnumMember(Value = @"a")] A = 1,
+
+                [EnumMember(Value = @"b")] B = 2
             }
 
             /// <summary>
@@ -512,6 +522,11 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
+
+            /// <summary>
+            /// The location of this object. 
+            /// </summary>
+            [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
             /// <summary>
             /// The relative path to the xml file for this object.
