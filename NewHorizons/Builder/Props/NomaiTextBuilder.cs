@@ -308,7 +308,7 @@ namespace NewHorizons.Builder.Props
                         AddTranslation(xmlPath);
 
                         // Make fifth ring work
-                        var fifthRingObject = computerObject.transform.Find("Props_NOM_Vessel_Computer 1/Props_NOM_Vessel_Computer_Effects (4)");
+                        var fifthRingObject = computerObject.FindChild("Props_NOM_Vessel_Computer 1/Props_NOM_Vessel_Computer_Effects (4)");
                         fifthRingObject.SetActive(true);
                         var fifthRing = fifthRingObject.GetComponent<NomaiVesselComputerRing>();
                         //fifthRing._baseProjectorColor = new Color(1.4118, 1.5367, 4, 1);
