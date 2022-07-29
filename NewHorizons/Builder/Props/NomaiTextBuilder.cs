@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Props
             _computerPrefab.name = "Prefab_NOM_Computer";
             _computerPrefab.transform.rotation = Quaternion.identity;
 
-            _preCrashComputerPrefab = SearchUtilities.Find("DB_EscapePodDimension_Body/Sector_EscapePodDimension/Sector_EscapePodBody/Interactables_EscapePodBody/Prefab_NOM_Vessel_Computer").InstantiateInactive();
+            _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive();
             _preCrashComputerPrefab.name = "Prefab_NOM_Vessel_Computer";
             _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
 
@@ -299,9 +299,6 @@ namespace NewHorizons.Builder.Props
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
                         computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
-                        // Move it slightly up more
-                        computerObject.transform.position += up.normalized * 0.1f;
-
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
 
@@ -309,6 +306,15 @@ namespace NewHorizons.Builder.Props
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlPath);
+
+                        // Make fifth ring work
+                        var fifthRingObject = computerObject.transform.Find("Props_NOM_Vessel_Computer 1/Props_NOM_Vessel_Computer_Effects (4)");
+                        fifthRingObject.SetActive(true);
+                        var fifthRing = fifthRingObject.GetComponent<NomaiVesselComputerRing>();
+                        //fifthRing._baseProjectorColor = new Color(1.4118, 1.5367, 4, 1);
+                        //fifthRing._baseTextColor = new Color(0.8824, 0.9604, 2.5, 1);
+                        //fifthRing._baseTextShadowColor = new Color(0.3529, 0.3843, 1, 0.25);
+                        fifthRing._computer = computer;
 
                         computerObject.SetActive(true);
 
