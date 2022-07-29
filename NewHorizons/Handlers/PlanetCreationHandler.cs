@@ -242,13 +242,32 @@ namespace NewHorizons.Handlers
             return true;
         }
 
+        public static Sector CreateSectorFromParent(GameObject planetGO, OWRigidbody rigidbody)
+        {
+            switch (planetGO.name)
+            {
+                case "TimeLoopRing_Body":
+                    return SectorBuilder.Make(planetGO, rigidbody, SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_TimeLoopInterior").GetComponent<Sector>());
+                case "SandFunnel_Body":
+                    return SectorBuilder.Make(planetGO, rigidbody, SearchUtilities.Find("FocalBody/Sector_HGT").GetComponent<Sector>());
+                case "SS_Debris_Body":
+                    return SectorBuilder.Make(planetGO, rigidbody, SearchUtilities.Find("SunStation_Body/Sector_SunStation").GetComponent<Sector>());
+                case "WhiteholeStationSuperstructure_Body":
+                    return SectorBuilder.Make(planetGO, rigidbody, SearchUtilities.Find("WhiteholeStation_Body/Sector_WhiteholeStation").GetComponent<Sector>());
+                case "MiningRig_Body":
+                    return SectorBuilder.Make(planetGO, rigidbody, SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_ZeroGCave").GetComponent<Sector>());
+                default:
+                    return null;
+            }
+        }
+
         // Called when updating an existing planet
         public static GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
             Logger.Log($"Updating existing Object {go.name}");
 
-            var sector = go.GetComponentInChildren<Sector>();
             var rb = go.GetAttachedOWRigidbody();
+            var sector = go.GetComponentInChildren<Sector>() ?? CreateSectorFromParent(go, rb);
 
             // Since orbits are always there just check if they set a semi major axis
             if (body.Config.Orbit != null && body.Config.Orbit.semiMajorAxis != 0f)
