@@ -8,6 +8,11 @@ on:
         description: 'Name of the artifact to download and check against'
         type: string
 
+# Prevents schemas from trying to update on old commits  
+concurrency:
+  group: "schemas-${{ github.ref }}"
+  cancel-in-progress: true
+
 jobs:
   update_schemas:
     runs-on: ubuntu-latest
