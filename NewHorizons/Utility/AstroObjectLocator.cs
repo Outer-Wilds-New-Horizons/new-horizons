@@ -61,7 +61,7 @@ namespace NewHorizons.Utility
         {
             var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
 
-            if (_customAstroObjectDictionary.Keys.Contains(key))
+            if (_customAstroObjectDictionary.ContainsKey(key))
             {
                 Logger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary[key] = ao;

@@ -1,5 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Builder.Props;
+using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -176,6 +177,10 @@ namespace NewHorizons.Builder.Body
             cloak.transform.localScale = Vector3.one * 4000f;
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
+
+            // Cull stuff
+            var cullController = go.AddComponent<BrambleSectorController>();
+            cullController.SetSector(sector);
 
             // finalize
             atmo.SetActive(true);
