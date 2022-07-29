@@ -47,7 +47,7 @@ namespace NewHorizons
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
 
-        public string DefaultStarSystem => SystemDict.Keys.Contains(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
+        public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem => _currentStarSystem;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
@@ -99,7 +99,7 @@ namespace NewHorizons
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
             // Else it doesn't get set idk
-            if (currentScene == "TitleScreen" && SystemDict.Keys.Contains(_defaultSystemOverride))
+            if (currentScene == "TitleScreen" && SystemDict.ContainsKey(_defaultSystemOverride))
             {
                 _currentStarSystem = _defaultSystemOverride;
             }
@@ -332,7 +332,7 @@ namespace NewHorizons
             {
                 // Reset back to original solar system after going to main menu.
                 // If the override is a valid system then we go there
-                if (SystemDict.Keys.Contains(_defaultSystemOverride))
+                if (SystemDict.ContainsKey(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
                     IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
@@ -575,7 +575,7 @@ namespace NewHorizons
             if (!IsChangingStarSystem)
             {
                 // If the override is a valid system then we go there
-                if (SystemDict.Keys.Contains(_defaultSystemOverride))
+                if (SystemDict.ContainsKey(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
                     IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
