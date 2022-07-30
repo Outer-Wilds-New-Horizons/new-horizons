@@ -270,9 +270,12 @@ namespace NewHorizons
 
             if (isEyeOfTheUniverse && IsWarpingFromShip)
             {
-                if (_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
-                _ship.transform.position = new Vector3(50, 0, 0);
-                _ship.SetActive(true);
+                if (_ship != null)
+                {
+                    SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
+                    _ship.transform.position = new Vector3(50, 0, 0);
+                    _ship.SetActive(true);
+                }
             }
 
             if (isSolarSystem || isEyeOfTheUniverse)
