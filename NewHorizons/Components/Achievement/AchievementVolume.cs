@@ -9,7 +9,6 @@ namespace NewHorizons.Components.Achievement
         {
             _trigger = gameObject.GetRequiredComponent<OWTriggerVolume>();
             _trigger.OnEntry += OnEntry;
-            return;
         }
 
         private void OnDestroy()
