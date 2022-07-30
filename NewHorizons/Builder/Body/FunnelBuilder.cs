@@ -56,6 +56,7 @@ namespace NewHorizons.Builder.Body
             switch (funnelType)
             {
                 case FunnelType.Sand:
+                default:
                     sfv._fluidType = FluidVolume.Type.SAND;
                     break;
                 case FunnelType.Water:
