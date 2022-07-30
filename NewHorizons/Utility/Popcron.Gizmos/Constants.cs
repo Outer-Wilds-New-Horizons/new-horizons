@@ -1,6 +1,6 @@
-﻿namespace Popcron
+namespace Popcron
 {
-	public class Constants
+	public static class Constants
 	{
 		public const string UniqueIdentifier = "Popcron.Gizmos";
 	}
