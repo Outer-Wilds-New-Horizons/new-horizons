@@ -80,7 +80,7 @@ namespace NewHorizons.Utility
 
         private static async Task<AudioClip> GetAudioClip(string filePath)
         {
-            var extension = filePath.Split(new char[] { '.' }).Last();
+            var extension = filePath.Split('.').Last();
 
             UnityEngine.AudioType audioType;
 
