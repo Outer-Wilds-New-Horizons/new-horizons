@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Popcron
 {
-	public class Gizmos
+	public static class Gizmos
 	{
 		private static string _prefsKey = null;
 		private static int? _bufferSize = null;
