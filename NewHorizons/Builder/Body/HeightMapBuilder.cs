@@ -38,6 +38,7 @@ namespace NewHorizons.Builder.Body
                 }
                 else
                 {
+                    // TODO we gotta get this working better
                     // If we've loaded a new heightmap we'll delete the texture after
                     // Only delete it if it wasnt loaded before (something else is using it)
                     deleteHeightmapFlag = !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
