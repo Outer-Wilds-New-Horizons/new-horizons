@@ -1145,6 +1145,11 @@
           "default": "wall",
           "$ref": "#/definitions/NomaiTextType"
         },
+        "location": {
+          "description": "The location of this object. ",
+          "default": "unspecified",
+          "$ref": "#/definitions/NomaiTextLocation"
+        },
         "xmlFile": {
           "type": "string",
           "description": "The relative path to the xml file for this object."
@@ -1239,6 +1244,20 @@
         "recorder",
         "preCrashRecorder",
         "preCrashComputer"
+      ]
+    },
+    "NomaiTextLocation": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "UNSPECIFIED",
+        "A",
+        "B"
+      ],
+      "enum": [
+        "unspecified",
+        "a",
+        "b"
       ]
     },
     "RaftInfo": {

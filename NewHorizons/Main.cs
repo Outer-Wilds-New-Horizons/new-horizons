@@ -228,6 +228,10 @@ namespace NewHorizons
         {
             Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
 
+            var isTitleScreen = scene.name == "TitleScreen";
+            var isSolarSystem = scene.name == "SolarSystem";
+            var isEyeOfTheUniverse = scene.name == "EyeOfTheUniverse";
+
             if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
             {
                 Logger.LogError($"System \"{_currentStarSystem}\" does not exist!");
@@ -258,20 +262,23 @@ namespace NewHorizons
 
             IsChangingStarSystem = false;
 
-            if (scene.name == "TitleScreen" && _useCustomTitleScreen)
+            if (isTitleScreen && _useCustomTitleScreen)
             {
                 TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
                 TitleSceneHandler.InitSubtitles();
             }
 
-            if (scene.name == "EyeOfTheUniverse" && IsWarpingFromShip)
+            if (isEyeOfTheUniverse && IsWarpingFromShip)
             {
-                if (_ship != null) SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
-                _ship.transform.position = new Vector3(50, 0, 0);
-                _ship.SetActive(true);
+                if (_ship != null)
+                {
+                    SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
+                    _ship.transform.position = new Vector3(50, 0, 0);
+                    _ship.SetActive(true);
+                }
             }
 
-            if (scene.name == "SolarSystem")
+            if (isSolarSystem || isEyeOfTheUniverse)
             {
                 if (_ship != null)
                 {
@@ -292,31 +299,37 @@ namespace NewHorizons
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
-                PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                if (isSolarSystem)
+                {
+                    PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
 
-                VesselWarpHandler.LoadVessel();
-                SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
+                    VesselWarpHandler.LoadVessel();
+                    SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
+                }
+
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
-                // Warp drive
                 StarChartHandler.Init(SystemDict.Values.ToArray());
-                HasWarpDrive = StarChartHandler.CanWarp();
-                _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
-                _shipWarpController.Init();
-                if (HasWarpDrive == true) EnableWarpDrive();
+                if (isSolarSystem)
+                {
+                    // Warp drive
+                    HasWarpDrive = StarChartHandler.CanWarp();
+                    _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
+                    _shipWarpController.Init();
+                    if (HasWarpDrive == true) EnableWarpDrive();
 
-                var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
-                var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
-                Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
+                    var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
+                    var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
+                    Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
-                IsWarpingFromShip = false;
-                IsWarpingFromVessel = false;
+                    IsWarpingFromShip = false;
+                    IsWarpingFromVessel = false;
 
-                var map = GameObject.FindObjectOfType<MapController>();
-                if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
-
-                // Fix the map satellite
-                SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+                    var map = GameObject.FindObjectOfType<MapController>();
+                    if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+                    // Fix the map satellite
+                    SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+                }
 
                 try
                 {

@@ -3,6 +3,8 @@ using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
@@ -12,6 +14,11 @@ namespace NewHorizons.Builder.Body
             var radius = module.radius;
 
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
+            if (cloak == null)
+            {
+                Logger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
+                return;
+            }
 
             var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);
             newCloak.transform.position = planetGO.transform.position;

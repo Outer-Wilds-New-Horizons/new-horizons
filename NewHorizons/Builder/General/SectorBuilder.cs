@@ -31,5 +31,32 @@ namespace NewHorizons.Builder.General
 
             return S;
         }
+
+        public static Sector Make(GameObject planetBody, OWRigidbody owRigidBody, Sector parent)
+        {
+            if (parent == null) return null;
+
+            GameObject sectorGO = new GameObject("Sector");
+            sectorGO.SetActive(false);
+            sectorGO.transform.parent = planetBody.transform;
+            sectorGO.transform.localPosition = Vector3.zero;
+
+            Sector S = sectorGO.AddComponent<Sector>();
+            S._idString = parent._idString;
+            S._name = parent._name;
+            S._attachedOWRigidbody = owRigidBody;
+            S._subsectors = new List<Sector>();
+            S._triggerRoot = parent._triggerRoot;
+            S._proximityTrigger = parent._proximityTrigger;
+            S._volumeExcluder = parent._volumeExcluder;
+            S._owTriggerVolume = parent._owTriggerVolume;
+            S._frameCounter = parent._frameCounter;
+            S.SetParentSector(parent);
+
+            sectorGO.SetActive(true);
+            S.enabled = true;
+
+            return S;
+        }
     }
 }
