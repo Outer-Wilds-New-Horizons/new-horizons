@@ -235,6 +235,10 @@ namespace NewHorizons.Builder.Props
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
                 fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
             }
+            else
+            {
+                brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
+            }
 
             // Change the colors
             if (config.isSeed) SetSeedColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
