@@ -232,7 +232,6 @@ namespace NewHorizons.Builder.Props
             {
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
                 var fogMaterial = fog.GetComponent<MeshRenderer>().material;
-                fog.transform.localScale /= config.scale;
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
                 fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
             }
