@@ -33,14 +33,19 @@ namespace NewHorizons.External.Modules
             public MColor fogTint;
 
             /// <summary>
+            /// The density of the fog inside this dimension. The default is 6.
+            /// </summary>
+            [DefaultValue(6f)] public float fogDensity = 6f;
+
+            /// <summary>
             /// The name of the *node* that the player is taken to when exiting this dimension.
             /// </summary>
             public string linksTo;
 
             /// <summary>
-            /// The internal radius (in meters) of the dimension. The default is 1705.
+            /// The internal radius (in meters) of the dimension. The default is 750 for the Hub, Escape Pod, and Angler Nest dimensions, and 500 for the others.
             /// </summary>
-            [DefaultValue(1705f)] public float radius = 1705f;
+            [DefaultValue(750f)] public float radius = 750f;
 
             /// <summary>
             /// An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.
