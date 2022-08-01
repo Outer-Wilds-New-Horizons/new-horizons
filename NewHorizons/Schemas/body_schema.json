@@ -1098,6 +1098,16 @@
           "format": "float",
           "default": -97.5
         },
+        "force": {
+          "type": "number",
+          "description": "Force of the geyser on objects",
+          "format": "float",
+          "default": 55.0
+        },
+        "tint": {
+          "description": "Color of the geyser. Alpha sets the particle density.",
+          "$ref": "#/definitions/MColor"
+        },
         "disableBubbles": {
           "type": "boolean",
           "description": "Disable the individual particle systems of the geyser"
