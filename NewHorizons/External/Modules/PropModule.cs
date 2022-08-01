@@ -225,6 +225,16 @@ namespace NewHorizons.External.Modules
             [DefaultValue(-97.5f)] public float offset = -97.5f;
 
             /// <summary>
+            /// Force of the geyser on objects
+            /// </summary>
+            [DefaultValue(55f)] public float force = 55f;
+
+            /// <summary>
+            /// Color of the geyser. Alpha sets the particle density.
+            /// </summary>
+            public MColor tint;
+
+            /// <summary>
             /// Disable the individual particle systems of the geyser
             /// </summary>
             public bool disableBubbles, disableShaft, disableSpout;
