@@ -535,15 +535,21 @@
           "description": "The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)",
           "$ref": "#/definitions/MColor"
         },
+        "fogDensity": {
+          "type": "number",
+          "description": "The density of the fog inside this dimension. The default is 6.",
+          "format": "float",
+          "default": 6.0
+        },
         "linksTo": {
           "type": "string",
           "description": "The name of the *node* that the player is taken to when exiting this dimension."
         },
         "radius": {
           "type": "number",
-          "description": "The internal radius (in meters) of the dimension. The default is 1705.",
+          "description": "The internal radius (in meters) of the dimension. The default is 750 for the Hub, Escape Pod, and Angler Nest dimensions, and 500 for the others.",
           "format": "float",
-          "default": 1705.0
+          "default": 750.0
         },
         "allowedEntrances": {
           "type": "array",
