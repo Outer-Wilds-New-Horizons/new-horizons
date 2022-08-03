@@ -151,7 +151,7 @@ namespace NewHorizons.External.Configs
         public StarModule Star;
 
         /// <summary>
-        /// Unique star system containing your planet
+        /// Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.
         /// </summary>
         [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
 
