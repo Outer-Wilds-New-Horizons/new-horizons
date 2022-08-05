@@ -187,7 +187,6 @@ namespace NewHorizons.Builder.Props
         /// Remove things that require sectors if the sector is null. Will just keep extending this as things pop up.
         /// Returns true if the object is destroyed
         /// </summary>
-        /// <param name="component"></param>
         private static bool FixUnsectoredComponent(Component component)
         {
             if (component is FogLight or SectoredMonoBehaviour)
