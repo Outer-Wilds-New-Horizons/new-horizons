@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -101,11 +100,11 @@ namespace NewHorizons.Handlers
         public static bool IsBundleInUse(string assetBundle)
         {
             // If a sector in the list is null then it is always in use
-            if(_sectorCache.TryGetValue(assetBundle, out var sectors))
+            if (_sectorCache.TryGetValue(assetBundle, out var sectors))
                 foreach (var sector in sectors)
-                    if (sector == null || sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe)) 
+                    if (sector == null || sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         return true;
-            return false;   
+            return false;
         }
     }
 }
