@@ -1,10 +1,10 @@
 using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using System;
 using UnityEngine;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

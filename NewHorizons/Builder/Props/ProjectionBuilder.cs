@@ -222,7 +222,13 @@ namespace NewHorizons.Builder.Props
         {
             // spawn a trigger for the vision torch
             var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            var g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
+            var prefab = SearchUtilities.Find(path);
+            var detailInfo = new PropModule.DetailInfo()
+            {
+                position = info.position,
+                scale = 2
+            };
+            var g = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
@@ -280,12 +286,15 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            //
-            // spawn the torch itself
-            //
-
+            // Spawn the torch itself
             var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
-            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
+            var prefab = SearchUtilities.Find(path);
+            var detailInfo = new PropModule.DetailInfo()
+            {
+                position = info.position,
+                rotation = info.rotation
+            };
+            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
@@ -306,22 +315,16 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            //
-            // set some required properties on the torch
-            //
-
+            // Set some required properties on the torch
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
             mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
             
-            // setup for visually supporting async texture loading
+            // Setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
             var visionBeamEffect = standingTorch.FindChild("VisionBeam");
             visionBeamEffect.SetActive(false);
 
-            //
-            // set up slides
-            //
-
+            // Set up slides
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
             var slidesCount = slides.Length;
@@ -340,8 +343,8 @@ namespace NewHorizons.Builder.Props
                 slideCollection.slides[i] = slide;
             }
             
-            // this variable just lets us track how many of the slides have been loaded.
-            // this way as soon as the last one is loaded (due to async loading, this may be
+            // This variable just lets us track how many of the slides have been loaded.
+            // This way as soon as the last one is loaded (due to async loading, this may be
             // slide 7, or slide 3, or whatever), we can enable the vision torch. This allows us
             // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
             int displaySlidesLoaded = 0;
@@ -359,13 +362,13 @@ namespace NewHorizons.Builder.Props
                 }
             );
 
-            // set up the containers for the slides
+            // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // make sure that these slides play when the player wanders into the beam
+            // Make sure that these slides play when the player wanders into the beam
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 

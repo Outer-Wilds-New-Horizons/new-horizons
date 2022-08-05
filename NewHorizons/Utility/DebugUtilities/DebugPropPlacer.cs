@@ -1,13 +1,10 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
-using System;
+using NewHorizons.External.Modules;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using static NewHorizons.External.Modules.PropModule;
 
 namespace NewHorizons.Utility.DebugUtilities
 {
@@ -24,7 +21,7 @@ namespace NewHorizons.Utility.DebugUtilities
             public AstroObject body;
             public string system;
             public GameObject gameObject;
-            public DetailInfo detailInfo;
+            public PropModule.DetailInfo detailInfo;
         }
 
         // VASE
@@ -108,8 +105,16 @@ namespace NewHorizons.Utility.DebugUtilities
                     SetCurrentObject(DEFAULT_OBJECT);
                 }
 
-                GameObject prop = DetailBuilder.MakeDetail(data.hitBodyGameObject, data.hitBodyGameObject.GetComponentInChildren<Sector>(), currentObject, data.pos, data.norm, 1, false);
-                PropPlacementData propData = RegisterProp_WithReturn(data.hitBodyGameObject.GetComponent<AstroObject>(), prop);
+                var planetGO = data.hitBodyGameObject;
+                var sector = planetGO.GetComponentInChildren<Sector>();
+                var prefab = SearchUtilities.Find(currentObject);
+                var detailInfo = new PropModule.DetailInfo()
+                {
+                    position = data.pos,
+                    rotation = data.norm,
+                };
+                var prop = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+                var propData = RegisterProp_WithReturn(data.hitBodyGameObject.GetComponent<AstroObject>(), prop);
 
                 SetGameObjectRotation(prop, data, playerAbsolutePosition);
             }
@@ -156,7 +161,7 @@ namespace NewHorizons.Utility.DebugUtilities
         {
             if (config.starSystem != Main.Instance.CurrentStarSystem) return;
 
-            AstroObject planet = AstroObjectLocator.GetAstroObject(config.name);
+            var planet = AstroObjectLocator.GetAstroObject(config.name);
 
             if (planet == null) return;
             if (config.Props == null || config.Props.details == null) return;
@@ -165,7 +170,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             foreach (var detail in config.Props.details)
             {
-                GameObject spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
+                var spawnedProp = DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail);
 
                 if (spawnedProp == null)
                 {
@@ -173,7 +178,7 @@ namespace NewHorizons.Utility.DebugUtilities
                     continue;
                 }
 
-                PropPlacementData data = RegisterProp_WithReturn(astroObject, spawnedProp, detail.path, detail);
+                var data = RegisterProp_WithReturn(astroObject, spawnedProp, detail.path, detail);
 
                 // note: we do not support placing props from assetbundles, so they will not be added to the
                 // selectable list of placed props
@@ -189,7 +194,7 @@ namespace NewHorizons.Utility.DebugUtilities
             RegisterProp_WithReturn(body, prop);
         }
 
-        private PropPlacementData RegisterProp_WithReturn(AstroObject body, GameObject prop, string propPath = null, DetailInfo detailInfo = null)
+        private PropPlacementData RegisterProp_WithReturn(AstroObject body, GameObject prop, string propPath = null, PropModule.DetailInfo detailInfo = null)
         {
             if (Main.Debug)
             {
@@ -201,7 +206,7 @@ namespace NewHorizons.Utility.DebugUtilities
             Logger.LogVerbose($"Adding prop to {Main.Instance.CurrentStarSystem}::{body.name}");
 
 
-            detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
+            detailInfo = detailInfo == null ? new PropModule.DetailInfo() : detailInfo;
             detailInfo.path = propPath == null ? currentObject : propPath;
 
             PropPlacementData data = new PropPlacementData
@@ -216,14 +221,14 @@ namespace NewHorizons.Utility.DebugUtilities
             return data;
         }
 
-        public Dictionary<AstroObject, DetailInfo[]> GetPropsConfigByBody()
+        public Dictionary<AstroObject, PropModule.DetailInfo[]> GetPropsConfigByBody()
         {
             var groupedProps = props
                 .GroupBy(p => p.system + "." + p.body)
                 .Select(grp => grp.ToList())
                 .ToList();
 
-            Dictionary<AstroObject, DetailInfo[]> propConfigs = new Dictionary<AstroObject, DetailInfo[]>();
+            Dictionary<AstroObject, PropModule.DetailInfo[]> propConfigs = new Dictionary<AstroObject, PropModule.DetailInfo[]>();
 
             foreach (List<PropPlacementData> bodyProps in groupedProps)
             {
@@ -233,7 +238,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 Logger.LogVerbose("getting prop group for body " + body.name);
                 //string bodyName = GetAstroObjectName(bodyProps[0].body);
 
-                DetailInfo[] infoArray = new DetailInfo[bodyProps.Count];
+                PropModule.DetailInfo[] infoArray = new PropModule.DetailInfo[bodyProps.Count];
                 propConfigs[body] = infoArray;
 
                 for (int i = 0; i < bodyProps.Count; i++)

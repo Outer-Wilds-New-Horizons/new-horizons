@@ -111,7 +111,14 @@ namespace NewHorizons
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
             float scale, bool alignWithNormal)
         {
-            return DetailBuilder.MakeDetail(planet, sector, propToCopyPath, position, eulerAngles, scale, alignWithNormal);
+            var prefab = SearchUtilities.Find(propToCopyPath);
+            var detailInfo = new PropModule.DetailInfo() {
+                position = position,
+                rotation = eulerAngles,
+                scale = scale,
+                alignToNormal = alignWithNormal
+            };
+            return DetailBuilder.MakeDetail(planet, sector, prefab, detailInfo);
         }
 
         public AudioSignal SpawnSignal(IModBehaviour mod, GameObject root, string audio, string name, string frequency,

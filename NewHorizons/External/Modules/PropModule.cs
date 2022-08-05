@@ -200,6 +200,11 @@ namespace NewHorizons.External.Modules
             /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+            /// </summary>
+            public bool keepLoaded;
         }
 
         [JsonObject]

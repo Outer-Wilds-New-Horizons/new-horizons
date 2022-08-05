@@ -2,6 +2,7 @@ using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System.Collections.Generic;
@@ -56,7 +57,11 @@ namespace NewHorizons.Builder.Body
             var atmo = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive();
             var volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive();
             var effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive();
-            var geometry = DetailBuilder.MakeDetail(go, sector, "DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension", Vector3.zero, Vector3.zero, 1, false);
+
+            var prefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension");
+            var detailInfo = new PropModule.DetailInfo();
+            var geometry = DetailBuilder.MakeDetail(go, sector, prefab, detailInfo);
+
             var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/OuterWarp_Hub").InstantiateInactive();
             var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();
 
