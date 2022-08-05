@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -72,16 +73,20 @@ namespace NewHorizons.Handlers
                 StreamingManager.LoadStreamingAssets(assetBundle);
             }
 
-            if (sector)
+            if (!sector)
             {
-                sector.OnOccupantEnterSector += _ =>
-                {
-                    foreach (var assetBundle in assetBundles)
-                    {
-                        StreamingManager.LoadStreamingAssets(assetBundle);
-                    }
-                };
+                Logger.LogWarning($"StreamingHandler for {obj} has null sector." +
+                    $"This can lead to the thing being unloaded permanently.");
+                return;
             }
+
+            sector.OnOccupantEnterSector += _ =>
+            {
+                foreach (var assetBundle in assetBundles)
+                {
+                    StreamingManager.LoadStreamingAssets(assetBundle);
+                }
+            };
         }
     }
 }
