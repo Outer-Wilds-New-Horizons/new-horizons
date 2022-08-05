@@ -75,8 +75,8 @@ namespace NewHorizons.Handlers
 
             if (!sector)
             {
-                Logger.LogWarning($"StreamingHandler for {obj} has null sector." +
-                    $"This can lead to the thing being unloaded permanently.");
+                Logger.LogWarning($"StreamingHandler for {obj} has null sector. " +
+                    "This can lead to the thing being unloaded permanently.");
                 return;
             }
 
