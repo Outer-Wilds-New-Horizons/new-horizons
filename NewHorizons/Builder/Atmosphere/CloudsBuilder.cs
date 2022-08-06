@@ -15,10 +15,10 @@ namespace NewHorizons.Builder.Atmosphere
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
         private static readonly int Color = Shader.PropertyToID("_Color");
+        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int RampTex = Shader.PropertyToID("_RampTex");
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
-        private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
         {
@@ -200,7 +200,6 @@ namespace NewHorizons.Builder.Atmosphere
 
             foreach (var material in topMR.sharedMaterials)
             {
-                material.SetColor(Color, cloudTint);
                 material.SetTexture(MainTex, image);
                 material.SetTexture(RampTex, ramp);
                 material.SetTexture(CapTex, cap);
