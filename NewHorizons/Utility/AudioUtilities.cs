@@ -13,6 +13,8 @@ namespace NewHorizons.Utility
 
         public static void SetAudioClip(OWAudioSource source, string audio, IModBehaviour mod)
         {
+            if (string.IsNullOrWhiteSpace(audio)) return;
+
             if (audio.Contains(".wav") || audio.Contains(".ogg") || audio.Contains(".mp3"))
             {
                 try
