@@ -829,7 +829,7 @@ namespace NewHorizons.External.Modules
             public WhiteboardInfo whiteboard;
 
             /// <summary>
-            /// camera platform that the stones can project to
+            /// camera platform that the stones can project to and from
             /// </summary>
             public PlatformInfo platform;
 
