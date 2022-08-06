@@ -4,7 +4,7 @@ using UnityEngine;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
-    public class RaftPatches : HarmonyPatch
+    public static class RaftPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RaftController), nameof(RaftController.FixedUpdate))]
