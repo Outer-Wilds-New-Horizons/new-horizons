@@ -82,8 +82,10 @@ namespace NewHorizons.Handlers
             {
                 sector.OnOccupantEnterSector += _ =>
                 {
-                    foreach (var assetBundle in assetBundles)
-                        StreamingManager.LoadStreamingAssets(assetBundle);
+                    // If both are already in then it already loaded
+                    if (sector.ContainsOccupant(DynamicOccupant.Player) && sector.ContainsOccupant(DynamicOccupant.Probe)) return;
+
+                    foreach (var assetBundle in assetBundles) StreamingManager.LoadStreamingAssets(assetBundle);
                 };
                 /*
                 sector.OnOccupantExitSector += _ =>
