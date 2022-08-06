@@ -1876,16 +1876,16 @@
           "description": "Icon that the will show on the stone, pedastal of the whiteboard, and pedastal of the platform."
         },
         "whiteboard": {
-          "description": "whiteboard that the stones can put text onto",
+          "description": "Whiteboard that the stones can put text onto",
           "$ref": "#/definitions/WhiteboardInfo"
         },
         "platform": {
-          "description": "camera platform that the stones can project to",
+          "description": "Camera platform that the stones can project to and from",
           "$ref": "#/definitions/PlatformInfo"
         },
         "stones": {
           "type": "array",
-          "description": "projection stones",
+          "description": "Projection stones",
           "items": {
             "$ref": "#/definitions/StoneInfo"
           }
