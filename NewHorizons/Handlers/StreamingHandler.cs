@@ -74,8 +74,12 @@ namespace NewHorizons.Handlers
                 StreamingManager.LoadStreamingAssets(assetBundle);
 
                 // Track the sector even if its null. null means stay loaded forever
-                if (!_sectorCache.ContainsKey(assetBundle)) _sectorCache.Add(assetBundle, new List<Sector>());
-                if (!_sectorCache[assetBundle].Contains(sector)) _sectorCache[assetBundle].Add(sector);
+                if (!_sectorCache.TryGetValue(assetBundle, out var sectors))
+                {
+                    sectors = new List<Sector>();
+                    _sectorCache.Add(assetBundle, sectors);
+                }
+                sectors.SafeAdd(sector);
             }
 
             if (sector)
