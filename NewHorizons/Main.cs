@@ -296,6 +296,7 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
+                RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
@@ -329,6 +330,9 @@ namespace NewHorizons
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+
+                    
+                    // Sector changes (so that projection pools actually turn off proxies and cull groups on these moons)
 
                     //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
                     var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();

@@ -148,7 +148,7 @@ namespace NewHorizons.Builder.Props
         /// <param name="component"></param>
         /// <param name="sector"></param>
         /// <param name="isTorch"></param>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch)
+        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch = false)
         {
             if (component is Sector s)
             {
@@ -180,6 +180,11 @@ namespace NewHorizons.Builder.Props
             if (!isTorch && component is SlideCollectionContainer container)
             {
                 sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
+            }
+
+            if (component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            {
+                remoteCameraPlatform._visualSector = sector;
             }
         }
 
