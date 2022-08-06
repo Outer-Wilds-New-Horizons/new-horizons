@@ -15,7 +15,6 @@ namespace NewHorizons.Builder.Atmosphere
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
         private static readonly int Color = Shader.PropertyToID("_Color");
-        private static readonly int TintColor = Shader.PropertyToID("_TintColor");
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int RampTex = Shader.PropertyToID("_RampTex");
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
@@ -50,7 +49,6 @@ namespace NewHorizons.Builder.Atmosphere
 
                 bottomTSRTempArray[0] = new Material(bottomTSRMaterials[0]);
                 bottomTSRTempArray[0].SetColor(Color, bottomColor);
-                bottomTSRTempArray[0].SetColor(TintColor, bottomColor);
                 bottomTSRTempArray[0].SetTexture(ColorRamp, ImageUtilities.TintImage(_colorRamp, bottomColor));
 
                 bottomTSRTempArray[1] = new Material(bottomTSRMaterials[1]);
@@ -203,8 +201,6 @@ namespace NewHorizons.Builder.Atmosphere
             foreach (var material in topMR.sharedMaterials)
             {
                 material.SetColor(Color, cloudTint);
-                material.SetColor(TintColor, cloudTint);
-
                 material.SetTexture(MainTex, image);
                 material.SetTexture(RampTex, ramp);
                 material.SetTexture(CapTex, cap);
