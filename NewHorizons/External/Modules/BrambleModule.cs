@@ -68,7 +68,8 @@ namespace NewHorizons.External.Modules
             public MVector3 rotation;
 
             /// <summary>
-            /// The physical scale of the node, as a multiplier of the original size
+            /// The physical scale of the node, as a multiplier of the original size. 
+            /// Nodes are 150m across, seeds are 10m across.
             /// </summary>
             [DefaultValue(1f)] public float scale = 1f;
 
@@ -88,24 +89,34 @@ namespace NewHorizons.External.Modules
             [DefaultValue(false)] public bool isSeed = false;
 
             /// <summary>
-            /// The color of the fog inside the node. Leave blank for the default yellowish color: (131, 124, 105, 255)
+            /// The color of the fog inside the node. 
+            /// Leave blank for the default yellowish white color: (255, 245, 217, 255)
             /// </summary>
             public MColor fogTint;
 
             /// <summary>
-            /// The color of the shafts of light coming from the entrances to the node. Leave blank for the default yellowish color: (131, 124, 105, 255)
+            /// The color of the light from the node. Alpha controls brightness.
+            /// Leave blank for the default white color.
             /// </summary>
             public MColor lightTint;
 
             /// <summary>
-            /// The color a dimension's background fog turns when you approach this node (if it's in a dimension). If this node is not in a dimension, this does nothing. Leave blank for the default yellowish white color: (255, 245, 217, 255)
+            /// Should this node have a point of light from afar? 
+            /// By default, nodes will have a foglight, while seeds won't, and neither will if not in a dimension.
             /// </summary>
-            public MColor farFogTint;
+            public bool? hasFogLight;
 
             /// <summary>
             /// An array of integers from 0-5. By default, all exits are allowed. To force this node to warp players out from only one hole set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] possibleExits;
+
+            #region Obsolete
+
+            [Obsolete("farFogTint is deprecated, please use fogTint instead")]
+            public MColor farFogTint;
+
+            #endregion Obsolete
         }
     }
 }
