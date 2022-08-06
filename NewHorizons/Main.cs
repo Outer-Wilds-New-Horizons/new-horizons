@@ -329,6 +329,21 @@ namespace NewHorizons
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+
+                    //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
+                    var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();
+                    foreach (var component in thm.GetComponentsInChildren<Component>(true))
+                    {
+                        if (component is ISectorGroup sectorGroup)
+                        {
+                            sectorGroup.SetSector(thm);
+                        }
+
+                        if (component is SectoredMonoBehaviour behaviour)
+                        {
+                            behaviour.SetSector(thm);
+                        }
+                    }
                 }
 
                 try
