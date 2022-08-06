@@ -344,6 +344,21 @@ namespace NewHorizons
                             behaviour.SetSector(thm);
                         }
                     }
+
+                    //Fix hollow's lantern vanilla sector components (they were set to brittle hollow's sector)
+                    var vm = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>();
+                    foreach (var component in vm.GetComponentsInChildren<Component>(true))
+                    {
+                        if (component is ISectorGroup sectorGroup)
+                        {
+                            sectorGroup.SetSector(vm);
+                        }
+
+                        if (component is SectoredMonoBehaviour behaviour)
+                        {
+                            behaviour.SetSector(vm);
+                        }
+                    }
                 }
 
                 try
