@@ -824,17 +824,17 @@ namespace NewHorizons.External.Modules
             public string decalPath;
 
             /// <summary>
-            /// whiteboard that the stones can put text onto
+            /// Whiteboard that the stones can put text onto
             /// </summary>
             public WhiteboardInfo whiteboard;
 
             /// <summary>
-            /// camera platform that the stones can project to and from
+            /// Camera platform that the stones can project to and from
             /// </summary>
             public PlatformInfo platform;
 
             /// <summary>
-            /// projection stones
+            /// Projection stones
             /// </summary>
             public StoneInfo[] stones;
 
