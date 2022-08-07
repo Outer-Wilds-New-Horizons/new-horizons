@@ -68,6 +68,7 @@ namespace NewHorizons.Builder.Props
             GameObject.DestroyImmediate(AstroBodySymbolRendererW);
 
             GameObject stone = new GameObject("ShareStoneFallback");
+            stone.layer = LayerMask.NameToLayer("Interactible");
             stone.SetActive(false);
             SphereCollider sc = stone.AddComponent<SphereCollider>();
             sc.center = Vector3.zero;
