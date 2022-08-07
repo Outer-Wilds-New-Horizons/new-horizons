@@ -336,6 +336,7 @@ namespace NewHorizons
 
                     //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
                     var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();
+                    thm._parentSector = SearchUtilities.Find("TimberHearth_Body/Sector_TH").GetComponent<Sector>();
                     foreach (var component in thm.GetComponentsInChildren<Component>(true))
                     {
                         if (component is ISectorGroup sectorGroup)
@@ -351,6 +352,7 @@ namespace NewHorizons
 
                     //Fix hollow's lantern vanilla sector components (they were set to brittle hollow's sector)
                     var vm = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>();
+                    vm._parentSector = SearchUtilities.Find("BrittleHollow_Body/Sector_BH").GetComponent<Sector>();
                     foreach (var component in vm.GetComponentsInChildren<Component>(true))
                     {
                         if (component is ISectorGroup sectorGroup)
