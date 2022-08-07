@@ -276,7 +276,11 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, Vector3.zero, 1, false);
+                        var detailInfo = new PropModule.DetailInfo()
+                        {
+                            position = info.position
+                        };
+                        var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, detailInfo);
                         computerObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))

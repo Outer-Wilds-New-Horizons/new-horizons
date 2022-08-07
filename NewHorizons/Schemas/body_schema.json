@@ -112,7 +112,7 @@
     },
     "starSystem": {
       "type": "string",
-      "description": "Unique star system containing your planet",
+      "description": "Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.",
       "default": "SolarSystem"
     },
     "version": {
@@ -970,6 +970,13 @@
           "items": {
             "$ref": "#/definitions/SignalInfo"
           }
+        },
+        "remotes": {
+          "type": "array",
+          "description": "Add projection pools/platforms, whiteboards, and stones to this planet",
+          "items": {
+            "$ref": "#/definitions/RemoteInfo"
+          }
         }
       }
     },
@@ -1025,6 +1032,10 @@
         "parentPath": {
           "type": "string",
           "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
         }
       }
     },
@@ -1868,6 +1879,148 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
+        }
+      }
+    },
+    "RemoteInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The unique remote id"
+        },
+        "decalPath": {
+          "type": "string",
+          "description": "Icon that the will show on the stone, pedastal of the whiteboard, and pedastal of the platform."
+        },
+        "whiteboard": {
+          "description": "Whiteboard that the stones can put text onto",
+          "$ref": "#/definitions/WhiteboardInfo"
+        },
+        "platform": {
+          "description": "Camera platform that the stones can project to and from",
+          "$ref": "#/definitions/PlatformInfo"
+        },
+        "stones": {
+          "type": "array",
+          "description": "Projection stones",
+          "items": {
+            "$ref": "#/definitions/StoneInfo"
+          }
+        }
+      }
+    },
+    "WhiteboardInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "nomaiText": {
+          "type": "array",
+          "description": "The text for each stone",
+          "items": {
+            "$ref": "#/definitions/SharedNomaiTextInfo"
+          }
+        },
+        "position": {
+          "description": "The location of this platform.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The rotation of this platform.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "SharedNomaiTextInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The id of the stone this text will appear for"
+        },
+        "arcInfo": {
+          "type": "array",
+          "description": "Additional information about each arc in the text",
+          "items": {
+            "$ref": "#/definitions/NomaiTextArcInfo"
+          }
+        },
+        "seed": {
+          "type": "integer",
+          "description": "The random seed used to pick what the text arcs will look like.",
+          "format": "int32"
+        },
+        "location": {
+          "description": "The location of this object. ",
+          "default": "unspecified",
+          "$ref": "#/definitions/NomaiTextLocation"
+        },
+        "xmlFile": {
+          "type": "string",
+          "description": "The relative path to the xml file for this object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "PlatformInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this platform.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The rotation of this platform.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "reveals": {
+          "type": "string",
+          "description": "A ship log fact to reveal when the platform is connected to.",
+          "default": ""
+        }
+      }
+    },
+    "StoneInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this stone.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The rotation of this stone.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },

@@ -296,6 +296,7 @@ namespace NewHorizons
                 AstroObjectLocator.Init();
                 StreamingHandler.Init();
                 AudioTypeHandler.Init();
+                RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
@@ -329,6 +330,46 @@ namespace NewHorizons
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
+
+                    
+                    // Sector changes (so that projection pools actually turn off proxies and cull groups on these moons)
+
+                    //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
+                    var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();
+                    thm._parentSector = SearchUtilities.Find("TimberHearth_Body/Sector_TH").GetComponent<Sector>();
+                    foreach (var component in thm.GetComponentsInChildren<Component>(true))
+                    {
+                        if (component is ISectorGroup sectorGroup)
+                        {
+                            sectorGroup.SetSector(thm);
+                        }
+
+                        if (component is SectoredMonoBehaviour behaviour)
+                        {
+                            behaviour.SetSector(thm);
+                        }
+                    }
+
+                    //Fix hollow's lantern vanilla sector components (they were set to brittle hollow's sector)
+                    var vm = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>();
+                    vm._parentSector = SearchUtilities.Find("BrittleHollow_Body/Sector_BH").GetComponent<Sector>();
+                    foreach (var component in vm.GetComponentsInChildren<Component>(true))
+                    {
+                        if (component is ISectorGroup sectorGroup)
+                        {
+                            sectorGroup.SetSector(vm);
+                        }
+
+                        if (component is SectoredMonoBehaviour behaviour)
+                        {
+                            behaviour.SetSector(vm);
+                        }
+                    }
+
+                    //Fix brittle hollow north pole projection platform
+                    var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
+                    var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
+                    remoteViewer._visualSector = northPoleSurface;
                 }
 
                 try

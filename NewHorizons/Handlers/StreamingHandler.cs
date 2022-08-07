@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,11 +11,13 @@ namespace NewHorizons.Handlers
     {
         private static readonly Dictionary<Material, string> _materialCache = new();
         private static readonly Dictionary<GameObject, string[]> _objectCache = new();
+        private static readonly Dictionary<string, List<Sector>> _sectorCache = new();
 
         public static void Init()
         {
             _materialCache.Clear();
             _objectCache.Clear();
+            _sectorCache.Clear();
         }
 
         /// <summary>
@@ -70,18 +72,44 @@ namespace NewHorizons.Handlers
             foreach (var assetBundle in assetBundles)
             {
                 StreamingManager.LoadStreamingAssets(assetBundle);
+
+                // Track the sector even if its null. null means stay loaded forever
+                if (!_sectorCache.TryGetValue(assetBundle, out var sectors))
+                {
+                    sectors = new List<Sector>();
+                    _sectorCache.Add(assetBundle, sectors);
+                }
+                sectors.SafeAdd(sector);
             }
 
             if (sector)
             {
                 sector.OnOccupantEnterSector += _ =>
                 {
-                    foreach (var assetBundle in assetBundles)
-                    {
-                        StreamingManager.LoadStreamingAssets(assetBundle);
-                    }
+                    if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        foreach (var assetBundle in assetBundles)
+                            StreamingManager.LoadStreamingAssets(assetBundle);
                 };
+                /*
+                sector.OnOccupantExitSector += _ =>
+                {
+                    // UnloadStreamingAssets is patched to check IsBundleInUse first before unloading
+                    if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        foreach (var assetBundle in assetBundles)
+                            StreamingManager.UnloadStreamingAssets(assetBundle);
+                };
+                */
             }
+        }
+
+        public static bool IsBundleInUse(string assetBundle)
+        {
+            if (_sectorCache.TryGetValue(assetBundle, out var sectors))
+                foreach (var sector in sectors)
+                    // If a sector in the list is null then it is always in use
+                    if (sector == null || sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        return true;
+            return false;
         }
     }
 }
