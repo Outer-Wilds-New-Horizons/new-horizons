@@ -365,6 +365,11 @@ namespace NewHorizons
                             behaviour.SetSector(vm);
                         }
                     }
+
+                    //Fix brittle hollow north pole projection platform
+                    var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
+                    var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
+                    remoteViewer._visualSector = northPoleSurface;
                 }
 
                 try

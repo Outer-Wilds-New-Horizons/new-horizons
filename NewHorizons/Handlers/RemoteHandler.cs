@@ -17,14 +17,23 @@ namespace NewHorizons.Handlers
         {
             _customPlatformIDs = new Dictionary<string, NomaiRemoteCameraPlatform.ID>();
         }
-        
+
         public static string GetPlatformIDName(NomaiRemoteCameraPlatform.ID id)
         {
             foreach (var pair in _customPlatformIDs)
             {
                 if (pair.Value == id) return TranslationHandler.GetTranslation(pair.Key, TranslationHandler.TextType.UI);
             }
-            return string.Empty;
+            return id.ToString();
+        }
+
+        public static string GetPlatformIDKey(NomaiRemoteCameraPlatform.ID id)
+        {
+            foreach (var pair in _customPlatformIDs)
+            {
+                if (pair.Value == id) return pair.Key;
+            }
+            return id.ToString();
         }
 
         public static NomaiRemoteCameraPlatform.ID GetPlatformID(string id)
