@@ -57,7 +57,7 @@ namespace NewHorizons.Builder.Body
             var volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive();
             var effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive();
             var geometry = DetailBuilder.MakeDetail(go, sector, "DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension", Vector3.zero, Vector3.zero, 1, false);
-            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive();
+            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/OuterWarp_Hub").InstantiateInactive();
             var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();
 
             atmo.name = "Atmosphere";
