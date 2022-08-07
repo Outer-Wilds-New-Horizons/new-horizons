@@ -37,6 +37,7 @@ namespace NewHorizons.Builder.Props
             var remoteCameraPlatform = _remoteCameraPlatformPrefab.GetComponent<NomaiRemoteCameraPlatform>();
             remoteCameraPlatform.enabled = true;
             remoteCameraPlatform._id = NomaiRemoteCameraPlatform.ID.None;
+            remoteCameraPlatform._platformState = NomaiRemoteCameraPlatform.State.Disconnected;
             remoteCameraPlatform._dataPointID = string.Empty;
             remoteCameraPlatform._visualSector = null;
             var AstroBodySymbolRenderer = _remoteCameraPlatformPrefab.FindChild("PedestalAnchor/Prefab_NOM_SharedPedestal/SharedPedestal_side01_bottom_jnt/SharedPedestal_side01_top_jnt/AstroBodySymbolRenderer");
