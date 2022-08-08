@@ -105,7 +105,7 @@ namespace NewHorizons.Utility
                 var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
                 if (root == null)
                 {
-                    if (warn) Logger.LogWarning($"Couldn't find root object in path ({path})");
+                    if (warn) Logger.LogWarning($"Couldn't find root object in path {path}");
                     return null;
                 }
 
@@ -114,11 +114,15 @@ namespace NewHorizons.Utility
                 if (go == null)
                 {
                     var name = names.Last();
-                    if (warn) Logger.LogWarning($"Couldn't find object in path ({path}), will look for potential matches for name {name}");
+                    if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
                     // find resource to include inactive objects
                     // also includes prefabs but hopefully thats okay
                     go = FindResourceOfTypeAndName<GameObject>(name);
-                    if (go == null) return null;
+                    if (go == null)
+                    {
+                        if (warn) Logger.LogWarning($"Couldn't find object with name {name}");
+                        return null;
+                    }
                 }
             }
 
