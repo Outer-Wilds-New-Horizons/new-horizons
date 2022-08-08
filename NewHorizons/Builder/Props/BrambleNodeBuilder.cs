@@ -262,7 +262,7 @@ namespace NewHorizons.Builder.Props
                 fogLightTint = lightTint;
                 fogLightTint.a = config.hasFogLight != true ? 0f : lightTint.a * 0.5f;
 
-                lightShaftTint = Color.HSVToRGB(lightH, -Mathf.Pow(lightS - 1, 2f) + 1f, lightV); // Inverted parabola is best fit
+                lightShaftTint = CalculateLightShaftTint(lightH, lightS, lightV);
                 lightShaftTint.a = lightTint.a;
             }
             else
@@ -270,7 +270,7 @@ namespace NewHorizons.Builder.Props
                 fogLightTint = lightTint;
                 fogLightTint.a = config.hasFogLight == false || (outerFogWarpVolume == null && config.hasFogLight != true) ? 0f : lightTint.a * 0.5f;
 
-                lightShaftTint = Color.HSVToRGB(fogH, -Mathf.Pow(fogS - 1, 2f) + 1f, fogV); // Inverted parabola is best fit
+                lightShaftTint = CalculateLightShaftTint(fogH, fogS, fogV);
                 lightShaftTint.a = lightTint.a;
             }
 
@@ -286,6 +286,7 @@ namespace NewHorizons.Builder.Props
                     fogTint = AstroObjectLocator.GetAstroObject(config.linksTo).gameObject.FindChild("Sector/Atmosphere/FogSphere_Hub").GetComponent<PlanetaryFogController>().fogTint;
 
                     // Calculate glow and fog override
+                    // Will work with any fog
                     Color dimFogTint;
                     if (go.GetComponentInChildren<PlanetaryFogController>())
                     {
@@ -340,6 +341,17 @@ namespace NewHorizons.Builder.Props
             // Done!
             brambleNode.SetActive(true);
             return brambleNode;
+
+            static Color CalculateLightShaftTint(float H, float S, float V)
+            {
+                // Sine curve approximation shifts hue to compensate for shader shenanigans
+                H += -1f / 24f * Mathf.Sin(6f * Mathf.PI * H);
+
+                // Inverted parabola is best fit for limited base game examples
+                S = -Mathf.Pow(S - 1f, 2f) + 1f;
+
+                return Color.HSVToRGB(H, S, V);
+            }
         }
 
         public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color farFogTint, Color fogLightTint, Color lightTint, Color lightShaftTint, Color glowTint, Color fogOverrideTint)
