@@ -77,7 +77,7 @@ namespace NewHorizons.External.Modules
         /// </summary>
         [Range(0f, double.MaxValue)]
         [DefaultValue(5000f)]
-        public float semiMajorAxis { get; set; }
+        public float semiMajorAxis { get; set; } = 5000f;
 
         /// <summary>
         /// The angle (in degrees) between the body's orbit and the plane of the star system

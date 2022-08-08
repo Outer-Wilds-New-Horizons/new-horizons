@@ -23,7 +23,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Radius of the brackets that show up when you target this. Defaults to the sphere of influence.
         /// </summary>
-        [DefaultValue(-1)] public float bracketRadius = -1;
+        [DefaultValue(-1f)] public float bracketRadius = -1f;
 
         /// <summary>
         /// If it should be targetable even when super close.

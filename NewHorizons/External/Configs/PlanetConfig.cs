@@ -45,7 +45,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Should this planet ever be shown on the title screen?
         /// </summary>
-        public bool canShowOnTitle = true;
+        [DefaultValue(true)] public bool canShowOnTitle = true;
 
         #region Obsolete
 
