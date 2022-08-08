@@ -78,13 +78,18 @@ public static class SchemaExporter
                 {"description", _description}
             });
 
+            if (_title == "Celestial Body Schema")
+            {
+                schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
+            }
+
             if (_title == "Star System Schema")
             {
                 schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
                 schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
                 schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
             }
-            
+
             return schema;
         }
     }
