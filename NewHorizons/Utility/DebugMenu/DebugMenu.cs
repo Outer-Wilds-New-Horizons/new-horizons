@@ -225,9 +225,7 @@ namespace NewHorizons.Utility.DebugMenu
 
                 var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
 
-                var json = JsonConvert.SerializeObject(loadedConfigFiles[filePath], jsonSettings);
-                // Add the schema line
-                json = "{\n\t\"$schema\": \"https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json\"," + json.Substring(1);
+                var json = loadedConfigFiles[filePath].ToSerializedJson();
 
                 try
                 {
