@@ -17,7 +17,13 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Should this star explode after 22 minutes?
         /// </summary>
         [DefaultValue(true)] public bool goSupernova = true;
-        
+
+        /// <summary>
+        /// How long this star will last until it supernovas.
+        /// </summary>
+        [DefaultValue(22f)]
+        public float lifespan = 22f;
+
         /// <summary>
         /// Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.
         /// </summary>

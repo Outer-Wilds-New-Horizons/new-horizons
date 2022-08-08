@@ -141,6 +141,7 @@ namespace NewHorizons.Builder.Body
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.WillExplode = starModule.goSupernova;
+            controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {

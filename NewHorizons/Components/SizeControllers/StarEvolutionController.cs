@@ -36,7 +36,6 @@ namespace NewHorizons.Components.SizeControllers
 
         public float collapseTime = 10f; // seconds
         public float lifespan = 22f; // minutes
-        private float _age;
 
         private bool _isSupernova;
         private float _supernovaStartTime;
@@ -122,8 +121,6 @@ namespace NewHorizons.Components.SizeControllers
                 _atmosphereRenderers = atmosphere?.transform?.Find("AtmoSphere")?.GetComponentsInChildren<MeshRenderer>();
             }
 
-            if (WillExplode) GlobalMessenger.AddListener("TriggerSupernova", StartCollapse);
-
             if (scaleCurve != null)
             {
                 maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
@@ -143,7 +140,6 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
-            if (WillExplode) GlobalMessenger.RemoveListener("TriggerSupernova", StartCollapse);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -157,8 +153,8 @@ namespace NewHorizons.Components.SizeControllers
             // Only do colour transition stuff if they set an end colour
             if (EndColour != null)
             {
-                // Use the age if theres no resizing happening, else make it get redder the larger it is or wtv
-                var t = _age / (lifespan * 60f);
+                // Use minutes elapsed if theres no resizing happening, else make it get redder the larger it is or wtv
+                var t = TimeLoop.GetMinutesElapsed() / lifespan;
                 if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
 
                 if (t < 1f)
@@ -218,6 +214,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public void StartCollapse()
         {
+            if (_isCollapsing) return;
+
             Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
 
             _isCollapsing = true;
@@ -230,6 +228,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public void StopCollapse()
         {
+            if (!_isCollapsing) return;
+
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
 
             _isCollapsing = false;
@@ -240,6 +240,8 @@ namespace NewHorizons.Components.SizeControllers
 
         public void StartSupernova()
         {
+            if (_isSupernova) return;
+
             Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
 
             SupernovaStart.Invoke();
@@ -248,10 +250,14 @@ namespace NewHorizons.Components.SizeControllers
             _supernovaStartTime = Time.time;
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+
+            if (_proxy != null) _proxy.StartSupernova();
         }
 
         public void StopSupernova()
         {
+            if (!_isSupernova) return;
+
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             supernova.enabled = false;
@@ -267,12 +273,12 @@ namespace NewHorizons.Components.SizeControllers
             transform.localScale = Vector3.one;
             supernova._surface._materials[0] = _surfaceMaterial;
             supernova._surface.transform.localScale = Vector3.one;
+
+            if (_proxy != null) _proxy.StopSupernova();
         }
 
         protected new void FixedUpdate()
         {
-            _age += Time.deltaTime;
-
             // If we've gone supernova and its been 45 seconds that means it has faded out and is gone
             // The 45 is from the animation curve used for the supernova alpha
             if (_isSupernova)
@@ -285,6 +291,7 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
                 UpdateMainSequence();
+                if (WillExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
             }
             else
             {
