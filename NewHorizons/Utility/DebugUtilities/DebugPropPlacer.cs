@@ -93,9 +93,10 @@ namespace NewHorizons.Utility.DebugUtilities
             // TODO: implement sectors
             // if this hits a sector, store that sector and add a config file option for it
 
-            if (!data.hitBodyGameObject.name.EndsWith("_Body"))
+            if (data.hitBodyGameObject == null)
             {
-                Logger.LogWarning("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
+                Logger.LogError($"Failed to place object {currentObject} on nothing.");
+                return;
             }
 
             try
@@ -106,6 +107,12 @@ namespace NewHorizons.Utility.DebugUtilities
                 }
 
                 var planetGO = data.hitBodyGameObject;
+
+                if (!planetGO.name.EndsWith("_Body"))
+                {
+                    Logger.LogWarning("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
+                }
+
                 var sector = planetGO.GetComponentInChildren<Sector>();
                 var prefab = SearchUtilities.Find(currentObject);
                 var detailInfo = new PropModule.DetailInfo()
@@ -114,7 +121,9 @@ namespace NewHorizons.Utility.DebugUtilities
                     rotation = data.norm,
                 };
                 var prop = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
-                var propData = RegisterProp_WithReturn(data.hitBodyGameObject.GetComponent<AstroObject>(), prop);
+
+                var body = data.hitBodyGameObject.GetComponent<AstroObject>();
+                if (body != null) RegisterProp(body, prop);
 
                 SetGameObjectRotation(prop, data, playerAbsolutePosition);
             }
