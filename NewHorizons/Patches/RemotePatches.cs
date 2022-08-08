@@ -101,7 +101,8 @@ namespace NewHorizons.Patches
                     break;
                 default:
                     var key = RemoteHandler.GetPlatformIDKey(id);
-                    switch (key.Substring(0, key.IndexOf("_")))
+                    var _ = key.IndexOf("_");
+                    switch ((_ == -1) ? key : key.Substring(0, _))
                     {
                         case "SS":
                             __result = "SolarSystem";
