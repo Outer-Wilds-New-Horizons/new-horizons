@@ -76,7 +76,7 @@ namespace NewHorizons.External.Modules
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
         /// </summary>
         [Range(0f, double.MaxValue)]
-        public float semiMajorAxis { get; set; };
+        public float semiMajorAxis { get; set; }
 
         /// <summary>
         /// The angle (in degrees) between the body's orbit and the plane of the star system
