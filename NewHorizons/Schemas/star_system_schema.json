@@ -24,6 +24,12 @@
       "type": "string",
       "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if\nyou're using this, that would make no sense."
     },
+    "loopDuration": {
+      "type": "number",
+      "description": "The duration of the time loop.",
+      "format": "float",
+      "default": 22.0
+    },
     "mapRestricted": {
       "type": "boolean",
       "description": "Should the player not be able to view the map in this system?"
