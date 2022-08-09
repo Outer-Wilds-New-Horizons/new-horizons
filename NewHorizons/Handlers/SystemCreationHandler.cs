@@ -31,6 +31,11 @@ namespace NewHorizons.Handlers
                 timeLoopController.AddComponent<TimeLoopController>();
             }
 
+            if (system.Config.loopDuration != 22f)
+            {
+                TimeLoopUtilities.SetLoopDuration(system.Config.loopDuration);
+            }
+
             if (!string.IsNullOrEmpty(system.Config.travelAudio))
             {
                 Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
