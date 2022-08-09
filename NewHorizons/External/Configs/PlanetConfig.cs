@@ -18,6 +18,17 @@ namespace NewHorizons.External.Configs
     public class PlanetConfig
     {
         /// <summary>
+        /// Unique name of your planet
+        /// </summary>
+        [Required]
+        public string name;
+
+        /// <summary>
+        /// Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.
+        /// </summary>
+        [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
+
+        /// <summary>
         /// Generate asteroids around this body
         /// </summary>
         public AsteroidBeltModule AsteroidBelt;
@@ -95,12 +106,6 @@ namespace NewHorizons.External.Configs
         public LavaModule Lava;
 
         /// <summary>
-        /// Unique name of your planet
-        /// </summary>
-        [Required]
-        public string name;
-
-        /// <summary>
         /// Describes this Body's orbit (or lack there of)
         /// </summary>
         public OrbitModule Orbit;
@@ -149,11 +154,6 @@ namespace NewHorizons.External.Configs
         /// Make this body a star
         /// </summary>
         public StarModule Star;
-
-        /// <summary>
-        /// Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.
-        /// </summary>
-        [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
 
         /// <summary>
         /// Version of New Horizons this config is using (Doesn't do anything)
