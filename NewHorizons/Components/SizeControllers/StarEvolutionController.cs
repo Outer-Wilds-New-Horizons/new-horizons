@@ -14,6 +14,7 @@ namespace NewHorizons.Components.SizeControllers
     public class StarEvolutionController : SizeController
     {
         public GameObject atmosphere;
+        public StarController controller;
         public SupernovaEffectController supernova;
         public bool WillExplode { get; set; }
         public MColor StartColour { get; set; }
@@ -29,6 +30,8 @@ namespace NewHorizons.Components.SizeControllers
         private HeatHazardVolume _heatVolume;
         private DestructionVolume _destructionVolume;
         private SolarFlareEmitter _flareEmitter;
+        private MapMarker _mapMarker;
+        private OWRigidbody _rigidbody;
 
         private bool _isCollapsing;
         private float _collapseStartSize;
@@ -64,6 +67,9 @@ namespace NewHorizons.Components.SizeControllers
 
         private void Start()
         {
+            _rigidbody = this.GetAttachedOWRigidbody();
+            if (_rigidbody != null) _mapMarker = _rigidbody.GetComponent<MapMarker>();
+
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
             _collapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
@@ -207,6 +213,22 @@ namespace NewHorizons.Components.SizeControllers
 
             if (Time.time > _supernovaStartTime + 45f)
             {
+                if (_rigidbody != null)
+                {
+                    ReferenceFrameTracker referenceFrameTracker = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
+                    if (referenceFrameTracker.GetReferenceFrame() != null && referenceFrameTracker.GetReferenceFrame().GetOWRigidBody() == _rigidbody) referenceFrameTracker.UntargetReferenceFrame();
+                    _rigidbody._isTargetable = false;
+                    if (_rigidbody._attachedRFVolume != null)
+                    {
+                        _rigidbody._attachedRFVolume._minColliderRadius = 0;
+                        _rigidbody._attachedRFVolume._maxColliderRadius = 0;
+                    }
+                }
+
+                if (_mapMarker != null) _mapMarker.DisableMarker();
+
+                if (controller != null) StarLightController.RemoveStar(controller);
+
                 // Just turn off the star entirely
                 base.gameObject.SetActive(false);
             }

@@ -137,6 +137,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
+            controller.controller = starController;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
