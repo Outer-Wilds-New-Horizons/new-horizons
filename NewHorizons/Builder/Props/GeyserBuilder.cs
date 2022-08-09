@@ -56,6 +56,30 @@ namespace NewHorizons.Builder.Props
                 geyserFluidVolume._attractionalFlowSpeed *= info.force / 55f;
                 geyserFluidVolume._directionalFlowSpeed = info.force;
             }
+
+            geyserGO.GetComponent<GeyserAudioController>().SetSector(sector);
+            var oneShotAudio = geyserGO.FindChild("Geyser_OneShotAudioSrc");
+            var loopAudio = geyserGO.FindChild("Geyser_LoopAudioSrc");
+            oneShotAudio.GetComponent<AudioSpreadController>().SetSector(sector);
+            loopAudio.GetComponent<AudioSpreadController>().SetSector(sector);
+
+            // Someone might want a geyser just for its force maybe idk
+            if (info.disableSpout & info.disableShaft & info.disableBubbles)
+            {
+                oneShotAudio.SetActive(false);
+                loopAudio.SetActive(false);
+            } 
+            // Disable start/end sounds if its just bubbles
+            else if (info.disableSpout & info.disableShaft)
+            {
+                oneShotAudio.SetActive(false);
+            }
+            // If it starts at the shaft, move the start/end sounds to it
+            else if ((info.disableSpout & !info.disableShaft) | info.offset == -67f)
+            {
+                oneShotAudio.transform.SetLocalPositionY(67f);
+            }
+
         }
     }
 }
