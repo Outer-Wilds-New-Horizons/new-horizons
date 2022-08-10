@@ -150,11 +150,11 @@ namespace NewHorizons.Components.SizeControllers
             {
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
-                    StartCollapse();
+                    Delay.RunWhen(() => Main.IsSystemReady, StartCollapse);
                 else if (timeAfter <= collapseTime + 45)
-                    StartSupernova();
+                    Delay.RunWhen(() => Main.IsSystemReady, StartSupernova);
                 else
-                    DisableStar();
+                    Delay.RunWhen(() => Main.IsSystemReady, () => Delay.FireOnNextUpdate(() => DisableStar(true)));
             }
         }
 
@@ -232,7 +232,7 @@ namespace NewHorizons.Components.SizeControllers
             }
         }
 
-        private void DisableStar()
+        private void DisableStar(bool start = false)
         {
             if (_rigidbody != null)
             {
@@ -252,6 +252,25 @@ namespace NewHorizons.Components.SizeControllers
 
             // Just turn off the star entirely
             base.gameObject.SetActive(false);
+
+            if (start && _planetDestructionVolume != null)
+            {
+                foreach (var collider in Physics.OverlapSphere(_planetDestructionVolume.transform.position, _planetDestructionVolume.GetComponent<SphereCollider>().radius * 50000f * 0.9f))
+                {
+                    if (collider.attachedRigidbody != null)
+                    {
+                        var body = collider.attachedRigidbody.GetComponent<OWRigidbody>();
+                        if (body != null && body != _rigidbody)
+                        {
+                            // Vanish anything that is not a player-related object
+                            if (!(collider.attachedRigidbody.CompareTag("Player") || collider.attachedRigidbody.CompareTag("Ship") || collider.attachedRigidbody.CompareTag("ShipCockpit") || collider.attachedRigidbody.CompareTag("Probe")))
+                            {
+                                _planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, _planetDestructionVolume.transform));
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         public void StartCollapse()
