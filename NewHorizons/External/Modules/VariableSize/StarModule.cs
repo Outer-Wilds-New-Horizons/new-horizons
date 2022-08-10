@@ -53,6 +53,13 @@ namespace NewHorizons.External.Modules.VariableSize
         public float solarLuminosity = 1f;
 
         /// <summary>
+        /// Radius of the supernova.
+        /// </summary>
+        [DefaultValue(50000f)]
+        [Range(0f, double.MaxValue)]
+        public float supernovaSize = 50000f;
+
+        /// <summary>
         /// The tint of the supernova this star creates when it dies.
         /// </summary>
         public MColor supernovaTint;

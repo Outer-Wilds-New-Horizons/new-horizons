@@ -2333,6 +2333,13 @@
           "default": 1.0,
           "minimum": 0.0
         },
+        "supernovaSize": {
+          "type": "number",
+          "description": "Radius of the supernova.",
+          "format": "float",
+          "default": 50000.0,
+          "minimum": 0.0
+        },
         "supernovaTint": {
           "description": "The tint of the supernova this star creates when it dies.",
           "$ref": "#/definitions/MColor"

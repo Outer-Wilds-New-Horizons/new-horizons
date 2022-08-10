@@ -144,6 +144,8 @@ namespace NewHorizons.Builder.Body
             controller.WillExplode = starModule.goSupernova;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
+            controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
                 controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
@@ -185,6 +187,7 @@ namespace NewHorizons.Builder.Body
             var controller = starGO.AddComponent<StarEvolutionController>();
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
+            controller.supernovaSize = starModule.supernovaSize;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
@@ -198,7 +201,7 @@ namespace NewHorizons.Builder.Body
             controller.enabled = true;
             starGO.SetActive(true);
 
-            planet.GetComponentInChildren<StarEvolutionController>().SetProxy(controller);
+            planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
 
             return proxyGO;
         }
@@ -284,6 +287,7 @@ namespace NewHorizons.Builder.Body
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+            supernova._supernovaScale = AnimationCurve.Linear(5, 0, 15, starModule.supernovaSize);
             supernova._supernovaVolume = null;
 
             if (starModule.supernovaTint != null)

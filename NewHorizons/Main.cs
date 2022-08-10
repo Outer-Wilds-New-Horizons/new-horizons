@@ -381,6 +381,14 @@ namespace NewHorizons
                     remoteViewer._visualSector = northPoleSurface;
                 }
 
+                //Stop starfield from disappearing when there is no lights
+                var playerBody = SearchUtilities.Find("Player_Body");
+                var playerLight = playerBody.AddComponent<Light>();
+                playerLight.innerSpotAngle = 0;
+                playerLight.spotAngle = 179;
+                playerLight.range = 0.5f;
+                playerLight.intensity = 0.001f;
+
                 try
                 {
                     Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
