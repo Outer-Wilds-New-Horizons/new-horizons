@@ -1152,6 +1152,12 @@
         "disableSpout": {
           "type": "boolean",
           "description": "Disable the individual particle systems of the geyser"
+        },
+        "volume": {
+          "type": "number",
+          "description": "Loudness of the geyser",
+          "format": "float",
+          "default": 0.7
         }
       }
     },
