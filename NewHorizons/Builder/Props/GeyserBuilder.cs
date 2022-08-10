@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Props
             });
 
             // If it starts at the shaft, move the start/end sounds to it
-            if ((info.disableSpout & !info.disableShaft) | info.offset == -67f)
+            if ((info.disableSpout && !info.disableShaft) || info.offset == -67f)
             {
                 oneShotAudio.transform.SetLocalPositionY(67f);
             }
