@@ -142,6 +142,19 @@ namespace NewHorizons.Components.SizeControllers
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
             _surfaceMaterial = supernova._surface._materials[0];
+
+            var secondsElapsed = TimeLoop.GetSecondsElapsed();
+            var lifespanInSeconds = lifespan * 60;
+            if (secondsElapsed >= lifespanInSeconds)
+            {
+                var timeAfter = secondsElapsed - lifespanInSeconds;
+                if (timeAfter <= collapseTime)
+                    StartCollapse();
+                else if (timeAfter <= collapseTime + 45)
+                    StartSupernova();
+                else
+                    DisableStar();
+            }
         }
 
         public void OnDestroy()
@@ -213,25 +226,30 @@ namespace NewHorizons.Components.SizeControllers
 
             if (Time.time > _supernovaStartTime + 45f)
             {
-                if (_rigidbody != null)
-                {
-                    ReferenceFrameTracker referenceFrameTracker = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
-                    if (referenceFrameTracker.GetReferenceFrame() != null && referenceFrameTracker.GetReferenceFrame().GetOWRigidBody() == _rigidbody) referenceFrameTracker.UntargetReferenceFrame();
-                    _rigidbody._isTargetable = false;
-                    if (_rigidbody._attachedRFVolume != null)
-                    {
-                        _rigidbody._attachedRFVolume._minColliderRadius = 0;
-                        _rigidbody._attachedRFVolume._maxColliderRadius = 0;
-                    }
-                }
-
-                if (_mapMarker != null) _mapMarker.DisableMarker();
-
-                if (controller != null) StarLightController.RemoveStar(controller);
-
-                // Just turn off the star entirely
-                base.gameObject.SetActive(false);
+                DisableStar();
             }
+        }
+
+        private void DisableStar()
+        {
+            if (_rigidbody != null)
+            {
+                ReferenceFrameTracker referenceFrameTracker = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
+                if (referenceFrameTracker.GetReferenceFrame() != null && referenceFrameTracker.GetReferenceFrame().GetOWRigidBody() == _rigidbody) referenceFrameTracker.UntargetReferenceFrame();
+                _rigidbody._isTargetable = false;
+                if (_rigidbody._attachedRFVolume != null)
+                {
+                    _rigidbody._attachedRFVolume._minColliderRadius = 0;
+                    _rigidbody._attachedRFVolume._maxColliderRadius = 0;
+                }
+            }
+
+            if (_mapMarker != null) _mapMarker.DisableMarker();
+
+            if (controller != null) StarLightController.RemoveStar(controller);
+
+            // Just turn off the star entirely
+            base.gameObject.SetActive(false);
         }
 
         public void StartCollapse()
