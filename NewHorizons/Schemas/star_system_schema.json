@@ -26,7 +26,7 @@
     },
     "loopDuration": {
       "type": "number",
-      "description": "The duration of the time loop.",
+      "description": "The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.",
       "format": "float",
       "default": 22.0
     },

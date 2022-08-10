@@ -2254,17 +2254,17 @@
           }
         },
         "endTint": {
-          "description": "Colour of the star at the end of its life.",
+          "description": "Colour of the star at the end of its lifespan.",
           "$ref": "#/definitions/MColor"
         },
         "goSupernova": {
           "type": "boolean",
-          "description": "Should this star explode after 22 minutes?",
+          "description": "Should this star explode at the end of its lifespan?",
           "default": true
         },
         "lifespan": {
           "type": "number",
-          "description": "How long this star will last until it supernovas.",
+          "description": "How long in minutes this star will last until it supernovas.",
           "format": "float",
           "default": 22.0
         },
