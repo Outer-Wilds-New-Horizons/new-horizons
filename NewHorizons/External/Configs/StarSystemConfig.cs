@@ -36,7 +36,7 @@ namespace NewHorizons.External.Configs
         public string factRequiredForWarp;
 
         /// <summary>
-        /// The duration of the time loop.
+        /// The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.
         /// </summary>
         [DefaultValue(22f)] public float loopDuration = 22f;
 
