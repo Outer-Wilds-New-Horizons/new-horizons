@@ -28,7 +28,8 @@ namespace NewHorizons.Components.SizeControllers
         private PlanetaryFogController _fog;
         private MeshRenderer[] _atmosphereRenderers;
         private HeatHazardVolume _heatVolume;
-        private DestructionVolume _destructionVolume;
+        public DestructionVolume _destructionVolume;
+        public DestructionVolume _planetDestructionVolume;
         private SolarFlareEmitter _flareEmitter;
         private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
@@ -119,7 +120,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _heatVolume = GetComponentInChildren<HeatHazardVolume>();
-            _destructionVolume = GetComponentInChildren<DestructionVolume>();
+            if (_destructionVolume != null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
 
             if (atmosphere != null)
             {
@@ -222,6 +223,7 @@ namespace NewHorizons.Components.SizeControllers
 
             // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
             if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+            if (_planetDestructionVolume != null) _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
 
             if (Time.time > _supernovaStartTime + 45f)
@@ -290,6 +292,7 @@ namespace NewHorizons.Components.SizeControllers
             _supernovaStartTime = Time.time;
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
+            if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
 
             if (_proxy != null) _proxy.StartSupernova();
         }
@@ -307,6 +310,11 @@ namespace NewHorizons.Components.SizeControllers
             {
                 _destructionVolume._deathType = DeathType.Energy;
                 _destructionVolume.transform.localScale = Vector3.one;
+            }
+            if (_planetDestructionVolume != null)
+            {
+                _planetDestructionVolume._deathType = DeathType.Energy;
+                _planetDestructionVolume.transform.localScale = Vector3.one;
             }
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);

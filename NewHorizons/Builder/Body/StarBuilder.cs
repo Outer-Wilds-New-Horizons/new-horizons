@@ -144,6 +144,8 @@ namespace NewHorizons.Builder.Body
             controller.WillExplode = starModule.goSupernova;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
+            controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
                 controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
