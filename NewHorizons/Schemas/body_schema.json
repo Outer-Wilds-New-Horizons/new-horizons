@@ -1124,6 +1124,18 @@
           "format": "float",
           "default": 55.0
         },
+        "activeDuration": {
+          "type": "number",
+          "description": "Time in seconds eruptions last for",
+          "format": "float",
+          "default": 10.0
+        },
+        "inactiveDuration": {
+          "type": "number",
+          "description": "Time in seconds between eruptions",
+          "format": "float",
+          "default": 19.0
+        },
         "tint": {
           "description": "Color of the geyser. Alpha sets the particle density.",
           "$ref": "#/definitions/MColor"
