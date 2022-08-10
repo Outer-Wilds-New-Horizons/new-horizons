@@ -23,7 +23,7 @@ namespace NewHorizons.Builder.Body
 
     public static class BrambleDimensionBuilder
     {
-        public static readonly float BASE_DIMENSION_RADIUS = 1705f;
+        public static readonly float BASE_DIMENSION_RADIUS = 750f;
 
         // location of all vanilla bramble dimensions
         //-9116.795 -19873.44 2480.327
@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
             var detailInfo = new PropModule.DetailInfo();
             var geometry = DetailBuilder.MakeDetail(go, sector, prefab, detailInfo);
 
-            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/OuterWarp_Hub").InstantiateInactive();
+            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive();
             var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();
 
             atmo.name = "Atmosphere";
@@ -155,13 +155,15 @@ namespace NewHorizons.Builder.Body
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
             geometry.transform.localScale = Vector3.one * scale;
+            sector.gameObject.GetComponent<SphereShape>().radius *= scale;
             outerFogWarpVolume._warpRadius *= scale;
             outerFogWarpVolume._exitRadius *= scale;
             
             var fogGO = atmo.FindChild("FogSphere_Hub");
             var fog = fogGO.GetComponent<PlanetaryFogController>();
             fog._fogRadius *= scale;
-            fog._fogDensity *= scale;
+            fog._fogDensity = config.fogDensity * scale;
+            atmo.FindChild("FogBackdrop_Hub").transform.localScale *= scale;
 
             var volumesShape = volumes.FindChild("ZeroG_Fluid_Audio_Volume");
             var sphereShape = volumesShape.GetComponent<SphereShape>();
@@ -169,17 +171,19 @@ namespace NewHorizons.Builder.Body
             sphereShape.radius *= scale;
 
             // Change fog color
-            if (body.Config.Bramble.dimension.fogTint != null)
+            if (config.fogTint != null)
             {
-                var color = body.Config.Bramble.dimension.fogTint.ToColor();
+                var color = config.fogTint.ToColor();
                 fog.fogTint = color;
                 outerFogWarpVolume._fogColor = color;
             }
 
-            // Set up repel volume to only contain this dimension
+            // Set up repel volume and cloak to scale and only contain this dimension
             // The base game one is on the HUB dimension and encompasses all bramble dimensions and their sectors
-            var cloak = repelVolume.gameObject.GetComponentInChildren<DarkBrambleCloakSphere>();
-            cloak.transform.localScale = Vector3.one * 4000f;
+            repelVolume.GetComponent<SphereShape>().radius = 2400f * scale;
+            repelVolume.GetComponent<DarkBrambleRepelVolume>()._innerRadius = 2010f * scale;
+            var cloak = repelVolume.GetComponentInChildren<DarkBrambleCloakSphere>();
+            cloak.transform.localScale = Vector3.one * 4020f * scale;
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 

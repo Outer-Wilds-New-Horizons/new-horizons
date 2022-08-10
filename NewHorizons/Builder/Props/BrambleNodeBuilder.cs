@@ -175,6 +175,7 @@ namespace NewHorizons.Builder.Props
             }
 
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
+            var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
 
             brambleNode.transform.parent = sector.transform;
@@ -192,8 +193,6 @@ namespace NewHorizons.Builder.Props
             fogLight._innerWarp = innerFogWarpVolume;
             fogLight._linkedFogLights = new List<FogLight>();
             fogLight._linkedLightData = new List<FogLight.LightData>();
-
-            sector.RegisterFogLight(fogLight);
         
             // If the config says only certain exits are allowed, enforce that
             if (config.possibleExits != null)
@@ -221,32 +220,92 @@ namespace NewHorizons.Builder.Props
             // TODO: replace InnerFogWarpVolume with NHInnerFogWarpVolume, which overrides GetFogDensity to
             // account for scale (this will fix the issue with screen fog caused by scaled down nodes)
 
-            // Set the scale
+            // Set the main scale
             brambleNode.transform.localScale = Vector3.one * config.scale;
             innerFogWarpVolume._warpRadius *= config.scale;
             innerFogWarpVolume._exitRadius *= config.scale;
 
-            // Seed fog works differently, so it doesn't need to be fixed
-            // (it's also located on a different child path, so the below FindChild calls wouldn't work)
-            if (!config.isSeed)
+            // Set the seed/node specific scales and other stuff
+            if (config.isSeed)
             {
+                innerFogWarpVolume._exitRadius /= 1.8f;
+                brambleNode.FindChild("PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
+                brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
+                fogLight._maxVisibleDistance = float.PositiveInfinity; // Prefab does have working foglight aside from this
+                fogLight._minVisibleDistance *= config.scale / 15f;
+            }
+            else
+            {
+                brambleNode.FindChild("Effects/PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
+                brambleNode.FindChild("Effects/FogOverrideVolume").GetComponent<FogOverrideVolume>().blendDistance *= config.scale;
+                fogLight._minVisibleDistance *= config.scale;
+
+                // Seed fog works differently, so it doesn't need to be fixed
+                // (it's also located on a different child path, so the below FindChild calls wouldn't work)
                 var fog = brambleNode.FindChild("Effects/InnerWarpFogSphere");
                 var fogMaterial = fog.GetComponent<MeshRenderer>().material;
-                fog.transform.localScale /= config.scale;
                 fogMaterial.SetFloat("_Radius", fogMaterial.GetFloat("_Radius") * config.scale);
                 fogMaterial.SetFloat("_Density", fogMaterial.GetFloat("_Density") / config.scale);
             }
 
-            // Change the colors
-            if (config.isSeed) SetSeedColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
-            else SetNodeColors(brambleNode, config.fogTint?.ToColor(), config.lightTint?.ToColor());
+            // Set colors
+            Color fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint;
 
-            innerFogWarpVolume._useFarFogColor = false;
-            if (config.farFogTint != null)
+            farFogTint = config.fogTint != null ? config.fogTint.ToColor() : new Color(1f, 0.9608f, 0.851f, 1f);
+            lightTint = config.lightTint != null ? config.lightTint.ToColor() : Color.white;
+
+            Color.RGBToHSV(farFogTint, out var fogH, out var fogS, out var fogV);
+            Color.RGBToHSV(lightTint, out var lightH, out var lightS, out var lightV);
+
+            if (config.isSeed)
             {
-                innerFogWarpVolume._useFarFogColor = true;
-                innerFogWarpVolume._farFogColor = config.farFogTint.ToColor();
+                fogLightTint = lightTint;
+                fogLightTint.a = config.hasFogLight != true ? 0f : lightTint.a * 0.5f;
+
+                lightShaftTint = CalculateLightShaftTint(lightH, lightS, lightV);
+                lightShaftTint.a = lightTint.a;
             }
+            else
+            {
+                fogLightTint = lightTint;
+                fogLightTint.a = config.hasFogLight == false || (outerFogWarpVolume == null && config.hasFogLight != true) ? 0f : lightTint.a * 0.5f;
+
+                lightShaftTint = CalculateLightShaftTint(fogH, fogS, fogV);
+                lightShaftTint.a = lightTint.a;
+            }
+
+            // Apply colors
+            Delay.FireOnNextUpdate(() => {
+                if (config.isSeed)
+                {
+                    SetSeedColors(brambleNode, farFogTint, fogLightTint, lightTint, lightShaftTint);
+                }
+                else
+                {
+                    // Set inner fog to destination fog tint
+                    fogTint = AstroObjectLocator.GetAstroObject(config.linksTo).gameObject.FindChild("Sector/Atmosphere/FogSphere_Hub").GetComponent<PlanetaryFogController>().fogTint;
+
+                    // Calculate glow and fog override
+                    // Will work with any fog
+                    Color dimFogTint;
+                    if (go.GetComponentInChildren<PlanetaryFogController>())
+                    {
+                        dimFogTint = go.GetComponentInChildren<PlanetaryFogController>().fogTint;
+                        Color.RGBToHSV(dimFogTint, out var dimH, out var dimS, out var dimV);
+                        Color.RGBToHSV(lightShaftTint, out var shaftH, out var shaftS, out var shaftV);
+                        glowTint = Color.HSVToRGB(shaftH, shaftS, dimV * 1.25f);
+                        glowTint.a = lightTint.a;
+                        fogOverrideTint = Color.HSVToRGB(fogH, Mathf.Lerp(fogS, dimS, 0.5f), Mathf.Lerp(fogV, dimV, 0.5f));
+                        fogOverrideTint.a = 1f;
+                    }
+                    else
+                    {
+                        glowTint = fogOverrideTint = Color.clear;
+                    }
+
+                    SetNodeColors(brambleNode, fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint);
+                }
+            });
 
             // Set up warps
             innerFogWarpVolume._sector = sector;
@@ -254,7 +313,7 @@ namespace NewHorizons.Builder.Props
 
             // the OuterFogWarpVolume of the dimension this node is inside of
             // (null if this node is not inside of a bramble dimension, eg it's sitting on a planet or something)
-            innerFogWarpVolume._containerWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go); 
+            innerFogWarpVolume._containerWarpVolume = outerFogWarpVolume;
 
             var success = PairEntrance(innerFogWarpVolume, config.linksTo);
             if (!success) RecordUnpairedNode(innerFogWarpVolume, config.linksTo);
@@ -282,60 +341,84 @@ namespace NewHorizons.Builder.Props
             // Done!
             brambleNode.SetActive(true);
             return brambleNode;
-        }
 
-        public static void SetNodeColors(GameObject brambleNode, Color? fogTint, Color? lightTint)
-        {
-            if (fogTint != null)
+            static Color CalculateLightShaftTint(float H, float S, float V)
             {
-                var fogRenderer = brambleNode.GetComponent<InnerFogWarpVolume>();
+                // Sine curve approximation shifts hue to compensate for shader shenanigans
+                H += -1f / 24f * Mathf.Sin(6f * Mathf.PI * H);
 
-                fogRenderer._fogColor = fogTint.Value;
+                // Inverted parabola is best fit for limited base game examples
+                S = -Mathf.Pow(S - 1f, 2f) + 1f;
 
-                var fogBackdrop = brambleNode.FindChild("Terrain_DB_BrambleSphere_Inner_v2/fogbackdrop_v2");
-                if (fogBackdrop != null) 
-                    fogBackdrop.GetComponent<MeshRenderer>().material.color = fogTint.Value;
-            }
-
-            if (lightTint != null)
-            {
-                var lightShafts = brambleNode.FindChild("Effects/DB_BrambleLightShafts");
-
-                var lightShaft1 = lightShafts.FindChild("BrambleLightShaft1");
-                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
-                mat.color = lightTint.Value;
-
-                for (int i = 1; i <= 6; i++)
-                {
-                    var lightShaft = lightShafts.FindChild($"BrambleLightShaft{i}");
-                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
-                }
+                return Color.HSVToRGB(H, S, V);
             }
         }
 
-        public static void SetSeedColors(GameObject brambleSeed, Color? fogTint, Color? lightTint)
+        public static void SetNodeColors(GameObject brambleNode, Color fogTint, Color farFogTint, Color fogLightTint, Color lightTint, Color lightShaftTint, Color glowTint, Color fogOverrideTint)
         {
-            if (fogTint != null)
-            {
-                var fogRenderer = brambleSeed.FindChild("VolumetricFogSphere (2)");
+            var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
+            innerFogWarpVolume._fogColor = fogTint;
+            innerFogWarpVolume._farFogColor = farFogTint;
 
-                var fogMeshRenderer = fogRenderer.GetComponent<MeshRenderer>();
-                fogMeshRenderer.material.color = fogTint.Value;
+            var fogLight = brambleNode.GetComponent<FogLight>();
+            fogLight._maxAlpha = fogLightTint.a;
+            fogLight._primaryLightData.maxAlpha = fogLightTint.a;
+            fogLight._tint = fogLightTint;
+            fogLight._primaryLightData.color = fogLightTint;
+
+            var light = brambleNode.FindChild("Effects/PointLight_DB_FogLight").GetComponent<Light>();
+            light.intensity = lightTint.a * 0.7f;
+            light.color = lightTint;
+
+            var lightShafts = brambleNode.FindChild("Effects/DB_BrambleLightShafts");
+            var lightShaft1 = lightShafts.FindChild("BrambleLightShaft1");
+            var mat = lightShaft1.GetComponent<MeshRenderer>().material;
+            mat.color = lightShaftTint;
+            for (int i = 1; i <= 6; i++)
+            {
+                var lightShaft = lightShafts.FindChild($"BrambleLightShaft{i}");
+                lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
             }
 
-            if (lightTint != null)
+            var glow = brambleNode.FindChild("Effects/InnerWarpFogGlow");
+            glow.GetComponent<MeshRenderer>().material.color = glowTint;
+            glow.transform.localScale *= glowTint.a;
+            if (glowTint.a == 0f) glow.SetActive(false);
+
+            var fogOverride = brambleNode.FindChild("Effects/FogOverrideVolume");
+            if (fogOverrideTint.a == 1f) // Override turns goofy if alpha isn't 1
             {
-                var lightShafts = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)/DB_SeedLightShafts");
+                var volume = fogOverride.GetComponent<FogOverrideVolume>();
+                volume.tint = fogOverrideTint;
+                volume.blendDistance *= lightTint.a;
+                volume.radius *= lightTint.a;
+            }
+            else fogOverride.SetActive(false);
+        }
 
-                var lightShaft1 = lightShafts.FindChild("DB_SeedLightShafts1");
-                var mat = lightShaft1.GetComponent<MeshRenderer>().material;
-                mat.color = lightTint.Value;
+        public static void SetSeedColors(GameObject brambleSeed, Color farFogTint, Color fogLightTint, Color lightTint, Color lightShaftTint)
+        {
+            brambleSeed.GetComponent<InnerFogWarpVolume>()._fogColor = farFogTint;
+            brambleSeed.FindChild("VolumetricFogSphere (2)").GetComponent<MeshRenderer>().material.color = new Color(farFogTint.r * 10, farFogTint.g * 10, farFogTint.b * 10, farFogTint.a);
 
-                for (int i = 1; i <= 6; i++)
-                {
-                    var lightShaft = lightShafts.FindChild($"DB_SeedLightShafts{i}");
-                    lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
-                }
+            var fogLight = brambleSeed.GetComponent<FogLight>();
+            fogLight._maxAlpha = fogLightTint.a;
+            fogLight._primaryLightData.maxAlpha = fogLightTint.a;
+            fogLight._tint = fogLightTint;
+            fogLight._primaryLightData.color = fogLightTint;
+
+            var light = brambleSeed.FindChild("PointLight_DB_FogLight").GetComponent<Light>();
+            light.intensity = lightTint.a;
+            light.color = lightTint;
+
+            var lightShafts = brambleSeed.FindChild("Terrain_DB_BrambleSphere_Seed_V2 (2)/DB_SeedLightShafts");
+            var lightShaft1 = lightShafts.FindChild("DB_SeedLightShafts1");
+            var mat = lightShaft1.GetComponent<MeshRenderer>().material;
+            mat.color = lightShaftTint;
+            for (int i = 1; i <= 6; i++)
+            {
+                var lightShaft = lightShafts.FindChild($"DB_SeedLightShafts{i}");
+                lightShaft.GetComponent<MeshRenderer>().sharedMaterial = mat;
             }
         }
     }

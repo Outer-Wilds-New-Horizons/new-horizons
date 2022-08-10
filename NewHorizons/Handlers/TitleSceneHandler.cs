@@ -67,8 +67,9 @@ namespace NewHorizons.Handlers
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
             var light = lightGO.AddComponent<Light>();
-            light.color = new Color(1f, 1f, 1f, 1f);
-            light.range = 100;
+            light.type = LightType.Directional;
+            light.color = Color.white;
+            light.range = float.PositiveInfinity;
             light.intensity = 0.8f;
         }
 
