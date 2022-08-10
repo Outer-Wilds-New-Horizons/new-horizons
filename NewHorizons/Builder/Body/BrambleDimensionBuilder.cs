@@ -139,6 +139,22 @@ namespace NewHorizons.Builder.Body
 
             PairExit(config.linksTo, outerFogWarpVolume);
 
+            // If the config says only certain entrances are allowed, enforce that
+            if (config.allowedEntrances != null)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var entrances = outerFogWarpVolume._exits;
+                    var newEntrances = new List<SphericalFogWarpExit>();
+                    foreach (var index in config.allowedEntrances)
+                    {
+                        if (index is < 0 or > 5) continue;
+                        newEntrances.Add(entrances[index]);
+                    }
+                    outerFogWarpVolume._exits = newEntrances.ToArray();
+                });
+            }
+
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
             geometry.transform.localScale = Vector3.one * scale;
@@ -185,22 +201,6 @@ namespace NewHorizons.Builder.Body
             geometry.SetActive(true);
             exitWarps.SetActive(true);
             repelVolume.SetActive(true);
-
-            // If the config says only certain entrances are allowed, enforce that
-            if (config.allowedEntrances != null)
-            {
-                Delay.FireOnNextUpdate(() =>
-                {
-                    var entrances = outerFogWarpVolume._exits;
-                    var newEntrances = new List<SphericalFogWarpExit>();
-                    foreach (var index in config.allowedEntrances)
-                    {
-                        if (index is < 0 or > 5) continue;
-                        newEntrances.Add(entrances[index]);
-                    }
-                    outerFogWarpVolume._exits = newEntrances.ToArray();
-                });
-            }
 
             return go;
         }

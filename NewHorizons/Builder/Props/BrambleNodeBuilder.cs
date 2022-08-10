@@ -194,6 +194,22 @@ namespace NewHorizons.Builder.Props
             fogLight._linkedFogLights = new List<FogLight>();
             fogLight._linkedLightData = new List<FogLight.LightData>();
 
+            // If the config says only certain exits are allowed, enforce that
+            if (config.possibleExits != null)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var exits = innerFogWarpVolume._exits;
+                    var newExits = new List<SphericalFogWarpExit>();
+                    foreach (var index in config.possibleExits)
+                    {
+                        if (index is < 0 or > 5) continue;
+                        newExits.Add(exits[index]);
+                    }
+                    innerFogWarpVolume._exits = newExits.ToArray();
+                });
+            }
+
             // Set up screen fog effect 
             var fogEffectRuleset = sector.gameObject.GetAddComponent<EffectRuleset>();
             fogEffectRuleset._attachedBody = sector.GetAttachedOWRigidbody();
@@ -325,25 +341,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            brambleNode.SetActive(true);
-
-            // If the config says only certain exits are allowed, enforce that
-            if (config.possibleExits != null)
-            {
-                Delay.FireOnNextUpdate(() =>
-                {
-                    var exits = innerFogWarpVolume._exits;
-                    var newExits = new List<SphericalFogWarpExit>();
-                    foreach (var index in config.possibleExits)
-                    {
-                        if (index is < 0 or > 5) continue;
-                        newExits.Add(exits[index]);
-                    }
-                    innerFogWarpVolume._exits = newExits.ToArray();
-                });
-            }
-
             // Done!
+            brambleNode.SetActive(true);
             return brambleNode;
 
             static Color CalculateLightShaftTint(float H, float S, float V)
