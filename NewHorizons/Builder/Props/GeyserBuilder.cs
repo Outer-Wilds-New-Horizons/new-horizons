@@ -39,6 +39,7 @@ namespace NewHorizons.Builder.Props
             if (info.disableBubbles) bubbles.SetActive(false);
             if (info.disableShaft) shaft.SetActive(false);
             if (info.disableSpout) spout.SetActive(false);
+
             var geyserController = geyserGO.GetComponent<GeyserController>();
             geyserController._activeDuration = info.activeDuration;
             geyserController._inactiveDuration = info.inactiveDuration;
@@ -66,19 +67,21 @@ namespace NewHorizons.Builder.Props
             oneShotAudio.GetComponent<AudioSpreadController>().SetSector(sector);
             loopAudio.GetComponent<AudioSpreadController>().SetSector(sector);
 
-            // Someone might want a geyser just for its force maybe idk
-            if (info.disableSpout & info.disableShaft & info.disableBubbles)
-            {
-                oneShotAudio.SetActive(false);
-                loopAudio.SetActive(false);
-            } 
-            // Disable start/end sounds if its just bubbles
-            else if (info.disableSpout & info.disableShaft)
-            {
-                oneShotAudio.SetActive(false);
-            }
+            Delay.FireOnNextUpdate(() => {
+                if (info.volume == 0)
+                {
+                    oneShotAudio.SetActive(false);
+                    loopAudio.SetActive(false);
+                }
+                else
+                {
+                    oneShotAudio.GetComponent<OWAudioSource>().SetMaxVolume(info.volume);
+                    loopAudio.GetComponent<OWAudioSource>().SetMaxVolume(info.volume);
+                }
+            });
+
             // If it starts at the shaft, move the start/end sounds to it
-            else if ((info.disableSpout & !info.disableShaft) | info.offset == -67f)
+            if ((info.disableSpout & !info.disableShaft) | info.offset == -67f)
             {
                 oneShotAudio.transform.SetLocalPositionY(67f);
             }

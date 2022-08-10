@@ -258,6 +258,11 @@ namespace NewHorizons.External.Modules
             /// Disable the individual particle systems of the geyser
             /// </summary>
             public bool disableBubbles, disableShaft, disableSpout;
+
+            /// <summary>
+            /// Loudness of the geyser
+            /// </summary>
+            [DefaultValue(0.7f)] public float volume = 0.7f;
         }
 
         [JsonObject]
