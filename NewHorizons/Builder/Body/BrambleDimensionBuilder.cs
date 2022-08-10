@@ -142,14 +142,17 @@ namespace NewHorizons.Builder.Body
             // If the config says only certain entrances are allowed, enforce that
             if (config.allowedEntrances != null)
             {
-                var entrances = outerFogWarpVolume._exits;
-                var newEntrances = new List<SphericalFogWarpExit>();
-                foreach (var index in config.allowedEntrances)
+                Delay.FireOnNextUpdate(() =>
                 {
-                    if(index is < 0 or > 5) continue;
-                    newEntrances.Add(entrances[index]);
-                }
-                outerFogWarpVolume._exits = newEntrances.ToArray();
+                    var entrances = outerFogWarpVolume._exits;
+                    var newEntrances = new List<SphericalFogWarpExit>();
+                    foreach (var index in config.allowedEntrances)
+                    {
+                        if (index is < 0 or > 5) continue;
+                        newEntrances.Add(entrances[index]);
+                    }
+                    outerFogWarpVolume._exits = newEntrances.ToArray();
+                });
             }
 
             // Set the scale

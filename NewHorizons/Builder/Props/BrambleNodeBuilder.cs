@@ -193,18 +193,21 @@ namespace NewHorizons.Builder.Props
             fogLight._innerWarp = innerFogWarpVolume;
             fogLight._linkedFogLights = new List<FogLight>();
             fogLight._linkedLightData = new List<FogLight.LightData>();
-        
+
             // If the config says only certain exits are allowed, enforce that
             if (config.possibleExits != null)
             {
-                var exits = innerFogWarpVolume._exits;
-                var newExits = new List<SphericalFogWarpExit>();
-                foreach (var index in config.possibleExits)
+                Delay.FireOnNextUpdate(() =>
                 {
-                    if(index is < 0 or > 5) continue;
-                    newExits.Add(exits[index]);
-                }
-                innerFogWarpVolume._exits = newExits.ToArray();
+                    var exits = innerFogWarpVolume._exits;
+                    var newExits = new List<SphericalFogWarpExit>();
+                    foreach (var index in config.possibleExits)
+                    {
+                        if (index is < 0 or > 5) continue;
+                        newExits.Add(exits[index]);
+                    }
+                    innerFogWarpVolume._exits = newExits.ToArray();
+                });
             }
 
             // Set up screen fog effect 
