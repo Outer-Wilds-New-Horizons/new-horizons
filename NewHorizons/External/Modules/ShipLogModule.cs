@@ -20,7 +20,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Describe what this planet looks and like in map mode
         /// </summary>
-        public MapModeInfo mapMode = new MapModeInfo();
+        public MapModeInfo mapMode;
 
         /// <summary>
         /// A path to the folder where entry sprites are stored.

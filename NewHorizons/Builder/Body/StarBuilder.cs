@@ -137,10 +137,12 @@ namespace NewHorizons.Builder.Body
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.atmosphere = sunAtmosphere;
+            controller.controller = starController;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.WillExplode = starModule.goSupernova;
+            controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
@@ -173,6 +175,7 @@ namespace NewHorizons.Builder.Body
         public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod)
         {
             var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
+            var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
             var supernova = MakeSupernova(starGO, starModule);
 
@@ -185,6 +188,13 @@ namespace NewHorizons.Builder.Body
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
+            controller.WillExplode = starModule.goSupernova;
+            controller.lifespan = starModule.lifespan;
+            controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+            }
             controller.enabled = true;
             starGO.SetActive(true);
 

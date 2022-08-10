@@ -36,6 +36,11 @@ namespace NewHorizons.External.Configs
         public string factRequiredForWarp;
 
         /// <summary>
+        /// The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.
+        /// </summary>
+        [DefaultValue(22f)] public float loopDuration = 22f;
+
+        /// <summary>
         /// Should the player not be able to view the map in this system?
         /// </summary>
         public bool mapRestricted;
@@ -209,6 +214,7 @@ namespace NewHorizons.External.Configs
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+            loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;

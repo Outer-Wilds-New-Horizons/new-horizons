@@ -9,15 +9,21 @@ namespace NewHorizons.External.Modules.VariableSize
     public class StarModule : VariableSizeModule
     {
         /// <summary>
-        /// Colour of the star at the end of its life.
+        /// Colour of the star at the end of its lifespan.
         /// </summary>
         public MColor endTint;
 
         /// <summary>
-        /// Should this star explode after 22 minutes?
+        /// Should this star explode at the end of its lifespan?
         /// </summary>
         [DefaultValue(true)] public bool goSupernova = true;
-        
+
+        /// <summary>
+        /// How long in minutes this star will last until it supernovas.
+        /// </summary>
+        [DefaultValue(22f)]
+        public float lifespan = 22f;
+
         /// <summary>
         /// Should we add a star controller to this body? If you want clouds to work on a binary brown dwarf system, set this to false.
         /// </summary>

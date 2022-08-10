@@ -8,6 +8,16 @@
     "name"
   ],
   "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique name of your planet",
+      "minLength": 1
+    },
+    "starSystem": {
+      "type": "string",
+      "description": "Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.",
+      "default": "SolarSystem"
+    },
     "AsteroidBelt": {
       "description": "Generate asteroids around this body",
       "$ref": "#/definitions/AsteroidBeltModule"
@@ -32,7 +42,8 @@
     },
     "canShowOnTitle": {
       "type": "boolean",
-      "description": "Should this planet ever be shown on the title screen?"
+      "description": "Should this planet ever be shown on the title screen?",
+      "default": true
     },
     "Cloak": {
       "description": "Add a cloaking field to this planet",
@@ -61,11 +72,6 @@
     "Lava": {
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
-    },
-    "name": {
-      "type": "string",
-      "description": "Unique name of your planet",
-      "minLength": 1
     },
     "Orbit": {
       "description": "Describes this Body's orbit (or lack there of)",
@@ -109,11 +115,6 @@
     "Star": {
       "description": "Make this body a star",
       "$ref": "#/definitions/StarModule"
-    },
-    "starSystem": {
-      "type": "string",
-      "description": "Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.",
-      "default": "SolarSystem"
     },
     "version": {
       "type": "string",
@@ -2053,7 +2054,7 @@
           "type": "number",
           "description": "Radius of the brackets that show up when you target this. Defaults to the sphere of influence.",
           "format": "float",
-          "default": -1
+          "default": -1.0
         },
         "targetWhenClose": {
           "type": "boolean",
@@ -2284,13 +2285,19 @@
           }
         },
         "endTint": {
-          "description": "Colour of the star at the end of its life.",
+          "description": "Colour of the star at the end of its lifespan.",
           "$ref": "#/definitions/MColor"
         },
         "goSupernova": {
           "type": "boolean",
-          "description": "Should this star explode after 22 minutes?",
+          "description": "Should this star explode at the end of its lifespan?",
           "default": true
+        },
+        "lifespan": {
+          "type": "number",
+          "description": "How long in minutes this star will last until it supernovas.",
+          "format": "float",
+          "default": 22.0
         },
         "hasStarController": {
           "type": "boolean",

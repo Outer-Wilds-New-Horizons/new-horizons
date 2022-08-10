@@ -42,7 +42,7 @@ namespace NewHorizons
         public static Dictionary<string, List<NewHorizonsBody>> BodyDict = new Dictionary<string, List<NewHorizonsBody>>();
         public static List<IModBehaviour> MountedAddons = new List<IModBehaviour>();
 
-        public static float SecondsLeftInLoop = -1;
+        public static float SecondsElapsedInLoop = -1;
 
         public static bool IsSystemReady { get; private set; }
         public static float FurthestOrbit { get; set; } = 50000f;
@@ -239,9 +239,9 @@ namespace NewHorizons
             }
 
             // Set time loop stuff if its enabled and if we're warping to a new place
-            if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsLeftInLoop > 0f)
+            if (IsChangingStarSystem && (SystemDict[_currentStarSystem].Config.enableTimeLoop || _currentStarSystem == "SolarSystem") && SecondsElapsedInLoop > 0f)
             {
-                TimeLoop.SetSecondsRemaining(SecondsLeftInLoop);
+                TimeLoopUtilities.SetSecondsElapsed(SecondsElapsedInLoop);
                 // Prevent the OPC from firing
                 var launchController = GameObject.FindObjectOfType<OrbitalProbeLaunchController>();
                 if (launchController != null)
@@ -258,7 +258,7 @@ namespace NewHorizons
             }
 
             // Reset this
-            SecondsLeftInLoop = -1;
+            SecondsElapsedInLoop = -1;
 
             IsChangingStarSystem = false;
 
@@ -607,13 +607,13 @@ namespace NewHorizons
 
             if (newStarSystem == "EyeOfTheUniverse")
             {
-                PlayerData.SaveWarpedToTheEye(TimeLoop.GetSecondsRemaining());
+                PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
                 sceneToLoad = OWScene.EyeOfTheUniverse;
             }
             else
             {
-                if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsLeftInLoop = TimeLoop.GetSecondsRemaining();
-                else SecondsLeftInLoop = -1;
+                if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
+                else SecondsElapsedInLoop = -1;
 
                 sceneToLoad = OWScene.SolarSystem;
             }
