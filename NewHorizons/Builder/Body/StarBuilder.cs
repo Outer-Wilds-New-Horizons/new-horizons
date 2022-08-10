@@ -200,7 +200,7 @@ namespace NewHorizons.Builder.Body
             controller.enabled = true;
             starGO.SetActive(true);
 
-            planet.GetComponentInChildren<StarEvolutionController>().SetProxy(controller);
+            planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
 
             return proxyGO;
         }
