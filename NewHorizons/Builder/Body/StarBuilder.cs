@@ -187,6 +187,7 @@ namespace NewHorizons.Builder.Body
             var controller = starGO.AddComponent<StarEvolutionController>();
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
+            controller.supernovaSize = starModule.supernovaSize;
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
@@ -286,6 +287,7 @@ namespace NewHorizons.Builder.Body
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+            supernova._supernovaScale = AnimationCurve.Linear(5, 0, 15, starModule.supernovaSize);
             supernova._supernovaVolume = null;
 
             if (starModule.supernovaTint != null)

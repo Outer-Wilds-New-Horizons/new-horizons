@@ -40,6 +40,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public float collapseTime = 10f; // seconds
         public float lifespan = 22f; // minutes
+        public float supernovaSize = 50000f;
 
         private bool _isSupernova;
         private float _supernovaStartTime;
@@ -255,7 +256,7 @@ namespace NewHorizons.Components.SizeControllers
 
             if (start && _planetDestructionVolume != null)
             {
-                foreach (var collider in Physics.OverlapSphere(_planetDestructionVolume.transform.position, _planetDestructionVolume.GetComponent<SphereCollider>().radius * 50000f * 0.9f))
+                foreach (var collider in Physics.OverlapSphere(_planetDestructionVolume.transform.position, _planetDestructionVolume.GetComponent<SphereCollider>().radius * supernovaSize * 0.9f))
                 {
                     if (collider.attachedRigidbody != null)
                     {
