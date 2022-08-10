@@ -240,6 +240,16 @@ namespace NewHorizons.External.Modules
             [DefaultValue(55f)] public float force = 55f;
 
             /// <summary>
+            /// Time in seconds eruptions last for
+            /// </summary>
+            [DefaultValue(10f)] public float activeDuration = 10f;
+
+            /// <summary>
+            /// Time in seconds between eruptions
+            /// </summary>
+            [DefaultValue(19f)] public float inactiveDuration = 19f;
+
+            /// <summary>
             /// Color of the geyser. Alpha sets the particle density.
             /// </summary>
             public MColor tint;

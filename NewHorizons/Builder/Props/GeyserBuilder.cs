@@ -39,6 +39,9 @@ namespace NewHorizons.Builder.Props
             if (info.disableBubbles) bubbles.SetActive(false);
             if (info.disableShaft) shaft.SetActive(false);
             if (info.disableSpout) spout.SetActive(false);
+            var geyserController = geyserGO.GetComponent<GeyserController>();
+            geyserController._activeDuration = info.activeDuration;
+            geyserController._inactiveDuration = info.inactiveDuration;
 
             geyserGO.SetActive(true);
 
@@ -79,7 +82,6 @@ namespace NewHorizons.Builder.Props
             {
                 oneShotAudio.transform.SetLocalPositionY(67f);
             }
-
         }
     }
 }
