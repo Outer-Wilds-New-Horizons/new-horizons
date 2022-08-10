@@ -331,12 +331,11 @@ namespace NewHorizons
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 
-                    
+
                     // Sector changes (so that projection pools actually turn off proxies and cull groups on these moons)
 
                     //Fix attlerock vanilla sector components (they were set to timber hearth's sector)
                     var thm = SearchUtilities.Find("Moon_Body/Sector_THM").GetComponent<Sector>();
-                    thm.SetParentSector(SearchUtilities.Find("TimberHearth_Body/Sector_TH").GetComponent<Sector>());
                     foreach (var component in thm.GetComponentsInChildren<Component>(true))
                     {
                         if (component is ISectorGroup sectorGroup)
@@ -349,10 +348,15 @@ namespace NewHorizons
                             behaviour.SetSector(thm);
                         }
                     }
+                    var thm_ss_obj = new GameObject("Sector_Streaming");
+                    thm_ss_obj.transform.SetParent(thm.transform, false);
+                    var thm_ss = thm_ss_obj.AddComponent<SectorStreaming>();
+                    thm_ss._streamingGroup = SearchUtilities.Find("TimberHearth_Body/StreamingGroup_TH").GetComponent<StreamingGroup>();
+                    thm_ss.SetSector(thm);
+
 
                     //Fix hollow's lantern vanilla sector components (they were set to brittle hollow's sector)
                     var vm = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM").GetComponent<Sector>();
-                    vm.SetParentSector(SearchUtilities.Find("BrittleHollow_Body/Sector_BH").GetComponent<Sector>());
                     foreach (var component in vm.GetComponentsInChildren<Component>(true))
                     {
                         if (component is ISectorGroup sectorGroup)
@@ -365,6 +369,11 @@ namespace NewHorizons
                             behaviour.SetSector(vm);
                         }
                     }
+                    var vm_ss_obj = new GameObject("Sector_Streaming");
+                    vm_ss_obj.transform.SetParent(vm.transform, false);
+                    var vm_ss = vm_ss_obj.AddComponent<SectorStreaming>();
+                    vm_ss._streamingGroup = SearchUtilities.Find("BrittleHollow_Body/StreamingGroup_BH").GetComponent<StreamingGroup>();
+                    vm_ss.SetSector(vm);
 
                     //Fix brittle hollow north pole projection platform
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
