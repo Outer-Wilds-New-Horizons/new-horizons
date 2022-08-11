@@ -255,6 +255,7 @@ namespace NewHorizons.Builder.Props
             Color fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint;
 
             farFogTint = config.fogTint != null ? config.fogTint.ToColor() : new Color(1f, 0.9608f, 0.851f, 1f);
+            farFogTint.a = 1f;
             lightTint = config.lightTint != null ? config.lightTint.ToColor() : Color.white;
 
             Color.RGBToHSV(farFogTint, out var fogH, out var fogS, out var fogV);
