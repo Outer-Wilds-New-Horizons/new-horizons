@@ -309,6 +309,14 @@ namespace NewHorizons
                 vesselAO._type = AstroObject.Type.SpaceStation;
                 vesselAO.Register();
 
+                eyeSector.GetComponent<SphereShape>().SetLayer(Shape.Layer.Sector);
+
+                var vesselSectorTrigger = vesselSector.gameObject.FindChild("SectorTriggerVolume_VesselBridge");
+                vesselSectorTrigger.transform.localPosition = new Vector3(0, 0, -207.375f);
+                var vesselSectorTriggerBox = vesselSectorTrigger.GetComponent<BoxShape>();
+                vesselSectorTriggerBox.size = new Vector3(600, 600, 600);
+                vesselSectorTriggerBox.SetLayer(Shape.Layer.Sector);
+
                 var vesselPointlight = eyeSector.gameObject.FindChild("Pointlight_NOM_Vessel");
                 vesselPointlight.transform.SetParent(vesselSector.transform, true);
                 var vesselSpotlight = eyeSector.gameObject.FindChild("Spotlight_NOM_Vessel");
