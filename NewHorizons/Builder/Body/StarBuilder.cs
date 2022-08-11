@@ -67,6 +67,9 @@ namespace NewHorizons.Builder.Body
             ambientLightGO.transform.localPosition = Vector3.zero;
             ambientLightGO.name = "AmbientLight_Star";
 
+            Light ambientLight = ambientLightGO.GetComponent<Light>();
+            ambientLight.range = starModule.size * OuterRadiusRatio;
+
             var heatVolume = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN/HeatVolume"), starGO.transform);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
@@ -88,8 +91,6 @@ namespace NewHorizons.Builder.Body
             planetDestructionVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
             planetDestructionVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             planetDestructionVolume.name = "PlanetDestructionVolume";
-
-            Light ambientLight = ambientLightGO.GetComponent<Light>();
 
             var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
