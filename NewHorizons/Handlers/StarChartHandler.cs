@@ -88,12 +88,8 @@ namespace NewHorizons.Handlers
             if (!_starSystemToFactID.TryGetValue(system, out var factID))
                 return true;
 
-            // If we got a fact but now can't find it elsewhere, its not unlocked
-            if (!GameObject.FindObjectOfType<ShipLogManager>()._factDict.TryGetValue(factID, out var fact))
-                return false;
-
-            // It's unlocked if revealed
-            return fact.IsRevealed();
+            // It's unlocked if known
+            return ShipLogHandler.KnowsFact(factID);
         }
 
         public static void OnRevealFact(string factID)
