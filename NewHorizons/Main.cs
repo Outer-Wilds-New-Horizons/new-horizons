@@ -316,6 +316,12 @@ namespace NewHorizons
                 var vesselAmbientLight = eyeSector.gameObject.FindChild("AmbientLight_Vessel");
                 vesselAmbientLight.transform.SetParent(vesselSector.transform, true);
 
+                var vesselStreaming = new GameObject("Sector_Streaming");
+                vesselStreaming.transform.SetParent(vesselSector.transform, false);
+                var vessel_ss = vesselStreaming.AddComponent<SectorStreaming>();
+                vessel_ss._streamingGroup = eyeSector.gameObject.FindChild("StreamingGroup_EYE").GetComponent<StreamingGroup>();
+                vessel_ss.SetSector(vesselSector);
+
                 if (IsWarpingFromShip && _ship != null)
                 {
                     var eyeShip = GameObject.Instantiate(_ship);
