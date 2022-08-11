@@ -18,6 +18,10 @@ namespace NewHorizons.Builder.Body
                 groundGO.GetComponent<MeshFilter>().mesh = topLayer.GetComponent<MeshFilter>().mesh;
                 groundGO.GetComponent<SphereCollider>().radius = 1f;
             }
+            else
+            {
+                groundGO.transform.localScale *= 2;
+            }
             groundGO.SetActive(true);
         }
     }
