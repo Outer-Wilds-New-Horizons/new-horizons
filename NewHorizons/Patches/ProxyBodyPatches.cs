@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -13,6 +13,13 @@ namespace NewHorizons.Patches
             GlobalMessenger.AddListener("ExitMapView", __instance.OnExitMapView);
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ProxyBody), nameof(ProxyBody.IsObjectInSupernova))]
+        public static bool ProxyBody_IsObjectInSupernova(ProxyBody __instance)
+        {
+            return Locator.GetSunController() != null;
+        }
+        
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ProxyBody), nameof(ProxyBody.OnDestroy))]
         public static void ProxyBody_OnDestroy(ProxyBody __instance)
