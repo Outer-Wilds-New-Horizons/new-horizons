@@ -13,8 +13,11 @@ namespace NewHorizons.Builder.Body
             groundGO.transform.localScale = new Vector3(groundScale, groundScale, groundScale);
             groundGO.transform.position = planetGO.transform.position;
             var topLayer = SearchUtilities.Find("CloudsTopLayer_GD");
-            if (topLayer != null) groundGO.GetComponent<MeshFilter>().mesh = topLayer.GetComponent<MeshFilter>().mesh;
-            groundGO.GetComponent<SphereCollider>().radius = 1f;
+            if (topLayer != null)
+            {
+                groundGO.GetComponent<MeshFilter>().mesh = topLayer.GetComponent<MeshFilter>().mesh;
+                groundGO.GetComponent<SphereCollider>().radius = 1f;
+            }
             groundGO.SetActive(true);
         }
     }
