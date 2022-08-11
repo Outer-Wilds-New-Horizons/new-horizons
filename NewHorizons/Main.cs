@@ -389,6 +389,14 @@ namespace NewHorizons
                 playerLight.range = 1;
                 playerLight.intensity = 0.001f;
 
+                //Do the same for map
+                var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
+                var ssrLight = solarSystemRoot.AddComponent<Light>();
+                ssrLight.innerSpotAngle = 0;
+                ssrLight.spotAngle = 179;
+                ssrLight.range = Main.FurthestOrbit * (4f/3f);
+                ssrLight.intensity = 0.001f;
+                
                 try
                 {
                     Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
