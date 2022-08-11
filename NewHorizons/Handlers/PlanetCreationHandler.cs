@@ -379,6 +379,18 @@ namespace NewHorizons.Handlers
             var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                EyeStateActivationController eyeStateActivation = SearchUtilities.Find("SolarSystemRoot").AddComponent<EyeStateActivationController>();
+                eyeStateActivation._object = go;
+                eyeStateActivation._activeStates = new EyeState[3]
+                {
+                    EyeState.AboardVessel,
+                    EyeState.WarpedToSurface,
+                    EyeState.IntoTheVortex
+                };
+            }
+
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
             var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
 
