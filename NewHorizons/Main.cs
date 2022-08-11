@@ -309,6 +309,13 @@ namespace NewHorizons
                 vesselAO._type = AstroObject.Type.SpaceStation;
                 vesselAO.Register();
 
+                var vesselPointlight = eyeSector.gameObject.FindChild("Pointlight_NOM_Vessel");
+                vesselPointlight.transform.SetParent(vesselSector.transform, true);
+                var vesselSpotlight = eyeSector.gameObject.FindChild("Spotlight_NOM_Vessel");
+                vesselSpotlight.transform.SetParent(vesselSector.transform, true);
+                var vesselAmbientLight = eyeSector.gameObject.FindChild("AmbientLight_Vessel");
+                vesselAmbientLight.transform.SetParent(vesselSector.transform, true);
+
                 if (IsWarpingFromShip && _ship != null)
                 {
                     var eyeShip = GameObject.Instantiate(_ship);
