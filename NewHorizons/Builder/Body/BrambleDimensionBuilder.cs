@@ -177,6 +177,7 @@ namespace NewHorizons.Builder.Body
             if (config.fogTint != null)
             {
                 var color = config.fogTint.ToColor();
+                color.a = 1f;
                 fog.fogTint = color;
                 outerFogWarpVolume._fogColor = color;
             }
