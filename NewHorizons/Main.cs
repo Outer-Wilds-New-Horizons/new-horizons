@@ -336,7 +336,7 @@ namespace NewHorizons
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
-                if (isSolarSystem) VesselWarpHandler.LoadVessel();
+                VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
 
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
