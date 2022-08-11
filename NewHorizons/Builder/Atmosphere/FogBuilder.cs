@@ -25,7 +25,9 @@ namespace NewHorizons.Builder.Atmosphere
 
             // Going to copy from dark bramble
             var dbFog = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
-            var dbPlanetaryFogController = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB").GetComponent<PlanetaryFogController>();
+            if (dbFog == null) return;
+            var dbPlanetaryFogController = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB")?.GetComponent<PlanetaryFogController>();
+            if (dbPlanetaryFogController == null) return;
 
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
             MF.mesh = dbFog.GetComponent<MeshFilter>().mesh;
