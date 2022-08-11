@@ -48,7 +48,7 @@ namespace NewHorizons.Patches
         {
             bool canWarpToEye = __instance._coordinateInterface.CheckEyeCoordinates();
             bool canWarpToStarSystem = __instance._coordinateInterface.CheckAllCoordinates(out string targetSystem);
-            if (slot == __instance._warpVesselSlot && __instance._hasPower && (canWarpToEye || (canWarpToStarSystem && targetSystem != Main.Instance.CurrentStarSystem)) && __instance._blackHole.GetState() == SingularityController.State.Collapsed && LoadManager.GetCurrentScene() != OWScene.EyeOfTheUniverse)
+            if (slot == __instance._warpVesselSlot && __instance._hasPower && ((canWarpToEye && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse") || (canWarpToStarSystem && targetSystem != Main.Instance.CurrentStarSystem)) && __instance._blackHole.GetState() == SingularityController.State.Collapsed)
             {
                 __instance._blackHole.Create();
                 RumbleManager.StartVesselWarp();
@@ -56,7 +56,10 @@ namespace NewHorizons.Patches
                 __instance.enabled = true;
                 Locator.GetPauseCommandListener().AddPauseCommandLock();
                 if (canWarpToEye || (canWarpToStarSystem && targetSystem == "EyeOfTheUniverse"))
+                {
+                    Main.Instance._currentStarSystem = "EyeOfTheUniverse";
                     LoadManager.LoadSceneAsync(OWScene.EyeOfTheUniverse, false, LoadManager.FadeType.ToWhite);
+                }
                 else if (canWarpToStarSystem)
                     Main.Instance.ChangeCurrentStarSystem(targetSystem, false, true);
                 __instance._blackHoleOneShot.PlayOneShot(AudioType.VesselSingularityCreate);

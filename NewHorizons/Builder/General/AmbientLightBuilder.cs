@@ -6,7 +6,10 @@ namespace NewHorizons.Builder.General
     {
         public static void Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
-            GameObject lightGO = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/AmbientLight_BH_Surface"), sector?.transform ?? planetGO.transform);
+            var bhAmbientLight = SearchUtilities.Find("BrittleHollow_Body/AmbientLight_BH_Surface");
+            if (bhAmbientLight == null) return;
+
+            GameObject lightGO = GameObject.Instantiate(bhAmbientLight, sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
             lightGO.name = "Light";
 

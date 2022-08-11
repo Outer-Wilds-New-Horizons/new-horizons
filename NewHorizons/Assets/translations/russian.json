@@ -11,6 +11,7 @@
     "FREQ_WARP_CORE": "Гиперядро",
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Телепортироваться к {0}",
-    "WARP_LOCKED": "АВТОПИЛОТ ЗАКРЕПЛЁН НА:\n{0}"
+    "WARP_LOCKED": "АВТОПИЛОТ ЗАКРЕПЛЁН НА:\n{0}",
+    "Vessel": "«Звездолёта»"
   }
 }

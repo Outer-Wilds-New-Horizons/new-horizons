@@ -25,6 +25,9 @@ namespace NewHorizons.Handlers
                 SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
             }
 
+
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") return;
+
             if (system.Config.enableTimeLoop)
             {
                 var timeLoopController = new GameObject("TimeLoopController");

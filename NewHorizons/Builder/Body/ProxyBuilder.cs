@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, NewHorizonsBody body)
         {
-            if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
+            if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body")?.transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
             var proxyName = $"{body.Config.name}_Proxy";
 

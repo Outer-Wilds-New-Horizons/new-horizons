@@ -9,6 +9,7 @@
     "INTERSTELLAR_MODE": "Mode Interstellaire",
     "FREQ_STATUE": "Statue Nomaï",
     "FREQ_WARP_CORE": "Flux Anti-Gravitonique",
-    "FREQ_UNKNOWN": "???"
+    "FREQ_UNKNOWN": "???",
+    "Vessel": "Vaisseau"
   }
 }

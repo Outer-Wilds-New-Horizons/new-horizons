@@ -32,33 +32,36 @@ namespace NewHorizons.Handlers
             _existingBodyDict = new();
             _customBodyDict = new();
 
-            // Set up stars
-            // Need to manage this when there are multiple stars
-            var sun = SearchUtilities.Find("Sun_Body");
-            var starController = sun.AddComponent<StarController>();
-            starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
-            starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
-            starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
-            starController.CSMTextureCacher = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
-            starController.ProxyShadowLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
-            starController.Intensity = 0.9859f;
-            starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
-
-            var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
-            foreach (var comp in starLightGO.GetComponents<Component>())
+            if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
             {
-                if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                // Set up stars
+                // Need to manage this when there are multiple stars
+                var sun = SearchUtilities.Find("Sun_Body");
+                var starController = sun.AddComponent<StarController>();
+                starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+                starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
+                starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
+                starController.CSMTextureCacher = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
+                starController.ProxyShadowLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
+                starController.Intensity = 0.9859f;
+                starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
+
+                var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+                foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    GameObject.Destroy(comp);
+                    if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                    {
+                        GameObject.Destroy(comp);
+                    }
                 }
+                GameObject.Destroy(starLightGO.GetComponent<Light>());
+                starLightGO.name = "StarLightController";
+
+                starLightGO.AddComponent<StarLightController>();
+                StarLightController.AddStar(starController);
+
+                starLightGO.SetActive(true);
             }
-            GameObject.Destroy(starLightGO.GetComponent<Light>());
-            starLightGO.name = "StarLightController";
-
-            starLightGO.AddComponent<StarLightController>();
-            StarLightController.AddStar(starController);
-
-            starLightGO.SetActive(true);
 
             // Load all planets
             var toLoad = bodies.ToList();
@@ -124,7 +127,7 @@ namespace NewHorizons.Handlers
 
             // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveSolarSystem();
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)

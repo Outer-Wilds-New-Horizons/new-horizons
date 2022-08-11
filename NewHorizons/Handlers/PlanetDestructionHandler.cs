@@ -31,11 +31,25 @@ namespace NewHorizons.Handlers
             "White Hole"
         };
 
+        private static readonly string[] _eyeOfTheUniverseBodies = new string[]
+        {
+            "Eye Of The Universe",
+            "Vessel"
+        };
+
         private static readonly string[] _suspendBlacklist = new string[]
         {
             "Player_Body",
             "Ship_Body"
         };
+
+        public static void RemoveStockPlanets()
+        {
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                RemoveEyeOfTheUniverse();
+            else
+                RemoveSolarSystem();
+        }
 
         public static void RemoveSolarSystem()
         {
@@ -52,6 +66,16 @@ namespace NewHorizons.Handlers
 
             // Bring the sun back because why not
             Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+        }
+
+        public static void RemoveEyeOfTheUniverse()
+        {
+            foreach (var name in _eyeOfTheUniverseBodies)
+            {
+                var ao = AstroObjectLocator.GetAstroObject(name);
+                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
+                else Logger.LogError($"Couldn't find [{name}]");
+            }
         }
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)

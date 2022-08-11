@@ -36,18 +36,21 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
-            EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
-            ER._type = EffectRuleset.BubbleType.Underwater;
-            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
-
-            ER._material = gdRuleset._material;
-
-            var cloudMaterial = new Material(gdRuleset._cloudMaterial);
-            if (config.Atmosphere?.clouds?.tint != null)
+            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD")?.GetComponent<EffectRuleset>();
+            if (gdRuleset != null)
             {
-                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
+                EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
+                ER._type = EffectRuleset.BubbleType.Underwater;
+
+                ER._material = gdRuleset._material;
+
+                var cloudMaterial = new Material(gdRuleset._cloudMaterial);
+                if (config.Atmosphere?.clouds?.tint != null)
+                {
+                    cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
+                }
+                ER._cloudMaterial = cloudMaterial;
             }
-            ER._cloudMaterial = cloudMaterial;
 
             if (config.Base.zeroGravityRadius != 0)
             {

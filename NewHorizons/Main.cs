@@ -4,6 +4,7 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
@@ -58,7 +59,7 @@ namespace NewHorizons
         public static bool HasWarpDrive { get; private set; } = false;
 
         private string _defaultStarSystem = "SolarSystem";
-        private string _currentStarSystem = "SolarSystem";
+        internal string _currentStarSystem = "SolarSystem";
         private bool _firstLoad = true;
         private ShipWarpController _shipWarpController;
 
@@ -144,13 +145,15 @@ namespace NewHorizons
             {
                 Config =
                 {
+                    destroyStockPlanets = false,
+                    factRequiredForWarp = "OPC_EYE_COORDINATES_X1",
                     Vessel = new StarSystemConfig.VesselModule()
                     {
                         coords = new StarSystemConfig.NomaiCoordinates
                         {
-                            x = new int[3]{ 1,5,4 },
-                            y = new int[4]{ 3,0,1,4 },
-                            z = new int[6]{ 1,2,3,0,5,4 }
+                            x = new int[3] { 1, 5, 4 },
+                            y = new int[4] { 3, 0, 1, 4 },
+                            z = new int[6] { 1, 2, 3, 0, 5, 4 }
                         }
                     }
                 }
@@ -231,6 +234,7 @@ namespace NewHorizons
             var isTitleScreen = scene.name == "TitleScreen";
             var isSolarSystem = scene.name == "SolarSystem";
             var isEyeOfTheUniverse = scene.name == "EyeOfTheUniverse";
+            if (isEyeOfTheUniverse) _currentStarSystem = scene.name;
 
             if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
             {
@@ -268,24 +272,55 @@ namespace NewHorizons
                 TitleSceneHandler.InitSubtitles();
             }
 
-            if (isEyeOfTheUniverse && IsWarpingFromShip)
+            if (isSolarSystem && _ship == null)
             {
-                if (_ship != null)
+                var ship = SearchUtilities.Find("Ship_Body", false);
+                if (ship != null)
                 {
-                    SceneManager.MoveGameObjectToScene(_ship, SceneManager.GetActiveScene());
-                    _ship.transform.position = new Vector3(50, 0, 0);
-                    _ship.SetActive(true);
+                    _ship = ship.InstantiateInactive();
+                    _ship.name = ship.name;
+                    _ship.AddComponent<ShipWarpController>().Init();
+                    DontDestroyOnLoad(_ship);
+                }
+            }
+
+            if (isEyeOfTheUniverse)
+            {
+                var eyeOfTheUniverse = SearchUtilities.Find("EyeOfTheUniverse_Body");
+                var eyeSector = eyeOfTheUniverse.FindChild("Sector_EyeOfTheUniverse").GetComponent<Sector>();
+                var eyeAO = eyeOfTheUniverse.AddComponent<EyeAstroObject>();
+                eyeAO._owRigidbody = eyeOfTheUniverse.GetAttachedOWRigidbody();
+                eyeAO._rootSector = eyeSector;
+                eyeAO._gravityVolume = eyeSector.GetComponentInChildren<GravityVolume>();
+                eyeAO._customName = "Eye Of The Universe";
+                eyeAO._name = AstroObject.Name.Eye;
+                eyeAO._type = AstroObject.Type.None;
+                eyeAO.Register();
+
+                var vessel = SearchUtilities.Find("Vessel_Body");
+                var vesselSector = vessel.FindChild("Sector_VesselBridge").GetComponent<Sector>();
+                var vesselAO = vessel.AddComponent<EyeAstroObject>();
+                vesselAO._owRigidbody = vessel.GetAttachedOWRigidbody();
+                vesselAO._primaryBody = eyeAO;
+                eyeAO._satellite = vesselAO;
+                vesselAO._rootSector = vesselSector;
+                vesselAO._customName = "Vessel";
+                vesselAO._name = AstroObject.Name.CustomString;
+                vesselAO._type = AstroObject.Type.SpaceStation;
+                vesselAO.Register();
+
+                if (IsWarpingFromShip && _ship != null)
+                {
+                    var eyeShip = GameObject.Instantiate(_ship);
+                    eyeShip.name = "Ship_Body";
+                    _shipWarpController = eyeShip.GetComponent<ShipWarpController>();
+                    SceneManager.MoveGameObjectToScene(eyeShip, scene);
+                    eyeShip.SetActive(true);
                 }
             }
 
             if (isSolarSystem || isEyeOfTheUniverse)
             {
-                if (_ship != null)
-                {
-                    _ship = SearchUtilities.Find("Ship_Body").InstantiateInactive();
-                    DontDestroyOnLoad(_ship);
-                }
-
                 IsSystemReady = false;
 
                 NewHorizonsData.Load();
@@ -300,13 +335,9 @@ namespace NewHorizons
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
-                if (isSolarSystem)
-                {
-                    PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
-
-                    VesselWarpHandler.LoadVessel();
-                    SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
-                }
+                PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
+                if (isSolarSystem) VesselWarpHandler.LoadVessel();
+                SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
 
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
@@ -315,8 +346,11 @@ namespace NewHorizons
                 {
                     // Warp drive
                     HasWarpDrive = StarChartHandler.CanWarp();
-                    _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
-                    _shipWarpController.Init();
+                    if (_shipWarpController == null)
+                    {
+                        _shipWarpController = SearchUtilities.Find("Ship_Body").AddComponent<ShipWarpController>();
+                        _shipWarpController.Init();
+                    }
                     if (HasWarpDrive == true) EnableWarpDrive();
 
                     var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
@@ -379,6 +413,16 @@ namespace NewHorizons
                     var northPoleSurface = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface").GetComponent<Sector>();
                     var remoteViewer = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_NorthPoleSurface/Interactables_NorthPoleSurface/LowBuilding/Prefab_NOM_RemoteViewer").GetComponent<NomaiRemoteCameraPlatform>();
                     remoteViewer._visualSector = northPoleSurface;
+                }
+                else if (isEyeOfTheUniverse)
+                {
+                    Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                    {
+                        IsSystemReady = true;
+                        OnSystemReady(false, false);
+                    });
+                    IsWarpingFromShip = false;
+                    IsWarpingFromVessel = false;
                 }
 
                 //Stop starfield from disappearing when there is no lights
@@ -629,6 +673,8 @@ namespace NewHorizons
             }
             else
             {
+                PlayerData.SaveEyeCompletion();
+
                 if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
                 else SecondsElapsedInLoop = -1;
 

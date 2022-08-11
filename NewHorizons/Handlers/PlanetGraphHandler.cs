@@ -40,6 +40,12 @@ namespace NewHorizons.Handlers
                     SunConfig.name = "Sun";
                     _rootNode = ConstructGraph(new NewHorizonsBody(SunConfig, Main.Instance), bodies);
                 }
+                else if (centers.Length == 0 && Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+                {
+                    var EyeConfig = new PlanetConfig();
+                    EyeConfig.name = "Eye Of The Universe";
+                    _rootNode = ConstructGraph(new NewHorizonsBody(EyeConfig, Main.Instance), bodies);
+                }
                 else
                 {
                     Logger.LogError($"There must be one and only one centerOfSolarSystem! Found [{centers.Length}]");

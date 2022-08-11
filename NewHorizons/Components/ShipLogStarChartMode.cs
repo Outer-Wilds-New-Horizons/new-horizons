@@ -63,6 +63,7 @@ namespace NewHorizons.Components
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
+                else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
                 else if (config.Spawn?.shipSpawnPoint != null) flag = true;
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
@@ -73,10 +74,8 @@ namespace NewHorizons.Components
                 }
             }
 
-            //AddSystemCard("EyeOfTheUniverse");
-
-            /* Ship log manager isnt initiatiized yet
-            if(Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1"))
+            /* 
+            if(VesselCoordinatePromptHandler.KnowsEyeCoordinates())
             {
                 AddSystemCard("EyeOfTheUniverse");
             }
@@ -129,6 +128,10 @@ namespace NewHorizons.Components
                 if (uniqueID.Equals("SolarSystem"))
                 {
                     texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
+                }
+                else if (uniqueID.Equals("EyeOfTheUniverse"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/eye symbol.png");
                 }
                 else
                 {

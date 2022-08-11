@@ -35,6 +35,7 @@ namespace NewHorizons.Utility
             if (stringID.Equals("ASH_TWIN")) stringID = "TOWER_TWIN";
             if (stringID.Equals("EMBER_TWIN")) stringID = "CAVE_TWIN";
             if (stringID.Equals("INTERLOPER")) stringID = "COMET";
+            if (stringID.Equals("EYE")) stringID = "EYE_OF_THE_UNIVERSE";
 
             string key;
             if (stringID.ToUpper().Replace("_", "").Equals("MAPSATELLITE"))

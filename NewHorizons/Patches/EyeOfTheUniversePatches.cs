@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
@@ -13,6 +13,13 @@ namespace NewHorizons.Patches
             return (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse");
         }
 
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(SubmitActionLoadScene), nameof(SubmitActionLoadScene.ConfirmSubmit))]
+        public static void SubmitActionLoadScene_ConfirmSubmit(SubmitActionLoadScene __instance)
+        {
+            if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.EYE) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
+        }
+        
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ShipThrusterController), nameof(ShipThrusterController.ReadTranslationalInput))]
         public static bool ShipThrusterController_ReadTranslationalInput(ShipThrusterController __instance, ref Vector3 __result)
