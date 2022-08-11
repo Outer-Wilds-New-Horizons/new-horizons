@@ -39,6 +39,7 @@ namespace NewHorizons.Components.SizeControllers
         private float _collapseTimer;
 
         public float collapseTime = 10f; // seconds
+        public float supernovaTime = 45f; // seconds
         public float lifespan = 22f; // minutes
         public float supernovaSize = 50000f;
 
@@ -152,7 +153,7 @@ namespace NewHorizons.Components.SizeControllers
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
                     Delay.RunWhen(() => Main.IsSystemReady, StartCollapse);
-                else if (timeAfter <= collapseTime + 45)
+                else if (timeAfter <= collapseTime + supernovaTime)
                     Delay.RunWhen(() => Main.IsSystemReady, StartSupernova);
                 else
                     Delay.RunWhen(() => Main.IsSystemReady, () => Delay.FireOnNextUpdate(() => DisableStar(true)));
@@ -227,7 +228,7 @@ namespace NewHorizons.Components.SizeControllers
             if (_planetDestructionVolume != null) _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
 
-            if (Time.time > _supernovaStartTime + 45f)
+            if (Time.time > _supernovaStartTime + supernovaTime)
             {
                 DisableStar();
             }
