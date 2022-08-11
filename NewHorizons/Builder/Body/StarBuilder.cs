@@ -107,7 +107,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
-            ambientLight.color = lightColour;
+            ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
             faceActiveCamera.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>());
