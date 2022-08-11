@@ -330,6 +330,27 @@ namespace NewHorizons
                 vessel_ss._streamingGroup = eyeSector.gameObject.FindChild("StreamingGroup_EYE").GetComponent<StreamingGroup>();
                 vessel_ss.SetSector(vesselSector);
 
+                var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
+
+                var forestActivation = solarSystemRoot.AddComponent<EyeStateActivationController>();
+                forestActivation._object = eyeSector.gameObject.FindChild("ForestOfGalaxies_Root");
+                forestActivation._activeStates = new EyeState[]
+                {
+                    EyeState.Observatory,
+                    EyeState.ZoomOut,
+                    EyeState.ForestOfGalaxies,
+                    EyeState.ForestIsDark
+                };
+
+                var observatoryActivation = solarSystemRoot.AddComponent<EyeStateActivationController>();
+                observatoryActivation._object = eyeSector.gameObject.FindChild("Sector_Observatory");
+                observatoryActivation._activeStates = new EyeState[]
+                {
+                    EyeState.IntoTheVortex,
+                    EyeState.Observatory,
+                    EyeState.ZoomOut
+                };
+
                 if (IsWarpingFromShip && _ship != null)
                 {
                     var eyeShip = GameObject.Instantiate(_ship);
