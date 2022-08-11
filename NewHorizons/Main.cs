@@ -386,7 +386,7 @@ namespace NewHorizons
                 var playerLight = playerBody.AddComponent<Light>();
                 playerLight.innerSpotAngle = 0;
                 playerLight.spotAngle = 179;
-                playerLight.range = 0.5f;
+                playerLight.range = 1;
                 playerLight.intensity = 0.001f;
 
                 try
