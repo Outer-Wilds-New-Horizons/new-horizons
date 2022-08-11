@@ -28,7 +28,8 @@ namespace NewHorizons.External.Modules
         public class BrambleDimensionInfo
         {
             /// <summary>
-            /// The color of the fog inside this dimension. Leave blank for the default yellowish color: (113, 107, 81)
+            /// The color of the fog inside this dimension. 
+            /// Leave blank for the default grayish color: (84, 83, 73)
             /// </summary>
             public MColor fogTint;
 
@@ -43,7 +44,8 @@ namespace NewHorizons.External.Modules
             public string linksTo;
 
             /// <summary>
-            /// The internal radius (in meters) of the dimension. The default is 750 for the Hub, Escape Pod, and Angler Nest dimensions, and 500 for the others.
+            /// The internal radius (in meters) of the dimension. 
+            /// The default is 750 for the Hub, Escape Pod, and Angler Nest dimensions, and 500 for the others.
             /// </summary>
             [DefaultValue(750f)] public float radius = 750f;
 
