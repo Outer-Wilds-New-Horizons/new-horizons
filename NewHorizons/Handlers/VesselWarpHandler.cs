@@ -27,6 +27,7 @@ namespace NewHorizons.Handlers
 
         public static void LoadVessel()
         {
+            if (Instance.CurrentStarSystem == "EyeOfTheUniverse") return SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
             if (Instance.IsWarpingFromVessel)
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
