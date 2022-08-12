@@ -10,6 +10,7 @@
     "FREQ_STATUE": "Statue Nomaï",
     "FREQ_WARP_CORE": "Flux Anti-Gravitonique",
     "FREQ_UNKNOWN": "???",
-    "Vessel": "Vaisseau"
+    "Vessel": "Vaisseau",
+    "VESSEL": "VAISSEAU"
   }
 }

@@ -12,7 +12,8 @@
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Engage Warp To {0}",
     "WARP_LOCKED": "AUTOPILOT LOCKED TO:\n{0}",
-    "Vessel": "Vessel"
+    "Vessel": "Vessel",
+    "VESSEL": "VESSEL"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
