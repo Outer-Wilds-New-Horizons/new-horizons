@@ -255,6 +255,7 @@ namespace NewHorizons.Builder.Props
             Color fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint;
 
             farFogTint = config.fogTint != null ? config.fogTint.ToColor() : new Color(1f, 0.9608f, 0.851f, 1f);
+            farFogTint.a = 1f;
             lightTint = config.lightTint != null ? config.lightTint.ToColor() : Color.white;
 
             Color.RGBToHSV(farFogTint, out var fogH, out var fogS, out var fogV);
@@ -298,6 +299,16 @@ namespace NewHorizons.Builder.Props
                         Color.RGBToHSV(lightShaftTint, out var shaftH, out var shaftS, out var shaftV);
                         glowTint = Color.HSVToRGB(shaftH, shaftS, dimV * 1.25f);
                         glowTint.a = lightTint.a;
+
+                        // Scale glow shader properties, here due to dependencies
+                        var glow = brambleNode.FindChild("Effects/InnerWarpFogGlow");
+                        var glowMaterial = glow.GetComponent<MeshRenderer>().material;
+                        var limit = outerFogWarpVolume?._exitRadius ?? float.PositiveInfinity;
+                        glowMaterial.SetFloat("_NearFadeStart", 100f * config.scale);
+                        glowMaterial.SetFloat("_NearFadeEnd", Mathf.Min(limit, 500f * config.scale * Mathf.Max(glowTint.a, 0.5f)));
+                        glowMaterial.SetFloat("_FarFadeStart", Mathf.Min(limit, 500f * config.scale * Mathf.Max(glowTint.a, 0.5f)));
+                        glowMaterial.SetFloat("_FarFadeEnd", Mathf.Min(limit * 1.1f, 1000f * config.scale * Mathf.Max(glowTint.a, 0.5f)));
+
                         fogOverrideTint = Color.HSVToRGB(fogH, Mathf.Lerp(fogS, dimS, 0.5f), Mathf.Lerp(fogV, dimV, 0.5f));
                         fogOverrideTint.a = 1f;
                     }
