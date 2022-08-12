@@ -1037,6 +1037,10 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around"
         }
       }
     },
