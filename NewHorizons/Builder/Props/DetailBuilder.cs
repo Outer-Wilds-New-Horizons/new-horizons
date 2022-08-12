@@ -137,6 +137,8 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = info.scale != 0 ? Vector3.one * info.scale : prefab.transform.localScale;
 
+            if (info.hasPhysics) AddPhysics(prop, sector);
+
             prop.SetActive(true);
 
             return prop;
@@ -292,6 +294,29 @@ namespace NewHorizons.Builder.Props
                     Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] for prop [{prefab}]:\n{e}");
                 }
             });
+        }
+
+        private static void AddPhysics(GameObject prop, Sector sector)
+        {
+            var rb = prop.AddComponent<Rigidbody>();
+            var owrb = prop.AddComponent<OWRigidbody>();
+            var kine = prop.AddComponent<KinematicRigidbody>();
+            rb.isKinematic = true;
+            owrb._simulateInSector = sector;
+            owrb._kinematicSimulation = true;
+            owrb._kinematicRigidbody = kine;
+
+            prop.AddComponent<InitialMotion>();
+            prop.AddComponent<MatchInitialMotion>().SetBodyToMatch(prop.GetComponentInParent<OWRigidbody>());
+            prop.AddComponent<CenterOfTheUniverseOffsetApplier>();
+
+            var detector = new GameObject("Detector");
+            detector.transform.parent = prop.transform;
+            detector.transform.localPosition = Vector3.zero;
+
+            var shape = detector.AddComponent<SphereShape>();
+            detector.AddComponent<DynamicForceDetector>();
+            detector.AddComponent<ForceApplier>();
         }
     }
 }

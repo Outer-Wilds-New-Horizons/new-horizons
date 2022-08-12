@@ -210,6 +210,11 @@ namespace NewHorizons.External.Modules
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
             /// </summary>
             public bool keepLoaded;
+
+            /// <summary>
+            /// Should this object dynamically move around
+            /// </summary>
+            public bool hasPhysics;
         }
 
         [JsonObject]
