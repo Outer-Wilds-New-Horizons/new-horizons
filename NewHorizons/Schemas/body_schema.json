@@ -1634,7 +1634,7 @@
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
-          "default": "downwards",
+          "default": "upwards",
           "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
@@ -1665,13 +1665,13 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "Downwards",
         "Upwards",
+        "Downwards",
         "Hurricane"
       ],
       "enum": [
-        "downwards",
         "upwards",
+        "downwards",
         "hurricane"
       ]
     },
