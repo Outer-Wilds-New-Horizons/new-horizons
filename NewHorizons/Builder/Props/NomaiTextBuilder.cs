@@ -408,35 +408,23 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                     {
-                        var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
+                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var detailInfo = new PropModule.DetailInfo {
+                            parentPath = info.parentPath,
+                            rotation = info.rotation,
+                            position = info.position
+                        };
+                        var recorderObject = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+                        recorderObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             recorderObject.name = info.rename;
                         }
 
-                        recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                recorderObject.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
                         recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
-                        if (info.rotation != null)
-                        {
-                            recorderObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
-                        }
-                        else
+                        if (info.rotation == null)
                         {
                             var up = recorderObject.transform.position - planetGO.transform.position;
                             recorderObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * recorderObject.transform.rotation;
@@ -450,9 +438,6 @@ namespace NewHorizons.Builder.Props
                         nomaiText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlPath);
-
-                        // Make sure the recorder model is loaded
-                        StreamingHandler.SetUpStreaming(recorderObject, sector);
 
                         recorderObject.SetActive(true);
 
