@@ -198,6 +198,8 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+
+            LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
         public void OnDestroy()
@@ -515,9 +517,7 @@ namespace NewHorizons
                 // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
-                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
-
-                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                    LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
@@ -529,6 +529,16 @@ namespace NewHorizons
             {
                 Logger.LogError(ex.ToString());
             }
+        }
+
+        private void LoadAddonManifest(string file, IModBehaviour mod)
+        {
+            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
+
+            var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
+
+            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
