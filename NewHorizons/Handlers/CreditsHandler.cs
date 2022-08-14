@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Xml;
 using UnityEngine;
-using static RumbleManager.Rumble;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
@@ -42,9 +41,9 @@ namespace NewHorizons.Handlers
         {
             var finalCredits = xml.SelectSingleNode("Credits/section");
 
-            // Fade credits look wrong right now bc it works with just one column not two
             /*
-            var nodeFade = CreateFadeCreditsFromList(xml, sectionName, entries, true);
+             * Looks bad, would need more customization, complicated, messes up music timing, wont do for now
+            var nodeFade = CreateFadeCreditsFromList(xml, sectionName, entries);
             finalCredits.InsertAfter(nodeFade, finalCredits.ChildNodes[0]);
             */
 
@@ -66,6 +65,8 @@ namespace NewHorizons.Handlers
             return null;
         }
 
+        // Looked bad so not used
+        /*
         private static XmlNode CreateFadeCreditsFromList(XmlDocument doc, string title, string[] entries)
         {
             var rootSection = MakeNode(doc, "section", new Dictionary<string, string>()
@@ -98,7 +99,16 @@ namespace NewHorizons.Handlers
             for (int i = 0; i < entries.Length; i++)
             {
                 var entry = entries[i];
-                entry = entry.Split('#')[0];
+
+                if (entry.Contains("#"))
+                {
+                    // Replace first one with a space
+                    entry = RemoveExcessSpaces(entry);
+                    var indexOfColon = entry.IndexOf(":");
+                    var firstPart = entry.Substring(0, Math.Min(entry.IndexOf("#"), indexOfColon == -1 ? int.MaxValue : indexOfColon));
+                    entry = firstPart + ": " + entry.Substring(entry.IndexOf("#") + 1);
+                }
+                entry = entry.Replace("#", ", ").Replace("/n", "");
 
                 xmlText += $"{entry}\n";
                 xmlText += "<spacer />\n";
@@ -107,10 +117,18 @@ namespace NewHorizons.Handlers
             xmlText += "</layout>";
 
             rootSection.AppendChild(titleLayout);
-            rootSection.AppendChild(StringToNode(doc, xmlText));
+            foreach (var node in StringToNodes(doc, xmlText)) rootSection.AppendChild(node);
 
             return rootSection;
         }
+
+        private static string RemoveExcessSpaces(string s)
+        {
+            var options = RegexOptions.None;
+            Regex regex = new Regex("[ ]{2,}", options);
+            return regex.Replace(s, " ");
+        }
+        */
 
         private static XmlNode CreateScrollCreditsFromList(XmlDocument doc, string title, string[] entries)
         {
@@ -136,32 +154,48 @@ namespace NewHorizons.Handlers
             titleNode.InnerText = title;
             titleLayout.AppendChild(titleNode);
 
-            var type = "TwoColumnScrollAlignRightLeft";
-            var xmlText = $"<layout type=\"{type}\" spacer-base-height=\"10\">\n";
+
+            var xmlText = "";
+            bool? flag = null;
             for (int i = 0; i < entries.Length; i++)
             {
                 var entry = entries[i];
 
+                var twoColumn = entry.Contains("#");
+                if (flag != twoColumn)
+                {
+                    if (i != 0) xmlText += "</layout>";
+                    var type = twoColumn ? "TwoColumnScrollAlignRightLeft" : "SingleColumnScrollCentered";
+                    xmlText += $"<layout type=\"{type}\" spacer-base-height=\"10\">\n";
+                    flag = twoColumn;
+                }
+
                 xmlText += $"{entry}\n";
+                xmlText += "<spacer/>";
             }
             xmlText += "<spacer height = \"295\" />\n";
             xmlText += "</layout>";
 
             rootSection.AppendChild(titleLayout);
-            rootSection.AppendChild(StringToNode(doc, xmlText));
+            foreach(var node in StringToNodes(doc, xmlText)) rootSection.AppendChild(node);
 
             return rootSection;
         }
 
-        private static XmlNode StringToNode(XmlDocument docContext, string text)
+        private static XmlNode[] StringToNodes(XmlDocument docContext, string text)
         {
             var doc = new XmlDocument();
-            doc.LoadXml(text);
+            // Doing this funny thing so that theres a single parent root thing
+            doc.LoadXml("<root>" + text + "</root>");
 
             // ArgumentException: The node to be inserted is from a different document context.
-            var importedNode = docContext.ImportNode(doc.DocumentElement, true);
+            var nodes = new List<XmlNode>();
+            foreach (XmlNode node in doc.DocumentElement.ChildNodes)
+            {
+                nodes.Add(docContext.ImportNode(node, true));
+            }
 
-            return importedNode;
+            return nodes.ToArray();
         }
 
         private static XmlNode MakeNode(XmlDocument doc, string nodeType, Dictionary<string, string> attributes)

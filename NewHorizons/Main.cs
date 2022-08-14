@@ -525,11 +525,9 @@ namespace NewHorizons
 
         private void LoadAddonManifest(string file, IModBehaviour mod)
         {
-            Logger.LogError($"{mod.ModHelper.Manifest.Name}");
+            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
-
-
 
             if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
             if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
