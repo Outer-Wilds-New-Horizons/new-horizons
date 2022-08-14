@@ -67,6 +67,9 @@ namespace NewHorizons.Builder.Body
             ambientLightGO.transform.localPosition = Vector3.zero;
             ambientLightGO.name = "AmbientLight_Star";
 
+            Light ambientLight = ambientLightGO.GetComponent<Light>();
+            ambientLight.range = starModule.size * OuterRadiusRatio;
+
             var heatVolume = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN/HeatVolume"), starGO.transform);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
@@ -84,12 +87,10 @@ namespace NewHorizons.Builder.Body
             var planetDestructionVolume = Object.Instantiate(deathVolume, starGO.transform);
             planetDestructionVolume.transform.localPosition = Vector3.zero;
             planetDestructionVolume.transform.localScale = Vector3.one;
-            planetDestructionVolume.GetComponent<SphereCollider>().radius = 0.75f;
+            planetDestructionVolume.GetComponent<SphereCollider>().radius = 0.8f;
             planetDestructionVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
             planetDestructionVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
             planetDestructionVolume.name = "PlanetDestructionVolume";
-
-            Light ambientLight = ambientLightGO.GetComponent<Light>();
 
             var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
@@ -106,7 +107,7 @@ namespace NewHorizons.Builder.Body
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
             light.color = lightColour;
-            ambientLight.color = lightColour;
+            ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
             faceActiveCamera.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>());
