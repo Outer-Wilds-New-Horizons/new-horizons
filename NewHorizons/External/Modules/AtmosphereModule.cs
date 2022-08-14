@@ -165,7 +165,7 @@ namespace NewHorizons.External.Modules
             public bool unlit;
 
             /// <summary>
-            /// How fast the clouds will rotate in degrees per second.
+            /// How fast the clouds will rotate relative to the planet in degrees per second.
             /// </summary>
             [DefaultValue(0f)] public float rotationSpeed = 0f;
 
