@@ -364,9 +364,9 @@
         },
         "rotationSpeed": {
           "type": "number",
-          "description": "How fast the clouds will rotate in degrees per second.",
+          "description": "How fast the clouds will rotate relative to the planet in degrees per second.",
           "format": "float",
-          "default": 10.0
+          "default": 0.0
         }
       }
     },
