@@ -71,6 +71,10 @@ namespace NewHorizons.Patches
 				base_DropItem(__instance, position, normal, parent, sector, customDropTarget);
 			}
 
+            if (__instance._wasProjecting) __instance._mindProjectorTrigger.SetProjectorActive(false);
+
+            __instance.gameObject.GetComponent<Collider>().enabled = true;
+
 			return true;
 		}
 	}
