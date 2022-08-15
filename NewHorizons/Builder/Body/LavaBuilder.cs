@@ -52,6 +52,7 @@ namespace NewHorizons.Builder.Body
             sectorProxy.SetSector(sector);
 
             var destructionVolume = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);
+            destructionVolume.name = "DestructionVolume";
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
             destructionVolume.SetActive(true);
 
