@@ -55,7 +55,7 @@ namespace NewHorizons.Handlers
                 if (starEvolutionController == null) continue;
                 if (starEvolutionController._disabled) continue;
                 float distance = (supernovaPlanetEffectController.transform.position - starEvolutionController.transform.position).sqrMagnitude;
-                if (starEvolutionController.IsPointInsideMaxSupernova(supernovaPlanetEffectController.transform.position) && distance < nearestDistance)
+                if (distance < (starEvolutionController.supernovaSize * starEvolutionController.supernovaSize) && distance < nearestDistance)
                 {
                     nearestDistance = distance;
                     nearestStarEvolutionController = starEvolutionController;
@@ -65,7 +65,7 @@ namespace NewHorizons.Handlers
             if (_sunController != null && _sunController.gameObject.activeSelf)
             {
                 float distance = (supernovaPlanetEffectController.transform.position - _sunController.transform.position).sqrMagnitude;
-                if (InPointInsideSunSupernova(supernovaPlanetEffectController) && distance < nearestDistance)
+                if (distance < 2500000000f && distance < nearestDistance)
                 {
                     supernovaPlanetEffectController._sunController = _sunController;
                     supernovaPlanetEffectController._starEvolutionController = null;
