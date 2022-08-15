@@ -19,8 +19,9 @@ namespace NewHorizons.Components
         public Color _fogOrigTint;
         [Space]
         public MeshRenderer _shockLayer;
+        public static readonly Color _shockLayerDefaultColor = new Color(0.3569f, 0.7843f, 1f, 1f);
         [ColorUsage(true, true)]
-        public Color _shockLayerColor = new Color(0.3569f, 0.7843f, 1f, 1f);
+        public Color _shockLayerColor = _shockLayerDefaultColor;
         public float _shockLayerStartRadius = 1000f;
         public float _shockLayerFullRadius = 10000f;
         public float _shockLayerTrailLength = 300f;
@@ -94,7 +95,7 @@ namespace NewHorizons.Components
                     {
                         if (!_shockLayer.enabled) _shockLayer.enabled = true;
                         Vector3 dir = Vector3.Normalize(transform.position - _starEvolutionController.transform.position);
-                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, _starEvolutionController.SupernovaColour != null ? _starEvolutionController.SupernovaColour.ToColor() : new Color(0.3569f, 0.7843f, 1f, 1f));
+                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, _starEvolutionController.SupernovaColour != null ? _starEvolutionController.SupernovaColour.ToColor() : _shockLayerColor);
                         s_matPropBlock_ShockLayer.SetMatrix(s_propID_WorldToLocalShockMatrix, Matrix4x4.TRS(transform.position, Quaternion.LookRotation(dir, Vector3.up), Vector3.one).inverse);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_Dir, dir);
                         s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, _shockLayerTrailLength);
