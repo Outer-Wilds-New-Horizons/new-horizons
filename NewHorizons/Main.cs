@@ -304,6 +304,14 @@ namespace NewHorizons
 
                 if (isSolarSystem)
                 {
+                    foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
+                    {
+                        SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
+                    }
+                }
+
+                if (isSolarSystem)
+                {
                     PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
 
                     VesselWarpHandler.LoadVessel();

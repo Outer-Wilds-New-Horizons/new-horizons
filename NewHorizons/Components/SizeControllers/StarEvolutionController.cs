@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace NewHorizons.Components.SizeControllers
         public bool WillExplode { get; set; }
         public MColor StartColour { get; set; }
         public MColor EndColour { get; set; }
+        public MColor SupernovaColour { get; set; }
         public Texture normalRamp;
         public Texture collapseRamp;
 
@@ -48,6 +50,8 @@ namespace NewHorizons.Components.SizeControllers
         private bool _isSupernova;
         private float _supernovaStartTime;
 
+        public bool _disabled;
+
         private Material _collapseStartSurfaceMaterial;
         private Material _collapseEndSurfaceMaterial;
         private Material _startSurfaceMaterial;
@@ -58,7 +62,10 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
+        public UnityEvent CollapseStart = new UnityEvent();
+        public UnityEvent CollapseStop = new UnityEvent();
         public UnityEvent SupernovaStart = new UnityEvent();
+        public UnityEvent SupernovaStop = new UnityEvent();
 
         private float maxScale;
         private float minScale;
@@ -148,6 +155,8 @@ namespace NewHorizons.Components.SizeControllers
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
             _surfaceMaterial = supernova._surface._materials[0];
 
+            SupernovaEffectHandler.RegisterStar(this);
+
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
             if (secondsElapsed >= lifespanInSeconds)
@@ -164,6 +173,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void OnDestroy()
         {
+            SupernovaEffectHandler.UnregisterStar(this);
         }
 
         public void SetProxy(StarEvolutionController proxy)
@@ -260,6 +270,8 @@ namespace NewHorizons.Components.SizeControllers
 
             if (controller != null) StarLightController.RemoveStar(controller);
 
+            _disabled = true;
+
             // Just turn off the star entirely
             base.gameObject.SetActive(false);
 
@@ -289,6 +301,7 @@ namespace NewHorizons.Components.SizeControllers
 
             Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
 
+            CollapseStart.Invoke();
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
@@ -303,6 +316,7 @@ namespace NewHorizons.Components.SizeControllers
 
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
 
+            CollapseStop.Invoke();
             _isCollapsing = false;
             supernova._surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
 
@@ -332,6 +346,7 @@ namespace NewHorizons.Components.SizeControllers
 
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
+            SupernovaStop.Invoke();
             supernova.enabled = false;
             _isSupernova = false;
             if (atmosphere != null) atmosphere.SetActive(true);
@@ -353,6 +368,24 @@ namespace NewHorizons.Components.SizeControllers
 
             if (_proxy != null) _proxy.StopSupernova();
         }
+
+        public bool IsCollapsing() => _isCollapsing;
+
+        public float GetCollapseProgress() => _collapseTimer / collapseTime;
+
+        public bool HasSupernovaStarted() => _isSupernova;
+
+        public bool IsPointInsideSupernova(Vector3 worldPosition) => _isSupernova && (worldPosition - transform.position).sqrMagnitude < (supernova.GetSupernovaRadius() * supernova.GetSupernovaRadius());
+
+        public bool IsPointInsideMaxSupernova(Vector3 worldPosition) => (worldPosition - transform.position).sqrMagnitude < (supernovaSize * supernovaSize);
+
+        public float GetDistanceToSupernova(Vector3 worldPosition) => Vector3.Distance(worldPosition, transform.position) - supernova.GetSupernovaRadius();
+
+        public float GetDistanceToMaxSupernova(Vector3 worldPosition) => Vector3.Distance(worldPosition, transform.position) - supernovaSize;
+
+        public float GetSupernovaRadius() => supernova.GetSupernovaRadius();
+
+        public float GetMaxSupernovaRadius() => supernovaSize;
 
         protected new void FixedUpdate()
         {

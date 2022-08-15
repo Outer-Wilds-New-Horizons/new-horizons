@@ -156,6 +156,11 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
+                if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
+                {
+                    proxyController._supernovaPlanetEffectController = SupernovaEffectBuilder.Make(newProxy, null, body.Config, heightMap, procGen, null, null, null, proxyController._atmosphere, proxyController._fog);
+                }
+
                 // Remove all collisions if there are any
                 foreach (var col in newProxy.GetComponentsInChildren<Collider>())
                 {

@@ -31,11 +31,12 @@ namespace NewHorizons.Handlers
 
             _existingBodyDict = new();
             _customBodyDict = new();
-
+            
             // Set up stars
             // Need to manage this when there are multiple stars
             var sun = SearchUtilities.Find("Sun_Body");
             var starController = sun.AddComponent<StarController>();
+            SupernovaEffectHandler.RegisterSun(sun.GetComponent<SunController>());
             starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
             starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
             starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
@@ -467,9 +468,10 @@ namespace NewHorizons.Handlers
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
+            Light ambientLight = null;
             if (body.Config.Base.ambientLight != 0)
             {
-                AmbientLightBuilder.Make(go, sector, sphereOfInfluence, body.Config.Base.ambientLight);
+                ambientLight = AmbientLightBuilder.Make(go, sector, sphereOfInfluence, body.Config.Base.ambientLight);
             }
 
             if (body.Config.Base.groundSize != 0)
@@ -477,17 +479,19 @@ namespace NewHorizons.Handlers
                 GeometryBuilder.Make(go, sector, body.Config.Base.groundSize);
             }
 
+            GameObject heightMap = null;
             if (body.Config.HeightMap != null)
             {
                 // resolution = tris on edge per face
                 // divide by 4 to account for all the way around the equator
                 var res = body.Config.HeightMap.resolution / 4;
-                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res, true);
+                heightMap = HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res, true);
             }
 
+            GameObject procGen = null;
             if (body.Config.ProcGen != null)
             {
-                ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
+                procGen = ProcGenBuilder.Make(go, sector, body.Config.ProcGen);
             }
 
             if (body.Config.Star != null)
@@ -539,7 +543,8 @@ namespace NewHorizons.Handlers
             }
 
             var willHaveCloak = body.Config.Cloak != null && body.Config.Cloak.radius != 0f;
-
+            PlanetaryFogController fog = null;
+            LODGroup atmosphere = null;
             if (body.Config.Atmosphere != null)
             {
                 var surfaceSize = body.Config.Base.surfaceSize;
@@ -556,9 +561,11 @@ namespace NewHorizons.Handlers
                     EffectsBuilder.Make(go, sector, body.Config, surfaceSize);
 
                 if (body.Config.Atmosphere.fogSize != 0)
-                    FogBuilder.Make(go, sector, body.Config.Atmosphere);
+                {
+                    fog = FogBuilder.Make(go, sector, body.Config.Atmosphere);
+                }
 
-                AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize);
+                atmosphere = AtmosphereBuilder.Make(go, sector, body.Config.Atmosphere, surfaceSize).GetComponentInChildren<LODGroup>();
             }
 
             if (body.Config.Props != null)
@@ -575,6 +582,11 @@ namespace NewHorizons.Handlers
             if (willHaveCloak)
             {
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
+            }
+
+            if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
+            {
+                SupernovaEffectBuilder.Make(go, sector, body.Config, heightMap, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
 
             return go;

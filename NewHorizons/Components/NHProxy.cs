@@ -15,6 +15,7 @@ namespace NewHorizons.Components
         private SolarFlareEmitter _solarFlareEmitter;
         public CloudLightningGenerator _lightningGenerator;
         public MeshRenderer _mainBody;
+        public NHSupernovaPlanetEffectController _supernovaPlanetEffectController;
 
         public override void Awake()
         {
@@ -33,6 +34,8 @@ namespace NewHorizons.Components
             }
 
             if (_lightningGenerator == null) _lightningGenerator = GetComponentInChildren<CloudLightningGenerator>();
+
+            if (_supernovaPlanetEffectController == null) _supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>();
             
             // Start off
             _outOfRange = false;
@@ -85,6 +88,12 @@ namespace NewHorizons.Components
                 if (_lightningGenerator != null)
                 {
                     _lightningGenerator.enabled = on;
+                }
+
+                if (_supernovaPlanetEffectController != null)
+                {
+                    if (on) _supernovaPlanetEffectController.Enable();
+                    else _supernovaPlanetEffectController.Disable();
                 }
 
                 foreach (var renderer in _starRenderers)

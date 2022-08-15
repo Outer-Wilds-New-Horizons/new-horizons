@@ -57,6 +57,11 @@ namespace NewHorizons.External.Modules
         public bool hasMapMarker;
 
         /// <summary>
+        /// Does this planet have a shock effect when the nearest star goes supernova?
+        /// </summary>
+        [DefaultValue(true)] public bool hasSupernovaShockEffect = true;
+
+        /// <summary>
         /// Can this planet survive entering a star?
         /// </summary>
         public bool invulnerableToSun;
