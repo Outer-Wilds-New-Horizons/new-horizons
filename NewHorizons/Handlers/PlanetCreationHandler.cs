@@ -328,10 +328,8 @@ namespace NewHorizons.Handlers
             body.Config.Base.hasMapMarker = false;
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, null, body.Config);
-
             var sector = SectorBuilder.Make(go, owRigidBody, 2000f);
-            ao._rootSector = sector;
+            var ao = AstroObjectBuilder.Make(go, sector, null, body.Config);
             ao._type = AstroObject.Type.None;
 
             BrambleDimensionBuilder.Make(body, go, ao, sector, owRigidBody);
@@ -394,12 +392,9 @@ namespace NewHorizons.Handlers
             }
 
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
-            var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
-
             var sphereOfInfluence = GetSphereOfInfluence(body);
-
             var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
-            ao._rootSector = sector;
+            var ao = AstroObjectBuilder.Make(go, sector, primaryBody, body.Config);
 
             if (body.Config.Base.surfaceGravity != 0)
             {
@@ -682,7 +677,7 @@ namespace NewHorizons.Handlers
                 }
 
                 // Just destroy the existing AO after copying everything over
-                var newAO = AstroObjectBuilder.Make(go, primary, body.Config);
+                var newAO = AstroObjectBuilder.Make(go, ao._rootSector, primary, body.Config);
                 newAO._gravityVolume = ao._gravityVolume;
                 newAO._moon = ao._moon;
                 newAO._name = ao._name;

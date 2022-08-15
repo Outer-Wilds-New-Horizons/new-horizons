@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
     {
-        public static NHAstroObject Make(GameObject body, AstroObject primaryBody, PlanetConfig config)
+        public static NHAstroObject Make(GameObject body, Sector sector, AstroObject primaryBody, PlanetConfig config)
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
@@ -25,6 +25,7 @@ namespace NewHorizons.Builder.General
             astroObject._name = AstroObject.Name.CustomString;
             astroObject._customName = config.name;
             astroObject._primaryBody = primaryBody;
+            astroObject._rootSector = sector;
 
             // Expand gravitational sphere of influence of the primary to encompass this body if needed
             if (primaryBody?.gameObject?.GetComponent<SphereCollider>() != null && !config.Orbit.isStatic)
