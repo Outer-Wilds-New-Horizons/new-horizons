@@ -39,7 +39,9 @@ namespace NewHorizons.Components.SizeControllers
         private float _collapseTimer;
 
         public float collapseTime = 10f; // seconds
-        public float supernovaTime = 45f; // seconds
+        public float supernovaScaleStart = 45f; // seconds
+        public float supernovaScaleEnd = 50f; // seconds
+        public float supernovaTime = 50f; // seconds
         public float lifespan = 22f; // minutes
         public float supernovaSize = 50000f;
 
@@ -227,6 +229,12 @@ namespace NewHorizons.Components.SizeControllers
             if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
             if (_planetDestructionVolume != null) _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+
+            var t = Mathf.Clamp01((Time.time - (_supernovaStartTime + supernovaScaleStart)) / (supernovaScaleEnd - supernovaScaleStart));
+            if (t > 0)
+            {
+                _planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
+            }
 
             if (Time.time > _supernovaStartTime + supernovaTime)
             {
