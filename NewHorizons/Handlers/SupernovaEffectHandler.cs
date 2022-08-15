@@ -53,7 +53,7 @@ namespace NewHorizons.Handlers
             foreach (StarEvolutionController starEvolutionController in _starEvolutionControllers)
             {
                 if (starEvolutionController == null) continue;
-                if (starEvolutionController._disabled) continue;
+                if (starEvolutionController._disabled || !(starEvolutionController.gameObject.activeSelf && starEvolutionController.gameObject.activeInHierarchy)) continue;
                 float distance = (supernovaPlanetEffectController.transform.position - starEvolutionController.transform.position).sqrMagnitude;
                 if (distance < (starEvolutionController.supernovaSize * starEvolutionController.supernovaSize) && distance < nearestDistance)
                 {
