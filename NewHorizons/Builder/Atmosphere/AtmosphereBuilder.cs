@@ -18,7 +18,7 @@ namespace NewHorizons.Builder.Atmosphere
             Skys.Clear();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize)
+        public static GameObject Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize, bool proxy = false)
         {
             GameObject atmoGO = new GameObject("Atmosphere");
             atmoGO.SetActive(false);
@@ -26,36 +26,73 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                GameObject atmo = GameObject.Instantiate(SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"), atmoGO.transform, true);
-                atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
-                atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
-
-                var renderers = atmo.GetComponentsInChildren<MeshRenderer>();
-                var material = renderers[0].material; // makes a new material
-                foreach (var renderer in renderers)
+                if (proxy)
                 {
-                    renderer.sharedMaterial = material;
-                }
-                material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
-                material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
-                if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
+                    var distantProxy = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?.FindChild("Atmosphere_TH/Atmosphere_LOD3");
+                    if (distantProxy != null)
+                    {
+                        GameObject atmo = GameObject.Instantiate(distantProxy, atmoGO.transform, true);
+                        atmo.name = "Atmosphere_LOD3";
+                        atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+                        atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f * 2f;
 
-                atmo.SetActive(true);
+                        var renderer = atmo.GetComponent<MeshRenderer>();
+                        var material = renderer.material; // makes a new material
+                        renderer.sharedMaterial = material;
+                        material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                        material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
+                        if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
 
-                if (atmosphereModule.atmosphereSunIntensity == 0)
-                {
-                    // do it based on distance
-                    Skys.Add((planetGO, material));
+                        atmo.SetActive(true);
+
+                        if (atmosphereModule.atmosphereSunIntensity == 0)
+                        {
+                            // do it based on distance
+                            Skys.Add((planetGO, material));
+                        }
+                        else
+                        {
+                            // use the override instead
+                            material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
+                        }
+                    }
                 }
                 else
                 {
-                    // use the override instead
-                    material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
+                    GameObject atmo = GameObject.Instantiate(SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere"), atmoGO.transform, true);
+                    atmo.name = "AtmoSphere";
+                    atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+                    atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
+
+                    var renderers = atmo.GetComponentsInChildren<MeshRenderer>();
+                    var material = renderers[0].material; // makes a new material
+                    foreach (var renderer in renderers)
+                    {
+                        renderer.sharedMaterial = material;
+                    }
+                    material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                    material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
+                    if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
+
+                    atmo.SetActive(true);
+
+                    if (atmosphereModule.atmosphereSunIntensity == 0)
+                    {
+                        // do it based on distance
+                        Skys.Add((planetGO, material));
+                    }
+                    else
+                    {
+                        // use the override instead
+                        material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
+                    }
                 }
             }
 
             atmoGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
             atmoGO.SetActive(true);
+
+            return atmoGO;
         }
     }
 }

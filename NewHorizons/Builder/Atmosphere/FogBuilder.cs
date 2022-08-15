@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int DensityExponent = Shader.PropertyToID("_DensityExp");
         private static readonly int ColorRampTexture = Shader.PropertyToID("_ColorRampTex");
 
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
+        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
         {
             if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
 
@@ -58,6 +58,41 @@ namespace NewHorizons.Builder.Atmosphere
             fogGO.transform.position = planetGO.transform.position;
 
             fogGO.SetActive(true);
+            return PFC;
+        }
+
+        public static Renderer MakeProxy(GameObject proxyGO, AtmosphereModule atmo)
+        {
+            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
+
+            GameObject fogGO = new GameObject("FogSphere");
+            fogGO.SetActive(false);
+            fogGO.transform.parent = proxyGO.transform;
+            fogGO.transform.localScale = Vector3.one * atmo.fogSize;
+
+            var fog = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?.FindChild("Atmosphere_TH/FogSphere");
+
+            MeshFilter MF = fogGO.AddComponent<MeshFilter>();
+            MF.mesh = fog.GetComponent<MeshFilter>().mesh;
+
+            MeshRenderer MR = fogGO.AddComponent<MeshRenderer>();
+            MR.materials = fog.GetComponent<MeshRenderer>().materials;
+            MR.allowOcclusionWhenDynamic = true;
+
+            var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
+            if (atmo.fogTint != null)
+            {
+                MR.material.SetColor(Tint, atmo.fogTint.ToColor());
+            }
+            MR.material.SetFloat(Radius, atmo.fogSize);
+            MR.material.SetFloat(Density, atmo.fogDensity);
+            MR.material.SetFloat(DensityExponent, 1);
+            MR.material.SetTexture(ColorRampTexture, colorRampTexture);
+
+            fogGO.transform.position = proxyGO.transform.position;
+
+            fogGO.SetActive(true);
+            return MR;
         }
     }
 }

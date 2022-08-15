@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        public static void Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
+        public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
             var deleteHeightmapFlag = false;
 
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Body
             catch (Exception e)
             {
                 Logger.LogError($"Couldn't load HeightMap textures:\n{e}");
-                return;
+                return null;
             }
 
             GameObject cubeSphere = new GameObject("CubeSphere");
@@ -111,6 +111,8 @@ namespace NewHorizons.Builder.Body
 
             // Now that we've made the mesh we can delete the heightmap texture
             if (deleteHeightmapFlag) ImageUtilities.DeleteTexture(mod, module.heightMap, heightMap);
+
+            return cubeSphere;
         }
 
         public static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch)
