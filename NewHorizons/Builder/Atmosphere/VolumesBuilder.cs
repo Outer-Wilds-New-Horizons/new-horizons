@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (_gdCloudMaterial == null) _gdCloudMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._cloudMaterial).DontDestroyOnLoad();
         }
         
-        public static void Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
+        public static GameObject Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
         {
             InitPrefabs();
 
@@ -69,6 +69,8 @@ namespace NewHorizons.Builder.Atmosphere
             volumesGO.transform.position = planetGO.transform.position;
             rulesetGO.SetActive(true);
             volumesGO.SetActive(true);
+
+            return volumesGO;
         }
     }
 }

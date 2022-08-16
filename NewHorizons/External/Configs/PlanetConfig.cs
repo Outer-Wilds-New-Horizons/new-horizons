@@ -94,6 +94,11 @@ namespace NewHorizons.External.Configs
         public HeightMapModule HeightMap;
 
         /// <summary>
+        /// Does this config describe an island of a custom planet defined in another file?
+        /// </summary>
+        public bool isIsland;
+
+        /// <summary>
         /// Does this config describe a quantum state of a custom planet defined in another file?
         /// </summary>
         public bool isQuantumState;

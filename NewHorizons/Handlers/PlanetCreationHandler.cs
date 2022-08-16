@@ -7,6 +7,7 @@ using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
+using NewHorizons.External.Modules;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using System;
@@ -231,6 +232,24 @@ namespace NewHorizons.Handlers
                 {
                     //Skip
                 }
+                else if (body.Config.isIsland)
+                {
+                    try
+                    {
+                        Logger.Log($"Creating island [{body.Config.name}]");
+                        var planetObject = GenerateIslandBody(body, defaultPrimaryToSun);
+                        if (planetObject == null) return false;
+
+                        var ao = planetObject.GetComponent<NHAstroObject>();
+
+                        _customBodyDict.Add(ao, body);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.LogError($"Couldn't generate island {body.Config?.name}:\n{e}");
+                        return false;
+                    }
+                }
                 else
                 {
                     try
@@ -408,7 +427,7 @@ namespace NewHorizons.Handlers
                 MarkerBuilder.Make(go, body.Config.name, body.Config);
             }
 
-            VolumesBuilder.Make(go, owRigidBody, body.Config, sphereOfInfluence);
+            var volumesGO = VolumesBuilder.Make(go, owRigidBody, body.Config, sphereOfInfluence);
 
             if (body.Config.FocalPoint != null)
             {
@@ -440,12 +459,17 @@ namespace NewHorizons.Handlers
                 Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
             }
 
-            if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
+            if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic && !body.Config.isIsland)
             {
                 Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
+
+            if (body.Config.isIsland)
+            {
+                IslandBuilder.Make(go, sector, owRigidBody, primaryBody, volumesGO, body.Config, sphereOfInfluence);
+            }
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
@@ -464,6 +488,69 @@ namespace NewHorizons.Handlers
             RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
+
+            return go;
+        }
+
+        public static GameObject GenerateIslandBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
+        {
+            AstroObject primaryBody;
+            if (body.Config.Orbit.primaryBody != null)
+            {
+                primaryBody = AstroObjectLocator.GetAstroObject(body.Config.Orbit.primaryBody);
+                if (primaryBody == null)
+                {
+                    if (defaultPrimaryToSun)
+                    {
+                        Logger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
+                        primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
+                    }
+                    else
+                    {
+                        _nextPassBodies.Add(body);
+                        return null;
+                    }
+                }
+            }
+            else
+            {
+                primaryBody = null;
+            }
+
+            var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
+            go.SetActive(false);
+
+            var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
+            var sphereOfInfluence = GetSphereOfInfluence(body);
+            var sector = SectorBuilder.Make(go, owRigidBody, sphereOfInfluence * 2f);
+            var ao = AstroObjectBuilder.Make(go, sector, primaryBody, body.Config);
+
+            RFVolumeBuilder.Make(go, owRigidBody, sphereOfInfluence, new ReferenceFrameModule { hideInMap = true });
+
+            var volumesGO = VolumesBuilder.Make(go, owRigidBody, body.Config, sphereOfInfluence);
+
+            go = SharedGenerateBody(body, go, sector, owRigidBody);
+
+            body.Object = go;
+
+            if (body.Config.Spawn != null)
+            {
+                Logger.LogVerbose("Making spawn point");
+                Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+            }
+
+            DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
+
+            IslandBuilder.Make(go, sector, owRigidBody, primaryBody, volumesGO, body.Config, sphereOfInfluence);
+
+            AstroObjectLocator.RegisterCustomAstroObject(ao);
+
+            Logger.LogVerbose($"Finished creating island [{body.Config.name}]");
+
+            go.SetActive(true);
+
+            owRigidBody._origParent = primaryBody.transform;
+            owRigidBody._origParentBody = primaryBody._owRigidbody;
 
             return go;
         }

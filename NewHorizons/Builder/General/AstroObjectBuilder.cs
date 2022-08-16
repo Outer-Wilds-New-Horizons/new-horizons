@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.General
                     primarySphereOfInfluence.radius = config.Orbit.semiMajorAxis * 1.5f;
             }
 
-            if (config.Orbit.isTidallyLocked)
+            if (config.Orbit.isTidallyLocked || config.isIsland)
             {
                 var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
 
@@ -47,6 +47,13 @@ namespace NewHorizons.Builder.General
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
                 alignment._usePhysicsToRotate = false;
                 alignment._localAlignmentAxis = alignmentAxis;
+
+                if (config.isIsland)
+                {
+                    alignment._degreesToTarget = 0.0198f;
+                    alignment._interpolationRate = 2;
+                    alignment._interpolationMode = AlignWithDirection.InterpolationMode.Linear;
+                }
 
                 // Static bodies won't update rotation with physics for some reason
                 // Have to set it next tick else it flings the player into deep space on spawn (#171)

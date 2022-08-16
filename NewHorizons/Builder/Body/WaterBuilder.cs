@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
+using NewHorizons.Components;
 
 namespace NewHorizons.Builder.Body
 {
@@ -95,8 +96,9 @@ namespace NewHorizons.Builder.Body
             //Buoyancy
             var buoyancyObject = new GameObject("WaterVolume");
             buoyancyObject.transform.parent = waterGO.transform;
-            buoyancyObject.transform.localScale = Vector3.one;
+            buoyancyObject.transform.localScale = Vector3.one * 1.02f;
             buoyancyObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            buoyancyObject.SetActive(false);
 
             var sphereCollider = buoyancyObject.AddComponent<SphereCollider>();
             sphereCollider.radius = 1;
@@ -106,15 +108,33 @@ namespace NewHorizons.Builder.Body
             owCollider._parentBody = rb;
             owCollider._collider = sphereCollider;
 
+            var waveHeightCalculator = buoyancyObject.AddComponent<WaveHeightCalculator>();
+            waveHeightCalculator._oceanMaterial = TSR.sharedMaterials[1];
+            waveHeightCalculator._oceanTransform = waterGO.transform;
+
+            var owOceanCollider = buoyancyObject.AddComponent<OWOceanCollider>();
+            owOceanCollider._owCollider = owCollider;
+            owOceanCollider._wavelessRadius = module.size * 1.004f;
+            owOceanCollider._collider = sphereCollider;
+            owOceanCollider._waveHeightCalculator = waveHeightCalculator;
+
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
+            buoyancyTriggerVolume._owCustomCollider = owOceanCollider;
 
-            var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
+            var fluidVolume = buoyancyObject.AddComponent<NHFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
-            fluidVolume._radius = waterSize;
-            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
+            fluidVolume._buoyancyDensity = 1.1f;
+            fluidVolume._radius = module.size * 1.004f;
+            fluidVolume._allowShipAutoroll = true;
+            fluidVolume._density = 30;
+            fluidVolume._layer = 5;
+            fluidVolume._priority = 3;
+            fluidVolume._waveHeightCalculator = waveHeightCalculator;
+
+            buoyancyObject.SetActive(true);
 
             var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
@@ -141,6 +161,34 @@ namespace NewHorizons.Builder.Body
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
             }
+
+            var oceanGravity = new GameObject("Ocean_Gravity");
+            oceanGravity.transform.parent = waterGO.transform;
+            oceanGravity.transform.localPosition = Vector3.zero;
+            oceanGravity.transform.localScale = Vector3.one * 0.86f;
+            oceanGravity.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+            var sphereColliderGravity = oceanGravity.AddComponent<SphereCollider>();
+            sphereColliderGravity.radius = 1;
+            sphereColliderGravity.isTrigger = true;
+
+            var owColliderGravity = oceanGravity.AddComponent<OWCollider>();
+            owColliderGravity._parentBody = rb;
+            owColliderGravity._collider = sphereColliderGravity;
+
+            var triggerVolumeGravity = oceanGravity.AddComponent<OWTriggerVolume>();
+            triggerVolumeGravity._owCollider = owColliderGravity;
+
+            var polarForceVolume = oceanGravity.AddComponent<PolarForceVolume>();
+            polarForceVolume._attachedBody = rb;
+            polarForceVolume._triggerVolume = triggerVolumeGravity;
+            polarForceVolume._inheritable = false;
+            polarForceVolume._layer = 5;
+            polarForceVolume._priority = 1;
+            polarForceVolume._alignmentPriority = 1;
+            polarForceVolume._acceleration = 1;
+            polarForceVolume._localAxis = Vector3.up;
+            polarForceVolume._fieldMode = PolarForceVolume.ForceMode.Polar;
 
             // TODO: fix ruleset making the sand bubble pop up
 
