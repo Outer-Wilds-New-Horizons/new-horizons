@@ -321,6 +321,7 @@ namespace NewHorizons
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 StarChartHandler.Init(SystemDict.Values.ToArray());
+
                 if (isSolarSystem)
                 {
                     // Warp drive
@@ -406,7 +407,17 @@ namespace NewHorizons
                 ssrLight.spotAngle = 179;
                 ssrLight.range = Main.FurthestOrbit * (4f/3f);
                 ssrLight.intensity = 0.001f;
-                
+
+                var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
+                fluid._splashEffects = fluid._splashEffects.AddToArray(new SplashEffect
+                {
+                    fluidType = FluidVolume.Type.PLASMA,
+                    ignoreSphereAligment = false,
+                    minImpactSpeed = 15,
+                    splashPrefab = SearchUtilities.Find("Probe_Body/ProbeDetector").GetComponent<FluidDetector>()._splashEffects.FirstOrDefault(sfx => sfx.fluidType == FluidVolume.Type.PLASMA).splashPrefab,
+                    triggerEvent = SplashEffect.TriggerEvent.OnEntry
+                });
+
                 try
                 {
                     Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
