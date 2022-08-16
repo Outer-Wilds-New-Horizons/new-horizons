@@ -41,6 +41,9 @@ namespace NewHorizons.Patches
             __result = __result || Components.CloakSectorController.isShipInside;
         }
 
+        // Locator Fixes
+        // Vanilla doesn't register these AstroObjects for some reason. So here is a fix.
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(Locator), nameof(Locator.GetAstroObject))]
         public static bool Locator_GetAstroObject(AstroObject.Name astroObjectName, ref AstroObject __result)
@@ -76,6 +79,8 @@ namespace NewHorizons.Patches
         public static bool Locator_RegisterAstroObject(AstroObject astroObject)
         {
             if (astroObject.GetAstroObjectName() == AstroObject.Name.None) return false;
+
+            // Sun Station name change because for some dumb reason it doesn't use AstroObject.Name.SunStation
             if (!string.IsNullOrEmpty(astroObject._customName) && astroObject._customName.Equals("Sun Station"))
             {
                 if (astroObject.gameObject.name == "SunStation_Body")
@@ -84,9 +89,11 @@ namespace NewHorizons.Patches
                     _sunStation = astroObject;
                     return false;
                 }
+                // Debris uses same custom name because morbius, so let us change that.
                 else if (astroObject.gameObject.name == "SS_Debris_Body") astroObject._customName = "Sun Station Debris";
                 return true;
             }
+
             switch (astroObject.GetAstroObjectName())
             {
                 case AstroObject.Name.Eye:

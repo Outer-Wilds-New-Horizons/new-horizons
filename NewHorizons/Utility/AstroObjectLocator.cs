@@ -158,7 +158,7 @@ namespace NewHorizons.Utility
                         .Select(x => x.gameObject)
                         .Where(x => x.name == "SS_Debris_Body"));
                     break;
-                // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
+                // Just in case GetChildren runs before sun station's name is changed
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
                     {
