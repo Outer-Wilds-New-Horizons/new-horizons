@@ -1,5 +1,7 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
+using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -33,7 +35,58 @@ namespace NewHorizons.Builder.General
 
                 OWRB.RegisterAttachedFluidDetector(fluidDetector);
 
-                // Could copy the splash from the interloper as well some day
+                var splashEffects = new List<SplashEffect>();
+
+                var cometDetector = SearchUtilities.Find("Comet_Body/Detector_CO")?.GetComponent<FluidDetector>();
+                if (cometDetector != null)
+                {
+                    foreach (var splashEffect in cometDetector._splashEffects)
+                    {
+                        splashEffects.Add(new SplashEffect
+                        {
+                            fluidType = splashEffect.fluidType,
+                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                            triggerEvent = splashEffect.triggerEvent,
+                            minImpactSpeed = 15,
+                            splashPrefab = splashEffect.splashPrefab
+                        });
+                    }
+                }
+
+                var islandDetector = SearchUtilities.Find("GabbroIsland_Body/Detector_GabbroIsland")?.GetComponent<FluidDetector>();
+                if (islandDetector != null)
+                {
+                    foreach (var splashEffect in islandDetector._splashEffects)
+                    {
+                        splashEffects.Add(new SplashEffect
+                        {
+                            fluidType = splashEffect.fluidType,
+                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                            triggerEvent = splashEffect.triggerEvent,
+                            minImpactSpeed = 15,
+                            splashPrefab = splashEffect.splashPrefab
+                        });
+                    }
+                }
+
+                var shipDetector = SearchUtilities.Find("Ship_Body/ShipDetector")?.GetComponent<FluidDetector>();
+                if (shipDetector != null)
+                {
+                    foreach (var splashEffect in shipDetector._splashEffects)
+                    {
+                        if (splashEffect.fluidType == FluidVolume.Type.SAND)
+                            splashEffects.Add(new SplashEffect
+                            {
+                                fluidType = splashEffect.fluidType,
+                                ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                                triggerEvent = splashEffect.triggerEvent,
+                                minImpactSpeed = 15,
+                                splashPrefab = splashEffect.splashPrefab
+                            });
+                    }
+                }
+
+                fluidDetector._splashEffects = splashEffects.ToArray();
             }
 
             SetDetector(primaryBody, astroObject, forceDetector);
