@@ -89,7 +89,7 @@ namespace NewHorizons.Builder.General
                 fluidDetector._splashEffects = splashEffects.ToArray();
             }
 
-            SetDetector(primaryBody, astroObject, forceDetector);
+            if (!config.Orbit.isStatic) SetDetector(primaryBody, astroObject, forceDetector);
 
             detectorGO.SetActive(true);
             return detectorGO;
