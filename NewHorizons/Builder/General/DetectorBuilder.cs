@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.General
                 // Could copy the splash from the interloper as well some day
             }
 
-            SetDetector(primaryBody, astroObject, forceDetector);
+            if (!config.Orbit.isStatic) SetDetector(primaryBody, astroObject, forceDetector);
 
             detectorGO.SetActive(true);
             return detectorGO;
