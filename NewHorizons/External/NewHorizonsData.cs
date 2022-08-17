@@ -22,7 +22,7 @@ namespace NewHorizons.External
 
             try
             {
-                _saveFile = Main.Instance.ModHelper.Storage.Load<NewHorizonsSaveFile>(FileName);
+                _saveFile = Main.Instance.ModHelper.Storage.Load<NewHorizonsSaveFile>(FileName, false);
                 if (!_saveFile.Profiles.ContainsKey(_activeProfileName))
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                 _activeProfile = _saveFile.Profiles[_activeProfileName];

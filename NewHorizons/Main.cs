@@ -460,7 +460,7 @@ namespace NewHorizons
                         Logger.LogVerbose($"Loading system {name}");
 
                         var relativePath = file.Replace(folder, "");
-                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
+                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
                         starSystemConfig.Migrate();
                         starSystemConfig.FixCoordinates();
 
@@ -507,7 +507,7 @@ namespace NewHorizons
                 // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
-                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
+                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json", false);
 
                     AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
                 }
@@ -556,7 +556,7 @@ namespace NewHorizons
             NewHorizonsBody body = null;
             try
             {
-                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath);
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath, false);
                 if (config == null)
                 {
                     Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
@@ -568,7 +568,7 @@ namespace NewHorizons
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
+                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json", false);
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
