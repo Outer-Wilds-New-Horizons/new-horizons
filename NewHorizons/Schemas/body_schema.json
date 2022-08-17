@@ -364,9 +364,9 @@
         },
         "rotationSpeed": {
           "type": "number",
-          "description": "How fast the clouds will rotate in degrees per second.",
+          "description": "How fast the clouds will rotate relative to the planet in degrees per second.",
           "format": "float",
-          "default": 10.0
+          "default": 0.0
         }
       }
     },
@@ -1634,7 +1634,7 @@
         },
         "type": {
           "description": "What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.",
-          "default": "downwards",
+          "default": "upwards",
           "$ref": "#/definitions/TornadoType"
         },
         "wanderDegreesX": {
@@ -1665,13 +1665,13 @@
       "type": "string",
       "description": "",
       "x-enumNames": [
-        "Downwards",
         "Upwards",
+        "Downwards",
         "Hurricane"
       ],
       "enum": [
-        "downwards",
         "upwards",
+        "downwards",
         "hurricane"
       ]
     },
@@ -2335,7 +2335,7 @@
         },
         "supernovaSize": {
           "type": "number",
-          "description": "Radius of the supernova.",
+          "description": "Radius of the supernova. Any planets within 80% of this will be destroyed.",
           "format": "float",
           "default": 50000.0,
           "minimum": 0.0

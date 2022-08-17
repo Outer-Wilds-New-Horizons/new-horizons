@@ -210,11 +210,14 @@ namespace NewHorizons.Builder.Atmosphere
                 cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
 
-            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            // Idk why but the axis is weird
-            topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
-            topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
-            topRT._randomizeRotationRate = false;
+            if (atmo.clouds.rotationSpeed != 0f)
+            {
+                RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                // Idk why but the axis is weird
+                topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
+                topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
+                topRT._randomizeRotationRate = false;
+            }
 
             cloudsTopGO.transform.localPosition = Vector3.zero;
 

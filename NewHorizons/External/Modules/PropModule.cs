@@ -271,9 +271,9 @@ namespace NewHorizons.External.Modules
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
             {
-                [EnumMember(Value = @"downwards")] Downwards = 0,
+                [EnumMember(Value = @"upwards")] Upwards = 0,
 
-                [EnumMember(Value = @"upwards")] Upwards = 1,
+                [EnumMember(Value = @"downwards")] Downwards = 1,
 
                 [EnumMember(Value = @"hurricane")] Hurricane = 2
             }
@@ -303,7 +303,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            [DefaultValue("downwards")] public TornadoType type = TornadoType.Downwards;
+            [DefaultValue("upwards")] public TornadoType type = TornadoType.Upwards;
 
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.

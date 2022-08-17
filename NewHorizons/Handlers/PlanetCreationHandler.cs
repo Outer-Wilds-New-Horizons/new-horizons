@@ -433,10 +433,7 @@ namespace NewHorizons.Handlers
                 Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
             }
 
-            if (!body.Config.Orbit.isStatic)
-            {
-                DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
-            }
+            DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 

@@ -198,6 +198,8 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+
+            LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
         public void OnDestroy()
@@ -386,9 +388,17 @@ namespace NewHorizons
                 var playerLight = playerBody.AddComponent<Light>();
                 playerLight.innerSpotAngle = 0;
                 playerLight.spotAngle = 179;
-                playerLight.range = 0.5f;
+                playerLight.range = 1;
                 playerLight.intensity = 0.001f;
 
+                //Do the same for map
+                var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
+                var ssrLight = solarSystemRoot.AddComponent<Light>();
+                ssrLight.innerSpotAngle = 0;
+                ssrLight.spotAngle = 179;
+                ssrLight.range = Main.FurthestOrbit * (4f/3f);
+                ssrLight.intensity = 0.001f;
+                
                 try
                 {
                     Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
@@ -460,7 +470,7 @@ namespace NewHorizons
                         Logger.LogVerbose($"Loading system {name}");
 
                         var relativePath = file.Replace(folder, "");
-                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
+                        var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath);
                         starSystemConfig.Migrate();
                         starSystemConfig.FixCoordinates();
 
@@ -507,9 +517,7 @@ namespace NewHorizons
                 // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
-                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json", false);
-
-                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                    LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
@@ -521,6 +529,16 @@ namespace NewHorizons
             {
                 Logger.LogError(ex.ToString());
             }
+        }
+
+        private void LoadAddonManifest(string file, IModBehaviour mod)
+        {
+            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
+
+            var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
+
+            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -556,7 +574,7 @@ namespace NewHorizons
             NewHorizonsBody body = null;
             try
             {
-                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath, false);
+                var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath);
                 if (config == null)
                 {
                     Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
@@ -568,7 +586,7 @@ namespace NewHorizons
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
-                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json", false);
+                    var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>($"systems/{config.starSystem}.json");
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
                     else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
