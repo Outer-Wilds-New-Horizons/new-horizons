@@ -32,6 +32,8 @@ namespace NewHorizons.Components.SizeControllers
         private HeatHazardVolume _heatVolume;
         public DestructionVolume _destructionVolume;
         public DestructionVolume _planetDestructionVolume;
+        public SimpleFluidVolume _destructionFluidVolume;
+        public SimpleFluidVolume _planetDestructionFluidVolume;
         private SolarFlareEmitter _flareEmitter;
         private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
@@ -129,7 +131,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _heatVolume = GetComponentInChildren<HeatHazardVolume>();
-            if (_destructionVolume != null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
+            if (_destructionVolume == null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
 
             if (atmosphere != null)
             {
@@ -332,6 +334,8 @@ namespace NewHorizons.Components.SizeControllers
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
             if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
+            if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = false;
+            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.enabled = false;
 
             if (_proxy != null) _proxy.StartSupernova();
         }
@@ -356,6 +360,8 @@ namespace NewHorizons.Components.SizeControllers
                 _planetDestructionVolume._deathType = DeathType.Energy;
                 _planetDestructionVolume.transform.localScale = Vector3.one;
             }
+            if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = true;
+            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.enabled = true;
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
