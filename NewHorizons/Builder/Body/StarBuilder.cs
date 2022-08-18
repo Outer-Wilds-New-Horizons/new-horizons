@@ -348,7 +348,7 @@ namespace NewHorizons.Builder.Body
             return supernova;
         }
 
-        public static GameObject MakeStellarRemnant(GameObject rootObject, Sector sector, StarModule starModule)
+        public static StellarRemnantController MakeStellarRemnant(GameObject rootObject, Sector sector, StarModule starModule)
         {
             var stellarRemnant = new GameObject("StellarRemnant");
             stellarRemnant.transform.SetParent(sector?.transform ?? rootObject.transform, false);
