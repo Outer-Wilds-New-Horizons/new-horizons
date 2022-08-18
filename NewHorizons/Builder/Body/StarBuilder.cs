@@ -70,27 +70,42 @@ namespace NewHorizons.Builder.Body
             Light ambientLight = ambientLightGO.GetComponent<Light>();
             ambientLight.range = starModule.size * OuterRadiusRatio;
 
-            var heatVolume = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN/HeatVolume"), starGO.transform);
+            var heatVolume = new GameObject("HeatVolume");
+            heatVolume.transform.SetParent(starGO.transform, false);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
-            heatVolume.GetComponent<SphereShape>().radius = 1f;
-            heatVolume.name = "HeatVolume";
+            heatVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            heatVolume.AddComponent<SphereShape>().radius = 1f;
+            heatVolume.AddComponent<OWTriggerVolume>();
+            heatVolume.AddComponent<HeatHazardVolume>()._damagePerSecond = 20f;
 
-            var deathVolume = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Volumes_SUN/ScaledVolumesRoot/DestructionFluidVolume"), starGO.transform);
+            var deathVolume = new GameObject("DestructionFluidVolume");
+            deathVolume.transform.SetParent(starGO.transform, false);
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
-            deathVolume.GetComponent<SphereCollider>().radius = 1f;
-            deathVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = true;
-            deathVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
-            deathVolume.name = "DestructionVolume";
+            deathVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            var sphereCollider = deathVolume.AddComponent<SphereCollider>();
+            sphereCollider.radius = 1f;
+            sphereCollider.isTrigger = true;
+            deathVolume.AddComponent<OWCollider>();
+            deathVolume.AddComponent<OWTriggerVolume>();
+            var destructionVolume = deathVolume.AddComponent<DestructionVolume>();
+            destructionVolume._onlyAffectsPlayerAndShip = true;
+            destructionVolume._deathType = DeathType.Energy;
+            deathVolume.AddComponent<SimpleFluidVolume>()._fluidType = FluidVolume.Type.PLASMA;
 
-            var planetDestructionVolume = Object.Instantiate(deathVolume, starGO.transform);
+            var planetDestructionVolume = new GameObject("PlanetDestructionVolume");
+            planetDestructionVolume.transform.SetParent(starGO.transform, false);
             planetDestructionVolume.transform.localPosition = Vector3.zero;
             planetDestructionVolume.transform.localScale = Vector3.one;
-            planetDestructionVolume.GetComponent<SphereCollider>().radius = 0.8f;
-            planetDestructionVolume.GetComponent<DestructionVolume>()._onlyAffectsPlayerAndShip = false;
-            planetDestructionVolume.GetComponent<DestructionVolume>()._shrinkBodies = true;
-            planetDestructionVolume.name = "PlanetDestructionVolume";
+            planetDestructionVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            var planetSphereCollider = planetDestructionVolume.AddComponent<SphereCollider>();
+            planetSphereCollider.radius = 0.8f;
+            planetSphereCollider.isTrigger = true;
+            planetDestructionVolume.AddComponent<OWCollider>();
+            planetDestructionVolume.AddComponent<OWTriggerVolume>();
+            planetDestructionVolume.AddComponent<DestructionVolume>()._deathType = DeathType.Energy;
+            planetDestructionVolume.AddComponent<SimpleFluidVolume>()._fluidType = FluidVolume.Type.PLASMA;
 
             var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
@@ -150,7 +165,7 @@ namespace NewHorizons.Builder.Body
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
             controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
-            controller._destructionFluidVolume = planetDestructionVolume.GetComponent<SimpleFluidVolume>();
+            controller._destructionFluidVolume = deathVolume.GetComponent<SimpleFluidVolume>();
             controller._planetDestructionFluidVolume = planetDestructionVolume.GetComponent<SimpleFluidVolume>();
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
