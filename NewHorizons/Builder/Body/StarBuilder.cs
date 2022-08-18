@@ -296,6 +296,7 @@ namespace NewHorizons.Builder.Body
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
             supernova._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
+            supernova._supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f) );
             supernova._supernovaVolume = null;
 
             if (starModule.supernovaTint != null)
