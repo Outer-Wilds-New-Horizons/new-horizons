@@ -26,8 +26,6 @@ namespace NewHorizons.Builder.Body
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
-            var stellarRemnant = MakeStellarRemnant(planetGO, sector, starModule);
-
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
@@ -192,6 +190,8 @@ namespace NewHorizons.Builder.Body
             shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
             if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
 
+            var stellarRemnant = MakeStellarRemnant(planetGO, sector, starModule);
+
             return starController;
         }
 
@@ -199,8 +199,6 @@ namespace NewHorizons.Builder.Body
         {
             var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
-
-            var stellarRemnant = MakeStellarRemnant(proxyGO, null, starModule);
 
             var supernova = MakeSupernova(starGO, starModule);
 
@@ -226,6 +224,8 @@ namespace NewHorizons.Builder.Body
             starGO.SetActive(true);
 
             planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
+
+            var stellarRemnant = MakeStellarRemnant(proxyGO, null, starModule);
 
             return proxyGO;
         }
@@ -350,8 +350,15 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeStellarRemnant(GameObject rootObject, Sector sector, StarModule starModule)
         {
-            GameObject stellarRemnant = new GameObject("StellarRemnant");
+            var stellarRemnant = new GameObject("StellarRemnant");
             stellarRemnant.transform.SetParent(sector?.transform ?? rootObject.transform, false);
+            stellarRemnant.SetActive(false);
+
+            var controller = stellarRemnant.AddComponent<StellarRemnantController>();
+            controller.SetStarEvolutionController(rootObject.GetComponentInChildren<StarEvolutionController>());
+
+            stellarRemnant.SetActive(true);
+
             return stellarRemnant;
         }
     }
