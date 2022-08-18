@@ -104,7 +104,7 @@ namespace NewHorizons.Builder.Body
             planetSphereCollider.isTrigger = true;
             planetDestructionVolume.AddComponent<OWCollider>();
             planetDestructionVolume.AddComponent<OWTriggerVolume>();
-            planetDestructionVolume.AddComponent<DestructionVolume>()._deathType = DeathType.Energy;
+            planetDestructionVolume.AddComponent<StarDestructionVolume>()._deathType = DeathType.Energy;
 
             var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
