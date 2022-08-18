@@ -4,12 +4,13 @@ using NewHorizons.External.Configs;
 using NewHorizons.Components;
 using System.Linq;
 using NewHorizons.Handlers;
+using OWML.Common;
 
 namespace NewHorizons.Builder.Body
 {
     public static class SupernovaEffectBuilder
     {
-        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
+        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
             var vanillaController = planetGO.GetComponentInChildren<SupernovaPlanetEffectController>();
             if (vanillaController != null)
@@ -137,6 +138,20 @@ namespace NewHorizons.Builder.Body
                     shockLayer.GetComponent<MeshFilter>().sharedMesh = procGen.GetComponent<MeshFilter>().sharedMesh;
                     shockLayer.transform.localScale = Vector3.one * 1.1f;
                     shockLayer.transform.rotation = Quaternion.Euler(90, 0, 0);
+                }
+
+                if (config.ShockEffect != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(config.ShockEffect.assetBundle) && !string.IsNullOrWhiteSpace(config.ShockEffect.meshPath))
+                    {
+                        var mesh = AssetBundleUtilities.Load<Mesh>(config.ShockEffect.assetBundle, config.ShockEffect.meshPath, mod);
+                        if (mesh != null)
+                        {
+                            shockLayer.GetComponent<MeshFilter>().sharedMesh = mesh;
+                            shockLayer.transform.localScale = Vector3.one * 1.1f;
+                            shockLayer.transform.rotation = Quaternion.Euler(0, 0, 0);
+                        }
+                    }
                 }
 
                 return supernovaEffectController;

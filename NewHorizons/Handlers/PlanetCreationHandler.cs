@@ -599,7 +599,7 @@ namespace NewHorizons.Handlers
 
             if ((body.Config.ShockEffect == null || body.Config.ShockEffect.hasSupernovaShockEffect)  && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
             {
-                SupernovaEffectBuilder.Make(go, sector, body.Config, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
+                SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
 
             return go;

@@ -21,7 +21,7 @@ namespace NewHorizons.External.Modules
         public string assetBundle;
 
         /// <summary>
-        /// Path in the asset bundle that leads a replacement mesh for the planet's supernova shock effect
+        /// Path to the replacement mesh for the planet's supernova shock effect in the supplied asset bundle
         /// </summary>
         public string meshPath;
     }
