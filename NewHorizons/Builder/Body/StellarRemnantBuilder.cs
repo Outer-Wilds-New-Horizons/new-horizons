@@ -18,14 +18,15 @@ namespace NewHorizons.Builder.Body
 {
     public static class StellarRemnantBuilder
     {
-        public static void Make(GameObject go, OWRigidbody rb, PlanetConfig config, IModBehaviour mod, float sphereOfInfluence)
+        public static void Make(NewHorizonsBody star, GameObject go, OWRigidbody rb, IModBehaviour mod, NewHorizonsBody stellarRemnant = null)
         {
-            Logger.Log($"Creating stellar remnant for [{config.name}]");
+            Logger.Log($"Creating stellar remnant for [{star.Config.name}]");
             try
             {
-                var starModule = config.Star;
+                var config = star.Config;
+                var starModule = star.Config.Star;
                 var size = starModule.size;
-                var sector = SectorBuilder.Make(go, rb, sphereOfInfluence);
+                var sector = SectorBuilder.Make(go, rb, 0);
                 sector.name = "StellarRemnant";
                 var ss = sector.GetComponent<SphereShape>();
 
@@ -36,21 +37,19 @@ namespace NewHorizons.Builder.Body
 
                 sector.gameObject.SetActive(false);
 
-                if (starModule.stellarRemnant != null)
+                if (stellarRemnant != null)
                 {
-                    var srConfig = starModule.stellarRemnant.ConvertToPlanetConfig(config);
-                    var srBody = new NewHorizonsBody(srConfig, mod);
                     stellarRemnantController.SetRemnantType(StellarRemnantType.Custom);
-                    stellarRemnantController.SetSurfaceSize(starModule.stellarRemnant.Base.surfaceSize);
-                    stellarRemnantController.SetSurfaceGravity(starModule.stellarRemnant.Base.surfaceGravity);
-                    stellarRemnantController.SetSiderealPeriod(starModule.stellarRemnant.siderealPeriod);
-                    var srSphereOfInfluence = PlanetCreationHandler.GetSphereOfInfluence(srBody);
+                    stellarRemnantController.SetSurfaceSize(stellarRemnant.Config.Base.surfaceSize);
+                    stellarRemnantController.SetSurfaceGravity(stellarRemnant.Config.Base.surfaceGravity);
+                    stellarRemnantController.SetSiderealPeriod(stellarRemnant.Config.Orbit.siderealPeriod);
+                    var srSphereOfInfluence = PlanetCreationHandler.GetSphereOfInfluence(stellarRemnant);
                     stellarRemnantController.SetSphereOfInfluence(srSphereOfInfluence);
                     ss.radius = srSphereOfInfluence + 10;
-                    var alignmentRadius = srBody.Config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * srBody.Config.Base.surfaceSize;
-                    if (srBody.Config.Base.surfaceGravity == 0) alignmentRadius = 0;
+                    var alignmentRadius = stellarRemnant.Config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * stellarRemnant.Config.Base.surfaceSize;
+                    if (stellarRemnant.Config.Base.surfaceGravity == 0) alignmentRadius = 0;
                     stellarRemnantController.SetAlignmentRadius(alignmentRadius);
-                    PlanetCreationHandler.SharedGenerateBody(srBody, go, sector, rb, true);
+                    PlanetCreationHandler.SharedGenerateBody(stellarRemnant, go, sector, rb, true);
                 }
                 else
                 {
@@ -127,7 +126,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't make stellar remnant for [{config.name}]:\n{ex}");
+                Logger.LogError($"Couldn't make stellar remnant for [{star.Config.name}]:\n{ex}");
             }
         }
     }

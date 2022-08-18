@@ -200,6 +200,10 @@ namespace NewHorizons.Handlers
                             return false;
                         }
                     }
+                    else if (body.Config.isStellarRemnant)
+                    {
+                        //Skip
+                    }
                     else
                     {
                         UpdateBody(body, existingPlanet);
@@ -217,6 +221,10 @@ namespace NewHorizons.Handlers
                 {
                     // If the ground state object isn't made yet do it later
                     _nextPassBodies.Add(body);
+                }
+                else if (body.Config.isStellarRemnant)
+                {
+                    //Skip
                 }
                 else
                 {
@@ -500,7 +508,7 @@ namespace NewHorizons.Handlers
                 else
                 {
                     StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, false));
-                    StellarRemnantBuilder.Make(go, rb, body.Config, body.Mod, sphereOfInfluence);
+                    StellarRemnantBuilder.Make(body, go, rb, body.Mod, Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && body.Config.isStellarRemnant).FirstOrDefault());
                 }
             }
 
