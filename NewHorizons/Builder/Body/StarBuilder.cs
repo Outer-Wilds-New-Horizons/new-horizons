@@ -131,6 +131,8 @@ namespace NewHorizons.Builder.Body
                 starController.SunColor = lightColour;
             }
 
+            var stellarRemnant = MakeStellarRemnant(starGO, starModule);
+
             var supernova = MakeSupernova(starGO, starModule);
 
             starGO.SetActive(false);
@@ -284,7 +286,7 @@ namespace NewHorizons.Builder.Body
             return starGO;
         }
 
-        private static SupernovaEffectController MakeSupernova(GameObject starGO, StarModule starModule)
+        public static SupernovaEffectController MakeSupernova(GameObject starGO, StarModule starModule)
         {
             var supernovaGO = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
             supernovaGO.name = "Supernova";
@@ -318,6 +320,13 @@ namespace NewHorizons.Builder.Body
             supernovaGO.SetActive(true);
 
             return supernova;
+        }
+
+        public static GameObject MakeStellarRemnant(GameObject starGO, StarModule starModule)
+        {
+            GameObject stellarRemnant = new GameObject("StellarRemnant");
+            stellarRemnant.transform.SetParent(starGO.transform, false);
+            return stellarRemnant;
         }
     }
 }
