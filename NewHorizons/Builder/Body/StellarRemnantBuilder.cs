@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.Body
                     var alignmentRadius = stellarRemnant.Config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * stellarRemnant.Config.Base.surfaceSize;
                     if (stellarRemnant.Config.Base.surfaceGravity == 0) alignmentRadius = 0;
                     stellarRemnantController.SetAlignmentRadius(alignmentRadius);
-                    PlanetCreationHandler.SharedGenerateBody(stellarRemnant, go, sector, rb, true);
+                    PlanetCreationHandler.SharedGenerateBody(stellarRemnant, go, sector, rb);
                 }
                 else
                 {

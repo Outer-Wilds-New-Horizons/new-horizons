@@ -470,7 +470,7 @@ namespace NewHorizons.Handlers
         }
 
         // What is called both on existing planets and new planets
-        internal static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb, bool isStellarRemnant = false)
+        internal static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
@@ -501,14 +501,14 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                if (isStellarRemnant)
+                if (body.Config.isStellarRemnant)
                 {
                     sector.GetComponent<StellarRemnantController>().SetStarController(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, true));
                 }
                 else
                 {
                     StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, false));
-                    StellarRemnantBuilder.Make(body, go, rb, body.Mod, Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && body.Config.isStellarRemnant).FirstOrDefault());
+                    StellarRemnantBuilder.Make(body, go, rb, body.Mod, Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault());
                 }
             }
 
