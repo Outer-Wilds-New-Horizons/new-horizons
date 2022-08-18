@@ -308,10 +308,7 @@ namespace NewHorizons
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
-                }
 
-                if (isSolarSystem)
-                {
                     PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
 
                     VesselWarpHandler.LoadVessel();
