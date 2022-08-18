@@ -257,24 +257,12 @@ namespace NewHorizons.Components.SizeControllers
 
         private void DisableStar(bool start = false)
         {
-            if (_rigidbody != null)
-            {
-                ReferenceFrameTracker referenceFrameTracker = Locator.GetPlayerBody().GetComponent<ReferenceFrameTracker>();
-                if (referenceFrameTracker.GetReferenceFrame() != null && referenceFrameTracker.GetReferenceFrame().GetOWRigidBody() == _rigidbody) referenceFrameTracker.UntargetReferenceFrame();
-                _rigidbody._isTargetable = false;
-                if (_rigidbody._attachedRFVolume != null)
-                {
-                    _rigidbody._attachedRFVolume._minColliderRadius = 0;
-                    _rigidbody._attachedRFVolume._maxColliderRadius = 0;
-                }
-            }
-
-            if (_mapMarker != null) _mapMarker.DisableMarker();
-
             if (controller != null) StarLightController.RemoveStar(controller);
 
             // Just turn off the star entirely
             base.gameObject.SetActive(false);
+
+            if (_stellarRemnantController != null) _stellarRemnantController.gameObject.SetActive(true);
 
             if (start && _planetDestructionVolume != null)
             {

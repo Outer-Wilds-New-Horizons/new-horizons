@@ -215,6 +215,8 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetStarEvolutionController(starEvolutionController);
                             starEvolutionController.SetStellarRemnantController(stellarRemnantController);
 
+                            sector.gameObject.SetActive(false);
+
                             SharedGenerateBody(body, existingPlanet, sector, rb);
                         }
                         catch (Exception ex)
