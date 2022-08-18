@@ -199,6 +199,17 @@ namespace NewHorizons.Handlers
                             return false;
                         }
                     }
+                    else if (body.Config.isStellarRemnant)
+                    {
+                        try
+                        {
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError($"Couldn't make stellar remnant for [{body.Config.name}]:\n{ex}");
+                            return false;
+                        }
+                    }
                     else
                     {
                         UpdateBody(body, existingPlanet);
@@ -215,6 +226,11 @@ namespace NewHorizons.Handlers
                 if (body.Config.isQuantumState)
                 {
                     // If the ground state object isn't made yet do it later
+                    _nextPassBodies.Add(body);
+                }
+                else if (body.Config.isStellarRemnant)
+                {
+                    // If the star object isn't made yet do it later
                     _nextPassBodies.Add(body);
                 }
                 else
