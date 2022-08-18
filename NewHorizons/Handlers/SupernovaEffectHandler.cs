@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.Handlers
 {
-    public class SupernovaEffectHandler
+    public static class SupernovaEffectHandler
     {
         private static List<NHSupernovaPlanetEffectController> _supernovaPlanetEffectControllers = new List<NHSupernovaPlanetEffectController>();
         private static List<StarEvolutionController> _starEvolutionControllers = new List<StarEvolutionController>();
