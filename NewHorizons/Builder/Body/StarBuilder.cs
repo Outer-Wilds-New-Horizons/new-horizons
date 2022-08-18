@@ -164,7 +164,7 @@ namespace NewHorizons.Builder.Body
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             controller._heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
             controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
-            controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
+            controller._planetDestructionVolume = planetDestructionVolume.GetComponent<StarDestructionVolume>();
             controller._starFluidVolume = starFluidVolume;
             starFluidVolume.SetStarEvolutionController(controller);
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))

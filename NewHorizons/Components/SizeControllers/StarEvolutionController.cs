@@ -31,7 +31,7 @@ namespace NewHorizons.Components.SizeControllers
         private MeshRenderer[] _atmosphereRenderers;
         public HeatHazardVolume _heatVolume;
         public DestructionVolume _destructionVolume;
-        public DestructionVolume _planetDestructionVolume;
+        public StarDestructionVolume _planetDestructionVolume;
         public StarFluidVolume _starFluidVolume;
         private SolarFlareEmitter _flareEmitter;
         private MapMarker _mapMarker;
@@ -131,6 +131,7 @@ namespace NewHorizons.Components.SizeControllers
 
             if (_heatVolume == null) _heatVolume = GetComponentInChildren<HeatHazardVolume>();
             if (_destructionVolume == null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
+            if (_planetDestructionVolume == null) _planetDestructionVolume = GetComponentInChildren<StarDestructionVolume>();
             if (_starFluidVolume == null) _starFluidVolume = GetComponentInChildren<StarFluidVolume>();
 
             if (atmosphere != null)
