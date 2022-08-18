@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NewHorizons.Handlers
 {
@@ -85,6 +86,25 @@ namespace NewHorizons.Handlers
 
         public static SunController GetSunController() => _sunController;
 
-        public static bool InPointInsideSunSupernova(NHSupernovaPlanetEffectController supernovaPlanetEffectController) => _sunController != null && (supernovaPlanetEffectController.transform.position - _sunController.transform.position).sqrMagnitude < 2500000000f;//(50000f*50000f);
+        public static bool InPointInsideAnySupernova(Vector3 position)
+        {
+            foreach (StarEvolutionController starEvolutionController in _starEvolutionControllers)
+            {
+                if (starEvolutionController == null) continue;
+                if (!(starEvolutionController.gameObject.activeSelf && starEvolutionController.gameObject.activeInHierarchy)) continue;
+                float distance = (position - starEvolutionController.transform.position).sqrMagnitude;
+                float size = starEvolutionController.GetSupernovaRadius();
+                if (distance < (size * size)) return true;
+            }
+
+            if (_sunController != null && _sunController.gameObject.activeSelf)
+            {
+                float distance = (position - _sunController.transform.position).sqrMagnitude;
+                float size = _sunController.GetSupernovaRadius();
+                if (distance < (size * size)) return true;
+            }
+
+            return false;
+        }
     }
 }
