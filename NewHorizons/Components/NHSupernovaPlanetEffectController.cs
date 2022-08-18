@@ -14,6 +14,7 @@ namespace NewHorizons.Components
         public float _ambientLightOrigIntensity;
         public LODGroup _atmosphere;
         public Renderer _atmosphereRenderer;
+        public float _atmosphereOrigSunIntensity = 1;
         public PlanetaryFogController _fog;
         public Renderer _fogImpostor;
         public Color _fogOrigTint;
@@ -114,7 +115,7 @@ namespace NewHorizons.Components
 
                     if (_atmosphere != null)
                     {
-                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, 1f - collapseProgress);
+                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, _atmosphereOrigSunIntensity * (1f - collapseProgress));
 
                         foreach (var lod in _atmosphereLODs)
                             foreach (var renderer in lod.renderers)
@@ -123,7 +124,7 @@ namespace NewHorizons.Components
 
                     if (_atmosphereRenderer != null)
                     {
-                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, 1f - collapseProgress);
+                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, _atmosphereOrigSunIntensity * (1f - collapseProgress));
 
                         _atmosphereRenderer.SetPropertyBlock(s_matPropBlock_Atmosphere);
                     }

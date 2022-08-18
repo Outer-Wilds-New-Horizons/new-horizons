@@ -28,6 +28,8 @@ namespace NewHorizons.Builder.Body
 
                 if (currentController._atmosphere == null && atmosphere != null) currentController._atmosphere = atmosphere;
 
+                if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) currentController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
+
                 if (currentController._fog == null && fog != null) currentController._fog = fog;
 
                 return currentController;
@@ -39,6 +41,7 @@ namespace NewHorizons.Builder.Body
                 var supernovaEffectController = supernovaController.AddComponent<NHSupernovaPlanetEffectController>();
                 supernovaEffectController._ambientLight = ambientLight;
                 supernovaEffectController._ambientLightOrigIntensity = config.Base.ambientLight;
+                if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) supernovaEffectController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
                 supernovaEffectController._atmosphere = atmosphere;
                 supernovaEffectController._atmosphereRenderer = atmosphereRenderer;
                 supernovaEffectController._fog = fog;
