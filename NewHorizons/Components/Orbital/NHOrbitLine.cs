@@ -55,7 +55,7 @@ namespace NewHorizons.Components.Orbital
                 AstroObject primary = _astroObject?.GetPrimaryBody();
 
                 // If it has nothing to orbit then why is this here
-                if (primary == null)
+                if (primary == null || !primary.gameObject.activeSelf)
                 {
                     base.enabled = false;
                     return;
