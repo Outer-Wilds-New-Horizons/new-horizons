@@ -81,6 +81,7 @@ namespace NewHorizons.Components
             foreach (var star in _stars)
             {
                 if (star == null) continue;
+                if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
 
                 // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
                 var origin = Vector3.zero;
