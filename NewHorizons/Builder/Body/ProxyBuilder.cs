@@ -7,6 +7,7 @@ using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Builder.Body
 {
@@ -31,64 +32,78 @@ namespace NewHorizons.Builder.Body
         {
             if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
-            var proxyName = $"{body.Config.name}_Proxy";
+            var proxyController = ProxyHandler.GetProxy(body.Config.name);
+            var proxy = proxyController != null ? proxyController.gameObject : new GameObject($"{body.Config.name}_Proxy");
+            proxy.SetActive(false);
+            if (proxyController == null)
+            {
+                proxyController = proxy.AddComponent<NHProxy>();
+                proxyController.astroName = body.Config.name;
+            }
 
-            var newProxy = new GameObject(proxyName);
-            newProxy.SetActive(false);
+            var success = SharedMake(planetGO, proxy, proxyController, body);
+            if (!success)
+            {
+                GameObject.Destroy(proxy);
+                return;
+            }
 
+            proxy.SetActive(true);
+        }
+
+        internal static bool SharedMake(GameObject planetGO, GameObject proxy, NHProxy proxyController, NewHorizonsBody body, StellarRemnantProxy stellarRemnantProxy = null)
+        {
             try
             {
-                var proxyController = newProxy.AddComponent<NHProxy>();
-                proxyController.astroName = body.Config.name;
-
                 // We want to take the largest size I think
                 var realSize = body.Config.Base.surfaceSize;
 
                 if (body.Config.HeightMap != null)
                 {
-                    HeightMapBuilder.Make(newProxy, null, body.Config.HeightMap, body.Mod, 20);
+                    HeightMapBuilder.Make(proxy, null, body.Config.HeightMap, body.Mod, 20);
                     if (realSize < body.Config.HeightMap.maxHeight) realSize = body.Config.HeightMap.maxHeight;
                 }
 
                 if (body.Config.Base.groundSize != 0)
                 {
-                    GeometryBuilder.Make(newProxy, null, body.Config.Base.groundSize);
+                    GeometryBuilder.Make(proxy, null, body.Config.Base.groundSize);
                     if (realSize < body.Config.Base.groundSize) realSize = body.Config.Base.groundSize;
                 }
 
+                Renderer atmosphere = null;
+                Renderer fog = null;
+                float fogCurveMaxVal = 0;
+                Renderer topClouds = null;
+                CloudLightningGenerator lightningGenerator = null;
                 if (body.Config.Atmosphere != null)
                 {
-                    proxyController._atmosphere = AtmosphereBuilder.Make(newProxy, null, body.Config.Atmosphere, body.Config.Base.surfaceSize, true).GetComponentInChildren<MeshRenderer>();
-                    proxyController._mieCurveMaxVal = 0.1f;
-                    proxyController._mieCurve = AnimationCurve.EaseInOut(0.0011f, 1, 1, 0);
+                    atmosphere = AtmosphereBuilder.Make(proxy, null, body.Config.Atmosphere, body.Config.Base.surfaceSize, true).GetComponentInChildren<MeshRenderer>();
 
                     if (body.Config.Atmosphere.fogSize != 0)
                     {
-                        proxyController._fog = FogBuilder.MakeProxy(newProxy, body.Config.Atmosphere);
-                        proxyController._fogCurveMaxVal = body.Config.Atmosphere.fogDensity;
-                        proxyController._fogCurve = AnimationCurve.Linear(0, 1, 1, 0);
+                        fog = FogBuilder.MakeProxy(proxy, body.Config.Atmosphere);
+                        fogCurveMaxVal = body.Config.Atmosphere.fogDensity;
                     }
 
                     if (body.Config.Atmosphere.clouds != null)
                     {
-                        proxyController._mainBody = CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
-                        if (body.Config.Atmosphere.clouds.hasLightning)
-                        {
-                            proxyController._lightningGenerator = CloudsBuilder.MakeLightning(newProxy, null, body.Config.Atmosphere, true);
-                        }
+                        topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+
+                        if (body.Config.Atmosphere.clouds.hasLightning) lightningGenerator = CloudsBuilder.MakeLightning(proxy, null, body.Config.Atmosphere, true);
+
                         if (realSize < body.Config.Atmosphere.size) realSize = body.Config.Atmosphere.size;
                     }
                 }
 
                 if (body.Config.Ring != null)
                 {
-                    RingBuilder.MakeRingGraphics(newProxy, null, body.Config.Ring, body.Mod);
+                    RingBuilder.MakeRingGraphics(proxy, null, body.Config.Ring, body.Mod);
                     if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
                 }
 
                 if (body.Config.Star != null)
                 {
-                    var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star, body.Mod);
+                    StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
@@ -96,13 +111,13 @@ namespace NewHorizons.Builder.Body
                 GameObject procGen = null;
                 if (body.Config.ProcGen != null)
                 {
-                    procGen = ProcGenBuilder.Make(newProxy, null, body.Config.ProcGen);
+                    procGen = ProcGenBuilder.Make(proxy, null, body.Config.ProcGen);
                     if (realSize < body.Config.ProcGen.scale) realSize = body.Config.ProcGen.scale;
                 }
 
                 if (body.Config.Lava != null)
                 {
-                    var sphere = AddColouredSphere(newProxy, body.Config.Lava.size, body.Config.Lava.curve, Color.black);
+                    var sphere = AddColouredSphere(proxy, body.Config.Lava.size, body.Config.Lava.curve, Color.black);
                     if (realSize < body.Config.Lava.size) realSize = body.Config.Lava.size;
 
                     var material = new Material(lavaMaterial);
@@ -113,29 +128,29 @@ namespace NewHorizons.Builder.Body
                 if (body.Config.Water != null)
                 {
                     var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
-                    AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.curve, colour);
+                    AddColouredSphere(proxy, body.Config.Water.size, body.Config.Water.curve, colour);
                     if (realSize < body.Config.Water.size) realSize = body.Config.Water.size;
                 }
 
                 if (body.Config.Sand != null)
                 {
                     var colour = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
-                    AddColouredSphere(newProxy, body.Config.Sand.size, body.Config.Sand.curve, colour);
+                    AddColouredSphere(proxy, body.Config.Sand.size, body.Config.Sand.curve, colour);
                     if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
 
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Props?.singularities != null)
                 {
-                    foreach(var singularity in body.Config.Props.singularities)
+                    foreach (var singularity in body.Config.Props.singularities)
                     {
                         if (singularity.type == SingularityModule.SingularityType.BlackHole)
                         {
-                            MakeBlackHole(newProxy, singularity.size);
+                            MakeBlackHole(proxy, singularity.position, singularity.size, singularity.curve);
                         }
                         else
                         {
-                            MakeWhiteHole(newProxy, singularity.size);
+                            MakeWhiteHole(proxy, singularity.position, singularity.size, singularity.curve);
                         }
 
                         if (realSize < singularity.size) realSize = singularity.size;
@@ -144,51 +159,71 @@ namespace NewHorizons.Builder.Body
 
                 if (body.Config.Base.hasCometTail)
                 {
-                    CometTailBuilder.Make(newProxy, null, body.Config);
+                    CometTailBuilder.Make(proxy, null, body.Config);
                 }
 
                 if (body.Config.Props?.proxyDetails != null)
                 {
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
-                        DetailBuilder.Make(newProxy, null, body.Config, body.Mod, detailInfo);
+                        DetailBuilder.Make(proxy, null, body.Config, body.Mod, detailInfo);
                     }
                 }
 
-                if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
+                NHSupernovaPlanetEffectController supernovaPlanetEffect = null;
+                if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null && !body.Config.isStellarRemnant)
                 {
-                    proxyController._supernovaPlanetEffectController = SupernovaEffectBuilder.Make(newProxy, null, body.Config, procGen, null, null, null, proxyController._atmosphere, proxyController._fog);
+                    supernovaPlanetEffect = SupernovaEffectBuilder.Make(proxy, null, body.Config, procGen, null, null, null, atmosphere, fog);
                 }
 
                 // Remove all collisions if there are any
-                foreach (var col in newProxy.GetComponentsInChildren<Collider>())
+                foreach (var col in proxy.GetComponentsInChildren<Collider>())
                 {
                     GameObject.Destroy(col);
                 }
 
-                foreach (var renderer in newProxy.GetComponentsInChildren<Renderer>())
+                foreach (var renderer in proxy.GetComponentsInChildren<Renderer>())
                 {
                     renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                     renderer.receiveShadows = false;
                     renderer.enabled = true;
                 }
-                foreach (var tessellatedRenderer in newProxy.GetComponentsInChildren<TessellatedRenderer>())
+                foreach (var tessellatedRenderer in proxy.GetComponentsInChildren<TessellatedRenderer>())
                 {
                     tessellatedRenderer.enabled = true;
                 }
 
-                proxyController._realObjectDiameter = realSize;
+                if (proxyController != null)
+                {
+                    proxyController._atmosphere = atmosphere;
+                    proxyController._fog = fog;
+                    proxyController._fogCurveMaxVal = fogCurveMaxVal;
+                    proxyController._topClouds = topClouds;
+                    proxyController._lightningGenerator = lightningGenerator;
+                    proxyController._supernovaPlanetEffectController = supernovaPlanetEffect;
+                    proxyController._realObjectDiameter = realSize;
+                    proxyController._baseRealObjectDiameter = realSize;
+                }
+                else if (stellarRemnantProxy != null)
+                {
+                    stellarRemnantProxy._atmosphere = atmosphere;
+                    stellarRemnantProxy._fog = fog;
+                    stellarRemnantProxy._fogCurveMaxVal = fogCurveMaxVal;
+                    stellarRemnantProxy._topClouds = topClouds;
+                    stellarRemnantProxy._lightningGenerator = lightningGenerator;
+                    stellarRemnantProxy._realObjectDiameter = realSize;
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
-                GameObject.Destroy(newProxy);
+                return false;
             }
-
-            newProxy.SetActive(true);
         }
 
-        private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
+        internal static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
         {
             GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphereGO.transform.name = "ProxySphere";
@@ -206,14 +241,15 @@ namespace NewHorizons.Builder.Body
             return sphereGO;
         }
 
-        private static void AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        internal static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
             sizeController.SetScaleCurve(curve);
             sizeController.size = size;
+            return sizeController;
         }
 
-        private static void MakeBlackHole(GameObject rootObject, float size)
+        internal static GameObject MakeBlackHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
         {
             if (_blackHolePrefab == null) _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
 
@@ -222,7 +258,8 @@ namespace NewHorizons.Builder.Body
 
             var blackHoleRender = new GameObject("BlackHoleRender");
             blackHoleRender.transform.parent = rootObject.transform;
-            blackHoleRender.transform.localPosition = new Vector3(0, 1, 0);
+            if (position != null) blackHoleRender.transform.localPosition = position;
+            else blackHoleRender.transform.localPosition = Vector3.zero;
             blackHoleRender.transform.localScale = Vector3.one * size;
 
             var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
@@ -235,10 +272,13 @@ namespace NewHorizons.Builder.Body
             meshRenderer.material.SetFloat(MassScale, 1);
             meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
 
+            if (curve != null) AddSizeController(blackHoleRender, curve, size);
+
             blackHoleRender.SetActive(true);
+            return blackHoleRender;
         }
 
-        private static void MakeWhiteHole(GameObject rootObject, float size)
+        internal static GameObject MakeWhiteHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
         {
             if (_whiteHolePrefab == null) _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
 
@@ -247,7 +287,8 @@ namespace NewHorizons.Builder.Body
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
             whiteHoleRenderer.transform.parent = rootObject.transform;
-            whiteHoleRenderer.transform.localPosition = new Vector3(0, 1, 0);
+            if (position != null) whiteHoleRenderer.transform.localPosition = position;
+            else whiteHoleRenderer.transform.localPosition = Vector3.zero;
             whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
 
             var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
@@ -260,7 +301,10 @@ namespace NewHorizons.Builder.Body
             meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
             meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
 
+            if (curve != null) AddSizeController(whiteHoleRenderer, curve, size);
+
             whiteHoleRenderer.SetActive(true);
+            return whiteHoleRenderer;
         }
     }
 }

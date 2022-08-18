@@ -9,23 +9,29 @@ namespace NewHorizons.Components
     {
         public string astroName;
 
-        private GameObject _star;
+        public GameObject _star;
         private Renderer[] _starRenderers;
         private TessellatedRenderer[] _starTessellatedRenderers;
         private ParticleSystemRenderer[] _starParticleRenderers;
         private SolarFlareEmitter _solarFlareEmitter;
         public CloudLightningGenerator _lightningGenerator;
-        public MeshRenderer _mainBody;
+        public Renderer _topClouds;
         public NHSupernovaPlanetEffectController _supernovaPlanetEffectController;
+        public StellarRemnantProxy _stellarRemnant;
+        public float _baseRealObjectDiameter;
 
         public override void Awake()
         {
             ProxyHandler.RegisterProxy(this);
             base.Awake();
 
+            _mieCurveMaxVal = 0.1f;
+            _mieCurve = AnimationCurve.EaseInOut(0.0011f, 1, 1, 0);
+            _fogCurve = AnimationCurve.Linear(0, 1, 1, 0);
+
             // The star part cant be disabled like the rest and we have to manually disable the renderers
             // Else it can stop the supernova effect mid way through
-            _star = GetComponentInChildren<StarEvolutionController>()?.gameObject;
+            if (_star == null) _star = GetComponentInChildren<StarEvolutionController>()?.gameObject;
 
             if (_star != null)
             {
@@ -71,13 +77,39 @@ namespace NewHorizons.Components
             }
         }
 
+        public override void Update()
+        {
+            if (_stellarRemnant != null)
+            {
+                if (_stellarRemnant.IsActiveAndEnabled())
+                {
+                    _realObjectDiameter = _stellarRemnant._realObjectDiameter;
+                    if (!_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
+                }
+                else
+                {
+                    _realObjectDiameter = _baseRealObjectDiameter;
+                    if (_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
+                }
+            }
+
+            base.Update();
+        }
+
         public override void ToggleRendering(bool on)
         {
+            if (_stellarRemnant != null)
+            {
+                _stellarRemnant.ToggleRendering(on);
+                on = on && !_stellarRemnant.IsActiveAndEnabled();
+            }
+
             base.ToggleRendering(on);
 
             foreach (Transform child in transform)
             {
                 if (child.gameObject == _star) continue;
+                if (child.gameObject == _stellarRemnant?.gameObject) continue;
                 child.gameObject.SetActive(on);
             }
 
@@ -86,22 +118,6 @@ namespace NewHorizons.Components
                 if (_solarFlareEmitter != null)
                 {
                     _solarFlareEmitter.gameObject.SetActive(on);
-                }
-
-                if (_mainBody != null)
-                {
-                    _mainBody.enabled = on;
-                }
-
-                if (_lightningGenerator != null)
-                {
-                    _lightningGenerator.enabled = on;
-                }
-
-                if (_supernovaPlanetEffectController != null)
-                {
-                    if (on) _supernovaPlanetEffectController.Enable();
-                    else _supernovaPlanetEffectController.Disable();
                 }
 
                 foreach (var renderer in _starRenderers)
@@ -119,6 +135,28 @@ namespace NewHorizons.Components
                     renderer.enabled = on;
                 }
             }
+
+            if (_topClouds != null)
+            {
+                _topClouds.enabled = on;
+            }
+
+            if (_lightningGenerator != null)
+            {
+                _lightningGenerator.enabled = on;
+            }
+
+            if (_supernovaPlanetEffectController != null)
+            {
+                if (on) _supernovaPlanetEffectController.Enable();
+                else _supernovaPlanetEffectController.Disable();
+            }
+        }
+
+        public override void UpdateScale(float scaleMultiplier, float viewDistance)
+        {
+            if (_stellarRemnant != null) _stellarRemnant.UpdateScale(scaleMultiplier, viewDistance);
+            base.UpdateScale(scaleMultiplier, viewDistance);
         }
     }
 }

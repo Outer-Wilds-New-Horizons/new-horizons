@@ -229,7 +229,7 @@ namespace NewHorizons.Builder.Body
 
             planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
 
-            return proxyGO;
+            return starGO;
         }
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule, IModBehaviour mod)

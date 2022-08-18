@@ -48,9 +48,10 @@ namespace NewHorizons.Builder.Body
 
                 sector.gameObject.SetActive(false);
 
+                var remnantType = starModule.stellarRemnantType;
                 if (stellarRemnant != null)
                 {
-                    stellarRemnantController.SetRemnantType(StellarRemnantType.Custom);
+                    remnantType = StellarRemnantType.Custom;
                     stellarRemnantController.SetSurfaceSize(stellarRemnant.Config.Base.surfaceSize);
                     stellarRemnantController.SetSurfaceGravity(stellarRemnant.Config.Base.surfaceGravity);
                     stellarRemnantController.SetSiderealPeriod(stellarRemnant.Config.Orbit.siderealPeriod);
@@ -61,10 +62,24 @@ namespace NewHorizons.Builder.Body
                     if (stellarRemnant.Config.Base.surfaceGravity == 0) alignmentRadius = 0;
                     stellarRemnantController.SetAlignmentRadius(alignmentRadius);
                     PlanetCreationHandler.SharedGenerateBody(stellarRemnant, go, sector, rb);
+                    Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
+                    {
+                        var proxyController = ProxyHandler.GetProxy(star.Config.name);
+                        if (proxyController != null)
+                        {
+                            GameObject proxyStellarRemnant = new GameObject("StellarRemnant");
+                            proxyStellarRemnant.transform.SetParent(proxyController.transform, false);
+                            proxyStellarRemnant.SetActive(false);
+                            StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
+                            srp.SetStellarRemnantController(stellarRemnantController);
+                            proxyController._stellarRemnant = srp;
+                            ProxyBuilder.SharedMake(go, proxyStellarRemnant, null, stellarRemnant, srp);
+                            proxyStellarRemnant.SetActive(true);
+                        }
+                    }, 2);
                 }
                 else
                 {
-                    var remnantType = starModule.stellarRemnantType;
                     if (remnantType == StellarRemnantType.Default)
                     {
                         if (size > 4000)
@@ -74,7 +89,6 @@ namespace NewHorizons.Builder.Body
                         else
                             remnantType = StellarRemnantType.WhiteDwarf;
                     }
-                    stellarRemnantController.SetRemnantType(remnantType);
                     switch (remnantType)
                     {
                         case StellarRemnantType.WhiteDwarf:
@@ -85,12 +99,28 @@ namespace NewHorizons.Builder.Body
                             ss.radius = (wdSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(wdSurfaceSize * 1.5f);
                             stellarRemnantController.SetSiderealPeriod(config.Orbit.siderealPeriod);
-                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, new StarModule
+                            var wdModule = new StarModule
                             {
                                 size = wdSurfaceSize,
                                 tint = MColor.white,
                                 endTint = MColor.black
-                            }, mod, true));
+                            };
+                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, wdModule, mod, true));
+                            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
+                            {
+                                var proxyController = ProxyHandler.GetProxy(star.Config.name);
+                                if (proxyController != null)
+                                {
+                                    GameObject proxyStellarRemnant = new GameObject("StellarRemnant");
+                                    proxyStellarRemnant.transform.SetParent(proxyController.transform, false);
+                                    proxyStellarRemnant.SetActive(false);
+                                    StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
+                                    srp.SetStellarRemnantController(stellarRemnantController);
+                                    proxyController._stellarRemnant = srp;
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, wdModule, mod);
+                                    proxyStellarRemnant.SetActive(true);
+                                }
+                            }, 2);
                             break;
                         case StellarRemnantType.NeutronStar:
                             var nsSurfaceSize = size / 50;
@@ -100,11 +130,27 @@ namespace NewHorizons.Builder.Body
                             ss.radius = (nsSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(nsSurfaceSize * 1.5f);
                             stellarRemnantController.SetSiderealPeriod(1);
-                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, new StarModule
+                            var nsModule = new StarModule
                             {
                                 size = nsSurfaceSize,
                                 tint = MColor.cyan
-                            }, mod, true));
+                            };
+                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, nsModule, mod, true));
+                            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
+                            {
+                                var proxyController = ProxyHandler.GetProxy(star.Config.name);
+                                if (proxyController != null)
+                                {
+                                    GameObject proxyStellarRemnant = new GameObject("StellarRemnant");
+                                    proxyStellarRemnant.transform.SetParent(proxyController.transform, false);
+                                    proxyStellarRemnant.SetActive(false);
+                                    StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
+                                    srp.SetStellarRemnantController(stellarRemnantController);
+                                    proxyController._stellarRemnant = srp;
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, nsModule, mod);
+                                    proxyStellarRemnant.SetActive(true);
+                                }
+                            }, 2);
                             break;
                         case StellarRemnantType.Pulsar:
                             var psSurfaceSize = size / 50;
@@ -114,11 +160,27 @@ namespace NewHorizons.Builder.Body
                             ss.radius = (psSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(psSurfaceSize * 1.5f);
                             stellarRemnantController.SetSiderealPeriod(0.5f);
-                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, new StarModule
+                            var psModule = new StarModule
                             {
                                 size = psSurfaceSize,
                                 tint = MColor.cyan
-                            }, mod, true));
+                            };
+                            stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, psModule, mod, true));
+                            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
+                            {
+                                var proxyController = ProxyHandler.GetProxy(star.Config.name);
+                                if (proxyController != null)
+                                {
+                                    GameObject proxyStellarRemnant = new GameObject("StellarRemnant");
+                                    proxyStellarRemnant.transform.SetParent(proxyController.transform, false);
+                                    proxyStellarRemnant.SetActive(false);
+                                    StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
+                                    srp.SetStellarRemnantController(stellarRemnantController);
+                                    proxyController._stellarRemnant = srp;
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, psModule, mod);
+                                    proxyStellarRemnant.SetActive(true);
+                                }
+                            }, 2);
                             break;
                         case StellarRemnantType.BlackHole:
                             var bhSurfaceSize = size / 100;
@@ -129,11 +191,28 @@ namespace NewHorizons.Builder.Body
                             ss.radius = (bhSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(bhSurfaceSize * 1.5f);
                             SingularityBuilder.MakeBlackHole(go, sector, Vector3.zero, bhSurfaceSize, true, string.Empty);
+                            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
+                            {
+                                var proxyController = ProxyHandler.GetProxy(star.Config.name);
+                                if (proxyController != null)
+                                {
+                                    GameObject proxyStellarRemnant = new GameObject("StellarRemnant");
+                                    proxyStellarRemnant.transform.SetParent(proxyController.transform, false);
+                                    proxyStellarRemnant.SetActive(false);
+                                    StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
+                                    srp.SetStellarRemnantController(stellarRemnantController);
+                                    proxyController._stellarRemnant = srp;
+                                    ProxyBuilder.MakeBlackHole(proxyStellarRemnant, Vector3.zero, bhSurfaceSize);
+                                    proxyStellarRemnant.SetActive(true);
+                                }
+                            }, 2);
                             break;
                         default:
                             break;
                     }
                 }
+
+                stellarRemnantController.SetRemnantType(remnantType);
 
                 return stellarRemnantController;
             }

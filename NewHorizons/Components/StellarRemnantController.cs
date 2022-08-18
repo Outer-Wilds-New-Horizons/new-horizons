@@ -13,7 +13,7 @@ namespace NewHorizons.Components
 
         private StarEvolutionController _starEvolutionController;
 
-        private StellarRemnantController _proxy;
+        private StellarRemnantProxy _proxy;
 
         private StarController _starController;
 
@@ -33,7 +33,7 @@ namespace NewHorizons.Components
         public void SetSphereOfInfluence(float sphereOfInfluence) => _sphereOfInfluence = sphereOfInfluence;
         public void SetStarController(StarController starController) => _starController = starController;
 
-        public void SetProxy(StellarRemnantController proxy) => _proxy = proxy;
+        public void SetProxy(StellarRemnantProxy proxy) => _proxy = proxy;
 
         public void SetStarEvolutionController(StarEvolutionController controller) => _starEvolutionController = controller;
 
