@@ -101,11 +101,6 @@ namespace NewHorizons.External.Configs
         public bool isQuantumState;
 
         /// <summary>
-        /// Does this config describe a stellar remnant of a custom star defined in another file?
-        /// </summary>
-        public bool isStellarRemnant;
-
-        /// <summary>
         /// Add lava to this planet
         /// </summary>
         public LavaModule Lava;

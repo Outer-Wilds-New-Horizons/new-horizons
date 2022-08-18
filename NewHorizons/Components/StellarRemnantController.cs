@@ -1,4 +1,5 @@
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.External.Modules.VariableSize;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace NewHorizons.Components
 {
     public class StellarRemnantController : MonoBehaviour
     {
-        private RemnantType _type = RemnantType.None;
+        private StellarRemnantType _type = StellarRemnantType.Default;
 
         private StarEvolutionController _starEvolutionController;
 
@@ -22,8 +23,8 @@ namespace NewHorizons.Components
         private float _sphereOfInfluence = 0;
         private float _alignmentRadius = 0;
 
-        public RemnantType GetRemnantType() => _type;
-        public void SetRemnantType(RemnantType type) => _type = type;
+        public StellarRemnantType GetRemnantType() => _type;
+        public void SetRemnantType(StellarRemnantType type) => _type = type;
 
         public void SetSiderealPeriod(float siderealPeriod) => _siderealPeriod = siderealPeriod;
         public void SetSurfaceGravity(float surfaceGravity) => _surfaceGravity = surfaceGravity;
@@ -67,15 +68,6 @@ namespace NewHorizons.Components
             }
 
             if (_starController != null) StarLightController.AddStar(_starController);
-        }
-
-        public enum RemnantType
-        {
-            None,
-            BlackHole,
-            NeutronStar,
-            WhiteDwarf,
-            Custom
         }
     }
 }

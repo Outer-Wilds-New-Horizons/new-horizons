@@ -95,7 +95,7 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, 
-            bool hasDestructionVolume, string targetSolarSystem, VariableSizeModule.TimeValuePair[] curve, bool makeAudio = true)
+            bool hasDestructionVolume, string targetSolarSystem, VariableSizeModule.TimeValuePair[] curve = null, bool makeAudio = true)
         {
             var blackHole = new GameObject("BlackHole");
             blackHole.SetActive(false);

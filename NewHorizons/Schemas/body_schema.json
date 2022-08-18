@@ -69,10 +69,6 @@
       "type": "boolean",
       "description": "Does this config describe a quantum state of a custom planet defined in another file?"
     },
-    "isStellarRemnant": {
-      "type": "boolean",
-      "description": "Does this config describe a stellar remnant of a custom star defined in another file?"
-    },
     "Lava": {
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
