@@ -333,6 +333,14 @@ namespace NewHorizons.Builder.Body
                 Object.DestroyImmediate(controller);
             }
 
+            var supernovaWallAudio = new GameObject("SupernovaWallAudio");
+            supernovaWallAudio.transform.SetParent(supernovaGO.transform, false);
+            supernovaWallAudio.transform.localPosition = Vector3.zero;
+            supernovaWallAudio.transform.localScale = Vector3.one;
+            supernovaWallAudio.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            supernovaWallAudio.AddComponent<AudioSource>();
+            supernova._audioSource = supernovaWallAudio.AddComponent<OWAudioSource>();
+
             supernovaGO.SetActive(true);
 
             return supernova;
