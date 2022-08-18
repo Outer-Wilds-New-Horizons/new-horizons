@@ -235,17 +235,14 @@ namespace NewHorizons.Components.SizeControllers
             // Reset the scale back to normal bc now its just the supernova scaling itself + destruction and heat volumes
             transform.localScale = Vector3.one;
 
+            var t = Mathf.Clamp01((Time.time - (_supernovaStartTime + supernovaScaleStart)) / (supernovaScaleEnd - supernovaScaleStart));
             // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
+            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
             if (_planetDestructionVolume != null)
             {
-                _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * 0.9f;
-                var t = Mathf.Clamp01((Time.time - (_supernovaStartTime + supernovaScaleStart)) / (supernovaScaleEnd - supernovaScaleStart));
-                if (t > 0)
-                {
-                    _planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
-                }
+                _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
+                _planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
             }
 
             if (Time.time > _supernovaStartTime + supernovaTime)
