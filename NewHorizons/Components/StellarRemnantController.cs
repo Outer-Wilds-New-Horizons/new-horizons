@@ -16,6 +16,7 @@ namespace NewHorizons.Components
 
         private StarController _starController;
 
+        private float _siderealPeriod = 0;
         private float _surfaceGravity = 0;
         private float _surfaceSize = 0;
         private float _sphereOfInfluence = 0;
@@ -24,6 +25,7 @@ namespace NewHorizons.Components
         public RemnantType GetRemnantType() => _type;
         public void SetRemnantType(RemnantType type) => _type = type;
 
+        public void SetSiderealPeriod(float siderealPeriod) => _siderealPeriod = siderealPeriod;
         public void SetSurfaceGravity(float surfaceGravity) => _surfaceGravity = surfaceGravity;
         public void SetSurfaceSize(float surfaceSize) => _surfaceSize = surfaceSize;
         public void SetAlignmentRadius(float alignmentRadius) => _alignmentRadius = alignmentRadius;
@@ -43,19 +45,25 @@ namespace NewHorizons.Components
         {
             if (!gameObject.activeSelf) gameObject.SetActive(true);
 
-            var gravityVolume = this.GetAttachedOWRigidbody().GetAttachedGravityVolume();
-            if (gravityVolume != null)
+            var owrb = this.GetAttachedOWRigidbody();
+            if (owrb != null)
             {
-                gravityVolume._alignmentRadius = _alignmentRadius;
-                gravityVolume._upperSurfaceRadius = _surfaceSize;
-                gravityVolume._surfaceAcceleration = _surfaceGravity;
-            }
+                owrb.SetAngularVelocity(Vector3.up * (_siderealPeriod == 0 ? 0 : 2 * Mathf.PI / (_siderealPeriod * 60)));
 
-            var referenceFrameVolume = this.GetAttachedOWRigidbody()._attachedRFVolume;
-            if (referenceFrameVolume != null)
-            {
-                referenceFrameVolume.GetComponent<SphereCollider>().radius = _sphereOfInfluence * 2;
-                referenceFrameVolume._maxColliderRadius = _sphereOfInfluence * 2;
+                var gravityVolume = owrb.GetAttachedGravityVolume();
+                if (gravityVolume != null)
+                {
+                    gravityVolume._alignmentRadius = _alignmentRadius;
+                    gravityVolume._upperSurfaceRadius = _surfaceSize;
+                    gravityVolume._surfaceAcceleration = _surfaceGravity;
+                }
+
+                var referenceFrameVolume = owrb._attachedRFVolume;
+                if (referenceFrameVolume != null)
+                {
+                    referenceFrameVolume.GetComponent<SphereCollider>().radius = _sphereOfInfluence * 2;
+                    referenceFrameVolume._maxColliderRadius = _sphereOfInfluence * 2;
+                }
             }
 
             if (_starController != null) StarLightController.AddStar(_starController);

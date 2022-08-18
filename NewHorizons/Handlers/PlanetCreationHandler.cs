@@ -525,6 +525,7 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetRemnantType(StellarRemnantController.RemnantType.Custom);
                             stellarRemnantController.SetSurfaceSize(srBody.Config.Base.surfaceSize);
                             stellarRemnantController.SetSurfaceGravity(srBody.Config.Base.surfaceGravity);
+                            stellarRemnantController.SetSiderealPeriod(srBody.Config.Orbit.siderealPeriod);
                             var srSphereOfInfluence = GetSphereOfInfluence(srBody);
                             stellarRemnantController.SetSphereOfInfluence(srSphereOfInfluence);
                             ss.radius = srSphereOfInfluence + 10;
@@ -541,6 +542,7 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetSurfaceSize(bhSurfaceSize);
                             stellarRemnantController.SetSurfaceGravity(body.Config.Base.surfaceGravity * 4);
                             stellarRemnantController.SetSphereOfInfluence(bhSurfaceSize * 2);
+                            stellarRemnantController.SetSiderealPeriod(0.1f);
                             ss.radius = (bhSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(bhSurfaceSize * 1.5f);
                             SingularityBuilder.MakeBlackHole(go, srSector, Vector3.zero, bhSurfaceSize, true, string.Empty, new External.Modules.VariableSize.VariableSizeModule.TimeValuePair[0]);
@@ -555,6 +557,7 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetSphereOfInfluence(nsSurfaceSize * 2);
                             ss.radius = (nsSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(nsSurfaceSize * 1.5f);
+                            stellarRemnantController.SetSiderealPeriod(0.1f);
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, srSector, new External.Modules.VariableSize.StarModule
                             {
                                 size = nsSurfaceSize,
@@ -571,6 +574,7 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetSphereOfInfluence(wdSurfaceSize * 2);
                             ss.radius = (wdSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(wdSurfaceSize * 1.5f);
+                            stellarRemnantController.SetSiderealPeriod(body.Config.Orbit.siderealPeriod);
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, srSector, new External.Modules.VariableSize.StarModule
                             {
                                 size = wdSurfaceSize,
