@@ -10,6 +10,10 @@ namespace NewHorizons.Components
     {
         private StarEvolutionController _starEvolutionController;
 
+        private StellarRemnantController _proxy;
+
+        public void SetProxy(StellarRemnantController proxy) => _proxy = proxy;
+
         public void SetStarEvolutionController(StarEvolutionController controller) => _starEvolutionController = controller;
     }
 }

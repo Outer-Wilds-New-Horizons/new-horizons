@@ -27,6 +27,7 @@ namespace NewHorizons.Components.SizeControllers
         private Color _startColour;
         private Color _endColour;
 
+        private StellarRemnantController _stellarRemnantController;
         private PlanetaryFogController _fog;
         private MeshRenderer[] _atmosphereRenderers;
         public HeatHazardVolume _heatVolume;
@@ -433,5 +434,7 @@ namespace NewHorizons.Components.SizeControllers
                 }
             }
         }
+
+        public void SetStellarRemnantController(StellarRemnantController controller) => _stellarRemnantController = controller;
     }
 }

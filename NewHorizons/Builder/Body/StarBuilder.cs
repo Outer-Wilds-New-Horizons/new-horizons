@@ -192,6 +192,9 @@ namespace NewHorizons.Builder.Body
 
             var stellarRemnant = MakeStellarRemnant(planetGO, sector, starModule);
 
+            controller.SetStellarRemnantController(stellarRemnant);
+
+
             return starController;
         }
 
@@ -226,6 +229,10 @@ namespace NewHorizons.Builder.Body
             planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
 
             var stellarRemnant = MakeStellarRemnant(proxyGO, null, starModule);
+
+            planet.GetComponentInChildren<StellarRemnantController>(true).SetProxy(stellarRemnant);
+
+            controller.SetStellarRemnantController(stellarRemnant);
 
             return proxyGO;
         }
@@ -359,7 +366,7 @@ namespace NewHorizons.Builder.Body
 
             stellarRemnant.SetActive(true);
 
-            return stellarRemnant;
+            return controller;
         }
     }
 }
