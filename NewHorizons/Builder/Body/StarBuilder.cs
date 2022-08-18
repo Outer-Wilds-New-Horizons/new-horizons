@@ -92,7 +92,7 @@ namespace NewHorizons.Builder.Body
             var destructionVolume = deathVolume.AddComponent<DestructionVolume>();
             destructionVolume._onlyAffectsPlayerAndShip = true;
             destructionVolume._deathType = DeathType.Energy;
-            deathVolume.AddComponent<SimpleFluidVolume>()._fluidType = FluidVolume.Type.PLASMA;
+            var starFluidVolume = deathVolume.AddComponent<StarFluidVolume>();
 
             var planetDestructionVolume = new GameObject("PlanetDestructionVolume");
             planetDestructionVolume.transform.SetParent(starGO.transform, false);
@@ -105,7 +105,6 @@ namespace NewHorizons.Builder.Body
             planetDestructionVolume.AddComponent<OWCollider>();
             planetDestructionVolume.AddComponent<OWTriggerVolume>();
             planetDestructionVolume.AddComponent<DestructionVolume>()._deathType = DeathType.Energy;
-            planetDestructionVolume.AddComponent<SimpleFluidVolume>()._fluidType = FluidVolume.Type.PLASMA;
 
             var sunLight = new GameObject("StarLight");
             sunLight.transform.parent = starGO.transform;
@@ -163,10 +162,11 @@ namespace NewHorizons.Builder.Body
             controller.WillExplode = starModule.goSupernova;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            controller._heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
             controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
             controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
-            controller._destructionFluidVolume = deathVolume.GetComponent<SimpleFluidVolume>();
-            controller._planetDestructionFluidVolume = planetDestructionVolume.GetComponent<SimpleFluidVolume>();
+            controller._starFluidVolume = starFluidVolume;
+            starFluidVolume.SetStarEvolutionController(controller);
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
                 controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);

@@ -29,11 +29,10 @@ namespace NewHorizons.Components.SizeControllers
 
         private PlanetaryFogController _fog;
         private MeshRenderer[] _atmosphereRenderers;
-        private HeatHazardVolume _heatVolume;
+        public HeatHazardVolume _heatVolume;
         public DestructionVolume _destructionVolume;
         public DestructionVolume _planetDestructionVolume;
-        public SimpleFluidVolume _destructionFluidVolume;
-        public SimpleFluidVolume _planetDestructionFluidVolume;
+        public StarFluidVolume _starFluidVolume;
         private SolarFlareEmitter _flareEmitter;
         private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
@@ -130,8 +129,9 @@ namespace NewHorizons.Components.SizeControllers
                 _endSurfaceMaterial.color = _endColour * 4.5948f;
             }
 
-            _heatVolume = GetComponentInChildren<HeatHazardVolume>();
+            if (_heatVolume == null) _heatVolume = GetComponentInChildren<HeatHazardVolume>();
             if (_destructionVolume == null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
+            if (_starFluidVolume == null) _starFluidVolume = GetComponentInChildren<StarFluidVolume>();
 
             if (atmosphere != null)
             {
@@ -333,8 +333,6 @@ namespace NewHorizons.Components.SizeControllers
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
             if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
-            if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = false;
-            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.SetVolumeActivation(false);
 
             if (_proxy != null) _proxy.StartSupernova();
         }
@@ -359,8 +357,6 @@ namespace NewHorizons.Components.SizeControllers
                 _planetDestructionVolume._deathType = DeathType.Energy;
                 _planetDestructionVolume.transform.localScale = Vector3.one;
             }
-            if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = true;
-            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.SetVolumeActivation(true);
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
