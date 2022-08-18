@@ -112,6 +112,10 @@
       "description": "Add ship log entries to this planet and describe how it looks in map mode",
       "$ref": "#/definitions/ShipLogModule"
     },
+    "ShockEffect": {
+      "description": "Settings for shock effect on planet when the nearest star goes supernova",
+      "$ref": "#/definitions/ShockEffectModule"
+    },
     "Spawn": {
       "description": "Spawn the player at this planet",
       "$ref": "#/definitions/SpawnModule"
@@ -453,11 +457,6 @@
         "hasMapMarker": {
           "type": "boolean",
           "description": "If the body should have a marker on the map screen."
-        },
-        "hasSupernovaShockEffect": {
-          "type": "boolean",
-          "description": "Does this planet have a shock effect when the nearest star goes supernova?",
-          "default": true
         },
         "invulnerableToSun": {
           "type": "boolean",
@@ -2259,6 +2258,24 @@
         "scale": {
           "description": "The amount to scale the x and y-axis of the detail by.",
           "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "ShockEffectModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hasSupernovaShockEffect": {
+          "type": "boolean",
+          "description": "Does this planet have a shock effect when the nearest star goes supernova? Automatically disabled for stars, focal points, and stellar remnants."
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Asset Bundle that contains the shock effect mesh"
+        },
+        "meshPath": {
+          "type": "string",
+          "description": "Path to the replacement mesh for the planet's supernova shock effect in the supplied asset bundle"
         }
       }
     },
