@@ -47,6 +47,7 @@ namespace NewHorizons.Components
         public override void OnDestroy()
         {
             ProxyHandler.UnregisterProxy(this);
+            base.OnDestroy();
         }
 
         public override void Initialize()
