@@ -24,5 +24,9 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public AchievementInfo[] achievements;
 
+        /// <summary>
+        /// Credits info for this mod. A list of contributors and their roles separated by #. For example: xen#New Horizons dev.
+        /// </summary>
+        public string[] credits;
     }
 }

@@ -201,6 +201,8 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+
+            LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
         public void OnDestroy()
@@ -377,6 +379,14 @@ namespace NewHorizons
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
+                if (isSolarSystem)
+                {
+                    foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
+                    {
+                        SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
+                    }
+                }
+
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
@@ -384,6 +394,7 @@ namespace NewHorizons
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 StarChartHandler.Init(SystemDict.Values.ToArray());
+
                 if (isSolarSystem)
                 {
                     // Warp drive
@@ -482,7 +493,17 @@ namespace NewHorizons
                 ssrLight.spotAngle = 179;
                 ssrLight.range = Main.FurthestOrbit * (4f/3f);
                 ssrLight.intensity = 0.001f;
-                
+
+                var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
+                fluid._splashEffects = fluid._splashEffects.AddToArray(new SplashEffect
+                {
+                    fluidType = FluidVolume.Type.PLASMA,
+                    ignoreSphereAligment = false,
+                    minImpactSpeed = 15,
+                    splashPrefab = SearchUtilities.Find("Probe_Body/ProbeDetector").GetComponent<FluidDetector>()._splashEffects.FirstOrDefault(sfx => sfx.fluidType == FluidVolume.Type.PLASMA).splashPrefab,
+                    triggerEvent = SplashEffect.TriggerEvent.OnEntry
+                });
+
                 try
                 {
                     Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
@@ -601,9 +622,7 @@ namespace NewHorizons
                 // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
-                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
-
-                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                    LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
@@ -615,6 +634,16 @@ namespace NewHorizons
             {
                 Logger.LogError(ex.ToString());
             }
+        }
+
+        private void LoadAddonManifest(string file, IModBehaviour mod)
+        {
+            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
+
+            var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
+
+            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)

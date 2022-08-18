@@ -4,7 +4,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class GeometryBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, float groundScale)
+        public static GameObject Make(GameObject planetGO, Sector sector, float groundScale)
         {
             GameObject groundGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             groundGO.transform.name = "GroundSphere";
@@ -23,6 +23,8 @@ namespace NewHorizons.Builder.Body
                 groundGO.transform.localScale *= 2;
             }
             groundGO.SetActive(true);
+
+            return groundGO;
         }
     }
 }

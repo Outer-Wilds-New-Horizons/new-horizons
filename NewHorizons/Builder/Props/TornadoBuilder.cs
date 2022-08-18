@@ -36,7 +36,8 @@ namespace NewHorizons.Builder.Props
             }
             if (_hurricanePrefab == null)
             {
-                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane/").InstantiateInactive();
+                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive();
+                _hurricanePrefab.name = "Hurricane_Prefab";
                 // For some reason they put the hurricane at the origin and offset all its children (450)
                 // Increasing by 40 will keep the bottom above the ground
                 foreach (Transform child in _hurricanePrefab.transform)
@@ -84,6 +85,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
         {
             var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
+            tornadoGO.name = downwards ? "Tornado_Down" : "Tornado_Up";
             tornadoGO.transform.parent = sector.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
@@ -168,6 +170,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeHurricane(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool hasClouds)
         {
             var hurricaneGO = _hurricanePrefab.InstantiateInactive();
+            hurricaneGO.name = "Hurricane";
             hurricaneGO.transform.parent = sector.transform;
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
             hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));

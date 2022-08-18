@@ -140,6 +140,7 @@ namespace NewHorizons.Builder.Body
                 if (sizeController != null) sizeController.audioSource = blackHoleAudioSource;
 
                 var blackHoleOneShot = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleEmissionOneShot"), blackHole.transform);
+                blackHoleOneShot.name = "BlackHoleEmissionOneShot";
                 var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
                 oneShotAudioSource.maxDistance = size * 3f;
                 oneShotAudioSource.minDistance = size * 0.4f;

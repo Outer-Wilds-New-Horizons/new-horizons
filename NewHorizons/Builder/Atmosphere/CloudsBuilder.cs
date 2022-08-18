@@ -109,26 +109,7 @@ namespace NewHorizons.Builder.Atmosphere
             // Lightning
             if (atmo.clouds.hasLightning)
             {
-                var lightning = _lightningPrefab.InstantiateInactive();
-                lightning.transform.parent = cloudsMainGO.transform;
-                lightning.transform.localPosition = Vector3.zero;
-
-                var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
-                lightningGenerator._altitude = (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f;
-                lightningGenerator._audioSector = sector;
-                if (atmo.clouds.lightningGradient != null)
-                {
-                    var gradient = new GradientColorKey[atmo.clouds.lightningGradient.Length];
-
-                    for(int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
-                    {
-                        var pair = atmo.clouds.lightningGradient[i];
-                        gradient[i] = new GradientColorKey(pair.tint.ToColor(), pair.time);
-                    }
-
-                    lightningGenerator._lightColor.colorKeys = gradient;
-                }
-                lightning.SetActive(true);
+                MakeLightning(cloudsMainGO, sector, atmo);
             }
 
             cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
@@ -138,6 +119,37 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsBottomGO.SetActive(true);
             cloudsFluidGO.SetActive(true);
             cloudsMainGO.SetActive(true);
+        }
+
+        public static CloudLightningGenerator MakeLightning(GameObject rootObject, Sector sector, AtmosphereModule atmo, bool noAudio = false)
+        {
+            var lightning = _lightningPrefab.InstantiateInactive();
+            lightning.name = "LightningGenerator";
+            lightning.transform.parent = rootObject.transform;
+            lightning.transform.localPosition = Vector3.zero;
+
+            var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
+            lightningGenerator._altitude = (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f;
+            if (noAudio)
+            {
+                lightningGenerator._audioPrefab = null;
+                lightningGenerator._audioSourcePool = null;
+            }
+            lightningGenerator._audioSector = sector;
+            if (atmo.clouds.lightningGradient != null)
+            {
+                var gradient = new GradientColorKey[atmo.clouds.lightningGradient.Length];
+
+                for (int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
+                {
+                    var pair = atmo.clouds.lightningGradient[i];
+                    gradient[i] = new GradientColorKey(pair.tint.ToColor(), pair.time);
+                }
+
+                lightningGenerator._lightColor.colorKeys = gradient;
+            }
+            lightning.SetActive(true);
+            return lightningGenerator;
         }
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
@@ -210,11 +222,14 @@ namespace NewHorizons.Builder.Atmosphere
                 cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
 
-            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            // Idk why but the axis is weird
-            topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
-            topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
-            topRT._randomizeRotationRate = false;
+            if (atmo.clouds.rotationSpeed != 0f)
+            {
+                RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                // Idk why but the axis is weird
+                topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
+                topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
+                topRT._randomizeRotationRate = false;
+            }
 
             cloudsTopGO.transform.localPosition = Vector3.zero;
 

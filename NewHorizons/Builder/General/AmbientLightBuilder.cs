@@ -4,10 +4,10 @@ namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, float scale, float intensity)
+        public static Light Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
-            var ambientLight = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" ? SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/QuantumMoonProxy_Pivot/QuantumMoonProxy_Root/MoonState_Root/AmbientLight_QM") : SearchUtilities.Find("BrittleHollow_Body/AmbientLight_BH_Surface");
-            if (ambientLight == null) return;
+            var ambientLight = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" ? SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/QuantumMoonProxy_Pivot/QuantumMoonProxy_Root/MoonState_Root/AmbientLight_QM") : SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM");
+            if (ambientLight == null) return null;
 
             GameObject lightGO = GameObject.Instantiate(ambientLight, sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
@@ -20,9 +20,17 @@ namespace NewHorizons.Builder.General
              * A is the intensity and its like square rooted and squared and idgi
              */
 
-            light.color = new Color(0.0f, 0.0f, 0.8f, 0.0225f);
+            light.color = new Color(0.5f, 0.0f, 0.8f, 0.0225f);
             light.range = scale;
             light.intensity = intensity;
+            
+            /*if (tint != null)
+            {
+                var cubemap = ImageUtilities.TintImage(ImageUtilities.GetTexture(Main.Instance, "Assets/textures/AmbientLight_QM.png"), tint.ToColor());
+                light.cookie = cubemap;
+            }*/
+
+            return light;
         }
     }
 }
