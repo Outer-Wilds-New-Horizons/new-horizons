@@ -190,6 +190,12 @@ namespace NewHorizons.Components
             else
             {
                 if (_shockLayer != null) _shockLayer.enabled = false;
+
+                if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity;
+
+                if (_fog != null) _fog.fogTint = _fogOrigTint;
+
+                if (_fogImpostor != null) _fogImpostor.material.SetColor(s_propID_Tint, _fogOrigTint);
             }
         }
     }

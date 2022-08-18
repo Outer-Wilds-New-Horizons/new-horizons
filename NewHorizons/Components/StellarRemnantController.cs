@@ -50,6 +50,7 @@ namespace NewHorizons.Components
                 gravityVolume._upperSurfaceRadius = _surfaceSize;
                 gravityVolume._surfaceAcceleration = _surfaceGravity;
             }
+
             var referenceFrameVolume = this.GetAttachedOWRigidbody()._attachedRFVolume;
             if (referenceFrameVolume != null)
             {
