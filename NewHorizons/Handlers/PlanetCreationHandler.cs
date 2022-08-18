@@ -476,13 +476,12 @@ namespace NewHorizons.Handlers
                 GeometryBuilder.Make(go, sector, body.Config.Base.groundSize);
             }
 
-            GameObject heightMap = null;
             if (body.Config.HeightMap != null)
             {
                 // resolution = tris on edge per face
                 // divide by 4 to account for all the way around the equator
                 var res = body.Config.HeightMap.resolution / 4;
-                heightMap = HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res, true);
+                HeightMapBuilder.Make(go, sector, body.Config.HeightMap, body.Mod, res, true);
             }
 
             GameObject procGen = null;
@@ -583,7 +582,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
             {
-                SupernovaEffectBuilder.Make(go, sector, body.Config, heightMap, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
+                SupernovaEffectBuilder.Make(go, sector, body.Config, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
 
             return go;

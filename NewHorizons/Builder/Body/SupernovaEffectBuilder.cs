@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class SupernovaEffectBuilder
     {
-        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, GameObject heightMap, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
+        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
             var vanillaController = planetGO.GetComponentInChildren<SupernovaPlanetEffectController>();
             if (vanillaController != null)
@@ -129,20 +129,11 @@ namespace NewHorizons.Builder.Body
                 shockLayer.transform.position = planetGO.transform.position;
                 shockLayer.transform.localScale = Vector3.one * biggestSize * 1.1f;
 
-                if (!noMeshChange)
+                if (!noMeshChange && procGen != null)
                 {
-                    if (heightMap != null)
-                    {
-                        shockLayer.GetComponent<MeshFilter>().sharedMesh = heightMap.GetComponent<MeshCollider>().sharedMesh;
-                        shockLayer.transform.localScale = Vector3.one * 1.1f;
-                        shockLayer.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
-                    }
-                    else if (procGen != null)
-                    {
-                        shockLayer.GetComponent<MeshFilter>().sharedMesh = procGen.GetComponent<MeshFilter>().sharedMesh;
-                        shockLayer.transform.localScale = Vector3.one * 1.1f;
-                        shockLayer.transform.rotation = Quaternion.Euler(90, 0, 0);
-                    }
+                    shockLayer.GetComponent<MeshFilter>().sharedMesh = procGen.GetComponent<MeshFilter>().sharedMesh;
+                    shockLayer.transform.localScale = Vector3.one * 1.1f;
+                    shockLayer.transform.rotation = Quaternion.Euler(90, 0, 0);
                 }
 
                 return supernovaEffectController;
