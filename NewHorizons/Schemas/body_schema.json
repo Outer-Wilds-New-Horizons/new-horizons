@@ -2340,7 +2340,7 @@
         },
         "supernovaSize": {
           "type": "number",
-          "description": "Radius of the supernova. Any planets within 80% of this will be destroyed.",
+          "description": "Radius of the supernova. Any planets within this will be destroyed.",
           "format": "float",
           "default": 50000.0,
           "minimum": 0.0
