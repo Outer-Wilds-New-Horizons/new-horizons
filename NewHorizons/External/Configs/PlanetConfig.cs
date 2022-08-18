@@ -351,6 +351,13 @@ namespace NewHorizons.External.Configs
                 if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
+
+            // Star
+            if (Star != null)
+            {
+                if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+            }
+
             // Signals no longer use two different variables for audio
             if (Props?.signals != null)
             {

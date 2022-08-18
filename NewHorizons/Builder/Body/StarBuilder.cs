@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Body
                 controller.StartColour = starModule.tint;
                 controller.EndColour = starModule.endTint;
                 controller.SupernovaColour = starModule.supernovaTint;
-                controller.WillExplode = starModule.goSupernova;
+                controller.WillExplode = starModule.stellarDeathType != StellarDeathType.None;
                 controller.lifespan = starModule.lifespan;
                 controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
                 controller._heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
@@ -217,7 +217,7 @@ namespace NewHorizons.Builder.Body
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
             controller.SupernovaColour = starModule.supernovaTint;
-            controller.WillExplode = starModule.goSupernova;
+            controller.WillExplode = starModule.stellarDeathType != StellarDeathType.None;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))

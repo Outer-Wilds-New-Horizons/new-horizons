@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -19,7 +20,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Should this star explode at the end of its lifespan?
         /// </summary>
-        [DefaultValue(true)] public bool goSupernova = true;
+        [Obsolete("goSupernova is deprecated, please use stellarDeathType instead")] [DefaultValue(true)] public bool goSupernova = true;
 
         /// <summary>
         /// How long in minutes this star will last until it supernovas.
@@ -103,6 +104,7 @@ namespace NewHorizons.External.Modules.VariableSize
     public enum StellarDeathType
     {
         [EnumMember(Value = @"default")] Default,
+        [EnumMember(Value = @"none")] None,
         [EnumMember(Value = @"planetaryNebula")] PlanetaryNebula,
         [EnumMember(Value = @"supernova")] Supernova
     }
