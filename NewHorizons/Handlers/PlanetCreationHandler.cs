@@ -202,6 +202,7 @@ namespace NewHorizons.Handlers
                     }
                     else if (body.Config.isStellarRemnant)
                     {
+                        Logger.Log($"Creating stellar remnant for [{body.Config.name}]");
                         try
                         {
                             var rb = existingPlanet.GetComponent<OWRigidbody>();
