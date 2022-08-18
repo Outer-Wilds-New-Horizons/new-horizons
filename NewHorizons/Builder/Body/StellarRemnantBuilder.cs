@@ -64,8 +64,8 @@ namespace NewHorizons.Builder.Body
                         else
                             remnantType = StellarRemnantType.WhiteDwarf;
                     }
-                    stellarRemnantController.SetRemnantType(starModule.stellarRemnantType);
-                    switch (starModule.stellarRemnantType)
+                    stellarRemnantController.SetRemnantType(remnantType);
+                    switch (remnantType)
                     {
                         case StellarRemnantType.WhiteDwarf:
                             var wdSurfaceSize = size / 10;
