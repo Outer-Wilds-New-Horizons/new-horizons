@@ -247,6 +247,8 @@ namespace NewHorizons.Components.SizeControllers
 
             if (Time.time > _supernovaStartTime + supernovaTime)
             {
+                if (_destructionVolume != null && _destructionVolume._shrinkingBodies.Count > 0) return;
+                if (_planetDestructionVolume != null && _planetDestructionVolume._shrinkingBodies.Count > 0) return;
                 DisableStar();
             }
         }
