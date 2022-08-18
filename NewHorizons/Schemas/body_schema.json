@@ -2303,11 +2303,6 @@
           "description": "Colour of the star at the end of its lifespan.",
           "$ref": "#/definitions/MColor"
         },
-        "goSupernova": {
-          "type": "boolean",
-          "description": "Should this star explode at the end of its lifespan?",
-          "default": true
-        },
         "lifespan": {
           "type": "number",
           "description": "How long in minutes this star will last until it supernovas.",
@@ -2389,11 +2384,13 @@
       "description": "",
       "x-enumNames": [
         "Default",
+        "None",
         "PlanetaryNebula",
         "Supernova"
       ],
       "enum": [
         "default",
+        "none",
         "planetaryNebula",
         "supernova"
       ]
