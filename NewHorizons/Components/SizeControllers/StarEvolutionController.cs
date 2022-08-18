@@ -247,6 +247,8 @@ namespace NewHorizons.Components.SizeControllers
                 _planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
             }
 
+            if (_stellarRemnantController != null && Time.time > _supernovaStartTime + 15) _stellarRemnantController.PartiallyActivate();
+
             if (Time.time > _supernovaStartTime + supernovaTime)
             {
                 if (_destructionVolume != null && _destructionVolume._shrinkingBodies.Count > 0) return;
@@ -260,9 +262,9 @@ namespace NewHorizons.Components.SizeControllers
             if (controller != null) StarLightController.RemoveStar(controller);
 
             // Just turn off the star entirely
-            base.gameObject.SetActive(false);
+            transform.parent.gameObject.SetActive(false);
 
-            if (_stellarRemnantController != null) _stellarRemnantController.gameObject.SetActive(true);
+            if (_stellarRemnantController != null) _stellarRemnantController.FullyActivate();
 
             if (start && _planetDestructionVolume != null)
             {

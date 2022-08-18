@@ -202,28 +202,7 @@ namespace NewHorizons.Handlers
                     }
                     else if (body.Config.isStellarRemnant)
                     {
-                        Logger.Log($"Creating stellar remnant for [{body.Config.name}]");
-                        try
-                        {
-                            var rb = existingPlanet.GetComponent<OWRigidbody>();
-
-                            var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
-                            sector.name = $"StellarRemnant";
-
-                            var stellarRemnantController = sector.gameObject.AddComponent<StellarRemnantController>();
-                            var starEvolutionController = existingPlanet.GetComponentInChildren<StarEvolutionController>(true);
-                            stellarRemnantController.SetStarEvolutionController(starEvolutionController);
-                            starEvolutionController.SetStellarRemnantController(stellarRemnantController);
-
-                            sector.gameObject.SetActive(false);
-
-                            SharedGenerateBody(body, existingPlanet, sector, rb);
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError($"Couldn't make stellar remnant for [{body.Config.name}]:\n{ex}");
-                            return false;
-                        }
+                        //Skip
                     }
                     else
                     {
@@ -245,8 +224,7 @@ namespace NewHorizons.Handlers
                 }
                 else if (body.Config.isStellarRemnant)
                 {
-                    // If the star object isn't made yet do it later
-                    _nextPassBodies.Add(body);
+                    //Skip
                 }
                 else
                 {
@@ -523,7 +501,89 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
+                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant));
+                if (!body.Config.isStellarRemnant)
+                {
+                    Logger.Log($"Creating stellar remnant for [{body.Config.name}]");
+                    try
+                    {
+                        var size = body.Config.Star.size;
+                        var srBody = Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && body.Config.isStellarRemnant).FirstOrDefault();
+                        var srSector = SectorBuilder.Make(go, rb, GetSphereOfInfluence(body));
+                        srSector.name = "StellarRemnant";
+                        var ss = srSector.GetComponent<SphereShape>();
+
+                        var stellarRemnantController = srSector.gameObject.AddComponent<StellarRemnantController>();
+                        var starEvolutionController = go.GetComponentInChildren<StarEvolutionController>(true);
+                        stellarRemnantController.SetStarEvolutionController(starEvolutionController);
+                        starEvolutionController.SetStellarRemnantController(stellarRemnantController);
+
+                        srSector.gameObject.SetActive(false);
+
+                        if (srBody != null)
+                        {
+                            stellarRemnantController.SetRemnantType(StellarRemnantController.RemnantType.Custom);
+                            stellarRemnantController.SetSurfaceSize(srBody.Config.Base.surfaceSize);
+                            stellarRemnantController.SetSurfaceGravity(srBody.Config.Base.surfaceGravity);
+                            var srSphereOfInfluence = GetSphereOfInfluence(srBody);
+                            stellarRemnantController.SetSphereOfInfluence(srSphereOfInfluence);
+                            ss.radius = srSphereOfInfluence + 10;
+                            var alignmentRadius = srBody.Config.Atmosphere?.clouds?.outerCloudRadius ?? 1.5f * srBody.Config.Base.surfaceSize;
+                            if (srBody.Config.Base.surfaceGravity == 0) alignmentRadius = 0;
+                            stellarRemnantController.SetAlignmentRadius(alignmentRadius);
+                            SharedGenerateBody(srBody, go, srSector, rb);
+                        }
+                        // Black Hole
+                        else if (size > 4000)
+                        {
+                            stellarRemnantController.SetRemnantType(StellarRemnantController.RemnantType.BlackHole);
+                            var bhSurfaceSize = size * 0.015f;
+                            stellarRemnantController.SetSurfaceSize(bhSurfaceSize);
+                            stellarRemnantController.SetSurfaceGravity(body.Config.Base.surfaceGravity * 4);
+                            stellarRemnantController.SetSphereOfInfluence(bhSurfaceSize * 2);
+                            ss.radius = (bhSurfaceSize * 2) + 10;
+                            stellarRemnantController.SetAlignmentRadius(bhSurfaceSize * 1.5f);
+                            SingularityBuilder.MakeBlackHole(go, srSector, Vector3.zero, bhSurfaceSize, true, string.Empty, new External.Modules.VariableSize.VariableSizeModule.TimeValuePair[0]);
+                        }
+                        // Neutron Star
+                        else if (2000 < size && size < 3000)
+                        {
+                            stellarRemnantController.SetRemnantType(StellarRemnantController.RemnantType.NeutronStar);
+                            var nsSurfaceSize = size * 0.03f;
+                            stellarRemnantController.SetSurfaceSize(nsSurfaceSize);
+                            stellarRemnantController.SetSurfaceGravity(body.Config.Base.surfaceGravity * 2);
+                            stellarRemnantController.SetSphereOfInfluence(nsSurfaceSize * 2);
+                            ss.radius = (nsSurfaceSize * 2) + 10;
+                            stellarRemnantController.SetAlignmentRadius(nsSurfaceSize * 1.5f);
+                            stellarRemnantController.SetStarController(StarBuilder.Make(go, srSector, new External.Modules.VariableSize.StarModule
+                            {
+                                size = nsSurfaceSize,
+                                tint = MColor.white
+                            }, body.Mod, true));
+                        }
+                        // White Dwarf
+                        else
+                        {
+                            stellarRemnantController.SetRemnantType(StellarRemnantController.RemnantType.WhiteDwarf);
+                            var wdSurfaceSize = size * 0.15f;
+                            stellarRemnantController.SetSurfaceSize(wdSurfaceSize);
+                            stellarRemnantController.SetSurfaceGravity(body.Config.Base.surfaceGravity * 1.4f);
+                            stellarRemnantController.SetSphereOfInfluence(wdSurfaceSize * 2);
+                            ss.radius = (wdSurfaceSize * 2) + 10;
+                            stellarRemnantController.SetAlignmentRadius(wdSurfaceSize * 1.5f);
+                            stellarRemnantController.SetStarController(StarBuilder.Make(go, srSector, new External.Modules.VariableSize.StarModule
+                            {
+                                size = wdSurfaceSize,
+                                tint = MColor.white,
+                                endTint = MColor.black
+                            }, body.Mod, true));
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make stellar remnant for [{body.Config.name}]:\n{ex}");
+                    }
+                }
             }
 
             if (body.Config?.Bramble != null)

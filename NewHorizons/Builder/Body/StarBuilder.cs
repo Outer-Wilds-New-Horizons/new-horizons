@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
-        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod)
+        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
@@ -32,6 +32,7 @@ namespace NewHorizons.Builder.Body
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.size * 2f;
             var sunSurfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
             var surfaceAudio = sunSurfaceAudio.gameObject.AddComponent<StarSurfaceAudioController>();
+            surfaceAudio._size = starModule.size;
             GameObject.Destroy(sunSurfaceAudio);
             surfaceAudio.SetSector(sector);
 
@@ -143,44 +144,48 @@ namespace NewHorizons.Builder.Body
                 starController.ProxyShadowLight = proxyShadowLight;
                 starController.Intensity = starModule.solarLuminosity;
                 starController.SunColor = lightColour;
+                starController.IsStellarRemnant = isStellarRemnant;
             }
 
-            var supernova = MakeSupernova(starGO, starModule);
-
-            starGO.SetActive(false);
-            var controller = starGO.AddComponent<StarEvolutionController>();
-            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
-            controller.size = starModule.size;
-            controller.atmosphere = sunAtmosphere;
-            controller.controller = starController;
-            controller.supernova = supernova;
-            controller.StartColour = starModule.tint;
-            controller.EndColour = starModule.endTint;
-            controller.SupernovaColour = starModule.supernovaTint;
-            controller.WillExplode = starModule.goSupernova;
-            controller.lifespan = starModule.lifespan;
-            controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
-            controller._heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
-            controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
-            controller._planetDestructionVolume = planetDestructionVolume.GetComponent<StarDestructionVolume>();
-            controller._starFluidVolume = starFluidVolume;
-            starFluidVolume.SetStarEvolutionController(controller);
-            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            if (!isStellarRemnant)
             {
-                controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
-            }
-            surfaceAudio.SetStarEvolutionController(controller);
-            starGO.SetActive(true);
+                var supernova = MakeSupernova(starGO, starModule);
 
-            // It fucking insists on this existing and its really annoying
-            var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
-            supernovaVolume.transform.SetParent(starGO.transform);
-            supernovaVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
-            var sphere = supernovaVolume.AddComponent<SphereCollider>();
-            sphere.radius = 0f;
-            sphere.isTrigger = true;
-            supernovaVolume.AddComponent<OWCollider>();
-            supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
+                starGO.SetActive(false);
+                var controller = starGO.AddComponent<StarEvolutionController>();
+                if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
+                controller.size = starModule.size;
+                controller.atmosphere = sunAtmosphere;
+                controller.controller = starController;
+                controller.supernova = supernova;
+                controller.StartColour = starModule.tint;
+                controller.EndColour = starModule.endTint;
+                controller.SupernovaColour = starModule.supernovaTint;
+                controller.WillExplode = starModule.goSupernova;
+                controller.lifespan = starModule.lifespan;
+                controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+                controller._heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
+                controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
+                controller._planetDestructionVolume = planetDestructionVolume.GetComponent<StarDestructionVolume>();
+                controller._starFluidVolume = starFluidVolume;
+                starFluidVolume.SetStarEvolutionController(controller);
+                if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+                {
+                    controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+                }
+                surfaceAudio.SetStarEvolutionController(controller);
+                starGO.SetActive(true);
+
+                // It fucking insists on this existing and its really annoying
+                var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
+                supernovaVolume.transform.SetParent(starGO.transform);
+                supernovaVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                var sphere = supernovaVolume.AddComponent<SphereCollider>();
+                sphere.radius = 0f;
+                sphere.isTrigger = true;
+                supernovaVolume.AddComponent<OWCollider>();
+                supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
+            }
 
             var shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Radial;
@@ -309,7 +314,7 @@ namespace NewHorizons.Builder.Body
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
             supernova._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
-            supernova._supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f) );
+            supernova._supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
             supernova._supernovaVolume = null;
 
             if (starModule.supernovaTint != null)

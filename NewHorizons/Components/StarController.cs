@@ -10,6 +10,7 @@ namespace NewHorizons.Components
         public ProxyShadowLight ProxyShadowLight;
         public float Intensity;
         public Color SunColor;
+        public bool IsStellarRemnant;
 
         public void Awake()
         {
