@@ -34,9 +34,13 @@ namespace NewHorizons.Builder.Body
             var proxyName = $"{body.Config.name}_Proxy";
 
             var newProxy = new GameObject(proxyName);
+            newProxy.SetActive(false);
 
             try
             {
+                var proxyController = newProxy.AddComponent<NHProxy>();
+                proxyController.astroName = body.Config.name;
+
                 // We want to take the largest size I think
                 var realSize = body.Config.Base.surfaceSize;
 
@@ -45,32 +49,57 @@ namespace NewHorizons.Builder.Body
                     HeightMapBuilder.Make(newProxy, null, body.Config.HeightMap, body.Mod, 20);
                     if (realSize < body.Config.HeightMap.maxHeight) realSize = body.Config.HeightMap.maxHeight;
                 }
+
                 if (body.Config.Base.groundSize != 0)
                 {
                     GeometryBuilder.Make(newProxy, null, body.Config.Base.groundSize);
                     if (realSize < body.Config.Base.groundSize) realSize = body.Config.Base.groundSize;
                 }
-                if (body.Config.Atmosphere?.clouds != null)
+
+                if (body.Config.Atmosphere != null)
                 {
-                    CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod);
-                    if (realSize < body.Config.Atmosphere.size) realSize = body.Config.Atmosphere.size;
+                    proxyController._atmosphere = AtmosphereBuilder.Make(newProxy, null, body.Config.Atmosphere, body.Config.Base.surfaceSize, true).GetComponentInChildren<MeshRenderer>();
+                    proxyController._mieCurveMaxVal = 0.1f;
+                    proxyController._mieCurve = AnimationCurve.EaseInOut(0.0011f, 1, 1, 0);
+
+                    if (body.Config.Atmosphere.fogSize != 0)
+                    {
+                        proxyController._fog = FogBuilder.MakeProxy(newProxy, body.Config.Atmosphere);
+                        proxyController._fogCurveMaxVal = body.Config.Atmosphere.fogDensity;
+                        proxyController._fogCurve = AnimationCurve.Linear(0, 1, 1, 0);
+                    }
+
+                    if (body.Config.Atmosphere.clouds != null)
+                    {
+                        proxyController._mainBody = CloudsBuilder.MakeTopClouds(newProxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        if (body.Config.Atmosphere.clouds.hasLightning)
+                        {
+                            proxyController._lightningGenerator = CloudsBuilder.MakeLightning(newProxy, null, body.Config.Atmosphere, true);
+                        }
+                        if (realSize < body.Config.Atmosphere.size) realSize = body.Config.Atmosphere.size;
+                    }
                 }
+
                 if (body.Config.Ring != null)
                 {
                     RingBuilder.MakeRingGraphics(newProxy, null, body.Config.Ring, body.Mod);
                     if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
                 }
+
                 if (body.Config.Star != null)
                 {
                     var starGO = StarBuilder.MakeStarProxy(planetGO, newProxy, body.Config.Star, body.Mod);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
+
+                GameObject procGen = null;
                 if (body.Config.ProcGen != null)
                 {
-                    ProcGenBuilder.Make(newProxy, null, body.Config.ProcGen);
+                    procGen = ProcGenBuilder.Make(newProxy, null, body.Config.ProcGen);
                     if (realSize < body.Config.ProcGen.scale) realSize = body.Config.ProcGen.scale;
                 }
+
                 if (body.Config.Lava != null)
                 {
                     var sphere = AddColouredSphere(newProxy, body.Config.Lava.size, body.Config.Lava.curve, Color.black);
@@ -80,18 +109,21 @@ namespace NewHorizons.Builder.Body
                     if (body.Config.Lava.tint != null) material.SetColor(EmissionColor, body.Config.Lava.tint.ToColor());
                     sphere.GetComponent<MeshRenderer>().material = material;
                 }
+
                 if (body.Config.Water != null)
                 {
                     var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
                     AddColouredSphere(newProxy, body.Config.Water.size, body.Config.Water.curve, colour);
                     if (realSize < body.Config.Water.size) realSize = body.Config.Water.size;
                 }
+
                 if (body.Config.Sand != null)
                 {
                     var colour = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
                     AddColouredSphere(newProxy, body.Config.Sand.size, body.Config.Sand.curve, colour);
                     if (realSize < body.Config.Sand.size) realSize = body.Config.Sand.size;
                 }
+
                 // Could improve this to actually use the proper renders and materials
                 if (body.Config.Props?.singularities != null)
                 {
@@ -109,16 +141,23 @@ namespace NewHorizons.Builder.Body
                         if (realSize < singularity.size) realSize = singularity.size;
                     }
                 }
+
                 if (body.Config.Base.hasCometTail)
                 {
                     CometTailBuilder.Make(newProxy, null, body.Config);
                 }
+
                 if (body.Config.Props?.proxyDetails != null)
                 {
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
                         DetailBuilder.Make(newProxy, null, body.Config, body.Mod, detailInfo);
                     }
+                }
+
+                if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
+                {
+                    proxyController._supernovaPlanetEffectController = SupernovaEffectBuilder.Make(newProxy, null, body.Config, procGen, null, null, null, proxyController._atmosphere, proxyController._fog);
                 }
 
                 // Remove all collisions if there are any
@@ -138,8 +177,6 @@ namespace NewHorizons.Builder.Body
                     tessellatedRenderer.enabled = true;
                 }
 
-                var proxyController = newProxy.AddComponent<NHProxy>();
-                proxyController.astroName = body.Config.name;
                 proxyController._realObjectDiameter = realSize;
             }
             catch (Exception ex)
@@ -147,6 +184,8 @@ namespace NewHorizons.Builder.Body
                 Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
                 GameObject.Destroy(newProxy);
             }
+
+            newProxy.SetActive(true);
         }
 
         private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)

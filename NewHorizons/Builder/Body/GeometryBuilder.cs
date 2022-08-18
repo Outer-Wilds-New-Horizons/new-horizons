@@ -4,7 +4,7 @@ namespace NewHorizons.Builder.Body
 {
     public static class GeometryBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, float groundScale)
+        public static GameObject Make(GameObject planetGO, Sector sector, float groundScale)
         {
             GameObject groundGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             groundGO.transform.name = "GroundSphere";
@@ -15,6 +15,8 @@ namespace NewHorizons.Builder.Body
             groundGO.GetComponent<MeshFilter>().mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
             groundGO.GetComponent<SphereCollider>().radius = 1f;
             groundGO.SetActive(true);
+
+            return groundGO;
         }
     }
 }

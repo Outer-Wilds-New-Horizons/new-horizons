@@ -62,7 +62,7 @@ namespace NewHorizons.Builder.Body
                     config.ProcGen = new ProcGenModule()
                     {
                         scale = size,
-                        color = new MColor(126, 94, 73, 255)
+                        color = new MColor(126, 94, 73)
                     };
                 }
                 else

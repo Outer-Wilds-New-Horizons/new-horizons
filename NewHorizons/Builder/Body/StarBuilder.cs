@@ -142,11 +142,14 @@ namespace NewHorizons.Builder.Body
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
+            controller.SupernovaColour = starModule.supernovaTint;
             controller.WillExplode = starModule.goSupernova;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
             controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
             controller._planetDestructionVolume = planetDestructionVolume.GetComponent<DestructionVolume>();
+            controller._destructionFluidVolume = planetDestructionVolume.GetComponent<SimpleFluidVolume>();
+            controller._planetDestructionFluidVolume = planetDestructionVolume.GetComponent<SimpleFluidVolume>();
             if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
             {
                 controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
@@ -192,6 +195,7 @@ namespace NewHorizons.Builder.Body
             controller.supernova = supernova;
             controller.StartColour = starModule.tint;
             controller.EndColour = starModule.endTint;
+            controller.SupernovaColour = starModule.supernovaTint;
             controller.WillExplode = starModule.goSupernova;
             controller.lifespan = starModule.lifespan;
             controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
@@ -283,12 +287,13 @@ namespace NewHorizons.Builder.Body
         private static SupernovaEffectController MakeSupernova(GameObject starGO, StarModule starModule)
         {
             var supernovaGO = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
+            supernovaGO.name = "Supernova";
             supernovaGO.transform.SetParent(starGO.transform);
             supernovaGO.transform.localPosition = Vector3.zero;
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
             supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
-            supernova._supernovaScale = AnimationCurve.Linear(5, 0, 15, starModule.supernovaSize);
+            supernova._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
             supernova._supernovaVolume = null;
 
             if (starModule.supernovaTint != null)

@@ -23,6 +23,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (config.Atmosphere.hasRain)
             {
                 var rainGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
+                rainGO.name = "RainEmitter";
                 rainGO.transform.position = planetGO.transform.position;
 
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();

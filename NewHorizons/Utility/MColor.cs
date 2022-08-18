@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using Newtonsoft.Json;
 using UnityEngine;
 namespace NewHorizons.Utility
@@ -6,7 +6,7 @@ namespace NewHorizons.Utility
     [JsonObject]
     public class MColor
     {
-        public MColor(int r, int g, int b, int a)
+        public MColor(int r, int g, int b, int a = 255)
         {
             this.r = r;
             this.g = g;
@@ -37,8 +37,30 @@ namespace NewHorizons.Utility
         /// </summary>
         [System.ComponentModel.DataAnnotations.Range(0, 255)] 
         [DefaultValue(255)]
-        public int a;
+        public int a = 255;
 
         public Color ToColor() => new Color(r / 255f, g / 255f, b / 255f, a / 255f);
+
+        public static MColor red => new MColor(255, 0, 0);
+
+        public static MColor green => new MColor(0, 255, 0);
+
+        public static MColor blue => new MColor(0, 0, 255);
+
+        public static MColor white => new MColor(255, 255, 255);
+
+        public static MColor black => new MColor(0, 0, 0);
+
+        public static MColor yellow => new MColor(255, 235, 4);
+
+        public static MColor cyan => new MColor(0, 255, 255);
+
+        public static MColor magenta => new MColor(255, 0, 255);
+
+        public static MColor gray => new MColor(127, 127, 127);
+
+        public static MColor grey => new MColor(127, 127, 127);
+
+        public static MColor clear => new MColor(0, 0, 0, 0);
     }
 }

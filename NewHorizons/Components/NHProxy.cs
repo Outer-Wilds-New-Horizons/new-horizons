@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components.SizeControllers;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,6 +13,9 @@ namespace NewHorizons.Components
         private TessellatedRenderer[] _starTessellatedRenderers;
         private ParticleSystemRenderer[] _starParticleRenderers;
         private SolarFlareEmitter _solarFlareEmitter;
+        public CloudLightningGenerator _lightningGenerator;
+        public MeshRenderer _mainBody;
+        public NHSupernovaPlanetEffectController _supernovaPlanetEffectController;
 
         public override void Awake()
         {
@@ -30,6 +33,10 @@ namespace NewHorizons.Components
                 _solarFlareEmitter = _star.GetComponentInChildren<SolarFlareEmitter>();
             }
 
+            if (_lightningGenerator == null) _lightningGenerator = GetComponentInChildren<CloudLightningGenerator>();
+
+            if (_supernovaPlanetEffectController == null) _supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>();
+            
             // Start off
             _outOfRange = false;
             ToggleRendering(false);
@@ -39,9 +46,9 @@ namespace NewHorizons.Components
         {
             AstroObject astroObject = AstroObjectLocator.GetAstroObject(astroName);
             _realObjectTransform = astroObject.transform;
-            _hasAtmosphere = _atmosphere != null;
-            if (_hasAtmosphere)
+            if (_atmosphere != null)
             {
+                _hasAtmosphere = true;
                 _atmosphereMaterial = new Material(_atmosphere.sharedMaterial);
                 _baseAtmoMatShellInnerRadius = _atmosphereMaterial.GetFloat(propID_AtmoInnerRadius);
                 _baseAtmoMatShellOuterRadius = _atmosphereMaterial.GetFloat(propID_AtmoOuterRadius);
@@ -71,6 +78,22 @@ namespace NewHorizons.Components
                 if (_solarFlareEmitter != null)
                 {
                     _solarFlareEmitter.gameObject.SetActive(on);
+                }
+
+                if (_mainBody != null)
+                {
+                    _mainBody.enabled = on;
+                }
+
+                if (_lightningGenerator != null)
+                {
+                    _lightningGenerator.enabled = on;
+                }
+
+                if (_supernovaPlanetEffectController != null)
+                {
+                    if (on) _supernovaPlanetEffectController.Enable();
+                    else _supernovaPlanetEffectController.Disable();
                 }
 
                 foreach (var renderer in _starRenderers)

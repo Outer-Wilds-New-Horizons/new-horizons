@@ -450,6 +450,11 @@
           "type": "boolean",
           "description": "If the body should have a marker on the map screen."
         },
+        "hasSupernovaShockEffect": {
+          "type": "boolean",
+          "description": "Does this planet have a shock effect when the nearest star goes supernova?",
+          "default": true
+        },
         "invulnerableToSun": {
           "type": "boolean",
           "description": "Can this planet survive entering a star?"
