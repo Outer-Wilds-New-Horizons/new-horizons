@@ -334,7 +334,7 @@ namespace NewHorizons.Components.SizeControllers
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
             if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
             if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = false;
-            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.enabled = false;
+            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.SetVolumeActivation(false);
 
             if (_proxy != null) _proxy.StartSupernova();
         }
@@ -360,7 +360,7 @@ namespace NewHorizons.Components.SizeControllers
                 _planetDestructionVolume.transform.localScale = Vector3.one;
             }
             if (_destructionFluidVolume != null) _destructionFluidVolume.enabled = true;
-            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.enabled = true;
+            if (_planetDestructionFluidVolume != null) _planetDestructionFluidVolume.SetVolumeActivation(true);
             if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
