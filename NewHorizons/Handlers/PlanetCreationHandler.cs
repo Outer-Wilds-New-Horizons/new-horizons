@@ -5,6 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System;
@@ -203,6 +204,17 @@ namespace NewHorizons.Handlers
                     {
                         try
                         {
+                            var rb = existingPlanet.GetComponent<OWRigidbody>();
+
+                            var sector = SectorBuilder.Make(existingPlanet, rb, GetSphereOfInfluence(body));
+                            sector.name = $"StellarRemnant";
+
+                            var stellarRemnantController = sector.gameObject.AddComponent<StellarRemnantController>();
+                            var starEvolutionController = existingPlanet.GetComponentInChildren<StarEvolutionController>(true);
+                            stellarRemnantController.SetStarEvolutionController(starEvolutionController);
+                            starEvolutionController.SetStellarRemnantController(stellarRemnantController);
+
+                            SharedGenerateBody(body, existingPlanet, sector, rb);
                         }
                         catch (Exception ex)
                         {

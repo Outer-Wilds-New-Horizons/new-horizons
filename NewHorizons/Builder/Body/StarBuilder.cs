@@ -190,11 +190,6 @@ namespace NewHorizons.Builder.Body
             shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
             if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
 
-            var stellarRemnant = MakeStellarRemnant(planetGO, sector, starModule);
-
-            controller.SetStellarRemnantController(stellarRemnant);
-
-
             return starController;
         }
 
@@ -227,12 +222,6 @@ namespace NewHorizons.Builder.Body
             starGO.SetActive(true);
 
             planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
-
-            var stellarRemnant = MakeStellarRemnant(proxyGO, null, starModule);
-
-            planet.GetComponentInChildren<StellarRemnantController>(true).SetProxy(stellarRemnant);
-
-            controller.SetStellarRemnantController(stellarRemnant);
 
             return proxyGO;
         }
@@ -353,20 +342,6 @@ namespace NewHorizons.Builder.Body
             supernovaGO.SetActive(true);
 
             return supernova;
-        }
-
-        public static StellarRemnantController MakeStellarRemnant(GameObject rootObject, Sector sector, StarModule starModule)
-        {
-            var stellarRemnant = new GameObject("StellarRemnant");
-            stellarRemnant.transform.SetParent(sector?.transform ?? rootObject.transform, false);
-            stellarRemnant.SetActive(false);
-
-            var controller = stellarRemnant.AddComponent<StellarRemnantController>();
-            controller.SetStarEvolutionController(rootObject.GetComponentInChildren<StarEvolutionController>());
-
-            stellarRemnant.SetActive(true);
-
-            return controller;
         }
     }
 }
