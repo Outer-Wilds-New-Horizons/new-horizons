@@ -75,7 +75,7 @@ namespace NewHorizons.Builder.Body
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
             heatVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
-            heatVolume.AddComponent<SphereShape>().radius = 1f;
+            heatVolume.AddComponent<SphereShape>().radius = 1.1f;
             heatVolume.AddComponent<OWTriggerVolume>();
             heatVolume.AddComponent<HeatHazardVolume>()._damagePerSecond = 20f;
 
