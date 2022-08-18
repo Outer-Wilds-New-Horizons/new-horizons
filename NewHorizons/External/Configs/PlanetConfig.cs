@@ -151,6 +151,11 @@ namespace NewHorizons.External.Configs
         public ShipLogModule ShipLog;
 
         /// <summary>
+        /// Settings for shock effect on planet when the nearest star goes supernova
+        /// </summary>
+        public ShockEffectModule ShockEffect;
+
+        /// <summary>
         /// Spawn the player at this planet
         /// </summary>
         public SpawnModule Spawn;

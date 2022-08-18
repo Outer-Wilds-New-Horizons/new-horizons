@@ -171,7 +171,7 @@ namespace NewHorizons.Builder.Body
                 }
 
                 NHSupernovaPlanetEffectController supernovaPlanetEffect = null;
-                if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null && !body.Config.isStellarRemnant)
+                if ((body.Config.ShockEffect == null || body.Config.ShockEffect.hasSupernovaShockEffect)  && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null && !body.Config.isStellarRemnant)
                 {
                     supernovaPlanetEffect = SupernovaEffectBuilder.Make(proxy, null, body.Config, procGen, null, null, null, atmosphere, fog);
                 }
