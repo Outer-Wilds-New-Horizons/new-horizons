@@ -17,7 +17,7 @@ namespace NewHorizons.External.Modules
         [DefaultValue(true)] public bool hasSupernovaShockEffect = true;
 
         /// <summary>
-        /// Scale of the shock effect mesh
+        /// Scale of the shock effect
         /// </summary>
         [DefaultValue(1.1f)] public float scale = 1.1f;
 
