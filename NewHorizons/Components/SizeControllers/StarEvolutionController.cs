@@ -50,8 +50,6 @@ namespace NewHorizons.Components.SizeControllers
         private bool _isSupernova;
         private float _supernovaStartTime;
 
-        public bool _disabled;
-
         private Material _collapseStartSurfaceMaterial;
         private Material _collapseEndSurfaceMaterial;
         private Material _startSurfaceMaterial;
@@ -269,8 +267,6 @@ namespace NewHorizons.Components.SizeControllers
             if (_mapMarker != null) _mapMarker.DisableMarker();
 
             if (controller != null) StarLightController.RemoveStar(controller);
-
-            _disabled = true;
 
             // Just turn off the star entirely
             base.gameObject.SetActive(false);
