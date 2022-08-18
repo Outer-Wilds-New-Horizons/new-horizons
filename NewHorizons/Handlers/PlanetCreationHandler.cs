@@ -558,7 +558,7 @@ namespace NewHorizons.Handlers
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, srSector, new External.Modules.VariableSize.StarModule
                             {
                                 size = nsSurfaceSize,
-                                tint = MColor.white
+                                tint = MColor.cyan
                             }, body.Mod, true));
                         }
                         // White Dwarf
