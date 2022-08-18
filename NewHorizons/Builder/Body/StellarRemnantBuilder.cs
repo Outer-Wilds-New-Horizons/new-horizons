@@ -18,11 +18,22 @@ namespace NewHorizons.Builder.Body
 {
     public static class StellarRemnantBuilder
     {
-        public static void Make(NewHorizonsBody star, GameObject go, OWRigidbody rb, IModBehaviour mod, NewHorizonsBody stellarRemnant = null)
+        public static StellarRemnantController Make(NewHorizonsBody star, GameObject go, OWRigidbody rb, IModBehaviour mod, NewHorizonsBody stellarRemnant = null)
         {
-            Logger.Log($"Creating stellar remnant for [{star.Config.name}]");
             try
             {
+                var currentSRC = go.GetComponentInChildren<StellarRemnantController>();
+                if (currentSRC != null)
+                {
+                    foreach (var starEvolutionController1 in go.GetComponentsInChildren<StarEvolutionController>(true))
+                    {
+                        starEvolutionController1.SetStellarRemnantController(currentSRC);
+                    }
+                    return currentSRC;
+                }
+
+                Logger.Log($"Creating stellar remnant for [{star.Config.name}]");
+
                 var config = star.Config;
                 var starModule = star.Config.Star;
                 var size = starModule.size;
@@ -123,10 +134,13 @@ namespace NewHorizons.Builder.Body
                             break;
                     }
                 }
+
+                return stellarRemnantController;
             }
             catch (Exception ex)
             {
                 Logger.LogError($"Couldn't make stellar remnant for [{star.Config.name}]:\n{ex}");
+                return null;
             }
         }
     }
