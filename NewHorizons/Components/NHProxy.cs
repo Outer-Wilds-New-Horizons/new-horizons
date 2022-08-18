@@ -1,4 +1,5 @@
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,6 +20,7 @@ namespace NewHorizons.Components
 
         public override void Awake()
         {
+            ProxyHandler.RegisterProxy(this);
             base.Awake();
 
             // The star part cant be disabled like the rest and we have to manually disable the renderers
@@ -40,6 +42,11 @@ namespace NewHorizons.Components
             // Start off
             _outOfRange = false;
             ToggleRendering(false);
+        }
+
+        public override void OnDestroy()
+        {
+            ProxyHandler.UnregisterProxy(this);
         }
 
         public override void Initialize()
