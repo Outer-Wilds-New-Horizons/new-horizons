@@ -2267,7 +2267,14 @@
       "properties": {
         "hasSupernovaShockEffect": {
           "type": "boolean",
-          "description": "Does this planet have a shock effect when the nearest star goes supernova? Automatically disabled for stars, focal points, and stellar remnants."
+          "description": "Does this planet have a shock effect when the nearest star goes supernova? Automatically disabled for stars, focal points, and stellar remnants.",
+          "default": true
+        },
+        "radius": {
+          "type": "number",
+          "description": "Radius of the shock effect",
+          "format": "float",
+          "default": 1.1
         },
         "assetBundle": {
           "type": "string",
