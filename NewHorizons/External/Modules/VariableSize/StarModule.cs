@@ -53,7 +53,7 @@ namespace NewHorizons.External.Modules.VariableSize
         public float solarLuminosity = 1f;
 
         /// <summary>
-        /// Radius of the supernova. Any planets within 80% of this will be destroyed.
+        /// Radius of the supernova. Any planets within this will be destroyed.
         /// </summary>
         [DefaultValue(50000f)]
         [Range(0f, double.MaxValue)]
