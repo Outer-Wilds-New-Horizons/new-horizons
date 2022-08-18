@@ -2381,10 +2381,6 @@
           "description": "The type of stellar remnant your star will leave behind.",
           "default": "default",
           "$ref": "#/definitions/StellarRemnantType"
-        },
-        "stellarRemnant": {
-          "description": "If you want a custom stellar remnant, use this.",
-          "$ref": "#/definitions/StellarRemnantModule"
         }
       }
     },
@@ -2421,76 +2417,6 @@
         "blackHole",
         "custom"
       ]
-    },
-    "StellarRemnantModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "Atmosphere": {
-          "description": "Describes this Body's atmosphere",
-          "$ref": "#/definitions/AtmosphereModule"
-        },
-        "Base": {
-          "description": "Base Properties of this Body",
-          "$ref": "#/definitions/BaseModule"
-        },
-        "Bramble": {
-          "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
-          "$ref": "#/definitions/BrambleModule"
-        },
-        "Cloak": {
-          "description": "Add a cloaking field to this planet",
-          "$ref": "#/definitions/CloakModule"
-        },
-        "Funnel": {
-          "description": "Add funnel from this planet to another",
-          "$ref": "#/definitions/FunnelModule"
-        },
-        "HeightMap": {
-          "description": "Generate the surface of this planet using a heightmap",
-          "$ref": "#/definitions/HeightMapModule"
-        },
-        "Lava": {
-          "description": "Add lava to this planet",
-          "$ref": "#/definitions/LavaModule"
-        },
-        "ProcGen": {
-          "description": "Procedural Generation",
-          "$ref": "#/definitions/ProcGenModule"
-        },
-        "Props": {
-          "description": "Spawn various objects on this body",
-          "$ref": "#/definitions/PropModule"
-        },
-        "removeChildren": {
-          "type": "array",
-          "description": "A list of paths to child GameObjects to destroy on this planet",
-          "items": {
-            "type": "string"
-          }
-        },
-        "Ring": {
-          "description": "Creates a ring around the planet",
-          "$ref": "#/definitions/RingModule"
-        },
-        "Sand": {
-          "description": "Add sand to this planet",
-          "$ref": "#/definitions/SandModule"
-        },
-        "siderealPeriod": {
-          "type": "number",
-          "description": "Rotation period in minutes.",
-          "format": "float"
-        },
-        "Star": {
-          "description": "Make this body a star",
-          "$ref": "#/definitions/StarModule"
-        },
-        "Water": {
-          "description": "Add water to this planet",
-          "$ref": "#/definitions/WaterModule"
-        }
-      }
     },
     "WaterModule": {
       "type": "object",
