@@ -26,6 +26,8 @@ namespace NewHorizons.Builder.Body
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
+            var stellarRemnant = MakeStellarRemnant(planetGO, sector, starModule);
+
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
@@ -145,8 +147,6 @@ namespace NewHorizons.Builder.Body
                 starController.SunColor = lightColour;
             }
 
-            var stellarRemnant = MakeStellarRemnant(starGO, starModule);
-
             var supernova = MakeSupernova(starGO, starModule);
 
             starGO.SetActive(false);
@@ -199,6 +199,8 @@ namespace NewHorizons.Builder.Body
         {
             var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
+
+            var stellarRemnant = MakeStellarRemnant(proxyGO, null, starModule);
 
             var supernova = MakeSupernova(starGO, starModule);
 
@@ -346,10 +348,10 @@ namespace NewHorizons.Builder.Body
             return supernova;
         }
 
-        public static GameObject MakeStellarRemnant(GameObject starGO, StarModule starModule)
+        public static GameObject MakeStellarRemnant(GameObject rootObject, Sector sector, StarModule starModule)
         {
             GameObject stellarRemnant = new GameObject("StellarRemnant");
-            stellarRemnant.transform.SetParent(starGO.transform, false);
+            stellarRemnant.transform.SetParent(sector?.transform ?? rootObject.transform, false);
             return stellarRemnant;
         }
     }
