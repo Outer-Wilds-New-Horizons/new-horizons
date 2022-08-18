@@ -168,6 +168,7 @@ namespace NewHorizons.Builder.Body
                 controller._destructionVolume = deathVolume.GetComponent<DestructionVolume>();
                 controller._planetDestructionVolume = planetDestructionVolume.GetComponent<StarDestructionVolume>();
                 controller._starFluidVolume = starFluidVolume;
+                controller._oneShotSource = sunAudio.transform.Find("OneShotAudio_Sun")?.GetComponent<OWAudioSource>();
                 starFluidVolume.SetStarEvolutionController(controller);
                 if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
                 {

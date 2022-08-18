@@ -38,6 +38,8 @@ namespace NewHorizons.Components.SizeControllers
         private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
 
+        public OWAudioSource _oneShotSource;
+
         private bool _isCollapsing;
         private float _collapseStartSize;
         private float _collapseTimer;
@@ -297,6 +299,7 @@ namespace NewHorizons.Components.SizeControllers
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
             supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
+            if (_oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) _oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
             if (_proxy != null) _proxy.StartCollapse();
         }
@@ -327,6 +330,7 @@ namespace NewHorizons.Components.SizeControllers
             if (atmosphere != null) atmosphere.SetActive(false);
             if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
             if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
+            if (_oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) _oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
 
             if (_proxy != null) _proxy.StartSupernova();
         }
