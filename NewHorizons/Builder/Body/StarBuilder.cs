@@ -210,6 +210,7 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(false);
             var controller = starGO.AddComponent<StarEvolutionController>();
+            controller._isProxy = true;
             if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
             controller.size = starModule.size;
             controller.supernovaSize = starModule.supernovaSize;

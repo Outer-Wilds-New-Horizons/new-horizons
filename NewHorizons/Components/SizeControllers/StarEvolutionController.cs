@@ -14,6 +14,8 @@ namespace NewHorizons.Components.SizeControllers
 {
     public class StarEvolutionController : SizeController
     {
+        public bool _isProxy;
+
         public GameObject atmosphere;
         public StarController controller;
         public SupernovaEffectController supernova;
@@ -159,7 +161,7 @@ namespace NewHorizons.Components.SizeControllers
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
             _surfaceMaterial = supernova._surface._materials[0];
 
-            SupernovaEffectHandler.RegisterStar(this);
+            if (!_isProxy) SupernovaEffectHandler.RegisterStar(this);
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
