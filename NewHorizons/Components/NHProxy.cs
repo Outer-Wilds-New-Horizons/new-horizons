@@ -104,6 +104,12 @@ namespace NewHorizons.Components
                 }
             }
 
+            if (_starEvolutionController != null && _star != null && (_star.activeSelf || _star.activeInHierarchy))
+            {
+                if (_starEvolutionController.HasSupernovaStarted()) _realObjectDiameter = _starEvolutionController.GetSupernovaRadius();
+                else if (_starEvolutionController.IsCollapsing()) Mathf.Lerp(_baseRealObjectDiameter, 0, _starEvolutionController.GetCollapseProgress());
+            }
+
             base.Update();
         }
 
