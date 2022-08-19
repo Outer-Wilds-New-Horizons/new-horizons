@@ -11,6 +11,7 @@ namespace NewHorizons.Components
 
         public GameObject _planet;
         public GameObject _star;
+        public StarEvolutionController _starEvolutionController;
         private Renderer[] _starRenderers;
         private TessellatedRenderer[] _starTessellatedRenderers;
         private ParticleSystemRenderer[] _starParticleRenderers;
@@ -32,8 +33,9 @@ namespace NewHorizons.Components
 
             // The star part cant be disabled like the rest and we have to manually disable the renderers
             // Else it can stop the supernova effect mid way through
-            if (_star == null) _star = GetComponentInChildren<StarEvolutionController>()?.gameObject;
-
+            if (_starEvolutionController == null) _starEvolutionController = GetComponentInChildren<StarEvolutionController>();
+            if (_star == null) _star = _starEvolutionController?.gameObject;
+            
             if (_star != null)
             {
                 _starRenderers = _star.GetComponentsInChildren<Renderer>();

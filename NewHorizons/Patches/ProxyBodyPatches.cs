@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -39,8 +40,16 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ProxyBody), nameof(ProxyBody.IsObjectInSupernova))]
         public static bool ProxyBody_IsObjectInSupernova(ProxyBody __instance, ref bool __result)
         {
-            __result = SupernovaEffectHandler.InPointInsideAnySupernova(__instance._realObjectTransform.position);
-            return false;
+            if (__instance is NHProxy nh && nh._starEvolutionController != null)
+            {
+                __result = false;
+                return false;
+            }
+            else
+            {
+                __result = SupernovaEffectHandler.InPointInsideAnySupernova(__instance._realObjectTransform.position);
+                return false;
+            }
         }
         
         // Mobius why doesn't ProxyOrbiter inherit from ProxyBody
