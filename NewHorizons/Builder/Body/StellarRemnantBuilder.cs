@@ -82,9 +82,9 @@ namespace NewHorizons.Builder.Body
                 {
                     if (remnantType == StellarRemnantType.Default)
                     {
-                        if (size > 4000)
+                        if (size >= 4000)
                             remnantType = StellarRemnantType.BlackHole;
-                        else if (2000 < size && size < 3000)
+                        else if (2000 < size && size < 4000)
                             remnantType = StellarRemnantType.NeutronStar;
                         else
                             remnantType = StellarRemnantType.WhiteDwarf;
