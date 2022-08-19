@@ -39,6 +39,7 @@ namespace NewHorizons.Builder.Body
             {
                 proxyController = proxy.AddComponent<NHProxy>();
                 proxyController.astroName = body.Config.name;
+                proxyController._planet = planetGO;
             }
 
             var success = SharedMake(planetGO, proxy, proxyController, body);

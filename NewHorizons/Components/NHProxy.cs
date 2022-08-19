@@ -9,6 +9,7 @@ namespace NewHorizons.Components
     {
         public string astroName;
 
+        public GameObject _planet;
         public GameObject _star;
         private Renderer[] _starRenderers;
         private TessellatedRenderer[] _starTessellatedRenderers;
@@ -79,6 +80,14 @@ namespace NewHorizons.Components
 
         public override void Update()
         {
+            if (_planet == null || !_planet.activeSelf)
+            {
+                _outOfRange = false;
+                ToggleRendering(false);
+                enabled = false;
+                return;
+            }
+
             if (_stellarRemnant != null)
             {
                 if (_stellarRemnant.IsActiveAndEnabled())
