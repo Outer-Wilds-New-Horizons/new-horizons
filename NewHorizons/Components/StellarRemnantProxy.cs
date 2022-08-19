@@ -62,7 +62,7 @@ namespace NewHorizons.Components
 
         public void ToggleRendering(bool on)
         {
-            on = on && IsActiveAndEnabled();
+            on = on && IsActivated();
 
             _renderingOn = on;
 
@@ -146,7 +146,7 @@ namespace NewHorizons.Components
             controller.SetProxy(this);
         }
 
-        public bool IsActiveAndEnabled() => _stellarRemnantController.isActiveAndEnabled;
+        public bool IsActivated() => _stellarRemnantController.IsActivated();
         public bool IsRenderingOn() => _renderingOn;
     }
 }

@@ -90,7 +90,7 @@ namespace NewHorizons.Components
 
             if (_stellarRemnant != null)
             {
-                if (_stellarRemnant.IsActiveAndEnabled())
+                if (_stellarRemnant.IsActivated())
                 {
                     _realObjectDiameter = _stellarRemnant._realObjectDiameter;
                     if (!_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
@@ -110,7 +110,7 @@ namespace NewHorizons.Components
             if (_stellarRemnant != null)
             {
                 _stellarRemnant.ToggleRendering(on);
-                on = on && !_stellarRemnant.IsActiveAndEnabled();
+                on = on && !_stellarRemnant.IsActivated();
             }
 
             base.ToggleRendering(on);

@@ -11,6 +11,8 @@ namespace NewHorizons.Components
     {
         private StellarRemnantType _type = StellarRemnantType.Default;
 
+        private bool _activated;
+
         private StarEvolutionController _starEvolutionController;
 
         private StellarRemnantProxy _proxy;
@@ -68,6 +70,10 @@ namespace NewHorizons.Components
             }
 
             if (_starController != null) StarLightController.AddStar(_starController);
+
+            _activated = true;
         }
+
+        public bool IsActivated() => _activated;
     }
 }
