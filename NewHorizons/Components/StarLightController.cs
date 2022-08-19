@@ -73,7 +73,7 @@ namespace NewHorizons.Components
             foreach (var (planet, material) in AtmosphereBuilder.Skys)
             {
                 var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
-                var intensity = Mathf.Min(_activeStar.Light.intensity / (sqrDist / hearthSunDistanceSqr), 1f);
+                var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
 
                 material.SetFloat(SunIntensity, intensity);
             }
