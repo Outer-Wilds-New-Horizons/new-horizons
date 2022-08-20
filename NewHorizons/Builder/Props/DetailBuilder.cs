@@ -110,7 +110,6 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-
                 GameObject detailGO = MakeDetail(planetGO, sector, prefab, info);
 
                 if (info.removeChildren != null)
@@ -170,6 +169,8 @@ namespace NewHorizons.Builder.Props
                         Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                     }
                 }
+
+                return detailGO;
             }
         }
 
