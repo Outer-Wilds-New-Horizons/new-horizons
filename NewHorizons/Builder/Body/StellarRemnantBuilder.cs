@@ -116,6 +116,7 @@ namespace NewHorizons.Builder.Body
                                     proxyStellarRemnant.SetActive(false);
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
+                                    srp._realObjectDiameter = wdSurfaceSize;
                                     proxyController._stellarRemnant = srp;
                                     proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, wdModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
@@ -146,6 +147,7 @@ namespace NewHorizons.Builder.Body
                                     proxyStellarRemnant.SetActive(false);
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
+                                    srp._realObjectDiameter = nsSurfaceSize;
                                     proxyController._stellarRemnant = srp;
                                     proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, nsModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
@@ -176,6 +178,7 @@ namespace NewHorizons.Builder.Body
                                     proxyStellarRemnant.SetActive(false);
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
+                                    srp._realObjectDiameter = psSurfaceSize;
                                     proxyController._stellarRemnant = srp;
                                     proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, psModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
@@ -201,6 +204,7 @@ namespace NewHorizons.Builder.Body
                                     proxyStellarRemnant.SetActive(false);
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
+                                    srp._realObjectDiameter = bhSurfaceSize;
                                     proxyController._stellarRemnant = srp;
                                     ProxyBuilder.MakeBlackHole(proxyStellarRemnant, Vector3.zero, bhSurfaceSize);
                                     proxyStellarRemnant.SetActive(true);
