@@ -291,6 +291,8 @@ namespace NewHorizons.Components.SizeControllers
                     }
                 }
             }
+
+            if (_proxy != null) _proxy.DisableStar(start);
         }
 
         public void StartCollapse()
