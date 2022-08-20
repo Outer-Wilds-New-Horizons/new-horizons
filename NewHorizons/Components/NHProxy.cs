@@ -95,11 +95,13 @@ namespace NewHorizons.Components
                 if (_stellarRemnant.IsActivated())
                 {
                     _realObjectDiameter = _stellarRemnant._realObjectDiameter;
+                    _proxyAtan = Mathf.Atan(_stellarRemnant._realObjectDiameter / 42000f);
                     if (!_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
                 }
                 else
                 {
                     _realObjectDiameter = _baseRealObjectDiameter;
+                    _proxyAtan = Mathf.Atan(_baseRealObjectDiameter / 42000f);
                     if (_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
                 }
             }
