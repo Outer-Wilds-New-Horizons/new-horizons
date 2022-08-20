@@ -81,6 +81,8 @@ namespace NewHorizons.Builder.Props
 
         public static SignalFrequency AddFrequency(string str)
         {
+            if (_customFrequencyNames == null) Init();
+
             Logger.Log($"Registering new frequency name [{str}]");
 
             if (NumberOfFrequencies == 31)
@@ -109,12 +111,16 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
+            if (_customFrequencyNames == null) Init();
+
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
 
         public static SignalName AddSignalName(string str)
         {
+            if (_customSignalNames == null) Init();
+
             Logger.Log($"Registering new signal name [{str}]");
             SignalName newName;
 
@@ -127,6 +133,8 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomSignalName(SignalName signalName)
         {
+            if (_customSignalNames == null) Init();
+
             _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
