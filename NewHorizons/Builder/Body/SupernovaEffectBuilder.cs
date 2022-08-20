@@ -130,10 +130,10 @@ namespace NewHorizons.Builder.Body
                 supernovaEffectController._shockLayerTrailFlare = 100;
                 supernovaEffectController._shockLayerTrailLength = biggestSize < 600 ? 300 : 600;
 
-                var radius = config.ShockEffect.radius != null ? config.ShockEffect.radius : biggestSize * 1.1f;
+                var radius = config.ShockEffect.radius != null ? config.ShockEffect.radius.Value : biggestSize * 1.1f;
 
                 shockLayer.transform.position = planetGO.transform.position;
-                shockLayer.transform.localScale = Vector3.one * radius.Value;
+                shockLayer.transform.localScale = Vector3.one * radius;
 
                 if (!noMeshChange && config.ShockEffect.radius == null && procGen != null)
                 {
@@ -150,7 +150,7 @@ namespace NewHorizons.Builder.Body
                         if (mesh != null)
                         {
                             shockLayer.GetComponent<MeshFilter>().sharedMesh = mesh;
-                            shockLayer.transform.localScale = Vector3.one * (config.ShockEffect.radius != null ? config.ShockEffect.radius : 1);
+                            shockLayer.transform.localScale = Vector3.one * (config.ShockEffect.radius != null ? config.ShockEffect.radius.Value : 1);
                             shockLayer.transform.rotation = Quaternion.Euler(0, 0, 0);
                         }
                     }
