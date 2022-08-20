@@ -150,7 +150,7 @@ namespace NewHorizons.Builder.Body
                         if (mesh != null)
                         {
                             shockLayer.GetComponent<MeshFilter>().sharedMesh = mesh;
-                            shockLayer.transform.localScale = Vector3.one;
+                            shockLayer.transform.localScale = Vector3.one * (config.ShockEffect.radius != null ? config.ShockEffect.radius : 1);
                             shockLayer.transform.rotation = Quaternion.Euler(0, 0, 0);
                         }
                     }
