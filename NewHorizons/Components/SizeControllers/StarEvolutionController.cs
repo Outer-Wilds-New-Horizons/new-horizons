@@ -266,7 +266,10 @@ namespace NewHorizons.Components.SizeControllers
             if (controller != null) StarLightController.RemoveStar(controller);
 
             // Just turn off the star entirely
-            transform.parent.gameObject.SetActive(false);
+            if (_isProxy)
+                gameObject.SetActive(false);
+            else
+                transform.parent.gameObject.SetActive(false); // Turn off sector
 
             if (_stellarRemnantController != null) _stellarRemnantController.FullyActivate();
 
