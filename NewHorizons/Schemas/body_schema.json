@@ -2271,10 +2271,12 @@
           "default": true
         },
         "radius": {
-          "type": "number",
-          "description": "Radius of the shock effect",
-          "format": "float",
-          "default": 1.1
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Override the calculated radius of the shock effect",
+          "format": "float"
         },
         "assetBundle": {
           "type": "string",
