@@ -104,7 +104,65 @@ namespace NewHorizons.Builder.Props
                 Logger.LogError($"Couldn't find detail {info.path}");
                 return null;
             }
-            else return MakeDetail(planetGO, sector, prefab, info);
+            else
+            {
+
+                GameObject detailGO = MakeDetail(planetGO, sector, prefab, info);
+
+                if (info.removeChildren != null)
+                {
+                    var detailPath = detailGO.transform.GetPath();
+                    var transforms = detailGO.GetComponentsInChildren<Transform>(true);
+                    foreach (var childPath in info.removeChildren)
+                    {
+                        // Multiple children can have the same path so we delete all that match
+                        var path = $"{detailPath}/{childPath}";
+
+                        var flag = true;
+                        foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                        {
+                            flag = false;
+                            childObj.gameObject.SetActive(false);
+                        }
+
+                        if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                    }
+                }
+
+                if (info.removeComponents)
+                {
+                    // Just swap all the children to a new game object
+                    var newDetailGO = new GameObject(detailGO.name);
+                    newDetailGO.transform.position = detailGO.transform.position;
+                    newDetailGO.transform.parent = detailGO.transform.parent;
+                    // Can't modify parents while looping through children bc idk
+                    var children = new List<Transform>();
+                    foreach (Transform child in detailGO.transform)
+                    {
+                        children.Add(child);
+                    }
+                    foreach (var child in children)
+                    {
+                        child.parent = newDetailGO.transform;
+                    }
+                    GameObject.Destroy(detailGO);
+                    detailGO = newDetailGO;
+                }
+
+                if (info.rename != null)
+                {
+                    detailGO.name = info.rename;
+                }
+
+                if (!string.IsNullOrEmpty(info.parentPath))
+                {
+                    var newParent = go.transform.Find(info.parentPath);
+                    if (newParent != null)
+                    {
+                        detailGO.transform.parent = newParent.transform;
+                    }
+                }
+            }
         }
 
         public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
