@@ -91,6 +91,10 @@ namespace NewHorizons.Builder.Props
                 {
                     detailGO.transform.parent = newParent.transform;
                 }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
+                }
             }
 
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
@@ -156,10 +160,14 @@ namespace NewHorizons.Builder.Props
 
                 if (!string.IsNullOrEmpty(info.parentPath))
                 {
-                    var newParent = go.transform.Find(info.parentPath);
+                    var newParent = planetGO.transform.Find(info.parentPath);
                     if (newParent != null)
                     {
                         detailGO.transform.parent = newParent.transform;
+                    }
+                    else
+                    {
+                        Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                     }
                 }
             }
