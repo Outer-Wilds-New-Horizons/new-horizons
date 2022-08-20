@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, detail);
+                        DetailBuilder.Make(go, sector, mod, detail);
                     }
                     catch (Exception ex)
                     {

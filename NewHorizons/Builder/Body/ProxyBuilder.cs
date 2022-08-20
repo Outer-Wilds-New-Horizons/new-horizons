@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Body
                 {
                     foreach (var detailInfo in body.Config.Props.proxyDetails)
                     {
-                        DetailBuilder.Make(proxy, null, body.Config, body.Mod, detailInfo);
+                        DetailBuilder.Make(proxy, null, body.Mod, detailInfo);
                     }
                 }
 
