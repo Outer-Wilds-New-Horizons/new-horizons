@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Props
         {
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
-                var existingArcs = GameObject.FindObjectsOfType<NomaiWallText>().SelectMany(x => x._textLines).Select(x => x?.gameObject).Where(x => x != null).ToArray();
+                var existingArcs = GameObject.FindObjectsOfType<NomaiTextLine>().Select(x => x?.gameObject).Where(x => x != null).ToArray();
                 _arcPrefabs = new List<GameObject>();
                 _childArcPrefabs = new List<GameObject>();
                 _ghostArcPrefabs = new List<GameObject>();
