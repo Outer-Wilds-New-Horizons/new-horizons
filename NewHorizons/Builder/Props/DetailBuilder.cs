@@ -96,6 +96,17 @@ namespace NewHorizons.Builder.Props
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
+        public static GameObject MakeDetail(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        {
+            var prefab = SearchUtilities.Find(info.path);
+            if (prefab == null)
+            {
+                Logger.LogError($"Couldn't find detail {info.path}");
+                return null;
+            }
+            else return MakeDetail(planetGO, sector, prefab, info);
+        }
+
         public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
         {
             if (prefab == null) return null;
