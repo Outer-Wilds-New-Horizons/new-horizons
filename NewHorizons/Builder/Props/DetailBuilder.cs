@@ -79,24 +79,6 @@ namespace NewHorizons.Builder.Props
                 detailGO = newDetailGO;
             }
 
-            if (detail.rename != null)
-            {
-                detailGO.name = detail.rename;
-            }
-
-            if (!string.IsNullOrEmpty(detail.parentPath))
-            {
-                var newParent = go.transform.Find(detail.parentPath);
-                if (newParent != null)
-                {
-                    detailGO.transform.parent = newParent.transform;
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
-                }
-            }
-
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
@@ -152,24 +134,6 @@ namespace NewHorizons.Builder.Props
                     detailGO = newDetailGO;
                 }
 
-                if (info.rename != null)
-                {
-                    detailGO.name = info.rename;
-                }
-
-                if (!string.IsNullOrEmpty(info.parentPath))
-                {
-                    var newParent = planetGO.transform.Find(info.parentPath);
-                    if (newParent != null)
-                    {
-                        detailGO.transform.parent = newParent.transform;
-                    }
-                    else
-                    {
-                        Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                    }
-                }
-
                 return detailGO;
             }
         }
@@ -179,8 +143,22 @@ namespace NewHorizons.Builder.Props
             if (prefab == null) return null;
 
             GameObject prop = prefab.InstantiateInactive();
-            prop.name = prefab.name;
+            prop.name = !string.IsNullOrEmpty(info.rename) ? info.rename : prefab.name;
+
             prop.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    prop.transform.parent = newParent.transform;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
