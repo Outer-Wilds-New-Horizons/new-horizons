@@ -104,7 +104,7 @@ namespace NewHorizons.Builder.Body
 
                 if (body.Config.Star != null)
                 {
-                    StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod);
+                    StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }

@@ -21,7 +21,7 @@ namespace NewHorizons.Builder.Body
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
-        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant = false)
+        public static StarController Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
@@ -199,7 +199,7 @@ namespace NewHorizons.Builder.Body
             return starController;
         }
 
-        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant = false)
+        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);

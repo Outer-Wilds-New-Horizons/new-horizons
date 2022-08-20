@@ -117,7 +117,7 @@ namespace NewHorizons.Builder.Body
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
                                     proxyController._stellarRemnant = srp;
-                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, wdModule, mod);
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, wdModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
                                 }
                             }, 2);
@@ -147,7 +147,7 @@ namespace NewHorizons.Builder.Body
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
                                     proxyController._stellarRemnant = srp;
-                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, nsModule, mod);
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, nsModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
                                 }
                             }, 2);
@@ -177,7 +177,7 @@ namespace NewHorizons.Builder.Body
                                     StellarRemnantProxy srp = proxyStellarRemnant.AddComponent<StellarRemnantProxy>();
                                     srp.SetStellarRemnantController(stellarRemnantController);
                                     proxyController._stellarRemnant = srp;
-                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, psModule, mod);
+                                    proxyController._star = StarBuilder.MakeStarProxy(go, proxyStellarRemnant, psModule, mod, true);
                                     proxyStellarRemnant.SetActive(true);
                                 }
                             }, 2);
