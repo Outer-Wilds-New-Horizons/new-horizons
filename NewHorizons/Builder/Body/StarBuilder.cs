@@ -178,16 +178,6 @@ namespace NewHorizons.Builder.Body
                 }
                 surfaceAudio.SetStarEvolutionController(controller);
                 starGO.SetActive(true);
-
-                // It fucking insists on this existing and its really annoying
-                var supernovaVolume = new GameObject("SupernovaVolumePlaceholder");
-                supernovaVolume.transform.SetParent(starGO.transform);
-                supernovaVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
-                var sphere = supernovaVolume.AddComponent<SphereCollider>();
-                sphere.radius = 0f;
-                sphere.isTrigger = true;
-                supernovaVolume.AddComponent<OWCollider>();
-                supernova._supernovaVolume = supernovaVolume.AddComponent<SupernovaDestructionVolume>();
             }
 
             var shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
@@ -210,7 +200,7 @@ namespace NewHorizons.Builder.Body
             {
                 var supernova = MakeSupernova(starGO, starModule);
 
-                supernova._belongsToProxySun = true;
+                supernova.SetIsProxy(true);
 
                 starGO.SetActive(false);
                 var controller = starGO.AddComponent<StarEvolutionController>();
@@ -312,7 +302,7 @@ namespace NewHorizons.Builder.Body
             return starGO;
         }
 
-        public static SupernovaEffectController MakeSupernova(GameObject starGO, StarModule starModule)
+        public static StellarDeathController MakeSupernova(GameObject starGO, StarModule starModule)
         {
             var supernovaGO = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
             supernovaGO.name = "Supernova";
@@ -320,26 +310,33 @@ namespace NewHorizons.Builder.Body
             supernovaGO.transform.localPosition = Vector3.zero;
 
             var supernova = supernovaGO.GetComponent<SupernovaEffectController>();
-            supernova._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
-            supernova._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
-            supernova._supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
-            supernova._supernovaVolume = null;
+            var stellarDeath = supernovaGO.AddComponent<StellarDeathController>();
+            stellarDeath._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
+            stellarDeath._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
+            stellarDeath._supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
+            stellarDeath._explosionParticles = supernova._explosionParticles;
+            stellarDeath._shockwave = supernova._shockwave;
+            stellarDeath._shockwaveLength = supernova._shockwaveLength;
+            stellarDeath._shockwaveAlpha = supernova._shockwaveAlpha;
+            stellarDeath._shockwaveScale = supernova._shockwaveScale;
+            stellarDeath._supernovaMaterial = supernova._supernovaMaterial;
+            GameObject.Destroy(supernova);
 
             if (starModule.supernovaTint != null)
             {
                 var colour = starModule.supernovaTint.ToColor();
 
-                var supernovaMaterial = new Material(supernova._supernovaMaterial);
+                var supernovaMaterial = new Material(stellarDeath._supernovaMaterial);
                 var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);
                 supernovaMaterial.SetTexture(ColorRamp, ramp);
-                supernova._supernovaMaterial = supernovaMaterial;
+                stellarDeath._supernovaMaterial = supernovaMaterial;
 
                 // Motes
-                var moteMaterial = supernova.GetComponentInChildren<ParticleSystemRenderer>().material;
+                var moteMaterial = supernovaGO.GetComponentInChildren<ParticleSystemRenderer>().material;
                 moteMaterial.color = new Color(colour.r * 3f, colour.g * 3f, colour.b * 3f, moteMaterial.color.a);
             }
 
-            foreach (var controller in supernova.GetComponentsInChildren<SupernovaStreamersController>())
+            foreach (var controller in supernovaGO.GetComponentsInChildren<SupernovaStreamersController>())
             {
                 Object.DestroyImmediate(controller);
             }
@@ -350,11 +347,11 @@ namespace NewHorizons.Builder.Body
             supernovaWallAudio.transform.localScale = Vector3.one;
             supernovaWallAudio.layer = LayerMask.NameToLayer("BasicEffectVolume");
             supernovaWallAudio.AddComponent<AudioSource>();
-            supernova._audioSource = supernovaWallAudio.AddComponent<OWAudioSource>();
+            stellarDeath._audioSource = supernovaWallAudio.AddComponent<OWAudioSource>();
 
             supernovaGO.SetActive(true);
 
-            return supernova;
+            return stellarDeath;
         }
     }
 }
