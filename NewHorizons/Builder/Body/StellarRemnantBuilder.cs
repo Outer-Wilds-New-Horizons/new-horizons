@@ -94,7 +94,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.WhiteDwarf:
                             var wdSurfaceSize = size / 10;
                             stellarRemnantController.SetSurfaceSize(wdSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 50f); // 0.5 progenitor mass
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 100f);
                             stellarRemnantController.SetSphereOfInfluence(wdSurfaceSize * 2);
                             ss.radius = (wdSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(wdSurfaceSize * 1.5f);
@@ -128,7 +128,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.NeutronStar:
                             var nsSurfaceSize = size / 50;
                             stellarRemnantController.SetSurfaceSize(nsSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 250); // 0.1 progenitor mass
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 2500);
                             stellarRemnantController.SetSphereOfInfluence(nsSurfaceSize * 2);
                             ss.radius = (nsSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(nsSurfaceSize * 1.5f);
@@ -175,7 +175,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.Pulsar:
                             var psSurfaceSize = size / 50;
                             stellarRemnantController.SetSurfaceSize(psSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 250); // 0.1 progenitor mass
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 2500);
                             stellarRemnantController.SetSphereOfInfluence(psSurfaceSize * 2);
                             ss.radius = (psSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(psSurfaceSize * 1.5f);
@@ -222,7 +222,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.BlackHole:
                             var bhSurfaceSize = size / 100;
                             stellarRemnantController.SetSurfaceSize(bhSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 1000); // 0.1 progenitor mass
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 10000);
                             stellarRemnantController.SetSphereOfInfluence(bhSurfaceSize * 2);
                             stellarRemnantController.SetSiderealPeriod(0.25f);
                             ss.radius = (bhSurfaceSize * 2) + 10;
