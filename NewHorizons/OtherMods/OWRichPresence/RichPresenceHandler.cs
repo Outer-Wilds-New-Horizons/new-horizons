@@ -35,10 +35,9 @@ namespace NewHorizons.OtherMods.OWRichPresence
             Logger.LogVerbose($"Registering {go.name} to OWRichPresence");
 
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
-            var localizedMessage = TranslationHandler.GetTranslation("OWRP_EXPLORING", TranslationHandler.TextType.UI);
-            var message = localizedMessage.Replace("{0}", localizedName);
+            var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.CreateTrigger(go, sector, message, "sun");
+            API.CreateTrigger(go, sector, message, name.Replace(" ", "").ToLowerInvariant());
         }
 
         public static void SetUpSolarSystem(string name)
@@ -46,8 +45,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             if (name == "SolarSystem") return;
 
             var localizedName = ShipLogStarChartMode.UniqueIDToName(name);
-            var localizedMessage = TranslationHandler.GetTranslation("OWRP_EXPLORING", TranslationHandler.TextType.UI);
-            var message = localizedMessage.Replace("{0}", localizedName);
+            var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
             API.SetCurrentRootPresence(message, "sun");
         }

@@ -10,6 +10,6 @@
     "FREQ_STATUE": "Statue Nomaï",
     "FREQ_WARP_CORE": "Flux Anti-Gravitonique",
     "FREQ_UNKNOWN": "???",
-    "OWRP_EXPLORING": "En train d'explorer {0}"
+    "RICH_PRESENCE_EXPLORING": "En train d'explorer {0}"
   }
 }

@@ -55,7 +55,6 @@ namespace NewHorizons.Handlers
             // Try to default to English
             if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
             {
-
                 if (englishTable.TryGetValue(text, out var englishText))
                 {
                     translatedLanguage = TextTranslation.Language.ENGLISH;
