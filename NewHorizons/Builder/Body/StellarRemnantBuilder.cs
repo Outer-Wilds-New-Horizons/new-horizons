@@ -94,7 +94,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.WhiteDwarf:
                             var wdSurfaceSize = size / 10;
                             stellarRemnantController.SetSurfaceSize(wdSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 1.4f);
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 50f); // 0.5 progenitor mass
                             stellarRemnantController.SetSphereOfInfluence(wdSurfaceSize * 2);
                             ss.radius = (wdSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(wdSurfaceSize * 1.5f);
@@ -102,8 +102,10 @@ namespace NewHorizons.Builder.Body
                             var wdModule = new StarModule
                             {
                                 size = wdSurfaceSize,
-                                tint = MColor.white,
-                                endTint = MColor.black
+                                tint = new MColor(384, 384, 384, 255), // refuses to actually be this color for no reason
+                                lightTint = MColor.white,
+                                lightRadius = 10000,
+                                solarLuminosity = 0.5f
                             };
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, wdModule, mod, true));
                             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
@@ -126,17 +128,28 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.NeutronStar:
                             var nsSurfaceSize = size / 50;
                             stellarRemnantController.SetSurfaceSize(nsSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 2);
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 250); // 0.1 progenitor mass
                             stellarRemnantController.SetSphereOfInfluence(nsSurfaceSize * 2);
                             ss.radius = (nsSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(nsSurfaceSize * 1.5f);
-                            stellarRemnantController.SetSiderealPeriod(1);
+                            stellarRemnantController.SetSiderealPeriod(0.2f);
                             var nsModule = new StarModule
                             {
                                 size = nsSurfaceSize,
-                                tint = MColor.cyan
+                                tint = new MColor(128, 510, 510, 255),
+                                lightTint = new MColor(128, 255, 255, 255),
+                                lightRadius = 10000,
+                                solarLuminosity = 0.5f
                             };
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, nsModule, mod, true));
+                            stellarRemnantController.gameObject.FindChild("Star/Surface").SetActive(false);
+                            stellarRemnantController.gameObject.FindChild("Star/Atmosphere_Star").SetActive(false);
+                            var nsFlareEmitter = stellarRemnantController.gameObject.GetComponentInChildren<SolarFlareEmitter>();
+                            nsFlareEmitter.lifeLength = 3;
+                            nsFlareEmitter._endScale = 1;
+                            nsFlareEmitter.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
+                            SingularityBuilder.MakeBlackHole(go, sector, Vector3.zero, nsSurfaceSize * 2.5f, true, string.Empty, null, false);
+                            stellarRemnantController.gameObject.FindChild("BlackHole/BlackHoleRender").GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
                             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
                             {
                                 var proxyController = ProxyHandler.GetProxy(star.Config.name);
@@ -157,17 +170,28 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.Pulsar:
                             var psSurfaceSize = size / 50;
                             stellarRemnantController.SetSurfaceSize(psSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 2);
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 250); // 0.1 progenitor mass
                             stellarRemnantController.SetSphereOfInfluence(psSurfaceSize * 2);
                             ss.radius = (psSurfaceSize * 2) + 10;
                             stellarRemnantController.SetAlignmentRadius(psSurfaceSize * 1.5f);
-                            stellarRemnantController.SetSiderealPeriod(0.5f);
+                            stellarRemnantController.SetSiderealPeriod(0.01f);
                             var psModule = new StarModule
                             {
                                 size = psSurfaceSize,
-                                tint = MColor.cyan
+                                tint = new MColor(128, 510, 510, 255),
+                                lightTint = new MColor(128, 255, 255, 255),
+                                lightRadius = 10000,
+                                solarLuminosity = 0.5f,
                             };
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, psModule, mod, true));
+                            stellarRemnantController.gameObject.FindChild("Star/Surface").SetActive(false);
+                            stellarRemnantController.gameObject.FindChild("Star/Atmosphere_Star").SetActive(false);
+                            var psFlareEmitter = stellarRemnantController.gameObject.GetComponentInChildren<SolarFlareEmitter>();
+                            psFlareEmitter.lifeLength = 1;
+                            psFlareEmitter._endScale = 1;
+                            psFlareEmitter.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
+                            SingularityBuilder.MakeBlackHole(go, sector, Vector3.zero, psSurfaceSize * 2.5f, true, string.Empty, null, false);
+                            stellarRemnantController.gameObject.FindChild("BlackHole/BlackHoleRender").GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
                             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
                             {
                                 var proxyController = ProxyHandler.GetProxy(star.Config.name);
@@ -188,7 +212,7 @@ namespace NewHorizons.Builder.Body
                         case StellarRemnantType.BlackHole:
                             var bhSurfaceSize = size / 100;
                             stellarRemnantController.SetSurfaceSize(bhSurfaceSize);
-                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 4);
+                            stellarRemnantController.SetSurfaceGravity(config.Base.surfaceGravity * 1000); // 0.1 progenitor mass
                             stellarRemnantController.SetSphereOfInfluence(bhSurfaceSize * 2);
                             stellarRemnantController.SetSiderealPeriod(0.25f);
                             ss.radius = (bhSurfaceSize * 2) + 10;
