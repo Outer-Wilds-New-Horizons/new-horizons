@@ -320,6 +320,7 @@ namespace NewHorizons.Builder.Body
             stellarDeath._shockwaveAlpha = supernova._shockwaveAlpha;
             stellarDeath._shockwaveScale = supernova._shockwaveScale;
             stellarDeath._supernovaMaterial = supernova._supernovaMaterial;
+            stellarDeath._audioSource = supernova._audioSource;
             GameObject.Destroy(supernova);
 
             if (starModule.supernovaTint != null)

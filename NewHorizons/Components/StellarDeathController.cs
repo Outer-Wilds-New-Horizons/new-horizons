@@ -44,7 +44,7 @@ namespace NewHorizons.Components
             if (_audioSource == null) return;
 
             _audioSource.AssignAudioLibraryClip(AudioType.Sun_SupernovaWall_LP);
-            _audioSource.SetLocalVolume(0.0f);
+            _audioSource.SetLocalVolume(0);
             _audioSource.Play();
         }
 
@@ -54,7 +54,7 @@ namespace NewHorizons.Components
 
             if (_audioSource == null) return;
 
-            _audioSource.SetLocalVolume(0.0f);
+            _audioSource.SetLocalVolume(0);
             _audioSource.Stop();
         }
 
@@ -72,8 +72,12 @@ namespace NewHorizons.Components
 
             if (_isProxy) return;
 
-            float dt = Mathf.InverseLerp(12000f, 0.0f, distanceToPlayer);
-            _audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
+            if (_audioSource != null)
+            {
+                float dt = Mathf.InverseLerp(12000f, 0.0f, distanceToPlayer);
+                _audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
+            }
+
             RumbleManager.UpdateSupernova(distanceToPlayer);
         }
 
