@@ -59,6 +59,8 @@ namespace NewHorizons.Components
                     gravityVolume._alignmentRadius = _alignmentRadius;
                     gravityVolume._upperSurfaceRadius = _surfaceSize;
                     gravityVolume._surfaceAcceleration = _surfaceGravity;
+                    gravityVolume._gravitationalMass = _surfaceGravity * Mathf.Pow(_surfaceSize, gravityVolume._falloffExponent) / (1f / 1000f);
+                    if (gravityVolume._setMass) owrb.SetMass(gravityVolume._gravitationalMass);
                 }
 
                 var referenceFrameVolume = owrb._attachedRFVolume;
