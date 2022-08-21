@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -52,6 +53,8 @@ namespace NewHorizons.Components.SizeControllers
         public float supernovaTime = 50f; // seconds
         public float lifespan = 22f; // minutes
         public float supernovaSize = 50000f;
+
+        public StellarDeathType deathType;
 
         private bool _isSupernova;
         private float _supernovaStartTime;
