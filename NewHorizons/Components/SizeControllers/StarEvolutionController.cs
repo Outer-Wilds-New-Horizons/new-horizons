@@ -19,7 +19,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public GameObject atmosphere;
         public StarController controller;
-        public SupernovaEffectController supernova;
+        public StellarDeathController supernova;
         public bool WillExplode { get; set; }
         public MColor StartColour { get; set; }
         public MColor EndColour { get; set; }
