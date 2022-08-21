@@ -155,7 +155,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var whiteboard = DetailBuilder.MakeDetail(go, sector, _whiteboardPrefab, detailInfo);
+            var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, detailInfo);
             whiteboard.SetActive(false);
 
             if (!string.IsNullOrEmpty(info.rename))
@@ -218,7 +218,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var platform = DetailBuilder.MakeDetail(go, sector, _remoteCameraPlatformPrefab, detailInfo);
+            var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, detailInfo);
             platform.SetActive(false);
 
             if (!string.IsNullOrEmpty(info.rename))

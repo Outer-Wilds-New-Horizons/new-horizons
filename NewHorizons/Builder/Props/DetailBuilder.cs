@@ -20,69 +20,25 @@ namespace NewHorizons.Builder.Props
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
 
-        public static void Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
+        /// <summary>
+        /// Create a detail using an asset bundle.
+        /// </summary>
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
         {
-            GameObject detailGO = null;
-
             if (detail.assetBundle != null)
             {
                 var prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
 
-                detailGO = MakeDetail(go, sector, prefab, detail);
+                return Make(go, sector, prefab, detail);
             }
             else
-            {
-                var prefab = SearchUtilities.Find(detail.path);
-                if (prefab == null) Logger.LogError($"Couldn't find detail {detail.path}");
-                else detailGO = MakeDetail(go, sector, prefab, detail);
-            }
-
-            if (detailGO == null) return;
-
-            if (detail.removeChildren != null)
-            {
-                var detailPath = detailGO.transform.GetPath();
-                var transforms = detailGO.GetComponentsInChildren<Transform>(true);
-                foreach (var childPath in detail.removeChildren)
-                {
-                    // Multiple children can have the same path so we delete all that match
-                    var path = $"{detailPath}/{childPath}";
-
-                    var flag = true;
-                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
-                    {
-                        flag = false;
-                        childObj.gameObject.SetActive(false);
-                    }
-
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
-            }
-
-            if (detail.removeComponents)
-            {
-                // Just swap all the children to a new game object
-                var newDetailGO = new GameObject(detailGO.name);
-                newDetailGO.transform.position = detailGO.transform.position;
-                newDetailGO.transform.parent = detailGO.transform.parent;
-                // Can't modify parents while looping through children bc idk
-                var children = new List<Transform>();
-                foreach (Transform child in detailGO.transform)
-                {
-                    children.Add(child);
-                }
-                foreach (var child in children)
-                {
-                    child.parent = newDetailGO.transform;
-                }
-                GameObject.Destroy(detailGO);
-                detailGO = newDetailGO;
-            }
-
-            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
+                return Make(go, sector, detail);
         }
 
-        public static GameObject MakeDetail(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        /// <summary>
+        /// Create a detail using a path in the scene hierarchy of the item to copy.
+        /// </summary>
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
         {
             var prefab = SearchUtilities.Find(info.path);
             if (prefab == null)
@@ -91,54 +47,13 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
             else
-            {
-                GameObject detailGO = MakeDetail(planetGO, sector, prefab, info);
-
-                if (info.removeChildren != null)
-                {
-                    var detailPath = detailGO.transform.GetPath();
-                    var transforms = detailGO.GetComponentsInChildren<Transform>(true);
-                    foreach (var childPath in info.removeChildren)
-                    {
-                        // Multiple children can have the same path so we delete all that match
-                        var path = $"{detailPath}/{childPath}";
-
-                        var flag = true;
-                        foreach (var childObj in transforms.Where(x => x.GetPath() == path))
-                        {
-                            flag = false;
-                            childObj.gameObject.SetActive(false);
-                        }
-
-                        if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
-                    }
-                }
-
-                if (info.removeComponents)
-                {
-                    // Just swap all the children to a new game object
-                    var newDetailGO = new GameObject(detailGO.name);
-                    newDetailGO.transform.position = detailGO.transform.position;
-                    newDetailGO.transform.parent = detailGO.transform.parent;
-                    // Can't modify parents while looping through children bc idk
-                    var children = new List<Transform>();
-                    foreach (Transform child in detailGO.transform)
-                    {
-                        children.Add(child);
-                    }
-                    foreach (var child in children)
-                    {
-                        child.parent = newDetailGO.transform;
-                    }
-                    GameObject.Destroy(detailGO);
-                    detailGO = newDetailGO;
-                }
-
-                return detailGO;
-            }
+                return Make(planetGO, sector, prefab, info);
         }
 
-        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
+        /// <summary>
+        /// Create a detail using a prefab.
+        /// </summary>
+        public static GameObject Make(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
         {
             if (prefab == null) return null;
 
@@ -193,7 +108,50 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = info.scale != 0 ? Vector3.one * info.scale : prefab.transform.localScale;
 
+            if (info.removeChildren != null)
+            {
+                var detailPath = prop.transform.GetPath();
+                var transforms = prop.GetComponentsInChildren<Transform>(true);
+                foreach (var childPath in info.removeChildren)
+                {
+                    // Multiple children can have the same path so we delete all that match
+                    var path = $"{detailPath}/{childPath}";
+
+                    var flag = true;
+                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                    {
+                        flag = false;
+                        childObj.gameObject.SetActive(false);
+                    }
+
+                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                }
+            }
+
+            if (info.removeComponents)
+            {
+                // Just swap all the children to a new game object
+                var newProp = new GameObject(prop.name);
+                newProp.transform.position = prop.transform.position;
+                newProp.transform.parent = prop.transform.parent;
+                newProp.SetActive(false);
+                // Can't modify parents while looping through children bc idk
+                var children = new List<Transform>();
+                foreach (Transform child in prop.transform)
+                {
+                    children.Add(child);
+                }
+                foreach (var child in children)
+                {
+                    child.parent = newProp.transform;
+                }
+                GameObject.Destroy(prop);
+                prop = newProp;
+            }
+
             prop.SetActive(true);
+
+            detailInfoToCorrespondingSpawnedGameObject[info] = prop;
 
             return prop;
         }

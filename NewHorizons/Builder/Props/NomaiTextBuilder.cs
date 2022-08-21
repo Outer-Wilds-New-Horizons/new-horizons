@@ -280,7 +280,7 @@ namespace NewHorizons.Builder.Props
                         {
                             position = info.position
                         };
-                        var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, detailInfo);
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
                         computerObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))
@@ -414,7 +414,7 @@ namespace NewHorizons.Builder.Props
                             rotation = info.rotation,
                             position = info.position
                         };
-                        var recorderObject = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
                         recorderObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))
