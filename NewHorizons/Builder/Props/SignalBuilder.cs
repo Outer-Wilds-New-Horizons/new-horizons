@@ -1,4 +1,4 @@
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;

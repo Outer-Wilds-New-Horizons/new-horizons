@@ -2,7 +2,7 @@ using NewHorizons.Utility;
 using System.IO;
 using System.Linq;
 
-namespace NewHorizons.VoiceActing
+namespace NewHorizons.OtherMods.VoiceActing
 {
     public static class VoiceHandler
     {

@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
 using NewHorizons.Handlers;

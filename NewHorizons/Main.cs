@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
@@ -10,7 +10,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.VoiceActing;
+using NewHorizons.OtherMods.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -22,6 +22,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.OtherMods.OWRichPresence;
 
 namespace NewHorizons
 {
@@ -198,6 +199,8 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+            RichPresenceHandler.Init();
+            OnStarSystemLoaded.AddListener(RichPresenceHandler.SetUpSolarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }

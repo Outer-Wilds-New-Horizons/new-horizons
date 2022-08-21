@@ -4,7 +4,7 @@ using OWML.ModHelper;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace NewHorizons.AchievementsPlus
+namespace NewHorizons.OtherMods.AchievementsPlus
 {
     public static class AchievementHandler
     {
