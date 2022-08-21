@@ -142,14 +142,19 @@ namespace NewHorizons.Builder.Body
                                 solarLuminosity = 0.5f
                             };
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, nsModule, mod, true));
-                            stellarRemnantController.gameObject.FindChild("Star/Surface").SetActive(false);
-                            stellarRemnantController.gameObject.FindChild("Star/Atmosphere_Star").SetActive(false);
-                            var nsFlareEmitter = stellarRemnantController.gameObject.GetComponentInChildren<SolarFlareEmitter>();
+                            var nsStarObject = stellarRemnantController.gameObject.FindChild("Star");
+                            nsStarObject.FindChild("Surface").SetActive(false);
+                            nsStarObject.FindChild("Atmosphere_Star").SetActive(false);
+                            var nsFlareEmitter = nsStarObject.GetComponentInChildren<SolarFlareEmitter>();
                             nsFlareEmitter.lifeLength = 3;
                             nsFlareEmitter._endScale = 1;
                             nsFlareEmitter.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
                             SingularityBuilder.MakeBlackHole(go, sector, Vector3.zero, nsSurfaceSize * 2.5f, true, string.Empty, null, false);
-                            stellarRemnantController.gameObject.FindChild("BlackHole/BlackHoleRender").GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
+                            var nsBlackHole = stellarRemnantController.gameObject.FindChild("BlackHole");
+                            var nsBlackHoleRender = nsBlackHole.FindChild("BlackHoleRender");
+                            nsBlackHoleRender.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
+                            nsBlackHoleRender.transform.SetParent(nsStarObject.transform, true);
+                            GameObject.Destroy(nsBlackHole);
                             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
                             {
                                 var proxyController = ProxyHandler.GetProxy(star.Config.name);
@@ -184,14 +189,19 @@ namespace NewHorizons.Builder.Body
                                 solarLuminosity = 0.5f,
                             };
                             stellarRemnantController.SetStarController(StarBuilder.Make(go, sector, psModule, mod, true));
-                            stellarRemnantController.gameObject.FindChild("Star/Surface").SetActive(false);
-                            stellarRemnantController.gameObject.FindChild("Star/Atmosphere_Star").SetActive(false);
+                            var psStarObject = stellarRemnantController.gameObject.FindChild("Star");
+                            psStarObject.FindChild("Surface").SetActive(false);
+                            psStarObject.FindChild("Atmosphere_Star").SetActive(false);
                             var psFlareEmitter = stellarRemnantController.gameObject.GetComponentInChildren<SolarFlareEmitter>();
                             psFlareEmitter.lifeLength = 1;
                             psFlareEmitter._endScale = 1;
                             psFlareEmitter.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
                             SingularityBuilder.MakeBlackHole(go, sector, Vector3.zero, psSurfaceSize * 2.5f, true, string.Empty, null, false);
-                            stellarRemnantController.gameObject.FindChild("BlackHole/BlackHoleRender").GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
+                            var psBlackHole = stellarRemnantController.gameObject.FindChild("BlackHole");
+                            var psBlackHoleRender = psBlackHole.FindChild("BlackHoleRender");
+                            psBlackHoleRender.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
+                            psBlackHoleRender.transform.SetParent(psStarObject.transform, true);
+                            GameObject.Destroy(psBlackHole);
                             Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() =>
                             {
                                 var proxyController = ProxyHandler.GetProxy(star.Config.name);
