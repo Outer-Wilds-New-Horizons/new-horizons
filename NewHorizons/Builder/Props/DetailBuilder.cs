@@ -20,16 +20,22 @@ namespace NewHorizons.Builder.Props
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
 
+        public static void RegisterDetailInfo(PropModule.DetailInfo detail, GameObject detailGO)
+        {
+            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
+        }
+
         /// <summary>
-        /// Create a detail using an asset bundle.
+        /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
         public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
         {
             if (detail.assetBundle != null)
             {
-                var prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
+                // Shouldn't happen
+                if (mod == null) return null;
 
-                return Make(go, sector, prefab, detail);
+                return Make(go, sector, AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod), detail);
             }
             else
                 return Make(go, sector, detail);
@@ -53,27 +59,13 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
         {
             if (prefab == null) return null;
 
             GameObject prop = prefab.InstantiateInactive();
-            prop.name = !string.IsNullOrEmpty(info.rename) ? info.rename : prefab.name;
-
-            prop.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    prop.transform.parent = newParent.transform;
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
+            prop.name = prefab.name;
+            prop.transform.parent = sector?.transform ?? go.transform;
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
@@ -87,32 +79,36 @@ namespace NewHorizons.Builder.Props
                 }
                 else FixSectoredComponent(component, sector, isTorch);
 
-                FixComponent(component, planetGO, prefab.name);
+                FixComponent(component, go, prefab.name);
             }
 
-            prop.transform.position = info.position == null ? planetGO.transform.position : planetGO.transform.TransformPoint(info.position);
+            prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
 
-            Quaternion rot = info.rotation == null ? Quaternion.identity : Quaternion.Euler(info.rotation);
+            Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
 
-            if (info.alignToNormal)
+            if (detail.alignToNormal)
             {
                 // Apply the rotation after aligning it with normal
-                var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
+                var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
                 prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 prop.transform.rotation *= rot;
             }
             else
             {
-                prop.transform.rotation = planetGO.transform.TransformRotation(rot);
+                prop.transform.rotation = go.transform.TransformRotation(rot);
             }
 
-            prop.transform.localScale = info.scale != 0 ? Vector3.one * info.scale : prefab.transform.localScale;
+            prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
 
-            if (info.removeChildren != null)
+            prop.SetActive(true);
+
+            if (prop == null) return null;
+
+            if (detail.removeChildren != null)
             {
                 var detailPath = prop.transform.GetPath();
                 var transforms = prop.GetComponentsInChildren<Transform>(true);
-                foreach (var childPath in info.removeChildren)
+                foreach (var childPath in detail.removeChildren)
                 {
                     // Multiple children can have the same path so we delete all that match
                     var path = $"{detailPath}/{childPath}";
@@ -128,13 +124,13 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            if (info.removeComponents)
+            if (detail.removeComponents)
             {
                 // Just swap all the children to a new game object
-                var newProp = new GameObject(prop.name);
-                newProp.transform.position = prop.transform.position;
-                newProp.transform.parent = prop.transform.parent;
-                newProp.SetActive(false);
+                var newDetailGO = new GameObject(prop.name);
+                newDetailGO.transform.position = prop.transform.position;
+                newDetailGO.transform.parent = prop.transform.parent;
+
                 // Can't modify parents while looping through children bc idk
                 var children = new List<Transform>();
                 foreach (Transform child in prop.transform)
@@ -143,15 +139,25 @@ namespace NewHorizons.Builder.Props
                 }
                 foreach (var child in children)
                 {
-                    child.parent = newProp.transform;
+                    child.parent = newDetailGO.transform;
                 }
                 GameObject.Destroy(prop);
-                prop = newProp;
+                prop = newDetailGO;
             }
 
-            prop.SetActive(true);
+            if (detail.rename != null)
+            {
+                prop.name = detail.rename;
+            }
 
-            detailInfoToCorrespondingSpawnedGameObject[info] = prop;
+            if (!string.IsNullOrEmpty(detail.parentPath))
+            {
+                var newParent = go.transform.Find(detail.parentPath);
+                if (newParent != null)
+                {
+                    prop.transform.parent = newParent.transform;
+                }
+            }
 
             return prop;
         }
