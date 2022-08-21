@@ -155,6 +155,7 @@ namespace NewHorizons.Builder.Body
                 var controller = starGO.AddComponent<StarEvolutionController>();
                 if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
                 controller.size = starModule.size;
+                controller.supernovaSize = starModule.supernovaSize;
                 controller.atmosphere = sunAtmosphere;
                 controller.controller = starController;
                 controller.supernova = supernova;
