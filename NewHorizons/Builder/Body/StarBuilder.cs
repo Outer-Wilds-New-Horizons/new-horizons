@@ -350,6 +350,7 @@ namespace NewHorizons.Builder.Body
             supernovaWallAudio.layer = LayerMask.NameToLayer("BasicEffectVolume");
             supernovaWallAudio.AddComponent<AudioSource>();
             stellarDeath._audioSource = supernovaWallAudio.AddComponent<OWAudioSource>();
+            stellarDeath._audioSource._audioLibraryClip = AudioType.Sun_SupernovaWall_LP;
 
             supernovaGO.SetActive(true);
 
