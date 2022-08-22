@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.AchievementsPlus.NH
+namespace NewHorizons.OtherMods.AchievementsPlus.NH
 {
-    public static class WarpDriveAchievement
+    public static class VesselWarpAchievement
     {
-        public static readonly string UNIQUE_ID = "NH_WARP_DRIVE";
+        public static readonly string UNIQUE_ID = "NH_VESSEL_WARP";
 
         public static void Init()
         {
@@ -18,7 +18,7 @@ namespace NewHorizons.AchievementsPlus.NH
 
         private static void OnChangeStarSystem(string system)
         {
-            if (Main.Instance.IsWarpingFromShip) AchievementHandler.Earn(UNIQUE_ID);
+            if (Main.Instance.IsWarpingFromVessel) AchievementHandler.Earn(UNIQUE_ID);
         }
     }
 }

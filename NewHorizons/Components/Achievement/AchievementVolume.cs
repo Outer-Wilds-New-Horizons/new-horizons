@@ -1,4 +1,4 @@
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using UnityEngine;
 
 namespace NewHorizons.Components.Achievement

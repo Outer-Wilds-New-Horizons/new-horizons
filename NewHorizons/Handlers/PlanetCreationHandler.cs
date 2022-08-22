@@ -7,6 +7,7 @@ using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External.Modules;
+using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -454,6 +455,8 @@ namespace NewHorizons.Handlers
                     ProxyBuilder.Make(go, body);
                 });
             }
+
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 

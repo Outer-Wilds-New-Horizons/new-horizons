@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewHorizons.AchievementsPlus.NH
+namespace NewHorizons.OtherMods.AchievementsPlus.NH
 {
     public static class ProbeLostAchievement
     {

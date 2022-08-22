@@ -1,4 +1,4 @@
-namespace NewHorizons.VoiceActing
+namespace NewHorizons.OtherMods.VoiceActing
 {
     public interface IVoiceMod
     {
