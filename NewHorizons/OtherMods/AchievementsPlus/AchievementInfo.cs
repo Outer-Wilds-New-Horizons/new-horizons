@@ -2,7 +2,7 @@ using NewHorizons.Builder.Props;
 using Newtonsoft.Json;
 using System.Linq;
 
-namespace NewHorizons.AchievementsPlus
+namespace NewHorizons.OtherMods.AchievementsPlus
 {
     /// <summary>
     /// Info for an achievement to be used with the Achievements+ mod.
