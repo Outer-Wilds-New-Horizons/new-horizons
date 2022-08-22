@@ -441,7 +441,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
+                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
