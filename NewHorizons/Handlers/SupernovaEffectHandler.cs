@@ -50,58 +50,60 @@ namespace NewHorizons.Handlers
             if (supernovaPlanetEffectController == null) return;
 
             StarEvolutionController nearestStarEvolutionController = null;
-            float nearestDistance = float.MaxValue;
-            foreach (StarEvolutionController starEvolutionController in _starEvolutionControllers)
+            float nearestDistanceSqr = float.MaxValue;
+
+            // First we check for the nearest custom star
+            foreach (var starEvolutionController in _starEvolutionControllers)
             {
-                if (starEvolutionController == null) continue;
-                if (!(starEvolutionController.gameObject.activeSelf && starEvolutionController.gameObject.activeInHierarchy)) continue;
-                float distance = (supernovaPlanetEffectController.transform.position - starEvolutionController.transform.position).sqrMagnitude;
-                if (distance < (starEvolutionController.supernovaSize * starEvolutionController.supernovaSize) && distance < nearestDistance)
+                if (!IsStarActive(starEvolutionController)) continue;
+
+                var distanceSqr = (supernovaPlanetEffectController.transform.position - starEvolutionController.transform.position).sqrMagnitude;
+
+                if (distanceSqr < (starEvolutionController.supernovaSize * starEvolutionController.supernovaSize) && distanceSqr < nearestDistanceSqr)
                 {
-                    nearestDistance = distance;
+                    nearestDistanceSqr = distanceSqr;
                     nearestStarEvolutionController = starEvolutionController;
                 }
             }
 
+            // We check if the stock sun is actually the closest star. Since it doesn't use StarEvolutionController we do this separately.
             if (_sunController != null && _sunController.gameObject.activeSelf)
             {
-                float distance = (supernovaPlanetEffectController.transform.position - _sunController.transform.position).sqrMagnitude;
-                if (distance < 2500000000f && distance < nearestDistance)
-                {
-                    supernovaPlanetEffectController._sunController = _sunController;
-                    supernovaPlanetEffectController._starEvolutionController = null;
-                }
+                var distanceSqr = (supernovaPlanetEffectController.transform.position - _sunController.transform.position).sqrMagnitude;
+                if (distanceSqr < 2500000000f && distanceSqr < nearestDistanceSqr)
+                    supernovaPlanetEffectController.SunController = _sunController;
                 else
-                {
-                    supernovaPlanetEffectController._sunController = null;
-                    supernovaPlanetEffectController._starEvolutionController = nearestStarEvolutionController;
-                }
+                    supernovaPlanetEffectController.StarEvolutionController = nearestStarEvolutionController;
             }
             else
-            {
-                supernovaPlanetEffectController._sunController = null;
-                supernovaPlanetEffectController._starEvolutionController = nearestStarEvolutionController;
-            }
+                supernovaPlanetEffectController.StarEvolutionController = nearestStarEvolutionController;
+        }
+
+        private static bool IsStarActive(Component component)
+        {
+            return component != null && component.gameObject.activeSelf && component.gameObject.activeInHierarchy;
         }
 
         public static SunController GetSunController() => _sunController;
 
         public static bool InPointInsideAnySupernova(Vector3 position)
         {
-            foreach (StarEvolutionController starEvolutionController in _starEvolutionControllers)
+            foreach (var starEvolutionController in _starEvolutionControllers)
             {
-                if (starEvolutionController == null) continue;
-                if (!(starEvolutionController.gameObject.activeSelf && starEvolutionController.gameObject.activeInHierarchy)) continue;
-                float distance = (position - starEvolutionController.transform.position).sqrMagnitude;
-                float size = starEvolutionController.GetSupernovaRadius();
-                if (distance < (size * size)) return true;
+                if (!IsStarActive(starEvolutionController)) continue;
+
+                var distanceSqr = (position - starEvolutionController.transform.position).sqrMagnitude;
+                var size = starEvolutionController.GetSupernovaRadius();
+
+                if (distanceSqr < (size * size)) return true;
             }
 
-            if (_sunController != null && _sunController.gameObject.activeSelf)
+            if (IsStarActive(_sunController))
             {
-                float distance = (position - _sunController.transform.position).sqrMagnitude;
-                float size = _sunController.GetSupernovaRadius();
-                if (distance < (size * size)) return true;
+                var distanceSqr = (position - _sunController.transform.position).sqrMagnitude;
+                var size = _sunController.GetSupernovaRadius();
+
+                if (distanceSqr < (size * size)) return true;
             }
 
             return false;
