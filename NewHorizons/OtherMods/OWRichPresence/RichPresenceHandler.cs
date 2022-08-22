@@ -1,6 +1,7 @@
 using NewHorizons.Components;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
@@ -16,16 +17,24 @@ namespace NewHorizons.OtherMods.OWRichPresence
 
         public static void Init()
         {
-            API = Main.Instance.ModHelper.Interaction.TryGetModApi<IRichPresenceAPI>("MegaPiggy.OWRichPresence");
-
-            if (API == null)
+            try
             {
-                Logger.LogVerbose("OWRichPresence isn't installed");
-                Enabled = false;
-                return;
-            }
+                API = Main.Instance.ModHelper.Interaction.TryGetModApi<IRichPresenceAPI>("MegaPiggy.OWRichPresence");
 
-            Enabled = true;
+                if (API == null)
+                {
+                    Logger.LogVerbose("OWRichPresence isn't installed");
+                    Enabled = false;
+                    return;
+                }
+
+                Enabled = true;
+            }
+            catch(Exception ex)
+            {
+                Logger.LogError($"OWRichPresence handler failed to initialize: {ex}");
+                Enabled = false;
+            }
         }
 
         public static void SetUpPlanet(string name, GameObject go, Sector sector)

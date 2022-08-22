@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using OWML.ModHelper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,30 +17,37 @@ namespace NewHorizons.OtherMods.AchievementsPlus
        
         public static void Init()
         {
-            API = Main.Instance.ModHelper.Interaction.TryGetModApi<IAchievements>("xen.AchievementTracker");
-
-            if (API == null)
+            try
             {
-                Logger.LogVerbose("Achievements+ isn't installed");
-                Enabled = false;
-                return;
+                API = Main.Instance.ModHelper.Interaction.TryGetModApi<IAchievements>("xen.AchievementTracker");
+
+                if (API == null)
+                {
+                    Logger.LogVerbose("Achievements+ isn't installed");
+                    Enabled = false;
+                    return;
+                }
+
+                Enabled = true;
+
+                _achievements = new List<AchievementInfo>();
+
+                // Register base NH achievements
+                NH.WarpDriveAchievement.Init();
+                NH.VesselWarpAchievement.Init();
+                NH.MultipleSystemAchievement.Init();
+                NH.EatenOutsideBrambleAchievement.Init();
+                NH.NewFrequencyAchievement.Init();
+                NH.ProbeLostAchievement.Init();
+
+                API.RegisterTranslationsFromFiles(Main.Instance, "Assets/translations");
+
+                GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
             }
-
-            Enabled = true;
-
-            _achievements = new List<AchievementInfo>();
-
-            // Register base NH achievements
-            NH.WarpDriveAchievement.Init();
-            NH.VesselWarpAchievement.Init();
-            NH.MultipleSystemAchievement.Init();
-            NH.EatenOutsideBrambleAchievement.Init();
-            NH.NewFrequencyAchievement.Init();
-            NH.ProbeLostAchievement.Init();
-
-            API.RegisterTranslationsFromFiles(Main.Instance, "Assets/translations");
-
-            GlobalMessenger<string, bool>.AddListener("DialogueConditionChanged", OnDialogueConditionChanged);
+            catch(Exception ex)
+            {
+                Logger.LogError($"Achievements+ handler failed to initialize: {ex}");
+            }
         }
 
         public static void OnDestroy()

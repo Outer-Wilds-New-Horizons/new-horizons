@@ -1,4 +1,5 @@
 using NewHorizons.Utility;
+using System;
 using System.IO;
 using System.Linq;
 
@@ -12,17 +13,29 @@ namespace NewHorizons.OtherMods.VoiceActing
 
         public static void Init()
         {
-            API = Main.Instance.ModHelper.Interaction.TryGetModApi<IVoiceMod>("Krevace.VoiceMod");
-
-            if (API == null)
+            try
             {
-                Logger.LogVerbose("VoiceMod isn't installed");
-                Enabled = false;
-                return;
+                API = Main.Instance.ModHelper.Interaction.TryGetModApi<IVoiceMod>("Krevace.VoiceMod");
+
+                if (API == null)
+                {
+                    Logger.LogVerbose("VoiceMod isn't installed");
+                    return;
+                }
+
+                Enabled = true;
+
+                SetUp();
             }
+            catch (Exception ex)
+            {
+                Logger.LogError($"VoiceMod handler failed to initialize: {ex}");
+                Enabled = false;
+            }
+        }
 
-            Enabled = true;
-
+        private static void SetUp()
+        {
             foreach (var mod in Main.Instance.GetDependants().Append(Main.Instance))
             {
                 var folder = $"{mod.ModHelper.Manifest.ModFolderPath}voicemod";
