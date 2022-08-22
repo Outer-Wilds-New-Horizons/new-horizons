@@ -129,7 +129,7 @@ namespace NewHorizons.Builder.Orbital
             var tru = secondaryBody.trueAnomaly;
 
             // Update their astro objects
-            primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg, lon, tru - 180);
+            primaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r1, inc, arg - 180, lon, tru);
             secondaryBody.SetOrbitalParametersFromTrueAnomaly(ecc, r2, inc, arg, lon, tru);
 
             primaryBody.transform.position = baryCenter.transform.position + primaryBody.GetOrbitalParameters(primaryGravity, secondaryGravity).InitialPosition;
