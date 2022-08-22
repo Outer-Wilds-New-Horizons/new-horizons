@@ -57,6 +57,8 @@ namespace NewHorizons.Handlers
             {
                 if (!IsStarActive(starEvolutionController)) continue;
 
+                if (!starEvolutionController.HasSupernovaStarted()) continue;
+
                 if (supernovaPlanetEffectController.transform.parent == starEvolutionController.transform.parent) continue; // If the shock effect is on a star, ignore itself
 
                 var distanceSqr = (supernovaPlanetEffectController.transform.position - starEvolutionController.transform.position).sqrMagnitude;
