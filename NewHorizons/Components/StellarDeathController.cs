@@ -25,14 +25,14 @@ namespace NewHorizons.Components
         private bool _isProxy;
         private ParticleSystemRenderer[] _cachedParticleRenderers;
 
-        private void Awake()
+        public void Awake()
         {
             _cachedParticleRenderers = new ParticleSystemRenderer[_explosionParticles.Length];
             for (int index = 0; index < _explosionParticles.Length; ++index)
                 _cachedParticleRenderers[index] = _explosionParticles[index].GetComponent<ParticleSystemRenderer>();
         }
 
-        private void OnEnable()
+        public void OnEnable()
         {
             _shockwave.enabled = true;
             foreach (var particle in _explosionParticles) particle.Play();
@@ -48,7 +48,7 @@ namespace NewHorizons.Components
             _audioSource.Play();
         }
 
-        private void OnDisable()
+        public void OnDisable()
         {
             _shockwave.enabled = false;
 
@@ -58,7 +58,7 @@ namespace NewHorizons.Components
             _audioSource.Stop();
         }
 
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
             _time += Time.deltaTime;
             float shockwaveTime = Mathf.Clamp01(_time / _shockwaveLength);
