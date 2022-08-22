@@ -66,9 +66,9 @@ namespace NewHorizons.External.Modules.VariableSize
         /// <summary>
         /// Speed of the supernova wall in meters per second.
         /// </summary>
-        [DefaultValue(1111f)]
+        [DefaultValue(50000f/45f)]
         [Range(1f, double.MaxValue)]
-        public float supernovaSpeed = 1111f;
+        public float supernovaSpeed = 50000f/45f;
 
         /// <summary>
         /// The tint of the supernova this star creates when it dies.
