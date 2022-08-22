@@ -71,12 +71,30 @@ namespace NewHorizons.Handlers
             {
                 var distanceSqr = (supernovaPlanetEffectController.transform.position - _sunController.transform.position).sqrMagnitude;
                 if (distanceSqr < 2500000000f && distanceSqr < nearestDistanceSqr)
+                {
                     supernovaPlanetEffectController.SunController = _sunController;
+                    supernovaPlanetEffectController.shockLayerStartRadius = Mathf.Sqrt(distanceSqr) / 10f;
+                    supernovaPlanetEffectController.shockLayerFullRadius = Mathf.Sqrt(distanceSqr);
+                }
                 else
+                {
                     supernovaPlanetEffectController.StarEvolutionController = nearestStarEvolutionController;
+                    if (nearestDistanceSqr != float.MaxValue)
+                    {
+                        supernovaPlanetEffectController.shockLayerStartRadius = Mathf.Sqrt(nearestDistanceSqr) / 10f;
+                        supernovaPlanetEffectController.shockLayerFullRadius = Mathf.Sqrt(nearestDistanceSqr);
+                    }
+                }
             }
             else
+            {
                 supernovaPlanetEffectController.StarEvolutionController = nearestStarEvolutionController;
+                if (nearestDistanceSqr != float.MaxValue)
+                {
+                    supernovaPlanetEffectController.shockLayerStartRadius = Mathf.Sqrt(nearestDistanceSqr) / 10f;
+                    supernovaPlanetEffectController.shockLayerFullRadius = Mathf.Sqrt(nearestDistanceSqr);
+                }
+            }
         }
 
         private static bool IsStarActive(Component component)

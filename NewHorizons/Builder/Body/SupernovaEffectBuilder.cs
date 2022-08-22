@@ -125,9 +125,6 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                supernovaEffectController.shockLayerStartRadius = config.Orbit.semiMajorAxis / 10;
-                supernovaEffectController.shockLayerFullRadius = config.Orbit.semiMajorAxis; // Temporary; change to distance
-
                 var radius = (config.ShockEffect?.radius != null && config.ShockEffect.radius.HasValue) ? config.ShockEffect.radius.Value : biggestSize * 1.1f;
 
                 supernovaEffectController.shockLayerTrailFlare = radius < 500 ? 50 : 100; // Base game all uses 100, but sphere model looks bad if not 1:6 ratio with length like GD, so retain it instead
