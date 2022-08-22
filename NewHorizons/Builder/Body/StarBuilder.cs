@@ -223,7 +223,9 @@ namespace NewHorizons.Builder.Body
                 controller.enabled = true;
                 starGO.SetActive(true);
 
-                planet.GetComponentInChildren<StarEvolutionController>(true).SetProxy(controller);
+                var main = planet.GetComponentInChildren<StarEvolutionController>(true);
+                main.SetProxy(controller);
+                supernova._main = main.supernova;
             }
 
             return starGO;

@@ -19,6 +19,7 @@ namespace NewHorizons.Components
         public AnimationCurve _supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
         [Space]
         public OWAudioSource _audioSource;
+        public StellarDeathController _main;
         private float _time;
         private float _currentSupernovaScale;
         private Material _localSupernovaMat;
@@ -32,8 +33,9 @@ namespace NewHorizons.Components
                 _cachedParticleRenderers[index] = _explosionParticles[index].GetComponent<ParticleSystemRenderer>();
         }
 
-        public void OnEnable()
+        public void Activate()
         {
+            enabled = true;
             _shockwave.enabled = true;
             foreach (var particle in _explosionParticles) particle.Play();
             _time = 0.0f;
@@ -48,8 +50,9 @@ namespace NewHorizons.Components
             _audioSource.Play();
         }
 
-        public void OnDisable()
+        public void Deactivate()
         {
+            enabled = false;
             _shockwave.enabled = false;
 
             if (_audioSource == null) return;
@@ -60,7 +63,8 @@ namespace NewHorizons.Components
 
         public void FixedUpdate()
         {
-            _time += Time.deltaTime;
+            if (_main != null) _time = _main._time;
+            else _time += Time.deltaTime;
             float shockwaveTime = Mathf.Clamp01(_time / _shockwaveLength);
             _shockwave.transform.localScale = Vector3.one * _shockwaveScale.Evaluate(shockwaveTime);
             _shockwave.material.color = Color.Lerp(Color.black, _shockwave.sharedMaterial.color, _shockwaveAlpha.Evaluate(shockwaveTime));
