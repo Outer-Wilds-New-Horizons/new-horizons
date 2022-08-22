@@ -2370,6 +2370,13 @@
           "default": 50000.0,
           "minimum": 0.0
         },
+        "supernovaSpeed": {
+          "type": "number",
+          "description": "Speed of the supernova wall in meters per second.",
+          "format": "float",
+          "default": 1111.0,
+          "minimum": 1.0
+        },
         "supernovaTint": {
           "description": "The tint of the supernova this star creates when it dies.",
           "$ref": "#/definitions/MColor"
