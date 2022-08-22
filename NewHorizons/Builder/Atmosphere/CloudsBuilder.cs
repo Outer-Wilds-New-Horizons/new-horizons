@@ -163,8 +163,8 @@ namespace NewHorizons.Builder.Atmosphere
                 // qm cloud type = should wrap, otherwise clamp like normal
                 image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
-                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
+                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128, wrap: true);
+                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath, wrap: true);
                 if (atmo.clouds.rampPath == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = ImageUtilities.GetTexture(mod, atmo.clouds.rampPath);
             }
