@@ -2374,7 +2374,7 @@
           "type": "number",
           "description": "Speed of the supernova wall in meters per second.",
           "format": "float",
-          "default": 1111.0,
+          "default": 1111.11108,
           "minimum": 1.0
         },
         "supernovaTint": {
