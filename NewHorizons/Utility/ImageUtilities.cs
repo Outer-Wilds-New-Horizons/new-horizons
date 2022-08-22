@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 namespace NewHorizons.Utility
 {
@@ -259,6 +260,8 @@ namespace NewHorizons.Utility
             newImage.name = image.name + "LerpedGrayscale";
             newImage.SetPixels(pixels);
             newImage.Apply();
+
+            newImage.wrapMode = image.wrapMode;
 
             _generatedTextures.Add(newImage);
 
