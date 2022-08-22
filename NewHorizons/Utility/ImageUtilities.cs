@@ -114,7 +114,7 @@ namespace NewHorizons.Utility
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
-            newTexture.wrapMode = TextureWrapMode.Clamp;
+            newTexture.wrapMode = texture.wrapMode;
 
             _generatedTextures.Add(newTexture);
 
@@ -197,6 +197,8 @@ namespace NewHorizons.Utility
             outline.SetPixels(outlinePixels);
             outline.Apply();
 
+            outline.wrapMode = texture.wrapMode;
+
             _generatedTextures.Add(outline);
 
             return outline;
@@ -241,6 +243,8 @@ namespace NewHorizons.Utility
             newImage.SetPixels(pixels);
             newImage.Apply();
 
+            newImage.wrapMode = image.wrapMode;
+
             _generatedTextures.Add(newImage);
 
             return newImage;
@@ -268,7 +272,7 @@ namespace NewHorizons.Utility
             return newImage;
         }
 
-        public static Texture2D ClearTexture(int width, int height)
+        public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
             var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
             tex.name = "Clear";
@@ -280,6 +284,8 @@ namespace NewHorizons.Utility
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
             _generatedTextures.Add(tex);
 
@@ -306,6 +312,8 @@ namespace NewHorizons.Utility
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = src.wrapMode;
 
             _generatedTextures.Add(tex);
 
