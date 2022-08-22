@@ -13,12 +13,14 @@ namespace NewHorizons.Builder.Body
     public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
+        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
             var deleteHeightmapFlag = false;
 
-            Texture2D heightMap, textureMap;
+            Texture2D heightMap, textureMap, emissionMap;
             try
             {
                 if (module.heightMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
@@ -30,6 +32,11 @@ namespace NewHorizons.Builder.Body
                 {
                     Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
                     module.textureMap = null;
+                }
+                if (module.emissionMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap ?? "")))
+                {
+                    Logger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
+                    module.emissionMap = null;
                 }
 
                 if (module.heightMap == null)
@@ -54,8 +61,18 @@ namespace NewHorizons.Builder.Body
                     textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
                 }
 
+                if (module.emissionMap == null)
+                {
+                    emissionMap = Texture2D.blackTexture;
+                }
+                else
+                {
+                    emissionMap = ImageUtilities.GetTexture(mod, module.emissionMap);
+                }
+
                 // If the texturemap is the same as the heightmap don't delete it #176
-                if (textureMap == heightMap) deleteHeightmapFlag = false;
+                // Do the same with emissionmap
+                if (textureMap == heightMap || emissionMap == heightMap) deleteHeightmapFlag = false;
             }
             catch (Exception e)
             {
@@ -71,7 +88,9 @@ namespace NewHorizons.Builder.Body
 
             Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 
-            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch);
+            Color emissionColor = module.emissionColor != null ? module.emissionColor.ToColor() : Color.white;
+
+            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch, emissionMap, emissionColor);
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = level1.gameObject.GetComponent<MeshFilter>().mesh;
@@ -79,7 +98,7 @@ namespace NewHorizons.Builder.Body
             if (useLOD)
             {
                 var level2Res = (int)Mathf.Clamp(resolution / 2f, 1 /*cube moment*/, 100);
-                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch);
+                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch, emissionMap, emissionColor);
 
                 var LODGroup = cubeSphere.AddComponent<LODGroup>();
                 LODGroup.size = module.maxHeight;
@@ -115,7 +134,7 @@ namespace NewHorizons.Builder.Body
             return cubeSphere;
         }
 
-        public static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch)
+        public static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch, Texture2D emissionMap, Color emissionColor)
         {
             var LODCubeSphere = new GameObject("LODCubeSphere");
 
@@ -126,6 +145,8 @@ namespace NewHorizons.Builder.Body
             cubeSphereMR.material = material;
             material.name = textureMap.name;
             material.mainTexture = textureMap;
+            material.SetTexture(EmissionMap, emissionMap);
+            material.SetColor(EmissionColor, emissionColor);
 
             LODCubeSphere.transform.parent = root.transform;
             LODCubeSphere.transform.localPosition = Vector3.zero;

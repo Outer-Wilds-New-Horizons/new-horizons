@@ -41,5 +41,15 @@ namespace NewHorizons.External.Modules
         [Range(1 * 4, 500 * 4)]
         [DefaultValue(51 * 4)]
         public int resolution = 51 * 4;
+
+        /// <summary>
+        /// Relative filepath to the texture used for emission. Optional.
+        /// </summary>
+        public string emissionMap;
+
+        /// <summary>
+        /// Color multiplier of the emission texture. Defaults to white.
+        /// </summary>
+        public MColor emissionColor;
     }
 }
