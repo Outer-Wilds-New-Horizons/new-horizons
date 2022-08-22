@@ -12,6 +12,7 @@
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Engage Warp To {0}",
     "WARP_LOCKED": "AUTOPILOT LOCKED TO:\n{0}",
+    "LOCK_AUTOPILOT_WARP": "Lock Autopilot to Star System",
     "RICH_PRESENCE_EXPLORING": "Exploring {0}."
   },
   "AchievementTranslations": {
