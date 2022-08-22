@@ -83,6 +83,8 @@ namespace NewHorizons.Components
 
         public float GetSupernovaRadius() => _currentSupernovaScale;
 
+        public bool IsProxy() => _isProxy;
+
         public void SetIsProxy(bool isProxy) => _isProxy = isProxy;
 
         public void SetParticlesVisibility(bool visible)
