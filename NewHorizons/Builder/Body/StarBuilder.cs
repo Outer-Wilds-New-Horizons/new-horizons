@@ -156,6 +156,10 @@ namespace NewHorizons.Builder.Body
                 if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
                 controller.size = starModule.size;
                 controller.supernovaSize = starModule.supernovaSize;
+                var duration = starModule.supernovaSize / starModule.supernovaSpeed;
+                controller.supernovaTime = duration;
+                controller.supernovaScaleEnd = duration;
+                controller.supernovaScaleStart = duration * 0.9f;
                 controller.deathType = starModule.stellarDeathType;
                 controller.atmosphere = sunAtmosphere;
                 controller.controller = starController;
@@ -208,6 +212,10 @@ namespace NewHorizons.Builder.Body
                 if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
                 controller.size = starModule.size;
                 controller.supernovaSize = starModule.supernovaSize;
+                var duration = starModule.supernovaSize / starModule.supernovaSpeed;
+                controller.supernovaTime = duration;
+                controller.supernovaScaleEnd = duration;
+                controller.supernovaScaleStart = duration * 0.9f;
                 controller.deathType = starModule.stellarDeathType;
                 controller.supernova = supernova;
                 controller.StartColour = starModule.tint;
@@ -317,7 +325,7 @@ namespace NewHorizons.Builder.Body
             stellarDeath._surface = starGO.GetComponentInChildren<TessellatedSphereRenderer>();
             var duration = starModule.supernovaSize / starModule.supernovaSpeed;
             stellarDeath._supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, starModule.supernovaSize, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
-            stellarDeath._supernovaAlpha = new AnimationCurve(new Keyframe(duration / 9f, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration / 3f, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
+            stellarDeath._supernovaAlpha = new AnimationCurve(new Keyframe(duration * 0.1f, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration * 0.3f, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(duration, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
             stellarDeath._explosionParticles = supernova._explosionParticles;
             stellarDeath._shockwave = supernova._shockwave;
             stellarDeath._shockwaveLength = supernova._shockwaveLength;
