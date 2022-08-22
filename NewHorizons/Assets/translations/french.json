@@ -13,7 +13,8 @@
     "ENGAGE_WARP_PROMPT": "Engagez la distorsion vers {0}",
     "WARP_LOCKED": "PILOTE AUTOMATIQUE VISÉ SUR:\n{0}",
     "LOCK_AUTOPILOT_WARP": "Visez le pilote automatique",
-    "RICH_PRESENCE_EXPLORING": "En explorant {0}."
+    "RICH_PRESENCE_EXPLORING": "En explorant {0}.",
+    "RICH_PRESENCE_WARPING": "En route vers {0}."
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

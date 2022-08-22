@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.OtherMods.OWRichPresence
@@ -49,7 +50,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").ToLowerInvariant());
         }
 
-        public static void SetUpSolarSystem(string name)
+        public static void OnStarSystemLoaded(string name)
         {
             if (name == "SolarSystem") return;
 
@@ -57,6 +58,14 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
             API.SetCurrentRootPresence(message, "sun");
+        }
+
+        public static void OnChangeStarSystem(string destination)
+        {
+            var localizedName = ShipLogStarChartMode.UniqueIDToName(destination);
+            var message = TranslationHandler.GetTranslation("RICH_PRESENCE_WARPING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
+
+            API.SetRichPresence(message, "newhorizons");
         }
     }
 }

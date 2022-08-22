@@ -200,7 +200,8 @@ namespace NewHorizons
             AchievementHandler.Init();
             VoiceHandler.Init();
             RichPresenceHandler.Init();
-            OnStarSystemLoaded.AddListener(RichPresenceHandler.SetUpSolarSystem);
+            OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
+            OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
