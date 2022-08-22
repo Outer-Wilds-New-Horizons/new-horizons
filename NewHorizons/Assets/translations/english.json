@@ -12,7 +12,7 @@
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Engage Warp To {0}",
     "WARP_LOCKED": "AUTOPILOT LOCKED TO:\n{0}",
-    "RICH_PRESENCE_EXPLORING": "Exploring {0}"
+    "RICH_PRESENCE_EXPLORING": "Exploring {0}."
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

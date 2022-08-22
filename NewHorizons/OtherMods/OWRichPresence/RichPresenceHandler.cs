@@ -37,7 +37,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.CreateTrigger(go, sector, message, name.Replace(" ", "").ToLowerInvariant());
+            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").ToLowerInvariant());
         }
 
         public static void SetUpSolarSystem(string name)

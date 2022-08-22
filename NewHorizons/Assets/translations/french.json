@@ -12,6 +12,6 @@
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Engagez distorsion vers {0}",
     "WARP_LOCKED": "PILOTE AUTOMATIQUE VERROUILLÉ SUR:\n{0}",
-    "RICH_PRESENCE_EXPLORING": "En explorant de {0}"
+    "RICH_PRESENCE_EXPLORING": "En explorant de {0}."
   }
 }
