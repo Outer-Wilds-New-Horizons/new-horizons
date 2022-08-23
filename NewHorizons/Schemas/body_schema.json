@@ -277,6 +277,10 @@
           "type": "boolean",
           "description": "Lets you survive on the planet without a suit."
         },
+        "hasTrees": {
+          "type": "boolean",
+          "description": "Does this planet have trees? This will change the \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+        },
         "hasRain": {
           "type": "boolean",
           "description": "Does this planet have rain?"

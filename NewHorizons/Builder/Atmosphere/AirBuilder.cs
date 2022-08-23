@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (config.Atmosphere.hasOxygen)
             {
-                airGO.AddComponent<OxygenVolume>();
+                airGO.AddComponent<OxygenVolume>()._treeVolume = config.Atmosphere.hasTrees;
             }
 
             if (config.Atmosphere.hasRain)
