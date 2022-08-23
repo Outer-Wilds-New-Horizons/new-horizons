@@ -891,6 +891,11 @@ namespace NewHorizons.External.Modules
                 /// </summary>
                 public string rename;
 
+                /// <summary>
+                /// Disable the wall, leaving only the pedestal and text.
+                /// </summary>
+                public bool disableWall;
+
                 [JsonObject]
                 public class SharedNomaiTextInfo
                 {
@@ -953,6 +958,16 @@ namespace NewHorizons.External.Modules
                 /// A ship log fact to reveal when the platform is connected to.
                 /// </summary>
                 [DefaultValue("")] public string reveals = "";
+
+                /// <summary>
+                /// Disable the structure, leaving only the pedestal.
+                /// </summary>
+                public bool disableStructure;
+
+                /// <summary>
+                /// Disable the pool that rises when you place a stone.
+                /// </summary>
+                public bool disablePool;
             }
 
             [JsonObject]
