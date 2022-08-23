@@ -11,6 +11,7 @@ namespace NewHorizons.Components
         public float CurrentOpacity { get; protected set; }
 
         private MeshRenderer _meshRenderer;
+        private RingFluidVolume _ringFluidVolume;
 
         protected void FixedUpdate()
         {
@@ -21,6 +22,12 @@ namespace NewHorizons.Components
             else
             {
                 CurrentOpacity = 1;
+            }
+
+            if (_ringFluidVolume != null)
+            {
+                if (Mathf.Approximately(CurrentOpacity, 0) && _ringFluidVolume.IsVolumeActive()) _ringFluidVolume.SetVolumeActivation(false);
+                else if (!_ringFluidVolume.IsVolumeActive()) _ringFluidVolume.SetVolumeActivation(true);
             }
 
             if (_meshRenderer == null) return;
@@ -38,5 +45,6 @@ namespace NewHorizons.Components
         }
 
         public void SetMeshRenderer(MeshRenderer meshRenderer) => _meshRenderer = meshRenderer;
+        public void SetRingFluidVolume(RingFluidVolume ringFluidVolume) => _ringFluidVolume = ringFluidVolume;
     }
 }

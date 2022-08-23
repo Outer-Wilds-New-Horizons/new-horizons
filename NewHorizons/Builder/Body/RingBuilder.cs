@@ -60,6 +60,8 @@ namespace NewHorizons.Builder.Body
             sfv._fluidType = fluidType;
             sfv._density = 5f;
 
+            if (ringGO.TryGetComponent<RingOpacityController>(out var ringOC)) ringOC.SetRingFluidVolume(sfv);
+
             ringVolume.SetActive(true);
 
 
