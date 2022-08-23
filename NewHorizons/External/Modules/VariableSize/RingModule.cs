@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.VariableSize
@@ -45,5 +45,10 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Should this ring be unlit?
         /// </summary>
         public bool unlit;
+
+        /// <summary>
+        /// Fade this module over time
+        /// </summary>
+        public TimeValuePair[] opacity;
     }
 }

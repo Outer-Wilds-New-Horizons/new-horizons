@@ -133,6 +133,13 @@ namespace NewHorizons.Builder.Body
                 levelController.SetScaleCurve(ring.curve);
             }
 
+            if (ring.opacity != null)
+            {
+                var ringOC = ringGO.AddComponent<RingOpacityController>();
+                ringOC.SetOpacityCurve(ring.opacity);
+                ringOC.SetMeshRenderer(ringMR);
+            }
+
             return ringGO;
         }
 
