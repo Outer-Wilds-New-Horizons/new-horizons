@@ -327,7 +327,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
           "default": "cloud",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -388,7 +388,7 @@
         "basic"
       ]
     },
-    "CloudFluidType": {
+    "FluidType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -2112,7 +2112,7 @@
         },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "inclination": {
           "type": "number",

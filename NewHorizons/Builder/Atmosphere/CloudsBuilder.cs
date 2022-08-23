@@ -90,7 +90,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             try
             {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), atmo.clouds.fluidType).ToUpper());
+                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), atmo.clouds.fluidType).ToUpper());
             }
             catch (Exception ex)
             {

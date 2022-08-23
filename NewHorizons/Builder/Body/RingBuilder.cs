@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Body
 
             try
             {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
+                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), ring.fluidType).ToUpper());
             }
             catch (Exception ex)
             {
