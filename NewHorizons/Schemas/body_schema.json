@@ -1675,6 +1675,11 @@
           "type": "number",
           "description": "The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.",
           "format": "float"
+        },
+        "fluidType": {
+          "description": "Fluid type for sounds/effects when colliding with this tornado.",
+          "default": "cloud",
+          "$ref": "#/definitions/FluidType"
         }
       }
     },
