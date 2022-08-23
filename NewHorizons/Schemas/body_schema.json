@@ -2148,6 +2148,13 @@
         "unlit": {
           "type": "boolean",
           "description": "Should this ring be unlit?"
+        },
+        "opacity": {
+          "type": "array",
+          "description": "Fade this module over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
         }
       }
     },
