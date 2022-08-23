@@ -1973,6 +1973,10 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "disableWall": {
+          "type": "boolean",
+          "description": "Disable the wall, leaving only the pedestal and text."
         }
       }
     },
@@ -2035,6 +2039,14 @@
           "type": "string",
           "description": "A ship log fact to reveal when the platform is connected to.",
           "default": ""
+        },
+        "disableStructure": {
+          "type": "boolean",
+          "description": "Disable the structure, leaving only the pedestal."
+        },
+        "disablePool": {
+          "type": "boolean",
+          "description": "Disable the pool that rises when you place a stone."
         }
       }
     },
