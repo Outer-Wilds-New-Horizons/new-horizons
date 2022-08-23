@@ -748,6 +748,14 @@
           "default": 204,
           "maximum": 2000.0,
           "minimum": 4.0
+        },
+        "emissionMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for emission. Optional."
+        },
+        "emissionColor": {
+          "description": "Color multiplier of the emission texture. Defaults to white.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
