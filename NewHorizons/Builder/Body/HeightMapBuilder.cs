@@ -28,12 +28,12 @@ namespace NewHorizons.Builder.Body
                     Logger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
                     module.heightMap = null;
                 }
-                if (module.textureMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap ?? "")))
+                if (module.textureMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
                     module.textureMap = null;
                 }
-                if (module.emissionMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap ?? "")))
+                if (module.emissionMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
                     module.emissionMap = null;
@@ -80,17 +80,18 @@ namespace NewHorizons.Builder.Body
                 return null;
             }
 
-            GameObject cubeSphere = new GameObject("CubeSphere");
+            var cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
 
             if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
 
-            Vector3 stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
+            var stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 
-            Color emissionColor = module.emissionColor != null ? module.emissionColor.ToColor() : Color.white;
+            var emissionColor = module.emissionColor != null ? module.emissionColor.ToColor() : Color.white;
 
-            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch, emissionMap, emissionColor);
+            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch, 
+                emissionMap, emissionColor);
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = level1.gameObject.GetComponent<MeshFilter>().mesh;
@@ -98,7 +99,8 @@ namespace NewHorizons.Builder.Body
             if (useLOD)
             {
                 var level2Res = (int)Mathf.Clamp(resolution / 2f, 1 /*cube moment*/, 100);
-                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch, emissionMap, emissionColor);
+                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch, 
+                    emissionMap, emissionColor);
 
                 var LODGroup = cubeSphere.AddComponent<LODGroup>();
                 LODGroup.size = module.maxHeight;
@@ -134,7 +136,7 @@ namespace NewHorizons.Builder.Body
             return cubeSphere;
         }
 
-        public static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch, Texture2D emissionMap, Color emissionColor)
+        private static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch, Texture2D emissionMap, Color emissionColor)
         {
             var LODCubeSphere = new GameObject("LODCubeSphere");
 
