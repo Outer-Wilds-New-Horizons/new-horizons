@@ -47,7 +47,7 @@ namespace NewHorizons.External.Modules.VariableSize
         public bool unlit;
 
         /// <summary>
-        /// Fade this module over time
+        /// Fade rings in/out over time. Optional. Value between 0-1, time is in minutes.
         /// </summary>
         public TimeValuePair[] opacity;
     }
