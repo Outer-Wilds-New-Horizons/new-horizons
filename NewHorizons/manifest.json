@@ -4,8 +4,8 @@
   "author": "xen, Bwc9876, clay, MegaPiggy, John, Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.4.3",
-  "owmlVersion": "2.5.2",
+  "version": "1.4.4",
+  "owmlVersion": "2.6.0",
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
