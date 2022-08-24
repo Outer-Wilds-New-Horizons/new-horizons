@@ -25,6 +25,8 @@ namespace NewHorizons.Builder.Props
         public static List<SignalName> QMSignals { get; private set; }
         public static List<SignalName> CloakedSignals { get; private set; }
 
+        public static bool Initialized;
+
         public static void Init()
         {
             Logger.LogVerbose($"Initializing SignalBuilder");
@@ -77,6 +79,8 @@ namespace NewHorizons.Builder.Props
 
             QMSignals = new List<SignalName>() { SignalName.Quantum_QM };
             CloakedSignals = new List<SignalName>();
+
+            Initialized = true;
         }
 
         public static SignalFrequency AddFrequency(string str)

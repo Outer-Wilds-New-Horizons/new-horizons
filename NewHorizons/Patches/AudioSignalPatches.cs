@@ -117,6 +117,8 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(AudioSignal), nameof(AudioSignal.UpdateSignalStrength))]
         public static bool AudioSignal_UpdateSignalStrength(AudioSignal __instance, Signalscope scope, float distToClosestScopeObstruction)
         {
+            if (!SignalBuilder.Initialized) return true;
+
             if (!SignalBuilder.CloakedSignals.Contains(__instance._name) && !SignalBuilder.QMSignals.Contains(__instance._name)) return true;
 
             __instance._canBePickedUpByScope = false;
