@@ -1,10 +1,12 @@
+using System;
 using System.ComponentModel.DataAnnotations;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
 
-namespace NewHorizons.External.Modules.VariableSize
+namespace NewHorizons.External.Modules
 {
     [JsonObject]
-    public class RingModule : VariableSizeModule
+    public class RingModule
     {
         /// <summary>
         /// Fluid type for sounds/effects when colliding with this ring.
@@ -45,6 +47,11 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Should this ring be unlit?
         /// </summary>
         public bool unlit;
+
+        #region Obsolete
+        [Obsolete("curve is deprecated, please use scaleCurve instead")]
+        public TimeValuePair[] curve;
+        #endregion
 
         /// <summary>
         /// Scale rings over time. Optional. Value between 0-1, time is in minutes.

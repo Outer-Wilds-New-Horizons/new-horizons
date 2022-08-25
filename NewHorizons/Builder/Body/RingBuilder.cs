@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {

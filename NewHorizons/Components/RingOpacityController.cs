@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Utility;
 using UnityEngine;
 
 namespace NewHorizons.Components
@@ -35,7 +36,7 @@ namespace NewHorizons.Components
             _meshRenderer.material.SetFloat(Alpha, CurrentOpacity);
         }
 
-        public void SetOpacityCurve(VariableSizeModule.TimeValuePair[] curve)
+        public void SetOpacityCurve(TimeValuePair[] curve)
         {
             opacityCurve = new AnimationCurve();
             foreach (var pair in curve)
