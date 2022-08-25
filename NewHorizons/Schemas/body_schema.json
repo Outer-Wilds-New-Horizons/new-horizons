@@ -662,7 +662,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -766,7 +766,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -1745,7 +1745,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2103,13 +2103,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "curve": {
-          "type": "array",
-          "description": "Scale this module over time",
-          "items": {
-            "$ref": "#/definitions/TimeValuePair"
-          }
-        },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
           "$ref": "#/definitions/CloudFluidType"
@@ -2171,7 +2164,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2316,7 +2309,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2402,7 +2395,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
