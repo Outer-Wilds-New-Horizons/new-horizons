@@ -155,19 +155,9 @@ namespace NewHorizons.Builder.Props
             }
 
             // Resize it so the force volume goes all the way up
-            switch (downwards)
-            {
-                case true:
-                    var fluidDown = tornadoGO.transform.Find("MockDownTornado_FluidCenter");
-                    fluidDown.GetComponent<TornadoFluidVolume>()._fluidType = fluidType;
-                    fluidDown.localScale = new Vector3(1, 2f, 1);
-                    break;
-                default:
-                    var fluidUp = tornadoGO.transform.Find("MockUpTornado_FluidCenter");
-                    fluidUp.GetComponent<TornadoFluidVolume>()._fluidType = fluidType;
-                    fluidUp.localScale = new Vector3(1, 2f, 1);
-                    break;
-            }
+            var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
+            fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = fluidType;
+            fluidGO.localScale = new Vector3(1, 2f, 1);
 
             if (info.tint != null)
             {
