@@ -1303,7 +1303,8 @@
         "Cairn",
         "Recorder",
         "PreCrashRecorder",
-        "PreCrashComputer"
+        "PreCrashComputer",
+        "Trailmarker"
       ],
       "enum": [
         "wall",
@@ -1312,7 +1313,8 @@
         "cairn",
         "recorder",
         "preCrashRecorder",
-        "preCrashComputer"
+        "preCrashComputer",
+        "trailmarker"
       ]
     },
     "NomaiTextLocation": {
