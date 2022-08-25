@@ -129,16 +129,16 @@ namespace NewHorizons.Builder.Body
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.curve != null)
+            if (ring.scaleCurve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
-                levelController.SetScaleCurve(ring.curve);
+                levelController.SetScaleCurve(ring.scaleCurve);
             }
 
-            if (ring.opacity != null)
+            if (ring.opacityCurve != null)
             {
                 var ringOC = ringGO.AddComponent<RingOpacityController>();
-                ringOC.SetOpacityCurve(ring.opacity);
+                ringOC.SetOpacityCurve(ring.opacityCurve);
                 ringOC.SetMeshRenderer(ringMR);
             }
 
