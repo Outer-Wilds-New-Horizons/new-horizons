@@ -85,19 +85,7 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
-
-            var fluidType = FluidVolume.Type.CLOUD;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), atmo.clouds.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]:\n{ex}");
-            }
-
-            fluidCLFV._fluidType = fluidType;
+            fluidCLFV._fluidType = atmo.clouds.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidCLFV._allowShipAutoroll = true;
             fluidCLFV._disableOnStart = false;
 

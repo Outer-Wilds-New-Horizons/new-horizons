@@ -46,18 +46,7 @@ namespace NewHorizons.Builder.Body
             trigger._shape = ringShape;
 
             var sfv = ringVolume.AddComponent<RingFluidVolume>();
-            var fluidType = FluidVolume.Type.NONE;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), ring.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]:\n{ex}");
-            }
-
-            sfv._fluidType = fluidType;
+            sfv._fluidType = ring.fluidType.ConvertToOW();
             sfv._density = 5f;
 
             ringVolume.SetActive(true);

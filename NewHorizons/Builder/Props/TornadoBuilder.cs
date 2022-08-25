@@ -143,20 +143,9 @@ namespace NewHorizons.Builder.Props
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
-            var fluidType = FluidVolume.Type.CLOUD;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), info.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{info.fluidType}]:\n{ex}");
-            }
-
             // Resize it so the force volume goes all the way up
             var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
-            fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = fluidType;
+            fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidGO.localScale = new Vector3(1, 2f, 1);
 
             if (info.tint != null)
@@ -181,19 +170,8 @@ namespace NewHorizons.Builder.Props
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
             hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
-            var fluidType = FluidVolume.Type.CLOUD;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), info.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{info.fluidType}]:\n{ex}");
-            }
-
             var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
-            fluidVolume._fluidType = fluidType;
+            fluidVolume._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidVolume._density = 8;
 
             var effects = hurricaneGO.transform.Find("Effects_GD_Hurricane").gameObject;
