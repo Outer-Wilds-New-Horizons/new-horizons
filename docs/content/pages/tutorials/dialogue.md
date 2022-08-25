@@ -38,7 +38,7 @@ Here's an example dialogue XML:
 <!-- Example Dialogue -->
 <!-- All files must have `DialogueTree` as the root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but provides improved error checking if your editor supports it -->
 <DialogueTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/dialogue_schema.xsd">
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/dialogue_schema.xsd">
  <NameField>EXAMPLE NPC</NameField> <!-- The name of this character -->
 
  <DialogueNode> <!-- A dialogue node is a set of pages displayed to the player optionally followed by options -->

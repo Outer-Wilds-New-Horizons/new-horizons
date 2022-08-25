@@ -15,7 +15,7 @@ Here's an example, for `russian.json`:
 
 ```json
 {
-    "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+    "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
     "DialogueDictionary" :
     {
         "Fred" : "Фред",
