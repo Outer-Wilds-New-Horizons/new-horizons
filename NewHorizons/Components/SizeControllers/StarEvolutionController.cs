@@ -16,15 +16,15 @@ namespace NewHorizons.Components.SizeControllers
 {
     public class StarEvolutionController : SizeController
     {
-        public bool _isProxy;
+        public bool isProxy;
 
         public GameObject atmosphere;
         public StarController controller;
         public StellarDeathController supernova;
-        public bool WillExplode { get; set; }
-        public MColor StartColour { get; set; }
-        public MColor EndColour { get; set; }
-        public MColor SupernovaColour { get; set; }
+        public bool willExplode;
+        public MColor startColour;
+        public MColor endColour;
+        public MColor supernovaColour;
         public Texture normalRamp;
         public Texture collapseRamp;
 
@@ -34,12 +34,13 @@ namespace NewHorizons.Components.SizeControllers
         private GameObject _stellarRemnant;
         private PlanetaryFogController _fog;
         private MeshRenderer[] _atmosphereRenderers;
+
         public HeatHazardVolume heatVolume;
         public DestructionVolume destructionVolume;
         public StarDestructionVolume planetDestructionVolume;
         public StarFluidVolume starFluidVolume;
+
         private SolarFlareEmitter _flareEmitter;
-        private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
 
         public OWAudioSource oneShotSource;
@@ -70,13 +71,13 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
-        public UnityEvent CollapseStart = new UnityEvent();
-        public UnityEvent CollapseStop = new UnityEvent();
-        public UnityEvent SupernovaStart = new UnityEvent();
-        public UnityEvent SupernovaStop = new UnityEvent();
+        public UnityEvent CollapseStart = new();
+        public UnityEvent CollapseStop = new();
+        public UnityEvent SupernovaStart = new();
+        public UnityEvent SupernovaStop = new();
 
-        private float maxScale;
-        private float minScale;
+        private float _maxScale;
+        private float _minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int ColorTime = Shader.PropertyToID("_ColorTime");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
@@ -88,7 +89,6 @@ namespace NewHorizons.Components.SizeControllers
         private void Start()
         {
             _rigidbody = this.GetAttachedOWRigidbody();
-            if (_rigidbody != null) _mapMarker = _rigidbody.GetComponent<MapMarker>();
 
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
@@ -117,24 +117,24 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
             _endSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
 
-            if (StartColour == null)
+            if (startColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = StartColour.ToColor();
+                _startColour = startColour.ToColor();
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (EndColour == null)
+            if (endColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = EndColour.ToColor();
+                _endColour = endColour.ToColor();
                 _endSurfaceMaterial.color = _endColour * 4.5948f;
             }
 
@@ -151,13 +151,13 @@ namespace NewHorizons.Components.SizeControllers
 
             if (scaleCurve != null)
             {
-                maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
-                minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
+                _maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+                _minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
             }
             else
             {
-                maxScale = 0;
-                minScale = 0;
+                _maxScale = 0;
+                _minScale = 0;
                 scaleCurve = new AnimationCurve();
                 scaleCurve.AddKey(0, 1);
             }
@@ -165,7 +165,7 @@ namespace NewHorizons.Components.SizeControllers
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
             _surfaceMaterial = supernova._surface._materials[0];
 
-            if (!_isProxy) SupernovaEffectHandler.RegisterStar(this);
+            if (!isProxy) SupernovaEffectHandler.RegisterStar(this);
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
@@ -195,11 +195,11 @@ namespace NewHorizons.Components.SizeControllers
         private void UpdateMainSequence()
         {
             // Only do colour transition stuff if they set an end colour
-            if (EndColour != null)
+            if (endColour != null)
             {
                 // Use minutes elapsed if theres no resizing happening, else make it get redder the larger it is or wtv
                 var t = TimeLoop.GetMinutesElapsed() / lifespan;
-                if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
+                if (_maxScale != _minScale) t = Mathf.InverseLerp(_minScale, _maxScale, CurrentScale);
 
                 if (t < 1f)
                 {
@@ -293,10 +293,20 @@ namespace NewHorizons.Components.SizeControllers
                     if (collider.attachedRigidbody != null)
                     {
                         // Destroy any planets that are not invulnerable to the sun
-                        var body = collider.attachedRigidbody.GetComponent<OWRigidbody>();
+                        var rb = collider.attachedRigidbody;
+                        var body = rb.GetComponent<OWRigidbody>();
                         var astroObject = collider.gameObject.GetComponent<NHAstroObject>();
-                        if (astroObject != null && !astroObject.invulnerableToSun) 
-                            planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
+                        if (astroObject != null)
+                        {
+                            if (!astroObject.invulnerableToSun)
+                                planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
+                        }
+                        else
+                        {
+                            // Vanish anything unrelated to player
+                            if (!(rb.CompareTag("Player") || rb.CompareTag("Ship") || rb.CompareTag("ShipCockpit") || rb.CompareTag("Probe")))
+                                planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
+                        }
                     }
                 }
             }
@@ -412,7 +422,7 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
                 UpdateMainSequence();
-                if (WillExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
+                if (willExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
             }
             else
             {

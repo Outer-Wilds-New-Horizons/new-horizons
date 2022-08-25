@@ -167,10 +167,10 @@ namespace NewHorizons.Builder.Body
                 starEvolutionController.atmosphere = sunAtmosphere;
                 starEvolutionController.controller = starController;
                 starEvolutionController.supernova = supernova;
-                starEvolutionController.StartColour = starModule.tint;
-                starEvolutionController.EndColour = starModule.endTint;
-                starEvolutionController.SupernovaColour = starModule.supernovaTint;
-                starEvolutionController.WillExplode = starModule.stellarDeathType != StellarDeathType.None;
+                starEvolutionController.startColour = starModule.tint;
+                starEvolutionController.endColour = starModule.endTint;
+                starEvolutionController.supernovaColour = starModule.supernovaTint;
+                starEvolutionController.willExplode = starModule.stellarDeathType != StellarDeathType.None;
                 starEvolutionController.lifespan = starModule.lifespan;
                 starEvolutionController.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
                 starEvolutionController.heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
@@ -211,7 +211,7 @@ namespace NewHorizons.Builder.Body
 
                 starGO.SetActive(false);
                 var controller = starGO.AddComponent<StarEvolutionController>();
-                controller._isProxy = true;
+                controller.isProxy = true;
                 if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
                 controller.size = starModule.size;
                 controller.supernovaSize = starModule.supernovaSize;
@@ -221,10 +221,10 @@ namespace NewHorizons.Builder.Body
                 controller.supernovaScaleStart = duration * 0.9f;
                 controller.deathType = starModule.stellarDeathType;
                 controller.supernova = supernova;
-                controller.StartColour = starModule.tint;
-                controller.EndColour = starModule.endTint;
-                controller.SupernovaColour = starModule.supernovaTint;
-                controller.WillExplode = starModule.stellarDeathType != StellarDeathType.None;
+                controller.startColour = starModule.tint;
+                controller.endColour = starModule.endTint;
+                controller.supernovaColour = starModule.supernovaTint;
+                controller.willExplode = starModule.stellarDeathType != StellarDeathType.None;
                 controller.lifespan = starModule.lifespan;
                 controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
                 if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))

@@ -15,6 +15,9 @@ namespace NewHorizons.Builder.Body
 {
     public static class SingularityBuilder
     {
+        private static readonly string _blackHoleProxyPath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_TT/Prefab_NOM_WarpTransmitter (1)/BlackHole/BlackHoleSingularity";
+        private static readonly string _whiteHoleProxyPath = "TowerTwin_Body/Sector_TowerTwin/Sector_Tower_HGT/Interactables_Tower_HGT/Interactables_Tower_CT/Prefab_NOM_WarpTransmitter/WhiteHole/WhiteHoleSingularity";
+        private static GameObject _blackHoleProxyPrefab, _whiteHoleProxyPrefab;
 
         private static Shader blackHoleShader = null;
         private static Shader whiteHoleShader = null;
@@ -282,6 +285,72 @@ namespace NewHorizons.Builder.Body
 
             whiteHole.SetActive(true);
             return whiteHole;
+        }
+
+        public static GameObject MakeBlackHoleProxy(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        {
+            if (_blackHoleProxyPrefab == null) _blackHoleProxyPrefab = SearchUtilities.Find(_blackHoleProxyPath);
+
+            var blackHoleShader = _blackHoleProxyPrefab.GetComponent<MeshRenderer>().material.shader;
+            if (blackHoleShader == null) blackHoleShader = _blackHoleProxyPrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+
+            var blackHoleRender = new GameObject("BlackHoleRender");
+            blackHoleRender.transform.parent = rootObject.transform;
+            if (position != null) blackHoleRender.transform.localPosition = position;
+            else blackHoleRender.transform.localPosition = Vector3.zero;
+            blackHoleRender.transform.localScale = Vector3.one * size;
+
+            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
+            meshFilter.mesh = _blackHoleProxyPrefab.GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(blackHoleShader);
+            meshRenderer.material.SetFloat(Radius, size * 0.4f);
+            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
+            meshRenderer.material.SetFloat(MassScale, 1);
+            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
+
+            if (curve != null) AddSizeController(blackHoleRender, curve, size);
+
+            blackHoleRender.SetActive(true);
+            return blackHoleRender;
+        }
+
+        public static GameObject MakeWhiteHoleProxy(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        {
+            if (_whiteHoleProxyPrefab == null) _whiteHoleProxyPrefab = SearchUtilities.Find(_whiteHoleProxyPath);
+
+            var whiteHoleShader = _whiteHoleProxyPrefab.GetComponent<MeshRenderer>().material.shader;
+            if (whiteHoleShader == null) whiteHoleShader = _whiteHoleProxyPrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
+
+            var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
+            whiteHoleRenderer.transform.parent = rootObject.transform;
+            if (position != null) whiteHoleRenderer.transform.localPosition = position;
+            else whiteHoleRenderer.transform.localPosition = Vector3.zero;
+            whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
+
+            var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
+            meshFilter.mesh = _whiteHoleProxyPrefab.GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(whiteHoleShader);
+            meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
+            meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
+            meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
+            meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
+
+            if (curve != null) AddSizeController(whiteHoleRenderer, curve, size);
+
+            whiteHoleRenderer.SetActive(true);
+            return whiteHoleRenderer;
+        }
+
+        private static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        {
+            var sizeController = go.AddComponent<SizeController>();
+            sizeController.SetScaleCurve(curve);
+            sizeController.size = size;
+            return sizeController;
         }
     }
 }

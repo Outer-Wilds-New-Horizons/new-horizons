@@ -116,7 +116,7 @@ namespace NewHorizons.Components
                     {
                         if (!_shockLayer.enabled) _shockLayer.enabled = true;
                         Vector3 dir = Vector3.Normalize(transform.position - StarEvolutionController.transform.position);
-                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, StarEvolutionController.SupernovaColour != null ? StarEvolutionController.SupernovaColour.ToColor() : _shockLayerColor);
+                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, StarEvolutionController.supernovaColour != null ? StarEvolutionController.supernovaColour.ToColor() : _shockLayerColor);
                         s_matPropBlock_ShockLayer.SetMatrix(s_propID_WorldToLocalShockMatrix, Matrix4x4.TRS(transform.position, Quaternion.LookRotation(dir, Vector3.up), Vector3.one).inverse);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_Dir, dir);
                         s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, shockLayerTrailLength);

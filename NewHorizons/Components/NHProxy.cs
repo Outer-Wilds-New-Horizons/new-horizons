@@ -1,7 +1,9 @@
+using Epic.OnlineServices.Stats;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Components
 {
@@ -9,17 +11,25 @@ namespace NewHorizons.Components
     {
         public string astroName;
 
-        public GameObject _planet;
-        public GameObject _star;
-        public StarEvolutionController _starEvolutionController;
-        private Renderer[] _starRenderers;
-        private TessellatedRenderer[] _starTessellatedRenderers;
-        private ParticleSystemRenderer[] _starParticleRenderers;
-        private SolarFlareEmitter _solarFlareEmitter;
-        public CloudLightningGenerator _lightningGenerator;
-        public Renderer _topClouds;
-        public NHSupernovaPlanetEffectController _supernovaPlanetEffectController;
-        public float _baseRealObjectDiameter;
+        public GameObject planet;
+
+        private GameObject[] _stars;
+
+        public StarEvolutionController[] StarEvolutionControllers { get; private set; }
+
+        private IEnumerable<Renderer> _starRenderers = new List<Renderer>();
+        private IEnumerable<TessellatedRenderer> _starTessellatedRenderers = new List<TessellatedRenderer>();
+        private IEnumerable<ParticleSystemRenderer> _starParticleRenderers = new List<ParticleSystemRenderer>();
+        private IEnumerable<SolarFlareEmitter> _solarFlareEmitter = new List<SolarFlareEmitter>();
+
+        // Public stuff from the builder
+        public CloudLightningGenerator lightningGenerator;
+        public Renderer topClouds;
+        public NHSupernovaPlanetEffectController supernovaPlanetEffectController;
+        public float baseRealObjectDiameter;
+
+        public GameObject root;
+        public GameObject stellarRemnantGO;
 
         public override void Awake()
         {
@@ -32,20 +42,26 @@ namespace NewHorizons.Components
 
             // The star part cant be disabled like the rest and we have to manually disable the renderers
             // Else it can stop the supernova effect mid way through
-            if (_starEvolutionController == null) _starEvolutionController = GetComponentInChildren<StarEvolutionController>();
-            if (_star == null) _star = _starEvolutionController?.gameObject;
-            
-            if (_star != null)
+            StarEvolutionControllers = GetComponentsInChildren<StarEvolutionController>();
+            _stars = StarEvolutionControllers.Select(x => x.gameObject).ToArray();
+
+            foreach (var star in _stars)
             {
-                _starRenderers = _star.GetComponentsInChildren<Renderer>();
-                _starTessellatedRenderers = _star.GetComponentsInChildren<TessellatedRenderer>();
-                _starParticleRenderers = _star.GetComponentsInChildren<ParticleSystemRenderer>();
-                _solarFlareEmitter = _star.GetComponentInChildren<SolarFlareEmitter>();
+                _starRenderers = _starRenderers.Concat(star.GetComponentsInChildren<Renderer>());
+                _starTessellatedRenderers = _starTessellatedRenderers.Concat(star.GetComponentsInChildren<TessellatedRenderer>());
+                _starParticleRenderers = _starParticleRenderers.Concat(star.GetComponentsInChildren<ParticleSystemRenderer>());
+                _solarFlareEmitter = _solarFlareEmitter.Append(star.GetComponentInChildren<SolarFlareEmitter>());
             }
 
-            if (_lightningGenerator == null) _lightningGenerator = GetComponentInChildren<CloudLightningGenerator>();
+            var progenitorEvolutionController = root.GetComponentInChildren<StarEvolutionController>();
+            if (progenitorEvolutionController != null && stellarRemnantGO != null)
+            {
+                progenitorEvolutionController.SetStellarRemnant(stellarRemnantGO);
+            }
 
-            if (_supernovaPlanetEffectController == null) _supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>();
+            if (lightningGenerator == null) lightningGenerator = GetComponentInChildren<CloudLightningGenerator>();
+
+            if (supernovaPlanetEffectController == null) supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>();
             
             // Start off
             _outOfRange = false;
@@ -81,7 +97,7 @@ namespace NewHorizons.Components
 
         public override void Update()
         {
-            if (_planet == null || !_planet.activeSelf)
+            if (planet == null || !planet.activeSelf)
             {
                 _outOfRange = false;
                 ToggleRendering(false);
@@ -98,47 +114,51 @@ namespace NewHorizons.Components
 
             foreach (Transform child in transform)
             {
-                if (child.gameObject == _star) continue;
-                child.gameObject.SetActive(on);
-            }
-
-            if (_star != null)
-            {
-                if (_solarFlareEmitter != null)
+                // The first layer of children are the different states of the proxy; root, remnant, eventually quantum states
+                foreach (Transform grandChild in child)
                 {
-                    _solarFlareEmitter.gameObject.SetActive(on);
-                }
+                    // Don't disable any stars
+                    if (_stars.Contains(grandChild.gameObject)) continue;
 
-                foreach (var renderer in _starRenderers)
-                {
-                    renderer.enabled = on;
-                }
-
-                foreach (var renderer in _starTessellatedRenderers)
-                {
-                    renderer.enabled = on;
-                }
-
-                foreach (var renderer in _starParticleRenderers)
-                {
-                    renderer.enabled = on;
+                    // Toggle the grandchildren
+                    grandChild.gameObject.SetActive(on);
                 }
             }
 
-            if (_topClouds != null)
+            foreach (var solarFlare in _solarFlareEmitter)
             {
-                _topClouds.enabled = on;
+                solarFlare.gameObject.SetActive(on);
             }
 
-            if (_lightningGenerator != null)
+            foreach (var renderer in _starRenderers)
             {
-                _lightningGenerator.enabled = on;
+                renderer.enabled = on;
             }
 
-            if (_supernovaPlanetEffectController != null)
+            foreach (var renderer in _starTessellatedRenderers)
             {
-                if (on) _supernovaPlanetEffectController.Enable();
-                else _supernovaPlanetEffectController.Disable();
+                renderer.enabled = on;
+            }
+
+            foreach (var renderer in _starParticleRenderers)
+            {
+                renderer.enabled = on;
+            }
+
+            if (topClouds != null)
+            {
+                topClouds.enabled = on;
+            }
+
+            if (lightningGenerator != null)
+            {
+                lightningGenerator.enabled = on;
+            }
+
+            if (supernovaPlanetEffectController != null)
+            {
+                if (on) supernovaPlanetEffectController.Enable();
+                else supernovaPlanetEffectController.Disable();
             }
         }
 

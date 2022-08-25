@@ -219,7 +219,7 @@ namespace NewHorizons.External.Configs
                     }
                 }
 
-                Dictionary<string, int> existingGroupsPropCounts = new Dictionary<string, int>();
+                var existingGroupsPropCounts = new Dictionary<string, int>();
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;

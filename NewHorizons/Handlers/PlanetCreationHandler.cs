@@ -448,11 +448,15 @@ namespace NewHorizons.Handlers
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
+            var otherBodies = Main.BodyDict[Main.Instance.CurrentStarSystem];
+            var remnant = otherBodies.Where(x => x.Config.isStellarRemnant && x.Config.name == body.Config.name).FirstOrDefault();
+            // TODO: add proxies for quantum states
+            //var quantumStates = otherBodies.Where(x => x.Config.isQuantumState && x.Config.name == body.Config.name).ToArray();
             if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f))
             {
                 Delay.FireOnNextUpdate(() =>
                 {
-                    ProxyBuilder.Make(go, body);
+                    ProxyBuilder.Make(go, body, remnant);
                 });
             }
 
