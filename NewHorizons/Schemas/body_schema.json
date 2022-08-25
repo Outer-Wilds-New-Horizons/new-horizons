@@ -124,10 +124,6 @@
       "description": "Make this body a star",
       "$ref": "#/definitions/StarModule"
     },
-    "version": {
-      "type": "string",
-      "description": "Version of New Horizons this config is using (Doesn't do anything)"
-    },
     "Water": {
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
