@@ -236,6 +236,9 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+
+            // Stars and focal points shouldnt be destroyed by stars
+            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
         }
 
         public void Migrate()
