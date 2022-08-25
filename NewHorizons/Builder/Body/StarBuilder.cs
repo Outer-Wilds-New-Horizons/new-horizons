@@ -24,6 +24,9 @@ namespace NewHorizons.Builder.Body
         public static (GameObject, StarController, StarEvolutionController) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
+
+            starGO.SetActive(false);
+
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
             var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
@@ -149,42 +152,48 @@ namespace NewHorizons.Builder.Body
                 starController.IsStellarRemnant = isStellarRemnant;
             }
 
-            StarEvolutionController starEvolutionController = null;
+            // TODO: A lot of this is shared with the proxy generation, we should merge that
+            // Could go into the star graphics method
+            var starEvolutionController = starGO.AddComponent<StarEvolutionController>();
+            if (starModule.curve != null) starEvolutionController.SetScaleCurve(starModule.curve);
+            starEvolutionController.size = starModule.size;
+            starEvolutionController.atmosphere = sunAtmosphere;
+            starEvolutionController.controller = starController;
+            starEvolutionController.startColour = starModule.tint;
+            starEvolutionController.endColour = starModule.endTint;
+
+            starEvolutionController.supernovaColour = starModule.supernovaTint;
+            starEvolutionController.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            starFluidVolume.SetStarEvolutionController(starEvolutionController);
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                starEvolutionController.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+            }
+            surfaceAudio.SetStarEvolutionController(starEvolutionController);
+
             if (!isStellarRemnant)
             {
                 var supernova = MakeSupernova(starGO, starModule);
-
-                starGO.SetActive(false);
-                starEvolutionController = starGO.AddComponent<StarEvolutionController>();
-                if (starModule.curve != null) starEvolutionController.SetScaleCurve(starModule.curve);
-                starEvolutionController.size = starModule.size;
                 starEvolutionController.supernovaSize = starModule.supernovaSize;
                 var duration = starModule.supernovaSize / starModule.supernovaSpeed;
                 starEvolutionController.supernovaTime = duration;
                 starEvolutionController.supernovaScaleEnd = duration;
                 starEvolutionController.supernovaScaleStart = duration * 0.9f;
                 starEvolutionController.deathType = starModule.stellarDeathType;
-                starEvolutionController.atmosphere = sunAtmosphere;
-                starEvolutionController.controller = starController;
+
                 starEvolutionController.supernova = supernova;
-                starEvolutionController.startColour = starModule.tint;
-                starEvolutionController.endColour = starModule.endTint;
-                starEvolutionController.supernovaColour = starModule.supernovaTint;
+
                 starEvolutionController.willExplode = starModule.stellarDeathType != StellarDeathType.None;
                 starEvolutionController.lifespan = starModule.lifespan;
-                starEvolutionController.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
                 starEvolutionController.heatVolume = heatVolume.GetComponent<HeatHazardVolume>();
                 starEvolutionController.destructionVolume = deathVolume.GetComponent<DestructionVolume>();
                 starEvolutionController.planetDestructionVolume = planetDestructionVolume.GetComponent<StarDestructionVolume>();
                 starEvolutionController.starFluidVolume = starFluidVolume;
                 starEvolutionController.oneShotSource = sunAudio.transform.Find("OneShotAudio_Sun")?.GetComponent<OWAudioSource>();
-                starFluidVolume.SetStarEvolutionController(starEvolutionController);
-                if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
-                {
-                    starEvolutionController.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
-                }
-                surfaceAudio.SetStarEvolutionController(starEvolutionController);
-                starGO.SetActive(true);
+            }
+            else
+            {
+                starEvolutionController.willExplode = false;
             }
 
             var shockLayerRuleset = sector.gameObject.AddComponent<ShockLayerRuleset>();
@@ -195,6 +204,8 @@ namespace NewHorizons.Builder.Body
             shockLayerRuleset._outerRadius = starModule.size * OuterRadiusRatio;
             if (starModule.tint != null) shockLayerRuleset._color *= starModule.tint.ToColor();
 
+            starGO.SetActive(true);
+
             return (starGO, starController, starEvolutionController);
         }
 
@@ -203,6 +214,21 @@ namespace NewHorizons.Builder.Body
             var starGO = MakeStarGraphics(proxyGO, null, starModule, mod);
             var ramp = starGO.GetComponentInChildren<TessellatedSphereRenderer>().sharedMaterial.GetTexture(ColorRamp);
 
+            var controller = starGO.AddComponent<StarEvolutionController>();
+            if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
+            controller.size = starModule.size;
+            controller.startColour = starModule.tint;
+            controller.endColour = starModule.endTint;
+
+            controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
+            if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
+            {
+                controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
+            }
+            controller.enabled = true;
+            starGO.SetActive(true);
+
+            // Remnants can't go supernova
             if (!isStellarRemnant)
             {
                 var supernova = MakeSupernova(starGO, starModule, true);
@@ -210,10 +236,9 @@ namespace NewHorizons.Builder.Body
                 supernova.SetIsProxy(true);
 
                 starGO.SetActive(false);
-                var controller = starGO.AddComponent<StarEvolutionController>();
+                
                 controller.isProxy = true;
-                if (starModule.curve != null) controller.SetScaleCurve(starModule.curve);
-                controller.size = starModule.size;
+
                 controller.supernovaSize = starModule.supernovaSize;
                 var duration = starModule.supernovaSize / starModule.supernovaSpeed;
                 controller.supernovaTime = duration;
@@ -221,22 +246,18 @@ namespace NewHorizons.Builder.Body
                 controller.supernovaScaleStart = duration * 0.9f;
                 controller.deathType = starModule.stellarDeathType;
                 controller.supernova = supernova;
-                controller.startColour = starModule.tint;
-                controller.endColour = starModule.endTint;
+
                 controller.supernovaColour = starModule.supernovaTint;
                 controller.willExplode = starModule.stellarDeathType != StellarDeathType.None;
                 controller.lifespan = starModule.lifespan;
-                controller.normalRamp = !string.IsNullOrEmpty(starModule.starRampTexture) ? ImageUtilities.GetTexture(mod, starModule.starRampTexture) : ramp;
-                if (!string.IsNullOrEmpty(starModule.starCollapseRampTexture))
-                {
-                    controller.collapseRamp = ImageUtilities.GetTexture(mod, starModule.starCollapseRampTexture);
-                }
-                controller.enabled = true;
-                starGO.SetActive(true);
 
                 var main = planet.GetComponentInChildren<StarEvolutionController>(true);
                 main.SetProxy(controller);
                 supernova._main = main.supernova;
+            }
+            else
+            {
+                controller.willExplode = false;
             }
 
             return starGO;

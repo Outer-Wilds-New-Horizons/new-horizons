@@ -49,6 +49,8 @@ namespace NewHorizons.Builder.Body
             // Add remnants
             if (remnant != null)
             {
+                Logger.LogVerbose($"Making custom remnant proxy");
+
                 var remnantGO = new GameObject("Remnant");
                 remnantGO.transform.parent = proxy.transform;
                 remnantGO.transform.localPosition = Vector3.zero;

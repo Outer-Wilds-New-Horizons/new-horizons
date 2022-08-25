@@ -257,7 +257,7 @@ namespace NewHorizons.Components.SizeControllers
 
             if (_stellarRemnant != null && Time.time > _supernovaStartTime + 15)
             {
-                _stellarRemnant.gameObject.SetActive(true);
+                _stellarRemnant.SetActive(true);
                 var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
                 if (remnantStarController != null) StarLightController.AddStar(remnantStarController);
             }
@@ -455,6 +455,10 @@ namespace NewHorizons.Components.SizeControllers
             }
         }
 
-        public void SetStellarRemnant(GameObject stellarRemnant) => _stellarRemnant = stellarRemnant;
+        public void SetStellarRemnant(GameObject stellarRemnant)
+        {
+            _stellarRemnant = stellarRemnant;
+            _stellarRemnant.SetActive(false);
+        }
     }
 }
