@@ -12,12 +12,12 @@ namespace NewHorizons.Components
         public float _shockwaveLength = 5f;
         public AnimationCurve _shockwaveScale = AnimationCurve.Linear(0.0f, 0.0f, 1f, 100000f);
         public AnimationCurve _shockwaveAlpha = AnimationCurve.Linear(0.0f, 1f, 1f, 0.0f);
-        [Space]
+
         public TessellatedSphereRenderer _surface;
         public Material _supernovaMaterial;
         public AnimationCurve _supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, 50000, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
         public AnimationCurve _supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
-        [Space]
+
         public OWAudioSource _audioSource;
         public StellarDeathController _main;
         private float _time;

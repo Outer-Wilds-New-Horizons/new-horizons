@@ -19,7 +19,6 @@ namespace NewHorizons.Components
         public CloudLightningGenerator _lightningGenerator;
         public Renderer _topClouds;
         public NHSupernovaPlanetEffectController _supernovaPlanetEffectController;
-        public StellarRemnantProxy _stellarRemnant;
         public float _baseRealObjectDiameter;
 
         public override void Awake()
@@ -90,39 +89,16 @@ namespace NewHorizons.Components
                 return;
             }
 
-            if (_stellarRemnant != null)
-            {
-                if (_stellarRemnant.IsActivated())
-                {
-                    _realObjectDiameter = _stellarRemnant._realObjectDiameter;
-                    _proxyAtan = Mathf.Atan(_stellarRemnant._realObjectDiameter / 42000f);
-                    if (!_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
-                }
-                else
-                {
-                    _realObjectDiameter = _baseRealObjectDiameter;
-                    _proxyAtan = Mathf.Atan(_baseRealObjectDiameter / 42000f);
-                    if (_stellarRemnant.IsRenderingOn()) ToggleRendering(_outOfRange);
-                }
-            }
-
             base.Update();
         }
 
         public override void ToggleRendering(bool on)
         {
-            if (_stellarRemnant != null)
-            {
-                _stellarRemnant.ToggleRendering(on);
-                on = on && !_stellarRemnant.IsActivated();
-            }
-
             base.ToggleRendering(on);
 
             foreach (Transform child in transform)
             {
                 if (child.gameObject == _star) continue;
-                if (child.gameObject == _stellarRemnant?.gameObject) continue;
                 child.gameObject.SetActive(on);
             }
 
@@ -168,7 +144,6 @@ namespace NewHorizons.Components
 
         public override void UpdateScale(float scaleMultiplier, float viewDistance)
         {
-            if (_stellarRemnant != null) _stellarRemnant.UpdateScale(scaleMultiplier, viewDistance);
             base.UpdateScale(scaleMultiplier, viewDistance);
         }
     }

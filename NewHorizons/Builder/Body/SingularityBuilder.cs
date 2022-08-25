@@ -8,6 +8,8 @@ using Logger = NewHorizons.Utility.Logger;
 using System.Collections.Generic;
 using System.Linq;
 using NewHorizons.Components.SizeControllers;
+using System.Drawing;
+using Color = UnityEngine.Color;
 
 namespace NewHorizons.Builder.Body
 {
@@ -102,30 +104,16 @@ namespace NewHorizons.Builder.Body
             blackHole.transform.parent = sector?.transform ?? planetGO.transform;
             blackHole.transform.position = planetGO.transform.TransformPoint(localPosition);
 
-            var blackHoleRender = new GameObject("BlackHoleRender");
-            blackHoleRender.transform.parent = blackHole.transform;
-            blackHoleRender.transform.localPosition = Vector3.zero;
-            blackHoleRender.transform.localScale = Vector3.one * size;
+            var blackHoleRender = MakeBlackHoleGraphics(blackHole, size);
 
             BlackHoleSizeController sizeController = null;
             if (curve != null)
             {
-                sizeController = blackHoleRender.AddComponent<BlackHoleSizeController>();
+                sizeController = blackHoleRender.gameObject.AddComponent<BlackHoleSizeController>();
                 sizeController.SetScaleCurve(curve);
                 sizeController.size = size;
+                sizeController.material = blackHoleRender.material;
             }
-
-            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
-            meshFilter.mesh = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
-
-            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
-            if (blackHoleShader == null) blackHoleShader = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
-            meshRenderer.material = new Material(blackHoleShader);
-            meshRenderer.material.SetFloat(Radius, size * 0.4f);
-            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
-            meshRenderer.material.SetFloat(MassScale, 1);
-            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
-            if (sizeController != null) sizeController.material = meshRenderer.material;
 
             if (makeAudio)
             {
@@ -178,6 +166,27 @@ namespace NewHorizons.Builder.Body
 
             blackHole.SetActive(true);
             return blackHole;
+        }
+
+        public static MeshRenderer MakeBlackHoleGraphics(GameObject blackHole, float size)
+        {
+            var blackHoleRender = new GameObject("BlackHoleRender");
+            blackHoleRender.transform.parent = blackHole.transform;
+            blackHoleRender.transform.localPosition = Vector3.zero;
+            blackHoleRender.transform.localScale = Vector3.one * size;
+
+            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
+            meshFilter.mesh = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshFilter>().mesh;
+
+            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
+            if (blackHoleShader == null) blackHoleShader = SearchUtilities.Find("BrittleHollow_Body/BlackHole_BH/BlackHoleRenderer").GetComponent<MeshRenderer>().sharedMaterial.shader;
+            meshRenderer.material = new Material(blackHoleShader);
+            meshRenderer.material.SetFloat(Radius, size * 0.4f);
+            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
+            meshRenderer.material.SetFloat(MassScale, 1);
+            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
+
+            return meshRenderer;
         }
 
         public static GameObject MakeWhiteHole(GameObject planetGO, Sector sector, OWRigidbody OWRB, Vector3 localPosition, float size,

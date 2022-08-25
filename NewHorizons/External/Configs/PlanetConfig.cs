@@ -166,11 +166,6 @@ namespace NewHorizons.External.Configs
         public StarModule Star;
 
         /// <summary>
-        /// Version of New Horizons this config is using (Doesn't do anything)
-        /// </summary>
-        public string version;
-
-        /// <summary>
         /// Add water to this planet
         /// </summary>
         public WaterModule Water;

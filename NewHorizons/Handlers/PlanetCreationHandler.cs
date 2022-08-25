@@ -463,7 +463,7 @@ namespace NewHorizons.Handlers
             return go;
         }
 
-        internal static float GetSphereOfInfluence(NewHorizonsBody body)
+        private static float GetSphereOfInfluence(NewHorizonsBody body)
         {
             var atmoSize = body.Config.Atmosphere != null ? body.Config.Atmosphere.size : 0f;
             float sphereOfInfluence = Mathf.Max(Mathf.Max(atmoSize, 50), body.Config.Base.surfaceSize * 2f);
@@ -473,7 +473,7 @@ namespace NewHorizons.Handlers
         }
 
         // What is called both on existing planets and new planets
-        internal static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
+        private static GameObject SharedGenerateBody(NewHorizonsBody body, GameObject go, Sector sector, OWRigidbody rb)
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
@@ -504,14 +504,34 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                if (body.Config.isStellarRemnant)
+                var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, false);
+
+                if (starController != null) StarLightController.AddStar(starController);
+
+                // If it has an evolution controller that means it will die -> we make a remnant
+                if (starEvolutionController != null)
                 {
-                    sector.GetComponent<StellarRemnantController>().SetStarController(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, true));
-                }
-                else
-                {
-                    StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod, false));
-                    StellarRemnantBuilder.Make(body, go, rb, body.Mod, Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault());
+                    GameObject remnantGO;
+
+                    // Create the remnant as if it were a planet
+                    if (body.Config.Star.stellarRemnantType == External.Modules.VariableSize.StellarRemnantType.Custom)
+                    {
+                        var remnant = Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault();
+
+                        var remnantSector = SectorBuilder.Make(go, rb, sphereOfInfluence);
+                        remnantSector.name = "CustomStellarRemnant";
+
+                        SharedGenerateBody(remnant, go, remnantSector, rb);
+
+                        remnantGO = remnantSector.gameObject;
+                    }
+                    else
+                    {
+                        remnantGO = StellarRemnantBuilder.Make(go, rb, sphereOfInfluence, body.Mod, body);
+                    }
+
+                    remnantGO.SetActive(false);
+                    starEvolutionController.SetStellarRemnant(remnantGO);
                 }
             }
 

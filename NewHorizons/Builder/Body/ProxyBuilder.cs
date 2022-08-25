@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.Body
             proxy.SetActive(true);
         }
 
-        internal static bool SharedMake(GameObject planetGO, GameObject proxy, NHProxy proxyController, NewHorizonsBody body, StellarRemnantProxy stellarRemnantProxy = null)
+        private static bool SharedMake(GameObject planetGO, GameObject proxy, NHProxy proxyController, NewHorizonsBody body)
         {
             try
             {
@@ -205,15 +205,6 @@ namespace NewHorizons.Builder.Body
                     proxyController._realObjectDiameter = realSize;
                     proxyController._baseRealObjectDiameter = realSize;
                 }
-                else if (stellarRemnantProxy != null)
-                {
-                    stellarRemnantProxy._atmosphere = atmosphere;
-                    stellarRemnantProxy._fog = fog;
-                    stellarRemnantProxy._fogCurveMaxVal = fogCurveMaxVal;
-                    stellarRemnantProxy._topClouds = topClouds;
-                    stellarRemnantProxy._lightningGenerator = lightningGenerator;
-                    stellarRemnantProxy._realObjectDiameter = realSize;
-                }
 
                 return true;
             }
@@ -224,7 +215,7 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        internal static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
+        private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
         {
             GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphereGO.transform.name = "ProxySphere";
@@ -242,7 +233,7 @@ namespace NewHorizons.Builder.Body
             return sphereGO;
         }
 
-        internal static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        private static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
             sizeController.SetScaleCurve(curve);
@@ -250,7 +241,7 @@ namespace NewHorizons.Builder.Body
             return sizeController;
         }
 
-        internal static GameObject MakeBlackHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        private static GameObject MakeBlackHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
         {
             if (_blackHolePrefab == null) _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
 
@@ -279,7 +270,7 @@ namespace NewHorizons.Builder.Body
             return blackHoleRender;
         }
 
-        internal static GameObject MakeWhiteHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        private static GameObject MakeWhiteHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
         {
             if (_whiteHolePrefab == null) _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
 
