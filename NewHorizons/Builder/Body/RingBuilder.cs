@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -48,6 +47,8 @@ namespace NewHorizons.Builder.Body
             var sfv = ringVolume.AddComponent<RingFluidVolume>();
             sfv._fluidType = ring.fluidType.ConvertToOW();
             sfv._density = 5f;
+
+            if (ringGO.TryGetComponent<RingOpacityController>(out var ringOC)) ringOC.SetRingFluidVolume(sfv);
 
             ringVolume.SetActive(true);
 
@@ -116,10 +117,17 @@ namespace NewHorizons.Builder.Body
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.curve != null)
+            if (ring.scaleCurve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
-                levelController.SetScaleCurve(ring.curve);
+                levelController.SetScaleCurve(ring.scaleCurve);
+            }
+
+            if (ring.opacityCurve != null)
+            {
+                var ringOC = ringGO.AddComponent<RingOpacityController>();
+                ringOC.SetOpacityCurve(ring.opacityCurve);
+                ringOC.SetMeshRenderer(ringMR);
             }
 
             return ringGO;
