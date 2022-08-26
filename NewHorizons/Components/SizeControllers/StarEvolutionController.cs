@@ -59,12 +59,17 @@ namespace NewHorizons.Components.SizeControllers
         private bool _isSupernova;
         private float _supernovaStartTime;
 
-        private static Material _collapseStartSurfaceMaterial;
-        private static Material _collapseEndSurfaceMaterial;
-        private static Material _startSurfaceMaterial;
-        private static Material _endSurfaceMaterial;
-        private static Texture _defaultNormalRamp;
-        private static Texture _defaultCollapseRamp;
+        private static Material _defaultCollapseStartSurfaceMaterial,
+            _defaultCollapseEndSurfaceMaterial,
+            _defaultStartSurfaceMaterial, 
+            _defaultEndSurfaceMaterial;
+
+        private static Texture _defaultNormalRamp, _defaultCollapseRamp;
+
+        private Material _collapseStartSurfaceMaterial,
+            _collapseEndSurfaceMaterial,
+            _startSurfaceMaterial,
+            _endSurfaceMaterial;
 
         private Material _surfaceMaterial;
         private Texture _normalRamp;
@@ -93,10 +98,11 @@ namespace NewHorizons.Components.SizeControllers
         {
             var sun = GameObject.FindObjectOfType<SunController>();
 
-            _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
-            _collapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
-            _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
-            _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
+            // Need to grab all this early bc the star might only Start after the solar system was made (remnants)
+            _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
+            _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
+            _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial);
+            _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
             _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
             _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
@@ -105,7 +111,12 @@ namespace NewHorizons.Components.SizeControllers
         private void Start()
         {
             _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
-            _surfaceMaterial = new Material(_surface._materials[0]);
+            _surfaceMaterial = _surface._materials[0];
+
+            _collapseStartSurfaceMaterial = new Material(_defaultCollapseStartSurfaceMaterial);
+            _collapseEndSurfaceMaterial = new Material(_defaultCollapseEndSurfaceMaterial);
+            _startSurfaceMaterial = new Material(_defaultStartSurfaceMaterial);
+            _endSurfaceMaterial = new Material(_defaultEndSurfaceMaterial);
 
             _rigidbody = this.GetAttachedOWRigidbody();
 
