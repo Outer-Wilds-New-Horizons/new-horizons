@@ -308,6 +308,9 @@ namespace NewHorizons
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
                 StarEvolutionController.Init();
 
+                // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
+                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
+
                 if (isSolarSystem)
                 {
                     foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
@@ -320,8 +323,6 @@ namespace NewHorizons
                     VesselWarpHandler.LoadVessel();
                     SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 }
-
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 StarChartHandler.Init(SystemDict.Values.ToArray());
 
