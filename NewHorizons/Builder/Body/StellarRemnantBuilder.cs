@@ -17,8 +17,7 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject Make(GameObject go, OWRigidbody rb, float soi, IModBehaviour mod, NewHorizonsBody star)
         {
-            var remnantType = star.Config.Star.stellarRemnantType;
-            if (remnantType == StellarRemnantType.Default && star.Config.Star.size < whiteDwarfSize) return null;
+            if (!HasRemnant(star.Config.Star)) return null;
 
             try
             {
@@ -29,6 +28,7 @@ namespace NewHorizons.Builder.Body
 
                 sector.gameObject.SetActive(false);
 
+                var remnantType = star.Config.Star.stellarRemnantType;
                 if (remnantType == StellarRemnantType.Default) remnantType = GetDefault(star.Config.Star.size);
 
                 switch (remnantType)
@@ -68,6 +68,13 @@ namespace NewHorizons.Builder.Body
             if (progenitorSize >= blackholeSize) return StellarRemnantType.BlackHole;
             else if (neutronStarSize < progenitorSize && progenitorSize < blackholeSize) return StellarRemnantType.NeutronStar;
             else return StellarRemnantType.WhiteDwarf;
+        }
+
+        public static bool HasRemnant(StarModule star) 
+        {
+            if (star.stellarDeathType == StellarDeathType.None) return false;
+
+            return !(star.stellarRemnantType == StellarRemnantType.Default && star.size < whiteDwarfSize);
         }
 
         private static GameObject MakeWhiteDwarf(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)

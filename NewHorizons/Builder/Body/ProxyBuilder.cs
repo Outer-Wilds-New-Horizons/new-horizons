@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.Body
 
                 proxyController.stellarRemnantGO = remnantGO;
             }
-            else if (body.Config.Star != null)
+            else if (body.Config.Star != null && StellarRemnantBuilder.HasRemnant(body.Config.Star))
             {
                 Logger.LogVerbose($"Making remnant proxy");
 
