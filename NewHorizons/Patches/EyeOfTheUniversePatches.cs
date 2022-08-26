@@ -13,13 +13,26 @@ namespace NewHorizons.Patches
             return (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse");
         }
 
+        private static void SwitchToDefaultIfAtEyeGoingToSS(OWScene scene)
+        {
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" && scene == OWScene.SolarSystem) Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(LoadManager), nameof(LoadManager.LoadSceneImmediate))]
+        public static void LoadManager_LoadSceneImmediate(OWScene scene) => SwitchToDefaultIfAtEyeGoingToSS(scene);
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(LoadManager), nameof(LoadManager.StartAsyncSceneLoad))]
+        public static void LoadManager_StartAsyncSceneLoad(OWScene scene) => SwitchToDefaultIfAtEyeGoingToSS(scene);
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SubmitActionLoadScene), nameof(SubmitActionLoadScene.ConfirmSubmit))]
         public static void SubmitActionLoadScene_ConfirmSubmit(SubmitActionLoadScene __instance)
         {
             if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.EYE) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
         }
-        
+
         [HarmonyPrefix]
         [HarmonyPatch(typeof(ShipThrusterController), nameof(ShipThrusterController.ReadTranslationalInput))]
         public static bool ShipThrusterController_ReadTranslationalInput(ShipThrusterController __instance, ref Vector3 __result)
