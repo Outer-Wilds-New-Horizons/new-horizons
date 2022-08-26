@@ -47,7 +47,7 @@ namespace NewHorizons.Patches
             }
             else
             {
-                __result = SupernovaEffectHandler.InPointInsideAnySupernova(__instance._realObjectTransform.position);
+                __result = SupernovaEffectHandler.IsPointInsideAnySupernova(__instance._realObjectTransform.position);
                 return false;
             }
         }

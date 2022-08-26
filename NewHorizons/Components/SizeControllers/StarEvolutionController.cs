@@ -17,6 +17,7 @@ namespace NewHorizons.Components.SizeControllers
     public class StarEvolutionController : SizeController
     {
         public bool isProxy;
+        public bool isRemnant;
 
         public GameObject atmosphere;
         public StarController controller;
@@ -86,8 +87,12 @@ namespace NewHorizons.Components.SizeControllers
 
         private Color _currentColour;
 
+        private TessellatedSphereRenderer _surface;
+
         private void Start()
         {
+            _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
+
             _rigidbody = this.GetAttachedOWRigidbody();
 
             var sun = GameObject.FindObjectOfType<SunController>();
@@ -163,7 +168,7 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
-            _surfaceMaterial = supernova._surface._materials[0];
+            _surfaceMaterial = _surface._materials[0];
 
             if (!isProxy) SupernovaEffectHandler.RegisterStar(this);
 
@@ -189,7 +194,7 @@ namespace NewHorizons.Components.SizeControllers
         public void SetProxy(StarEvolutionController proxy)
         {
             _proxy = proxy;
-            _proxy.supernova.SetIsProxy(true);
+            _proxy.supernova?.SetIsProxy(true);
         }
 
         private void UpdateMainSequence()
@@ -204,21 +209,21 @@ namespace NewHorizons.Components.SizeControllers
                 if (t < 1f)
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
-                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
-                    supernova._surface._materials[0].SetFloat(ColorTime, t);
+                    _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                    _surface._materials[0].SetFloat(ColorTime, t);
                 }
                 else
                 {
                     _currentColour = _endColour;
-                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 1);
-                    supernova._surface._materials[0].SetFloat(ColorTime, 1);
+                    _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 1);
+                    _surface._materials[0].SetFloat(ColorTime, 1);
                 }
             }
             else
             {
                 _currentColour = _startColour;
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 0);
-                supernova._surface._materials[0].SetFloat(ColorTime, 0);
+                _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 0);
+                _surface._materials[0].SetFloat(ColorTime, 0);
             }
 
             if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
@@ -234,7 +239,7 @@ namespace NewHorizons.Components.SizeControllers
 
             _currentColour = Color.Lerp(_endColour, Color.white, t);
 
-            supernova._surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
+            _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
             // After the collapse is done we go supernova
             if (_collapseTimer > collapseTime) StartSupernova();
@@ -324,7 +329,7 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
+            _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
             if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
             if (_proxy != null) _proxy.StartCollapse();
@@ -338,7 +343,7 @@ namespace NewHorizons.Components.SizeControllers
 
             CollapseStop.Invoke();
             _isCollapsing = false;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
+            _surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
 
             if (_proxy != null) _proxy.StopCollapse();
         }
@@ -384,8 +389,8 @@ namespace NewHorizons.Components.SizeControllers
             if (heatVolume != null) heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
-            supernova._surface._materials[0] = _surfaceMaterial;
-            supernova._surface.transform.localScale = Vector3.one;
+            _surface._materials[0] = _surfaceMaterial;
+            _surface.transform.localScale = Vector3.one;
 
             if (_proxy != null) _proxy.StopSupernova();
         }

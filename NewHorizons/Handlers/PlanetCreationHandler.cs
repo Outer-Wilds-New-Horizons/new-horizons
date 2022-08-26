@@ -508,12 +508,12 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, false);
+                var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                 if (starController != null) StarLightController.AddStar(starController);
 
-                // If it has an evolution controller that means it will die -> we make a remnant
-                if (starEvolutionController != null)
+                // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
+                if (starEvolutionController != null && !body.Config.isStellarRemnant)
                 {
                     GameObject remnantGO;
 
