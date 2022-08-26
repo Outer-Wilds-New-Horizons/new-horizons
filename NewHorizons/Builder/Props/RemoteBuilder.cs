@@ -208,6 +208,8 @@ namespace NewHorizons.Builder.Props
                 component._nomaiTexts[i] = wallText;
             }
 
+            if (info.disableWall) whiteboard.FindChild("Props_NOM_Whiteboard_Shared").SetActive(false);
+
             whiteboard.SetActive(true);
         }
 
@@ -250,6 +252,14 @@ namespace NewHorizons.Builder.Props
             component._id = id;
             component._visualSector = sector;
             component._dataPointID = info.reveals;
+
+            if (info.disableStructure)
+            {
+                platform.FindChild("Structure_NOM_RemoteViewer").SetActive(false);
+                platform.FindChild("RemoteViewer_FadeGeo").SetActive(false);
+            }
+
+            if (info.disablePool) platform.FindChild("RemoteViewer_Pool").SetActive(false);
 
             platform.SetActive(true);
         }

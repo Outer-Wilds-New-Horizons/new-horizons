@@ -239,7 +239,7 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        private static GameObject AddColouredSphere(GameObject rootObj, float size, VariableSizeModule.TimeValuePair[] curve, Color color)
+        private static GameObject AddColouredSphere(GameObject rootObj, float size, TimeValuePair[] curve, Color color)
         {
             GameObject sphereGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             sphereGO.transform.name = "ProxySphere";
@@ -257,7 +257,7 @@ namespace NewHorizons.Builder.Body
             return sphereGO;
         }
 
-        private static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        private static SizeController AddSizeController(GameObject go, TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
             sizeController.SetScaleCurve(curve);

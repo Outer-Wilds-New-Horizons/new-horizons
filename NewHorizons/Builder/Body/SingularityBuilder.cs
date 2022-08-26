@@ -100,7 +100,7 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, 
-            bool hasDestructionVolume, string targetSolarSystem, VariableSizeModule.TimeValuePair[] curve = null, bool makeAudio = true)
+            bool hasDestructionVolume, string targetSolarSystem = null, TimeValuePair[] curve = null, bool makeAudio = true)
         {
             var blackHole = new GameObject("BlackHole");
             blackHole.SetActive(false);
@@ -193,7 +193,7 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeWhiteHole(GameObject planetGO, Sector sector, OWRigidbody OWRB, Vector3 localPosition, float size,
-            VariableSizeModule.TimeValuePair[] curve, bool makeZeroGVolume = true)
+            TimeValuePair[] curve, bool makeZeroGVolume = true)
         {
             var whiteHole = new GameObject("WhiteHole");
             whiteHole.SetActive(false);
