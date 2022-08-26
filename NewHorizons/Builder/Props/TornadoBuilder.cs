@@ -2,6 +2,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
@@ -143,15 +144,9 @@ namespace NewHorizons.Builder.Props
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
             // Resize it so the force volume goes all the way up
-            switch (downwards)
-            {
-                case true:
-                    tornadoGO.transform.Find("MockDownTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
-                    break;
-                default:
-                    tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
-                    break;
-            }
+            var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
+            fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
+            fluidGO.localScale = new Vector3(1, 2f, 1);
 
             if (info.tint != null)
             {
@@ -176,6 +171,7 @@ namespace NewHorizons.Builder.Props
             hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
             var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
+            fluidVolume._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidVolume._density = 8;
 
             var effects = hurricaneGO.transform.Find("Effects_GD_Hurricane").gameObject;
