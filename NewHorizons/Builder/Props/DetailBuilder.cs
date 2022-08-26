@@ -211,8 +211,11 @@ namespace NewHorizons.Builder.Props
         {
             // Fix other components
             // I forget why this is here
-            if (component is GhostIK ik) ik.enabled = false;
-            if (component is GhostEffects effects) effects.enabled = false;
+            if (component is GhostIK || component is GhostEffects)
+            {
+                Component.DestroyImmediate(component);
+                return;
+            }
 
             if (component is DarkMatterVolume)
             {
