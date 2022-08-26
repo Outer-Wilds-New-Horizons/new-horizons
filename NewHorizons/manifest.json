@@ -6,6 +6,7 @@
   "uniqueName": "xen.NewHorizons",
   "version": "1.4.4",
   "owmlVersion": "2.6.0",
+  "dependencies": [ "JohnCorby.VanillaFix" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
