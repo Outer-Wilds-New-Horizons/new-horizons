@@ -1,4 +1,3 @@
-using Epic.OnlineServices.Stats;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
