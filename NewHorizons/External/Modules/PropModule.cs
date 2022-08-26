@@ -325,6 +325,11 @@ namespace NewHorizons.External.Modules
             /// The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.
             /// </summary>
             public float audioDistance;
+
+            /// <summary>
+            /// Fluid type for sounds/effects when colliding with this tornado.
+            /// </summary>
+            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
         }
 
         [JsonObject]
