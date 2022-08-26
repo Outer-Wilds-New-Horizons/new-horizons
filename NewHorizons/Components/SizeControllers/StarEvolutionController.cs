@@ -59,10 +59,13 @@ namespace NewHorizons.Components.SizeControllers
         private bool _isSupernova;
         private float _supernovaStartTime;
 
-        private Material _collapseStartSurfaceMaterial;
-        private Material _collapseEndSurfaceMaterial;
-        private Material _startSurfaceMaterial;
-        private Material _endSurfaceMaterial;
+        private static Material _collapseStartSurfaceMaterial;
+        private static Material _collapseEndSurfaceMaterial;
+        private static Material _startSurfaceMaterial;
+        private static Material _endSurfaceMaterial;
+        private static Texture _defaultNormalRamp;
+        private static Texture _defaultCollapseRamp;
+
         private Material _surfaceMaterial;
         private Texture _normalRamp;
         private Texture _collapseRamp;
@@ -86,29 +89,39 @@ namespace NewHorizons.Components.SizeControllers
 
         private TessellatedSphereRenderer _surface;
 
-        private void Start()
+        public static void Init()
         {
-            _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
-
-            _rigidbody = this.GetAttachedOWRigidbody();
-
             var sun = GameObject.FindObjectOfType<SunController>();
+
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
             _collapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
             _startSurfaceMaterial = new Material(sun._startSurfaceMaterial);
             _endSurfaceMaterial = new Material(sun._endSurfaceMaterial);
 
+            _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
+            _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
+        }
+
+        private void Start()
+        {
+            _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
+            _surfaceMaterial = new Material(_surface._materials[0]);
+
+            _rigidbody = this.GetAttachedOWRigidbody();
+
             if (normalRamp == null)
             {
-                _normalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
-            } else
+                _normalRamp = _defaultNormalRamp;
+            }
+            else
             {
                 _normalRamp = normalRamp;
             }
             if (collapseRamp == null)
             {
-                _collapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
-            } else
+                _collapseRamp = _defaultCollapseRamp;
+            }
+            else
             {
                 _collapseRamp = collapseRamp;
             }
@@ -165,7 +178,6 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
-            _surfaceMaterial = _surface._materials[0];
 
             if (!isProxy) SupernovaEffectHandler.RegisterStar(this);
 
@@ -419,7 +431,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateSupernova();
                 return;
             }
-            
+
             if (!_isCollapsing)
             {
                 base.FixedUpdate();
@@ -431,7 +443,7 @@ namespace NewHorizons.Components.SizeControllers
                 UpdateCollapse();
                 if (_isSupernova) return;
             }
-            
+
             // This is just all the scales stuff for the atmosphere effects
             if (_fog != null)
             {
