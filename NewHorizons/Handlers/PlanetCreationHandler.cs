@@ -284,27 +284,6 @@ namespace NewHorizons.Handlers
                 UpdateBodyOrbit(body, go);
             }
 
-            if (body.Config.removeChildren != null)
-            {
-                var goPath = go.transform.GetPath();
-                var transforms = go.GetComponentsInChildren<Transform>(true);
-                foreach (var childPath in body.Config.removeChildren)
-                {
-                    // Multiple children can have the same path so we delete all that match
-                    var path = $"{goPath}/{childPath}";
-
-                    var flag = true;
-                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
-                    {
-                        flag = false;
-                        // idk why we wait here but we do
-                        Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
-                    }
-
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
-            }
-
             // Do stuff that's shared between generating new planets and updating old ones
             go = SharedGenerateBody(body, go, sector, rb);
 
@@ -587,7 +566,8 @@ namespace NewHorizons.Handlers
             {
                 var surfaceSize = body.Config.Base.surfaceSize;
 
-                AirBuilder.Make(go, sector, body.Config);
+                if (body.Config.Atmosphere.size != 0)
+                    AirBuilder.Make(go, sector, body.Config);
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
@@ -626,6 +606,9 @@ namespace NewHorizons.Handlers
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
+
+            // We allow removing children afterwards so you can also take bits off of the modules you used
+            if (body.Config.removeChildren != null) RemoveChildren(go, body);
 
             return go;
         }
@@ -771,6 +754,27 @@ namespace NewHorizons.Handlers
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {
                 Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+            }
+        }
+
+        private static void RemoveChildren(GameObject go, NewHorizonsBody body)
+        {
+            var goPath = go.transform.GetPath();
+            var transforms = go.GetComponentsInChildren<Transform>(true);
+            foreach (var childPath in body.Config.removeChildren)
+            {
+                // Multiple children can have the same path so we delete all that match
+                var path = $"{goPath}/{childPath}";
+
+                var flag = true;
+                foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                {
+                    flag = false;
+                    // idk why we wait here but we do
+                    Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                }
+
+                if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
     }

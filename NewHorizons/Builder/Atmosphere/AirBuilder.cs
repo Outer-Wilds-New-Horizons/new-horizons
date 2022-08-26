@@ -6,16 +6,16 @@ namespace NewHorizons.Builder.Atmosphere
     {
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
         {
-            GameObject airGO = new GameObject("Air");
+            var airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
             airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
 
-            SphereCollider sc = airGO.AddComponent<SphereCollider>();
+            var sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
             sc.radius = config.Atmosphere.size;
 
-            SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
+            var sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
             sfv._priority = 1;
             sfv._density = 1.2f;
@@ -23,7 +23,11 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            ShockLayerRuleset shockLayerRuleset = planetGO.GetComponentInChildren<PlanetoidRuleset>().gameObject.AddComponent<ShockLayerRuleset>();
+            // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
+            var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
+            if (ruleSetGO == null) ruleSetGO = planetGO;
+
+            var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
             shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
             shockLayerRuleset._radialCenter = airGO.transform;
             shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
@@ -55,7 +59,7 @@ namespace NewHorizons.Builder.Atmosphere
                 vref._layer = 0;
                 vref._priority = 0;
 
-                AudioSource AS = airGO.AddComponent<AudioSource>();
+                var AS = airGO.AddComponent<AudioSource>();
                 AS.mute = false;
                 AS.bypassEffects = false;
                 AS.bypassListenerEffects = false;
