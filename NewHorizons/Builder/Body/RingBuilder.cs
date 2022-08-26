@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Builder.Body
 {
@@ -46,19 +45,10 @@ namespace NewHorizons.Builder.Body
             trigger._shape = ringShape;
 
             var sfv = ringVolume.AddComponent<RingFluidVolume>();
-            var fluidType = FluidVolume.Type.NONE;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]:\n{ex}");
-            }
-
-            sfv._fluidType = fluidType;
+            sfv._fluidType = ring.fluidType.ConvertToOW();
             sfv._density = 5f;
+
+            if (ringGO.TryGetComponent<RingOpacityController>(out var ringOC)) ringOC.SetRingFluidVolume(sfv);
 
             ringVolume.SetActive(true);
 
@@ -127,10 +117,17 @@ namespace NewHorizons.Builder.Body
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.curve != null)
+            if (ring.scaleCurve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
-                levelController.SetScaleCurve(ring.curve);
+                levelController.SetScaleCurve(ring.scaleCurve);
+            }
+
+            if (ring.opacityCurve != null)
+            {
+                var ringOC = ringGO.AddComponent<RingOpacityController>();
+                ringOC.SetOpacityCurve(ring.opacityCurve);
+                ringOC.SetMeshRenderer(ringMR);
             }
 
             return ringGO;

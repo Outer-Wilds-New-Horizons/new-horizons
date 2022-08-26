@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
-    public class BramblePatches
+    public static class BramblePatches
     {
         //
         // this file is not great. the real solution to the issues these patches address should be solved by replacing bramble nodes' InnerFogWarpVolume

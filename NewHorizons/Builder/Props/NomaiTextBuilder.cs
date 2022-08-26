@@ -2,6 +2,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
+using Enum = System.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -22,6 +23,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _cairnPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
+        private static GameObject _trailmarkerPrefab;
 
         private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
         public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
@@ -81,7 +83,7 @@ namespace NewHorizons.Builder.Props
             _computerPrefab.name = "Prefab_NOM_Computer";
             _computerPrefab.transform.rotation = Quaternion.identity;
 
-            _preCrashComputerPrefab = SearchUtilities.Find("DB_EscapePodDimension_Body/Sector_EscapePodDimension/Sector_EscapePodBody/Interactables_EscapePodBody/Prefab_NOM_Vessel_Computer").InstantiateInactive();
+            _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive();
             _preCrashComputerPrefab.name = "Prefab_NOM_Vessel_Computer";
             _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
 
@@ -96,6 +98,10 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive();
             _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
+
+            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign");
+            _trailmarkerPrefab.name = "Prefab_NOM_Trailmarker";
+            _trailmarkerPrefab.transform.rotation = Quaternion.identity;
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
@@ -157,6 +163,10 @@ namespace NewHorizons.Builder.Props
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             customScroll.name = info.rename;
+                        }
+                        else
+                        {
+                            customScroll.name = _scrollPrefab.name;
                         }
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath);
@@ -234,6 +244,10 @@ namespace NewHorizons.Builder.Props
                         {
                             computerObject.name = info.rename;
                         }
+                        else
+                        {
+                            computerObject.name = _computerPrefab.name;
+                        }
 
                         computerObject.transform.parent = sector?.transform ?? planetGO.transform;
 
@@ -259,6 +273,7 @@ namespace NewHorizons.Builder.Props
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
 
+                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -274,7 +289,11 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.MakeDetail(planetGO, sector, _preCrashComputerPrefab, info.position, Vector3.zero, 1, false);
+                        var detailInfo = new PropModule.DetailInfo()
+                        {
+                            position = info.position
+                        };
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
                         computerObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))
@@ -299,16 +318,23 @@ namespace NewHorizons.Builder.Props
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
                         computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
-                        // Move it slightly up more
-                        computerObject.transform.position += up.normalized * 0.1f;
-
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
 
+                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlPath);
+
+                        // Make fifth ring work
+                        var fifthRingObject = computerObject.FindChild("Props_NOM_Vessel_Computer 1/Props_NOM_Vessel_Computer_Effects (4)");
+                        fifthRingObject.SetActive(true);
+                        var fifthRing = fifthRingObject.GetComponent<NomaiVesselComputerRing>();
+                        //fifthRing._baseProjectorColor = new Color(1.4118, 1.5367, 4, 1);
+                        //fifthRing._baseTextColor = new Color(0.8824, 0.9604, 2.5, 1);
+                        //fifthRing._baseTextShadowColor = new Color(0.3529, 0.3843, 1, 0.25);
+                        fifthRing._computer = computer;
 
                         computerObject.SetActive(true);
 
@@ -333,6 +359,10 @@ namespace NewHorizons.Builder.Props
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             cairnObject.name = info.rename;
+                        }
+                        else
+                        {
+                            cairnObject.name = _cairnPrefab.name;
                         }
 
                         cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
@@ -380,6 +410,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiWallText = cairnObject.transform.Find("Props_TH_ClutterSmall/Arc_Short").GetComponent<NomaiWallText>();
                         nomaiWallText.SetSector(sector);
 
+                        nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -394,35 +425,23 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
                 case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
                     {
-                        var recorderObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab).InstantiateInactive();
+                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var detailInfo = new PropModule.DetailInfo {
+                            parentPath = info.parentPath,
+                            rotation = info.rotation,
+                            position = info.position
+                        };
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+                        recorderObject.SetActive(false);
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
                             recorderObject.name = info.rename;
                         }
 
-                        recorderObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                recorderObject.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
                         recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
-                        if (info.rotation != null)
-                        {
-                            recorderObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
-                        }
-                        else
+                        if (info.rotation == null)
                         {
                             var up = recorderObject.transform.position - planetGO.transform.position;
                             recorderObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * recorderObject.transform.rotation;
@@ -431,19 +450,76 @@ namespace NewHorizons.Builder.Props
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
                         nomaiText.SetSector(sector);
 
+                        nomaiText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
                         nomaiText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
                         AddTranslation(xmlPath);
-
-                        // Make sure the recorder model is loaded
-                        StreamingHandler.SetUpStreaming(recorderObject, sector);
 
                         recorderObject.SetActive(true);
 
                         recorderObject.transform.Find("InteractSphere").gameObject.GetComponent<SphereShape>().enabled = true;
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
+                    }
+                case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
+                    {
+                        var trailmarkerObject = _trailmarkerPrefab.InstantiateInactive();
+
+                        if (!string.IsNullOrEmpty(info.rename))
+                        {
+                            trailmarkerObject.name = info.rename;
+                        }
+                        else
+                        {
+                            trailmarkerObject.name = _trailmarkerPrefab.name;
+                        }
+
+                        trailmarkerObject.transform.parent = sector?.transform ?? planetGO.transform;
+
+                        if (!string.IsNullOrEmpty(info.parentPath))
+                        {
+                            var newParent = planetGO.transform.Find(info.parentPath);
+                            if (newParent != null)
+                            {
+                                trailmarkerObject.transform.parent = newParent;
+                            }
+                            else
+                            {
+                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                            }
+                        }
+
+                        trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+                        if (info.rotation != null)
+                        {
+                            trailmarkerObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                        }
+                        else
+                        {
+                            // By default align it to normal
+                            var up = (trailmarkerObject.transform.position - planetGO.transform.position).normalized;
+                            trailmarkerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * trailmarkerObject.transform.rotation;
+                        }
+
+                        // Idk do we have to set it active before finding things?
+                        trailmarkerObject.SetActive(true);
+
+                        var nomaiWallText = trailmarkerObject.transform.Find("Arc_Short").GetComponent<NomaiWallText>();
+                        nomaiWallText.SetSector(sector);
+
+                        nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
+                        nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
+                        nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
+                        AddTranslation(xmlPath);
+
+                        // Make sure the model is loaded
+                        StreamingHandler.SetUpStreaming(trailmarkerObject, sector);
+                        conversationInfoToCorrespondingSpawnedGameObject[info] = trailmarkerObject;
+
+                        return trailmarkerObject;
                     }
                 default:
                     Logger.LogError($"Unsupported NomaiText type {info.type}");
@@ -463,7 +539,10 @@ namespace NewHorizons.Builder.Props
             box.isTrigger = true;
 
             nomaiWallTextObj.AddComponent<OWCollider>();
+
             var nomaiWallText = nomaiWallTextObj.AddComponent<NomaiWallText>();
+
+            nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
 
             var text = new TextAsset(xmlPath);
 

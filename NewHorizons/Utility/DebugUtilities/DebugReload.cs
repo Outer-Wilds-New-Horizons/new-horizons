@@ -49,7 +49,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
 
-            Main.SecondsLeftInLoop = -1f;
+            Main.SecondsElapsedInLoop = -1f;
         }
     }
 }

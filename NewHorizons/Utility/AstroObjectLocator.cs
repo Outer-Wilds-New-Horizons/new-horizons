@@ -61,7 +61,7 @@ namespace NewHorizons.Utility
         {
             var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
 
-            if (_customAstroObjectDictionary.Keys.Contains(key))
+            if (_customAstroObjectDictionary.ContainsKey(key))
             {
                 Logger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary[key] = ao;
@@ -87,6 +87,16 @@ namespace NewHorizons.Utility
         public static GameObject[] GetMoons(AstroObject primary)
         {
             return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
+        }
+
+        public static AstroObject[] GetAncestors(AstroObject astroObject)
+        {
+            List<AstroObject> ancestors = new List<AstroObject>();
+            for (AstroObject primaryBody = astroObject._primaryBody; primaryBody != null && !ancestors.Contains(primaryBody); primaryBody = primaryBody._primaryBody)
+            {
+                ancestors.Add(primaryBody);
+            }
+            return ancestors.ToArray();
         }
 
         public static GameObject[] GetChildren(AstroObject primary)
@@ -142,7 +152,13 @@ namespace NewHorizons.Utility
                     otherChildren.Add(SearchUtilities.Find("DB_SmallNest_Body"));
                     otherChildren.Add(SearchUtilities.Find("DB_Elsinore_Body"));
                     break;
-                // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
+                case AstroObject.Name.SunStation:
+                    // there are multiple debris with the same name
+                    otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
+                        .Select(x => x.gameObject)
+                        .Where(x => x.name == "SS_Debris_Body"));
+                    break;
+                // Just in case GetChildren runs before sun station's name is changed
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
                     {

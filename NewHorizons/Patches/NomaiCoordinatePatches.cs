@@ -24,7 +24,7 @@ namespace NewHorizons.Patches
             VesselWarpController.s_playerWarpLocation = new RelativeLocationData(Locator.GetPlayerBody(), __instance.transform);
             VesselWarpController.s_relativeLocationSaved = !debugWarp;
             if (!Main.Instance.IsWarpingFromVessel)
-                PlayerData.SaveWarpedToTheEye(TimeLoop.GetSecondsRemaining());
+                PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
             LoadManager.EnableAsyncLoadTransition();
             return false;
         }

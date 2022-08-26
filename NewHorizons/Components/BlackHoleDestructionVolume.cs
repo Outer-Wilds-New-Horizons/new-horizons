@@ -1,4 +1,4 @@
-using NewHorizons.AchievementsPlus.NH;
+using NewHorizons.OtherMods.AchievementsPlus.NH;
 
 namespace NewHorizons.Components
 {

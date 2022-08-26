@@ -10,9 +10,9 @@ namespace NewHorizons.Components
 
         private bool _isInitialized;
 
-        private List<Renderer> _renderers = null;
-        private List<TessellatedRenderer> _tessellatedRenderers = null;
-        private List<CloakedTessSphereSectorToggle> _tessSphereToggles = null;
+        private Renderer[] _renderers = null;
+        private TessellatedRenderer[] _tessellatedRenderers = null;
+        private CloakedTessSphereSectorToggle[] _tessSphereToggles = null;
 
         public static bool isPlayerInside = false;
         public static bool isProbeInside = false;
@@ -52,9 +52,9 @@ namespace NewHorizons.Components
 
         private void SetUpList()
         {
-            _renderers = _root.GetComponentsInChildren<Renderer>().ToList();
-            _tessellatedRenderers = _root.GetComponentsInChildren<TessellatedRenderer>().ToList();
-            _tessSphereToggles = _root.GetComponentsInChildren<CloakedTessSphereSectorToggle>().ToList();
+            _renderers = _root.GetComponentsInChildren<Renderer>();
+            _tessellatedRenderers = _root.GetComponentsInChildren<TessellatedRenderer>();
+            _tessSphereToggles = _root.GetComponentsInChildren<CloakedTessSphereSectorToggle>();
         }
 
         public void OnPlayerEnter()

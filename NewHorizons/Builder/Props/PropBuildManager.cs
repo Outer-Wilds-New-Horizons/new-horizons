@@ -29,7 +29,8 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, detail);
+                        var detailGO = DetailBuilder.Make(go, sector, mod, detail);
+                        DetailBuilder.RegisterDetailInfo(detail, detailGO);
                     }
                     catch (Exception ex)
                     {
@@ -181,7 +182,7 @@ namespace NewHorizons.Builder.Props
                 {
                     if (!propsByGroup.ContainsKey(quantumGroup.id)) continue;
                     var propsInGroup = propsByGroup[quantumGroup.id];
-                    
+
                     try
                     {
                         QuantumBuilder.Make(go, sector, config, mod, quantumGroup, propsInGroup.ToArray());
@@ -218,6 +219,20 @@ namespace NewHorizons.Builder.Props
                 foreach (var signal in config.Props.signals)
                 {
                     SignalBuilder.Make(go, sector, signal, mod);
+                }
+            }
+            if (config.Props.remotes != null)
+            {
+                foreach (var remoteInfo in config.Props.remotes)
+                {
+                    try
+                    {
+                        RemoteBuilder.Make(go, sector, remoteInfo, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
+                    }
                 }
             }
         }

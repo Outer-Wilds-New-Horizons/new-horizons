@@ -7,7 +7,7 @@
   "properties": {
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive",
+      "description": "Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.",
       "default": true
     },
     "destroyStockPlanets": {
@@ -22,7 +22,13 @@
     },
     "factRequiredForWarp": {
       "type": "string",
-      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if\nyou're using this, that would make no sense."
+      "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
+    },
+    "loopDuration": {
+      "type": "number",
+      "description": "The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.",
+      "format": "float",
+      "default": 22.0
     },
     "mapRestricted": {
       "type": "boolean",
@@ -132,6 +138,10 @@
         "warpExitRotation": {
           "description": "Euler angles by which the warp exit will be oriented.",
           "$ref": "#/definitions/MVector3"
+        },
+        "promptFact": {
+          "type": "string",
+          "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
         }
       }
     },

@@ -1,6 +1,6 @@
 using OWML.ModHelper;
 
-namespace NewHorizons.AchievementsPlus
+namespace NewHorizons.OtherMods.AchievementsPlus
 {
     public interface IAchievements
     {

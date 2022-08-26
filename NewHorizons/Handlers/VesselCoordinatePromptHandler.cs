@@ -31,7 +31,7 @@ namespace NewHorizons.Handlers
             foreach (var system in systems)
             {
                 var systemName = system.UniqueID;
-                var fact = system.Config.factRequiredForWarp;
+                var fact = system.Config.Vessel.promptFact;
                 var nomaiCoords = system.Config.Vessel?.coords;
 
                 if (system.UniqueID == "EyeOfTheUniverse" || nomaiCoords == null) continue;
@@ -195,7 +195,7 @@ namespace NewHorizons.Handlers
         {
             // Works normally in the main system, else check save data directly
             if (Main.Instance.CurrentStarSystem == "SolarSystem") return Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1");
-            else return PlayerData._currentGameSave.shipLogFactSaves.ContainsKey("OPC_EYE_COORDINATES_X1");
+            else return PlayerData._currentGameSave.shipLogFactSaves.ContainsKey("OPC_EYE_COORDINATES_X1") && PlayerData._currentGameSave.shipLogFactSaves["OPC_EYE_COORDINATES_X1"].revealOrder > -1;
         }
     }
 }

@@ -1,15 +1,49 @@
+using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using NomaiCoordinates = NewHorizons.External.Configs.StarSystemConfig.NomaiCoordinates;
+
 namespace NewHorizons.Utility
 {
     public static class NewHorizonsExtensions
     {
+        private static JsonSerializer jsonSerializer = new JsonSerializer
+        {
+            NullValueHandling = NullValueHandling.Ignore,
+            DefaultValueHandling = DefaultValueHandling.Ignore,
+            Formatting = Formatting.Indented,
+        };
+
+        private static StringBuilder stringBuilder = new StringBuilder();
+
+        public static string ToSerializedJson(this PlanetConfig planetConfig)
+        {
+            string json = "{}";
+            using (StringWriter stringWriter = new StringWriter(stringBuilder))
+            {
+                using (JsonTextWriter jsonTextWriter = new JsonTextWriter(stringWriter)
+                {
+                    Formatting = Formatting.Indented,
+                    IndentChar = '\t',
+                    Indentation = 1
+                })
+                {
+                    jsonSerializer.Serialize(jsonTextWriter, planetConfig);
+                    json = "{\n\t\"$schema\": \"https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json\"," + stringBuilder.ToString().Substring(1);
+                    stringBuilder.Clear();
+                }
+            }
+            return json;
+        }
+
         public static MVector3 ToMVector3(this Vector3 vector3)
         {
             return new MVector3(vector3.x, vector3.y, vector3.z);
@@ -181,6 +215,19 @@ namespace NewHorizons.Utility
             bool zCorrect = nomaiCoordinateInterface._nodeControllers[2].CheckCoordinate(coordinates.z);
             Utility.Logger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
             return xCorrect && yCorrect && zCorrect;
+        }
+
+        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
+        {
+            try
+            {
+                return (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), fluidType).ToUpper());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't parse fluid volume type [{fluidType}]:\n{ex}");
+                return @default;
+            }
         }
     }
 }

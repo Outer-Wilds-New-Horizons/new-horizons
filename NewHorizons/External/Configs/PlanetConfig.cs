@@ -1,12 +1,11 @@
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using NewHorizons.Builder.Orbital;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
-using Newtonsoft.Json;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
@@ -17,6 +16,17 @@ namespace NewHorizons.External.Configs
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig
     {
+        /// <summary>
+        /// Unique name of your planet
+        /// </summary>
+        [Required]
+        public string name;
+
+        /// <summary>
+        /// Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.
+        /// </summary>
+        [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
+
         /// <summary>
         /// Generate asteroids around this body
         /// </summary>
@@ -45,7 +55,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Should this planet ever be shown on the title screen?
         /// </summary>
-        public bool canShowOnTitle = true;
+        [DefaultValue(true)] public bool canShowOnTitle = true;
 
         #region Obsolete
 
@@ -90,15 +100,14 @@ namespace NewHorizons.External.Configs
         public bool isQuantumState;
 
         /// <summary>
+        /// Does this config describe a stellar remnant of a custom star defined in another file?
+        /// </summary>
+        public bool isStellarRemnant;
+
+        /// <summary>
         /// Add lava to this planet
         /// </summary>
         public LavaModule Lava;
-
-        /// <summary>
-        /// Unique name of your planet
-        /// </summary>
-        [Required]
-        public string name;
 
         /// <summary>
         /// Describes this Body's orbit (or lack there of)
@@ -141,6 +150,11 @@ namespace NewHorizons.External.Configs
         public ShipLogModule ShipLog;
 
         /// <summary>
+        /// Settings for shock effect on planet when the nearest star goes supernova
+        /// </summary>
+        public ShockEffectModule ShockEffect;
+
+        /// <summary>
         /// Spawn the player at this planet
         /// </summary>
         public SpawnModule Spawn;
@@ -149,16 +163,6 @@ namespace NewHorizons.External.Configs
         /// Make this body a star
         /// </summary>
         public StarModule Star;
-
-        /// <summary>
-        /// Unique star system containing your planet
-        /// </summary>
-        [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
-
-        /// <summary>
-        /// Version of New Horizons this config is using (Doesn't do anything)
-        /// </summary>
-        public string version;
 
         /// <summary>
         /// Add water to this planet
@@ -214,7 +218,7 @@ namespace NewHorizons.External.Configs
                     }
                 }
 
-                Dictionary<string, int> existingGroupsPropCounts = new Dictionary<string, int>();
+                var existingGroupsPropCounts = new Dictionary<string, int>();
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;
@@ -231,6 +235,9 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+
+            // Stars and focal points shouldnt be destroyed by stars
+            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
         }
 
         public void Migrate()
@@ -346,6 +353,13 @@ namespace NewHorizons.External.Configs
                 if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
+
+            // Star
+            if (Star != null)
+            {
+                if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+            }
+
             // Signals no longer use two different variables for audio
             if (Props?.signals != null)
             {
@@ -361,6 +375,12 @@ namespace NewHorizons.External.Configs
             {
                 if (!string.IsNullOrEmpty(Cloak.audioClip)) Cloak.audio = Cloak.audioClip;
                 if (!string.IsNullOrEmpty(Cloak.audioFilePath)) Cloak.audio = Cloak.audioFilePath;
+            }
+
+            // Rings are no longer variable size module
+            if (Ring != null)
+            {
+                if (Ring.curve != null) Ring.scaleCurve = Ring.curve;
             }
         }
     }

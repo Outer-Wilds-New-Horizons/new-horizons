@@ -32,6 +32,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
+                    // TODO copy what heightmap builder does eventually 
                     heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
                     // defer remove texture to next frame
                     Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
@@ -91,7 +92,14 @@ namespace NewHorizons.Builder.Props
                         point = Quaternion.Euler(90, 0, 0) * point;
                     }
 
-                    var prop = DetailBuilder.MakeDetail(go, sector, prefab, (MVector3)(point.normalized * height), null, propInfo.scale, true);
+                    var detailInfo = new PropModule.DetailInfo()
+                    {
+                        position = point.normalized * height,
+                        scale = propInfo.scale,
+                        alignToNormal = true
+                    };
+                    var prop = DetailBuilder.Make(go, sector, prefab, detailInfo);
+
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if (propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation);
 

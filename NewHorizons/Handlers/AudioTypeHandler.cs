@@ -30,9 +30,10 @@ namespace NewHorizons.Handlers
             Logger.LogVerbose($"Adding all custom AudioTypes to the library");
 
             var library = Locator.GetAudioManager()._libraryAsset;
-            library.audioEntries = library.audioEntries.Concat(_audioEntries).ToArray();
-
+            var audioEntries = library.audioEntries; // store previous array
+            library.audioEntries = library.audioEntries.Concat(_audioEntries).ToArray(); // concat custom entries
             Locator.GetAudioManager()._audioLibraryDict = library.BuildAudioEntryDictionary();
+            library.audioEntries = audioEntries; // reset it back for next time we build
         }
 
         // Will return an existing audio type or create a new one for the given audio string

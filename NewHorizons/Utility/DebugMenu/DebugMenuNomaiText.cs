@@ -79,7 +79,10 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void OnBeginLoadMod(DebugMenu debugMenu) {}
 
-        internal override void GainActive() {} // intentionally blank. do not set `DebugNomaiTextPlacer.active = true;` here
+        /// <summary>
+        /// intentionally blank. do not set <see cref="DebugNomaiTextPlacer.active"/> to <see langword="true"/> here
+        /// </summary>
+        internal override void GainActive() {}
 
         internal override void LoseActive()
         {

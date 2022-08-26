@@ -15,7 +15,7 @@ namespace NewHorizons.External.Configs
     public class StarSystemConfig
     {
         /// <summary>
-        /// Whether this system can be warped to via the warp drive
+        /// Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
 
@@ -30,10 +30,15 @@ namespace NewHorizons.External.Configs
         [DefaultValue(true)] public bool enableTimeLoop = true;
 
         /// <summary>
-        /// Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if
-        /// you're using this, that would make no sense.
+        /// The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
+        /// you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredForWarp;
+
+        /// <summary>
+        /// The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.
+        /// </summary>
+        [DefaultValue(22f)] public float loopDuration = 22f;
 
         /// <summary>
         /// Should the player not be able to view the map in this system?
@@ -184,6 +189,11 @@ namespace NewHorizons.External.Configs
             /// Euler angles by which the warp exit will be oriented.
             /// </summary>
             public MVector3 warpExitRotation;
+
+            /// <summary>
+            /// A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel.
+            /// </summary>
+            public string promptFact;
         }
 
         /// <summary>
@@ -209,6 +219,7 @@ namespace NewHorizons.External.Configs
             canEnterViaWarpDrive = canEnterViaWarpDrive && otherConfig.canEnterViaWarpDrive;
             destroyStockPlanets = destroyStockPlanets && otherConfig.destroyStockPlanets;
             enableTimeLoop = enableTimeLoop && otherConfig.enableTimeLoop;
+            loopDuration = loopDuration == 22f ? otherConfig.loopDuration : loopDuration;
 
             // If current one is null take the other
             factRequiredForWarp = string.IsNullOrEmpty(factRequiredForWarp) ? otherConfig.factRequiredForWarp : factRequiredForWarp;

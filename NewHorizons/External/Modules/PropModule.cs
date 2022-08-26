@@ -62,7 +62,7 @@ namespace NewHorizons.External.Modules
         /// Add slideshows (from the DLC) to the planet
         /// </summary>
         public ProjectionInfo[] slideShows;
-        
+
         /// <summary>
         /// A list of quantum groups that props can be added to. An example of a group would be a list of possible locations for a QuantumSocketedObject.
         /// </summary>
@@ -92,6 +92,11 @@ namespace NewHorizons.External.Modules
         /// Add signalscope signals to this planet
         /// </summary>
         public SignalModule.SignalInfo[] signals;
+
+        /// <summary>
+        /// Add projection pools/platforms, whiteboards, and stones to this planet
+        /// </summary>
+        public RemoteInfo[] remotes;
 
         [JsonObject]
         public class ScatterInfo
@@ -200,6 +205,11 @@ namespace NewHorizons.External.Modules
             /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+            /// </summary>
+            public bool keepLoaded;
         }
 
         [JsonObject]
@@ -220,9 +230,39 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
+            /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
+            /// </summary>
+            [DefaultValue(-97.5f)] public float offset = -97.5f;
+
+            /// <summary>
+            /// Force of the geyser on objects
+            /// </summary>
+            [DefaultValue(55f)] public float force = 55f;
+
+            /// <summary>
+            /// Time in seconds eruptions last for
+            /// </summary>
+            [DefaultValue(10f)] public float activeDuration = 10f;
+
+            /// <summary>
+            /// Time in seconds between eruptions
+            /// </summary>
+            [DefaultValue(19f)] public float inactiveDuration = 19f;
+
+            /// <summary>
+            /// Color of the geyser. Alpha sets the particle density.
+            /// </summary>
+            public MColor tint;
+
+            /// <summary>
             /// Disable the individual particle systems of the geyser
             /// </summary>
             public bool disableBubbles, disableShaft, disableSpout;
+
+            /// <summary>
+            /// Loudness of the geyser
+            /// </summary>
+            [DefaultValue(0.7f)] public float volume = 0.7f;
         }
 
         [JsonObject]
@@ -231,9 +271,9 @@ namespace NewHorizons.External.Modules
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
             {
-                [EnumMember(Value = @"downwards")] Downwards = 0,
+                [EnumMember(Value = @"upwards")] Upwards = 0,
 
-                [EnumMember(Value = @"upwards")] Upwards = 1,
+                [EnumMember(Value = @"downwards")] Downwards = 1,
 
                 [EnumMember(Value = @"hurricane")] Hurricane = 2
             }
@@ -263,7 +303,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            [DefaultValue("downwards")] public TornadoType type = TornadoType.Downwards;
+            [DefaultValue("upwards")] public TornadoType type = TornadoType.Upwards;
 
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.
@@ -285,6 +325,11 @@ namespace NewHorizons.External.Modules
             /// The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.
             /// </summary>
             public float audioDistance;
+
+            /// <summary>
+            /// Fluid type for sounds/effects when colliding with this tornado.
+            /// </summary>
+            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
         }
 
         [JsonObject]
@@ -471,10 +516,22 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"cairn")] Cairn = 3,
 
                 [EnumMember(Value = @"recorder")] Recorder = 4,
-                
+
                 [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
 
-                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6
+                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+
+                [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum NomaiTextLocation
+            {
+                [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
+
+                [EnumMember(Value = @"a")] A = 1,
+
+                [EnumMember(Value = @"b")] B = 2
             }
 
             /// <summary>
@@ -509,6 +566,11 @@ namespace NewHorizons.External.Modules
             [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
+            /// The location of this object. 
+            /// </summary>
+            [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
+
+            /// <summary>
             /// The relative path to the xml file for this object.
             /// </summary>
             public string xmlFile;
@@ -522,7 +584,6 @@ namespace NewHorizons.External.Modules
             /// An optional rename of this object
             /// </summary>
             public string rename;
-
         }
 
         [JsonObject]
@@ -571,7 +632,7 @@ namespace NewHorizons.External.Modules
             public enum SlideShowType
             {
                 [EnumMember(Value = @"slideReel")] SlideReel = 0,
-                
+
                 [EnumMember(Value = @"autoProjector")] AutoProjector = 1,
 
                 [EnumMember(Value = @"visionTorchTarget")] VisionTorchTarget = 2,
@@ -692,8 +753,8 @@ namespace NewHorizons.External.Modules
         }
 
 
-        
-        
+
+
         [JsonConverter(typeof(StringEnumConverter))]
         public enum QuantumGroupType
         {
@@ -703,24 +764,24 @@ namespace NewHorizons.External.Modules
 
             FailedValidation = 10
         }
-        
+
         [JsonObject]
-        public class QuantumGroupInfo 
-        { 
+        public class QuantumGroupInfo
+        {
             /// <summary>
             /// What type of group this is: does it define a list of states a single quantum object could take or a list of sockets one or more quantum objects could share?
             /// </summary>
-            public QuantumGroupType type; 
+            public QuantumGroupType type;
 
             /// <summary>
             /// A unique string used by props (that are marked as quantum) use to refer back to this group
             /// </summary>
-            public string id; 
+            public string id;
 
             /// <summary>
             /// Only required if type is `sockets`. This lists all the possible locations for any props assigned to this group.
             /// </summary>
-            public QuantumSocketInfo[] sockets; 
+            public QuantumSocketInfo[] sockets;
 
             /// <summary>
             /// Optional. Only used if type is `states`. If this is true, then the first prop made part of this group will be used to construct a visibility box for an empty game object, which will be considered one of the states.
@@ -737,24 +798,24 @@ namespace NewHorizons.External.Modules
             /// </summary>
             [DefaultValue(true)] public bool loop = true;
         }
-        
+
         [JsonObject]
-        public class QuantumSocketInfo 
-        { 
+        public class QuantumSocketInfo
+        {
             /// <summary>
             /// The location of this socket
             /// </summary>
-            public MVector3 position; 
+            public MVector3 position;
 
             /// <summary>
             /// The rotation the quantum object will take if it's occupying this socket
             /// </summary>
-            public MVector3 rotation; 
+            public MVector3 rotation;
 
             /// <summary>
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
-            [DefaultValue(1f)] public float probability = 1f; 
+            [DefaultValue(1f)] public float probability = 1f;
         }
 
         [JsonObject]
@@ -779,6 +840,166 @@ namespace NewHorizons.External.Modules
             /// The audio track of this audio volume
             /// </summary>
             [DefaultValue("environment")] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
+        }
+
+        [JsonObject]
+        public class RemoteInfo
+        {
+            /// <summary>
+            /// The unique remote id
+            /// </summary>
+            public string id;
+
+            /// <summary>
+            /// Icon that the will show on the stone, pedastal of the whiteboard, and pedastal of the platform.
+            /// </summary>
+            public string decalPath;
+
+            /// <summary>
+            /// Whiteboard that the stones can put text onto
+            /// </summary>
+            public WhiteboardInfo whiteboard;
+
+            /// <summary>
+            /// Camera platform that the stones can project to and from
+            /// </summary>
+            public PlatformInfo platform;
+
+            /// <summary>
+            /// Projection stones
+            /// </summary>
+            public StoneInfo[] stones;
+
+            [JsonObject]
+            public class WhiteboardInfo
+            {
+                /// <summary>
+                /// The text for each stone
+                /// </summary>
+                public SharedNomaiTextInfo[] nomaiText;
+
+                /// <summary>
+                /// The location of this platform.
+                /// </summary>
+                public MVector3 position;
+
+                /// <summary>
+                /// The rotation of this platform.
+                /// </summary>
+                public MVector3 rotation;
+
+                /// <summary>
+                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+                /// </summary>
+                public string parentPath;
+
+                /// <summary>
+                /// An optional rename of this object
+                /// </summary>
+                public string rename;
+
+                /// <summary>
+                /// Disable the wall, leaving only the pedestal and text.
+                /// </summary>
+                public bool disableWall;
+
+                [JsonObject]
+                public class SharedNomaiTextInfo
+                {
+                    /// <summary>
+                    /// The id of the stone this text will appear for
+                    /// </summary>
+                    public string id;
+
+                    /// <summary>
+                    /// Additional information about each arc in the text
+                    /// </summary>
+                    public NomaiTextArcInfo[] arcInfo;
+
+                    /// <summary>
+                    /// The random seed used to pick what the text arcs will look like.
+                    /// </summary>
+                    public int seed; // For randomizing arcs
+
+                    /// <summary>
+                    /// The location of this object. 
+                    /// </summary>
+                    [DefaultValue("unspecified")] public NomaiTextInfo.NomaiTextLocation location = NomaiTextInfo.NomaiTextLocation.UNSPECIFIED;
+
+                    /// <summary>
+                    /// The relative path to the xml file for this object.
+                    /// </summary>
+                    public string xmlFile;
+
+                    /// <summary>
+                    /// An optional rename of this object
+                    /// </summary>
+                    public string rename;
+                }
+            }
+
+            [JsonObject]
+            public class PlatformInfo
+            {
+                /// <summary>
+                /// The location of this platform.
+                /// </summary>
+                public MVector3 position;
+
+                /// <summary>
+                /// The rotation of this platform.
+                /// </summary>
+                public MVector3 rotation;
+
+                /// <summary>
+                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+                /// </summary>
+                public string parentPath;
+
+                /// <summary>
+                /// An optional rename of this object
+                /// </summary>
+                public string rename;
+
+                /// <summary>
+                /// A ship log fact to reveal when the platform is connected to.
+                /// </summary>
+                [DefaultValue("")] public string reveals = "";
+
+                /// <summary>
+                /// Disable the structure, leaving only the pedestal.
+                /// </summary>
+                public bool disableStructure;
+
+                /// <summary>
+                /// Disable the pool that rises when you place a stone.
+                /// </summary>
+                public bool disablePool;
+            }
+
+            [JsonObject]
+            public class StoneInfo
+            {
+                /// <summary>
+                /// The location of this stone.
+                /// </summary>
+                public MVector3 position;
+
+                /// <summary>
+                /// The rotation of this stone.
+                /// </summary>
+                public MVector3 rotation;
+
+                /// <summary>
+                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+                /// </summary>
+                public string parentPath;
+
+                /// <summary>
+                /// An optional rename of this object
+                /// </summary>
+                public string rename;
+            }
         }
     }
 
