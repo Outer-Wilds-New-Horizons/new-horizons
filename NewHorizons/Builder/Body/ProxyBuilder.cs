@@ -2,13 +2,12 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.Handlers;
-using System.Collections.Generic;
 
 namespace NewHorizons.Builder.Body
 {
