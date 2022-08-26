@@ -548,7 +548,8 @@ namespace NewHorizons.Handlers
             {
                 var surfaceSize = body.Config.Base.surfaceSize;
 
-                AirBuilder.Make(go, sector, body.Config);
+                if (body.Config.Atmosphere.size != 0)
+                    AirBuilder.Make(go, sector, body.Config);
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
