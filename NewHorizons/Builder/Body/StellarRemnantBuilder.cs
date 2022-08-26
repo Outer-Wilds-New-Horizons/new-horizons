@@ -11,8 +11,15 @@ namespace NewHorizons.Builder.Body
 {
     public static class StellarRemnantBuilder
     {
+        public const float whiteDwarfSize = 1000;
+        public const float neutronStarSize = 2000;
+        public const float blackholeSize = 4000;
+
         public static GameObject Make(GameObject go, OWRigidbody rb, float soi, IModBehaviour mod, NewHorizonsBody star)
         {
+            var remnantType = star.Config.Star.stellarRemnantType;
+            if (remnantType == StellarRemnantType.Default && star.Config.Star.size < whiteDwarfSize) return null;
+
             try
             {
                 Logger.Log($"Creating stellar remnant for [{star.Config.name}]");
@@ -21,8 +28,6 @@ namespace NewHorizons.Builder.Body
                 sector.name = "StellarRemnant";
 
                 sector.gameObject.SetActive(false);
-
-                var remnantType = star.Config.Star.stellarRemnantType;
 
                 if (remnantType == StellarRemnantType.Default) remnantType = GetDefault(star.Config.Star.size);
 
@@ -60,8 +65,8 @@ namespace NewHorizons.Builder.Body
 
         private static StellarRemnantType GetDefault(float progenitorSize)
         {
-            if (progenitorSize >= 4000) return StellarRemnantType.BlackHole;
-            else if (2000 < progenitorSize && progenitorSize < 4000) return StellarRemnantType.NeutronStar;
+            if (progenitorSize >= blackholeSize) return StellarRemnantType.BlackHole;
+            else if (neutronStarSize < progenitorSize && progenitorSize < blackholeSize) return StellarRemnantType.NeutronStar;
             else return StellarRemnantType.WhiteDwarf;
         }
 

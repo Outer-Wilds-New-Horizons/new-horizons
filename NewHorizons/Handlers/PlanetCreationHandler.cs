@@ -511,8 +511,15 @@ namespace NewHorizons.Handlers
                         remnantGO = StellarRemnantBuilder.Make(go, rb, sphereOfInfluence, body.Mod, body);
                     }
 
-                    remnantGO.SetActive(false);
-                    starEvolutionController.SetStellarRemnant(remnantGO);
+                    if (remnantGO != null)
+                    {
+                        remnantGO.SetActive(false);
+                        starEvolutionController.SetStellarRemnant(remnantGO);
+                    }
+                    else
+                    {
+                        starEvolutionController.willExplode = false;
+                    }
                 }
             }
 
