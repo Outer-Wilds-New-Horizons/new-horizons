@@ -287,7 +287,7 @@ namespace NewHorizons.Builder.Body
             return whiteHole;
         }
 
-        public static GameObject MakeBlackHoleProxy(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        public static GameObject MakeBlackHoleProxy(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
         {
             if (_blackHoleProxyPrefab == null) _blackHoleProxyPrefab = SearchUtilities.Find(_blackHoleProxyPath);
 
@@ -316,7 +316,7 @@ namespace NewHorizons.Builder.Body
             return blackHoleRender;
         }
 
-        public static GameObject MakeWhiteHoleProxy(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        public static GameObject MakeWhiteHoleProxy(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
         {
             if (_whiteHoleProxyPrefab == null) _whiteHoleProxyPrefab = SearchUtilities.Find(_whiteHoleProxyPath);
 
@@ -345,7 +345,7 @@ namespace NewHorizons.Builder.Body
             return whiteHoleRenderer;
         }
 
-        private static SizeController AddSizeController(GameObject go, VariableSizeModule.TimeValuePair[] curve, float size)
+        private static SizeController AddSizeController(GameObject go, TimeValuePair[] curve, float size)
         {
             var sizeController = go.AddComponent<SizeController>();
             sizeController.SetScaleCurve(curve);
