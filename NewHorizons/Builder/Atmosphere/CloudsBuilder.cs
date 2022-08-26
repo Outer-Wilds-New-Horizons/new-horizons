@@ -85,19 +85,7 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
-
-            var fluidType = FluidVolume.Type.CLOUD;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), atmo.clouds.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]:\n{ex}");
-            }
-
-            fluidCLFV._fluidType = fluidType;
+            fluidCLFV._fluidType = atmo.clouds.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidCLFV._allowShipAutoroll = true;
             fluidCLFV._disableOnStart = false;
 
@@ -154,8 +142,6 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.clouds.tint?.ToColor() ?? UnityEngine.Color.white;
-
             Texture2D image, cap, ramp;
 
             try
@@ -163,8 +149,8 @@ namespace NewHorizons.Builder.Atmosphere
                 // qm cloud type = should wrap, otherwise clamp like normal
                 image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
-                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
+                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128, wrap: true);
+                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath, wrap: true);
                 if (atmo.clouds.rampPath == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = ImageUtilities.GetTexture(mod, atmo.clouds.rampPath);
             }
@@ -224,7 +210,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.rotationSpeed != 0f)
             {
-                RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                var topRT = cloudsTopGO.AddComponent<RotateTransform>();
                 // Idk why but the axis is weird
                 topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
                 topRT._degreesPerSecond = atmo.clouds.rotationSpeed;

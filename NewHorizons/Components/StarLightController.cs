@@ -73,7 +73,7 @@ namespace NewHorizons.Components
             foreach (var (planet, material) in AtmosphereBuilder.Skys)
             {
                 var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
-                var intensity = Mathf.Min(_activeStar.Light.intensity / (sqrDist / hearthSunDistanceSqr), 1f);
+                var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
 
                 material.SetFloat(SunIntensity, intensity);
             }
@@ -81,6 +81,7 @@ namespace NewHorizons.Components
             foreach (var star in _stars)
             {
                 if (star == null) continue;
+                if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
 
                 // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
                 var origin = Vector3.zero;

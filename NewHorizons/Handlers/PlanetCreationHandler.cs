@@ -5,7 +5,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
-using NewHorizons.External.Modules;
+using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -202,6 +202,10 @@ namespace NewHorizons.Handlers
                             return false;
                         }
                     }
+                    else if (body.Config.isStellarRemnant)
+                    {
+                        //Skip
+                    }
                     else
                     {
                         UpdateBody(body, existingPlanet);
@@ -219,6 +223,10 @@ namespace NewHorizons.Handlers
                 {
                     // If the ground state object isn't made yet do it later
                     _nextPassBodies.Add(body);
+                }
+                else if (body.Config.isStellarRemnant)
+                {
+                    //Skip
                 }
                 else
                 {
@@ -277,27 +285,6 @@ namespace NewHorizons.Handlers
             if (body.Config.Orbit != null && body.Config.Orbit.semiMajorAxis != 0f)
             {
                 UpdateBodyOrbit(body, go);
-            }
-
-            if (body.Config.removeChildren != null)
-            {
-                var goPath = go.transform.GetPath();
-                var transforms = go.GetComponentsInChildren<Transform>(true);
-                foreach (var childPath in body.Config.removeChildren)
-                {
-                    // Multiple children can have the same path so we delete all that match
-                    var path = $"{goPath}/{childPath}";
-
-                    var flag = true;
-                    foreach (var childObj in transforms.Where(x => x.GetPath() == path))
-                    {
-                        flag = false;
-                        // idk why we wait here but we do
-                        Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
-                    }
-
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
-                }
             }
 
             // Do stuff that's shared between generating new planets and updating old ones
@@ -446,20 +433,26 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)
             {
-                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao as NHAstroObject, body.Config.Orbit.isMoon, body.Config));
+                Delay.FireOnNextUpdate(() => OrbitlineBuilder.Make(body.Object, ao, body.Config.Orbit.isMoon, body.Config));
             }
 
             DetectorBuilder.Make(go, owRigidBody, primaryBody, ao, body.Config);
 
             AstroObjectLocator.RegisterCustomAstroObject(ao);
 
+            var otherBodies = Main.BodyDict[Main.Instance.CurrentStarSystem];
+            var remnant = otherBodies.Where(x => x.Config.isStellarRemnant && x.Config.name == body.Config.name).FirstOrDefault();
+            // TODO: add proxies for quantum states
+            //var quantumStates = otherBodies.Where(x => x.Config.isQuantumState && x.Config.name == body.Config.name).ToArray();
             if (!(body.Config.Cloak != null && body.Config.Cloak.radius != 0f))
             {
                 Delay.FireOnNextUpdate(() =>
                 {
-                    ProxyBuilder.Make(go, body);
+                    ProxyBuilder.Make(go, body, remnant);
                 });
             }
+
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
@@ -507,7 +500,42 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                StarLightController.AddStar(StarBuilder.Make(go, sector, body.Config.Star, body.Mod));
+                var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
+
+                if (starController != null) StarLightController.AddStar(starController);
+
+                // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
+                if (starEvolutionController != null && !body.Config.isStellarRemnant)
+                {
+                    GameObject remnantGO;
+
+                    // Create the remnant as if it were a planet
+                    if (body.Config.Star.stellarRemnantType == External.Modules.VariableSize.StellarRemnantType.Custom)
+                    {
+                        var remnant = Main.BodyDict[body.Config.starSystem].Where(x => x.Config.name == body.Config.name && x.Config.isStellarRemnant).FirstOrDefault();
+
+                        var remnantSector = SectorBuilder.Make(go, rb, sphereOfInfluence);
+                        remnantSector.name = "CustomStellarRemnant";
+
+                        SharedGenerateBody(remnant, go, remnantSector, rb);
+
+                        remnantGO = remnantSector.gameObject;
+                    }
+                    else
+                    {
+                        remnantGO = StellarRemnantBuilder.Make(go, rb, sphereOfInfluence, body.Mod, body);
+                    }
+
+                    if (remnantGO != null)
+                    {
+                        remnantGO.SetActive(false);
+                        starEvolutionController.SetStellarRemnant(remnantGO);
+                    }
+                    else
+                    {
+                        starEvolutionController.willExplode = false;
+                    }
+                }
             }
 
             if (body.Config?.Bramble != null)
@@ -560,7 +588,8 @@ namespace NewHorizons.Handlers
             {
                 var surfaceSize = body.Config.Base.surfaceSize;
 
-                AirBuilder.Make(go, sector, body.Config);
+                if (body.Config.Atmosphere.size != 0)
+                    AirBuilder.Make(go, sector, body.Config);
 
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
@@ -595,10 +624,13 @@ namespace NewHorizons.Handlers
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
 
-            if (body.Config.Base.hasSupernovaShockEffect && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null)
+            if ((body.Config.ShockEffect == null && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null) || body.Config.ShockEffect?.hasSupernovaShockEffect == true)
             {
-                SupernovaEffectBuilder.Make(go, sector, body.Config, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
+                SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
+
+            // We allow removing children afterwards so you can also take bits off of the modules you used
+            if (body.Config.removeChildren != null) RemoveChildren(go, body);
 
             return go;
         }
@@ -744,6 +776,27 @@ namespace NewHorizons.Handlers
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {
                 Main.FurthestOrbit = go.transform.position.magnitude + 30000f;
+            }
+        }
+
+        private static void RemoveChildren(GameObject go, NewHorizonsBody body)
+        {
+            var goPath = go.transform.GetPath();
+            var transforms = go.GetComponentsInChildren<Transform>(true);
+            foreach (var childPath in body.Config.removeChildren)
+            {
+                // Multiple children can have the same path so we delete all that match
+                var path = $"{goPath}/{childPath}";
+
+                var flag = true;
+                foreach (var childObj in transforms.Where(x => x.GetPath() == path))
+                {
+                    flag = false;
+                    // idk why we wait here but we do
+                    Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
+                }
+
+                if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
     }

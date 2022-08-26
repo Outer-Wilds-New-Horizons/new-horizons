@@ -69,6 +69,10 @@
       "type": "boolean",
       "description": "Does this config describe a quantum state of a custom planet defined in another file?"
     },
+    "isStellarRemnant": {
+      "type": "boolean",
+      "description": "Does this config describe a stellar remnant of a custom star defined in another file?"
+    },
     "Lava": {
       "description": "Add lava to this planet",
       "$ref": "#/definitions/LavaModule"
@@ -108,6 +112,10 @@
       "description": "Add ship log entries to this planet and describe how it looks in map mode",
       "$ref": "#/definitions/ShipLogModule"
     },
+    "ShockEffect": {
+      "description": "Settings for shock effect on planet when the nearest star goes supernova",
+      "$ref": "#/definitions/ShockEffectModule"
+    },
     "Spawn": {
       "description": "Spawn the player at this planet",
       "$ref": "#/definitions/SpawnModule"
@@ -115,10 +123,6 @@
     "Star": {
       "description": "Make this body a star",
       "$ref": "#/definitions/StarModule"
-    },
-    "version": {
-      "type": "string",
-      "description": "Version of New Horizons this config is using (Doesn't do anything)"
     },
     "Water": {
       "description": "Add water to this planet",
@@ -277,6 +281,10 @@
           "type": "boolean",
           "description": "Lets you survive on the planet without a suit."
         },
+        "hasTrees": {
+          "type": "boolean",
+          "description": "Does this planet have trees? This will change the \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+        },
         "hasRain": {
           "type": "boolean",
           "description": "Does this planet have rain?"
@@ -323,7 +331,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
           "default": "cloud",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -384,7 +392,7 @@
         "basic"
       ]
     },
-    "CloudFluidType": {
+    "FluidType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -449,11 +457,6 @@
         "hasMapMarker": {
           "type": "boolean",
           "description": "If the body should have a marker on the map screen."
-        },
-        "hasSupernovaShockEffect": {
-          "type": "boolean",
-          "description": "Does this planet have a shock effect when the nearest star goes supernova?",
-          "default": true
         },
         "invulnerableToSun": {
           "type": "boolean",
@@ -658,7 +661,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -745,6 +748,14 @@
           "default": 204,
           "maximum": 2000.0,
           "minimum": 4.0
+        },
+        "emissionMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for emission. Optional."
+        },
+        "emissionColor": {
+          "description": "Color multiplier of the emission texture. Defaults to white.",
+          "$ref": "#/definitions/MColor"
         }
       }
     },
@@ -754,7 +765,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -1288,7 +1299,8 @@
         "Cairn",
         "Recorder",
         "PreCrashRecorder",
-        "PreCrashComputer"
+        "PreCrashComputer",
+        "Trailmarker"
       ],
       "enum": [
         "wall",
@@ -1297,7 +1309,8 @@
         "cairn",
         "recorder",
         "preCrashRecorder",
-        "preCrashComputer"
+        "preCrashComputer",
+        "trailmarker"
       ]
     },
     "NomaiTextLocation": {
@@ -1663,6 +1676,11 @@
           "type": "number",
           "description": "The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.",
           "format": "float"
+        },
+        "fluidType": {
+          "description": "Fluid type for sounds/effects when colliding with this tornado.",
+          "default": "cloud",
+          "$ref": "#/definitions/FluidType"
         }
       }
     },
@@ -1733,7 +1751,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -1961,6 +1979,10 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "disableWall": {
+          "type": "boolean",
+          "description": "Disable the wall, leaving only the pedestal and text."
         }
       }
     },
@@ -2023,6 +2045,14 @@
           "type": "string",
           "description": "A ship log fact to reveal when the platform is connected to.",
           "default": ""
+        },
+        "disableStructure": {
+          "type": "boolean",
+          "description": "Disable the structure, leaving only the pedestal."
+        },
+        "disablePool": {
+          "type": "boolean",
+          "description": "Disable the pool that rises when you place a stone."
         }
       }
     },
@@ -2091,16 +2121,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "curve": {
-          "type": "array",
-          "description": "Scale this module over time",
-          "items": {
-            "$ref": "#/definitions/TimeValuePair"
-          }
-        },
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "inclination": {
           "type": "number",
@@ -2136,6 +2159,20 @@
         "unlit": {
           "type": "boolean",
           "description": "Should this ring be unlit?"
+        },
+        "scaleCurve": {
+          "type": "array",
+          "description": "Scale rings over time. Optional. Value between 0-1, time is in minutes.",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
+        },
+        "opacityCurve": {
+          "type": "array",
+          "description": "Fade rings in/out over time. Optional. Value between 0-1, time is in minutes.",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
         }
       }
     },
@@ -2145,7 +2182,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2258,6 +2295,33 @@
         }
       }
     },
+    "ShockEffectModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hasSupernovaShockEffect": {
+          "type": "boolean",
+          "description": "Does this planet have a shock effect when the nearest star goes supernova? Automatically disabled for stars, focal points, and stellar remnants.",
+          "default": true
+        },
+        "radius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Override the calculated radius of the shock effect",
+          "format": "float"
+        },
+        "assetBundle": {
+          "type": "string",
+          "description": "Asset Bundle that contains the shock effect mesh"
+        },
+        "meshPath": {
+          "type": "string",
+          "description": "Path to the replacement mesh for the planet's supernova shock effect in the supplied asset bundle"
+        }
+      }
+    },
     "SpawnModule": {
       "type": "object",
       "additionalProperties": false,
@@ -2290,7 +2354,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
@@ -2298,11 +2362,6 @@
         "endTint": {
           "description": "Colour of the star at the end of its lifespan.",
           "$ref": "#/definitions/MColor"
-        },
-        "goSupernova": {
-          "type": "boolean",
-          "description": "Should this star explode at the end of its lifespan?",
-          "default": true
         },
         "lifespan": {
           "type": "number",
@@ -2340,10 +2399,17 @@
         },
         "supernovaSize": {
           "type": "number",
-          "description": "Radius of the supernova. Any planets within 80% of this will be destroyed.",
+          "description": "Radius of the supernova. Any planets within this will be destroyed.",
           "format": "float",
           "default": 50000.0,
           "minimum": 0.0
+        },
+        "supernovaSpeed": {
+          "type": "number",
+          "description": "Speed of the supernova wall in meters per second.",
+          "format": "float",
+          "default": 1000.0,
+          "minimum": 1.0
         },
         "supernovaTint": {
           "description": "The tint of the supernova this star creates when it dies.",
@@ -2367,8 +2433,54 @@
           "format": "float",
           "default": 50000.0,
           "minimum": 0.0
+        },
+        "stellarDeathType": {
+          "description": "The type of death your star will have.",
+          "default": "default",
+          "$ref": "#/definitions/StellarDeathType"
+        },
+        "stellarRemnantType": {
+          "description": "The type of stellar remnant your star will leave behind.",
+          "default": "default",
+          "$ref": "#/definitions/StellarRemnantType"
         }
       }
+    },
+    "StellarDeathType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "None",
+        "PlanetaryNebula",
+        "Supernova"
+      ],
+      "enum": [
+        "default",
+        "none",
+        "planetaryNebula",
+        "supernova"
+      ]
+    },
+    "StellarRemnantType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "WhiteDwarf",
+        "NeutronStar",
+        "Pulsar",
+        "BlackHole",
+        "Custom"
+      ],
+      "enum": [
+        "default",
+        "whiteDwarf",
+        "neutronStar",
+        "pulsar",
+        "blackHole",
+        "custom"
+      ]
     },
     "WaterModule": {
       "type": "object",
@@ -2376,7 +2488,7 @@
       "properties": {
         "curve": {
           "type": "array",
-          "description": "Scale this module over time",
+          "description": "Scale this object over time",
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }

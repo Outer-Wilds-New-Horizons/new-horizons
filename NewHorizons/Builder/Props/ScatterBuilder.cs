@@ -98,7 +98,7 @@ namespace NewHorizons.Builder.Props
                         scale = propInfo.scale,
                         alignToNormal = true
                     };
-                    var prop = DetailBuilder.MakeDetail(go, sector, prefab, detailInfo);
+                    var prop = DetailBuilder.Make(go, sector, prefab, detailInfo);
 
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if (propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation);

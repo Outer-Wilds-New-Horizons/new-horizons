@@ -29,7 +29,8 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, detail);
+                        var detailGO = DetailBuilder.Make(go, sector, mod, detail);
+                        DetailBuilder.RegisterDetailInfo(detail, detailGO);
                     }
                     catch (Exception ex)
                     {

@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
@@ -11,7 +11,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.VoiceActing;
+using NewHorizons.OtherMods.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -23,6 +23,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons
 {
@@ -201,6 +203,9 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+            RichPresenceHandler.Init();
+            OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
+            OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
@@ -378,6 +383,10 @@ namespace NewHorizons
                 RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
+                StarEvolutionController.Init();
+
+                // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
+                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 if (isSolarSystem)
                 {
@@ -390,8 +399,6 @@ namespace NewHorizons
                 PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
                 VesselWarpHandler.LoadVessel();
                 SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
-
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 StarChartHandler.Init(SystemDict.Values.ToArray());
 

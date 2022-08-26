@@ -6,11 +6,42 @@
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "Ensuite, bouclez votre ceinture et engagez le pilote automatique pour y aller!"
   },
   "UIDictionary": {
-    "INTERSTELLAR_MODE": "Mode Interstellaire",
+    "INTERSTELLAR_MODE": "Mode interstellaire",
     "FREQ_STATUE": "Statue Nomaï",
     "FREQ_WARP_CORE": "Flux Anti-Gravitonique",
     "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "Engagez la distorsion vers {0}",
+    "WARP_LOCKED": "PILOTE AUTOMATIQUE VISÉ SUR:\n{0}",
+    "LOCK_AUTOPILOT_WARP": "Visez le pilote automatique",
+    "RICH_PRESENCE_EXPLORING": "En explorant {0}.",
+    "RICH_PRESENCE_WARPING": "En route vers {0}.",
     "Vessel": "Vaisseau",
     "VESSEL": "VAISSEAU"
+  },
+  "AchievementTranslations": {
+    "NH_EATEN_OUTSIDE_BRAMBLE": {
+      "Name": "Brèche de confinement",
+      "Description": "Soyez mangé à l'extérieur de Sombronces."
+    },
+    "NH_MULTIPLE_SYSTEM": {
+      "Name": "Le voyageur",
+      "Description": "Visitez 5 systèmes solaires uniques d'affilée."
+    },
+    "NH_NEW_FREQ": {
+      "Name": "Fréquence anormale",
+      "Description": "Découvrez une nouvelle fréquence."
+    },
+    "NH_PROBE_LOST": {
+      "Name": "Connexion perdue",
+      "Description": "Perdez votre lance-guetteur."
+    },
+    "NH_WARP_DRIVE": {
+      "Name": "En désaccord avec l'histoire.",
+      "Description": "Utilisez le moteur de distorsion de votre fusée."
+    },
+    "NH_VESSEL_WARP": {
+      "Name": "En accord avec l'histoire.",
+      "Description": "Voyagez vers un autre système solaire avec le Vaissau."
+    }
   }
 }

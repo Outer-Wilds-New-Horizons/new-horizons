@@ -38,7 +38,7 @@ look something like this:
 ```json
 {
   "name": "Wetrock",
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json",
+  "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/body_schema.json",
   "starSystem": "SolarSystem",
   "Base": {
     "groundSize": 100,

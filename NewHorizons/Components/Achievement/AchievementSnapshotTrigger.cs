@@ -1,4 +1,4 @@
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using System;
 using System.Collections.Generic;
 using System.Linq;

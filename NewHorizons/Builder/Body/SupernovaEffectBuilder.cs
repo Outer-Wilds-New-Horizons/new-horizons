@@ -4,12 +4,13 @@ using NewHorizons.External.Configs;
 using NewHorizons.Components;
 using System.Linq;
 using NewHorizons.Handlers;
+using OWML.Common;
 
 namespace NewHorizons.Builder.Body
 {
     public static class SupernovaEffectBuilder
     {
-        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
+        public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
             var vanillaController = planetGO.GetComponentInChildren<SupernovaPlanetEffectController>();
             if (vanillaController != null)
@@ -28,6 +29,8 @@ namespace NewHorizons.Builder.Body
 
                 if (currentController._atmosphere == null && atmosphere != null) currentController._atmosphere = atmosphere;
 
+                if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) currentController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
+
                 if (currentController._fog == null && fog != null) currentController._fog = fog;
 
                 return currentController;
@@ -39,6 +42,7 @@ namespace NewHorizons.Builder.Body
                 var supernovaEffectController = supernovaController.AddComponent<NHSupernovaPlanetEffectController>();
                 supernovaEffectController._ambientLight = ambientLight;
                 supernovaEffectController._ambientLightOrigIntensity = config.Base.ambientLight;
+                if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) supernovaEffectController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
                 supernovaEffectController._atmosphere = atmosphere;
                 supernovaEffectController._atmosphereRenderer = atmosphereRenderer;
                 supernovaEffectController._fog = fog;
@@ -121,19 +125,37 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                supernovaEffectController._shockLayerStartRadius = biggestSize;
-                supernovaEffectController._shockLayerFullRadius = biggestSize * 10f;
-                supernovaEffectController._shockLayerTrailFlare = 100;
-                supernovaEffectController._shockLayerTrailLength = biggestSize < 600 ? 300 : 600;
+                var radius = (config.ShockEffect?.radius != null && config.ShockEffect.radius.HasValue) ? config.ShockEffect.radius.Value : biggestSize * 1.1f;
+
+                supernovaEffectController.shockLayerTrailFlare = radius < 500 ? 50 : 100; // Base game all uses 100, but sphere model looks bad if not 1:6 ratio with length like GD, so retain it instead
+                supernovaEffectController.shockLayerTrailLength = radius < 500 ? 300 : 600; // GD is the only planet with 600 so ig do it if big
 
                 shockLayer.transform.position = planetGO.transform.position;
-                shockLayer.transform.localScale = Vector3.one * biggestSize * 1.1f;
+                shockLayer.transform.localScale = Vector3.one * radius;
 
-                if (!noMeshChange && procGen != null)
+                if (!noMeshChange && config.ShockEffect?.radius == null && procGen != null)
                 {
                     shockLayer.GetComponent<MeshFilter>().sharedMesh = procGen.GetComponent<MeshFilter>().sharedMesh;
                     shockLayer.transform.localScale = Vector3.one * 1.1f;
                     shockLayer.transform.rotation = Quaternion.Euler(90, 0, 0);
+                    supernovaEffectController.shockLayerTrailFlare = 100;
+                    supernovaEffectController.shockLayerTrailLength = 300;
+                }
+
+                if (config.ShockEffect != null)
+                {
+                    if (!string.IsNullOrWhiteSpace(config.ShockEffect.assetBundle) && !string.IsNullOrWhiteSpace(config.ShockEffect.meshPath))
+                    {
+                        var mesh = AssetBundleUtilities.Load<Mesh>(config.ShockEffect.assetBundle, config.ShockEffect.meshPath, mod);
+                        if (mesh != null)
+                        {
+                            shockLayer.GetComponent<MeshFilter>().sharedMesh = mesh;
+                            shockLayer.transform.localScale = Vector3.one * (config.ShockEffect.radius != null ? config.ShockEffect.radius.Value : 1);
+                            shockLayer.transform.rotation = Quaternion.Euler(0, 0, 0);
+                            supernovaEffectController.shockLayerTrailFlare = 100;
+                            supernovaEffectController.shockLayerTrailLength = 300;
+                        }
+                    }
                 }
 
                 return supernovaEffectController;
@@ -152,11 +174,11 @@ namespace NewHorizons.Builder.Body
             supernovaEffectController._fogOrigTint = vanillaController._fogOrigTint;
             supernovaEffectController._shockLayer = vanillaController._shockLayer;
             supernovaEffectController._shockLayerColor = vanillaController._shockLayerColor;
-            supernovaEffectController._shockLayerFullRadius = vanillaController._shockLayerFullRadius;
-            supernovaEffectController._shockLayerStartRadius = vanillaController._shockLayerStartRadius;
-            supernovaEffectController._shockLayerTrailFlare = vanillaController._shockLayerTrailFlare;
-            supernovaEffectController._shockLayerTrailLength = vanillaController._shockLayerTrailLength;
-            supernovaEffectController._sunController = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
+            supernovaEffectController.shockLayerFullRadius = vanillaController._shockLayerFullRadius;
+            supernovaEffectController.shockLayerStartRadius = vanillaController._shockLayerStartRadius;
+            supernovaEffectController.shockLayerTrailFlare = vanillaController._shockLayerTrailFlare;
+            supernovaEffectController.shockLayerTrailLength = vanillaController._shockLayerTrailLength;
+            supernovaEffectController.SunController = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
             Object.Destroy(vanillaController);
         }
     }

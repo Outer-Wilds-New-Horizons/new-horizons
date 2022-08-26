@@ -1,6 +1,6 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
-using NewHorizons.AchievementsPlus.NH;
+using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus.NH;
 using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.Handlers;

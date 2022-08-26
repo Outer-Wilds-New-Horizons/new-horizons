@@ -120,7 +120,7 @@ namespace NewHorizons.Utility.DebugUtilities
                     position = data.pos,
                     rotation = data.norm,
                 };
-                var prop = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+                var prop = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
 
                 var body = data.hitBodyGameObject.GetComponent<AstroObject>();
                 if (body != null) RegisterProp(body, prop);

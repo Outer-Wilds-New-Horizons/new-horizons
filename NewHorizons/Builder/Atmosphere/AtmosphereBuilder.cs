@@ -26,68 +26,54 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                if (proxy)
+                GameObject prefab;
+                if (proxy) prefab = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?
+                        .FindChild("Atmosphere_TH/Atmosphere_LOD3");
+                else prefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere");
+
+                if (prefab != null)
                 {
-                    var distantProxy = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?.FindChild("Atmosphere_TH/Atmosphere_LOD3");
-                    if (distantProxy != null)
+                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform, true);
+                    atmo.name = "Atmosphere";
+                    atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+
+                    Material material;
+
+                    if (proxy)
                     {
-                        GameObject atmo = GameObject.Instantiate(distantProxy, atmoGO.transform, true);
-                        atmo.name = "Atmosphere_LOD3";
-                        atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
                         atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f * 2f;
 
                         var renderer = atmo.GetComponent<MeshRenderer>();
-                        var material = renderer.material; // makes a new material
+                        material = renderer.material; // makes a new material
                         renderer.sharedMaterial = material;
-                        material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
-                        material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
-                        if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
-
-                        atmo.SetActive(true);
-
-                        if (atmosphereModule.atmosphereSunIntensity == 0)
-                        {
-                            // do it based on distance
-                            Skys.Add((planetGO, material));
-                        }
-                        else
-                        {
-                            // use the override instead
-                            material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
-                        }
                     }
-                }
-                else
-                {
-                    var atmoSphere = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere");
-                    if (atmoSphere != null)
+                    else
                     {
-                        GameObject atmo = GameObject.Instantiate(atmoSphere, atmoGO.transform, true);
-                        atmo.name = "AtmoSphere";
-                        atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
                         atmo.transform.localScale = Vector3.one * atmosphereModule.size * 1.2f;
 
                         var renderers = atmo.GetComponentsInChildren<MeshRenderer>();
-                        var material = renderers[0].material; // makes a new material
+                        material = renderers[0].material; // makes a new material
                         foreach (var renderer in renderers)
                         {
                             renderer.sharedMaterial = material;
                         }
-                        material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
-                        material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
-                        if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
-                        atmo.SetActive(true);
+                    }
 
-                        if (atmosphereModule.atmosphereSunIntensity == 0)
-                        {
-                            // do it based on distance
-                            Skys.Add((planetGO, material));
-                        }
-                        else
-                        {
-                            // use the override instead
-                            material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
-                        }
+                    material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                    material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
+                    if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
+
+                    atmo.SetActive(true);
+
+                    if (atmosphereModule.atmosphereSunIntensity == 0)
+                    {
+                        // Do it based on distance
+                        Skys.Add((planetGO, material));
+                    }
+                    else
+                    {
+                        // Use the override instead
+                        material.SetFloat(SunIntensity, atmosphereModule.atmosphereSunIntensity);
                     }
                 }
             }
