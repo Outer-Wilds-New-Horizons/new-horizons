@@ -15,7 +15,7 @@ namespace NewHorizons.External.Configs
     public class StarSystemConfig
     {
         /// <summary>
-        /// Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be overwritten.
+        /// Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;
 
@@ -30,7 +30,7 @@ namespace NewHorizons.External.Configs
         [DefaultValue(true)] public bool enableTimeLoop = true;
 
         /// <summary>
-        /// Set to the FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
+        /// The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if
         /// you're using this, because it will be overwritten.
         /// </summary>
         public string factRequiredForWarp;
