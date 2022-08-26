@@ -250,7 +250,7 @@ namespace NewHorizons.Builder.Body
             return sizeController;
         }
 
-        internal static GameObject MakeBlackHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        internal static GameObject MakeBlackHole(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
         {
             if (_blackHolePrefab == null) _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
 
@@ -279,7 +279,7 @@ namespace NewHorizons.Builder.Body
             return blackHoleRender;
         }
 
-        internal static GameObject MakeWhiteHole(GameObject rootObject, MVector3 position, float size, VariableSizeModule.TimeValuePair[] curve = null)
+        internal static GameObject MakeWhiteHole(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
         {
             if (_whiteHolePrefab == null) _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
 
