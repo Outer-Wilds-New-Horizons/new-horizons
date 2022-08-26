@@ -40,14 +40,14 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ProxyBody), nameof(ProxyBody.IsObjectInSupernova))]
         public static bool ProxyBody_IsObjectInSupernova(ProxyBody __instance, ref bool __result)
         {
-            if (__instance is NHProxy nh && nh._starEvolutionController != null)
+            if (__instance is NHProxy nh && nh.StarEvolutionControllers != null)
             {
                 __result = false;
                 return false;
             }
             else
             {
-                __result = SupernovaEffectHandler.InPointInsideAnySupernova(__instance._realObjectTransform.position);
+                __result = SupernovaEffectHandler.IsPointInsideAnySupernova(__instance._realObjectTransform.position);
                 return false;
             }
         }

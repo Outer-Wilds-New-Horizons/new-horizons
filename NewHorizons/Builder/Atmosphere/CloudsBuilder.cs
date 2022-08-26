@@ -142,8 +142,6 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.clouds.tint?.ToColor() ?? UnityEngine.Color.white;
-
             Texture2D image, cap, ramp;
 
             try
@@ -212,7 +210,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.rotationSpeed != 0f)
             {
-                RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                var topRT = cloudsTopGO.AddComponent<RotateTransform>();
                 // Idk why but the axis is weird
                 topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
                 topRT._degreesPerSecond = atmo.clouds.rotationSpeed;

@@ -1,12 +1,11 @@
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using NewHorizons.Builder.Orbital;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
-using Newtonsoft.Json;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
@@ -166,11 +165,6 @@ namespace NewHorizons.External.Configs
         public StarModule Star;
 
         /// <summary>
-        /// Version of New Horizons this config is using (Doesn't do anything)
-        /// </summary>
-        public string version;
-
-        /// <summary>
         /// Add water to this planet
         /// </summary>
         public WaterModule Water;
@@ -224,7 +218,7 @@ namespace NewHorizons.External.Configs
                     }
                 }
 
-                Dictionary<string, int> existingGroupsPropCounts = new Dictionary<string, int>();
+                var existingGroupsPropCounts = new Dictionary<string, int>();
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;
@@ -241,6 +235,9 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+
+            // Stars and focal points shouldnt be destroyed by stars
+            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
         }
 
         public void Migrate()

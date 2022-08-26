@@ -1,12 +1,10 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
@@ -15,33 +13,35 @@ namespace NewHorizons.Components.SizeControllers
 {
     public class StarEvolutionController : SizeController
     {
-        public bool _isProxy;
+        public bool isProxy;
+        public bool isRemnant;
 
         public GameObject atmosphere;
         public StarController controller;
         public StellarDeathController supernova;
-        public bool WillExplode { get; set; }
-        public MColor StartColour { get; set; }
-        public MColor EndColour { get; set; }
-        public MColor SupernovaColour { get; set; }
+        public bool willExplode;
+        public MColor startColour;
+        public MColor endColour;
+        public MColor supernovaColour;
         public Texture normalRamp;
         public Texture collapseRamp;
 
         private Color _startColour;
         private Color _endColour;
 
-        private StellarRemnantController _stellarRemnantController;
+        private GameObject _stellarRemnant;
         private PlanetaryFogController _fog;
         private MeshRenderer[] _atmosphereRenderers;
-        public HeatHazardVolume _heatVolume;
-        public DestructionVolume _destructionVolume;
-        public StarDestructionVolume _planetDestructionVolume;
-        public StarFluidVolume _starFluidVolume;
+
+        public HeatHazardVolume heatVolume;
+        public DestructionVolume destructionVolume;
+        public StarDestructionVolume planetDestructionVolume;
+        public StarFluidVolume starFluidVolume;
+
         private SolarFlareEmitter _flareEmitter;
-        private MapMarker _mapMarker;
         private OWRigidbody _rigidbody;
 
-        public OWAudioSource _oneShotSource;
+        public OWAudioSource oneShotSource;
 
         private bool _isCollapsing;
         private float _collapseStartSize;
@@ -69,13 +69,13 @@ namespace NewHorizons.Components.SizeControllers
 
         private StarEvolutionController _proxy;
 
-        public UnityEvent CollapseStart = new UnityEvent();
-        public UnityEvent CollapseStop = new UnityEvent();
-        public UnityEvent SupernovaStart = new UnityEvent();
-        public UnityEvent SupernovaStop = new UnityEvent();
+        public UnityEvent CollapseStart = new();
+        public UnityEvent CollapseStop = new();
+        public UnityEvent SupernovaStart = new();
+        public UnityEvent SupernovaStop = new();
 
-        private float maxScale;
-        private float minScale;
+        private float _maxScale;
+        private float _minScale;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int ColorTime = Shader.PropertyToID("_ColorTime");
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
@@ -84,10 +84,13 @@ namespace NewHorizons.Components.SizeControllers
 
         private Color _currentColour;
 
+        private TessellatedSphereRenderer _surface;
+
         private void Start()
         {
+            _surface = GetComponentInChildren<TessellatedSphereRenderer>(true);
+
             _rigidbody = this.GetAttachedOWRigidbody();
-            if (_rigidbody != null) _mapMarker = _rigidbody.GetComponent<MapMarker>();
 
             var sun = GameObject.FindObjectOfType<SunController>();
             _collapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
@@ -116,31 +119,31 @@ namespace NewHorizons.Components.SizeControllers
             _startSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
             _endSurfaceMaterial.SetTexture(ColorRamp, _normalRamp);
 
-            if (StartColour == null)
+            if (startColour == null)
             {
                 _startColour = _startSurfaceMaterial.color;
             }
             else
             {
-                _startColour = StartColour.ToColor();
+                _startColour = startColour.ToColor();
                 _startSurfaceMaterial.color = _startColour;
             }
 
-            if (EndColour == null)
+            if (endColour == null)
             {
                 _endColour = _startColour;
                 _endSurfaceMaterial.color = _startColour;
             }
             else
             {
-                _endColour = EndColour.ToColor();
+                _endColour = endColour.ToColor();
                 _endSurfaceMaterial.color = _endColour * 4.5948f;
             }
 
-            if (_heatVolume == null) _heatVolume = GetComponentInChildren<HeatHazardVolume>();
-            if (_destructionVolume == null) _destructionVolume = GetComponentInChildren<DestructionVolume>();
-            if (_planetDestructionVolume == null) _planetDestructionVolume = GetComponentInChildren<StarDestructionVolume>();
-            if (_starFluidVolume == null) _starFluidVolume = GetComponentInChildren<StarFluidVolume>();
+            if (heatVolume == null) heatVolume = GetComponentInChildren<HeatHazardVolume>();
+            if (destructionVolume == null) destructionVolume = GetComponentInChildren<DestructionVolume>();
+            if (planetDestructionVolume == null) planetDestructionVolume = GetComponentInChildren<StarDestructionVolume>();
+            if (starFluidVolume == null) starFluidVolume = GetComponentInChildren<StarFluidVolume>();
 
             if (atmosphere != null)
             {
@@ -150,21 +153,21 @@ namespace NewHorizons.Components.SizeControllers
 
             if (scaleCurve != null)
             {
-                maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
-                minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
+                _maxScale = scaleCurve.keys.Select(x => x.value).Max() * size;
+                _minScale = scaleCurve.keys.Select(x => x.value).Min() * size;
             }
             else
             {
-                maxScale = 0;
-                minScale = 0;
+                _maxScale = 0;
+                _minScale = 0;
                 scaleCurve = new AnimationCurve();
                 scaleCurve.AddKey(0, 1);
             }
 
             _flareEmitter = GetComponentInChildren<SolarFlareEmitter>();
-            _surfaceMaterial = supernova._surface._materials[0];
+            _surfaceMaterial = _surface._materials[0];
 
-            if (!_isProxy) SupernovaEffectHandler.RegisterStar(this);
+            if (!isProxy) SupernovaEffectHandler.RegisterStar(this);
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
@@ -188,36 +191,36 @@ namespace NewHorizons.Components.SizeControllers
         public void SetProxy(StarEvolutionController proxy)
         {
             _proxy = proxy;
-            _proxy.supernova.SetIsProxy(true);
+            _proxy.supernova?.SetIsProxy(true);
         }
 
         private void UpdateMainSequence()
         {
             // Only do colour transition stuff if they set an end colour
-            if (EndColour != null)
+            if (endColour != null)
             {
                 // Use minutes elapsed if theres no resizing happening, else make it get redder the larger it is or wtv
                 var t = TimeLoop.GetMinutesElapsed() / lifespan;
-                if (maxScale != minScale) t = Mathf.InverseLerp(minScale, maxScale, CurrentScale);
+                if (_maxScale != _minScale) t = Mathf.InverseLerp(_minScale, _maxScale, CurrentScale);
 
                 if (t < 1f)
                 {
                     _currentColour = Color.Lerp(_startColour, _endColour, t);
-                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
-                    supernova._surface._materials[0].SetFloat(ColorTime, t);
+                    _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, t);
+                    _surface._materials[0].SetFloat(ColorTime, t);
                 }
                 else
                 {
                     _currentColour = _endColour;
-                    supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 1);
-                    supernova._surface._materials[0].SetFloat(ColorTime, 1);
+                    _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 1);
+                    _surface._materials[0].SetFloat(ColorTime, 1);
                 }
             }
             else
             {
                 _currentColour = _startColour;
-                supernova._surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 0);
-                supernova._surface._materials[0].SetFloat(ColorTime, 0);
+                _surface._materials[0].Lerp(_startSurfaceMaterial, _endSurfaceMaterial, 0);
+                _surface._materials[0].SetFloat(ColorTime, 0);
             }
 
             if (_flareEmitter != null) _flareEmitter._tint = _currentColour;
@@ -233,7 +236,7 @@ namespace NewHorizons.Components.SizeControllers
 
             _currentColour = Color.Lerp(_endColour, Color.white, t);
 
-            supernova._surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
+            _surface._materials[0].Lerp(_collapseStartSurfaceMaterial, _collapseEndSurfaceMaterial, t);
 
             // After the collapse is done we go supernova
             if (_collapseTimer > collapseTime) StartSupernova();
@@ -246,20 +249,25 @@ namespace NewHorizons.Components.SizeControllers
 
             var t = Mathf.Clamp01((Time.time - (_supernovaStartTime + supernovaScaleStart)) / (supernovaScaleEnd - supernovaScaleStart));
             // Make the destruction volume scale slightly smaller so you really have to be in the supernova to die
-            if (_destructionVolume != null) _destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
-            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
-            if (_planetDestructionVolume != null)
+            if (destructionVolume != null) destructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
+            if (heatVolume != null) heatVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius();
+            if (planetDestructionVolume != null)
             {
-                _planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
-                _planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
+                planetDestructionVolume.transform.localScale = Vector3.one * supernova.GetSupernovaRadius() * Mathf.Lerp(0.9f, 1, t);
+                planetDestructionVolume.GetComponent<SphereCollider>().radius = Mathf.Lerp(0.8f, 1, t);
             }
 
-            if (_stellarRemnantController != null && Time.time > _supernovaStartTime + 15) _stellarRemnantController.PartiallyActivate();
+            if (_stellarRemnant != null && Time.time > _supernovaStartTime + 15)
+            {
+                _stellarRemnant.SetActive(true);
+                var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
+                if (remnantStarController != null) StarLightController.AddStar(remnantStarController);
+            }
 
             if (Time.time > _supernovaStartTime + supernovaTime)
             {
-                if (_destructionVolume != null && _destructionVolume._shrinkingBodies.Count > 0) return;
-                if (_planetDestructionVolume != null && _planetDestructionVolume._shrinkingBodies.Count > 0) return;
+                if (destructionVolume != null && destructionVolume._shrinkingBodies.Count > 0) return;
+                if (planetDestructionVolume != null && planetDestructionVolume._shrinkingBodies.Count > 0) return;
                 DisableStar();
             }
         }
@@ -268,28 +276,38 @@ namespace NewHorizons.Components.SizeControllers
         {
             if (controller != null) StarLightController.RemoveStar(controller);
 
-            // Just turn off the star entirely
-            if (_isProxy)
-                gameObject.SetActive(false);
-            else
+            if (_stellarRemnant != null)
+            {
                 transform.parent.gameObject.SetActive(false); // Turn off sector
 
-            if (_stellarRemnantController != null) _stellarRemnantController.FullyActivate();
-
-            if (start && _planetDestructionVolume != null)
+                // If the star is disabled but has a remnant, be sure it is active
+                _stellarRemnant.gameObject.SetActive(true);
+            }
+            else
             {
-                foreach (var collider in Physics.OverlapSphere(_planetDestructionVolume.transform.position, _planetDestructionVolume.GetComponent<SphereCollider>().radius * supernovaSize * 0.9f))
+                gameObject.SetActive(false);
+            }
+
+            if (start && planetDestructionVolume != null)
+            {
+                foreach (var collider in Physics.OverlapSphere(planetDestructionVolume.transform.position, planetDestructionVolume.GetComponent<SphereCollider>().radius * supernovaSize * 0.9f))
                 {
                     if (collider.attachedRigidbody != null)
                     {
-                        var body = collider.attachedRigidbody.GetComponent<OWRigidbody>();
-                        if (body != null && body != _rigidbody)
+                        // Destroy any planets that are not invulnerable to the sun
+                        var rb = collider.attachedRigidbody;
+                        var body = rb.GetComponent<OWRigidbody>();
+                        var astroObject = collider.gameObject.GetComponent<NHAstroObject>();
+                        if (astroObject != null)
                         {
-                            // Vanish anything that is not a player-related object
-                            if (!(collider.attachedRigidbody.CompareTag("Player") || collider.attachedRigidbody.CompareTag("Ship") || collider.attachedRigidbody.CompareTag("ShipCockpit") || collider.attachedRigidbody.CompareTag("Probe")))
-                            {
-                                _planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, _planetDestructionVolume.transform));
-                            }
+                            if (!astroObject.invulnerableToSun)
+                                planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
+                        }
+                        else
+                        {
+                            // Vanish anything unrelated to player
+                            if (!(rb.CompareTag("Player") || rb.CompareTag("Ship") || rb.CompareTag("ShipCockpit") || rb.CompareTag("Probe")))
+                                planetDestructionVolume.Vanish(body, new RelativeLocationData(body, _rigidbody, planetDestructionVolume.transform));
                         }
                     }
                 }
@@ -308,8 +326,8 @@ namespace NewHorizons.Components.SizeControllers
             _isCollapsing = true;
             _collapseStartSize = CurrentScale;
             _collapseTimer = 0f;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
-            if (_oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) _oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
+            _surface._materials[0].CopyPropertiesFromMaterial(_collapseStartSurfaceMaterial);
+            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Collapse);
 
             if (_proxy != null) _proxy.StartCollapse();
         }
@@ -322,7 +340,7 @@ namespace NewHorizons.Components.SizeControllers
 
             CollapseStop.Invoke();
             _isCollapsing = false;
-            supernova._surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
+            _surface._materials[0].CopyPropertiesFromMaterial(_endSurfaceMaterial);
 
             if (_proxy != null) _proxy.StopCollapse();
         }
@@ -338,9 +356,9 @@ namespace NewHorizons.Components.SizeControllers
             _isSupernova = true;
             _supernovaStartTime = Time.time;
             if (atmosphere != null) atmosphere.SetActive(false);
-            if (_destructionVolume != null) _destructionVolume._deathType = DeathType.Supernova;
-            if (_planetDestructionVolume != null) _planetDestructionVolume._deathType = DeathType.Supernova;
-            if (_oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) _oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
+            if (destructionVolume != null) destructionVolume._deathType = DeathType.Supernova;
+            if (planetDestructionVolume != null) planetDestructionVolume._deathType = DeathType.Supernova;
+            if (oneShotSource != null && !PlayerState.IsSleepingAtCampfire() && !PlayerState.InDreamWorld()) oneShotSource.PlayOneShot(AudioType.Sun_Explosion);
 
             if (_proxy != null) _proxy.StartSupernova();
         }
@@ -355,21 +373,21 @@ namespace NewHorizons.Components.SizeControllers
             supernova.Deactivate();
             _isSupernova = false;
             if (atmosphere != null) atmosphere.SetActive(true);
-            if (_destructionVolume != null)
+            if (destructionVolume != null)
             {
-                _destructionVolume._deathType = DeathType.Energy;
-                _destructionVolume.transform.localScale = Vector3.one;
+                destructionVolume._deathType = DeathType.Energy;
+                destructionVolume.transform.localScale = Vector3.one;
             }
-            if (_planetDestructionVolume != null)
+            if (planetDestructionVolume != null)
             {
-                _planetDestructionVolume._deathType = DeathType.Energy;
-                _planetDestructionVolume.transform.localScale = Vector3.one;
+                planetDestructionVolume._deathType = DeathType.Energy;
+                planetDestructionVolume.transform.localScale = Vector3.one;
             }
-            if (_heatVolume != null) _heatVolume.transform.localScale = Vector3.one;
+            if (heatVolume != null) heatVolume.transform.localScale = Vector3.one;
             gameObject.SetActive(true);
             transform.localScale = Vector3.one;
-            supernova._surface._materials[0] = _surfaceMaterial;
-            supernova._surface.transform.localScale = Vector3.one;
+            _surface._materials[0] = _surfaceMaterial;
+            _surface.transform.localScale = Vector3.one;
 
             if (_proxy != null) _proxy.StopSupernova();
         }
@@ -406,7 +424,7 @@ namespace NewHorizons.Components.SizeControllers
             {
                 base.FixedUpdate();
                 UpdateMainSequence();
-                if (WillExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
+                if (willExplode && (TimeLoop.GetMinutesElapsed() / lifespan) >= 1) StartCollapse();
             }
             else
             {
@@ -439,6 +457,10 @@ namespace NewHorizons.Components.SizeControllers
             }
         }
 
-        public void SetStellarRemnantController(StellarRemnantController controller) => _stellarRemnantController = controller;
+        public void SetStellarRemnant(GameObject stellarRemnant)
+        {
+            _stellarRemnant = stellarRemnant;
+            _stellarRemnant.SetActive(false);
+        }
     }
 }

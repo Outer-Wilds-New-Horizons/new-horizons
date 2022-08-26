@@ -1,25 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Components
 {
     public class StellarDeathController : MonoBehaviour
     {
-        public ParticleSystem[] _explosionParticles;
-        public MeshRenderer _shockwave;
-        public float _shockwaveLength = 5f;
-        public AnimationCurve _shockwaveScale = AnimationCurve.Linear(0.0f, 0.0f, 1f, 100000f);
-        public AnimationCurve _shockwaveAlpha = AnimationCurve.Linear(0.0f, 1f, 1f, 0.0f);
-        [Space]
-        public TessellatedSphereRenderer _surface;
-        public Material _supernovaMaterial;
-        public AnimationCurve _supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, 50000, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
-        public AnimationCurve _supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
-        [Space]
-        public OWAudioSource _audioSource;
-        public StellarDeathController _main;
+        public ParticleSystem[] explosionParticles;
+        public MeshRenderer shockwave;
+        public float shockwaveLength = 5f;
+        public AnimationCurve shockwaveScale = AnimationCurve.Linear(0.0f, 0.0f, 1f, 100000f);
+        public AnimationCurve shockwaveAlpha = AnimationCurve.Linear(0.0f, 1f, 1f, 0.0f);
+
+        public TessellatedSphereRenderer surface;
+        public Material supernovaMaterial;
+        public AnimationCurve supernovaScale = new AnimationCurve(new Keyframe(0, 200, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(45, 50000, 1758.508f, 1758.508f, 1f / 3f, 1f / 3f));
+        public AnimationCurve supernovaAlpha = new AnimationCurve(new Keyframe(5, 1, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(15, 1.0002f, 0, 0, 1f / 3f, 1f / 3f), new Keyframe(50, 0, -0.0578f, 1 / 3f, -0.0578f, 1 / 3f));
+
+        public OWAudioSource audioSource;
+        public StellarDeathController mainStellerDeathController;
+
         private float _time;
         private float _currentSupernovaScale;
         private Material _localSupernovaMat;
@@ -28,58 +26,59 @@ namespace NewHorizons.Components
 
         public void Awake()
         {
-            _cachedParticleRenderers = new ParticleSystemRenderer[_explosionParticles.Length];
-            for (int index = 0; index < _explosionParticles.Length; ++index)
-                _cachedParticleRenderers[index] = _explosionParticles[index].GetComponent<ParticleSystemRenderer>();
+            _cachedParticleRenderers = new ParticleSystemRenderer[explosionParticles.Length];
+            for (int index = 0; index < explosionParticles.Length; ++index)
+                _cachedParticleRenderers[index] = explosionParticles[index].GetComponent<ParticleSystemRenderer>();
         }
 
         public void Activate()
         {
             enabled = true;
-            _shockwave.enabled = true;
-            foreach (var particle in _explosionParticles) particle.Play();
+            shockwave.enabled = true;
+            foreach (var particle in explosionParticles) particle.Play();
             _time = 0.0f;
-            _currentSupernovaScale = _supernovaScale.Evaluate(0.0f);
-            _localSupernovaMat = new Material(_supernovaMaterial);
-            _surface.sharedMaterial = _localSupernovaMat;
+            _currentSupernovaScale = supernovaScale.Evaluate(0.0f);
+            _localSupernovaMat = new Material(supernovaMaterial);
+            surface.sharedMaterial = _localSupernovaMat;
 
-            if (_audioSource == null) return;
+            if (audioSource == null) return;
 
-            _audioSource.AssignAudioLibraryClip(AudioType.Sun_SupernovaWall_LP);
-            _audioSource.SetLocalVolume(0);
-            _audioSource.Play();
+            audioSource.AssignAudioLibraryClip(AudioType.Sun_SupernovaWall_LP);
+            audioSource.SetLocalVolume(0);
+            audioSource.Play();
         }
 
         public void Deactivate()
         {
             enabled = false;
-            _shockwave.enabled = false;
+            shockwave.enabled = false;
 
-            if (_audioSource == null) return;
+            if (audioSource == null) return;
 
-            _audioSource.SetLocalVolume(0);
-            _audioSource.Stop();
+            audioSource.SetLocalVolume(0);
+            audioSource.Stop();
         }
 
         public void FixedUpdate()
         {
-            if (_main != null) _time = _main._time;
+            if (mainStellerDeathController != null) _time = mainStellerDeathController._time;
             else _time += Time.deltaTime;
-            float shockwaveTime = Mathf.Clamp01(_time / _shockwaveLength);
-            _shockwave.transform.localScale = Vector3.one * _shockwaveScale.Evaluate(shockwaveTime);
-            _shockwave.material.color = Color.Lerp(Color.black, _shockwave.sharedMaterial.color, _shockwaveAlpha.Evaluate(shockwaveTime));
-            _currentSupernovaScale = _supernovaScale.Evaluate(_time);
-            _surface.transform.localScale = Vector3.one * _currentSupernovaScale;
-            _localSupernovaMat.color = Color.Lerp(Color.black, _supernovaMaterial.color, _supernovaAlpha.Evaluate(_time));
+
+            float shockwaveTime = Mathf.Clamp01(_time / shockwaveLength);
+            shockwave.transform.localScale = Vector3.one * shockwaveScale.Evaluate(shockwaveTime);
+            shockwave.material.color = Color.Lerp(Color.black, shockwave.sharedMaterial.color, shockwaveAlpha.Evaluate(shockwaveTime));
+            _currentSupernovaScale = supernovaScale.Evaluate(_time);
+            surface.transform.localScale = Vector3.one * _currentSupernovaScale;
+            _localSupernovaMat.color = Color.Lerp(Color.black, supernovaMaterial.color, supernovaAlpha.Evaluate(_time));
 
             float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : (Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius());
 
             if (_isProxy) return;
 
-            if (_audioSource != null)
+            if (audioSource != null)
             {
                 float dt = Mathf.InverseLerp(12000f, 0.0f, distanceToPlayer);
-                _audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
+                audioSource.SetLocalVolume(Mathf.Lerp(0.0f, 1f, dt * dt) * Mathf.InverseLerp(0.0f, 5f, _time));
             }
 
             RumbleManager.UpdateSupernova(distanceToPlayer);
@@ -99,7 +98,7 @@ namespace NewHorizons.Components
         public void SetRenderingEnabled(bool renderingEnabled)
         {
             if (!enabled) return;
-            _shockwave.enabled = renderingEnabled;
+            shockwave.enabled = renderingEnabled;
             SetParticlesVisibility(renderingEnabled);
         }
     }

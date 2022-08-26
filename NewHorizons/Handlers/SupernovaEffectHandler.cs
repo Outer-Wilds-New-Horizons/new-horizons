@@ -1,10 +1,6 @@
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NewHorizons.Handlers
@@ -108,11 +104,12 @@ namespace NewHorizons.Handlers
 
         public static SunController GetSunController() => _sunController;
 
-        public static bool InPointInsideAnySupernova(Vector3 position)
+        public static bool IsPointInsideAnySupernova(Vector3 position)
         {
             foreach (var starEvolutionController in _starEvolutionControllers)
             {
                 if (!IsStarActive(starEvolutionController)) continue;
+                if (starEvolutionController.supernova == null) continue;
 
                 var distanceSqr = (position - starEvolutionController.transform.position).sqrMagnitude;
                 var size = starEvolutionController.GetSupernovaRadius();
