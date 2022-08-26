@@ -65,8 +65,8 @@ namespace NewHorizons.Builder.Body
 
         private static StellarRemnantType GetDefault(float progenitorSize)
         {
-            if (progenitorSize >= blackholeSize) return StellarRemnantType.BlackHole;
-            else if (neutronStarSize < progenitorSize && progenitorSize < blackholeSize) return StellarRemnantType.NeutronStar;
+            if (progenitorSize > blackholeSize) return StellarRemnantType.BlackHole;
+            else if (neutronStarSize < progenitorSize && progenitorSize <= blackholeSize) return StellarRemnantType.NeutronStar;
             else return StellarRemnantType.WhiteDwarf;
         }
 
@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Body
         {
             if (star.stellarDeathType == StellarDeathType.None) return false;
 
-            return !(star.stellarRemnantType == StellarRemnantType.Default && star.size < whiteDwarfSize);
+            return !(star.stellarRemnantType == StellarRemnantType.Default && star.size <= whiteDwarfSize);
         }
 
         private static GameObject MakeWhiteDwarf(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule progenitor, GameObject proxy = null)
