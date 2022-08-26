@@ -201,10 +201,8 @@ namespace NewHorizons.Builder.Body
                 }
 
                 // Remove all collisions if there are any
-                foreach (var col in proxy.GetComponentsInChildren<Collider>())
-                {
-                    GameObject.Destroy(col);
-                }
+                foreach (var col in proxy.GetComponentsInChildren<Collider>()) GameObject.Destroy(col);
+                foreach (var col in proxy.GetComponentsInChildren<OWCollider>()) GameObject.Destroy(col);
 
                 foreach (var renderer in proxy.GetComponentsInChildren<Renderer>())
                 {
