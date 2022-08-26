@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -214,6 +215,19 @@ namespace NewHorizons.Utility
             bool zCorrect = nomaiCoordinateInterface._nodeControllers[2].CheckCoordinate(coordinates.z);
             Utility.Logger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
             return xCorrect && yCorrect && zCorrect;
+        }
+
+        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
+        {
+            try
+            {
+                return (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), fluidType).ToUpper());
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Couldn't parse fluid volume type [{fluidType}]:\n{ex}");
+                return @default;
+            }
         }
     }
 }

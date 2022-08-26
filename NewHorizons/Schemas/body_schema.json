@@ -327,7 +327,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
           "default": "cloud",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -388,7 +388,7 @@
         "basic"
       ]
     },
-    "CloudFluidType": {
+    "FluidType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -1675,6 +1675,11 @@
           "type": "number",
           "description": "The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.",
           "format": "float"
+        },
+        "fluidType": {
+          "description": "Fluid type for sounds/effects when colliding with this tornado.",
+          "default": "cloud",
+          "$ref": "#/definitions/FluidType"
         }
       }
     },
@@ -1973,6 +1978,10 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "disableWall": {
+          "type": "boolean",
+          "description": "Disable the wall, leaving only the pedestal and text."
         }
       }
     },
@@ -2035,6 +2044,14 @@
           "type": "string",
           "description": "A ship log fact to reveal when the platform is connected to.",
           "default": ""
+        },
+        "disableStructure": {
+          "type": "boolean",
+          "description": "Disable the structure, leaving only the pedestal."
+        },
+        "disablePool": {
+          "type": "boolean",
+          "description": "Disable the pool that rises when you place a stone."
         }
       }
     },
@@ -2105,7 +2122,7 @@
       "properties": {
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/CloudFluidType"
+          "$ref": "#/definitions/FluidType"
         },
         "inclination": {
           "type": "number",
