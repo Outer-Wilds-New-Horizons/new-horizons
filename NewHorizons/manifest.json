@@ -1,10 +1,10 @@
 {
   "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
-  "author": "xen, Bwc9876, clay, MegaPiggy, John, Book",
+  "author": "xen, Bwc9876, clay, MegaPiggy, John, Hawkbar, Trifid, Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.4.4",
+  "version": "1.5.0",
   "owmlVersion": "2.6.0",
   "dependencies": [ "JohnCorby.VanillaFix" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],

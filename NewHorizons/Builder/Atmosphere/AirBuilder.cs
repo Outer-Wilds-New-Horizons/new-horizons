@@ -1,5 +1,4 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {

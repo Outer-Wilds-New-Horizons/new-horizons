@@ -25,27 +25,41 @@ namespace NewHorizons.Builder.Props
             detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
         }
 
+        /// <summary>
+        /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
+        /// </summary>
         public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
         {
-            GameObject prefab;
             if (detail.assetBundle != null)
             {
                 // Shouldn't happen
                 if (mod == null) return null;
 
-                prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
+                return Make(go, sector, AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod), detail);
             }
             else
-            {
-                prefab = SearchUtilities.Find(detail.path);
-            }
-
-            if (prefab == null) Logger.LogError($"Couldn't find detail {detail.path}");
-
-            return MakeDetail(go, sector, prefab, detail);
+                return Make(go, sector, detail);
         }
 
-        public static GameObject MakeDetail(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
+        /// <summary>
+        /// Create a detail using a path in the scene hierarchy of the item to copy.
+        /// </summary>
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        {
+            var prefab = SearchUtilities.Find(info.path);
+            if (prefab == null)
+            {
+                Logger.LogError($"Couldn't find detail {info.path}");
+                return null;
+            }
+            else
+                return Make(planetGO, sector, prefab, info);
+        }
+
+        /// <summary>
+        /// Create a detail using a prefab.
+        /// </summary>
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
         {
             if (prefab == null) return null;
 
@@ -116,6 +130,7 @@ namespace NewHorizons.Builder.Props
                 var newDetailGO = new GameObject(prop.name);
                 newDetailGO.transform.position = prop.transform.position;
                 newDetailGO.transform.parent = prop.transform.parent;
+
                 // Can't modify parents while looping through children bc idk
                 var children = new List<Transform>();
                 foreach (Transform child in prop.transform)

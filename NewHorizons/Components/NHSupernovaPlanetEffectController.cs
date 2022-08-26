@@ -14,24 +14,45 @@ namespace NewHorizons.Components
         public float _ambientLightOrigIntensity;
         public LODGroup _atmosphere;
         public Renderer _atmosphereRenderer;
+        public float _atmosphereOrigSunIntensity = 1;
         public PlanetaryFogController _fog;
         public Renderer _fogImpostor;
         public Color _fogOrigTint;
-        [Space]
+
         public MeshRenderer _shockLayer;
         public static readonly Color _shockLayerDefaultColor = new Color(0.3569f, 0.7843f, 1f, 1f);
-        [ColorUsage(true, true)]
+
         public Color _shockLayerColor = _shockLayerDefaultColor;
-        public float _shockLayerStartRadius = 1000f;
-        public float _shockLayerFullRadius = 10000f;
-        public float _shockLayerTrailLength = 300f;
-        public float _shockLayerTrailFlare = 100f;
+
+        public float shockLayerStartRadius = 1000f;
+        public float shockLayerFullRadius = 10000f;
+        public float shockLayerTrailLength = 300f;
+        public float shockLayerTrailFlare = 100f;
 
         private LOD[] _atmosphereLODs;
 
-        public StarEvolutionController _starEvolutionController;
+        // Only one of StarEvolutionController or SunController can be set at once
+        public StarEvolutionController StarEvolutionController
+        {
+            get => _starEvolutionController;
+            set
+            {
+                _starEvolutionController = value;
+                _sunController = null;
+            }
+        }
+        private StarEvolutionController _starEvolutionController;
 
-        public SunController _sunController;
+        public SunController SunController
+        {
+            get => _sunController;
+            set
+            {
+                _sunController = value;
+                _starEvolutionController = null;
+            }
+        }
+        private SunController _sunController;
 
         public void Awake()
         {
@@ -87,34 +108,34 @@ namespace NewHorizons.Components
         public void Update()
         {
             SupernovaEffectHandler.GetNearestStarSupernova(this);
-            if (_starEvolutionController != null)
+            if (StarEvolutionController != null)
             {
-                if (_starEvolutionController.HasSupernovaStarted())
+                if (StarEvolutionController.HasSupernovaStarted())
                 {
                     if (_shockLayer != null)
                     {
                         if (!_shockLayer.enabled) _shockLayer.enabled = true;
-                        Vector3 dir = Vector3.Normalize(transform.position - _starEvolutionController.transform.position);
-                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, _starEvolutionController.SupernovaColour != null ? _starEvolutionController.SupernovaColour.ToColor() : _shockLayerColor);
+                        Vector3 dir = Vector3.Normalize(transform.position - StarEvolutionController.transform.position);
+                        s_matPropBlock_ShockLayer.SetColor(s_propID_Color, StarEvolutionController.supernovaColour != null ? StarEvolutionController.supernovaColour.ToColor() : _shockLayerColor);
                         s_matPropBlock_ShockLayer.SetMatrix(s_propID_WorldToLocalShockMatrix, Matrix4x4.TRS(transform.position, Quaternion.LookRotation(dir, Vector3.up), Vector3.one).inverse);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_Dir, dir);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, _shockLayerTrailLength);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Flare, _shockLayerTrailFlare);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_TrailFade, 1f - Mathf.InverseLerp(_shockLayerStartRadius, _shockLayerFullRadius, _starEvolutionController.GetSupernovaRadius()));
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, shockLayerTrailLength);
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Flare, shockLayerTrailFlare);
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_TrailFade, 1f - Mathf.InverseLerp(shockLayerStartRadius, shockLayerFullRadius, StarEvolutionController.GetSupernovaRadius()));
                         s_matPropBlock_ShockLayer.SetFloat(s_propID_GradientLerp, 0);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_MainTex_ST, _shockLayer.sharedMaterial.GetVector(s_propID_MainTex_ST) with { w = -Time.timeSinceLevelLoad });
                         _shockLayer.SetPropertyBlock(s_matPropBlock_ShockLayer);
                     }
                 }
-                if (_starEvolutionController.IsCollapsing())
+                if (StarEvolutionController.IsCollapsing())
                 {
-                    float collapseProgress = _starEvolutionController.GetCollapseProgress();
+                    float collapseProgress = StarEvolutionController.GetCollapseProgress();
 
                     if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity * (1f - collapseProgress);
 
                     if (_atmosphere != null)
                     {
-                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, 1f - collapseProgress);
+                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, _atmosphereOrigSunIntensity * (1f - collapseProgress));
 
                         foreach (var lod in _atmosphereLODs)
                             foreach (var renderer in lod.renderers)
@@ -123,7 +144,7 @@ namespace NewHorizons.Components
 
                     if (_atmosphereRenderer != null)
                     {
-                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, 1f - collapseProgress);
+                        s_matPropBlock_Atmosphere.SetFloat(s_propID_SunIntensity, _atmosphereOrigSunIntensity * (1f - collapseProgress));
 
                         _atmosphereRenderer.SetPropertyBlock(s_matPropBlock_Atmosphere);
                     }
@@ -137,28 +158,28 @@ namespace NewHorizons.Components
                     if (_shockLayer != null) _shockLayer.enabled = false;
                 }
             }
-            else if (_sunController != null)
+            else if (SunController != null)
             {
-                if (_sunController.HasSupernovaStarted())
+                if (SunController.HasSupernovaStarted())
                 {
                     if (_shockLayer != null)
                     {
                         if (!_shockLayer.enabled) _shockLayer.enabled = true;
-                        Vector3 dir = Vector3.Normalize(transform.position - _sunController.transform.position);
+                        Vector3 dir = Vector3.Normalize(transform.position - SunController.transform.position);
                         s_matPropBlock_ShockLayer.SetColor(s_propID_Color, _shockLayerColor);
                         s_matPropBlock_ShockLayer.SetMatrix(s_propID_WorldToLocalShockMatrix, Matrix4x4.TRS(transform.position, Quaternion.LookRotation(dir, Vector3.up), Vector3.one).inverse);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_Dir, dir);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, _shockLayerTrailLength);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Flare, _shockLayerTrailFlare);
-                        s_matPropBlock_ShockLayer.SetFloat(s_propID_TrailFade, 1f - Mathf.InverseLerp(_shockLayerStartRadius, _shockLayerFullRadius, _sunController.GetSupernovaRadius()));
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Length, shockLayerTrailLength);
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_Flare, shockLayerTrailFlare);
+                        s_matPropBlock_ShockLayer.SetFloat(s_propID_TrailFade, 1f - Mathf.InverseLerp(shockLayerStartRadius, shockLayerFullRadius, SunController.GetSupernovaRadius()));
                         s_matPropBlock_ShockLayer.SetFloat(s_propID_GradientLerp, 0);
                         s_matPropBlock_ShockLayer.SetVector(s_propID_MainTex_ST, _shockLayer.sharedMaterial.GetVector(s_propID_MainTex_ST) with { w = -Time.timeSinceLevelLoad });
                         _shockLayer.SetPropertyBlock(s_matPropBlock_ShockLayer);
                     }
                 }
-                else if (_sunController._collapseStarted)
+                else if (SunController._collapseStarted)
                 {
-                    float collapseProgress = _sunController.GetCollapseProgress();
+                    float collapseProgress = SunController.GetCollapseProgress();
 
                     if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity * (1f - collapseProgress);
 
@@ -190,6 +211,12 @@ namespace NewHorizons.Components
             else
             {
                 if (_shockLayer != null) _shockLayer.enabled = false;
+
+                if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity;
+
+                if (_fog != null) _fog.fogTint = _fogOrigTint;
+
+                if (_fogImpostor != null) _fogImpostor.material.SetColor(s_propID_Tint, _fogOrigTint);
             }
         }
     }

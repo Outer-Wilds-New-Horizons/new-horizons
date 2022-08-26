@@ -23,6 +23,7 @@ using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons
 {
@@ -305,6 +306,7 @@ namespace NewHorizons
                 RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
+                StarEvolutionController.Init();
 
                 // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
                 LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);

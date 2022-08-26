@@ -118,7 +118,7 @@ namespace NewHorizons
                 scale = scale,
                 alignToNormal = alignWithNormal
             };
-            return DetailBuilder.MakeDetail(planet, sector, prefab, detailInfo);
+            return DetailBuilder.Make(planet, sector, prefab, detailInfo);
         }
 
         public AudioSignal SpawnSignal(IModBehaviour mod, GameObject root, string audio, string name, string frequency,

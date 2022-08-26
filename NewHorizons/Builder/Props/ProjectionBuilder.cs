@@ -228,7 +228,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 scale = 2
             };
-            var g = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+            var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
@@ -294,7 +294,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+            var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
