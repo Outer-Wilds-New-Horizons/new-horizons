@@ -379,6 +379,12 @@ namespace NewHorizons.External.Configs
                 if (!string.IsNullOrEmpty(Cloak.audioClip)) Cloak.audio = Cloak.audioClip;
                 if (!string.IsNullOrEmpty(Cloak.audioFilePath)) Cloak.audio = Cloak.audioFilePath;
             }
+
+            // Rings are no longer variable size module
+            if (Ring != null)
+            {
+                if (Ring.curve != null) Ring.scaleCurve = Ring.curve;
+            }
         }
     }
 }
