@@ -1,4 +1,6 @@
 using HarmonyLib;
+using NewHorizons.Components;
+using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Runtime.CompilerServices;

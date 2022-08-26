@@ -52,6 +52,8 @@ namespace NewHorizons.OtherMods.OWRichPresence
 
         public static void OnStarSystemLoaded(string name)
         {
+            if (!Enabled) return;
+
             if (name == "SolarSystem") return;
 
             var localizedName = ShipLogStarChartMode.UniqueIDToName(name);
@@ -62,6 +64,8 @@ namespace NewHorizons.OtherMods.OWRichPresence
 
         public static void OnChangeStarSystem(string destination)
         {
+            if (!Enabled) return;
+
             var localizedName = ShipLogStarChartMode.UniqueIDToName(destination);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_WARPING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 

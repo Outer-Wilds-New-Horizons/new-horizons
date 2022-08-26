@@ -1,12 +1,11 @@
+using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.VariableSize;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using NewHorizons.Builder.Orbital;
-using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.VariableSize;
-using Newtonsoft.Json;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
@@ -101,6 +100,11 @@ namespace NewHorizons.External.Configs
         public bool isQuantumState;
 
         /// <summary>
+        /// Does this config describe a stellar remnant of a custom star defined in another file?
+        /// </summary>
+        public bool isStellarRemnant;
+
+        /// <summary>
         /// Add lava to this planet
         /// </summary>
         public LavaModule Lava;
@@ -146,6 +150,11 @@ namespace NewHorizons.External.Configs
         public ShipLogModule ShipLog;
 
         /// <summary>
+        /// Settings for shock effect on planet when the nearest star goes supernova
+        /// </summary>
+        public ShockEffectModule ShockEffect;
+
+        /// <summary>
         /// Spawn the player at this planet
         /// </summary>
         public SpawnModule Spawn;
@@ -154,11 +163,6 @@ namespace NewHorizons.External.Configs
         /// Make this body a star
         /// </summary>
         public StarModule Star;
-
-        /// <summary>
-        /// Version of New Horizons this config is using (Doesn't do anything)
-        /// </summary>
-        public string version;
 
         /// <summary>
         /// Add water to this planet
@@ -214,7 +218,7 @@ namespace NewHorizons.External.Configs
                     }
                 }
 
-                Dictionary<string, int> existingGroupsPropCounts = new Dictionary<string, int>();
+                var existingGroupsPropCounts = new Dictionary<string, int>();
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;
@@ -231,6 +235,9 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+
+            // Stars and focal points shouldnt be destroyed by stars
+            if (Star != null || FocalPoint != null) Base.invulnerableToSun = true;
         }
 
         public void Migrate()
@@ -346,6 +353,13 @@ namespace NewHorizons.External.Configs
                 if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
+
+            // Star
+            if (Star != null)
+            {
+                if (!Star.goSupernova) Star.stellarDeathType = StellarDeathType.None;
+            }
+
             // Signals no longer use two different variables for audio
             if (Props?.signals != null)
             {

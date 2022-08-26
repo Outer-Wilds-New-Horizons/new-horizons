@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Body
 
             var prefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension");
             var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.MakeDetail(go, sector, prefab, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, prefab, detailInfo);
 
             var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive();
             var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();

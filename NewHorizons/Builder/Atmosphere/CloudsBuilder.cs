@@ -142,8 +142,6 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.clouds.tint?.ToColor() ?? UnityEngine.Color.white;
-
             Texture2D image, cap, ramp;
 
             try
@@ -151,8 +149,8 @@ namespace NewHorizons.Builder.Atmosphere
                 // qm cloud type = should wrap, otherwise clamp like normal
                 image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
-                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
+                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128, wrap: true);
+                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath, wrap: true);
                 if (atmo.clouds.rampPath == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = ImageUtilities.GetTexture(mod, atmo.clouds.rampPath);
             }
@@ -212,7 +210,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.rotationSpeed != 0f)
             {
-                RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                var topRT = cloudsTopGO.AddComponent<RotateTransform>();
                 // Idk why but the axis is weird
                 topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
                 topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
