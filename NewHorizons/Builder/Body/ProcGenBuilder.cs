@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Body
             icosphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             var cubeSphereSC = icosphere.AddComponent<SphereCollider>();
-            cubeSphereSC.radius = module.scale;
+            cubeSphereSC.radius = module.scale * 0.85f;
 
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) icosphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
