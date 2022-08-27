@@ -1,4 +1,5 @@
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +36,7 @@ namespace NewHorizons.Utility
 
             try
             {
-                var audioType = (AudioType)Enum.Parse(typeof(AudioType), audio);
-                source._audioLibraryClip = audioType;
+                source._audioLibraryClip = EnumUtils.Parse<AudioType>(audio);
             }
             catch
             {

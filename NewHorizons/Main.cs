@@ -24,6 +24,7 @@ using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Components.SizeControllers;
+using OWML.Utils;
 
 namespace NewHorizons
 {
@@ -228,6 +229,7 @@ namespace NewHorizons
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
             AssetBundleUtilities.ClearCache();
+            EnumUtilities.ClearCache();
             IsSystemReady = false;
         }
 
@@ -567,7 +569,7 @@ namespace NewHorizons
         private void LoadTranslations(string folder, IModBehaviour mod)
         {
             var foundFile = false;
-            foreach (TextTranslation.Language language in Enum.GetValues(typeof(TextTranslation.Language)))
+            foreach (TextTranslation.Language language in EnumUtils.GetValues<TextTranslation.Language>())
             {
                 if (language == TextTranslation.Language.UNKNOWN || language == TextTranslation.Language.TOTAL) continue;
 

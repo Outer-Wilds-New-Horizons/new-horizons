@@ -1,9 +1,12 @@
+using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class SectorBuilder
     {
+        private static Sector.Name Name = EnumUtils.Create<Sector.Name>("NewHorizons");
+
         public static Sector Make(GameObject planetBody, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
             GameObject sectorGO = new GameObject("Sector");
@@ -22,7 +25,7 @@ namespace NewHorizons.Builder.General
             sectorGO.AddComponent<OWTriggerVolume>();
 
             Sector S = sectorGO.AddComponent<Sector>();
-            S._name = (Sector.Name)24;
+            S._name = Name;
             S._attachedOWRigidbody = owRigidBody;
             S._subsectors = new List<Sector>();
 

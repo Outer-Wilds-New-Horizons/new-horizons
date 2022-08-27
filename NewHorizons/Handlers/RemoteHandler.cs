@@ -1,5 +1,6 @@
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,6 @@ namespace NewHorizons.Handlers
     public static class RemoteHandler
     {
         private static Dictionary<string, NomaiRemoteCameraPlatform.ID> _customPlatformIDs;
-        private static readonly int _startingInt = 19;
 
         public static void Init()
         {
@@ -41,9 +41,13 @@ namespace NewHorizons.Handlers
             try
             {
                 NomaiRemoteCameraPlatform.ID platformID;
-                if (_customPlatformIDs.TryGetValue(id, out platformID) || Enum.TryParse(id, true, out platformID))
+                if (_customPlatformIDs.TryGetValue(id, out platformID))
                 {
                     return platformID;
+                }
+                else if (EnumUtils.IsDefined<NomaiRemoteCameraPlatform.ID>(id))
+                {
+                    return EnumUtils.Parse<NomaiRemoteCameraPlatform.ID>(id);
                 }
                 else
                 {
@@ -52,16 +56,16 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load platform id:\n{e}");
+                Logger.LogError($"Couldn't load platform id [{id}]:\n{e}");
                 return NomaiRemoteCameraPlatform.ID.None;
             }
         }
 
         public static NomaiRemoteCameraPlatform.ID AddCustomPlatformID(string id)
         {
-            var platformID = (NomaiRemoteCameraPlatform.ID)_startingInt + _customPlatformIDs.Count();
+            Logger.LogVerbose($"Registering new platform id [{id}]");
 
-            Logger.LogVerbose($"Registering custom platform id {id} as {platformID}");
+            var platformID = EnumUtilities.Create<NomaiRemoteCameraPlatform.ID>(id);
 
             _customPlatformIDs.Add(id, platformID);
 
