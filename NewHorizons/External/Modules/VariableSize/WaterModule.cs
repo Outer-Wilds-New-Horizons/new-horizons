@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.VariableSize
@@ -15,5 +15,10 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Tint of the water
         /// </summary>
         public MColor tint;
+
+        /// <summary>
+        /// Size of the interior. Useful for if you want the core of the planet to have no water.
+        /// </summary>
+        public float interiorSize;
     }
 }

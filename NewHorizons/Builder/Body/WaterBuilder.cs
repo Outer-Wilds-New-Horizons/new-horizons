@@ -85,7 +85,8 @@ namespace NewHorizons.Builder.Body
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
-            fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
+            fluidVolume._layer = 5;
+            fluidVolume._priority = 3;
 
             var fogGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
             fogGO.name = "OceanFog";
@@ -110,6 +111,27 @@ namespace NewHorizons.Builder.Body
             {
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius", module.size);
                 fogGO.GetComponent<MeshRenderer>().material.SetFloat("_Radius2", 0);
+            }
+
+            if (module.interiorSize != 0)
+            {
+                var interiorObject = new GameObject("InteriorVolume");
+                interiorObject.transform.parent = waterGO.transform;
+                interiorObject.transform.localScale = Vector3.one;
+                interiorObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+                var sphereShape = interiorObject.AddComponent<SphereShape>();
+                sphereShape.radius = module.interiorSize;
+
+                var interiorTriggerVolume = interiorObject.AddComponent<OWTriggerVolume>();
+                interiorTriggerVolume._shape = sphereShape;
+
+                var interiorFluidVolume = interiorObject.AddComponent<SimpleFluidVolume>();
+                interiorFluidVolume._fluidType = FluidVolume.Type.AIR;
+                interiorFluidVolume._attachedBody = rb;
+                interiorFluidVolume._triggerVolume = interiorTriggerVolume;
+                interiorFluidVolume._layer = 5;
+                interiorFluidVolume._priority = 5;
             }
 
             // TODO: fix ruleset making the sand bubble pop up
