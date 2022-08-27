@@ -2501,6 +2501,11 @@
         "tint": {
           "description": "Tint of the water",
           "$ref": "#/definitions/MColor"
+        },
+        "interiorSize": {
+          "type": "number",
+          "description": "Size of the interior. Useful for if you want the core of the planet to have no water.",
+          "format": "float"
         }
       }
     }
