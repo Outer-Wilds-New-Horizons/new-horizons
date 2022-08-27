@@ -98,6 +98,8 @@ namespace NewHorizons.Components.SizeControllers
         {
             var sun = GameObject.FindObjectOfType<SunController>();
 
+            if (sun == null) return;
+
             // Need to grab all this early bc the star might only Start after the solar system was made (remnants)
             _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
             _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
