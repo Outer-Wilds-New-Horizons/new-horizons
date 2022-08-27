@@ -194,7 +194,7 @@ namespace NewHorizons.Components.SizeControllers
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
-            if (secondsElapsed >= lifespanInSeconds)
+            if (willExplode && secondsElapsed >= lifespanInSeconds)
             {
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
