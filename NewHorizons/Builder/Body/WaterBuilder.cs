@@ -121,7 +121,7 @@ namespace NewHorizons.Builder.Body
                 interiorObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
                 var sphereShape = interiorObject.AddComponent<SphereShape>();
-                sphereShape.radius = module.interiorSize;
+                sphereShape.radius = module.interiorSize / module.size;
 
                 var interiorTriggerVolume = interiorObject.AddComponent<OWTriggerVolume>();
                 interiorTriggerVolume._shape = sphereShape;
