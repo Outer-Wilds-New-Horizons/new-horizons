@@ -115,13 +115,15 @@ namespace NewHorizons.Builder.Body
 
             if (module.interiorSize != 0)
             {
+                var scale = module.interiorSize / module.size;
+
                 var interiorObject = new GameObject("InteriorVolume");
                 interiorObject.transform.parent = waterGO.transform;
-                interiorObject.transform.localScale = Vector3.one;
+                interiorObject.transform.localScale = Vector3.one * scale;
                 interiorObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
                 var sphereShape = interiorObject.AddComponent<SphereShape>();
-                sphereShape.radius = module.interiorSize / module.size;
+                sphereShape.radius = 1;
 
                 var interiorTriggerVolume = interiorObject.AddComponent<OWTriggerVolume>();
                 interiorTriggerVolume._shape = sphereShape;
@@ -132,6 +134,14 @@ namespace NewHorizons.Builder.Body
                 interiorFluidVolume._triggerVolume = interiorTriggerVolume;
                 interiorFluidVolume._layer = 5;
                 interiorFluidVolume._priority = 5;
+
+                var stencil = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                stencil.name = "NoWaterStencil";
+                stencil.transform.SetParent(interiorObject.transform, false);
+                stencil.transform.localPosition = Vector3.zero;
+                stencil.transform.localScale = Vector3.one * 2;
+                stencil.GetComponent<MeshRenderer>().materials = SearchUtilities.Find("Ship_Body/StencilBuffer_Occlusion").GetComponent<MeshRenderer>().materials;//GiantsDeep_Body/Sector_GD/Sector_GDInterior/Sector_GDCore/Sector_Module_Sunken/Effects_Module_Sunken/sunkenModuleStencil
+                GameObject.DestroyImmediate(stencil.GetComponent<Collider>());
             }
 
             // TODO: fix ruleset making the sand bubble pop up
