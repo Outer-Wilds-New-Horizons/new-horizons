@@ -370,6 +370,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void StartSupernova()
         {
+            if (supernova == null) return;
             if (_isSupernova) return;
 
             Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
@@ -393,7 +394,7 @@ namespace NewHorizons.Components.SizeControllers
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             SupernovaStop.Invoke();
-            supernova.Deactivate();
+            if (supernova != null) supernova.Deactivate();
             _isSupernova = false;
             if (atmosphere != null) atmosphere.SetActive(true);
             if (destructionVolume != null)
