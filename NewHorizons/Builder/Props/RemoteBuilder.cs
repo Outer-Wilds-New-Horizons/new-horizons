@@ -155,7 +155,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var whiteboard = DetailBuilder.MakeDetail(go, sector, _whiteboardPrefab, detailInfo);
+            var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, detailInfo);
             whiteboard.SetActive(false);
 
             if (!string.IsNullOrEmpty(info.rename))
@@ -208,6 +208,8 @@ namespace NewHorizons.Builder.Props
                 component._nomaiTexts[i] = wallText;
             }
 
+            if (info.disableWall) whiteboard.FindChild("Props_NOM_Whiteboard_Shared").SetActive(false);
+
             whiteboard.SetActive(true);
         }
 
@@ -218,7 +220,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var platform = DetailBuilder.MakeDetail(go, sector, _remoteCameraPlatformPrefab, detailInfo);
+            var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, detailInfo);
             platform.SetActive(false);
 
             if (!string.IsNullOrEmpty(info.rename))
@@ -250,6 +252,14 @@ namespace NewHorizons.Builder.Props
             component._id = id;
             component._visualSector = sector;
             component._dataPointID = info.reveals;
+
+            if (info.disableStructure)
+            {
+                platform.FindChild("Structure_NOM_RemoteViewer").SetActive(false);
+                platform.FindChild("RemoteViewer_FadeGeo").SetActive(false);
+            }
+
+            if (info.disablePool) platform.FindChild("RemoteViewer_Pool").SetActive(false);
 
             platform.SetActive(true);
         }

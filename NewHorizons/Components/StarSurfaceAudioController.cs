@@ -10,6 +10,7 @@ namespace NewHorizons.Components
         private StarEvolutionController _starEvolutionController;
         private OWAudioSource _audioSource;
         private float _fade;
+        public float _size;
 
         public void Start()
         {
@@ -33,7 +34,7 @@ namespace NewHorizons.Components
         public void Update()
         {
             _fade = Mathf.MoveTowards(_fade, 1, Time.deltaTime * 0.2f);
-            float value = Mathf.Max(0.0f, Vector3.Distance(Locator.GetPlayerCamera().transform.position, this.transform.position) - _starEvolutionController.CurrentScale);
+            float value = Mathf.Max(0.0f, Vector3.Distance(Locator.GetPlayerCamera().transform.position, this.transform.position) - (_starEvolutionController != null ? _starEvolutionController.CurrentScale : _size));
             float num = Mathf.InverseLerp(1600f, 100f, value);
             _audioSource.SetLocalVolume(num * num * _fade);
         }

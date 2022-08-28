@@ -20,29 +20,96 @@ namespace NewHorizons.Builder.Props
             return detailInfoToCorrespondingSpawnedGameObject[detail];
         }
 
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.DetailInfo detail)
+        public static void RegisterDetailInfo(PropModule.DetailInfo detail, GameObject detailGO)
         {
-            GameObject detailGO = null;
+            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
+        }
 
+        /// <summary>
+        /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
+        /// </summary>
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
+        {
             if (detail.assetBundle != null)
             {
-                var prefab = AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod);
+                // Shouldn't happen
+                if (mod == null) return null;
 
-                detailGO = MakeDetail(go, sector, prefab, detail);
+                return Make(go, sector, AssetBundleUtilities.LoadPrefab(detail.assetBundle, detail.path, mod), detail);
+            }
+            else
+                return Make(go, sector, detail);
+        }
+
+        /// <summary>
+        /// Create a detail using a path in the scene hierarchy of the item to copy.
+        /// </summary>
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        {
+            var prefab = SearchUtilities.Find(info.path);
+            if (prefab == null)
+            {
+                Logger.LogError($"Couldn't find detail {info.path}");
+                return null;
+            }
+            else
+                return Make(planetGO, sector, prefab, info);
+        }
+
+        /// <summary>
+        /// Create a detail using a prefab.
+        /// </summary>
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
+        {
+            if (prefab == null) return null;
+
+            GameObject prop = prefab.InstantiateInactive();
+            prop.name = prefab.name;
+            prop.transform.parent = sector?.transform ?? go.transform;
+
+            StreamingHandler.SetUpStreaming(prop, sector);
+
+            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
+
+            foreach (var component in prop.GetComponentsInChildren<Component>(true))
+            {
+                if (sector == null)
+                {
+                    if (FixUnsectoredComponent(component)) continue;
+                }
+                else FixSectoredComponent(component, sector, isTorch);
+
+                FixComponent(component, go, prefab.name);
+            }
+
+            prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
+
+            Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
+
+            if (detail.alignToNormal)
+            {
+                // Apply the rotation after aligning it with normal
+                var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
+                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                prop.transform.rotation *= rot;
             }
             else
             {
-                var prefab = SearchUtilities.Find(detail.path);
-                if (prefab == null) Logger.LogError($"Couldn't find detail {detail.path}");
-                else detailGO = MakeDetail(go, sector, prefab, detail);
+                prop.transform.rotation = go.transform.TransformRotation(rot);
             }
 
-            if (detailGO == null) return;
+            prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
+
+            if (info.hasPhysics) AddPhysics(prop, sector);
+
+            prop.SetActive(true);
+
+            if (prop == null) return null;
 
             if (detail.removeChildren != null)
             {
-                var detailPath = detailGO.transform.GetPath();
-                var transforms = detailGO.GetComponentsInChildren<Transform>(true);
+                var detailPath = prop.transform.GetPath();
+                var transforms = prop.GetComponentsInChildren<Transform>(true);
                 foreach (var childPath in detail.removeChildren)
                 {
                     // Multiple children can have the same path so we delete all that match
@@ -62,12 +129,13 @@ namespace NewHorizons.Builder.Props
             if (detail.removeComponents)
             {
                 // Just swap all the children to a new game object
-                var newDetailGO = new GameObject(detailGO.name);
-                newDetailGO.transform.position = detailGO.transform.position;
-                newDetailGO.transform.parent = detailGO.transform.parent;
+                var newDetailGO = new GameObject(prop.name);
+                newDetailGO.transform.position = prop.transform.position;
+                newDetailGO.transform.parent = prop.transform.parent;
+
                 // Can't modify parents while looping through children bc idk
                 var children = new List<Transform>();
-                foreach (Transform child in detailGO.transform)
+                foreach (Transform child in prop.transform)
                 {
                     children.Add(child);
                 }
@@ -75,13 +143,13 @@ namespace NewHorizons.Builder.Props
                 {
                     child.parent = newDetailGO.transform;
                 }
-                GameObject.Destroy(detailGO);
-                detailGO = newDetailGO;
+                GameObject.Destroy(prop);
+                prop = newDetailGO;
             }
 
             if (detail.rename != null)
             {
-                detailGO.name = detail.rename;
+                prop.name = detail.rename;
             }
 
             if (!string.IsNullOrEmpty(detail.parentPath))
@@ -89,57 +157,9 @@ namespace NewHorizons.Builder.Props
                 var newParent = go.transform.Find(detail.parentPath);
                 if (newParent != null)
                 {
-                    detailGO.transform.parent = newParent.transform;
+                    prop.transform.parent = newParent.transform;
                 }
             }
-
-            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
-        }
-
-        public static GameObject MakeDetail(GameObject planetGO, Sector sector, GameObject prefab, PropModule.DetailInfo info)
-        {
-            if (prefab == null) return null;
-
-            GameObject prop = prefab.InstantiateInactive();
-            prop.name = prefab.name;
-            prop.transform.parent = sector?.transform ?? planetGO.transform;
-
-            StreamingHandler.SetUpStreaming(prop, sector);
-
-            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
-
-            foreach (var component in prop.GetComponentsInChildren<Component>(true))
-            {
-                if (sector == null)
-                {
-                    if (FixUnsectoredComponent(component)) continue;
-                }
-                else FixSectoredComponent(component, sector, isTorch);
-
-                FixComponent(component, planetGO, prefab.name);
-            }
-
-            prop.transform.position = info.position == null ? planetGO.transform.position : planetGO.transform.TransformPoint(info.position);
-
-            Quaternion rot = info.rotation == null ? Quaternion.identity : Quaternion.Euler(info.rotation);
-
-            if (info.alignToNormal)
-            {
-                // Apply the rotation after aligning it with normal
-                var up = planetGO.transform.InverseTransformPoint(prop.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                prop.transform.rotation *= rot;
-            }
-            else
-            {
-                prop.transform.rotation = planetGO.transform.TransformRotation(rot);
-            }
-
-            prop.transform.localScale = info.scale != 0 ? Vector3.one * info.scale : prefab.transform.localScale;
-
-            if (info.hasPhysics) AddPhysics(prop, sector);
-
-            prop.SetActive(true);
 
             return prop;
         }
@@ -208,8 +228,11 @@ namespace NewHorizons.Builder.Props
         {
             // Fix other components
             // I forget why this is here
-            if (component is GhostIK ik) ik.enabled = false;
-            if (component is GhostEffects effects) effects.enabled = false;
+            if (component is GhostIK || component is GhostEffects)
+            {
+                Component.DestroyImmediate(component);
+                return;
+            }
 
             if (component is DarkMatterVolume)
             {

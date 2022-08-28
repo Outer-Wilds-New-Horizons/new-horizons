@@ -85,19 +85,7 @@ namespace NewHorizons.Builder.Atmosphere
             fluidCLFV._layer = 5;
             fluidCLFV._priority = 1;
             fluidCLFV._density = 1.2f;
-
-            var fluidType = FluidVolume.Type.CLOUD;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), atmo.clouds.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{atmo.clouds.fluidType}]:\n{ex}");
-            }
-
-            fluidCLFV._fluidType = fluidType;
+            fluidCLFV._fluidType = atmo.clouds.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidCLFV._allowShipAutoroll = true;
             fluidCLFV._disableOnStart = false;
 
@@ -109,26 +97,7 @@ namespace NewHorizons.Builder.Atmosphere
             // Lightning
             if (atmo.clouds.hasLightning)
             {
-                var lightning = _lightningPrefab.InstantiateInactive();
-                lightning.transform.parent = cloudsMainGO.transform;
-                lightning.transform.localPosition = Vector3.zero;
-
-                var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
-                lightningGenerator._altitude = (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f;
-                lightningGenerator._audioSector = sector;
-                if (atmo.clouds.lightningGradient != null)
-                {
-                    var gradient = new GradientColorKey[atmo.clouds.lightningGradient.Length];
-
-                    for(int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
-                    {
-                        var pair = atmo.clouds.lightningGradient[i];
-                        gradient[i] = new GradientColorKey(pair.tint.ToColor(), pair.time);
-                    }
-
-                    lightningGenerator._lightColor.colorKeys = gradient;
-                }
-                lightning.SetActive(true);
+                MakeLightning(cloudsMainGO, sector, atmo);
             }
 
             cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
@@ -140,10 +109,39 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsMainGO.SetActive(true);
         }
 
+        public static CloudLightningGenerator MakeLightning(GameObject rootObject, Sector sector, AtmosphereModule atmo, bool noAudio = false)
+        {
+            var lightning = _lightningPrefab.InstantiateInactive();
+            lightning.name = "LightningGenerator";
+            lightning.transform.parent = rootObject.transform;
+            lightning.transform.localPosition = Vector3.zero;
+
+            var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
+            lightningGenerator._altitude = (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f;
+            if (noAudio)
+            {
+                lightningGenerator._audioPrefab = null;
+                lightningGenerator._audioSourcePool = null;
+            }
+            lightningGenerator._audioSector = sector;
+            if (atmo.clouds.lightningGradient != null)
+            {
+                var gradient = new GradientColorKey[atmo.clouds.lightningGradient.Length];
+
+                for (int i = 0; i < atmo.clouds.lightningGradient.Length; i++)
+                {
+                    var pair = atmo.clouds.lightningGradient[i];
+                    gradient[i] = new GradientColorKey(pair.tint.ToColor(), pair.time);
+                }
+
+                lightningGenerator._lightColor.colorKeys = gradient;
+            }
+            lightning.SetActive(true);
+            return lightningGenerator;
+        }
+
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
-            Color cloudTint = atmo.clouds.tint?.ToColor() ?? UnityEngine.Color.white;
-
             Texture2D image, cap, ramp;
 
             try
@@ -151,8 +149,8 @@ namespace NewHorizons.Builder.Atmosphere
                 // qm cloud type = should wrap, otherwise clamp like normal
                 image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath, wrap: atmo.clouds.cloudsPrefab == CloudPrefabType.QuantumMoon);
 
-                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128);
-                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath);
+                if (atmo.clouds.capPath == null) cap = ImageUtilities.ClearTexture(128, 128, wrap: true);
+                else cap = ImageUtilities.GetTexture(mod, atmo.clouds.capPath, wrap: true);
                 if (atmo.clouds.rampPath == null) ramp = ImageUtilities.CanvasScaled(image, 1, image.height);
                 else ramp = ImageUtilities.GetTexture(mod, atmo.clouds.rampPath);
             }
@@ -210,11 +208,14 @@ namespace NewHorizons.Builder.Atmosphere
                 cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
             }
 
-            RotateTransform topRT = cloudsTopGO.AddComponent<RotateTransform>();
-            // Idk why but the axis is weird
-            topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
-            topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
-            topRT._randomizeRotationRate = false;
+            if (atmo.clouds.rotationSpeed != 0f)
+            {
+                var topRT = cloudsTopGO.AddComponent<RotateTransform>();
+                // Idk why but the axis is weird
+                topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
+                topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
+                topRT._randomizeRotationRate = false;
+            }
 
             cloudsTopGO.transform.localPosition = Vector3.zero;
 

@@ -12,6 +12,13 @@
         "$ref": "#/definitions/AchievementInfo"
       }
     },
+    "credits": {
+      "type": "array",
+      "description": "Credits info for this mod. A list of contributors and their roles separated by #. For example: xen#New Horizons dev.",
+      "items": {
+        "type": "string"
+      }
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

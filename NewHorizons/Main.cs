@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
@@ -10,7 +10,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.VoiceActing;
+using NewHorizons.OtherMods.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -22,6 +22,8 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons
 {
@@ -198,6 +200,11 @@ namespace NewHorizons
 
             AchievementHandler.Init();
             VoiceHandler.Init();
+            RichPresenceHandler.Init();
+            OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
+            OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
+
+            LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
         public void OnDestroy()
@@ -299,18 +306,26 @@ namespace NewHorizons
                 RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
+                StarEvolutionController.Init();
+
+                // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
+                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 if (isSolarSystem)
                 {
+                    foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
+                    {
+                        SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
+                    }
+
                     PlanetCreationHandler.Init(BodyDict[CurrentStarSystem]);
 
                     VesselWarpHandler.LoadVessel();
                     SystemCreationHandler.LoadSystem(SystemDict[CurrentStarSystem]);
                 }
 
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
-
                 StarChartHandler.Init(SystemDict.Values.ToArray());
+
                 if (isSolarSystem)
                 {
                     // Warp drive
@@ -386,8 +401,26 @@ namespace NewHorizons
                 var playerLight = playerBody.AddComponent<Light>();
                 playerLight.innerSpotAngle = 0;
                 playerLight.spotAngle = 179;
-                playerLight.range = 0.5f;
+                playerLight.range = 1;
                 playerLight.intensity = 0.001f;
+
+                //Do the same for map
+                var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
+                var ssrLight = solarSystemRoot.AddComponent<Light>();
+                ssrLight.innerSpotAngle = 0;
+                ssrLight.spotAngle = 179;
+                ssrLight.range = Main.FurthestOrbit * (4f/3f);
+                ssrLight.intensity = 0.001f;
+
+                var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
+                fluid._splashEffects = fluid._splashEffects.AddToArray(new SplashEffect
+                {
+                    fluidType = FluidVolume.Type.PLASMA,
+                    ignoreSphereAligment = false,
+                    minImpactSpeed = 15,
+                    splashPrefab = SearchUtilities.Find("Probe_Body/ProbeDetector").GetComponent<FluidDetector>()._splashEffects.FirstOrDefault(sfx => sfx.fluidType == FluidVolume.Type.PLASMA).splashPrefab,
+                    triggerEvent = SplashEffect.TriggerEvent.OnEntry
+                });
 
                 try
                 {
@@ -507,9 +540,7 @@ namespace NewHorizons
                 // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
-                    var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>("addon-manifest.json");
-
-                    AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+                    LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
@@ -521,6 +552,16 @@ namespace NewHorizons
             {
                 Logger.LogError(ex.ToString());
             }
+        }
+
+        private void LoadAddonManifest(string file, IModBehaviour mod)
+        {
+            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
+
+            var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
+
+            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)

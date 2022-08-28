@@ -276,9 +276,9 @@ namespace NewHorizons.External.Modules
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
             {
-                [EnumMember(Value = @"downwards")] Downwards = 0,
+                [EnumMember(Value = @"upwards")] Upwards = 0,
 
-                [EnumMember(Value = @"upwards")] Upwards = 1,
+                [EnumMember(Value = @"downwards")] Downwards = 1,
 
                 [EnumMember(Value = @"hurricane")] Hurricane = 2
             }
@@ -308,7 +308,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// What type of cyclone should this be? Upwards and downwards are both tornados and will push in that direction.
             /// </summary>
-            [DefaultValue("downwards")] public TornadoType type = TornadoType.Downwards;
+            [DefaultValue("upwards")] public TornadoType type = TornadoType.Upwards;
 
             /// <summary>
             /// Angular distance from the starting position that it will wander, in terms of the angle around the x-axis.
@@ -330,6 +330,11 @@ namespace NewHorizons.External.Modules
             /// The maximum distance at which you'll hear the sounds of the cyclone. If not set it will scale relative to the size of the cyclone.
             /// </summary>
             public float audioDistance;
+
+            /// <summary>
+            /// Fluid type for sounds/effects when colliding with this tornado.
+            /// </summary>
+            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
         }
 
         [JsonObject]
@@ -519,7 +524,9 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
 
-                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6
+                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+
+                [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
             }
 
             [JsonConverter(typeof(StringEnumConverter))]
@@ -896,6 +903,11 @@ namespace NewHorizons.External.Modules
                 /// </summary>
                 public string rename;
 
+                /// <summary>
+                /// Disable the wall, leaving only the pedestal and text.
+                /// </summary>
+                public bool disableWall;
+
                 [JsonObject]
                 public class SharedNomaiTextInfo
                 {
@@ -958,6 +970,16 @@ namespace NewHorizons.External.Modules
                 /// A ship log fact to reveal when the platform is connected to.
                 /// </summary>
                 [DefaultValue("")] public string reveals = "";
+
+                /// <summary>
+                /// Disable the structure, leaving only the pedestal.
+                /// </summary>
+                public bool disableStructure;
+
+                /// <summary>
+                /// Disable the pool that rises when you place a stone.
+                /// </summary>
+                public bool disablePool;
             }
 
             [JsonObject]

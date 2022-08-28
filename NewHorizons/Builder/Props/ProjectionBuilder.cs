@@ -221,14 +221,14 @@ namespace NewHorizons.Builder.Props
         public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             // spawn a trigger for the vision torch
-            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
+            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
             var prefab = SearchUtilities.Find(path);
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
                 scale = 2
             };
-            var g = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+            var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
@@ -294,7 +294,7 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation
             };
-            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, prefab, detailInfo);
+            var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {

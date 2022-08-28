@@ -2,6 +2,8 @@ using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
@@ -19,11 +21,6 @@ namespace NewHorizons.Handlers
 
         public static string GetTranslation(string text, TextType type)
         {
-            return GetTranslation(text, type, out var _);
-        }
-
-        public static string GetTranslation(string text, TextType type, out TextTranslation.Language translatedLanguage)
-        {
             Dictionary<TextTranslation.Language, Dictionary<string, string>> dictionary;
             var language = TextTranslation.Get().m_language;
 
@@ -39,32 +36,25 @@ namespace NewHorizons.Handlers
                     dictionary = _uiTranslationDictionary;
                     break;
                 default:
-                    translatedLanguage = TextTranslation.Language.UNKNOWN;
+                    Logger.LogVerbose($"Invalid TextType {type}");
                     return text;
             }
 
+            // Get the translated text
             if (dictionary.TryGetValue(language, out var table))
-            {
                 if (table.TryGetValue(text, out var translatedText))
-                {
-                    translatedLanguage = language;
                     return translatedText;
-                }
-            }
+
+            Logger.LogVerbose($"Defaulting to english for {text}");
 
             // Try to default to English
             if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
-            {
-
                 if (englishTable.TryGetValue(text, out var englishText))
-                {
-                    translatedLanguage = TextTranslation.Language.ENGLISH;
                     return englishText;
-                }
-            }
+
+            Logger.LogVerbose($"Defaulting to key for {text}");
 
             // Default to the key
-            translatedLanguage = TextTranslation.Language.UNKNOWN;
             return text;
         }
 
