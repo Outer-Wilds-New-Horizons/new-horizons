@@ -325,13 +325,15 @@ namespace NewHorizons.Builder.Props
             var owrb = prop.AddComponent<OWRigidbody>();
             var kine = prop.AddComponent<KinematicRigidbody>();
             rb.isKinematic = true;
+            var offsetApplier = prop.AddComponent<CenterOfTheUniverseOffsetApplier>();
+            offsetApplier.Init(owrb);
             owrb._simulateInSector = sector;
             owrb._kinematicSimulation = true;
             owrb._kinematicRigidbody = kine;
+            owrb._offsetApplier = offsetApplier;
 
             prop.AddComponent<InitialMotion>();
             prop.AddComponent<MatchInitialMotion>().SetBodyToMatch(prop.GetComponentInParent<OWRigidbody>());
-            prop.AddComponent<CenterOfTheUniverseOffsetApplier>();
 
             var detector = new GameObject("Detector");
             detector.transform.parent = prop.transform;
