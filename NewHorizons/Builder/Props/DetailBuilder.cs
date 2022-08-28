@@ -100,7 +100,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
 
-            if (info.hasPhysics) AddPhysics(prop, sector);
+            if (detail.hasPhysics) AddPhysics(prop, sector);
 
             prop.SetActive(true);
 
