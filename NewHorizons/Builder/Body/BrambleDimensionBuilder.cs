@@ -192,8 +192,12 @@ namespace NewHorizons.Builder.Body
             cloak.GetComponent<Renderer>().enabled = true;
 
             // Cull stuff
-            var cullController = go.AddComponent<BrambleSectorController>();
-            cullController.SetSector(sector);
+            // Do next update so other nodes can be built first
+            Delay.FireOnNextUpdate(() =>
+            {
+                var cullController = go.AddComponent<BrambleSectorController>();
+                cullController.SetSector(sector);
+            });
 
             // finalize
             atmo.SetActive(true);
