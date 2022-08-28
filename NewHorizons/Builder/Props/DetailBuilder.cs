@@ -321,6 +321,8 @@ namespace NewHorizons.Builder.Props
 
         private static void AddPhysics(GameObject prop, Sector sector)
         {
+            var primaryBody = prop.GetComponentInParent<OWRigidbody>();
+
             var rb = prop.AddComponent<Rigidbody>();
             var owrb = prop.AddComponent<OWRigidbody>();
             var kine = prop.AddComponent<KinematicRigidbody>();
@@ -332,8 +334,8 @@ namespace NewHorizons.Builder.Props
             owrb._kinematicRigidbody = kine;
             owrb._offsetApplier = offsetApplier;
 
-            prop.AddComponent<InitialMotion>();
-            prop.AddComponent<MatchInitialMotion>().SetBodyToMatch(prop.GetComponentInParent<OWRigidbody>());
+            prop.AddComponent<InitialMotion>().SetPrimaryBody(primaryBody);
+            prop.AddComponent<MatchInitialMotion>().SetBodyToMatch(primaryBody);
 
             var detector = new GameObject("Detector");
             detector.transform.parent = prop.transform;
