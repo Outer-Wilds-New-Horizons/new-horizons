@@ -81,6 +81,7 @@ public static class SchemaExporter
             if (_title == "Celestial Body Schema")
             {
                 schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
+                schema.Properties.Add("extras", new Dictionary<string, object>());
             }
 
             if (_title == "Star System Schema")
