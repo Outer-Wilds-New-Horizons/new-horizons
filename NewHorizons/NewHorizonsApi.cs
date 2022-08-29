@@ -101,23 +101,42 @@ namespace NewHorizons
             }
         }
 
-        public object GetExtraModule(Type moduleType, string extraModuleKey, string planetName)
+        private object GetExtraModule(Type moduleType, string key, string path)
         {
-            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == planetName);
-            if (planet == null)
+            if (path == "") return null;
+            try
             {
-                // Uh idk if we need this but ye it do be here etc.
-                Logger.LogVerbose($"Attempting To Get Extras On Planet That Doesn't Exist! ({planetName})");
+                var jsonText = File.ReadAllText(path);
+                var jsonData = JObject.Parse(jsonText);
+                var possibleExtras = jsonData.Property("extras")?.Value;
+                if (possibleExtras is JObject extras)
+                {
+                    return extras.Property(key)?.Value.ToObject(moduleType);
+                }
                 return null;
             }
-            var jsonText = File.ReadAllText(planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath);
-            var jsonData = JObject.Parse(jsonText);
-            var possibleExtras = jsonData.Property("extras")?.Value;
-            if (possibleExtras is JObject extras)
+            catch (FileNotFoundException)
             {
-                return extras.Property(extraModuleKey)?.Value.ToObject(moduleType);
+                return null;
             }
-            return null;
+        }
+
+        public object GetExtraModuleForBody(Type moduleType, string extraModuleKey, string planetName)
+        {
+            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == planetName);
+            return planet == null
+                ? null
+                : GetExtraModule(moduleType, extraModuleKey,
+                    planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath);
+        }
+
+        public object GetExtraModuleForSystem(Type moduleType, string extraModuleKey, string systemName)
+        {
+            var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
+            return system == null 
+                ? null 
+                : GetExtraModule(moduleType, extraModuleKey,
+                    system.Mod.ModHelper.Manifest.ModFolderPath + system.RelativePath);
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
