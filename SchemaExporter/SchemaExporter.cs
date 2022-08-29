@@ -81,7 +81,10 @@ public static class SchemaExporter
             if (_title == "Celestial Body Schema")
             {
                 schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
-                schema.Properties.Add("extras", new Dictionary<string, object>());
+                schema.Properties.Add("extras", new JsonSchemaProperty {
+                    Type = JsonObjectType.Object,
+                    Description = "Extra data that may be used by extension mods"
+                });
             }
 
             if (_title == "Star System Schema")
@@ -89,6 +92,10 @@ public static class SchemaExporter
                 schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
                 schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
                 schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
+                schema.Properties.Add("extras", new JsonSchemaProperty {
+                    Type = JsonObjectType.Object,
+                    Description = "Extra data that may be used by extension mods"
+                });
             }
 
             return schema;
