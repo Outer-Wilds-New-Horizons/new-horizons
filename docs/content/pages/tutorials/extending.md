@@ -4,8 +4,6 @@ Description: A guide on extending config files with the New Horizons API
 Sort_Priority: 5
 ---
 
-<!-- TODO: When I do systems, some methods will probably be renamed so make sure to update this tutorial -->
-
 # Extending Configs
 
 This guide will explain how to use the API to add new features to New Horizons.
@@ -25,9 +23,9 @@ Addon developers will add a key to the `extras` object in the root of the config
 }
 ```
 
-**It's up to the addon dev to list your mod as a dependency!**
+Your mod will then use the API's `GetExtraModuleForBody` method to obtain the `myCoolExtensionData` object.
 
-Your mod will then use the API's `GetExtraModule` method to obtain the `myCoolExtensionData` object.
+**It's up to the addon dev to list your mod as a dependency!**
 
 ## Extending Planets
 
@@ -48,13 +46,13 @@ public class MyCoolExtensionData {
 }
 ```
 
-Then, use the `GetExtraModule` method:
+Then, use the `GetExtraModuleForBody` method:
 
 ```cs
 var api = ModHelper.Interactions.TryGetModApi<INewHorizons>("xen.NewHorizons");
 api.GetBodyLoadedEvent().AddListener((name) => {
     ModHelper.Console.WriteLine($"Body: {name} Loaded!");
-    var potentialData = api.GetExtraModule(typeof(MyCoolExtensionData), "myCoolExtensionData", name);
+    var potentialData = api.GetExtraModuleForBody(typeof(MyCoolExtensionData), "myCoolExtensionData", name);
     // Makes sure the module is valid and not null
     if (potentialData is MyCoolExtensionData data) {
         ModHelper.Console.WriteLine($"myCoolExtensionProperty for {name} is {data.myCoolExtensionProperty}!");
@@ -64,4 +62,4 @@ api.GetBodyLoadedEvent().AddListener((name) => {
 
 ## Extending Systems
 
-<!-- TODO -->
+Extending systems is the exact same as extending planets, except you use the `GetExtraModuleForSystem` method instead.
