@@ -68,6 +68,7 @@ namespace NewHorizons
         public class StarSystemEvent : UnityEvent<string> { }
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
+        public StarSystemEvent OnPlanetLoaded;
 
         // For warping to the eye system
         private GameObject _ship;
@@ -170,6 +171,7 @@ namespace NewHorizons
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
+            OnPlanetLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;

@@ -44,6 +44,17 @@ namespace NewHorizons
         UnityEvent<string> GetStarSystemLoadedEvent();
 
         /// <summary>
+        /// An event invoked when NH has finished a planet for a star system.
+        /// Gives the name of the planet that was just loaded.
+        /// </summary>
+        UnityEvent<string> GetBodyLoadedEvent();
+
+        /// <summary>
+        /// Gets an object in the `extras` object of a config, returns null if the key doesn't exist
+        /// </summary>
+        object GetExtraModule(Type moduleType, string extrasModuleName, string planetName);
+
+        /// <summary>
         /// Allows you to overwrite the default system. This is where the player is respawned after dying.
         /// </summary>
         bool SetDefaultSystem(string name);

@@ -5,14 +5,17 @@ using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
 {
+
     public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
@@ -64,20 +67,10 @@ namespace NewHorizons
             return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
-        public string GetCurrentStarSystem()
-        {
-            return Main.Instance.CurrentStarSystem;
-        }
-
-        public UnityEvent<string> GetChangeStarSystemEvent()
-        {
-            return Main.Instance.OnChangeStarSystem;
-        }
-
-        public UnityEvent<string> GetStarSystemLoadedEvent()
-        {
-            return Main.Instance.OnStarSystemLoaded;
-        }
+        public string GetCurrentStarSystem() => Main.Instance.CurrentStarSystem;
+        public UnityEvent<string> GetChangeStarSystemEvent() => Main.Instance.OnChangeStarSystem;
+        public UnityEvent<string> GetStarSystemLoadedEvent() => Main.Instance.OnStarSystemLoaded;
+        public UnityEvent<string> GetBodyLoadedEvent() => Main.Instance.OnPlanetLoaded;
 
         public bool SetDefaultSystem(string name)
         {
@@ -106,6 +99,25 @@ namespace NewHorizons
                 Logger.LogError($"Couldn't get installed addons:\n{ex}");
                 return new string[] { };
             }
+        }
+
+        public object GetExtraModule(Type moduleType, string extraModuleKey, string planetName)
+        {
+            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == planetName);
+            if (planet == null)
+            {
+                // Uh idk if we need this but ye it do be here etc.
+                Logger.LogVerbose($"Attempting To Get Extras On Planet That Doesn't Exist! ({planetName})");
+                return null;
+            }
+            var jsonText = File.ReadAllText(planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath);
+            var jsonData = JObject.Parse(jsonText);
+            var possibleExtras = jsonData.Property("extras")?.Value;
+            if (possibleExtras is JObject extras)
+            {
+                return extras.Property(extraModuleKey)?.Value.ToObject(moduleType);
+            }
+            return null;
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,

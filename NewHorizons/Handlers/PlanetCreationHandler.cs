@@ -248,6 +248,7 @@ namespace NewHorizons.Handlers
                     }
                 }
             }
+            Main.Instance.OnPlanetLoaded?.Invoke(body.Config.name);
             return true;
         }
 
