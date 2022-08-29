@@ -25,6 +25,8 @@ Addon developers will add a key to the `extras` object in the root of the config
 }
 ```
 
+**It's up to the addon dev to list your mod as a dependency!**
+
 Your mod will then use the API's `GetExtraModule` method to obtain the `myCoolExtensionData` object.
 
 ## Extending Planets
