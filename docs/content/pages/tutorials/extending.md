@@ -69,6 +69,6 @@ Extending systems is the exact same as extending planets, except you use the `Qu
 You can also use the `QueryBody` method to get values of the config outside of your extension object
 
 ```csharp
-var primaryBody = NHAPI.QueryBody(typeof(string), "Wetrock", "$.Orbit.primaryBody");
+var primaryBody = api.QueryBody(typeof(string), "Wetrock", "$.Orbit.primaryBody");
                 ModHelper.Console.WriteLine($"Primary of {bodyName} is {primaryBody ?? "NULL"}!");
 ```
