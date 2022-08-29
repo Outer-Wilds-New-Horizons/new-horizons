@@ -106,7 +106,7 @@ public class MyMod : ModBehaviour
 {
     void Start() 
     {
-        INewHorizons NewHorizonsAPI = ModHelper.Interaction.GetModApi<INewHorizons>("xen.NewHorizons");
+        INewHorizons NewHorizonsAPI = ModHelper.Interaction.TryGetModApi<INewHorizons>("xen.NewHorizons");
     }
 }
 ```
