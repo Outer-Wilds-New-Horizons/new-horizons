@@ -50,14 +50,14 @@ namespace NewHorizons
         UnityEvent<string> GetBodyLoadedEvent();
 
         /// <summary>
-        /// Gets an object in the `extras` object of a body config, returns null if the key doesn't exist
+        /// Uses JSONPath to query a body
         /// </summary>
-        object GetExtraModuleForBody(Type moduleType, string extrasModuleName, string planetName);
+        object QueryBody(Type outType, string bodyName, string path);
 
         /// <summary>
-        /// Gets an object in the `extras` object of a system config, returns null if the key doesn't exist
+        /// Uses JSONPath to query a system
         /// </summary>
-        object GetExtraModuleForSystem(Type moduleType, string extrasModuleName, string systemName);
+        object QuerySystem(Type outType, string path);
 
         /// <summary>
         /// Allows you to overwrite the default system. This is where the player is respawned after dying.

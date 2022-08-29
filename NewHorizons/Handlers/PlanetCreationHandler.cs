@@ -248,7 +248,16 @@ namespace NewHorizons.Handlers
                     }
                 }
             }
-            Main.Instance.OnPlanetLoaded?.Invoke(body.Config.name);
+
+            try
+            {
+                Main.Instance.OnPlanetLoaded?.Invoke(body.Config.name);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e.Message} : {e.StackTrace}");
+            }
+            
             return true;
         }
 

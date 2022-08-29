@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Data.SqlTypes;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
@@ -101,42 +103,40 @@ namespace NewHorizons
             }
         }
 
-        private object GetExtraModule(Type moduleType, string key, string path)
+        private static object QueryJson(Type outType, string filePath, string jsonPath)
         {
-            if (path == "") return null;
+            if (filePath == "") return null;
             try
             {
-                var jsonText = File.ReadAllText(path);
+                var jsonText = File.ReadAllText(filePath);
                 var jsonData = JObject.Parse(jsonText);
-                var possibleExtras = jsonData.Property("extras")?.Value;
-                if (possibleExtras is JObject extras)
-                {
-                    return extras.Property(key)?.Value.ToObject(moduleType);
-                }
-                return null;
+                return jsonData.SelectToken(jsonPath)?.ToObject(outType);
             }
             catch (FileNotFoundException)
             {
                 return null;
             }
+            catch (JsonException e)
+            {
+                Logger.LogError($"{e.Message} : {e.StackTrace}");
+                return null;
+            }
         }
 
-        public object GetExtraModuleForBody(Type moduleType, string extraModuleKey, string planetName)
+        public object QueryBody(Type outType, string bodyName, string jsonPath)
         {
-            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == planetName);
+            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
             return planet == null
                 ? null
-                : GetExtraModule(moduleType, extraModuleKey,
-                    planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath);
+                : QueryJson(outType, planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath, jsonPath);
         }
 
-        public object GetExtraModuleForSystem(Type moduleType, string extraModuleKey, string systemName)
+        public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
             return system == null 
                 ? null 
-                : GetExtraModule(moduleType, extraModuleKey,
-                    system.Mod.ModHelper.Manifest.ModFolderPath + system.RelativePath);
+                : QueryJson(outType, system.Mod.ModHelper.Manifest.ModFolderPath + system.RelativePath, jsonPath);
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,

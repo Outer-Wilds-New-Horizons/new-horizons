@@ -23,7 +23,7 @@ Addon developers will add a key to the `extras` object in the root of the config
 }
 ```
 
-Your mod will then use the API's `GetExtraModuleForBody` method to obtain the `myCoolExtensionData` object.
+Your mod will then use the API's `QueryBody` method to obtain the `myCoolExtensionData` object.
 
 **It's up to the addon dev to list your mod as a dependency!**
 
@@ -31,7 +31,7 @@ Your mod will then use the API's `GetExtraModuleForBody` method to obtain the `m
 
 You can extend all planets by hooking into the `OnBodyLoaded` event of the API:
 
-```cs
+```csharp
 var api = ModHelper.Interactions.TryGetModApi<INewHorizons>("xen.NewHorizons");
 api.GetBodyLoadedEvent().AddListener((name) => {
     ModHelper.Console.WriteLine($"Body: {name} Loaded!");
@@ -40,19 +40,19 @@ api.GetBodyLoadedEvent().AddListener((name) => {
 
 In order to get your extra module, first define the module as a class:
 
-```cs
+```csharp
 public class MyCoolExtensionData {
     int myCoolExtensionProperty;
 }
 ```
 
-Then, use the `GetExtraModuleForBody` method:
+Then, use the `QueryBody` method:
 
-```cs
+```csharp
 var api = ModHelper.Interactions.TryGetModApi<INewHorizons>("xen.NewHorizons");
 api.GetBodyLoadedEvent().AddListener((name) => {
     ModHelper.Console.WriteLine($"Body: {name} Loaded!");
-    var potentialData = api.GetExtraModuleForBody(typeof(MyCoolExtensionData), "myCoolExtensionData", name);
+    var potentialData = api.QueryBody(typeof(MyCoolExtensionData), "$.extras.myCoolExtensionData", name);
     // Makes sure the module is valid and not null
     if (potentialData is MyCoolExtensionData data) {
         ModHelper.Console.WriteLine($"myCoolExtensionProperty for {name} is {data.myCoolExtensionProperty}!");
@@ -62,4 +62,13 @@ api.GetBodyLoadedEvent().AddListener((name) => {
 
 ## Extending Systems
 
-Extending systems is the exact same as extending planets, except you use the `GetExtraModuleForSystem` method instead.
+Extending systems is the exact same as extending planets, except you use the `QuerySystem` method instead.
+
+## Accessing Other Values
+
+You can also use the `QueryBody` method to get values of the config outside of your extension object
+
+```csharp
+var primaryBody = NHAPI.QueryBody(typeof(string), "Wetrock", "$.Orbit.primaryBody");
+                ModHelper.Console.WriteLine($"Primary of {bodyName} is {primaryBody ?? "NULL"}!");
+```
