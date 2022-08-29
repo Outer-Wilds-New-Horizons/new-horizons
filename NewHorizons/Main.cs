@@ -618,7 +618,7 @@ namespace NewHorizons
                     starSystemConfig.Migrate();
                     starSystemConfig.FixCoordinates();
 
-                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"systems/{config.starSystem}.json", mod);
+                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
 
                     SystemDict.Add(config.starSystem, system);
 
