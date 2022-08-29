@@ -77,7 +77,10 @@
     },
     "extras": {
       "type": "object",
-      "description": "Extra data that may be used by extension mods"
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
+      }
     }
   },
   "definitions": {
