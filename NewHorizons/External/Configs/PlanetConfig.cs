@@ -169,6 +169,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public WaterModule Water;
 
+        /// <summary>
+        /// Extra data that may be used by extension mods
+        /// </summary>
+        public object extras;
+
         public PlanetConfig()
         {
             // Always have to have a base module

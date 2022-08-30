@@ -71,6 +71,13 @@
         "$ref": "#/definitions/CuriosityColorInfo"
       }
     },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
+      }
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

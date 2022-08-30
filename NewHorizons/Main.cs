@@ -68,6 +68,7 @@ namespace NewHorizons
         public class StarSystemEvent : UnityEvent<string> { }
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
+        public StarSystemEvent OnPlanetLoaded;
 
         // For warping to the eye system
         private GameObject _ship;
@@ -126,7 +127,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), "", Instance)
             {
                 Config =
                 {
@@ -142,7 +143,7 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), "", Instance)
             {
                 Config =
                 {
@@ -170,6 +171,7 @@ namespace NewHorizons
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
+            OnPlanetLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -515,7 +517,7 @@ namespace NewHorizons
                         }
                         else
                         {
-                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, mod);
+                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
                         }
                     }
                 }
@@ -616,7 +618,7 @@ namespace NewHorizons
                     starSystemConfig.Migrate();
                     starSystemConfig.FixCoordinates();
 
-                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
+                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
 
                     SystemDict.Add(config.starSystem, system);
 
