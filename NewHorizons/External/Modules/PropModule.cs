@@ -842,7 +842,7 @@ namespace NewHorizons.External.Modules
             [DefaultValue("environment")] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
 
             /// <summary>
-            /// Whether to loop this audio while in this audio volume
+            /// Whether to loop this audio while in this audio volume or just play it once
             /// </summary>
             [DefaultValue(true)] public bool loop = true;
         }
