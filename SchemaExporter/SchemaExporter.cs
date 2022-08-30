@@ -92,7 +92,7 @@ public static class SchemaExporter
 
             if (_title is "Star System Schema" or "Celestial Body Schema")
             {
-                schema.Properties.Add("extras", new JsonSchemaProperty {
+                schema.Properties["extras"] = new JsonSchemaProperty {
                     Type = JsonObjectType.Object,
                     Description = "Extra data that may be used by extension mods",
                     AllowAdditionalProperties = true,
@@ -100,7 +100,7 @@ public static class SchemaExporter
                     {
                         Type = JsonObjectType.Object
                     }
-                });
+                };
             }
 
             return schema;
