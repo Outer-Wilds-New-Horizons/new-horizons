@@ -255,7 +255,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e.Message} : {e.StackTrace}");
+                Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
             
             return true;

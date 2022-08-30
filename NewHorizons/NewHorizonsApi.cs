@@ -118,7 +118,7 @@ namespace NewHorizons
             }
             catch (JsonException e)
             {
-                Logger.LogError($"{e.Message} : {e.StackTrace}");
+                Logger.LogError(e.ToString());
                 return null;
             }
         }
