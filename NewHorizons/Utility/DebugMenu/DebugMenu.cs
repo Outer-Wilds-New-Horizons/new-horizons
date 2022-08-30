@@ -69,7 +69,13 @@ namespace NewHorizons.Utility.DebugMenu
 
                 PauseMenuInitHook();
 
-                Main.Instance.OnChangeStarSystem.AddListener((string s) => SaveLoadedConfigsForRecentSystem());
+                Main.Instance.OnChangeStarSystem.AddListener((string s) => {
+                    if (saveButtonUnlocked)
+                    {
+                        SaveLoadedConfigsForRecentSystem();
+                        saveButtonUnlocked = false;
+                    }
+                });
             }
             else
             {
