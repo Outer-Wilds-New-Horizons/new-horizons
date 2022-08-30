@@ -1825,7 +1825,7 @@
         },
         "loop": {
           "type": "boolean",
-          "description": "Whether to loop this audio while in this audio volume",
+          "description": "Whether to loop this audio while in this audio volume or just play it once",
           "default": true
         }
       }
