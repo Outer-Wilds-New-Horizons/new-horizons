@@ -1829,6 +1829,11 @@
           "description": "The audio track of this audio volume",
           "default": "environment",
           "$ref": "#/definitions/AudioMixerTrackName"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Whether to loop this audio while in this audio volume or just play it once",
+          "default": true
         }
       }
     },
