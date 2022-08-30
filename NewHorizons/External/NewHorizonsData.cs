@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NewHorizons.Utility;
 
@@ -11,9 +11,12 @@ namespace NewHorizons.External
         private static string _activeProfileName;
         private static readonly string FileName = "save.json";
 
+        // This is its own method so it can be patched by NH-QSB compat
+        public static string GetProfileName() => StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
+
         public static void Load()
         {
-            _activeProfileName = StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
+            _activeProfileName = GetProfileName();
             if (_activeProfileName == null)
             {
                 Logger.LogError("Couldn't find active profile, are you on Gamepass?");
