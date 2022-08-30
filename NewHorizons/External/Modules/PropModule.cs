@@ -840,6 +840,11 @@ namespace NewHorizons.External.Modules
             /// The audio track of this audio volume
             /// </summary>
             [DefaultValue("environment")] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
+
+            /// <summary>
+            /// Whether to loop this audio while in this audio volume
+            /// </summary>
+            [DefaultValue(true)] public bool loop = true;
         }
 
         [JsonObject]
