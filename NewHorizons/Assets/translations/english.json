@@ -40,6 +40,18 @@
     "NH_VESSEL_WARP": {
       "Name": "Lore Accurate",
       "Description": "Warp to a star system using the Vessel."
+    },
+    "NH_RAFTING": {
+      "Name": "The Raft and the Furious",
+      "Description": "Go rafting."
+    },
+    "NH_SUCKED_INTO_LAVA_BY_TORNADO": {
+      "Name": "Placeholder",
+      "Description": "Get sucked into lava by a tornado."
+    },
+    "NH_TALK_TO_FIVE_CHARACTERS": {
+      "Name": "Placeholder",
+      "Description": "Talk to 5 characters."
     }
   }
 }

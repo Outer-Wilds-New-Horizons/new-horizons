@@ -39,6 +39,9 @@ namespace NewHorizons.OtherMods.AchievementsPlus
                 NH.EatenOutsideBrambleAchievement.Init();
                 NH.NewFrequencyAchievement.Init();
                 NH.ProbeLostAchievement.Init();
+                NH.RaftingAchievement.Init();
+                NH.TalkToFiveCharactersAchievement.Init();
+                NH.SuckedIntoLavaByTornadoAchievement.Init();
 
                 API.RegisterTranslationsFromFiles(Main.Instance, "Assets/translations");
 
