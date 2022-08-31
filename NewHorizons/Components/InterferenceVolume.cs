@@ -20,6 +20,10 @@ namespace NewHorizons.Components
             {
                 InterferenceHandler.OnProbeEnterInterferenceVolume();
             }
+            else if (hitObj.CompareTag("ShipDetector"))
+            {
+                InterferenceHandler.OnShipEnterInterferenceVolume();
+            }
         }
 
         public override void OnTriggerVolumeExit(GameObject hitObj)
@@ -31,6 +35,10 @@ namespace NewHorizons.Components
             else if (hitObj.CompareTag("ProbeDetector"))
             {
                 InterferenceHandler.OnProbeExitInterferenceVolume();
+            }
+            else if (hitObj.CompareTag("ShipDetector"))
+            {
+                InterferenceHandler.OnShipExitInterferenceVolume();
             }
         }
     }
