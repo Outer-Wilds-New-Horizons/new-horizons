@@ -23,15 +23,18 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
-            var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
-            if (ruleSetGO == null) ruleSetGO = planetGO;
+            if (config.Atmosphere.hasShockLayer)
+            {
+                // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
+                var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
+                if (ruleSetGO == null) ruleSetGO = planetGO;
 
-            var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
-            shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
-            shockLayerRuleset._radialCenter = airGO.transform;
-            shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
-            shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
+                var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
+                shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
+                shockLayerRuleset._radialCenter = airGO.transform;
+                shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+                shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
+            }
 
             if (config.Atmosphere.clouds != null)
             {
