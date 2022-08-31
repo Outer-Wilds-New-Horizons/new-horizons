@@ -1001,6 +1001,13 @@
           "items": {
             "$ref": "#/definitions/RemoteInfo"
           }
+        },
+        "notificationVolumes": {
+          "type": "array",
+          "description": "Add notification volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/NotificationVolumeInfo"
+          }
         }
       }
     },
@@ -2087,6 +2094,64 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        }
+      }
+    },
+    "NotificationVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "description": "What the notification will show for.",
+          "default": "all",
+          "$ref": "#/definitions/NotificationTarget"
+        },
+        "position": {
+          "description": "The location of this notification volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this notification volume.",
+          "format": "float"
+        },
+        "entryNotification": {
+          "description": "The notification that will play when you enter this volume.",
+          "$ref": "#/definitions/NotificationInfo"
+        },
+        "exitNotification": {
+          "description": "The notification that will play when you exit this volume.",
+          "$ref": "#/definitions/NotificationInfo"
+        }
+      }
+    },
+    "NotificationTarget": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "All",
+        "Ship",
+        "Player"
+      ],
+      "enum": [
+        "all",
+        "ship",
+        "player"
+      ]
+    },
+    "NotificationInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayMessage": {
+          "type": "string",
+          "description": "The message that will be displayed."
+        },
+        "duration": {
+          "type": "number",
+          "description": "The duration this notification will be displayed.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },

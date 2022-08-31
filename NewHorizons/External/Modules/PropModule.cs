@@ -98,6 +98,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public RemoteInfo[] remotes;
 
+        /// <summary>
+        /// Add notification volumes to this planet
+        /// </summary>
+        public NotificationVolumeInfo[] notificationVolumes;
+
         [JsonObject]
         public class ScatterInfo
         {
@@ -1004,6 +1009,58 @@ namespace NewHorizons.External.Modules
                 /// An optional rename of this object
                 /// </summary>
                 public string rename;
+            }
+        }
+
+        [JsonObject]
+        public class NotificationVolumeInfo
+        {
+            /// <summary>
+            /// What the notification will show for.
+            /// </summary>
+            [DefaultValue("all")] public NotificationTarget target = NotificationTarget.All;
+
+            /// <summary>
+            /// The location of this notification volume. Optional (will default to 0,0,0).
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The radius of this notification volume.
+            /// </summary>
+            public float radius;
+
+            /// <summary>
+            /// The notification that will play when you enter this volume.
+            /// </summary>
+            public NotificationInfo entryNotification;
+
+            /// <summary>
+            /// The notification that will play when you exit this volume.
+            /// </summary>
+            public NotificationInfo exitNotification;
+
+
+            [JsonObject]
+            public class NotificationInfo
+            {
+                /// <summary>
+                /// The message that will be displayed.
+                /// </summary>
+                public string displayMessage;
+
+                /// <summary>
+                /// The duration this notification will be displayed.
+                /// </summary>
+                [DefaultValue(5f)] public float duration = 5f;
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum NotificationTarget
+            {
+                [EnumMember(Value = @"all")] All = 0,
+                [EnumMember(Value = @"ship")] Ship = 1,
+                [EnumMember(Value = @"player")] Player = 2,
             }
         }
     }

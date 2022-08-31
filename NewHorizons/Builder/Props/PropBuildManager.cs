@@ -235,6 +235,13 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
+            if (config.Props.notificationVolumes != null)
+            {
+                foreach (var notificationVolume in config.Props.notificationVolumes)
+                {
+                    NotificationVolumeBuilder.Make(go, sector, notificationVolume, mod);
+                }
+            }
         }
     }
 }
