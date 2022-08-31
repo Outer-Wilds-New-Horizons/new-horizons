@@ -9,7 +9,6 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class CloudsBuilder
     {
-        private static Shader _sphereShader = null;
         private static Material[] _gdCloudMaterials;
         private static Material[] _qmCloudMaterials;
         private static GameObject _lightningPrefab;
@@ -91,8 +90,6 @@ namespace NewHorizons.Builder.Atmosphere
 
             // Fix the rotations once the rest is done
             cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, 0, 0));
-            // For the base shader it has to be rotated idk
-            if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic) cloudsMainGO.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
             // Lightning
             if (atmo.clouds.hasLightning)
@@ -170,7 +167,6 @@ namespace NewHorizons.Builder.Atmosphere
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
 
-            if (_sphereShader == null) _sphereShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
             if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
             if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
             Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
@@ -178,10 +174,10 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.cloudsPrefab == CloudPrefabType.Basic)
             {
-                var material = new Material(_sphereShader);
+                var material = new Material(Shader.Find("Standard"));
                 if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "BasicCloud" : "BasicShadowCloud";
-
+                material.SetFloat(279, 0f); // smoothness
                 tempArray[0] = material;
             }
             else
@@ -211,8 +207,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (atmo.clouds.rotationSpeed != 0f)
             {
                 var topRT = cloudsTopGO.AddComponent<RotateTransform>();
-                // Idk why but the axis is weird
-                topRT._localAxis = atmo.clouds.cloudsPrefab == CloudPrefabType.Basic ? Vector3.forward : Vector3.up;
+                topRT._localAxis = Vector3.up;
                 topRT._degreesPerSecond = atmo.clouds.rotationSpeed;
                 topRT._randomizeRotationRate = false;
             }
