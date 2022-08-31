@@ -32,7 +32,7 @@ namespace NewHorizons.Components
 
         public void SetPinned(bool pin) => _pin = pin;
 
-        public void SetTarget(NewHorizons.External.Modules.PropModule.NotificationVolumeInfo.NotificationTarget target) => SetTarget(EnumUtils.Parse<NotificationTarget>(target.ToString(), NotificationTarget.All));
+        public void SetTarget(External.Modules.VolumesModule.NotificationVolumeInfo.NotificationTarget target) => SetTarget(EnumUtils.Parse<NotificationTarget>(target.ToString(), NotificationTarget.All));
 
         public void SetTarget(NotificationTarget target) => _target = target;
 

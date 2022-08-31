@@ -109,20 +109,6 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.reveal != null)
-            {
-                foreach (var revealInfo in config.Props.reveal)
-                {
-                    try
-                    {
-                        RevealBuilder.Make(go, sector, revealInfo, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}]:\n{ex}");
-                    }
-                }
-            }
             if (config.Props.entryLocation != null)
             {
                 foreach (var entryLocationInfo in config.Props.entryLocation)
@@ -207,13 +193,6 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
-            if (config.Props.audioVolumes != null)
-            {
-                foreach (var audioVolume in config.Props.audioVolumes)
-                {
-                    AudioVolumeBuilder.Make(go, sector, audioVolume, mod);
-                }
-            }
             if (config.Props.signals != null)
             {
                 foreach (var signal in config.Props.signals)
@@ -233,13 +212,6 @@ namespace NewHorizons.Builder.Props
                     {
                         Logger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
                     }
-                }
-            }
-            if (config.Props.notificationVolumes != null)
-            {
-                foreach (var notificationVolume in config.Props.notificationVolumes)
-                {
-                    NotificationVolumeBuilder.Make(go, sector, notificationVolume, mod);
                 }
             }
         }

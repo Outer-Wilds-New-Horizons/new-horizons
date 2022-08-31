@@ -11,11 +11,11 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NHNotificationVolume = NewHorizons.Components.NotificationVolume;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Volumes
 {
     public static class NotificationVolumeBuilder
     {
-        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, PropModule.NotificationVolumeInfo info, IModBehaviour mod)
+        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, VolumesModule.NotificationVolumeInfo info, IModBehaviour mod)
         {
             var go = new GameObject("NotificationVolume");
             go.SetActive(false);
