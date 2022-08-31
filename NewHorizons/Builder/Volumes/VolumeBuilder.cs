@@ -1,18 +1,14 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
-using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
 {
-    public static class MapRestrictionVolumeBuilder
+    public static class VolumeBuilder
     {
-        public static MapRestrictionVolume Make(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info)
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : BaseVolume
         {
-            var go = new GameObject("MapRestrictionVolume");
+            var go = new GameObject(typeof(TVolume).Name);
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
@@ -25,11 +21,11 @@ namespace NewHorizons.Builder.Volumes
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
 
-            var mapRestrictionVolume = go.AddComponent<MapRestrictionVolume>();
+            var volume = go.AddComponent<TVolume>();
 
             go.SetActive(true);
 
-            return mapRestrictionVolume;
+            return volume;
         }
     }
 }

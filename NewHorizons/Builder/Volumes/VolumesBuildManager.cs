@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
@@ -53,7 +54,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var mapRestrictionVolume in config.Volumes.mapRestrictionVolumes)
                 {
-                    MapRestrictionVolumeBuilder.Make(go, sector, mapRestrictionVolume);
+                    VolumeBuilder.Make<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
                 }
             }
         }
