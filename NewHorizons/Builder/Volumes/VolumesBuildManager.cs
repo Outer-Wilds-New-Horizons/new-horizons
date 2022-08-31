@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class VolumesBuildManager
     {
-        public static void Make(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
         {
             if (config.Volumes.revealVolumes != null)
             {
@@ -40,6 +40,13 @@ namespace NewHorizons.Builder.Volumes
                 foreach (var notificationVolume in config.Volumes.notificationVolumes)
                 {
                     NotificationVolumeBuilder.Make(go, sector, notificationVolume, mod);
+                }
+            }
+            if (config.Volumes.hazardVolumes != null)
+            {
+                foreach (var hazardVolume in config.Volumes.hazardVolumes)
+                {
+                    HazardVolumeBuilder.Make(go, sector, planetBody, hazardVolume, mod);
                 }
             }
         }

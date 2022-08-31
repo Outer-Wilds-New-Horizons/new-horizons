@@ -611,7 +611,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Volumes != null)
             {
-                VolumesBuildManager.Make(go, sector, body.Config, body.Mod);
+                VolumesBuildManager.Make(go, sector, rb, body.Config, body.Mod);
             }
 
             if (body.Config.Funnel != null)

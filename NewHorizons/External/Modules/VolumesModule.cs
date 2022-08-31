@@ -20,6 +20,11 @@ namespace NewHorizons.External.Modules
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
+        /// Add hazard volumes to this planet
+        /// </summary>
+        public HazardVolumeInfo[] hazardVolumes;
+
+        /// <summary>
         /// Add notification volumes to this planet
         /// </summary>
         public NotificationVolumeInfo[] notificationVolumes;
@@ -156,6 +161,61 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"all")] All = 0,
                 [EnumMember(Value = @"ship")] Ship = 1,
                 [EnumMember(Value = @"player")] Player = 2,
+            }
+        }
+
+        [JsonObject]
+        public class HazardVolumeInfo
+        {
+            /// <summary>
+            /// The location of this hazard volume. Optional (will default to 0,0,0).
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The radius of this hazard volume.
+            /// </summary>
+            public float radius;
+
+            /// <summary>
+            /// The type of hazard for this volume.
+            /// </summary>
+            [DefaultValue("general")] public HazardType type = HazardType.GENERAL;
+
+            /// <summary>
+            /// The amount of damage you will take per second while inside this volume.
+            /// </summary>
+            [DefaultValue(10f)] public float damagePerSecond = 10f;
+
+            /// <summary>
+            /// The type of damage you will take when you first touch this volume.
+            /// </summary>
+            [DefaultValue("impact")] public InstantDamageType _firstContactDamageType = InstantDamageType.Impact;
+
+            /// <summary>
+            /// The amount of damage you will take when you first touch this volume.
+            /// </summary>
+            public float firstContactDamage;
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum HazardType
+            {
+                [EnumMember(Value = @"none")] NONE = 0,
+                [EnumMember(Value = @"general")] GENERAL = 1,
+                [EnumMember(Value = @"darkMatter")] DARKMATTER = 2,
+                [EnumMember(Value = @"heat")] HEAT = 4,
+                [EnumMember(Value = @"fire")] FIRE = 8,
+                [EnumMember(Value = @"sandfall")] SANDFALL = 16,
+                [EnumMember(Value = @"electricity")] ELECTRICITY = 32,
+                [EnumMember(Value = @"rapids")] RAPIDS = 64
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum InstantDamageType
+            {
+                [EnumMember(Value = @"impact")] Impact,
+                [EnumMember(Value = @"puncture")] Puncture,
+                [EnumMember(Value = @"electrical")] Electrical
             }
         }
     }
