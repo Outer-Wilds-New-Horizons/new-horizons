@@ -30,6 +30,11 @@ namespace NewHorizons.External.Modules
         public VolumeInfo[] interferenceVolumes;
 
         /// <summary>
+        /// Add insulating volumes to this planet
+        /// </summary>
+        public VolumeInfo[] insulatingVolumes;
+
+        /// <summary>
         /// Add map restriction volumes to this planet
         /// </summary>
         public VolumeInfo[] mapRestrictionVolumes;

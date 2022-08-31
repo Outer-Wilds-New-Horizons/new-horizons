@@ -71,6 +71,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<ReverbTriggerVolume>(go, sector, reverbVolume);
                 }
             }
+            if (config.Volumes.insulatingVolumes != null)
+            {
+                foreach (var insulatingVolume in config.Volumes.insulatingVolumes)
+                {
+                    VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
+                }
+            }
         }
     }
 }
