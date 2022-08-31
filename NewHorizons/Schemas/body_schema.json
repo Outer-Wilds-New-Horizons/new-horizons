@@ -2393,6 +2393,13 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "hazardVolumes": {
+          "type": "array",
+          "description": "Add hazard volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/HazardVolumeInfo"
+          }
+        },
         "notificationVolumes": {
           "type": "array",
           "description": "Add notification volumes to this planet",
@@ -2476,6 +2483,80 @@
         "muffleWhileRafting",
         "muffleIndoors",
         "slideReelMusic"
+      ]
+    },
+    "HazardVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this hazard volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this hazard volume.",
+          "format": "float"
+        },
+        "type": {
+          "description": "The type of hazard for this volume.",
+          "default": "general",
+          "$ref": "#/definitions/HazardType"
+        },
+        "damagePerSecond": {
+          "type": "number",
+          "description": "The amount of damage you will take per second while inside this volume.",
+          "format": "float",
+          "default": 10.0
+        },
+        "firstContactDamageType": {
+          "description": "The type of damage you will take when you first touch this volume.",
+          "default": "impact",
+          "$ref": "#/definitions/InstantDamageType"
+        },
+        "firstContactDamage": {
+          "type": "number",
+          "description": "The amount of damage you will take when you first touch this volume.",
+          "format": "float"
+        }
+      }
+    },
+    "HazardType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NONE",
+        "GENERAL",
+        "DARKMATTER",
+        "HEAT",
+        "FIRE",
+        "SANDFALL",
+        "ELECTRICITY",
+        "RAPIDS"
+      ],
+      "enum": [
+        "none",
+        "general",
+        "darkMatter",
+        "heat",
+        "fire",
+        "sandfall",
+        "electricity",
+        "rapids"
+      ]
+    },
+    "InstantDamageType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Impact",
+        "Puncture",
+        "Electrical"
+      ],
+      "enum": [
+        "impact",
+        "puncture",
+        "electrical"
       ]
     },
     "NotificationVolumeInfo": {
