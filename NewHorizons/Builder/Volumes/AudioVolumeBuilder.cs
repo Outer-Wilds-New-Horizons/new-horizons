@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Volumes
 {
     public static class AudioVolumeBuilder
     {
-        public static AudioVolume Make(GameObject planetGO, Sector sector, PropModule.AudioVolumeInfo info, IModBehaviour mod)
+        public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
         {
             var go = new GameObject("AudioVolume");
             go.SetActive(false);

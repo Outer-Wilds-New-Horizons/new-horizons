@@ -170,6 +170,11 @@ namespace NewHorizons.External.Configs
         public WaterModule Water;
 
         /// <summary>
+        /// Add various volumes on this body
+        /// </summary>
+        public VolumesModule Volumes;
+
+        /// <summary>
         /// Extra data that may be used by extension mods
         /// </summary>
         public object extras;
@@ -316,6 +321,20 @@ namespace NewHorizons.External.Configs
                 foreach (var tornado in Props.tornados)
                     if (tornado.downwards)
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
+
+            if (Props?.audioVolumes != null)
+            {
+                if (Volumes == null) Volumes = new VolumesModule();
+                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new VolumesModule.AudioVolumeInfo[0];
+                Volumes.audioVolumes = Volumes.audioVolumes.Concat(Props.audioVolumes).ToArray();
+            }
+
+            if (Props?.reveal != null)
+            {
+                if (Volumes == null) Volumes = new VolumesModule();
+                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new VolumesModule.RevealVolumeInfo[0];
+                Volumes.revealVolumes = Volumes.revealVolumes.Concat(Props.reveal).ToArray();
+            }
 
             if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
 
