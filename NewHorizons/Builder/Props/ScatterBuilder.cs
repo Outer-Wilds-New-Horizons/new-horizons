@@ -25,7 +25,7 @@ namespace NewHorizons.Builder.Props
             // Works up to planets with 575 radius before capping
             var numPoints = Math.Min((int)(area * 10), 41666666);
 
-            var points = RandomUtility.FibonacciSphere(numPoints);
+            //var points = RandomUtility.FibonacciSphere(numPoints);
 
             Texture2D heightMapTexture = null;
             if (heightMap != null)
@@ -57,11 +57,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = SearchUtilities.Find(propInfo.path);
                 for (int i = 0; i < propInfo.count; i++)
                 {
-                    // Failsafe
-                    if (points.Count == 0) break;
-
-                    var randomInd = (int)Random.Range(0, points.Count - 1);
-                    var point = points[randomInd];
+                    var point = Random.insideUnitSphere;
 
                     var height = radius;
                     if (heightMapTexture != null)
@@ -105,9 +101,6 @@ namespace NewHorizons.Builder.Props
 
                     // Rotate around normal
                     prop.transform.localRotation *= Quaternion.AngleAxis(Random.Range(0, 360), Vector3.up);
-
-                    points.QuickRemoveAt(randomInd);
-                    if (points.Count == 0) return;
                 }
             }
         }
