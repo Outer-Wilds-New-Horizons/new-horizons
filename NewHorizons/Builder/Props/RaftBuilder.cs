@@ -1,4 +1,5 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
+using NewHorizons.Components.Achievement;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -53,6 +54,16 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
+
+            var achievementObject = new GameObject("AchievementVolume");
+            achievementObject.transform.SetParent(raftObject.transform, false);
+
+            var shape = achievementObject.AddComponent<SphereShape>();
+            shape.radius = 3;
+            shape.SetCollisionMode(Shape.CollisionMode.Volume);
+
+            achievementObject.AddComponent<OWTriggerVolume>()._shape = shape;
+            achievementObject.AddComponent<OtherMods.AchievementsPlus.NH.RaftingAchievement>();
 
             raftObject.SetActive(true);
         }
