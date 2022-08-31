@@ -190,7 +190,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of damage you will take when you first touch this volume.
             /// </summary>
-            [DefaultValue("impact")] public InstantDamageType _firstContactDamageType = InstantDamageType.Impact;
+            [DefaultValue("impact")] public InstantDamageType firstContactDamageType = InstantDamageType.Impact;
 
             /// <summary>
             /// The amount of damage you will take when you first touch this volume.

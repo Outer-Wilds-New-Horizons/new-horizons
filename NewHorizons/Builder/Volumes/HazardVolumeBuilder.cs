@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Volumes
             hazardVolume._attachedBody = owrb;
             hazardVolume._type = EnumUtils.Parse<HazardVolume.HazardType>(info.type.ToString(), HazardVolume.HazardType.GENERAL);
             hazardVolume._damagePerSecond = info.damagePerSecond;
-            hazardVolume._firstContactDamageType = EnumUtils.Parse<InstantDamageType>(info.firstContactDamage.ToString(), InstantDamageType.Impact);
+            hazardVolume._firstContactDamageType = EnumUtils.Parse<InstantDamageType>(info.firstContactDamageType.ToString(), InstantDamageType.Impact);
             hazardVolume._firstContactDamage = info.firstContactDamage;
 
             go.SetActive(true);
