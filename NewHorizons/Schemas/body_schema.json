@@ -2400,6 +2400,13 @@
             "$ref": "#/definitions/HazardVolumeInfo"
           }
         },
+        "interferenceVolumes": {
+          "type": "array",
+          "description": "Add interference volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
         "mapRestrictionVolumes": {
           "type": "array",
           "description": "Add map restriction volumes to this planet",
