@@ -89,6 +89,7 @@ namespace NewHorizons.Builder.Props
                     }
 
                     var prop = prefab.InstantiateInactive();
+                    prop.transform.SetParent(sector?.transform ?? go.transform);
                     prop.transform.localPosition = go.transform.TransformPoint(point);
                     var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
                     prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
