@@ -5,26 +5,9 @@ using UnityEngine;
 
 namespace NewHorizons.Components
 {
-    [RequireComponent(typeof(OWTriggerVolume))]
-    public class MapRestrictionVolume : MonoBehaviour
+    public class MapRestrictionVolume : BaseVolume
     {
-        private OWTriggerVolume _triggerVolume;
-
-        public void Awake()
-        {
-            _triggerVolume = this.GetRequiredComponent<OWTriggerVolume>();
-            _triggerVolume.OnEntry += OnTriggerVolumeEntry;
-            _triggerVolume.OnExit += OnTriggerVolumeExit;
-        }
-
-        public void OnDestroy()
-        {
-            if (_triggerVolume == null) return;
-            _triggerVolume.OnEntry -= OnTriggerVolumeEntry;
-            _triggerVolume.OnExit -= OnTriggerVolumeExit;
-        }
-
-        public void OnTriggerVolumeEntry(GameObject hitObj)
+        public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
             if (hitObj.CompareTag("PlayerDetector"))
             {
@@ -32,7 +15,7 @@ namespace NewHorizons.Components
             }
         }
 
-        public void OnTriggerVolumeExit(GameObject hitObj)
+        public override void OnTriggerVolumeExit(GameObject hitObj)
         {
             if (hitObj.CompareTag("PlayerDetector"))
             {
