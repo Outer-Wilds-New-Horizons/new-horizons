@@ -102,6 +102,8 @@ namespace NewHorizons.Builder.Props
 
                     prop.SetActive(true);
                 }
+
+                GameObject.Destroy(prefab);
             }
         }
     }
