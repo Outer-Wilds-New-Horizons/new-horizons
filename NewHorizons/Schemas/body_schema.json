@@ -2388,49 +2388,49 @@
       "properties": {
         "audioVolumes": {
           "type": "array",
-          "description": "Add audio volumes to this planet",
+          "description": "Add audio volumes to this planet.",
           "items": {
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
         "hazardVolumes": {
           "type": "array",
-          "description": "Add hazard volumes to this planet",
+          "description": "Add hazard volumes to this planet.",
           "items": {
             "$ref": "#/definitions/HazardVolumeInfo"
           }
         },
         "interferenceVolumes": {
           "type": "array",
-          "description": "Add interference volumes to this planet",
+          "description": "Add interference volumes to this planet.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "insulatingVolumes": {
           "type": "array",
-          "description": "Add insulating volumes to this planet",
+          "description": "Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "mapRestrictionVolumes": {
           "type": "array",
-          "description": "Add map restriction volumes to this planet",
+          "description": "Add map restriction volumes to this planet.",
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
         },
         "notificationVolumes": {
           "type": "array",
-          "description": "Add notification volumes to this planet",
+          "description": "Add notification volumes to this planet.",
           "items": {
             "$ref": "#/definitions/NotificationVolumeInfo"
           }
         },
         "revealVolumes": {
           "type": "array",
-          "description": "Add triggers that reveal parts of the ship log on this planet",
+          "description": "Add triggers that reveal parts of the ship log on this planet.",
           "items": {
             "$ref": "#/definitions/RevealVolumeInfo"
           }
