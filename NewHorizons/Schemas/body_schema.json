@@ -2400,6 +2400,13 @@
             "$ref": "#/definitions/HazardVolumeInfo"
           }
         },
+        "mapRestrictionVolumes": {
+          "type": "array",
+          "description": "Add map restriction volumes to this planet",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
         "notificationVolumes": {
           "type": "array",
           "description": "Add notification volumes to this planet",
@@ -2421,12 +2428,12 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "The location of this audio volume. Optional (will default to 0,0,0).",
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
           "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this audio volume",
+          "description": "The radius of this volume.",
           "format": "float"
         },
         "audio": {
@@ -2490,12 +2497,12 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "The location of this hazard volume. Optional (will default to 0,0,0).",
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
           "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this hazard volume.",
+          "description": "The radius of this volume.",
           "format": "float"
         },
         "type": {
@@ -2559,23 +2566,38 @@
         "electrical"
       ]
     },
-    "NotificationVolumeInfo": {
+    "VolumeInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "target": {
-          "description": "What the notification will show for.",
-          "default": "all",
-          "$ref": "#/definitions/NotificationTarget"
-        },
         "position": {
-          "description": "The location of this notification volume. Optional (will default to 0,0,0).",
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
           "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
-          "description": "The radius of this notification volume.",
+          "description": "The radius of this volume.",
           "format": "float"
+        }
+      }
+    },
+    "NotificationVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "target": {
+          "description": "What the notification will show for.",
+          "default": "all",
+          "$ref": "#/definitions/NotificationTarget"
         },
         "entryNotification": {
           "description": "The notification that will play when you enter this volume.",
@@ -2621,6 +2643,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
         "maxAngle": {
           "type": "number",
           "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)",
@@ -2629,15 +2660,6 @@
         "maxDistance": {
           "type": "number",
           "description": "The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)",
-          "format": "float"
-        },
-        "position": {
-          "description": "The position to place this volume at",
-          "$ref": "#/definitions/MVector3"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this reveal volume",
           "format": "float"
         },
         "revealOn": {
