@@ -49,6 +49,13 @@ namespace NewHorizons.Builder.Volumes
                     HazardVolumeBuilder.Make(go, sector, planetBody, hazardVolume, mod);
                 }
             }
+            if (config.Volumes.mapRestrictionVolumes != null)
+            {
+                foreach (var mapRestrictionVolume in config.Volumes.mapRestrictionVolumes)
+                {
+                    MapRestrictionVolumeBuilder.Make(go, sector, mapRestrictionVolume);
+                }
+            }
         }
     }
 }

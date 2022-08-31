@@ -25,6 +25,11 @@ namespace NewHorizons.External.Modules
         public HazardVolumeInfo[] hazardVolumes;
 
         /// <summary>
+        /// Add map restriction volumes to this planet
+        /// </summary>
+        public VolumeInfo[] mapRestrictionVolumes;
+
+        /// <summary>
         /// Add notification volumes to this planet
         /// </summary>
         public NotificationVolumeInfo[] notificationVolumes;
