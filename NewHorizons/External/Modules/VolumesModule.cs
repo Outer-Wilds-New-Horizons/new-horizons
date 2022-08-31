@@ -44,6 +44,11 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
 
+        /// <summary>
+        /// Add reverb volumes to this planet. Great for echoes in caves.
+        /// </summary>
+        public VolumeInfo[] reverbVolumes;
+
         [JsonObject]
         public class VolumeInfo
         {

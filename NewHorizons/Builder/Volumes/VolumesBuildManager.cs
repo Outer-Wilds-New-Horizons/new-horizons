@@ -64,6 +64,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<Components.InterferenceVolume>(go, sector, interferenceVolume);
                 }
             }
+            if (config.Volumes.reverbVolumes != null)
+            {
+                foreach (var reverbVolume in config.Volumes.reverbVolumes)
+                {
+                    VolumeBuilder.Make<ReverbTriggerVolume>(go, sector, reverbVolume);
+                }
+            }
         }
     }
 }
