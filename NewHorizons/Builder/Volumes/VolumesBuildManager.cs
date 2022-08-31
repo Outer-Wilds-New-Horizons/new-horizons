@@ -57,6 +57,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
                 }
             }
+            if (config.Volumes.interferenceVolumes != null)
+            {
+                foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
+                {
+                    VolumeBuilder.Make<Components.InterferenceVolume>(go, sector, interferenceVolume);
+                }
+            }
         }
     }
 }

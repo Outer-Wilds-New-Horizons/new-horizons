@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Handlers;
 
 namespace NewHorizons.Patches
 {
@@ -57,7 +58,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ProbeCamera), nameof(ProbeCamera.HasInterference))]
         public static void ProbeCamera_HasInterference(ProbeCamera __instance, ref bool __result)
         {
-            __result = __result || Components.CloakSectorController.isPlayerInside != Components.CloakSectorController.isProbeInside;
+            __result = __result || (__instance._id != ProbeCamera.ID.PreLaunch && (Components.CloakSectorController.isPlayerInside != Components.CloakSectorController.isProbeInside || InterferenceHandler.PlayerHasInterference() != InterferenceHandler.ProbeHasInterference()));
         }
     }
 }
