@@ -19,14 +19,6 @@ namespace NewHorizons.Builder.Props
         {
             var heightMap = config.HeightMap;
 
-            var area = 4f * Mathf.PI * radius * radius;
-
-            // To not use more than 0.5GB of RAM while doing this 
-            // Works up to planets with 575 radius before capping
-            var numPoints = Math.Min((int)(area * 10), 41666666);
-
-            //var points = RandomUtility.FibonacciSphere(numPoints);
-
             Texture2D heightMapTexture = null;
             if (heightMap != null)
             {
@@ -55,6 +47,14 @@ namespace NewHorizons.Builder.Props
                 GameObject prefab;
                 if (propInfo.assetBundle != null) prefab = AssetBundleUtilities.LoadPrefab(propInfo.assetBundle, propInfo.path, mod);
                 else prefab = SearchUtilities.Find(propInfo.path);
+
+                // Run all the make detail stuff on it early and just copy it over and over instead
+                var detailInfo = new PropModule.DetailInfo()
+                {
+                    scale = propInfo.scale
+                };
+                prefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
+
                 for (int i = 0; i < propInfo.count; i++)
                 {
                     var point = Random.insideUnitSphere;
@@ -88,13 +88,10 @@ namespace NewHorizons.Builder.Props
                         point = Quaternion.Euler(90, 0, 0) * point;
                     }
 
-                    var detailInfo = new PropModule.DetailInfo()
-                    {
-                        position = point.normalized * height,
-                        scale = propInfo.scale,
-                        alignToNormal = true
-                    };
-                    var prop = DetailBuilder.Make(go, sector, prefab, detailInfo);
+                    var prop = prefab.InstantiateInactive();
+                    prop.transform.localPosition = go.transform.TransformPoint(point);
+                    var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
+                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
 
                     if (propInfo.offset != null) prop.transform.localPosition += prop.transform.TransformVector(propInfo.offset);
                     if (propInfo.rotation != null) prop.transform.rotation *= Quaternion.Euler(propInfo.rotation);
