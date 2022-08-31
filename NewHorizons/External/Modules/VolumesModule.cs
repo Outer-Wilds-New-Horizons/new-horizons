@@ -35,7 +35,21 @@ namespace NewHorizons.External.Modules
         public RevealVolumeInfo[] revealVolumes;
 
         [JsonObject]
-        public class RevealVolumeInfo
+        public class VolumeInfo
+        {
+            /// <summary>
+            /// The location of this volume. Optional (will default to 0,0,0).
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The radius of this volume.
+            /// </summary>
+            public float radius = 1f;
+        }
+
+        [JsonObject]
+        public class RevealVolumeInfo : VolumeInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum RevealVolumeType
@@ -58,16 +72,6 @@ namespace NewHorizons.External.Modules
             public float maxDistance = -1f; // Snapshot & Observe Only
 
             /// <summary>
-            /// The position to place this volume at
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this reveal volume
-            /// </summary>
-            public float radius = 1f;
-
-            /// <summary>
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
             [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
@@ -84,18 +88,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class AudioVolumeInfo
+        public class AudioVolumeInfo : VolumeInfo
         {
-            /// <summary>
-            /// The location of this audio volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this audio volume
-            /// </summary>
-            public float radius;
-
             /// <summary>
             /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
@@ -113,22 +107,12 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class NotificationVolumeInfo
+        public class NotificationVolumeInfo : VolumeInfo
         {
             /// <summary>
             /// What the notification will show for.
             /// </summary>
             [DefaultValue("all")] public NotificationTarget target = NotificationTarget.All;
-
-            /// <summary>
-            /// The location of this notification volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this notification volume.
-            /// </summary>
-            public float radius;
 
             /// <summary>
             /// The notification that will play when you enter this volume.
@@ -165,18 +149,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class HazardVolumeInfo
+        public class HazardVolumeInfo : VolumeInfo
         {
-            /// <summary>
-            /// The location of this hazard volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this hazard volume.
-            /// </summary>
-            public float radius;
-
             /// <summary>
             /// The type of hazard for this volume.
             /// </summary>
