@@ -2427,6 +2427,13 @@
           "items": {
             "$ref": "#/definitions/RevealVolumeInfo"
           }
+        },
+        "reverbVolumes": {
+          "type": "array",
+          "description": "Add reverb volumes to this planet. Great for echoes in caves.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
         }
       }
     },
