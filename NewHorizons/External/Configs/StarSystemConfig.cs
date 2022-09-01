@@ -102,6 +102,11 @@ namespace NewHorizons.External.Configs
         /// </summary>
         public CuriosityColorInfo[] curiosities;
 
+        /// <summary>
+        /// Extra data that may be used by extension mods
+        /// </summary>
+        public object extras;
+
         public class NomaiCoordinates
         {
             [MinLength(2)]

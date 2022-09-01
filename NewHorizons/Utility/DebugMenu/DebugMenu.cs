@@ -69,7 +69,13 @@ namespace NewHorizons.Utility.DebugMenu
 
                 PauseMenuInitHook();
 
-                Main.Instance.OnChangeStarSystem.AddListener((string s) => SaveLoadedConfigsForRecentSystem());
+                Main.Instance.OnChangeStarSystem.AddListener((string s) => {
+                    if (saveButtonUnlocked)
+                    {
+                        SaveLoadedConfigsForRecentSystem();
+                        saveButtonUnlocked = false;
+                    }
+                });
             }
             else
             {
@@ -229,6 +235,24 @@ namespace NewHorizons.Utility.DebugMenu
 
                 try
                 {
+                    var path = loadedMod.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
+                    Logger.LogVerbose($"Backing up... {relativePath} to {path}");
+                    var oldPath = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
+                    var directoryName = Path.GetDirectoryName(path);
+                    Directory.CreateDirectory(directoryName);
+
+                    if (File.Exists(oldPath))
+                        File.WriteAllBytes(path, File.ReadAllBytes(oldPath));
+                    else
+                        File.WriteAllText(path, json);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
+                }
+
+                try
+                {
                     Logger.Log($"Saving... {relativePath} to {filePath}");
                     var path = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
                     var directoryName = Path.GetDirectoryName(path);
@@ -239,19 +263,6 @@ namespace NewHorizons.Utility.DebugMenu
                 catch (Exception e)
                 {
                     Logger.LogError($"Failed to save file {relativePath}:\n{e}");
-                }
-
-                try
-                {
-                    var path = Main.Instance.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
-                    var directoryName = Path.GetDirectoryName(path);
-                    Directory.CreateDirectory(directoryName);
-
-                    File.WriteAllText(path, json);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
                 }
             }
         }

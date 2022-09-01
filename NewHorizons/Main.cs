@@ -69,6 +69,7 @@ namespace NewHorizons
         public class StarSystemEvent : UnityEvent<string> { }
         public StarSystemEvent OnChangeStarSystem;
         public StarSystemEvent OnStarSystemLoaded;
+        public StarSystemEvent OnPlanetLoaded;
 
         // For warping to the eye system
         private GameObject _ship;
@@ -127,7 +128,7 @@ namespace NewHorizons
 
             BodyDict["SolarSystem"] = new List<NewHorizonsBody>();
             BodyDict["EyeOfTheUniverse"] = new List<NewHorizonsBody>(); // Keep this empty tho fr
-            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), Instance)
+            SystemDict["SolarSystem"] = new NewHorizonsSystem("SolarSystem", new StarSystemConfig(), "", Instance)
             {
                 Config =
                 {
@@ -143,7 +144,7 @@ namespace NewHorizons
                     }
                 }
             };
-            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), Instance)
+            SystemDict["EyeOfTheUniverse"] = new NewHorizonsSystem("EyeOfTheUniverse", new StarSystemConfig(), "", Instance)
             {
                 Config =
                 {
@@ -171,6 +172,7 @@ namespace NewHorizons
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
+            OnPlanetLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -517,7 +519,7 @@ namespace NewHorizons
                         }
                         else
                         {
-                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, mod);
+                            SystemDict[name] = new NewHorizonsSystem(name, starSystemConfig, relativePath, mod);
                         }
                     }
                 }
@@ -618,7 +620,7 @@ namespace NewHorizons
                     starSystemConfig.Migrate();
                     starSystemConfig.FixCoordinates();
 
-                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, mod);
+                    var system = new NewHorizonsSystem(config.starSystem, starSystemConfig, $"", mod);
 
                     SystemDict.Add(config.starSystem, system);
 
@@ -649,6 +651,13 @@ namespace NewHorizons
         #region Change star system
         public void ChangeCurrentStarSystem(string newStarSystem, bool warp = false, bool vessel = false)
         {
+            // If we're just on the title screen set the system for later
+            if (LoadManager.GetCurrentScene() == OWScene.TitleScreen)
+            {
+                _currentStarSystem = newStarSystem;
+                return;
+            }
+
             if (IsChangingStarSystem) return;
 
             IsWarpingFromShip = warp;
@@ -659,9 +668,6 @@ namespace NewHorizons
             if (warp && _shipWarpController) _shipWarpController.WarpOut();
             IsChangingStarSystem = true;
             WearingSuit = PlayerState.IsWearingSuit();
-
-            // We kill them so they don't move as much
-            Locator.GetDeathManager().KillPlayer(DeathType.Meditation);
 
             OWScene sceneToLoad;
 
@@ -680,12 +686,15 @@ namespace NewHorizons
 
             _currentStarSystem = newStarSystem;
 
+            // Freeze player inputs
+            OWInput.ChangeInputMode(InputMode.None);
+
             LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
         }
 
         void OnDeath(DeathType _)
         {
-            // We reset the solar system on death (unless we just killed the player)
+            // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
                 // If the override is a valid system then we go there
