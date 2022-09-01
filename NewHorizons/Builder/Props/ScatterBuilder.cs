@@ -78,7 +78,7 @@ namespace NewHorizons.Builder.Props
                     if (propInfo.preventOverlap) 
                     {
                         if (points.Count == 0) break;
-                        var randomInd = (int)Random.Range(0, points.Count - 1);
+                        var randomInd = Random.Range(0, points.Count - 1);
                         point = points[randomInd];
                         points.QuickRemoveAt(randomInd);
                     }
