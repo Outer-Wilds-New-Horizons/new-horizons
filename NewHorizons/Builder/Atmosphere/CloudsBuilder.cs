@@ -258,8 +258,16 @@ namespace NewHorizons.Builder.Atmosphere
             material.renderQueue = 2999;
             material.name = "TransparentCloud";
             material.SetFloat(Smoothness, 0f);
-            material.SetFloat(Mode, 2);
             material.SetTexture(MainTex, image);
+
+            material.SetFloat(Mode, 2);
+            material.SetOverrideTag("RenderType", "Transparent");
+            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+            material.SetInt("_ZWrite", 0);
+            material.DisableKeyword("_ALPHATEST_ON");
+            material.EnableKeyword("_ALPHABLEND_ON");
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
 
             renderer.sharedMaterial = material;
 
