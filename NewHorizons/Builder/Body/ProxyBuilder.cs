@@ -111,7 +111,8 @@ namespace NewHorizons.Builder.Body
 
                     if (body.Config.Atmosphere.clouds != null)
                     {
-                        topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        else topClouds = CloudsBuilder.MakeTransparentClouds(proxy, body.Config.Atmosphere, body.Mod, true).GetAddComponent<MeshRenderer>();
 
                         if (body.Config.Atmosphere.clouds.hasLightning) lightningGenerator = CloudsBuilder.MakeLightning(proxy, null, body.Config.Atmosphere, true);
 

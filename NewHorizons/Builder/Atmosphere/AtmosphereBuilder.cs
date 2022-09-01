@@ -59,7 +59,7 @@ namespace NewHorizons.Builder.Atmosphere
                         }
                     }
 
-                    material.SetFloat(InnerRadius, atmosphereModule.clouds != null ? atmosphereModule.size : surfaceSize);
+                    material.SetFloat(InnerRadius, (atmosphereModule.clouds != null && atmosphereModule.clouds.cloudsPrefab != CloudPrefabType.Transparent) ? atmosphereModule.size : surfaceSize);
                     material.SetFloat(OuterRadius, atmosphereModule.size * 1.2f);
                     if (atmosphereModule.atmosphereTint != null) material.SetColor(SkyColor, atmosphereModule.atmosphereTint.ToColor());
 
