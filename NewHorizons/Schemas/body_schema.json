@@ -2565,7 +2565,7 @@
       "enum": [
         "none",
         "general",
-        "darkMatter",
+        "ghostMatter",
         "heat",
         "fire",
         "sandfall",
