@@ -11,16 +11,15 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static Material[] _gdCloudMaterials;
         private static Material[] _qmCloudMaterials;
+        private static Material _transparentCloud;
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
-        private static Shader transparentCloudShader;
         private static readonly int Color = Shader.PropertyToID("_Color");
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int RampTex = Shader.PropertyToID("_RampTex");
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
         private static readonly int Smoothness = Shader.PropertyToID("_Glossiness");
-        private static readonly int Mode = Shader.PropertyToID("_Mode");
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
         {
@@ -253,22 +252,9 @@ namespace NewHorizons.Builder.Atmosphere
             filter.mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
 
             MeshRenderer renderer = cloudsTransparentGO.AddComponent<MeshRenderer>();
-            if (transparentCloudShader == null) transparentCloudShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/StandardCullOFF.shader");
-            var material = new Material(transparentCloudShader);
-            material.renderQueue = 2999;
-            material.name = "TransparentCloud";
-            material.SetFloat(Smoothness, 0f);
+            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
+            var material = _transparentCloud;
             material.SetTexture(MainTex, image);
-
-            material.SetFloat(Mode, 2);
-            material.SetOverrideTag("RenderType", "Transparent");
-            material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
-            material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
-            material.SetInt("_ZWrite", 0);
-            material.DisableKeyword("_ALPHATEST_ON");
-            material.EnableKeyword("_ALPHABLEND_ON");
-            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
-
             renderer.sharedMaterial = material;
 
             if (atmo.clouds.rotationSpeed != 0f)
