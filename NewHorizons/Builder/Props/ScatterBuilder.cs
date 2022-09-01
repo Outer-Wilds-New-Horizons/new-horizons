@@ -3,6 +3,8 @@ using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
@@ -18,6 +20,21 @@ namespace NewHorizons.Builder.Props
         private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
+
+            var makeFibonacciSphere = scatterInfo.Any(x => x.preventOverlap);
+
+            List<Vector3> points = new();
+
+            if (makeFibonacciSphere)
+            {
+                var area = 4f * Mathf.PI * radius * radius;
+
+                // To not use more than 0.5GB of RAM while doing this 
+                // Works up to planets with 575 radius before capping
+                var numPoints = Math.Min((int)(area * 10), 41666666);
+
+                points = RandomUtility.FibonacciSphere(numPoints);
+            }
 
             Texture2D heightMapTexture = null;
             if (heightMap != null)
@@ -57,7 +74,18 @@ namespace NewHorizons.Builder.Props
 
                 for (int i = 0; i < propInfo.count; i++)
                 {
-                    var point = Random.insideUnitSphere;
+                    Vector3 point;
+                    if (propInfo.preventOverlap) 
+                    {
+                        if (points.Count == 0) break;
+                        var randomInd = (int)Random.Range(0, points.Count - 1);
+                        point = points[randomInd];
+                        points.QuickRemoveAt(randomInd);
+                    }
+                    else
+                    {
+                        point = Random.onUnitSphere;
+                    }
 
                     var height = radius;
                     if (heightMapTexture != null)

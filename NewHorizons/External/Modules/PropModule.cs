@@ -139,6 +139,11 @@ namespace NewHorizons.External.Modules
             /// The highest height that these objects will be placed at (only relevant if there's a heightmap)
             /// </summary>
             public float? maxHeight;
+
+            /// <summary>
+            /// Should we try to prevent overlap between the scattered details? True by default. If it's affecting load times turn it off.
+            /// </summary>
+            [DefaultValue(true)] public bool preventOverlap = true;
         }
 
         [JsonObject]
