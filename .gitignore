@@ -417,4 +417,9 @@ docs/.m_cache/**
 # Unity project
 new-horizons-unity
 new-horizons-unity/**
+nh-unity
+nh-unity/**
+NewHorizons/Assets/Assets
+NewHorizons/Assets/Assets.manifest
+
 docs/.env

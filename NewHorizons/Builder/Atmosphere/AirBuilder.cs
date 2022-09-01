@@ -23,28 +23,31 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
-            var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
-            if (ruleSetGO == null) ruleSetGO = planetGO;
-
-            var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
-            shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
-            shockLayerRuleset._radialCenter = airGO.transform;
-            shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
-            shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
-
-            if (config.Atmosphere.clouds != null)
+            if (config.Atmosphere.hasShockLayer)
             {
-                shockLayerRuleset._innerRadius = config.Atmosphere.clouds.innerCloudRadius;
-                shockLayerRuleset._outerRadius = config.Atmosphere.clouds.outerCloudRadius;
-            }
-            else
-            {
-                var bottom = config.Base.surfaceSize;
-                var top = config.Atmosphere.size;
+                // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
+                var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
+                if (ruleSetGO == null) ruleSetGO = planetGO;
 
-                shockLayerRuleset._innerRadius = (bottom + top) / 2f;
-                shockLayerRuleset._outerRadius = top;
+                var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
+                shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
+                shockLayerRuleset._radialCenter = airGO.transform;
+                shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+                shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
+
+                if (config.Atmosphere.clouds != null)
+                {
+                    shockLayerRuleset._innerRadius = config.Atmosphere.clouds.innerCloudRadius;
+                    shockLayerRuleset._outerRadius = config.Atmosphere.clouds.outerCloudRadius;
+                }
+                else
+                {
+                    var bottom = config.Base.surfaceSize;
+                    var top = config.Atmosphere.size;
+
+                    shockLayerRuleset._innerRadius = (bottom + top) / 2f;
+                    shockLayerRuleset._outerRadius = top;
+                }
             }
 
             if (config.Atmosphere.hasOxygen)
