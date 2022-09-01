@@ -196,7 +196,7 @@ namespace NewHorizons.External.Modules
             {
                 [EnumMember(Value = @"none")] NONE = 0,
                 [EnumMember(Value = @"general")] GENERAL = 1,
-                [EnumMember(Value = @"darkMatter")] DARKMATTER = 2,
+                [EnumMember(Value = @"ghostMatter")] DARKMATTER = 2,
                 [EnumMember(Value = @"heat")] HEAT = 4,
                 [EnumMember(Value = @"fire")] FIRE = 8,
                 [EnumMember(Value = @"sandfall")] SANDFALL = 16,
