@@ -17,3 +17,7 @@ Uh idk what to put here thought it would be funny haha
 ## Test
 
 aaaaaaaaaaaaaaaaaaaaaaaaa
+
+## 9/2/22
+
+Where were you when new horizons docs died
