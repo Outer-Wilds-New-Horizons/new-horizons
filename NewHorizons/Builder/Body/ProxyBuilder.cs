@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Body
                 remnantGO.transform.parent = proxy.transform;
                 remnantGO.transform.localPosition = Vector3.zero;
 
-                SharedMake(planetGO, remnantGO, proxyController, remnant);
+                SharedMake(planetGO, remnantGO, null, remnant);
 
                 proxyController.stellarRemnantGO = remnantGO;
             }
@@ -125,9 +125,11 @@ namespace NewHorizons.Builder.Body
                     if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
                 }
 
+                Renderer starAtmosphere = null;
+                Renderer starFog = null;
                 if (body.Config.Star != null)
                 {
-                    StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
+                    (_, starAtmosphere, starFog) = StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
@@ -217,9 +219,17 @@ namespace NewHorizons.Builder.Body
 
                 if (proxyController != null)
                 {
-                    proxyController._atmosphere = atmosphere;
-                    proxyController._fog = fog;
-                    proxyController._fogCurveMaxVal = fogCurveMaxVal;
+                    proxyController._atmosphere = atmosphere ?? starAtmosphere;
+                    if (fog != null)
+                    {
+                        proxyController._fog = fog;
+                        proxyController._fogCurveMaxVal = fogCurveMaxVal;
+                    }
+                    else if (starFog != null)
+                    {
+                        proxyController._fog = starFog;
+                        proxyController._fogCurveMaxVal = 0.05f;
+                    }
                     proxyController.topClouds = topClouds;
                     proxyController.lightningGenerator = lightningGenerator;
                     proxyController.supernovaPlanetEffectController = supernovaPlanetEffect;

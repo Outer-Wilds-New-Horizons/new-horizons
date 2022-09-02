@@ -9,11 +9,11 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Volumes
 {
     public static class AudioVolumeBuilder
     {
-        public static AudioVolume Make(GameObject planetGO, Sector sector, PropModule.AudioVolumeInfo info, IModBehaviour mod)
+        public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
         {
             var go = new GameObject("AudioVolume");
             go.SetActive(false);
@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Props
 
             var owAudioSource = go.AddComponent<OWAudioSource>();
             owAudioSource._audioSource = audioSource;
-            owAudioSource.loop = true;
+            owAudioSource.loop = info.loop;
             owAudioSource.SetTrack((OWAudioMixer.TrackName)Enum.Parse(typeof(OWAudioMixer.TrackName), Enum.GetName(typeof(AudioMixerTrackName), info.track)));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 

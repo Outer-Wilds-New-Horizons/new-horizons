@@ -98,6 +98,8 @@ namespace NewHorizons.Components.SizeControllers
         {
             var sun = GameObject.FindObjectOfType<SunController>();
 
+            if (sun == null) return;
+
             // Need to grab all this early bc the star might only Start after the solar system was made (remnants)
             _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
             _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
@@ -194,7 +196,7 @@ namespace NewHorizons.Components.SizeControllers
 
             var secondsElapsed = TimeLoop.GetSecondsElapsed();
             var lifespanInSeconds = lifespan * 60;
-            if (secondsElapsed >= lifespanInSeconds)
+            if (willExplode && secondsElapsed >= lifespanInSeconds)
             {
                 var timeAfter = secondsElapsed - lifespanInSeconds;
                 if (timeAfter <= collapseTime)
@@ -370,6 +372,7 @@ namespace NewHorizons.Components.SizeControllers
 
         public void StartSupernova()
         {
+            if (supernova == null) return;
             if (_isSupernova) return;
 
             Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
@@ -393,7 +396,7 @@ namespace NewHorizons.Components.SizeControllers
             Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             SupernovaStop.Invoke();
-            supernova.Deactivate();
+            if (supernova != null) supernova.Deactivate();
             _isSupernova = false;
             if (atmosphere != null) atmosphere.SetActive(true);
             if (destructionVolume != null)

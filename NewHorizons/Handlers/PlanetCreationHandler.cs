@@ -3,6 +3,7 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Volumes;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.OtherMods.OWRichPresence;
@@ -251,6 +252,16 @@ namespace NewHorizons.Handlers
                     }
                 }
             }
+
+            try
+            {
+                Main.Instance.OnPlanetLoaded?.Invoke(body.Config.name);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
+            }
+            
             return true;
         }
 
@@ -611,6 +622,11 @@ namespace NewHorizons.Handlers
             if (body.Config.Props != null)
             {
                 PropBuildManager.Make(go, sector, rb, body.Config, body.Mod);
+            }
+
+            if (body.Config.Volumes != null)
+            {
+                VolumesBuildManager.Make(go, sector, rb, body.Config, body.Mod);
             }
 
             if (body.Config.Funnel != null)

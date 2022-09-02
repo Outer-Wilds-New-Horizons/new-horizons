@@ -46,23 +46,29 @@ namespace NewHorizons.Builder.Body
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
+
+                var atmospheres = sunAtmosphere.transform.Find("AtmoSphere");
+                atmospheres.transform.localScale = Vector3.one;
+                var lods = atmospheres.GetComponentsInChildren<MeshRenderer>();
+                foreach (var lod in lods)
+                {
+                    lod.material.SetFloat(InnerRadius, starModule.size);
+                    lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
+                }
+
                 var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
+                fog.transform.localScale = Vector3.one;
+                fog.fogRadius = starModule.size * OuterRadiusRatio;
+                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+
+                fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
                 if (starModule.tint != null)
                 {
                     fog.fogTint = starModule.tint.ToColor();
                     fog.fogImpostor.material.SetColor(Tint, starModule.tint.ToColor());
-                    sunAtmosphere.transform.Find("AtmoSphere").transform.localScale = Vector3.one;
-                    foreach (var lod in sunAtmosphere.transform.Find("AtmoSphere").GetComponentsInChildren<MeshRenderer>())
-                    {
+                    foreach (var lod in lods)
                         lod.material.SetColor(SkyColor, starModule.tint.ToColor());
-                        lod.material.SetFloat(InnerRadius, starModule.size);
-                        lod.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
-                    }
                 }
-                fog.transform.localScale = Vector3.one;
-                fog.fogRadius = starModule.size * OuterRadiusRatio;
-                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
-                fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
             }
 
             var ambientLightGO = Object.Instantiate(SearchUtilities.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
@@ -179,9 +185,36 @@ namespace NewHorizons.Builder.Body
             return (starGO, starController, starEvolutionController);
         }
 
-        public static GameObject MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
+        public static (GameObject, Renderer, Renderer) MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             var (starGO, controller, supernova) = SharedStarGeneration(proxyGO, null, mod, starModule, isStellarRemnant);
+
+            Renderer atmosphere = null;
+            Renderer fog = null;
+            if (starModule.hasAtmosphere)
+            {
+                GameObject sunAtmosphere = Object.Instantiate(SearchUtilities.Find("SunProxy/Sun_Proxy_Body/Atmosphere_SUN", false) ?? SearchUtilities.Find("SunProxy(Clone)/Sun_Proxy_Body/Atmosphere_SUN"), starGO.transform);
+                sunAtmosphere.transform.position = proxyGO.transform.position;
+                sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
+                sunAtmosphere.name = "Atmosphere_Star";
+
+                atmosphere = sunAtmosphere.transform.Find("Atmosphere_LOD2").GetComponent<MeshRenderer>();
+                atmosphere.transform.localScale = Vector3.one;
+                atmosphere.material.SetFloat(InnerRadius, starModule.size);
+                atmosphere.material.SetFloat(OuterRadius, starModule.size * OuterRadiusRatio);
+
+                fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<MeshRenderer>();
+                fog.transform.localScale = Vector3.one;
+                fog.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
+
+                if (starModule.tint != null)
+                {
+                    fog.material.SetColor(Tint, starModule.tint.ToColor());
+                    atmosphere.material.SetColor(SkyColor, starModule.tint.ToColor());
+                }
+
+                controller.atmosphere = sunAtmosphere;
+            }
 
             controller.isProxy = true;
 
@@ -198,7 +231,7 @@ namespace NewHorizons.Builder.Body
                 supernova.mainStellerDeathController = mainController.supernova;
             }
 
-            return starGO;
+            return (starGO, atmosphere, fog);
         }
 
         private static (GameObject, StarEvolutionController, StellarDeathController) SharedStarGeneration(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule starModule, bool isStellarRemnant)

@@ -7,12 +7,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
 {
+
     public class NewHorizonsApi : INewHorizons
     {
         [Obsolete("Create(Dictionary<string, object> config) is deprecated, please use LoadConfigs(IModBehaviour mod) instead")]
@@ -64,20 +67,10 @@ namespace NewHorizons
             return Main.BodyDict.Values.SelectMany(x => x)?.ToList()?.FirstOrDefault(x => x.Config.name == name)?.Object;
         }
 
-        public string GetCurrentStarSystem()
-        {
-            return Main.Instance.CurrentStarSystem;
-        }
-
-        public UnityEvent<string> GetChangeStarSystemEvent()
-        {
-            return Main.Instance.OnChangeStarSystem;
-        }
-
-        public UnityEvent<string> GetStarSystemLoadedEvent()
-        {
-            return Main.Instance.OnStarSystemLoaded;
-        }
+        public string GetCurrentStarSystem() => Main.Instance.CurrentStarSystem;
+        public UnityEvent<string> GetChangeStarSystemEvent() => Main.Instance.OnChangeStarSystem;
+        public UnityEvent<string> GetStarSystemLoadedEvent() => Main.Instance.OnStarSystemLoaded;
+        public UnityEvent<string> GetBodyLoadedEvent() => Main.Instance.OnPlanetLoaded;
 
         public bool SetDefaultSystem(string name)
         {
@@ -106,6 +99,42 @@ namespace NewHorizons
                 Logger.LogError($"Couldn't get installed addons:\n{ex}");
                 return new string[] { };
             }
+        }
+
+        private static object QueryJson(Type outType, string filePath, string jsonPath)
+        {
+            if (filePath == "") return null;
+            try
+            {
+                var jsonText = File.ReadAllText(filePath);
+                var jsonData = JObject.Parse(jsonText);
+                return jsonData.SelectToken(jsonPath)?.ToObject(outType);
+            }
+            catch (FileNotFoundException)
+            {
+                return null;
+            }
+            catch (JsonException e)
+            {
+                Logger.LogError(e.ToString());
+                return null;
+            }
+        }
+
+        public object QueryBody(Type outType, string bodyName, string jsonPath)
+        {
+            var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
+            return planet == null
+                ? null
+                : QueryJson(outType, planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath, jsonPath);
+        }
+
+        public object QuerySystem(Type outType, string jsonPath)
+        {
+            var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
+            return system == null 
+                ? null 
+                : QueryJson(outType, system.Mod.ModHelper.Manifest.ModFolderPath + system.RelativePath, jsonPath);
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
