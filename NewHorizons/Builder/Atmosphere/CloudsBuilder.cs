@@ -257,6 +257,22 @@ namespace NewHorizons.Builder.Atmosphere
             material.SetTexture(MainTex, image);
             renderer.sharedMaterial = material;
 
+            if (!isProxy)
+            {
+                GameObject tcrqcGO = new GameObject("TransparentCloudRenderQueueController");
+                tcrqcGO.transform.SetParent(cloudsTransparentGO.transform, false);
+                tcrqcGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+                var shape = tcrqcGO.AddComponent<SphereShape>();
+                shape.radius = 1;
+
+                var owTriggerVolume = tcrqcGO.AddComponent<OWTriggerVolume>();
+                owTriggerVolume._shape = shape;
+
+                TransparentCloudRenderQueueController tcrqc = tcrqcGO.AddComponent<TransparentCloudRenderQueueController>();
+                tcrqc.renderer = renderer;
+            }
+
             if (atmo.clouds.rotationSpeed != 0f)
             {
                 var rt = cloudsTransparentGO.AddComponent<RotateTransform>();
