@@ -341,6 +341,9 @@ namespace NewHorizons
 
                 var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
 
+                // Disable forest and observatory so that a custom body doesn't accidentally pass through them. (they are 6.5km away from eye)
+                // idk why mobius didn't add activation controllers for these
+
                 var forestActivation = solarSystemRoot.AddComponent<EyeStateActivationController>();
                 forestActivation._object = eyeSector.gameObject.FindChild("ForestOfGalaxies_Root");
                 forestActivation._activeStates = new EyeState[]

@@ -380,6 +380,7 @@ namespace NewHorizons.Handlers
 
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
+                // Disable any bodies when not at eye, vessel, or vortex.
                 EyeStateActivationController eyeStateActivation = SearchUtilities.Find("SolarSystemRoot").AddComponent<EyeStateActivationController>();
                 eyeStateActivation._object = go;
                 eyeStateActivation._activeStates = new EyeState[3]
