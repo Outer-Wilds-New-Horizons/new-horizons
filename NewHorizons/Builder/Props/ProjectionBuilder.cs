@@ -79,8 +79,18 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            if (info.isRelativeToParent)
+            {
+                slideReelObj.transform.localPosition = pos;
+                slideReelObj.transform.localRotation = rot;
+            }
+            else
+            {
+                slideReelObj.transform.position = planetGO.transform.TransformPoint(pos);
+                slideReelObj.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -184,8 +194,18 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            if (info.isRelativeToParent)
+            {
+                autoProjector.transform.localPosition = pos;
+                autoProjector.transform.localRotation = rot;
+            }
+            else
+            {
+                autoProjector.transform.position = planetGO.transform.TransformPoint(pos);
+                autoProjector.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -226,22 +246,12 @@ namespace NewHorizons.Builder.Props
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent,
                 scale = 2
             };
             var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    g.transform.SetParent(newParent, true);
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
 
             if (g == null)
             {
@@ -292,22 +302,11 @@ namespace NewHorizons.Builder.Props
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
-                rotation = info.rotation
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent
             };
             var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    standingTorch.transform.SetParent(newParent, true);
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
 
             if (standingTorch == null)
             {

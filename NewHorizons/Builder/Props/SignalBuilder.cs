@@ -154,7 +154,9 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) signalGO.transform.localPosition = pos;
+            else signalGO.transform.position = planetGO.transform.TransformPoint(pos);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();

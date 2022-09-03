@@ -159,6 +159,22 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            if (detail.isRelativeToParent)
+            {
+                prop.transform.localPosition = detail.position == null ? Vector3.zero : detail.position;
+                if (detail.alignToNormal)
+                {
+                    // Apply the rotation after aligning it with normal
+                    var up = prop.transform.parent.InverseTransformPoint(prop.transform.position).normalized;
+                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                    prop.transform.rotation *= rot;
+                }
+                else
+                {
+                    prop.transform.localRotation = rot;
+                }
+            }
+
             return prop;
         }
 
