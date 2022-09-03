@@ -12,6 +12,9 @@ namespace NewHorizons.Builder.Body
     {
         public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
+            var shockLayerGD = SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD");
+            if (shockLayerGD == null) return null;
+
             var vanillaController = planetGO.GetComponentInChildren<SupernovaPlanetEffectController>();
             if (vanillaController != null)
             {
@@ -48,7 +51,6 @@ namespace NewHorizons.Builder.Body
                 supernovaEffectController._fog = fog;
                 supernovaEffectController._fogImpostor = fogImpostor;
 
-                var shockLayerGD = SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD");
                 var shockLayer = new GameObject("ShockLayer");
                 shockLayer.transform.SetParent(sector?.transform ?? planetGO.transform, false);
                 shockLayer.AddComponent<MeshFilter>().sharedMesh = shockLayerGD.GetComponent<MeshFilter>().sharedMesh;
