@@ -301,9 +301,10 @@ namespace NewHorizons
                 var eyeOfTheUniverse = SearchUtilities.Find("EyeOfTheUniverse_Body");
                 var eyeSector = eyeOfTheUniverse.FindChild("Sector_EyeOfTheUniverse").GetComponent<Sector>();
                 var eyeAO = eyeOfTheUniverse.AddComponent<EyeAstroObject>();
-                eyeAO._owRigidbody = eyeOfTheUniverse.GetAttachedOWRigidbody();
+                var eyeBody = eyeOfTheUniverse.GetAttachedOWRigidbody();
                 var eyeSphere = eyeSector.GetComponent<SphereShape>();
                 eyeSphere.SetLayer(Shape.Layer.Sector);
+                eyeAO._owRigidbody = eyeBody;
                 eyeAO._rootSector = eyeSector;
                 eyeAO._gravityVolume = eyeSector.GetComponentInChildren<GravityVolume>();
                 eyeAO._customName = "Eye Of The Universe";
@@ -314,7 +315,8 @@ namespace NewHorizons
                 var vessel = SearchUtilities.Find("Vessel_Body");
                 var vesselSector = vessel.FindChild("Sector_VesselBridge").GetComponent<Sector>();
                 var vesselAO = vessel.AddComponent<EyeAstroObject>();
-                vesselAO._owRigidbody = vessel.GetAttachedOWRigidbody();
+                var vesselBody = vessel.GetAttachedOWRigidbody();
+                vesselAO._owRigidbody = vesselBody;
                 vesselAO._primaryBody = eyeAO;
                 eyeAO._satellite = vesselAO;
                 vesselAO._rootSector = vesselSector;
