@@ -491,6 +491,8 @@ namespace NewHorizons.Builder.Props
                         }
 
                         trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+                        // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
                         trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
 
                         if (info.rotation != null)
