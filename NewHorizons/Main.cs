@@ -762,6 +762,22 @@ namespace NewHorizons
             if (LoadManager.GetCurrentScene() == OWScene.TitleScreen)
             {
                 _currentStarSystem = newStarSystem;
+
+                var newGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-NewGame")?.GetComponent<SubmitActionLoadScene>();
+                var resumeGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-ResumeGame")?.GetComponent<SubmitActionLoadScene>();
+                if (newStarSystem == "EyeOfTheUniverse")
+                {
+                    PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.LOOP_DURATION_IN_SECONDS);
+                    if (newGame != null) newGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.EYE;
+                    if (resumeGame != null) resumeGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.EYE;
+                }
+                else
+                {
+                    PlayerData.SaveEyeCompletion();
+                    if (newGame != null) newGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
+                    if (resumeGame != null) resumeGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
+                }
+
                 return;
             }
 
