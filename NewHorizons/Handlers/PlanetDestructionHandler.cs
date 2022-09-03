@@ -118,6 +118,7 @@ namespace NewHorizons.Handlers
                     case AstroObject.Name.Sun:
                         var starController = ao.gameObject.GetComponent<StarController>();
                         StarLightController.RemoveStar(starController);
+                        StarLightController.RemoveStarLight(ao.gameObject.FindChild("SunLight").GetComponent<Light>());
                         GameObject.Destroy(starController);
 
                         var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();
