@@ -240,10 +240,14 @@ namespace NewHorizons
         {
             Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
 
-            var isTitleScreen = scene.name == "TitleScreen";
-            var isSolarSystem = scene.name == "SolarSystem";
-            var isEyeOfTheUniverse = scene.name == "EyeOfTheUniverse";
-            if (isEyeOfTheUniverse) _currentStarSystem = scene.name;
+            var isTitleScreen = scene.name == LoadManager.SceneToName(OWScene.TitleScreen);
+            var isSolarSystem = scene.name == LoadManager.SceneToName(OWScene.SolarSystem);
+            var isEyeOfTheUniverse = scene.name == LoadManager.SceneToName(OWScene.EyeOfTheUniverse);
+            var isCreditsFast = scene.name == LoadManager.SceneToName(OWScene.Credits_Fast);
+            var isCreditsFinal = scene.name == LoadManager.SceneToName(OWScene.Credits_Final);
+            var isPostCredits = scene.name == LoadManager.SceneToName(OWScene.PostCreditsScene);
+
+            if (isEyeOfTheUniverse) _currentStarSystem = "EyeOfTheUniverse";
 
             if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
             {
