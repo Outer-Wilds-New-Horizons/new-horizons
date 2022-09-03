@@ -302,6 +302,7 @@ namespace NewHorizons
                 var eyeSector = eyeOfTheUniverse.FindChild("Sector_EyeOfTheUniverse").GetComponent<Sector>();
                 var eyeAO = eyeOfTheUniverse.AddComponent<EyeAstroObject>();
                 var eyeBody = eyeOfTheUniverse.GetAttachedOWRigidbody();
+                var eyeMarker = eyeOfTheUniverse.AddComponent<MapMarker>();
                 var eyeSphere = eyeSector.GetComponent<SphereShape>();
                 eyeSphere.SetLayer(Shape.Layer.Sector);
                 eyeAO._owRigidbody = eyeBody;
@@ -311,11 +312,14 @@ namespace NewHorizons
                 eyeAO._name = AstroObject.Name.Eye;
                 eyeAO._type = AstroObject.Type.None;
                 eyeAO.Register();
+                eyeMarker._markerType = MapMarker.MarkerType.Sun;
+                eyeMarker._labelID = UITextType.LocationEye_Cap;
 
                 var vessel = SearchUtilities.Find("Vessel_Body");
                 var vesselSector = vessel.FindChild("Sector_VesselBridge").GetComponent<Sector>();
                 var vesselAO = vessel.AddComponent<EyeAstroObject>();
                 var vesselBody = vessel.GetAttachedOWRigidbody();
+                var vesselMapMarker = vessel.AddComponent<MapMarker>();
                 vesselAO._owRigidbody = vesselBody;
                 vesselAO._primaryBody = eyeAO;
                 eyeAO._satellite = vesselAO;
@@ -324,6 +328,8 @@ namespace NewHorizons
                 vesselAO._name = AstroObject.Name.CustomString;
                 vesselAO._type = AstroObject.Type.SpaceStation;
                 vesselAO.Register();
+                vesselMapMarker._markerType = MapMarker.MarkerType.Moon;
+                vesselMapMarker._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
 
                 // Resize vessel sector so that the vessel is fully collidable.
                 var vesselSectorTrigger = vesselSector.gameObject.FindChild("SectorTriggerVolume_VesselBridge");
