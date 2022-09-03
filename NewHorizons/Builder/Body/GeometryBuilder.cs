@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                groundGO.transform.localScale *= 2;
+                groundGO.transform.localScale *= 2; // Multiply by 2 to match top layer
             }
             groundGO.SetActive(true);
 

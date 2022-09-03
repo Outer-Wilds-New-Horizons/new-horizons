@@ -295,6 +295,8 @@ namespace NewHorizons
 
             if (isEyeOfTheUniverse)
             {
+                // Create astro objects for eye and vessel because they didn't have them somehow.
+
                 var eyeOfTheUniverse = SearchUtilities.Find("EyeOfTheUniverse_Body");
                 var eyeSector = eyeOfTheUniverse.FindChild("Sector_EyeOfTheUniverse").GetComponent<Sector>();
                 var eyeAO = eyeOfTheUniverse.AddComponent<EyeAstroObject>();
@@ -320,12 +322,14 @@ namespace NewHorizons
 
                 eyeSector.GetComponent<SphereShape>().SetLayer(Shape.Layer.Sector);
 
+                // Resize vessel sector so that the vessel is fully collidable.
                 var vesselSectorTrigger = vesselSector.gameObject.FindChild("SectorTriggerVolume_VesselBridge");
                 vesselSectorTrigger.transform.localPosition = new Vector3(0, 0, -207.375f);
                 var vesselSectorTriggerBox = vesselSectorTrigger.GetComponent<BoxShape>();
                 vesselSectorTriggerBox.size = new Vector3(600, 600, 600);
                 vesselSectorTriggerBox.SetLayer(Shape.Layer.Sector);
 
+                // Why were the vessel's lights inside the eye? Let's move them from the eye to vessel.
                 var vesselPointlight = eyeSector.gameObject.FindChild("Pointlight_NOM_Vessel");
                 vesselPointlight.transform.SetParent(vesselSector.transform, true);
                 var vesselSpotlight = eyeSector.gameObject.FindChild("Spotlight_NOM_Vessel");
@@ -333,6 +337,7 @@ namespace NewHorizons
                 var vesselAmbientLight = eyeSector.gameObject.FindChild("AmbientLight_Vessel");
                 vesselAmbientLight.transform.SetParent(vesselSector.transform, true);
 
+                // Add sector streaming to vessel just in case some one moves the vessel.
                 var vesselStreaming = new GameObject("Sector_Streaming");
                 vesselStreaming.transform.SetParent(vesselSector.transform, false);
                 var vessel_ss = vesselStreaming.AddComponent<SectorStreaming>();
@@ -481,6 +486,7 @@ namespace NewHorizons
                 }
                 else if (isEyeOfTheUniverse)
                 {
+                    // There is no wake up in eye scene
                     Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
                     {
                         IsSystemReady = true;
@@ -768,7 +774,7 @@ namespace NewHorizons
             }
             else
             {
-                PlayerData.SaveEyeCompletion();
+                PlayerData.SaveEyeCompletion(); // So that the title screen doesn't keep warping you back to eye
 
                 if (SystemDict[_currentStarSystem].Config.enableTimeLoop) SecondsElapsedInLoop = TimeLoop.GetSecondsElapsed();
                 else SecondsElapsedInLoop = -1;

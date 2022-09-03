@@ -15,6 +15,7 @@ namespace NewHorizons.Patches
 
         private static void SwitchToDefaultIfAtEyeGoingToSS(OWScene scene)
         {
+            // Switch to default just in case another mod warps back.
             if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" && scene == OWScene.SolarSystem) Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
         }
 
@@ -30,6 +31,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(SubmitActionLoadScene), nameof(SubmitActionLoadScene.ConfirmSubmit))]
         public static void SubmitActionLoadScene_ConfirmSubmit(SubmitActionLoadScene __instance)
         {
+            // Title screen can warp you to eye and cause problems.
             if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.EYE) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
         }
 
