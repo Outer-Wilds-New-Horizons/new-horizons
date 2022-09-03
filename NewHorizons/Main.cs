@@ -293,6 +293,7 @@ namespace NewHorizons
                 }
             }
 
+            // EOTU fixes
             if (isEyeOfTheUniverse)
             {
                 // Create astro objects for eye and vessel because they didn't have them somehow.
@@ -301,6 +302,8 @@ namespace NewHorizons
                 var eyeSector = eyeOfTheUniverse.FindChild("Sector_EyeOfTheUniverse").GetComponent<Sector>();
                 var eyeAO = eyeOfTheUniverse.AddComponent<EyeAstroObject>();
                 eyeAO._owRigidbody = eyeOfTheUniverse.GetAttachedOWRigidbody();
+                var eyeSphere = eyeSector.GetComponent<SphereShape>();
+                eyeSphere.SetLayer(Shape.Layer.Sector);
                 eyeAO._rootSector = eyeSector;
                 eyeAO._gravityVolume = eyeSector.GetComponentInChildren<GravityVolume>();
                 eyeAO._customName = "Eye Of The Universe";
@@ -319,8 +322,6 @@ namespace NewHorizons
                 vesselAO._name = AstroObject.Name.CustomString;
                 vesselAO._type = AstroObject.Type.SpaceStation;
                 vesselAO.Register();
-
-                eyeSector.GetComponent<SphereShape>().SetLayer(Shape.Layer.Sector);
 
                 // Resize vessel sector so that the vessel is fully collidable.
                 var vesselSectorTrigger = vesselSector.gameObject.FindChild("SectorTriggerVolume_VesselBridge");
