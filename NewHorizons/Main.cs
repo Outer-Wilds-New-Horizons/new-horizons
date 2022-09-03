@@ -314,6 +314,7 @@ namespace NewHorizons
                 eyeAO.Register();
                 eyeMarker._markerType = MapMarker.MarkerType.Sun;
                 eyeMarker._labelID = UITextType.LocationEye_Cap;
+                Builder.General.RFVolumeBuilder.Make(eyeOfTheUniverse, eyeBody, 400, new External.Modules.ReferenceFrameModule());
 
                 var vessel = SearchUtilities.Find("Vessel_Body");
                 var vesselSector = vessel.FindChild("Sector_VesselBridge").GetComponent<Sector>();
@@ -330,6 +331,7 @@ namespace NewHorizons
                 vesselAO.Register();
                 vesselMapMarker._markerType = MapMarker.MarkerType.Moon;
                 vesselMapMarker._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
+                Builder.General.RFVolumeBuilder.Make(vessel, vesselBody, 600, new External.Modules.ReferenceFrameModule { localPosition = new MVector3(0, 0, -207.375f) });
 
                 // Resize vessel sector so that the vessel is fully collidable.
                 var vesselSectorTrigger = vesselSector.gameObject.FindChild("SectorTriggerVolume_VesselBridge");
