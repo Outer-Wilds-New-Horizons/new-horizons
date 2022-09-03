@@ -73,6 +73,7 @@ namespace NewHorizons.Builder.Atmosphere
             fogGO.transform.localScale = Vector3.one * atmo.fogSize;
 
             var fog = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?.FindChild("Atmosphere_TH/FogSphere");
+            if (fog == null) return null;
 
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
             MF.mesh = fog.GetComponent<MeshFilter>().mesh;
