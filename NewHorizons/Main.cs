@@ -238,7 +238,7 @@ namespace NewHorizons
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.LogVerbose($"Scene Loaded: {scene.name} {mode}");
+            Logger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
 
             var isTitleScreen = scene.name == LoadManager.SceneToName(OWScene.TitleScreen);
             var isSolarSystem = scene.name == LoadManager.SceneToName(OWScene.SolarSystem);
