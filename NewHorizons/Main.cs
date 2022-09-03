@@ -818,7 +818,7 @@ namespace NewHorizons
             // Freeze player inputs
             OWInput.ChangeInputMode(InputMode.None);
 
-            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, 0.1f, true);
+            LoadManager.LoadSceneAsync(sceneToLoad, !vessel, LoadManager.FadeType.ToBlack, vessel ? 1 : 0.1f, true);
         }
 
         void OnDeath(DeathType _)
