@@ -41,7 +41,22 @@ namespace NewHorizons.Builder.ShipLog
             GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
             revealTriggerVolume.SetActive(false);
             revealTriggerVolume.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    go.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
+
             return revealTriggerVolume;
         }
 

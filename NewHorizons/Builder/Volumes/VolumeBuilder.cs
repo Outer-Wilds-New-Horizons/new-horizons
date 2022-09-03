@@ -1,6 +1,7 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
@@ -12,6 +13,20 @@ namespace NewHorizons.Builder.Volumes
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    go.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
