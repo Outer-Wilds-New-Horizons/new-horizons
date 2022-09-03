@@ -121,7 +121,7 @@ namespace NewHorizons.Utility
             if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
             // 3: find resource to include inactive objects (but skip prefabs
             go = Resources.FindObjectsOfTypeAll<GameObject>()
-                .FirstOrDefault(x.name == name && x => x.scene.name != null);
+                .FirstOrDefault(x => x.name == name && x.scene.name != null);
             if (go)
             {
                 CachedGameObjects.Add(path, go);
