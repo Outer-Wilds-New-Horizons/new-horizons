@@ -21,7 +21,6 @@ namespace NewHorizons.Builder.Atmosphere
             SCG._waitForStreaming = false;
 
             var minHeight = surfaceSize;
-            var maxHeight = config.Atmosphere.size;
             if (config.HeightMap?.minHeight != null)
             {
                 if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
@@ -29,6 +28,9 @@ namespace NewHorizons.Builder.Atmosphere
             }
             else if (config.Water?.size != null) minHeight = config.Water.size;
             else if (config.Lava?.size != null) minHeight = config.Lava.size;
+
+            var maxHeight = config.Atmosphere.size;
+            if (config.Atmosphere.clouds?.outerCloudRadius != null) maxHeight = config.Atmosphere.clouds.outerCloudRadius;
 
             if (config.Atmosphere.hasRain)
             {
