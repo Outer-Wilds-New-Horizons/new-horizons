@@ -16,7 +16,12 @@ namespace NewHorizons.Patches
         private static void SwitchToDefaultIfAtEyeGoingToSS(OWScene scene)
         {
             // Switch to default just in case another mod warps back.
-            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" && scene == OWScene.SolarSystem) Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
+            if (scene == OWScene.SolarSystem)
+            {
+                PlayerData.SaveEyeCompletion();
+
+                if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
+            }
         }
 
         [HarmonyPrefix]
