@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class VolumeBuilder
     {
-        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : MonoBehaviour
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : MonoBehaviour //Could be BaseVolume but I need to create vanilla volumes too.
         {
             var go = new GameObject(typeof(TVolume).Name);
             go.SetActive(false);
