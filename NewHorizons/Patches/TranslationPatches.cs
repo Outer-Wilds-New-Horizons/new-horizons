@@ -14,7 +14,13 @@ namespace NewHorizons.Patches
         {
             var ao = __instance.GetAstroObject();
 
-            if (ao == null || ao._name != AstroObject.Name.CustomString) return true;
+            if (ao == null) return true;
+
+            if (ao._name != AstroObject.Name.CustomString)
+            {
+                __result = AstroObject.AstroObjectNameToString(ao._name);
+                return false;
+            }
 
             __result = string.Empty;
 
