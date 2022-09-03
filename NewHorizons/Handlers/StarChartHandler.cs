@@ -19,8 +19,9 @@ namespace NewHorizons.Handlers
             _systems = systems;
 
             var shipLogRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
+            var reticleImage = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/");
 
-            if (shipLogRoot != null)
+            if (shipLogRoot != null && reticleImage != null)
             {
                 var starChartLog = new GameObject("StarChartMode");
                 starChartLog.SetActive(false);
@@ -31,7 +32,7 @@ namespace NewHorizons.Handlers
 
                 ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-                var reticleImage = GameObject.Instantiate(SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"), starChartLog.transform);
+                GameObject.Instantiate(reticleImage, starChartLog.transform);
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;
