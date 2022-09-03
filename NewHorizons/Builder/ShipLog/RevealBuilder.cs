@@ -47,7 +47,7 @@ namespace NewHorizons.Builder.ShipLog
                 var newParent = planetGO.transform.Find(info.parentPath);
                 if (newParent != null)
                 {
-                    go.transform.parent = newParent;
+                    revealTriggerVolume.transform.parent = newParent;
                 }
                 else
                 {
