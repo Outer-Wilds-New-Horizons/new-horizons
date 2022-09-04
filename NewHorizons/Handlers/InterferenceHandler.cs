@@ -6,58 +6,69 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.Handlers
 {
+    using InterferenceVolume = NewHorizons.Components.InterferenceVolume;
+
     public static class InterferenceHandler
     {
-        private static List<string> _playerInterference;
-        private static List<string> _probeInterference;
-        private static List<string> _shipInterference;
+        private static List<InterferenceVolume> _playerInterference;
+        private static List<InterferenceVolume> _probeInterference;
+        private static List<InterferenceVolume> _shipInterference;
 
         public static void Init()
         {
-            _playerInterference = new List<string>();
-            _probeInterference = new List<string>();
-            _shipInterference = new List<string>();
+            _playerInterference = new List<InterferenceVolume>();
+            _probeInterference = new List<InterferenceVolume>();
+            _shipInterference = new List<InterferenceVolume>();
         }
 
-        public static bool PlayerHasInterference() => _playerInterference.Any();
-        public static bool ProbeHasInterference() => _probeInterference.Any();
-        public static bool ShipHasInterference() => _shipInterference.Any();
+        public static bool PlayerHasInterference() => _playerInterference.Any(volume => volume != null);
+        public static bool ProbeHasInterference() => _probeInterference.Any(volume => volume != null);
+        public static bool ShipHasInterference() => _shipInterference.Any(volume => volume != null);
 
-        public static bool IsPlayerSameAsProbe() => _playerInterference.All(_probeInterference.Contains) && _playerInterference.Count == _probeInterference.Count;
-        public static bool IsPlayerSameAsShip() => _playerInterference.All(_shipInterference.Contains) && _playerInterference.Count == _shipInterference.Count;
-
-        public static void OnPlayerEnterInterferenceVolume(string id)
+        public static bool IsPlayerSameAsProbe()
         {
-            _playerInterference.SafeAdd(id);
+            _playerInterference.RemoveAll(volume => volume == null);
+            return _playerInterference.All(_probeInterference.Contains) && _playerInterference.Count == _probeInterference.Count;
+        }
+
+        public static bool IsPlayerSameAsShip()
+        {
+            _playerInterference.RemoveAll(volume => volume == null);
+            return _playerInterference.All(_shipInterference.Contains) && _playerInterference.Count == _shipInterference.Count;
+        }
+
+        public static void OnPlayerEnterInterferenceVolume(InterferenceVolume interferenceVolume)
+        {
+            _playerInterference.SafeAdd(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
 
-        public static void OnPlayerExitInterferenceVolume(string id)
+        public static void OnPlayerExitInterferenceVolume(InterferenceVolume interferenceVolume)
         {
-            _playerInterference.Remove(id);
+            _playerInterference.Remove(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
 
-        public static void OnProbeEnterInterferenceVolume(string id)
+        public static void OnProbeEnterInterferenceVolume(InterferenceVolume interferenceVolume)
         {
-            _probeInterference.SafeAdd(id);
+            _probeInterference.SafeAdd(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
 
-        public static void OnProbeExitInterferenceVolume(string id)
+        public static void OnProbeExitInterferenceVolume(InterferenceVolume interferenceVolume)
         {
-            _probeInterference.Remove(id);
+            _probeInterference.Remove(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
 
-        public static void OnShipEnterInterferenceVolume(string id)
+        public static void OnShipEnterInterferenceVolume(InterferenceVolume interferenceVolume)
         {
-            _shipInterference.SafeAdd(id);
+            _shipInterference.SafeAdd(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
-        public static void OnShipExitInterferenceVolume(string id)
+        public static void OnShipExitInterferenceVolume(InterferenceVolume interferenceVolume)
         {
-            _shipInterference.Remove(id);
+            _shipInterference.Remove(interferenceVolume);
             GlobalMessenger.FireEvent("RefreshHUDVisibility");
         }
     }

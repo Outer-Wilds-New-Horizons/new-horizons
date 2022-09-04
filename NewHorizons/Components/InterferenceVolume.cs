@@ -10,21 +10,19 @@ namespace NewHorizons.Components
 {
     public class InterferenceVolume : BaseVolume
     {
-        private string _id = Guid.NewGuid().ToString();
-
         public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
             if (hitObj.CompareTag("PlayerDetector"))
             {
-                InterferenceHandler.OnPlayerEnterInterferenceVolume(_id);
+                OnPlayerEnter();
             }
             else if (hitObj.CompareTag("ProbeDetector"))
             {
-                InterferenceHandler.OnProbeEnterInterferenceVolume(_id);
+                OnProbeEnter();
             }
             else if (hitObj.CompareTag("ShipDetector"))
             {
-                InterferenceHandler.OnShipEnterInterferenceVolume(_id);
+                OnShipEnter();
             }
         }
 
@@ -32,25 +30,25 @@ namespace NewHorizons.Components
         {
             if (hitObj.CompareTag("PlayerDetector"))
             {
-                InterferenceHandler.OnPlayerExitInterferenceVolume(_id);
+                OnPlayerExit();
             }
             else if (hitObj.CompareTag("ProbeDetector"))
             {
-                InterferenceHandler.OnProbeExitInterferenceVolume(_id);
+                OnProbeExit();
             }
             else if (hitObj.CompareTag("ShipDetector"))
             {
-                InterferenceHandler.OnShipExitInterferenceVolume(_id);
+                OnShipExit();
             }
         }
 
-        public void OnPlayerEnter() => InterferenceHandler.OnPlayerEnterInterferenceVolume(_id);
-        public void OnPlayerExit() => InterferenceHandler.OnPlayerExitInterferenceVolume(_id);
+        public void OnPlayerEnter() => InterferenceHandler.OnPlayerEnterInterferenceVolume(this);
+        public void OnPlayerExit() => InterferenceHandler.OnPlayerExitInterferenceVolume(this);
 
-        public void OnProbeEnter() => InterferenceHandler.OnProbeEnterInterferenceVolume(_id);
-        public void OnProbeExit() => InterferenceHandler.OnProbeExitInterferenceVolume(_id);
+        public void OnProbeEnter() => InterferenceHandler.OnProbeEnterInterferenceVolume(this);
+        public void OnProbeExit() => InterferenceHandler.OnProbeExitInterferenceVolume(this);
 
-        public void OnShipEnter() => InterferenceHandler.OnShipEnterInterferenceVolume(_id);
-        public void OnShipExit() => InterferenceHandler.OnShipExitInterferenceVolume(_id);
+        public void OnShipEnter() => InterferenceHandler.OnShipEnterInterferenceVolume(this);
+        public void OnShipExit() => InterferenceHandler.OnShipExitInterferenceVolume(this);
     }
 }
