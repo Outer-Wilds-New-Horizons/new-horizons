@@ -13,24 +13,26 @@ namespace NewHorizons.Patches
             return Main.Instance.CurrentStarSystem != "EyeOfTheUniverse" || deathType == DeathType.BigBang;
         }
 
-        private static void SwitchToDefaultIfAtEyeGoingToSS(OWScene scene)
+        private static void OnLoadScene(OWScene scene)
         {
-            // Switch to default just in case another mod warps back.
             if (scene == OWScene.SolarSystem)
             {
                 PlayerData.SaveEyeCompletion();
 
+                // Switch to default just in case another mod warps back.
                 if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") Main.Instance._currentStarSystem = Main.Instance.DefaultStarSystem;
             }
+            // Switch to eye just in case another mod warps there.
+            else if (scene == OWScene.EyeOfTheUniverse) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(LoadManager), nameof(LoadManager.LoadSceneImmediate))]
-        public static void LoadManager_LoadSceneImmediate(OWScene scene) => SwitchToDefaultIfAtEyeGoingToSS(scene);
+        public static void LoadManager_LoadSceneImmediate(OWScene scene) => OnLoadScene(scene);
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(LoadManager), nameof(LoadManager.StartAsyncSceneLoad))]
-        public static void LoadManager_StartAsyncSceneLoad(OWScene scene) => SwitchToDefaultIfAtEyeGoingToSS(scene);
+        public static void LoadManager_StartAsyncSceneLoad(OWScene scene) => OnLoadScene(scene);
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SubmitActionLoadScene), nameof(SubmitActionLoadScene.ConfirmSubmit))]
