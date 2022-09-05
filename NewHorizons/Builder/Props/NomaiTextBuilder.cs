@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
 
-            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign");
+            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive();
             _trailmarkerPrefab.name = "Prefab_NOM_Trailmarker";
             _trailmarkerPrefab.transform.rotation = Quaternion.identity;
         }
@@ -491,6 +491,9 @@ namespace NewHorizons.Builder.Props
                         }
 
                         trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+                        // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
+                        trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
 
                         if (info.rotation != null)
                         {

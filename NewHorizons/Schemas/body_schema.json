@@ -400,12 +400,14 @@
       "x-enumNames": [
         "GiantsDeep",
         "QuantumMoon",
-        "Basic"
+        "Basic",
+        "Transparent"
       ],
       "enum": [
         "giantsDeep",
         "quantumMoon",
-        "basic"
+        "basic",
+        "transparent"
       ]
     },
     "FluidType": {
