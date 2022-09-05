@@ -1,16 +1,19 @@
 using HarmonyLib;
-using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.OtherMods.MenuFramework;
+using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.OtherMods.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -22,9 +25,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.OtherMods.OWRichPresence;
-using NewHorizons.Components.SizeControllers;
-using NewHorizons.OtherMods.MenuFramework;
 
 namespace NewHorizons
 {
@@ -96,9 +96,9 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            if (VerboseLogs)          Logger.UpdateLogLevel(Logger.LogType.Verbose);
-            else if (Debug)           Logger.UpdateLogLevel(Logger.LogType.Log);
-            else                      Logger.UpdateLogLevel(Logger.LogType.Error);
+            if (VerboseLogs) Logger.UpdateLogLevel(Logger.LogType.Verbose);
+            else if (Debug) Logger.UpdateLogLevel(Logger.LogType.Log);
+            else Logger.UpdateLogLevel(Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
@@ -175,11 +175,6 @@ namespace NewHorizons
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
-            // Has to go before popups
-            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
-
-            MenuHandler.Init();
-
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
             OnPlanetLoaded = new StarSystemEvent();
@@ -210,12 +205,14 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
+            MenuHandler.Init();
             AchievementHandler.Init();
             VoiceHandler.Init();
             RichPresenceHandler.Init();
             OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
+            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
@@ -419,7 +416,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = Main.FurthestOrbit * (4f/3f);
+                ssrLight.range = Main.FurthestOrbit * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
@@ -510,7 +507,7 @@ namespace NewHorizons
                         if (starSystemConfig.startHere)
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem") 
+                            if (name != "SolarSystem")
                             {
                                 SetDefaultSystem(name);
                                 _currentStarSystem = name;
@@ -547,19 +544,16 @@ namespace NewHorizons
                         }
                     }
                 }
-                if (Directory.Exists(folder + @"translations\"))
-                {
-                    LoadTranslations(folder, mod);
-                }
-                // Has to go before translations for achievements but after regular ones (for popups)
+                // Has to go before translations for achievements
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
                     LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
-                    LoadAchievementTranslations(mod);
+                    LoadTranslations(folder, mod);
                 }
+
             }
             catch (Exception ex)
             {
@@ -596,17 +590,14 @@ namespace NewHorizons
                     foundFile = true;
 
                     TranslationHandler.RegisterTranslation(language, config);
+
+                    if (AchievementHandler.Enabled)
+                    {
+                        AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
+                    }
                 }
             }
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
-        }
-
-        private void LoadAchievementTranslations(IModBehaviour mod)
-        {
-            if (AchievementHandler.Enabled)
-            {
-                AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
-            }
         }
 
         public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativePath)
