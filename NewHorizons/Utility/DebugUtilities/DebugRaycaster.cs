@@ -1,4 +1,4 @@
-using NewHorizons.Components.Orbital;
+using NewHorizons.Handlers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -17,15 +17,25 @@ namespace NewHorizons.Utility.DebugUtilities
         private GameObject _planeDownRightSphere;
         private GameObject _planeDownLeftSphere;
 
+        private ScreenPrompt _raycastPrompt;
 
         private void Awake()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
+
+            _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
+
+            Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
         }
         
+        private void OnDestroy()
+        {
+            Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+        }
 
         private void Update()
         {
+            UpdatePromptVisibility();
             if (!Main.Debug) return;
             if (Keyboard.current == null) return;
 
@@ -35,7 +45,12 @@ namespace NewHorizons.Utility.DebugUtilities
             }
         }
 
-       
+
+        public void UpdatePromptVisibility()
+        {
+            _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+        }
+
 
         internal void PrintRaycast()
         {
