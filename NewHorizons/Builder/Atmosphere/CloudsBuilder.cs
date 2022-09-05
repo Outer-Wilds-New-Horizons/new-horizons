@@ -253,7 +253,8 @@ namespace NewHorizons.Builder.Atmosphere
 
             MeshRenderer renderer = cloudsTransparentGO.AddComponent<MeshRenderer>();
             if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
-            var material = _transparentCloud;
+            var material = new Material(_transparentCloud);
+            material.name = "TransparentClouds_" + image.name;
             material.SetTexture(MainTex, image);
             renderer.sharedMaterial = material;
 
