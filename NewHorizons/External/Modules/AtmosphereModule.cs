@@ -30,6 +30,8 @@ namespace NewHorizons.External.Modules
         [EnumMember(Value = @"quantumMoon")] QuantumMoon = 1,
 
         [EnumMember(Value = @"basic")] Basic = 2,
+
+        [EnumMember(Value = @"transparent")] Transparent = 3,
     }
 
     [JsonObject]

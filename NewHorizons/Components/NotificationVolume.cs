@@ -7,28 +7,12 @@ using UnityEngine;
 
 namespace NewHorizons.Components
 {
-    [RequireComponent(typeof(OWTriggerVolume))]
-    public class NotificationVolume : MonoBehaviour
+    public class NotificationVolume : BaseVolume
     {
         private NotificationTarget _target = NotificationTarget.All;
         private bool _pin = false;
-        private OWTriggerVolume _triggerVolume;
         private NotificationData _entryNotification;
         private NotificationData _exitNotification;
-
-        public void Awake()
-        {
-            _triggerVolume = this.GetRequiredComponent<OWTriggerVolume>();
-            _triggerVolume.OnEntry += OnTriggerVolumeEntry;
-            _triggerVolume.OnExit += OnTriggerVolumeExit;
-        }
-
-        public void OnDestroy()
-        {
-            if (_triggerVolume == null) return;
-            _triggerVolume.OnEntry -= OnTriggerVolumeEntry;
-            _triggerVolume.OnExit -= OnTriggerVolumeExit;
-        }
 
         public void SetPinned(bool pin) => _pin = pin;
 
@@ -46,7 +30,7 @@ namespace NewHorizons.Components
             _exitNotification = new NotificationData(_target, TranslationHandler.GetTranslation(displayMessage, TranslationHandler.TextType.UI), duration);
         }
 
-        public void OnTriggerVolumeEntry(GameObject hitObj)
+        public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
             if (_target == NotificationTarget.All)
             {
@@ -71,7 +55,7 @@ namespace NewHorizons.Components
             }
         }
 
-        public void OnTriggerVolumeExit(GameObject hitObj)
+        public override void OnTriggerVolumeExit(GameObject hitObj)
         {
             if (_target == NotificationTarget.All)
             {
