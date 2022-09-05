@@ -24,6 +24,7 @@ using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.OtherMods.MenuFramework;
 
 namespace NewHorizons
 {
@@ -164,10 +165,20 @@ namespace NewHorizons
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
         }
 
+        public void Awake()
+        {
+            Instance = this;
+        }
+
         public void Start()
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+
+            // Has to go before popups
+            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
+
+            MenuHandler.Init();
 
             OnChangeStarSystem = new StarSystemEvent();
             OnStarSystemLoaded = new StarSystemEvent();
@@ -176,7 +187,6 @@ namespace NewHorizons
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
-            Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
@@ -309,9 +319,6 @@ namespace NewHorizons
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
                 StarEvolutionController.Init();
-
-                // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
 
                 if (isSolarSystem)
                 {
@@ -539,16 +546,19 @@ namespace NewHorizons
                         }
                     }
                 }
-                // Has to go before translations for achievements
+                if (Directory.Exists(folder + @"translations\"))
+                {
+                    LoadTranslations(folder, mod);
+                }
+                // Has to go before translations for achievements but after regular ones (for popups)
                 if (File.Exists(folder + "addon-manifest.json"))
                 {
                     LoadAddonManifest("addon-manifest.json", mod);
                 }
                 if (Directory.Exists(folder + @"translations\"))
                 {
-                    LoadTranslations(folder, mod);
+                    LoadAchievementTranslations(mod);
                 }
-
             }
             catch (Exception ex)
             {
@@ -564,6 +574,7 @@ namespace NewHorizons
 
             if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
             if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
+            if (!string.IsNullOrEmpty(addonConfig.popupMessage)) MenuHandler.RegisterOneTimePopup(mod, addonConfig.popupMessage);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -584,14 +595,17 @@ namespace NewHorizons
                     foundFile = true;
 
                     TranslationHandler.RegisterTranslation(language, config);
-
-                    if (AchievementHandler.Enabled)
-                    {
-                        AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
-                    }
                 }
             }
             if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
+        }
+
+        private void LoadAchievementTranslations(IModBehaviour mod)
+        {
+            if (AchievementHandler.Enabled)
+            {
+                AchievementHandler.RegisterTranslationsFromFiles(mod as ModBehaviour, "translations");
+            }
         }
 
         public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativePath)

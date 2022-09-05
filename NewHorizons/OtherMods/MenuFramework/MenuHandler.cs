@@ -1,0 +1,60 @@
+using NewHorizons.External;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using OWML.Common;
+using System.Collections.Generic;
+using System.Net.Mail;
+using UnityEngine;
+using static UnityEngine.InputSystem.InputRemoting;
+using Logger = NewHorizons.Utility.Logger;
+
+namespace NewHorizons.OtherMods.MenuFramework
+{
+    public static class MenuHandler
+    {
+        private static IMenuAPI _menuApi;
+
+        private static List<(IModBehaviour mod, string message)> _registeredPopups;
+
+        public static void Init()
+        {
+            _menuApi = Main.Instance.ModHelper.Interaction.TryGetModApi<IMenuAPI>("_nebula.MenuFramework");
+
+            TextTranslation.Get().OnLanguageChanged += OnLanguageChanged;
+
+            _registeredPopups = new();
+        }
+
+        public static void OnLanguageChanged()
+        {
+            // Have to load save data before doing popups
+            NewHorizonsData.Load();
+
+            if (!VersionUtility.CheckUpToDate())
+            {
+                var warning = string.Format(TranslationHandler.GetTranslation("OUTDATED_VERSION_WARNING", TranslationHandler.TextType.UI),
+                    VersionUtility.RequiredVersionString,
+                    Application.version);
+
+                Logger.LogError(warning);
+                _menuApi.RegisterStartupPopup(warning);
+            }
+
+            foreach(var (mod, message) in _registeredPopups)
+            {
+                if (!NewHorizonsData.HasReadOneTimePopup(mod.ModHelper.Manifest.UniqueName))
+                {
+                    _menuApi.RegisterStartupPopup(TranslationHandler.GetTranslation(message, TranslationHandler.TextType.UI));
+                    NewHorizonsData.ReadOneTimePopup(mod.ModHelper.Manifest.UniqueName);
+                }
+            }
+
+            _registeredPopups.Clear();
+
+            // Just wanted to do this when the language is loaded in initially
+            TextTranslation.Get().OnLanguageChanged -= OnLanguageChanged;
+        }
+
+        public static void RegisterOneTimePopup(IModBehaviour mod, string message) => _registeredPopups.Add((mod, message));
+    }
+}
