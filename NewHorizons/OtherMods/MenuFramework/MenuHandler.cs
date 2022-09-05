@@ -3,6 +3,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Mail;
 using UnityEngine;
 using static UnityEngine.InputSystem.InputRemoting;
@@ -14,15 +15,14 @@ namespace NewHorizons.OtherMods.MenuFramework
     {
         private static IMenuAPI _menuApi;
 
-        private static List<(IModBehaviour mod, string message)> _registeredPopups;
+        private static List<(IModBehaviour mod, string message)> _registeredPopups = new();
+        private static List<string> _failedFiles = new();
 
         public static void Init()
         {
             _menuApi = Main.Instance.ModHelper.Interaction.TryGetModApi<IMenuAPI>("_nebula.MenuFramework");
 
             TextTranslation.Get().OnLanguageChanged += OnLanguageChanged;
-
-            _registeredPopups = new();
         }
 
         public static void OnLanguageChanged()
@@ -49,11 +49,22 @@ namespace NewHorizons.OtherMods.MenuFramework
                 }
             }
 
+            if (_failedFiles.Count > 0)
+            {
+                var message = TranslationHandler.GetTranslation("JSON_FAILED_TO_LOAD", TranslationHandler.TextType.UI);
+                var mods = string.Join(",", _failedFiles.Take(10));
+                if (_failedFiles.Count > 10) mods += "...";
+                _menuApi.RegisterStartupPopup(string.Format(message, mods));
+            }
+
             _registeredPopups.Clear();
+            _failedFiles.Clear();
 
             // Just wanted to do this when the language is loaded in initially
             TextTranslation.Get().OnLanguageChanged -= OnLanguageChanged;
         }
+
+        public static void RegisterFailedConfig(string filename) => _failedFiles.Add(filename);
 
         public static void RegisterOneTimePopup(IModBehaviour mod, string message) => _registeredPopups.Add((mod, message));
     }

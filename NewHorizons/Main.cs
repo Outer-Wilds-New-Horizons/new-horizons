@@ -609,6 +609,7 @@ namespace NewHorizons
                 if (config == null)
                 {
                     Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
+                    MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
                     return null;
                 }
 
@@ -640,6 +641,7 @@ namespace NewHorizons
             catch (Exception e)
             {
                 Logger.LogError($"Error encounter when loading {relativePath}:\n{e}");
+                MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
             }
 
             return body;
