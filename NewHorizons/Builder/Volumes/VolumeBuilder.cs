@@ -1,21 +1,15 @@
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
-using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
-    public static class AudioVolumeBuilder
+    public static class VolumeBuilder
     {
-        public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : MonoBehaviour //Could be BaseVolume but I need to create vanilla volumes too.
         {
-            var go = new GameObject("AudioVolume");
+            var go = new GameObject(typeof(TVolume).Name);
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
@@ -34,28 +28,19 @@ namespace NewHorizons.Builder.Volumes
             }
 
             go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
-            go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
-
-            var audioSource = go.AddComponent<AudioSource>();
-
-            var owAudioSource = go.AddComponent<OWAudioSource>();
-            owAudioSource._audioSource = audioSource;
-            owAudioSource.loop = info.loop;
-            owAudioSource.SetTrack((OWAudioMixer.TrackName)Enum.Parse(typeof(OWAudioMixer.TrackName), Enum.GetName(typeof(AudioMixerTrackName), info.track)));
-            AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
-
-            var audioVolume = go.AddComponent<AudioVolume>();
+            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;
 
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
-            audioVolume._triggerVolumeOverride = owTriggerVolume;
+
+            var volume = go.AddComponent<TVolume>();
 
             go.SetActive(true);
 
-            return audioVolume;
+            return volume;
         }
     }
 }
