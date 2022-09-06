@@ -14,6 +14,11 @@ namespace NewHorizons.Builder.Volumes
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
 
+            if (!string.IsNullOrEmpty(info.rename))
+            {
+                go.name = info.rename;
+            }
+
             if (!string.IsNullOrEmpty(info.parentPath))
             {
                 var newParent = planetGO.transform.Find(info.parentPath);
