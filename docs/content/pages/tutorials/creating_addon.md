@@ -36,7 +36,7 @@ Our repository is now cloned to our computer!
 
 ## Editing Files
 
-Now that our repo is clones, we're going to need to edit the files in it.
+Now that our repo is cloned, we're going to need to edit the files in it.
 To get started editing the files, simply click "Open in Visual Studio Code" in GitHub Desktop.
 
 ### Files Explanation
@@ -51,7 +51,7 @@ To get started editing the files, simply click "Open in Visual Studio Code" in G
   - Now set `uniqueName` to the name of your GitHub Repo.
   - You can leave `version`, `owmlVersion`, and `dependencies` alone
 - NewHorizonsConfig.dll: This is the heart of your addon, make sure to never move or rename it.
-- README.md: This file is what's displayed on the mod website when you go to a specific mod's page, you can delete the current contents.
+- README.md: This file is displayed on the mod website when you go to a specific mod's page, you can delete the current contents.
   - This file is a [markdown](https://www.markdowntutorial.com/){ target="_blank" } file, if you're not comfortable writing an entire README right now, just write a small description of your mod.
 
 ### Committing The Changes
@@ -64,7 +64,7 @@ Think of committing like taking a snapshot of your project at this moment in tim
 
 ### Pushing The Changes
 
-OK, so we've committed our new changes, but these commits still only exist on our computer, to get these changes onto GitHub we can click the "Push Origin" button the right.
+OK, so we've committed our new changes, but these commits still only exist on our computer, to get these changes onto GitHub we can click the "Push Origin" button on the top right.
 
 ## Testing The Addon
 
