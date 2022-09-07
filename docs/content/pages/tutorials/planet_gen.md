@@ -7,6 +7,10 @@ Sort_Priority: 80
 
 This guide covers some aspects of generating your planet, a lot of stuff is already explained in [the celestial body schema]({{ "Celestial Body Schema"|route }}).
 
+## Orbits
+
+First thing you should specify about your planet is its orbit. `primaryBody` will specify what planet this body will orbit.  If you're in a new solar system and want this planet to be the center, set `centerOfSolarSystem` to `true` (keep in mind `centerOfSolarSystem` is in the `Base` module, not `Orbit`).  Next up you'll need to specify the [orbital parameters](https://en.wikipedia.org/wiki/Orbital_elements). <!-- TODO: Make External, Vim is dumb --> 
+
 ## Heightmaps
 
 Heightmaps are a way to generate unique terrain on your planet. First you specify a maximum and minimum height, and then specify a [heightMap]({{ "Celestial Body Schema"|route }}#HeightMap_heightMap) image. The more white a section of that image is, the closer to `maxHeight` that part of the terrain will be. Finally, you specify a `textureMap` which is an image that gets applied to the terrain.
