@@ -49,8 +49,7 @@ XML files can also have schemas, you specify them by adding attributes to the to
 </Person>
 ```
 
-In order to get schema validation and auto-fill you'll need the [Redhat XML VSCode extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml).
-<!-- TODO: Make external, Vim is dumb -->
+In order to get schema validation and auto-fill you'll need the [Redhat XML VSCode extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-xml){ target="_blank" }.
 
 ## Uses
 
