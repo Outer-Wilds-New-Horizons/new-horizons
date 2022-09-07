@@ -14,7 +14,7 @@ This page outlines how to install and use the config editor.
 To get started, head over to the [releases page for the editor](https://github.com/Outer-Wilds-New-Horizons/nh-config-editor/releases/latest) and install the file for your OS:
 
 - Windows: The .msi file (not the .msi.zip and .msi.zip.sig file)
-- MacOS: The .AppImage file (not the .AppImage.tar.gz or the .AppImage.tar.gx.sig file)
+- MacOS: The .AppImage file (not the .AppImage.tar.gz or the .AppImage.tar.gz.sig file)
 
 Follow the installer instructions to complete setup
 
