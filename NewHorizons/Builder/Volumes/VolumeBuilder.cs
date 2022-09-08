@@ -1,23 +1,15 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
-using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NHNotificationVolume = NewHorizons.Components.NotificationVolume;
 
 namespace NewHorizons.Builder.Volumes
 {
-    public static class NotificationVolumeBuilder
+    public static class VolumeBuilder
     {
-        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, VolumesModule.NotificationVolumeInfo info, IModBehaviour mod)
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : MonoBehaviour //Could be BaseVolume but I need to create vanilla volumes too.
         {
-            var go = new GameObject("NotificationVolume");
+            var go = new GameObject(typeof(TVolume).Name);
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
@@ -49,14 +41,11 @@ namespace NewHorizons.Builder.Volumes
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
 
-            var notificationVolume = go.AddComponent<NHNotificationVolume>();
-            notificationVolume.SetTarget(info.target);
-            if (info.entryNotification != null) notificationVolume.SetEntryNotification(info.entryNotification.displayMessage, info.entryNotification.duration);
-            if (info.exitNotification != null) notificationVolume.SetExitNotification(info.exitNotification.displayMessage, info.exitNotification.duration);
+            var volume = go.AddComponent<TVolume>();
 
             go.SetActive(true);
 
-            return notificationVolume;
+            return volume;
         }
     }
 }
