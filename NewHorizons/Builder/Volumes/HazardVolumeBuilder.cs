@@ -52,6 +52,18 @@ namespace NewHorizons.Builder.Volumes
             {
                 hazardVolume = go.AddComponent<RiverHeatHazardVolume>();
             }
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.HEAT)
+            {
+                hazardVolume = go.AddComponent<HeatHazardVolume>();
+            }
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.DARKMATTER)
+            {
+                hazardVolume = go.AddComponent<DarkMatterVolume>();
+            }
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.ELECTRICITY)
+            {
+                hazardVolume = go.AddComponent<ElectricityVolume>();
+            }
             else
             {
                 var simpleHazardVolume = go.AddComponent<SimpleHazardVolume>();
