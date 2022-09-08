@@ -323,7 +323,8 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"fire")] FIRE = 8,
                 [EnumMember(Value = @"sandfall")] SANDFALL = 16,
                 [EnumMember(Value = @"electricity")] ELECTRICITY = 32,
-                [EnumMember(Value = @"rapids")] RAPIDS = 64
+                [EnumMember(Value = @"rapids")] RAPIDS = 64,
+                [EnumMember(Value = @"riverHeat")] RIVERHEAT = 128,
             }
 
             [JsonConverter(typeof(StringEnumConverter))]

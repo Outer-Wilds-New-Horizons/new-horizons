@@ -47,9 +47,18 @@ namespace NewHorizons.Builder.Volumes
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
             owTriggerVolume._shape = shape;
 
-            var hazardVolume = go.AddComponent<SimpleHazardVolume>();
+            HazardVolume hazardVolume = null;
+            if (info.type == VolumesModule.HazardVolumeInfo.HazardType.RIVERHEAT)
+            {
+                hazardVolume = go.AddComponent<RiverHeatHazardVolume>();
+            }
+            else
+            {
+                var simpleHazardVolume = go.AddComponent<SimpleHazardVolume>();
+                simpleHazardVolume._type = EnumUtils.Parse<HazardVolume.HazardType>(info.type.ToString(), HazardVolume.HazardType.GENERAL);
+                hazardVolume = simpleHazardVolume;
+            }
             hazardVolume._attachedBody = owrb;
-            hazardVolume._type = EnumUtils.Parse<HazardVolume.HazardType>(info.type.ToString(), HazardVolume.HazardType.GENERAL);
             hazardVolume._damagePerSecond = info.damagePerSecond;
             hazardVolume._firstContactDamageType = EnumUtils.Parse<InstantDamageType>(info.firstContactDamageType.ToString(), InstantDamageType.Impact);
             hazardVolume._firstContactDamage = info.firstContactDamage;
