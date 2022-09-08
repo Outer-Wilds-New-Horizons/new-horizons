@@ -5,7 +5,7 @@ Sort_Priority: 50
 
 # Config Editor
 
-Are you tired of manually editting JSON? Do you want richer validation than a JSON schema? Well then the config editor may be for you!  
+Are you tired of manually editing JSON? Do you want richer validation than a JSON schema? Well then the config editor may be for you!  
 
 This page outlines how to install and use the config editor.
 
@@ -43,7 +43,7 @@ You can view images and play audio files with this editor.
 
 ### XML Files 
 
-Right now, XML support is limited. You'll get syntax highlighting but no error checking or auto-fill.
+Right now, XML support is limited. You'll get syntax highlighting but no error checking or autofill.
 
 
 ## Running the Game

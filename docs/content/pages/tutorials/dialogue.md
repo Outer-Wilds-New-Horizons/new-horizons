@@ -26,7 +26,7 @@ A condition is a yes/no value stored **for this loop and this loop only**.  It c
 
 ### Persistent Condition
 
-A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the player's save file.
+A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the players save file.
 
 ### Remote Trigger
 
@@ -163,4 +163,4 @@ Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueO
 
 ### DialogueTargetShipLogCondition
 
-Used in tandum with `DialogueTarget`, makes it so you must have a [ship log fact]({{ "Ship Log"|route }}#explore-facts) to go to the next node.
+Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact]({{ "Ship Log"|route }}#explore-facts) to go to the next node.

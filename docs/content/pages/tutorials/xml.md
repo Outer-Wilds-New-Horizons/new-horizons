@@ -10,7 +10,7 @@ XML files are usually passed straight to the game's code instead of going throug
 
 ## Syntax
 
-XML is comprised of tags, a tag can represent a section or attribute
+XML is composed of tags, a tag can represent a section or attribute
 
 ```xml
 <Person>
@@ -20,7 +20,7 @@ XML is comprised of tags, a tag can represent a section or attribute
 </Person>
 ```
 
-Notice how each tag is closed by an identical tag with a slash at the front (i.e `<Person>` is closed by `</Person>`).  
+Notice how each tag is closed by an identical tag with a slash at the front (i.e. `<Person>` is closed by `</Person>`).  
 
 If the tag has no content you can use the self-closing tag shorthand (i.e. `<IsMarried/>` doesn't need a closing tag because of the `/` at the end).
 

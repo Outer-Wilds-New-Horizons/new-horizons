@@ -25,11 +25,11 @@ First things first we're going to create a release on GitHub. To do this, first 
 
 Then, edit your `manifest.json` and set the version number to `0.1.0` (or any version number that's higher than `0.0.0`).  
 
-Finally, push your changes to GitHub, head to the "Actions" tab of your repository and you should see an action running.  
+Finally, push your changes to GitHub, head to the "Actions" tab of your repository, and you should see an action running.  
 
-Once the action finishes head back to the "Code" tab and you should see a Version 0.1.0 (or whatever version you put) in the column on the right.  
+Once the action finishes head back to the "Code" tab, you should see a Version 0.1.0 (or whatever version you put) in the column on the right.  
 
-Double check the release, it should have a zip file in the assets with your mod's unique name.
+Double-check the release, it should have a zip file in the assets with your mod's unique name.
 
 ## Submitting
 
@@ -47,7 +47,7 @@ Congrats! You just published your addon!
 
 If you want to update your mod, you can simply bump the version number in `manifest.json` again.  
 
-To edit the release notes displayed in discord, enter them in the "Description" field before you commit in GitHub desktop.  The most recent commit's description is used for the relase notes.  
+To edit the release notes displayed in discord, enter them in the "Description" field before you commit in GitHub desktop.  The most recent commits description is used for the release notes.  
 
 **You don't need to create a new issue on the database to update your mod, it will be updated automatically after a few minutes**
 
