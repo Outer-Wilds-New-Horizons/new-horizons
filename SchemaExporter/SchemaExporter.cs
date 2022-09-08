@@ -78,13 +78,31 @@ public static class SchemaExporter
                 {"description", _description}
             });
 
-            if (_title == "Star System Schema")
+            switch (_title)
             {
-                schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
-                schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
-                schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
+                case "Celestial Body Schema":
+                    schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
+                    break;
+                case "Star System Schema":
+                    schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
+                    schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
+                    schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
+                    break;
             }
-            
+
+            if (_title is "Star System Schema" or "Celestial Body Schema")
+            {
+                schema.Properties["extras"] = new JsonSchemaProperty {
+                    Type = JsonObjectType.Object,
+                    Description = "Extra data that may be used by extension mods",
+                    AllowAdditionalProperties = true,
+                    AdditionalPropertiesSchema = new JsonSchema
+                    {
+                        Type = JsonObjectType.Object
+                    }
+                };
+            }
+
             return schema;
         }
     }

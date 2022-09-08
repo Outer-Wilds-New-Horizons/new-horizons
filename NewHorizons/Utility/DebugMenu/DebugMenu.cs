@@ -69,7 +69,13 @@ namespace NewHorizons.Utility.DebugMenu
 
                 PauseMenuInitHook();
 
-                Main.Instance.OnChangeStarSystem.AddListener((string s) => SaveLoadedConfigsForRecentSystem());
+                Main.Instance.OnChangeStarSystem.AddListener((string s) => {
+                    if (saveButtonUnlocked)
+                    {
+                        SaveLoadedConfigsForRecentSystem();
+                        saveButtonUnlocked = false;
+                    }
+                });
             }
             else
             {
@@ -200,7 +206,7 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 if (body.RelativePath == null)
                 {
-                    Logger.Log($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
+                    Logger.LogWarning($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
                     continue;
                 }
 
@@ -219,15 +225,31 @@ namespace NewHorizons.Utility.DebugMenu
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                Logger.Log($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
+                Logger.LogVerbose($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
 
                 if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
 
                 var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
 
-                var json = JsonConvert.SerializeObject(loadedConfigFiles[filePath], jsonSettings);
-                // Add the schema line
-                json = "{\n\t\"$schema\": \"https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json\"," + json.Substring(1);
+                var json = loadedConfigFiles[filePath].ToSerializedJson();
+
+                try
+                {
+                    var path = loadedMod.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
+                    Logger.LogVerbose($"Backing up... {relativePath} to {path}");
+                    var oldPath = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
+                    var directoryName = Path.GetDirectoryName(path);
+                    Directory.CreateDirectory(directoryName);
+
+                    if (File.Exists(oldPath))
+                        File.WriteAllBytes(path, File.ReadAllBytes(oldPath));
+                    else
+                        File.WriteAllText(path, json);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
+                }
 
                 try
                 {
@@ -240,20 +262,7 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to save file {relativePath}:\n{e.Message}\n{e.StackTrace}");
-                }
-
-                try
-                {
-                    var path = Main.Instance.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
-                    var directoryName = Path.GetDirectoryName(path);
-                    Directory.CreateDirectory(directoryName);
-
-                    File.WriteAllText(path, json);
-                }
-                catch (Exception e)
-                {
-                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e.Message}\n{e.StackTrace}");
+                    Logger.LogError($"Failed to save file {relativePath}:\n{e}");
                 }
             }
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using NewHorizons.Utility;
 
@@ -11,12 +11,15 @@ namespace NewHorizons.External
         private static string _activeProfileName;
         private static readonly string FileName = "save.json";
 
+        // This is its own method so it can be patched by NH-QSB compat
+        public static string GetProfileName() => StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
+
         public static void Load()
         {
-            _activeProfileName = StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
+            _activeProfileName = GetProfileName();
             if (_activeProfileName == null)
             {
-                Logger.LogError("Couldn't find active profile, are you on Gamepass?");
+                Logger.LogWarning("Couldn't find active profile, are you on Gamepass?");
                 _activeProfileName = "XboxGamepassDefaultProfile";
             }
 
@@ -26,22 +29,22 @@ namespace NewHorizons.External
                 if (!_saveFile.Profiles.ContainsKey(_activeProfileName))
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                 _activeProfile = _saveFile.Profiles[_activeProfileName];
-                Logger.Log($"Loaded save data for {_activeProfileName}");
+                Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
             }
             catch (Exception)
             {
                 try
                 {
-                    Logger.Log($"Couldn't load save data from {FileName}, creating a new file");
+                    Logger.LogVerbose($"Couldn't load save data from {FileName}, creating a new file");
                     _saveFile = new NewHorizonsSaveFile();
                     _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                     _activeProfile = _saveFile.Profiles[_activeProfileName];
                     Main.Instance.ModHelper.Storage.Save(_saveFile, FileName);
-                    Logger.Log($"Loaded save data for {_activeProfileName}");
+                    Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't create save data {e.Message}, {e.StackTrace}");
+                    Logger.LogError($"Couldn't create save data:\n{e}");
                 }
             }
         }
@@ -55,7 +58,7 @@ namespace NewHorizons.External
         public static void Reset()
         {
             if (_saveFile == null || _activeProfile == null) Load();
-            Logger.Log($"Resetting save data for {_activeProfileName}");
+            Logger.LogVerbose($"Resetting save data for {_activeProfileName}");
             _activeProfile = new NewHorizonsProfile();
             _saveFile.Profiles[_activeProfileName] = _activeProfile;
 
@@ -79,12 +82,13 @@ namespace NewHorizons.External
                 KnownFrequencies = new List<string>();
                 KnownSignals = new List<string>();
                 NewlyRevealedFactIDs = new List<string>();
+                PopupsRead = new List<string>();
             }
 
             public List<string> KnownFrequencies { get; }
             public List<string> KnownSignals { get; }
-
             public List<string> NewlyRevealedFactIDs { get; }
+            public List<string> PopupsRead { get; }
         }
 
         #region Frequencies
@@ -149,6 +153,22 @@ namespace NewHorizons.External
         {
             _activeProfile?.NewlyRevealedFactIDs.Clear();
             Save();
+        }
+
+        #endregion
+
+        #region Read popups
+
+        public static void ReadOneTimePopup(string id)
+        {
+            _activeProfile?.PopupsRead.Add(id);
+            Save();
+        }
+
+        public static bool HasReadOneTimePopup(string id)
+        {
+            // To avoid spam, we'll just say the popup has been read if we can't load the profile
+            return _activeProfile?.PopupsRead.Contains(id) ?? true;
         }
 
         #endregion

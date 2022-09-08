@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility;
@@ -9,6 +9,11 @@ namespace NewHorizons.External.Modules
     [JsonObject]
     public class OrbitModule : IOrbitalParameters
     {
+        /// <summary>
+        /// Specify this if you want the body to remain stationary at a given location (ie not orbit its parent). Required for Bramble dimensions
+        /// </summary>
+        public MVector3 staticPosition;
+
         /// <summary>
         /// The name of the body this one will orbit around
         /// </summary>
@@ -52,7 +57,8 @@ namespace NewHorizons.External.Modules
         public bool dottedOrbitLine;
 
         /// <summary>
-        /// Is the body meant to stay in one place without moving?
+        /// Is the body meant to stay in one place without moving? If staticPosition is not set, the initial position
+        /// will be determined using its orbital parameters.
         /// </summary>
         public bool isStatic;
 
@@ -70,7 +76,6 @@ namespace NewHorizons.External.Modules
         /// The semi-major axis of the ellipse that is the body's orbit. For a circular orbit this is the radius.
         /// </summary>
         [Range(0f, double.MaxValue)]
-        [DefaultValue(5000f)]
         public float semiMajorAxis { get; set; }
 
         /// <summary>

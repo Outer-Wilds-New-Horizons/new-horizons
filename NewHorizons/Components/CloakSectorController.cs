@@ -10,7 +10,9 @@ namespace NewHorizons.Components
 
         private bool _isInitialized;
 
-        private List<Renderer> _renderers = null;
+        private Renderer[] _renderers = null;
+        private TessellatedRenderer[] _tessellatedRenderers = null;
+        private CloakedTessSphereSectorToggle[] _tessSphereToggles = null;
 
         public static bool isPlayerInside = false;
         public static bool isProbeInside = false;
@@ -50,7 +52,9 @@ namespace NewHorizons.Components
 
         private void SetUpList()
         {
-            _renderers = _root.GetComponentsInChildren<Renderer>().ToList();
+            _renderers = _root.GetComponentsInChildren<Renderer>();
+            _tessellatedRenderers = _root.GetComponentsInChildren<TessellatedRenderer>();
+            _tessSphereToggles = _root.GetComponentsInChildren<CloakedTessSphereSectorToggle>();
         }
 
         public void OnPlayerEnter()
@@ -60,6 +64,16 @@ namespace NewHorizons.Components
             foreach (var renderer in _renderers)
             {
                 renderer.forceRenderingOff = false;
+            }
+
+            foreach (var tessellatedRenderer in _tessellatedRenderers)
+            {
+                tessellatedRenderer.enabled = true;
+            }
+
+            foreach (var tessSphereSectorToggle in _tessSphereToggles)
+            {
+                tessSphereSectorToggle.OnEnterCloakField();
             }
 
             isPlayerInside = true;
@@ -73,6 +87,16 @@ namespace NewHorizons.Components
             foreach (var renderer in _renderers)
             {
                 renderer.forceRenderingOff = true;
+            }
+
+            foreach (var tessellatedRenderer in _tessellatedRenderers)
+            {
+                tessellatedRenderer.enabled = false;
+            }
+
+            foreach (var tessSphereSectorToggle in _tessSphereToggles)
+            {
+                tessSphereSectorToggle.OnExitCloakField();
             }
 
             isPlayerInside = false;

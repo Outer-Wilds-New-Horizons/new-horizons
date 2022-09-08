@@ -1,9 +1,10 @@
-﻿using UnityEngine;
+using NewHorizons.Utility;
+using UnityEngine;
 namespace NewHorizons.Components.SizeControllers
 {
     public class SizeController : MonoBehaviour
     {
-        public AnimationCurve scaleCurve;
+        public AnimationCurve scaleCurve { get; protected set; }
         public float CurrentScale { get; protected set; }
         public float size = 1f;
 
@@ -19,6 +20,15 @@ namespace NewHorizons.Components.SizeControllers
             }
 
             base.transform.localScale = Vector3.one * CurrentScale;
+        }
+
+        public void SetScaleCurve(TimeValuePair[] curve)
+        {
+            scaleCurve = new AnimationCurve();
+            foreach (var pair in curve)
+            {
+                scaleCurve.AddKey(new Keyframe(pair.time, pair.value));
+            }
         }
     }
 }

@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.Body
             OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
             
             // trigger sector enter
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            Delay.FireOnNextUpdate(() =>
             {
                 OEC._active = true;
                 OEC.enabled = true;
@@ -102,12 +102,7 @@ namespace NewHorizons.Builder.Body
             if (module.curve != null)
             {
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in module.curve)
-                {
-                    curve.AddKey(new Keyframe(pair.time, pair.value));
-                }
-                sizeController.scaleCurve = curve;
+                sizeController.SetScaleCurve(module.curve);
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
                 sizeController.size = module.size;
             }

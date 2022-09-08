@@ -7,18 +7,18 @@ namespace NewHorizons.Builder.ShipLog
 {
     public static class RevealBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
             var newRevealGO = MakeGameObject(go, sector, info, mod);
             switch (info.revealOn)
             {
-                case PropModule.RevealInfo.RevealVolumeType.Enter:
+                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Enter:
                     MakeTrigger(newRevealGO, sector, info, mod);
                     break;
-                case PropModule.RevealInfo.RevealVolumeType.Observe:
+                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Observe:
                     MakeObservable(newRevealGO, sector, info, mod);
                     break;
-                case PropModule.RevealInfo.RevealVolumeType.Snapshot:
+                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Snapshot:
                     MakeSnapshot(newRevealGO, sector, info, mod);
                     break;
                 default:
@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.ShipLog
             newRevealGO.SetActive(true);
         }
 
-        private static SphereShape MakeShape(GameObject go, PropModule.RevealInfo info, Shape.CollisionMode collisionMode)
+        private static SphereShape MakeShape(GameObject go, VolumesModule.RevealVolumeInfo info, Shape.CollisionMode collisionMode)
         {
             SphereShape newShape = go.AddComponent<SphereShape>();
             newShape.radius = info.radius;
@@ -36,16 +36,36 @@ namespace NewHorizons.Builder.ShipLog
             return newShape;
         }
 
-        private static GameObject MakeGameObject(GameObject planetGO, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        private static GameObject MakeGameObject(GameObject planetGO, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
             GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
             revealTriggerVolume.SetActive(false);
             revealTriggerVolume.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.rename))
+            {
+                revealTriggerVolume.name = info.rename;
+            }
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    revealTriggerVolume.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
+
             return revealTriggerVolume;
         }
 
-        private static void MakeTrigger(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        private static void MakeTrigger(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
             var shape = MakeShape(go, info, Shape.CollisionMode.Volume);
 
@@ -65,7 +85,7 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeObservable(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        private static void MakeObservable(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
             go.layer = LayerMask.NameToLayer("Interactible");
 
@@ -96,7 +116,7 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeSnapshot(GameObject go, Sector sector, PropModule.RevealInfo info, IModBehaviour mod)
+        private static void MakeSnapshot(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
             var shape = MakeShape(go, info, Shape.CollisionMode.Manual);
 

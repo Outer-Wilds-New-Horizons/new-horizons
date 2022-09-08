@@ -1,21 +1,21 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Configs;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class AirBuilder
     {
-        public static void Make(GameObject planetGO, Sector sector, AtmosphereModule.AirInfo info)
+        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
         {
-            GameObject airGO = new GameObject("Air");
+            var airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
             airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
 
-            SphereCollider sc = airGO.AddComponent<SphereCollider>();
+            var sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;
-            sc.radius = info.scale;
+            sc.radius = config.Atmosphere.size;
 
-            SimpleFluidVolume sfv = airGO.AddComponent<SimpleFluidVolume>();
+            var sfv = airGO.AddComponent<SimpleFluidVolume>();
             sfv._layer = 5;
             sfv._priority = 1;
             sfv._density = 1.2f;
@@ -23,19 +23,46 @@ namespace NewHorizons.Builder.Atmosphere
             sfv._allowShipAutoroll = true;
             sfv._disableOnStart = false;
 
-            if (info.hasOxygen)
+            if (config.Atmosphere.hasShockLayer)
             {
-                airGO.AddComponent<OxygenVolume>();
+                // Try to parent it to the same as other rulesets to match vanilla but if its null put it on the root object
+                var ruleSetGO = planetGO.GetComponentInChildren<PlanetoidRuleset>()?.gameObject;
+                if (ruleSetGO == null) ruleSetGO = planetGO;
+
+                var shockLayerRuleset = ruleSetGO.AddComponent<ShockLayerRuleset>();
+                shockLayerRuleset._type = ShockLayerRuleset.ShockType.Atmospheric;
+                shockLayerRuleset._radialCenter = airGO.transform;
+                shockLayerRuleset._minShockSpeed = config.Atmosphere.minShockSpeed;
+                shockLayerRuleset._maxShockSpeed = config.Atmosphere.maxShockSpeed;
+
+                if (config.Atmosphere.clouds != null)
+                {
+                    shockLayerRuleset._innerRadius = config.Atmosphere.clouds.innerCloudRadius;
+                    shockLayerRuleset._outerRadius = config.Atmosphere.clouds.outerCloudRadius;
+                }
+                else
+                {
+                    var bottom = config.Base.surfaceSize;
+                    var top = config.Atmosphere.size;
+
+                    shockLayerRuleset._innerRadius = (bottom + top) / 2f;
+                    shockLayerRuleset._outerRadius = top;
+                }
             }
 
-            if (info.isRaining)
+            if (config.Atmosphere.hasOxygen)
+            {
+                airGO.AddComponent<OxygenVolume>()._treeVolume = config.Atmosphere.hasTrees;
+            }
+
+            if (config.Atmosphere.hasRain)
             {
                 var vref = airGO.AddComponent<VisorRainEffectVolume>();
                 vref._rainDirection = VisorRainEffectVolume.RainDirection.Radial;
                 vref._layer = 0;
                 vref._priority = 0;
 
-                AudioSource AS = airGO.AddComponent<AudioSource>();
+                var AS = airGO.AddComponent<AudioSource>();
                 AS.mute = false;
                 AS.bypassEffects = false;
                 AS.bypassListenerEffects = false;

@@ -2,6 +2,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
@@ -36,7 +37,8 @@ namespace NewHorizons.Builder.Props
             }
             if (_hurricanePrefab == null)
             {
-                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane/").InstantiateInactive();
+                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive();
+                _hurricanePrefab.name = "Hurricane_Prefab";
                 // For some reason they put the hurricane at the origin and offset all its children (450)
                 // Increasing by 40 will keep the bottom above the ground
                 foreach (Transform child in _hurricanePrefab.transform)
@@ -84,6 +86,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
         {
             var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
+            tornadoGO.name = downwards ? "Tornado_Down" : "Tornado_Up";
             tornadoGO.transform.parent = sector.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
@@ -118,7 +121,7 @@ namespace NewHorizons.Builder.Props
             // Resize the distance it can be heard from to match roughly with the size
             var maxDistance = info.audioDistance;
             if (maxDistance <= 0) maxDistance = scale * 10f;
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+            Delay.FireOnNextUpdate(() =>
             {
                 audioSource.maxDistance = maxDistance;
                 audioSource.minDistance = maxDistance / 10f;
@@ -136,21 +139,14 @@ namespace NewHorizons.Builder.Props
             controller._midBone.localPosition = controller._midStartPos;
             controller._topBone.localPosition = controller._topStartPos;
 
-            OWAssetHandler.LoadObject(tornadoGO);
-            sector.OnOccupantEnterSector += (sd) => OWAssetHandler.LoadObject(tornadoGO);
+            StreamingHandler.SetUpStreaming(tornadoGO, sector);
 
             tornadoGO.GetComponentInChildren<CapsuleShape>().enabled = true;
 
             // Resize it so the force volume goes all the way up
-            switch (downwards)
-            {
-                case true:
-                    tornadoGO.transform.Find("MockDownTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
-                    break;
-                default:
-                    tornadoGO.transform.Find("MockUpTornado_FluidCenter").localScale = new Vector3(1, 2f, 1);
-                    break;
-            }
+            var fluidGO = tornadoGO.transform.Find(downwards ? "MockDownTornado_FluidCenter" : "MockUpTornado_FluidCenter");
+            fluidGO.GetComponent<TornadoFluidVolume>()._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
+            fluidGO.localScale = new Vector3(1, 2f, 1);
 
             if (info.tint != null)
             {
@@ -169,11 +165,13 @@ namespace NewHorizons.Builder.Props
         private static void MakeHurricane(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool hasClouds)
         {
             var hurricaneGO = _hurricanePrefab.InstantiateInactive();
+            hurricaneGO.name = "Hurricane";
             hurricaneGO.transform.parent = sector.transform;
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
             hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
 
             var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
+            fluidVolume._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
             fluidVolume._density = 8;
 
             var effects = hurricaneGO.transform.Find("Effects_GD_Hurricane").gameObject;

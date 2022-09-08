@@ -10,16 +10,19 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-            var skybox = SearchUtilities.Find("Skybox/Starfield");
-
-            if (system.Config.skybox?.destroyStarField ?? false)
+            if (system.Config.Skybox?.destroyStarField ?? false)
             {
-                Object.Destroy(skybox);
+                Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
             }
 
-            if (system.Config.skybox?.assetBundle != null && system.Config.skybox?.path != null)
+            if (system.Config.Skybox?.rightPath != null ||
+                system.Config.Skybox?.leftPath != null ||
+                system.Config.Skybox?.topPath != null ||
+                system.Config.Skybox?.bottomPath != null ||
+                system.Config.Skybox?.frontPath != null ||
+                system.Config.Skybox?.bottomPath != null)
             {
-                SkyboxBuilder.Make(system.Config.skybox, system.Mod);
+                SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
             }
 
             if (system.Config.enableTimeLoop)
@@ -28,41 +31,14 @@ namespace NewHorizons.Handlers
                 timeLoopController.AddComponent<TimeLoopController>();
             }
 
-            AudioClip clip = null;
-            if (!string.IsNullOrEmpty(system.Config.travelAudioClip))
+            if (system.Config.loopDuration != 22f)
             {
-                clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(system.Config.travelAudioClip);
-
-                if (clip == null)
-                {
-                    Logger.LogError($"Couldn't get audio from clip [{system.Config.travelAudioClip}]");
-                }
-            }
-            else if (!string.IsNullOrEmpty(system.Config.travelAudioFilePath))
-            {
-                try
-                {
-                    clip = AudioUtilities.LoadAudio(system.Mod.ModHelper.Manifest.ModFolderPath + "/" + system.Config.travelAudioFilePath);
-                }
-                catch { }
-
-                if (clip == null)
-                {
-                    Logger.LogError($"Couldn't get audio from file [{system.Config.travelAudioFilePath}]");
-                }
+                TimeLoopUtilities.SetLoopDuration(system.Config.loopDuration);
             }
 
-            if (clip != null)
+            if (!string.IsNullOrEmpty(system.Config.travelAudio))
             {
-                Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
-                {
-                    var travelSource = Locator.GetGlobalMusicController()._travelSource;
-                    travelSource._audioLibraryClip = AudioType.None;
-                    travelSource._clipArrayIndex = 0;
-                    travelSource._clipArrayLength = 0;
-                    travelSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
-                    travelSource.clip = clip;
-                });
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
             }
         }
     }

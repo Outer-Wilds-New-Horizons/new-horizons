@@ -1,27 +1,36 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using OWML.Common;
+using System.IO;
 using System.Xml;
 using UnityEngine;
+using NewHorizons.Utility;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
-        public static void Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
+        // Returns the character dialogue tree and remote dialogue trigger, if applicable.
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
         {
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
-            if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return;
+            if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return (null, null);
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
-            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) MakeRemoteDialogueTrigger(go, sector, info, dialogue);
+            
+            RemoteDialogueTrigger remoteTrigger = null;
+            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0) remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, dialogue);
 
             // Make the character look at the player
             // Useful for dialogue replacement
             if (!string.IsNullOrEmpty(info.pathToAnimController)) MakePlayerTrackingZone(go, dialogue, info);
+
+            return (dialogue, remoteTrigger);
         }
 
-        public static void MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
+        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
             GameObject conversationTrigger = new GameObject("ConversationTrigger");
             conversationTrigger.SetActive(false);
@@ -49,9 +58,11 @@ namespace NewHorizons.Builder.Props
             conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
             conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
+
+            return remoteDialogueTrigger;
         }
 
-        public static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
+        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             GameObject conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
@@ -76,8 +87,11 @@ namespace NewHorizons.Builder.Props
 
             var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
 
-            var xml = System.IO.File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
+            var xml = File.ReadAllText(mod.Manifest.ModFolderPath + info.xmlFile);
             var text = new TextAsset(xml);
+
+            // Text assets need a name to be used with VoiceMod
+            text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
@@ -95,9 +109,15 @@ namespace NewHorizons.Builder.Props
             return dialogueTree;
         }
 
-        public static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
+        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
+
+            if (character == null)
+            {
+                Logger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
+                return;
+            }
 
             // At most one of these should ever not be null
             var nomaiController = character.GetComponent<SolanumAnimController>();

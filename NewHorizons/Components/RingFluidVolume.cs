@@ -17,5 +17,7 @@ namespace NewHorizons.Components
             
             fluidDetector.AddVolume(this);
         }
+
+        public override bool IsSpherical() => false;
     }
 }

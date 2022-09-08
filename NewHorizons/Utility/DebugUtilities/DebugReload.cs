@@ -29,7 +29,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private static void ReloadConfigs()
         {
-            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
+            Logger.Log("Begin reload of config files...");
 
             Main.ResetConfigs();
 
@@ -49,7 +49,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
 
-            Main.SecondsLeftInLoop = -1f;
+            Main.SecondsElapsedInLoop = -1f;
         }
     }
 }

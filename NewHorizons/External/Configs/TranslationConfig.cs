@@ -30,7 +30,7 @@ namespace NewHorizons.External.Configs
         /// <summary>
         /// Translation table for achievements. The key is the unique ID of the achievement
         /// </summary>
-        private readonly Dictionary<string, AchievementTranslationInfo> AchievementTranslations;
+        public Dictionary<string, AchievementTranslationInfo> AchievementTranslations;
 
         [JsonObject]
         public class AchievementTranslationInfo 
@@ -38,12 +38,12 @@ namespace NewHorizons.External.Configs
             /// <summary>
             /// The name of the achievement.
             /// </summary>
-            private string Name;
+            public string Name;
 
             /// <summary>
             /// The short description for this achievement.
             /// </summary>
-            private readonly string Description;
+            public string Description;
         }
 #pragma warning restore 0169
         #endregion

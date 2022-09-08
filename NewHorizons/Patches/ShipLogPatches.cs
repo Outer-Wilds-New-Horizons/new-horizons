@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Components;
 using NewHorizons.Handlers;
@@ -21,8 +21,17 @@ namespace NewHorizons.Patches
         {
             RumorModeBuilder.Init();
             ShipLogHandler.Init();
-            Logger.Log("Beginning Ship Log Generation For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
-            if (Main.Instance.CurrentStarSystem != "SolarSystem")
+
+            var currentStarSystem = Main.Instance.CurrentStarSystem;
+
+            if (!Main.SystemDict.ContainsKey(currentStarSystem) || !Main.BodyDict.ContainsKey(currentStarSystem))
+            {
+                currentStarSystem = Main.Instance.DefaultStarSystem;
+            }
+
+            Logger.Log($"Beginning Ship Log Generation For: {currentStarSystem}");
+
+            if (currentStarSystem != "SolarSystem")
             {
                 __instance._shipLogXmlAssets = new TextAsset[] { };
                 foreach (ShipLogEntryLocation logEntryLocation in GameObject.FindObjectsOfType<ShipLogEntryLocation>())
@@ -31,13 +40,13 @@ namespace NewHorizons.Patches
                 }
             }
 
-            var curiosities = Main.SystemDict[Main.Instance.CurrentStarSystem].Config.curiosities;
+            var curiosities = Main.SystemDict[currentStarSystem].Config.curiosities;
             if (curiosities != null)
             {
                 RumorModeBuilder.AddCuriosityColors(curiosities);
             }
 
-            foreach (NewHorizonsBody body in Main.BodyDict[Main.Instance.CurrentStarSystem])
+            foreach (NewHorizonsBody body in Main.BodyDict[currentStarSystem])
             {
                 if (body.Config.ShipLog?.xmlFile != null)
                 {
@@ -58,7 +67,7 @@ namespace NewHorizons.Patches
                 RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
             }
 
-            Logger.Log("Ship Log Generation Complete For: " + Main.Instance.CurrentStarSystem, Logger.LogType.Log);
+            Logger.Log($"Ship Log Generation Complete For: {Main.Instance.CurrentStarSystem}");
         }
 
         [HarmonyPrefix]
@@ -145,7 +154,7 @@ namespace NewHorizons.Patches
                 __instance._startingAstroObjectID = navMatrix[1][0].GetID();
                 if (Main.Instance.CurrentStarSystem != "SolarSystem")
                 {
-                    List<GameObject> delete = SearchUtilities.GetAllChildren(panRoot).Where(g => g.name.Contains("_ShipLog") == false).ToList();
+                    List<GameObject> delete = panRoot.GetAllChildren().Where(g => g.name.Contains("_ShipLog") == false).ToList();
                     foreach (GameObject gameObject in delete)
                     {
                         Object.Destroy(SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + gameObject.name));
@@ -157,7 +166,7 @@ namespace NewHorizons.Patches
                 }
             }
 
-            Logger.Log("Map Mode Construction Complete", Logger.LogType.Log);
+            Logger.Log("Map Mode Construction Complete");
         }
 
         [HarmonyPrefix]
@@ -182,7 +191,7 @@ namespace NewHorizons.Patches
             Transform detailsParent = __instance.transform.Find("Details");
             if (detailsParent != null)
             {
-                foreach (GameObject child in SearchUtilities.GetAllChildren(detailsParent.gameObject))
+                foreach (GameObject child in detailsParent.gameObject.GetAllChildren())
                 {
                     if (child.TryGetComponent(typeof(ShipLogDetail), out Component detail))
                     {
@@ -220,6 +229,21 @@ namespace NewHorizons.Patches
             StarChartHandler.OnRevealFact(__0);
 
             AchievementHandler.OnRevealFact();
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogFact), nameof(ShipLogFact.GetText))]
+        public static bool ShipLogFact_GetText(ShipLogFact __instance, ref string __result)
+        {
+            if (ShipLogHandler.IsModdedFact(__instance.GetID()))
+            {
+                __result = TranslationHandler.GetTranslation(__instance._text, TranslationHandler.TextType.SHIPLOG);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

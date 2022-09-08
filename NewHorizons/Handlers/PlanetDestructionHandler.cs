@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Handlers
@@ -30,6 +31,12 @@ namespace NewHorizons.Handlers
             "White Hole"
         };
 
+        private static readonly string[] _suspendBlacklist = new string[]
+        {
+            "Player_Body",
+            "Ship_Body"
+        };
+
         public static void RemoveSolarSystem()
         {
             // Stop the sun from killing the player
@@ -39,21 +46,21 @@ namespace NewHorizons.Handlers
             foreach (var name in _solarSystemBodies)
             {
                 var ao = AstroObjectLocator.GetAstroObject(name);
-                if (ao != null) Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => RemoveBody(ao, false), 2);
+                if (ao != null) Delay.FireInNUpdates(() => RemoveBody(ao, false), 2);
                 else Logger.LogError($"Couldn't find [{name}]");
             }
 
             // Bring the sun back because why not
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
+            Delay.FireInNUpdates(() => { if (Locator.GetAstroObject(AstroObject.Name.Sun).gameObject.activeInHierarchy) { sunVolumes.SetActive(true); } }, 3);
         }
 
         public static void RemoveBody(AstroObject ao, bool delete = false, List<AstroObject> toDestroy = null)
         {
-            Logger.Log($"Removing [{ao.name}]");
+            Logger.LogVerbose($"Removing [{ao.name}]");
 
             if (ao.gameObject == null || !ao.gameObject.activeInHierarchy)
             {
-                Logger.Log($"[{ao.name}] was already removed");
+                Logger.LogVerbose($"[{ao.name}] was already removed");
                 return;
             }
 
@@ -61,7 +68,7 @@ namespace NewHorizons.Handlers
 
             if (toDestroy.Contains(ao))
             {
-                Logger.LogError($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
+                Logger.LogVerbose($"Possible infinite recursion in RemoveBody: {ao.name} might be it's own primary body?");
                 return;
             }
 
@@ -83,10 +90,7 @@ namespace NewHorizons.Handlers
                     case AstroObject.Name.CaveTwin:
                     case AstroObject.Name.TowerTwin:
                         DisableBody(SearchUtilities.Find("FocalBody"), delete);
-                        DisableBody(SearchUtilities.Find("SandFunnel_Body"), delete);
-                        break;
-                    case AstroObject.Name.MapSatellite:
-                        DisableBody(SearchUtilities.Find("MapSatellite_Body"), delete);
+                        DisableBody(SearchUtilities.Find("SandFunnel_Body", false), delete);
                         break;
                     case AstroObject.Name.GiantsDeep:
                         // Might prevent leftover jellyfish from existing
@@ -133,7 +137,7 @@ namespace NewHorizons.Handlers
 
                         foreach (var sunProxy in GameObject.FindObjectsOfType<SunProxy>())
                         {
-                            Logger.Log($"Destroying SunProxy {sunProxy.gameObject.name}");
+                            Logger.LogVerbose($"Destroying SunProxy {sunProxy.gameObject.name}");
                             GameObject.Destroy(sunProxy.gameObject);
                         }
 
@@ -143,12 +147,12 @@ namespace NewHorizons.Handlers
                 }
 
                 // Always delete the children
-                Logger.Log($"Removing Children of [{ao._name}], [{ao._customName}]");
+                Logger.LogVerbose($"Removing Children of [{ao._name}], [{ao._customName}]");
                 foreach (var child in AstroObjectLocator.GetChildren(ao))
                 {
                     if (child == null) continue;
 
-                    Logger.Log($"Removing child [{child.name}] of [{ao._name}]");
+                    Logger.LogVerbose($"Removing child [{child.name}] of [{ao._name}]");
 
                     // Ship starts as a child of TH but obvious we want to keep that
                     if (child.name == "Ship_Body") continue;
@@ -169,7 +173,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]: {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Exception thrown when trying to delete bodies related to [{ao.name}]:\n{e}");
             }
 
             // Deal with proxies
@@ -183,7 +187,7 @@ namespace NewHorizons.Handlers
             }
             RemoveProxy(ao.name.Replace("_Body", ""));
 
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
+            Delay.RunWhen(() => Main.IsSystemReady, () => DisableBody(ao.gameObject, delete));
 
             foreach (ProxyBody proxy in GameObject.FindObjectsOfType<ProxyBody>())
             {
@@ -204,11 +208,43 @@ namespace NewHorizons.Handlers
             }
         }
 
-        private static void DisableBody(GameObject go, bool delete)
+        private static bool CanSuspend(OWRigidbody rigidbody, string name)
+        {
+            if (rigidbody.transform.name == name) return true;
+            if (rigidbody._origParentBody == null) return false;
+            return CanSuspend(rigidbody._origParentBody, name);
+        }
+
+        internal static void DisableBody(GameObject go, bool delete)
         {
             if (go == null) return;
 
-            Logger.Log($"Removing [{go.name}]");
+            Logger.LogVerbose($"Removing [{go.name}]");
+
+            OWRigidbody rigidbody = go.GetComponent<OWRigidbody>();
+            if (rigidbody != null)
+            {
+                string name = rigidbody.transform.name;
+                foreach (var ow in CenterOfTheUniverse.s_rigidbodies)
+                {
+                    if (_suspendBlacklist.Contains(ow.transform.name)) continue;
+                    if (ow.GetComponent<AstroObject>() != null) continue;
+                    if (ow._origParentBody != null)
+                    {
+                        if (CanSuspend(ow, name))
+                        {
+                            ow.Suspend();
+                        }
+                    }
+                    else if (ow._simulateInSector != null)
+                    {
+                        if (CanSuspend(ow._simulateInSector.GetAttachedOWRigidbody(), name))
+                        {
+                            ow.Suspend();
+                        }
+                    }
+                }
+            }
 
             if (delete)
             {
@@ -236,7 +272,7 @@ namespace NewHorizons.Handlers
             if (distantProxyClone != null) GameObject.Destroy(distantProxyClone.gameObject);
 
             if (distantProxy == null && distantProxyClone == null)
-                Logger.Log($"Couldn't find proxy for {name}");
+                Logger.LogVerbose($"Couldn't find proxy for {name}");
         }
     }
 }

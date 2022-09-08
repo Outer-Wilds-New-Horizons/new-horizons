@@ -1,10 +1,12 @@
 {
+  "$schema": "https://raw.githubusercontent.com/amazingalek/owml/master/schemas/manifest_schema.json",
   "filename": "NewHorizons.dll",
-  "author": "xen, Bwc9876, clay, MegaPiggy, John, Book",
+  "author": "xen, Bwc9876, clay, MegaPiggy, John, Hawkbar, Trifid, Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.3.2",
-  "owmlVersion": "2.5.2",
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "Vesper.AutoResume", "PacificEngine.OW_Randomizer" ],
+  "version": "1.5.1",
+  "owmlVersion": "2.6.0",
+  "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework" ],
+  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }

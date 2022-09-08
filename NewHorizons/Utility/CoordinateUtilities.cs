@@ -25,12 +25,10 @@ namespace NewHorizons.Utility
             float dist = Mathf.Sqrt(x * x + y * y + z * z);
 
             // theta
-            float longitude = 180f;
-            if (x > 0) longitude = Mathf.Rad2Deg * Mathf.Atan(y / x);
-            if (x < 0) longitude = Mathf.Rad2Deg * (Mathf.Atan(y / x) + Mathf.PI);
+            var longitude = Mathf.Rad2Deg * Mathf.Atan2(y, x);
 
             // phi
-            float latitude = (Mathf.Rad2Deg * Mathf.Acos(z / dist));
+            float latitude = Mathf.Rad2Deg * Mathf.Acos(z / dist);
 
             return new Vector3(longitude, latitude, dist);
         }

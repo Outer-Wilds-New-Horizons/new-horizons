@@ -9,7 +9,7 @@ using Newtonsoft.Json.Converters;
 namespace NewHorizons.External.Modules
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum CloudFluidType
+    public enum FluidType
     {
         [EnumMember(Value = @"none")] None = 0,
 
@@ -30,6 +30,8 @@ namespace NewHorizons.External.Modules
         [EnumMember(Value = @"quantumMoon")] QuantumMoon = 1,
 
         [EnumMember(Value = @"basic")] Basic = 2,
+
+        [EnumMember(Value = @"transparent")] Transparent = 3,
     }
 
     [JsonObject]
@@ -39,6 +41,15 @@ namespace NewHorizons.External.Modules
         /// Colour of atmospheric shader on the planet.
         /// </summary>
         public MColor atmosphereTint;
+
+        /// <summary>
+        /// How intense should the sun appear in the sky.
+        /// Also affects general atmosphere brightness.
+        /// Default value of 1 matches Timber Hearth.
+        /// If not set, this will be determined based off the distance to the sun.
+        /// </summary>
+        [Range(0f, double.MaxValue)]
+        public float atmosphereSunIntensity;
 
         /// <summary>
         /// Describes the clouds in the atmosphere
@@ -66,6 +77,11 @@ namespace NewHorizons.External.Modules
         public bool hasOxygen;
 
         /// <summary>
+        /// Does this planet have trees? This will change the "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
+        /// </summary>
+        public bool hasTrees;
+
+        /// <summary>
         /// Does this planet have rain?
         /// </summary>
         public bool hasRain;
@@ -86,14 +102,20 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public bool useAtmosphereShader;
 
-        // not an actual config thing, rip 
-        public class AirInfo
-        {
-            public bool hasOxygen;
-            public bool isRaining;
-            public bool isSnowing;
-            public float scale;
-        }
+        /// <summary>
+        /// Whether this atmosphere will have flames appear when your ship goes a certain speed.
+        /// </summary>
+        [DefaultValue(true)] public bool hasShockLayer = true;
+
+        /// <summary>
+        /// Minimum speed that your ship can go in the atmosphere where flames will appear.
+        /// </summary>
+        [DefaultValue(100f)] public float minShockSpeed = 100f;
+
+        /// <summary>
+        /// Maximum speed that your ship can go in the atmosphere where flames will appear at their brightest.
+        /// </summary>
+        [DefaultValue(300f)] public float maxShockSpeed = 300f;
 
         [JsonObject]
         public class CloudInfo
@@ -111,7 +133,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            public CloudFluidType fluidType = CloudFluidType.Cloud;
+            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.
@@ -154,6 +176,10 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public bool unlit;
 
+            /// <summary>
+            /// How fast the clouds will rotate relative to the planet in degrees per second.
+            /// </summary>
+            [DefaultValue(0f)] public float rotationSpeed = 0f;
 
             
             #region Obsolete
@@ -183,8 +209,8 @@ namespace NewHorizons.External.Modules
         [Obsolete("CloudRamp is deprecated, please use CloudInfo instead")]
         public string cloudRamp;
 
-        [Obsolete("CloudFluidType is deprecated, please use CloudInfo instead")]
-        public CloudFluidType fluidType;
+        [Obsolete("FluidType is deprecated, please use CloudInfo instead")]
+        public FluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;

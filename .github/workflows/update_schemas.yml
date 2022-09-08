@@ -1,0 +1,40 @@
+name: Update Schemas
+
+on:
+  workflow_call:
+    inputs:
+      artifact_name:
+        required: true
+        description: 'Name of the artifact to download and check against'
+        type: string
+
+# Prevents schemas from trying to update on old commits  
+concurrency:
+  group: "schemas-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  update_schemas:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Download Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact_name }}
+          path: NewHorizons/Schemas/
+          
+      - name: Commit Schemas
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add NewHorizons/Schemas/**
+          git commit -m "Updated Schemas"
+          
+      - name: Push Schemas
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.github_token }}
+          branch: ${{ github.ref }}

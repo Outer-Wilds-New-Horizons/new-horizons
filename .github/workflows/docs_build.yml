@@ -1,30 +1,35 @@
 name: Build Docs
 
 on:
-  push:
-    branches: [ main ]
-    paths:
-      - docs/**
-      - NewHorizons/Schemas/**
-
-  pull_request:
-    paths:
-      - docs/**
-      - NewHorizons/Schemas/**
-
-  workflow_dispatch:
+  workflow_call:
     inputs:
-      relative_path:
-        description: "Path to set for relative files, set to a blank string for local builds"
+      schemas_artifact:
+        description: "Name of the artifact that has updated schemas, set to `null` to not update"
+        default: 'null'
         required: false
-        default: "/"
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - docs/**
+      - NewHorizons/Schemas/*.xsd
 
 env:
-  URL_PREFIX:  ${{ github.events.inputs.relative_path }}
+  URL_PREFIX: '/'
   PIPENV_VENV_IN_PROJECT: 1
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+  
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
   build:
+    name: Build Docs
     runs-on: ubuntu-latest
     
     steps:
@@ -37,10 +42,6 @@ jobs:
       - run: mkdir ./.venv
       
       - run: cp -r docs/** .
-      
-      - if: github.ref == 'refs/heads/main'
-        run: |
-          echo "URL_PREFIX=/" >> $GITHUB_ENV
           
       - name: Cache Dependencies
         uses: actions/cache@v2
@@ -55,6 +56,13 @@ jobs:
         uses: VaultVulp/action-pipenv@v2.0.1
         with:
           command: install --dev
+
+      - name: Download Schemas
+        if: ${{ inputs.schemas_artifact != 'null' }}
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.schemas_artifact }}
+          path: NewHorizons/Schemas
           
       - name: Copy Schemas
         run: cp -rf NewHorizons/Schemas content/pages/
@@ -65,15 +73,21 @@ jobs:
           command: run menagerie generate
           
       - name: Upload Artifact
-        uses: actions/upload-artifact@v2
+        if: success() && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v1
         with:
-          name: Built-Docs
           path: out/
           
-      - name: Deploy To Pages
-        if: success() && github.ref == 'refs/heads/main'
-        uses: JamesIves/github-pages-deploy-action@4.1.5
-        with:
-          branch: gh-pages 
-          folder: out/
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    name: Deploy Docs
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
           

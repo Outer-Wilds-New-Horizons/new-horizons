@@ -43,7 +43,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             if (!data.hit)
             {
-                Logger.Log("Debug Raycast Didn't Hit Anything! (Try moving closer)");
+                Logger.LogWarning("Debug Raycast Didn't Hit Anything! (Try moving closer)");
                 return;
             }
 
@@ -100,7 +100,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
 
                 data.bodyName = o.name;
-                data.bodyPath = SearchUtilities.GetPath(o.transform);
+                data.bodyPath = o.transform.GetPath();
                 data.hitObject = o;
                 data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);
@@ -120,7 +120,7 @@ namespace NewHorizons.Utility.DebugUtilities
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 0, 1);
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 1, 0); // if 0,0,1 was actually the same vector U already was (lol), try (0,1,0) instead
 
-            Logger.Log("Up vector is " + U.ToString());
+            Logger.LogVerbose("Up vector is " + U.ToString());
 
             // stackoverflow.com/a/9605695
             // I don't know exactly how this works, but I'm projecting a point that is located above the plane's origin, relative to the planet, onto the plane. this gets us our v vector

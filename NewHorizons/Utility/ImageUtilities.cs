@@ -6,6 +6,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.UIElements;
 
 namespace NewHorizons.Utility
 {
@@ -20,27 +21,23 @@ namespace NewHorizons.Utility
             return _loadedTextures.ContainsKey(path);
         }
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename)
-        {
-            return GetTexture(mod, filename, true);
-        }
-
-        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps)
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false)
         {
             // Copied from OWML but without the print statement lol
             var path = mod.ModHelper.Manifest.ModFolderPath + filename;
             if (_loadedTextures.ContainsKey(path))
             {
-                Logger.Log($"Already loaded image at path: {path}");
+                Logger.LogVerbose($"Already loaded image at path: {path}");
                 return _loadedTextures[path];
             }
 
-            Logger.Log($"Loading image at path: {path}");
+            Logger.LogVerbose($"Loading image at path: {path}");
             try
             {
                 var data = File.ReadAllBytes(path);
                 var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
                 texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
 
@@ -48,7 +45,8 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
+                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
             }
         }
@@ -70,7 +68,7 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
-            Logger.Log("Clearing image cache");
+            Logger.LogVerbose("Clearing image cache");
 
             foreach (var texture in _loadedTextures.Values)
             {
@@ -116,7 +114,7 @@ namespace NewHorizons.Utility
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
-            newTexture.wrapMode = TextureWrapMode.Clamp;
+            newTexture.wrapMode = texture.wrapMode;
 
             _generatedTextures.Add(newTexture);
 
@@ -199,6 +197,8 @@ namespace NewHorizons.Utility
             outline.SetPixels(outlinePixels);
             outline.Apply();
 
+            outline.wrapMode = texture.wrapMode;
+
             _generatedTextures.Add(outline);
 
             return outline;
@@ -243,6 +243,8 @@ namespace NewHorizons.Utility
             newImage.SetPixels(pixels);
             newImage.Apply();
 
+            newImage.wrapMode = image.wrapMode;
+
             _generatedTextures.Add(newImage);
 
             return newImage;
@@ -263,12 +265,14 @@ namespace NewHorizons.Utility
             newImage.SetPixels(pixels);
             newImage.Apply();
 
+            newImage.wrapMode = image.wrapMode;
+
             _generatedTextures.Add(newImage);
 
             return newImage;
         }
 
-        public static Texture2D ClearTexture(int width, int height)
+        public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
             var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
             tex.name = "Clear";
@@ -280,6 +284,8 @@ namespace NewHorizons.Utility
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
             _generatedTextures.Add(tex);
 
@@ -306,6 +312,8 @@ namespace NewHorizons.Utility
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = src.wrapMode;
 
             _generatedTextures.Add(tex);
 
@@ -368,7 +376,7 @@ namespace NewHorizons.Utility
             {
                 if (_loadedTextures.ContainsKey(url))
                 {
-                    Logger.Log($"Already loaded image at path: {url}");
+                    Logger.LogVerbose($"Already loaded image at path: {url}");
                     var texture = _loadedTextures[url];
                     imageLoadedEvent.Invoke(texture, index);
                     yield break;
@@ -390,7 +398,7 @@ namespace NewHorizons.Utility
 
                         if (_loadedTextures.ContainsKey(url))
                         {
-                            Logger.Log($"Already loaded image at path: {url}");
+                            Logger.LogVerbose($"Already loaded image at path: {url}");
                             Destroy(texture);
                             texture = _loadedTextures[url];
                         }

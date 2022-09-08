@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.Props
             launcherGO.SetActive(true);
 
             // Have to null check else it breaks on reload configs
-            Main.Instance.ModHelper.Events.Unity.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
+            Delay.RunWhen(() => Main.IsSystemReady && meteorLauncher._meteorPool != null, () =>
             {
                 foreach (var meteor in meteorLauncher._meteorPool)
                 {
@@ -45,6 +45,7 @@ namespace NewHorizons.Builder.Props
                 }
             });
         }
+
         private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
         {
             meteor.transform.localScale = Vector3.one * info.scale;
@@ -53,24 +54,16 @@ namespace NewHorizons.Builder.Props
             mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
             mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
 
-            var detectors = meteor.transform.Find("ConstantDetectors").gameObject;
-            GameObject.Destroy(detectors.GetComponent<ConstantForceDetector>());
-            GameObject.Destroy(detectors.GetComponent<ConstantFluidDetector>());
+            GameObject.Destroy(meteor.transform.Find("ConstantDetectors").gameObject);
+
+            var detectors = meteor.transform.Find("DynamicDetector").gameObject;
+
+            meteor._constantFluidDetector = null;
+            meteor._constantForceDetector = null;
 
             var forceDetector = detectors.gameObject.AddComponent<DynamicForceDetector>();
-            detectors.gameObject.AddComponent<DynamicFluidDetector>();
 
-            detectors.layer = LayerMask.NameToLayer("BasicDetector");
-
-            var sphere = detectors.AddComponent<SphereCollider>();
-            sphere.radius = 1;
-
-            var sphere2 = detectors.AddComponent<SphereShape>();
-            sphere2._collisionMode = Shape.CollisionMode.Detector;
-            sphere2.radius = 1;
-
-            forceDetector._collider = sphere;
-            forceDetector._shape = sphere2;
+            meteor._owColliders = meteor.gameObject.GetComponentsInChildren<OWCollider>();
         }
     }
 }

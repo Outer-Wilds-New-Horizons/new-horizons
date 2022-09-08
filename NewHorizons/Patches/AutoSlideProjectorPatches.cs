@@ -7,9 +7,9 @@ namespace NewHorizons.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(AutoSlideProjector), nameof(AutoSlideProjector.Play))]
-        public static void AutoSlideProjector_Play(ref SlideCollectionContainer ____slideCollectionItem)
+        public static void AutoSlideProjector_Play(AutoSlideProjector __instance)
         {
-            ____slideCollectionItem.enabled = true;
+            __instance._slideCollectionItem.enabled = true;
         }
     }
 }

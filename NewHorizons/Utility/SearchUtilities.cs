@@ -1,8 +1,9 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Object = UnityEngine.Object;
+
 namespace NewHorizons.Utility
 {
     public static class SearchUtilities
@@ -11,25 +12,8 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
-            Logger.Log("Clearing search cache");
+            Logger.LogVerbose("Clearing search cache");
             CachedGameObjects.Clear();
-        }
-
-        public static GameObject CachedFind(string path)
-        {
-            if (CachedGameObjects.ContainsKey(path))
-            {
-                return CachedGameObjects[path];
-            }
-            else
-            {
-                GameObject foundObject = GameObject.Find(path);
-                if (foundObject != null)
-                {
-                    CachedGameObjects.Add(path, foundObject);
-                }
-                return foundObject;
-            }
         }
 
         public static List<T> FindObjectsOfTypeAndName<T>(string name) where T : Object
@@ -94,118 +78,63 @@ namespace NewHorizons.Utility
             return null;
         }
 
-        public static string GetPath(Transform current)
+        public static string GetPath(this Transform current)
         {
             if (current.parent == null) return current.name;
-            return GetPath(current.parent) + "/" + current.name;
+            return current.parent.GetPath() + "/" + current.name;
         }
 
-        /*
-        public static GameObject Find(string path)
-        {
-            var go = GameObject.Find(path);
-            if (go != null) return go;
+        public static GameObject FindChild(this GameObject g, string childPath) =>
+            g.transform.Find(childPath)?.gameObject;
 
-            var names = path.Split(new char[] { '\\', '/' });
-
-            foreach (var possibleMatch in FindObjectsOfTypeAndName<GameObject>(names.Last()))
-            {
-                Logger.LogPath(possibleMatch);
-                if (GetPath(possibleMatch.transform) == path) return possibleMatch;
-            }
-
-            return null;
-        }
-        */
-
-        public static GameObject FindChild(GameObject g, string childName)
-        {
-            foreach(Transform child in g.transform)
-            {
-                if (child.gameObject.name == childName) return child.gameObject;
-            }
-
-            return null;
-        }
-
+        /// <summary>
+        /// finds active or inactive object by path,
+        /// or recursively finds an active or inactive object by name
+        /// </summary>
         public static GameObject Find(string path, bool warn = true)
         {
-            if (CachedGameObjects.ContainsKey(path))
+            if (CachedGameObjects.TryGetValue(path, out var go)) return go;
+
+            // 1: normal find
+            go = GameObject.Find(path);
+            if (go)
             {
-                return CachedGameObjects[path];
-            }
-            try
-            {
-                var go = GameObject.Find(path);
-
-                var names = path.Split(new char[] { '\\', '/' });
-                if (go == null)
-                {
-
-                    // Get the root object and hope its the right one
-                    var root = GameObject.Find(names[0]);
-                    if (root == null) root = UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects().Where(x => x.name.Equals(names[0])).FirstOrDefault();
-
-                    var t = root?.transform;
-                    if (t == null)
-                    {
-                        if (warn) Logger.LogWarning($"Couldn't find root object in path ({names[0]})");
-                    }
-                    else
-                    {
-                        for (int i = 1; i < names.Length; i++)
-                        {
-                            var child = t.transform.Find(names[i]);
-
-                            if (child == null)
-                            {
-                                foreach (Transform c in t.GetComponentsInChildren<Transform>(true))
-                                {
-                                    if (c.name.Equals(names[i]))
-                                    {
-                                        child = c;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            if (child == null)
-                            {
-                                if (warn) Logger.LogWarning($"Couldn't find object in path ({names[i]})");
-                                t = null;
-                                break;
-                            }
-
-                            t = child;
-                        }
-                    }
-
-                    go = t?.gameObject;
-                }
-
-                if (go == null)
-                {
-                    var name = names.Last();
-                    if (warn) Logger.LogWarning($"Couldn't find object {path}, will look for potential matches for name {name}");
-                    go = FindObjectOfTypeAndName<GameObject>(name);
-                }
-
-                if (go != null)
-                {
-                    CachedGameObjects.Add(path, go);
-                }
-
+                CachedGameObjects.Add(path, go);
                 return go;
             }
-            catch (Exception)
+
+            // 2: find inactive using root + transform.find
+            var names = path.Split('/');
+
+            var rootName = names[0];
+            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
+
+            var childPath = string.Join("/", names.Skip(1));
+            go = root ? root.FindChild(childPath) : null;
+            if (go)
             {
-                return null;
+                CachedGameObjects.Add(path, go);
+                return go;
             }
+
+            var name = names.Last();
+            if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
+            // 3: find resource to include inactive objects (but skip prefabs
+            go = Resources.FindObjectsOfTypeAll<GameObject>()
+                .FirstOrDefault(x => x.name == name && x.scene.name != null);
+            if (go)
+            {
+                CachedGameObjects.Add(path, go);
+                return go;
+            }
+
+            if (warn) Logger.LogWarning($"Couldn't find object with name {name}");
+            return null;
         }
 
-        public static List<GameObject> GetAllChildren(GameObject parent)
+        public static List<GameObject> GetAllChildren(this GameObject parent)
         {
-            List<GameObject> children = new List<GameObject>();
+            var children = new List<GameObject>();
             foreach (Transform child in parent.transform)
             {
                 children.Add(child.gameObject);

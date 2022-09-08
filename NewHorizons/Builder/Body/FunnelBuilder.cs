@@ -56,6 +56,7 @@ namespace NewHorizons.Builder.Body
             switch (funnelType)
             {
                 case FunnelType.Sand:
+                default:
                     sfv._fluidType = FluidVolume.Type.SAND;
                     break;
                 case FunnelType.Water:
@@ -159,7 +160,7 @@ namespace NewHorizons.Builder.Body
             funnelSizeController.anchor = planetGO.transform;
 
             // Finish up next tick
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
+            Delay.FireOnNextUpdate(() => PostMake(funnelGO, funnelSizeController, module));
         }
 
         private static void PostMake(GameObject funnelGO, FunnelController funnelSizeController, FunnelModule module)

@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Body
         private static Material quantumMaterial;
         private static Material iceMaterial;
 
-        public static void Make(GameObject planetGO, Sector sector, ProcGenModule module)
+        public static GameObject Make(GameObject planetGO, Sector sector, ProcGenModule module)
         {
             if (quantumMaterial == null) quantumMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_QM_EyeRock_mat");
             if (iceMaterial == null) iceMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Rock_BH_IceSpike_mat");
@@ -33,10 +33,14 @@ namespace NewHorizons.Builder.Body
             cubeSphereMC.sharedMesh = mesh;
             icosphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
 
+            var cubeSphereSC = icosphere.AddComponent<SphereCollider>();
+            cubeSphereSC.radius = module.scale;
+
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) icosphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
             icosphere.SetActive(true);
+            return icosphere;
         }
     }
 }

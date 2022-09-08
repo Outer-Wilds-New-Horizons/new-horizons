@@ -64,7 +64,7 @@ navigate to ShipLogManager.
 <!-- Example File -->
 <!-- All files must have "AstroObjectEntry" as their root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but heavily encouraged to reduce errors -->
 <AstroObjectEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
     <ID>EXAMPLE_PLANET</ID> <!-- The ID of the planet this xml file is for -->
 
     <Entry> <!-- An Entry For This Planet -->

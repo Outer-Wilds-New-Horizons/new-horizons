@@ -3,6 +3,8 @@ using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
@@ -11,31 +13,12 @@ namespace NewHorizons.Builder.Body
         {
             var radius = module.radius;
 
-            AudioClip clip = null;
-            if (!string.IsNullOrEmpty(module.audioClip))
-            {
-                clip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(module.audioClip);
-
-                if (clip == null)
-                {
-                    Utility.Logger.LogError($"Couldn't get audio from clip [{module.audioClip}]");
-                }
-            }
-            else if (!string.IsNullOrEmpty(module.audioFilePath))
-            {
-                try
-                {
-                    clip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + module.audioFilePath);
-                }
-                catch { }
-
-                if (clip == null)
-                {
-                    Utility.Logger.LogError($"Couldn't get audio from file [{module.audioFilePath}]");
-                }
-            }
-
             var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
+            if (cloak == null)
+            {
+                Logger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
+                return;
+            }
 
             var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);
             newCloak.transform.position = planetGO.transform.position;
@@ -59,21 +42,18 @@ namespace NewHorizons.Builder.Body
 
             var cloakAudioSource = newCloak.GetComponentInChildren<OWAudioSource>();
             cloakAudioSource._audioSource = cloakAudioSource.GetComponent<AudioSource>();
-            cloakAudioSource._audioLibraryClip = AudioType.None;
-            cloakAudioSource._clipArrayIndex = 0;
-            cloakAudioSource._clipArrayLength = 0;
-            cloakAudioSource._clipSelectionOnPlay = OWAudioSource.ClipSelectionOnPlay.MANUAL;
-            cloakAudioSource.clip = clip;
-
+            bool hasCustomAudio = !string.IsNullOrEmpty(module.audio);
+            if (hasCustomAudio) AudioUtilities.SetAudioClip(cloakAudioSource, module.audio, mod);
+            
             newCloak.SetActive(true);
             cloakFieldController.enabled = true;
 
             cloakSectorController.EnableCloak();
 
             // To cloak from the start
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(clip != null ? cloakSectorController.TurnOnMusic : cloakSectorController.TurnOffMusic);
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(keepReferenceFrame ? cloakSectorController.EnableReferenceFrameVolume : cloakSectorController.DisableReferenceFrameVolume);
+            Delay.FireOnNextUpdate(cloakSectorController.OnPlayerExit);
+            Delay.FireOnNextUpdate(hasCustomAudio ? cloakSectorController.TurnOnMusic : cloakSectorController.TurnOffMusic);
+            Delay.FireOnNextUpdate(keepReferenceFrame ? cloakSectorController.EnableReferenceFrameVolume : cloakSectorController.DisableReferenceFrameVolume);
         }
     }
 }

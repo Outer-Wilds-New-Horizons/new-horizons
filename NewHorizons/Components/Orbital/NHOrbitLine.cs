@@ -55,7 +55,7 @@ namespace NewHorizons.Components.Orbital
                 AstroObject primary = _astroObject?.GetPrimaryBody();
 
                 // If it has nothing to orbit then why is this here
-                if (primary == null)
+                if (primary == null || !primary.gameObject.activeSelf)
                 {
                     base.enabled = false;
                     return;
@@ -85,7 +85,7 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
         }

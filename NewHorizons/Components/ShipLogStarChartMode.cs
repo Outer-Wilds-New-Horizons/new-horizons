@@ -47,8 +47,8 @@ namespace NewHorizons.Components
             _centerPromptList = centerPromptList;
             _upperRightPromptList = upperRightPromptList;
 
-            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, "Rumor Mode", 0, ScreenPrompt.DisplayState.Normal, false);
-            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, "Lock Autopilot to Star System", 0, ScreenPrompt.DisplayState.Normal, false);
+            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, UITextLibrary.GetString(UITextType.LogRumorModePrompt), 0, ScreenPrompt.DisplayState.Normal, false);
+            _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, TranslationHandler.GetTranslation("LOCK_AUTOPILOT_WARP", TranslationHandler.TextType.UI), 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
 
@@ -114,7 +114,7 @@ namespace NewHorizons.Components
             if (name.Length > 17) textComponent.fontSize = 10;
             // Do it next frame
             var fontPath = "Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot/TH_VILLAGE/EntryCardRoot/NameBackground/Name";
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
+            Delay.FireOnNextUpdate(() => textComponent.font = SearchUtilities.Find(fontPath).GetComponent<Text>().font);
 
             newCard.SetActive(true);
             newCard.transform.name = uniqueID;
@@ -133,7 +133,7 @@ namespace NewHorizons.Components
                 else
                 {
                     var path = $"planets/{uniqueID}.png";
-                    Logger.Log($"Trying to load {path}");
+                    Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
             }

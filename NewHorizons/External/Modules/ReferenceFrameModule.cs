@@ -23,7 +23,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Radius of the brackets that show up when you target this. Defaults to the sphere of influence.
         /// </summary>
-        [DefaultValue(-1)] public float bracketRadius = -1;
+        [DefaultValue(-1f)] public float bracketRadius = -1f;
 
         /// <summary>
         /// If it should be targetable even when super close.
@@ -39,5 +39,10 @@ namespace NewHorizons.External.Modules
         /// The radius of the sphere around the planet which you can click on to target it. Defaults to twice the sphere of influence.
         /// </summary>
         public float targetColliderRadius;
+
+        /// <summary>
+        /// Position of the reference frame relative to the object.
+        /// </summary>
+        public MVector3 localPosition;
     }
 }

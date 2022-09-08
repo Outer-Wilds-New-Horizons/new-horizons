@@ -142,7 +142,7 @@ namespace NewHorizons.Utility.DebugMenu
             Vector3 latestPropSphericalPosDelta = VectorInput(mostRecentlyPlacedPropSphericalPos, propSphericalPosDelta, out propSphericalPosDelta, "lat   ", "lon   ", "height");
             if (latestPropSphericalPosDelta != Vector3.zero)
             {
-                DeltaSphericalPosition(mostRecentlyPlacedProp, latestPropSphericalPosDelta);
+                SetSphericalPosition(mostRecentlyPlacedProp, mostRecentlyPlacedPropSphericalPos + latestPropSphericalPosDelta);
                 mostRecentlyPlacedPropSphericalPos = mostRecentlyPlacedPropSphericalPos + latestPropSphericalPosDelta;
             }
 
@@ -205,6 +205,40 @@ namespace NewHorizons.Utility.DebugMenu
             // then we apply the rotation about the astroobject using FromTooRotation
             // then we reapply the local rotations down through the hierarchy
             prop.transform.rotation = astroObject.rotation * Quaternion.FromToRotation(originalLocalPos.normalized, finalLocalPosition.normalized) * sector.localRotation * prop.transform.localRotation;
+
+            return newSpherical;
+        }
+
+        // DB_EscapePodDimension_Body/Sector_EscapePodDimension/Interactables_EscapePodDimension/InnerWarp_ToAnglerNest
+        // DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Interactables_ExitOnlyDimension/InnerWarp_ToExitOnly  // need to change the colors
+        // DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster   // need to delete the child "Signal_Harmonica"
+
+        private Vector3 SetSphericalPosition(GameObject prop, Vector3 newSpherical)
+        {
+            Transform astroObject = prop.transform.parent.parent;
+            Transform sector = prop.transform.parent;
+            Vector3 originalLocalPos = astroObject.InverseTransformPoint(prop.transform.position); // parent is the sector, this gives localPos relative to the astroobject (what the DetailBuilder asks for)
+            Vector3 sphericalPos = CoordinateUtilities.CartesianToSpherical(originalLocalPos);
+
+            if (newSpherical == sphericalPos) return sphericalPos;
+
+            Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(newSpherical);
+            Vector3 finalAbsolutePosition = astroObject.TransformPoint(finalLocalPosition);
+            prop.transform.localPosition = prop.transform.parent.InverseTransformPoint(finalAbsolutePosition);
+            Logger.Log("new position: " + prop.transform.localPosition);
+
+            var onlyChangingRAndRIsNegative = false;
+
+            // first, rotate the object by the astroObject's rotation, that means anything afterwards is relative to this rotation (ie, we can pretend the astroObject has 0 rotation)
+            // then, rotate by the difference in position, basically accounting for the curvature of a sphere
+            // then re-apply the local rotations of the hierarchy down to the prop (apply the sector local rotation, then the prop local rotation)
+
+            // since we're doing all rotation relative to the astro object, we start with its absolute rotation
+            // then we apply the rotation about the astroobject using FromTooRotation
+            // then we reapply the local rotations down through the hierarchy
+            Vector3 originalLocalPos_ForcedPositiveR = CoordinateUtilities.SphericalToCartesian(new Vector3(sphericalPos.x, sphericalPos.y, Mathf.Abs(sphericalPos.z)));
+            Vector3 finalLocalPos_ForcedPositiveR    = CoordinateUtilities.SphericalToCartesian(new Vector3(newSpherical.x, newSpherical.y, Mathf.Abs(newSpherical.z)));
+            if (!onlyChangingRAndRIsNegative) prop.transform.rotation = astroObject.rotation * Quaternion.FromToRotation(originalLocalPos_ForcedPositiveR.normalized, finalLocalPos_ForcedPositiveR.normalized) * sector.localRotation * prop.transform.localRotation;
 
             return newSpherical;
         }
@@ -311,14 +345,14 @@ namespace NewHorizons.Utility.DebugMenu
             // Get all configs
             foreach (var filePath in menu.loadedConfigFiles.Keys)
             {
-                Logger.Log($"Potentially updating copy of config at {filePath}");
-                Logger.Log($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
-                Logger.Log($"{menu.loadedConfigFiles[filePath].name}");
+                Logger.LogVerbose($"Potentially updating copy of config at {filePath}");
+                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
+                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name}");
 
                 if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) 
                 { 
-                    Logger.Log("Failed to update copy of config at " + filePath); 
+                    Logger.LogWarning("Failed to update copy of config at " + filePath); 
                     continue; 
                 }
 

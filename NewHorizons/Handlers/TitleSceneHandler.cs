@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.Handlers
 {
@@ -36,7 +35,7 @@ namespace NewHorizons.Handlers
             var selectionCount = Mathf.Min(eligibleCount, 3);
             var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            Logger.Log($"Displaying {selectionCount} bodies on the title screen");
+            Logger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
             GameObject body1, body2, body3;
 
@@ -67,14 +66,15 @@ namespace NewHorizons.Handlers
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
             var light = lightGO.AddComponent<Light>();
-            light.color = new Color(1f, 1f, 1f, 1f);
-            light.range = 100;
+            light.type = LightType.Directional;
+            light.color = Color.white;
+            light.range = float.PositiveInfinity;
             light.intensity = 0.8f;
         }
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.Log($"Displaying {body.Config.name} on the title screen");
+            Logger.LogVerbose($"Displaying {body.Config.name} on the title screen");
             GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
             HeightMapModule heightMap = new HeightMapModule();
             var minSize = 15;
@@ -89,7 +89,7 @@ namespace NewHorizons.Handlers
                 heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
                 heightMap.stretch = body.Config.HeightMap.stretch;
             }
-            if (body.Config.Atmosphere?.clouds?.texturePath != null)
+            if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
                 // Hacky but whatever I just want a sphere
                 size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);

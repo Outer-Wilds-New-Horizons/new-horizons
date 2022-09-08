@@ -1,4 +1,4 @@
-using NewHorizons.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus;
 using UnityEngine;
 
 namespace NewHorizons.Components.Achievement
@@ -9,7 +9,6 @@ namespace NewHorizons.Components.Achievement
         {
             _trigger = gameObject.GetRequiredComponent<OWTriggerVolume>();
             _trigger.OnEntry += OnEntry;
-            return;
         }
 
         private void OnDestroy()

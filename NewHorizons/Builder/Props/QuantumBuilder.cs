@@ -216,7 +216,7 @@ namespace NewHorizons.Builder.Props
 
         void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { Logger.Log("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) { Logger.LogVerbose("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;

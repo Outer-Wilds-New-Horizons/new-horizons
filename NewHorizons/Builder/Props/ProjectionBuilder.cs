@@ -65,6 +65,20 @@ namespace NewHorizons.Builder.Props
             }
 
             slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    slideReelObj.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
             slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
@@ -83,7 +97,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -129,8 +143,7 @@ namespace NewHorizons.Builder.Props
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
-            OWAssetHandler.LoadObject(slideReelObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(slideReelObj));
+            StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
             slideReelObj.SetActive(true);
         }
@@ -157,6 +170,20 @@ namespace NewHorizons.Builder.Props
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
 
             autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    autoProjector.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
             autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
 
@@ -172,7 +199,7 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
@@ -180,8 +207,7 @@ namespace NewHorizons.Builder.Props
 
             slideCollectionContainer.slideCollection = slideCollection;
 
-            OWAssetHandler.LoadObject(projectorObj);
-            sector.OnOccupantEnterSector.AddListener((x) => OWAssetHandler.LoadObject(projectorObj));
+            StreamingHandler.SetUpStreaming(projectorObj, sector);
 
             // Change the picture on the lens
             var lens = projectorObj.transform.Find("Spotlight/Prop_IP_SingleSlideProjector/Projector_Lens").GetComponent<MeshRenderer>();
@@ -195,8 +221,27 @@ namespace NewHorizons.Builder.Props
         public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
             // spawn a trigger for the vision torch
-            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostNodeMap_PrisonCell_Lower/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            var g = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, Vector3.zero, 2, false);
+            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
+            var prefab = SearchUtilities.Find(path);
+            var detailInfo = new PropModule.DetailInfo()
+            {
+                position = info.position,
+                scale = 2
+            };
+            var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    g.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             if (g == null)
             {
@@ -220,20 +265,18 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
 
-
-            // attatch a component to store all the data for the slides that play when a vision torch scans this target
+            // attach a component to store all the data for the slides that play when a vision torch scans this target
             var target = g.AddComponent<VisionTorchTarget>();
             var slideCollectionContainer = g.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
-            target.slideCollectionContainer = slideCollectionContainer;
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
@@ -243,12 +286,28 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            //
-            // spawn the torch itself
-            //
-
+            // Spawn the torch itself
             var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
-            var standingTorch = DetailBuilder.MakeDetail(planetGO, sector, path, info.position, info.rotation, 1, false);
+            var prefab = SearchUtilities.Find(path);
+            var detailInfo = new PropModule.DetailInfo()
+            {
+                position = info.position,
+                rotation = info.rotation
+            };
+            var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    standingTorch.transform.SetParent(newParent, true);
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             if (standingTorch == null)
             {
@@ -256,22 +315,16 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            //
-            // set some required properties on the torch
-            //
-
+            // Set some required properties on the torch
             var mindSlideProjector = standingTorch.GetComponent<MindSlideProjector>();
             mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
             
-            // setup for visually supporting async texture loading
+            // Setup for visually supporting async texture loading
             mindSlideProjector.enabled = false;	
-            var visionBeamEffect = SearchUtilities.FindChild(standingTorch, "VisionBeam");
+            var visionBeamEffect = standingTorch.FindChild("VisionBeam");
             visionBeamEffect.SetActive(false);
 
-            //
-            // set up slides
-            //
-
+            // Set up slides
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
             var slidesCount = slides.Length;
@@ -285,13 +338,13 @@ namespace NewHorizons.Builder.Props
 
                 imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
-                AddModules(slideInfo, ref slide);
+                AddModules(slideInfo, ref slide, mod);
 
                 slideCollection.slides[i] = slide;
             }
             
-            // this variable just lets us track how many of the slides have been loaded.
-            // this way as soon as the last one is loaded (due to async loading, this may be
+            // This variable just lets us track how many of the slides have been loaded.
+            // This way as soon as the last one is loaded (due to async loading, this may be
             // slide 7, or slide 3, or whatever), we can enable the vision torch. This allows us
             // to avoid doing a "is every element in the array `slideCollection.slides` not null" check every time a texture finishes loading
             int displaySlidesLoaded = 0;
@@ -309,16 +362,13 @@ namespace NewHorizons.Builder.Props
                 }
             );
 
-            // set up the containers for the slides
+            // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // make sure that these slides play when the player wanders into the beam
-            // _slideCollectionItem is actually a reference to a SlideCollectionContainer. Not a slide reel item
-            mindSlideProjector._mindSlideCollection = mindSlideCollection;
-            mindSlideProjector._slideCollectionItem = slideCollectionContainer; 
+            // Make sure that these slides play when the player wanders into the beam
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
 
@@ -328,20 +378,20 @@ namespace NewHorizons.Builder.Props
             return standingTorch;
         }
 
-        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide)
+        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
             if (!String.IsNullOrEmpty(slideInfo.beatAudio))
             {
                 var audioBeat = new SlideBeatAudioModule();
-                audioBeat._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.beatAudio);
+                audioBeat._audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod);
                 audioBeat._delay = slideInfo.beatDelay;
                 modules.Add(audioBeat);
             }
             if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
             {
                 var audioBackdrop = new SlideBackdropAudioModule();
-                audioBackdrop._audioType = (AudioType)Enum.Parse(typeof(AudioType), slideInfo.backdropAudio);
+                audioBackdrop._audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod);
                 audioBackdrop._fadeTime = slideInfo.backdropFadeTime;
                 modules.Add(audioBackdrop);
             }
@@ -380,7 +430,13 @@ namespace NewHorizons.Builder.Props
     public class VisionTorchTarget : MonoBehaviour
     {
         public MindSlideCollection slideCollection;
-        public SlideCollectionContainer slideCollectionContainer;
+
+        // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events when the mind slide show starts.
+        public OWEvent.OWCallback onSlidesStart;
+
+        // This Callback is never used in NH itself.
+        // It exists for addons that want to trigger events after the mind slide show is complete.
         public OWEvent.OWCallback onSlidesComplete;
     }
 }

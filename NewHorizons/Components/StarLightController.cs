@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using NewHorizons.Builder.Atmosphere;
+using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components
@@ -7,6 +8,9 @@ namespace NewHorizons.Components
     [RequireComponent(typeof(SunLightParamUpdater))]
     public class StarLightController : MonoBehaviour
     {
+        private static readonly int SunIntensity = Shader.PropertyToID("_SunIntensity");
+        private static readonly float hearthSunDistanceSqr = 8593 * 8593;
+
         public static StarLightController Instance { get; private set; }
 
         private List<StarController> _stars = new List<StarController>();
@@ -28,13 +32,13 @@ namespace NewHorizons.Components
         {
             if (star == null) return;
 
-            Logger.Log($"Adding new star to list: {star.gameObject.name}");
+            Logger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
             Instance._stars.Add(star);
         }
 
         public static void RemoveStar(StarController star)
         {
-            Logger.Log($"Removing star from list: {star?.gameObject?.name}");
+            Logger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
                 if (Instance._activeStar != null && Instance._activeStar.Equals(star))
@@ -57,12 +61,27 @@ namespace NewHorizons.Components
                 if (_stars.Count > 0) ChangeActiveStar(_stars[0]);
                 else gameObject.SetActive(false);
 
+                foreach (var (_, material) in AtmosphereBuilder.Skys)
+                {
+                    material.SetFloat(SunIntensity, 0);
+                }
+
                 return;
+            }
+
+            // Update atmo shaders
+            foreach (var (planet, material) in AtmosphereBuilder.Skys)
+            {
+                var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
+                var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
+
+                material.SetFloat(SunIntensity, intensity);
             }
 
             foreach (var star in _stars)
             {
                 if (star == null) continue;
+                if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
 
                 // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
                 var origin = Vector3.zero;
@@ -85,7 +104,7 @@ namespace NewHorizons.Components
 
             if (_activeStar != null) _activeStar.Disable();
 
-            Logger.Log($"Switching active star: {star.gameObject.name}");
+            Logger.LogVerbose($"Switching active star: {star.gameObject.name}");
 
             _activeStar = star;
 

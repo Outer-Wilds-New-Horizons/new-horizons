@@ -52,7 +52,6 @@ namespace NewHorizons.Builder.Orbital
             if (config.Orbit.tint != null) color = config.Orbit.tint.ToColor();
             else if (config.Star?.tint != null) color = config.Star.tint.ToColor();
             else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint.ToColor();
-            else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);
             else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint.ToColor();
@@ -70,6 +69,7 @@ namespace NewHorizons.Builder.Orbital
             */
 
             orbitLine._color = color;
+            lineRenderer.endColor = new Color(color.r, color.g, color.b, 0f);
 
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
@@ -78,7 +78,7 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.semiMajorAxis / 1000f, numVerts, 4096);
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+            Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
             return orbitLine;
         }

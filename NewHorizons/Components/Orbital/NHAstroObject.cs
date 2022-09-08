@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 namespace NewHorizons.Components.Orbital
 {
     public class NHAstroObject : AstroObject, IOrbitalParameters
@@ -10,6 +10,8 @@ namespace NewHorizons.Components.Orbital
         public float argumentOfPeriapsis { get; set; }
         public float trueAnomaly { get; set; }
         public bool HideDisplayName { get; set; }
+        public bool IsDimension { get; set; }
+        public bool invulnerableToSun;
 
         public void SetOrbitalParametersFromConfig(OrbitModule orbit)
         {
