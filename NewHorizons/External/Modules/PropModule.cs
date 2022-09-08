@@ -139,6 +139,11 @@ namespace NewHorizons.External.Modules
             /// The highest height that these objects will be placed at (only relevant if there's a heightmap)
             /// </summary>
             public float? maxHeight;
+            
+            /// <summary>
+            /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+            /// </summary>
+            public bool keepLoaded;
         }
 
         [JsonObject]

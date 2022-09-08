@@ -96,6 +96,7 @@ namespace NewHorizons.Builder.Props
                     {
                         position = point.normalized * height,
                         scale = propInfo.scale,
+                        keepLoaded = propInfo.keepLoaded,
                         alignToNormal = true
                     };
                     var prop = DetailBuilder.Make(go, sector, prefab, detailInfo);
