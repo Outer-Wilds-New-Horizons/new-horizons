@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Dein Schiff ist nun mit einem Warpantrieb ausgestattet!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Du kannst den neuen \"Interstellar Modus\" aus dem Schiffslogbuch auswählen um mit dem Autopilot in andere Sternensysteme zu reisen.",

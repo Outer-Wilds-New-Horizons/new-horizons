@@ -89,7 +89,7 @@ namespace NewHorizons.Handlers
                 heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
                 heightMap.stretch = body.Config.HeightMap.stretch;
             }
-            if (body.Config.Atmosphere?.clouds?.texturePath != null)
+            if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
                 // Hacky but whatever I just want a sphere
                 size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);

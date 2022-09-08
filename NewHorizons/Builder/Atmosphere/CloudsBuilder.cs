@@ -11,6 +11,7 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static Material[] _gdCloudMaterials;
         private static Material[] _qmCloudMaterials;
+        private static Material _transparentCloud;
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
         private static readonly int Color = Shader.PropertyToID("_Color");
@@ -18,6 +19,7 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int RampTex = Shader.PropertyToID("_RampTex");
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
+        private static readonly int Smoothness = Shader.PropertyToID("_Glossiness");
 
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
         {
@@ -28,7 +30,15 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsMainGO.SetActive(false);
             cloudsMainGO.transform.parent = sector?.transform ?? planetGO.transform;
 
-            MakeTopClouds(cloudsMainGO, atmo, mod);
+            if (atmo.clouds.cloudsPrefab != CloudPrefabType.Transparent) MakeTopClouds(cloudsMainGO, atmo, mod);
+            else
+            {
+                MakeTransparentClouds(cloudsMainGO, atmo, mod);
+                if (atmo.clouds.hasLightning) MakeLightning(cloudsMainGO, sector, atmo);
+                cloudsMainGO.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+                cloudsMainGO.SetActive(true);
+                return;
+            }
 
             GameObject cloudsBottomGO = new GameObject("BottomClouds");
             cloudsBottomGO.SetActive(false);
@@ -114,7 +124,7 @@ namespace NewHorizons.Builder.Atmosphere
             lightning.transform.localPosition = Vector3.zero;
 
             var lightningGenerator = lightning.GetComponent<CloudLightningGenerator>();
-            lightningGenerator._altitude = (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f;
+            lightningGenerator._altitude = atmo.clouds.cloudsPrefab != CloudPrefabType.Transparent ? (atmo.clouds.outerCloudRadius + atmo.clouds.innerCloudRadius) / 2f : atmo.clouds.outerCloudRadius;
             if (noAudio)
             {
                 lightningGenerator._audioPrefab = null;
@@ -177,7 +187,7 @@ namespace NewHorizons.Builder.Atmosphere
                 var material = new Material(Shader.Find("Standard"));
                 if (atmo.clouds.unlit) material.renderQueue = 3000;
                 material.name = atmo.clouds.unlit ? "BasicCloud" : "BasicShadowCloud";
-                material.SetFloat(279, 0f); // smoothness
+                material.SetFloat(Smoothness, 0f);
                 tempArray[0] = material;
             }
             else
@@ -217,6 +227,66 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsTopGO.SetActive(true);
 
             return cloudsTopGO;
+        }
+
+        public static GameObject MakeTransparentClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod, bool isProxy = false)
+        {
+            Texture2D image;
+
+            try
+            {
+                image = ImageUtilities.GetTexture(mod, atmo.clouds.texturePath);
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Couldn't load Cloud texture for [{atmo.clouds.texturePath}]:\n{e}");
+                return null;
+            }
+
+            GameObject cloudsTransparentGO = new GameObject("TransparentClouds");
+            cloudsTransparentGO.SetActive(false);
+            cloudsTransparentGO.transform.parent = rootObject.transform;
+            cloudsTransparentGO.transform.localScale = Vector3.one * atmo.clouds.outerCloudRadius;
+
+            MeshFilter filter = cloudsTransparentGO.AddComponent<MeshFilter>();
+            filter.mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+
+            MeshRenderer renderer = cloudsTransparentGO.AddComponent<MeshRenderer>();
+            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
+            var material = new Material(_transparentCloud);
+            material.name = "TransparentClouds_" + image.name;
+            material.SetTexture(MainTex, image);
+            renderer.sharedMaterial = material;
+
+            if (!isProxy)
+            {
+                GameObject tcrqcGO = new GameObject("TransparentCloudRenderQueueController");
+                tcrqcGO.transform.SetParent(cloudsTransparentGO.transform, false);
+                tcrqcGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+
+                var shape = tcrqcGO.AddComponent<SphereShape>();
+                shape.radius = 1;
+
+                var owTriggerVolume = tcrqcGO.AddComponent<OWTriggerVolume>();
+                owTriggerVolume._shape = shape;
+
+                TransparentCloudRenderQueueController tcrqc = tcrqcGO.AddComponent<TransparentCloudRenderQueueController>();
+                tcrqc.renderer = renderer;
+            }
+
+            if (atmo.clouds.rotationSpeed != 0f)
+            {
+                var rt = cloudsTransparentGO.AddComponent<RotateTransform>();
+                rt._localAxis = Vector3.up;
+                rt._degreesPerSecond = atmo.clouds.rotationSpeed;
+                rt._randomizeRotationRate = false;
+            }
+
+            cloudsTransparentGO.transform.localPosition = Vector3.zero;
+
+            cloudsTransparentGO.SetActive(true);
+
+            return cloudsTransparentGO;
         }
     }
 }
