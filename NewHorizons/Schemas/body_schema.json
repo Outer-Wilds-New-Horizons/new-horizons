@@ -1391,6 +1391,10 @@
           ],
           "description": "The highest height that these objects will be placed at (only relevant if there's a heightmap)",
           "format": "float"
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
         }
       }
     },
