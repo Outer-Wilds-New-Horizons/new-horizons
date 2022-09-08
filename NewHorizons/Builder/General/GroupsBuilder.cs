@@ -3,10 +3,10 @@ using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.General;
 
-public static class GroupBuilder
+public static class GroupsBuilder
 {
     /// <summary>
-    /// puts groups on objects.
+    /// puts groups on an object, activated by sector.
     /// run this before the gameobject is active.
     /// </summary>
     public static void Make(GameObject go, Sector sector)

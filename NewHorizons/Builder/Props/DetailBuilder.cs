@@ -101,7 +101,7 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
 
-            if (!detail.keepLoaded) GroupBuilder.Make(prop, sector);
+            if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
             if (prop == null) return null;
