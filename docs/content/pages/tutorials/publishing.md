@@ -35,7 +35,7 @@ Double check the release, it should have a zip file in the assets with your mod'
 
 The hard part is over now, all that's left is to submit your mod to the database.  
 
-[Head to the mod database and make a new "Add/Update Existing Mod" issue](#) <!-- TODO: Paste link for issue here, vim is dumb -->
+[Head to the mod database and make a new "Add/Update Existing Mod" issue](https://github.com/ow-mods/ow-mod-db/issues/new?assignees=&labels=add-mod&template=add-mod.yml&title=%5BYour+mod+name+here%5D)
 
 Fill this out with your mod's info and make sure to put `xen.NewHorizons` in the parent mod field.  
 
