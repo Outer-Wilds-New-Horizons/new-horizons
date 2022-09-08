@@ -1,6 +1,6 @@
 ---
 Title: Detailing
-Sort_Priority: 85
+Sort_Priority: 80
 ---
 
 # Details/Scatterer

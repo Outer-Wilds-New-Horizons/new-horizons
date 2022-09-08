@@ -54,7 +54,7 @@ You can start the game from the editor by selecting Project -> Run Project this 
 
 If you're using the mod manager and would like logs to appear there, you need to get the log port from the console, it's always the first entry in the logs. Keep in mind this port changes whenever you restart the manager.
 
-![TODO: Get Log Screenshot]()
+![Get the log port]({{ "images/editor/log_port.webp"|static }})
 
 
 ## Building

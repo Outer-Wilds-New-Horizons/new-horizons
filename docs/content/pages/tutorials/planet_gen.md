@@ -1,6 +1,6 @@
 ---
 Title: Planet Generation
-Sort_Priority: 80
+Sort_Priority: 85
 ---
 
 # Planet Generation
