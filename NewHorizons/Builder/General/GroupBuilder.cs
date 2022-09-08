@@ -11,15 +11,14 @@ public static class GroupBuilder
     /// </summary>
     public static void Make(GameObject go, Sector sector)
     {
-        Logger.LogVerbose($"putting groups on {go} (linked to {sector})");
         if (!sector)
         {
-            Logger.LogWarning("tried to put groups on a null sector");
+            Logger.LogWarning($"tried to put groups on {go.name} when sector is null");
             return;
         }
         if (go.activeInHierarchy)
         {
-            Logger.LogWarning("tried to put groups on an active gameobject");
+            Logger.LogWarning($"tried to put groups on an active gameobject {go.name}");
             return;
         }
 
