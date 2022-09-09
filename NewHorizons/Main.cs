@@ -502,7 +502,7 @@ namespace NewHorizons
 
                     if(systemFiles.Length == 0)
                     {
-                        Logger.LogWarning($"Found no JSON files in systems folder: {systemsFolder}");
+                        Logger.LogVerbose($"Found no JSON files in systems folder: {systemsFolder}");
                     }
 
                     foreach (var file in systemFiles)
@@ -546,7 +546,7 @@ namespace NewHorizons
 
                     if(planetFiles.Length == 0)
                     {
-                        Logger.LogWarning($"Found no JSON files in planets folder: {planetsFolder}");
+                        Logger.LogVerbose($"Found no JSON files in planets folder: {planetsFolder}");
                     }
 
                     foreach (var file in planetFiles)
