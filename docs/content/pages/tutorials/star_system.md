@@ -1,7 +1,7 @@
 ---
-Title: Star System
+Title: Star Systems
 Description: A guide to editing a custom star system in New Horizons
-Sort_Priority: 90
+Sort_Priority: 65
 ---
 
 # Intro
