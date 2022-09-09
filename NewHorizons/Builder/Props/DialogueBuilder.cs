@@ -211,7 +211,7 @@ namespace NewHorizons.Builder.Props
                 {
                     XmlNode pageData = (XmlNode)Page;
                     var text = pageData.InnerText;
-                    // The text is trimmed in CharacterDialogueTree.LoadXml, so we also need to trim it for the key
+                    // The text is trimmed in DialogueText constructor (_listTextBlocks), so we also need to trim it for the key
                     TranslationHandler.AddDialogue(text, true, name);
                 }
 
@@ -220,7 +220,7 @@ namespace NewHorizons.Builder.Props
                 {
                     XmlNode pageData = (XmlNode)Page;
                     var text = pageData.InnerText;
-                    // The text is trimmed in DialogueText constructor (_listTextBlocks), so we also need to trim it for the key
+                    // The text is trimmed in CharacterDialogueTree.LoadXml, so we also need to trim it for the key
                     TranslationHandler.AddDialogue(text, true, characterName, name);
                 }
             }
