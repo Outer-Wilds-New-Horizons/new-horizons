@@ -490,10 +490,22 @@ namespace NewHorizons
                 }
                 var folder = mod.ModHelper.Manifest.ModFolderPath;
 
+                var systemsFolder = Path.Combine(folder, "systems");
+                var planetsFolder = Path.Combine(folder, "planets");
+
                 // Load systems first so that when we load bodies later we can check for missing ones
-                if (Directory.Exists(folder + @"systems\"))
+                if (Directory.Exists(systemsFolder))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json?", SearchOption.AllDirectories))
+                    var systemFiles = Directory.GetFiles(systemsFolder, "*.json", SearchOption.AllDirectories)
+                        .Concat(Directory.GetFiles(systemsFolder, "*.jsonc", SearchOption.AllDirectories))
+                        .ToArray();
+
+                    if(systemFiles.Length == 0)
+                    {
+                        Logger.LogWarning($"Found no JSON files in systems folder: {systemsFolder}");
+                    }
+
+                    foreach (var file in systemFiles)
                     {
                         var name = Path.GetFileNameWithoutExtension(file);
 
@@ -526,9 +538,18 @@ namespace NewHorizons
                         }
                     }
                 }
-                if (Directory.Exists(folder + "planets"))
+                if (Directory.Exists(planetsFolder))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json?", SearchOption.AllDirectories))
+                    var planetFiles = Directory.GetFiles(planetsFolder, "*.json", SearchOption.AllDirectories)
+                        .Concat(Directory.GetFiles(planetsFolder, "*.jsonc", SearchOption.AllDirectories))
+                        .ToArray();
+
+                    if(planetFiles.Length == 0)
+                    {
+                        Logger.LogWarning($"Found no JSON files in planets folder: {planetsFolder}");
+                    }
+
+                    foreach (var file in planetFiles)
                     {
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
