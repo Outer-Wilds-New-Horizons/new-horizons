@@ -28,5 +28,10 @@ namespace NewHorizons.External.Configs
         /// Credits info for this mod. A list of contributors and their roles separated by #. For example: xen#New Horizons dev.
         /// </summary>
         public string[] credits;
+
+        /// <summary>
+        /// A pop-up message for the first time a user runs the add-on
+        /// </summary>
+        public string popupMessage;
     }
 }

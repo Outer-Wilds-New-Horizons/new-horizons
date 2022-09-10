@@ -67,6 +67,10 @@ namespace NewHorizons.External.Configs
 
         [Obsolete("Signal is deprecated, please use Props->signals")]
         public SignalModule Signal;
+
+        [Obsolete("Ring is deprecated, please use Rings")]
+        public RingModule Ring;
+
         #endregion Obsolete
 
         /// <summary>
@@ -135,9 +139,9 @@ namespace NewHorizons.External.Configs
         public string[] removeChildren;
 
         /// <summary>
-        /// Creates a ring around the planet
+        /// Create rings around the planet
         /// </summary>
-        public RingModule Ring;
+        public RingModule[] Rings;
 
         /// <summary>
         /// Add sand to this planet
@@ -401,10 +405,20 @@ namespace NewHorizons.External.Configs
                 if (!string.IsNullOrEmpty(Cloak.audioFilePath)) Cloak.audio = Cloak.audioFilePath;
             }
 
-            // Rings are no longer variable size module
+            // Ring is now a list so you can have many per planet
             if (Ring != null)
             {
-                if (Ring.curve != null) Ring.scaleCurve = Ring.curve;
+                if (Rings == null) Rings = new RingModule[0];
+                Rings = Rings.Append(Ring).ToArray();
+            }
+
+            // Rings are no longer variable size module
+            if (Rings != null)
+            {
+                foreach (var ring in Rings)
+                {
+                    if (ring.curve != null) ring.scaleCurve = ring.curve;
+                }
             }
         }
     }

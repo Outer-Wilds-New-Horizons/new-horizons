@@ -95,38 +95,41 @@ namespace NewHorizons.Utility
         {
             if (CachedGameObjects.TryGetValue(path, out var go)) return go;
 
+            // 1: normal find
             go = GameObject.Find(path);
-            if (go == null)
+            if (go)
             {
-                // find inactive use root + transform.find
-                var names = path.Split('/');
-                var rootName = names[0];
-                var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
-                if (root == null)
-                {
-                    if (warn) Logger.LogWarning($"Couldn't find root object in path {path}");
-                    return null;
-                }
-
-                var childPath = string.Join("/", names.Skip(1));
-                go = root.FindChild(childPath);
-                if (go == null)
-                {
-                    var name = names.Last();
-                    if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
-                    // find resource to include inactive objects
-                    // also includes prefabs but hopefully thats okay
-                    go = FindResourceOfTypeAndName<GameObject>(name);
-                    if (go == null)
-                    {
-                        if (warn) Logger.LogWarning($"Couldn't find object with name {name}");
-                        return null;
-                    }
-                }
+                CachedGameObjects.Add(path, go);
+                return go;
             }
 
-            CachedGameObjects.Add(path, go);
-            return go;
+            // 2: find inactive using root + transform.find
+            var names = path.Split('/');
+
+            var rootName = names[0];
+            var root = SceneManager.GetActiveScene().GetRootGameObjects().FirstOrDefault(x => x.name == rootName);
+
+            var childPath = string.Join("/", names.Skip(1));
+            go = root ? root.FindChild(childPath) : null;
+            if (go)
+            {
+                CachedGameObjects.Add(path, go);
+                return go;
+            }
+
+            var name = names.Last();
+            if (warn) Logger.LogWarning($"Couldn't find object in path {path}, will look for potential matches for name {name}");
+            // 3: find resource to include inactive objects (but skip prefabs
+            go = Resources.FindObjectsOfTypeAll<GameObject>()
+                .FirstOrDefault(x => x.name == name && x.scene.name != null);
+            if (go)
+            {
+                CachedGameObjects.Add(path, go);
+                return go;
+            }
+
+            if (warn) Logger.LogWarning($"Couldn't find object with name {name}");
+            return null;
         }
 
         public static List<GameObject> GetAllChildren(this GameObject parent)

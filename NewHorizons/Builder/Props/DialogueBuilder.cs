@@ -207,19 +207,21 @@ namespace NewHorizons.Builder.Props
                 var name = xmlNode2.SelectSingleNode("Name").InnerText;
 
                 XmlNodeList xmlText = xmlNode2.SelectNodes("Dialogue/Page");
-                foreach (object Page in xmlText)
+                foreach (object page in xmlText)
                 {
-                    XmlNode pageData = (XmlNode)Page;
+                    XmlNode pageData = (XmlNode)page;
                     var text = pageData.InnerText;
-                    TranslationHandler.AddDialogue(text, name);
+                    // The text is trimmed in DialogueText constructor (_listTextBlocks), so we also need to trim it for the key
+                    TranslationHandler.AddDialogue(text, true, name);
                 }
 
                 xmlText = xmlNode2.SelectNodes("DialogueOptionsList/DialogueOption/Text");
-                foreach (object Page in xmlText)
+                foreach (object option in xmlText)
                 {
-                    XmlNode pageData = (XmlNode)Page;
-                    var text = pageData.InnerText;
-                    TranslationHandler.AddDialogue(text, characterName, name);
+                    XmlNode optionData = (XmlNode)option;
+                    var text = optionData.InnerText;
+                    // The text is trimmed in CharacterDialogueTree.LoadXml, so we also need to trim it for the key
+                    TranslationHandler.AddDialogue(text, true, characterName, name);
                 }
             }
         }

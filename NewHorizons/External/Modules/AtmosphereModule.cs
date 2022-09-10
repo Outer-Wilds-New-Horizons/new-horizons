@@ -30,6 +30,8 @@ namespace NewHorizons.External.Modules
         [EnumMember(Value = @"quantumMoon")] QuantumMoon = 1,
 
         [EnumMember(Value = @"basic")] Basic = 2,
+
+        [EnumMember(Value = @"transparent")] Transparent = 3,
     }
 
     [JsonObject]
@@ -99,6 +101,11 @@ namespace NewHorizons.External.Modules
         /// visual.
         /// </summary>
         public bool useAtmosphereShader;
+
+        /// <summary>
+        /// Whether this atmosphere will have flames appear when your ship goes a certain speed.
+        /// </summary>
+        [DefaultValue(true)] public bool hasShockLayer = true;
 
         /// <summary>
         /// Minimum speed that your ship can go in the atmosphere where flames will appear.

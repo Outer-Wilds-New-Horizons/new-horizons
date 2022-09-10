@@ -1,12 +1,14 @@
 ---
 Title: Ship Log
 Description: A guide to editing the ship log in New Horizons
-Sort_Priority: 70
+Sort_Priority: 40
 ---
 
 # Intro
 
 Welcome! this page outlines how to create a custom ship log.
+
+If you haven't already, you may want to take a look at [Understanding XML]({{ "Understanding XML"|route }}) to get a better idea of how XML works.
 
 # Understanding Ship Logs
 

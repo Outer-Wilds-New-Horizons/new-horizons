@@ -219,7 +219,7 @@ namespace NewHorizons.Builder.ShipLog
 
             foreach (NewHorizonsBody body in bodies)
             {
-                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
+                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null && body.Config.ShipLog?.mapMode?.details == null) continue;
 
                 // Sometimes they got other names idk
                 var name = body.Config.name.Replace(" ", "");
@@ -283,6 +283,7 @@ namespace NewHorizons.Builder.ShipLog
                         {
                             gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale;
                         }
+                        MakeDetails(body, gameObject.transform, greyScaleMaterial);
                     }
                 }
             }

@@ -547,9 +547,12 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (body.Config.Ring != null)
+            if (body.Config.Rings != null)
             {
-                RingBuilder.Make(go, sector, body.Config.Ring, body.Mod);
+                foreach (var ring in body.Config.Rings)
+                {
+                    RingBuilder.Make(go, sector, ring, body.Mod);
+                }
             }
 
             if (body.Config.AsteroidBelt != null)
@@ -590,7 +593,7 @@ namespace NewHorizons.Handlers
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, willHaveCloak, body.Mod);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
+                    if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
                 if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)

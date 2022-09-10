@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Body
                 remnantGO.transform.parent = proxy.transform;
                 remnantGO.transform.localPosition = Vector3.zero;
 
-                SharedMake(planetGO, remnantGO, proxyController, remnant);
+                SharedMake(planetGO, remnantGO, null, remnant);
 
                 proxyController.stellarRemnantGO = remnantGO;
             }
@@ -111,7 +111,8 @@ namespace NewHorizons.Builder.Body
 
                     if (body.Config.Atmosphere.clouds != null)
                     {
-                        topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        else topClouds = CloudsBuilder.MakeTransparentClouds(proxy, body.Config.Atmosphere, body.Mod, true).GetAddComponent<MeshRenderer>();
 
                         if (body.Config.Atmosphere.clouds.hasLightning) lightningGenerator = CloudsBuilder.MakeLightning(proxy, null, body.Config.Atmosphere, true);
 
@@ -119,15 +120,20 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                if (body.Config.Ring != null)
+                if (body.Config.Rings != null)
                 {
-                    RingBuilder.MakeRingGraphics(proxy, null, body.Config.Ring, body.Mod);
-                    if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
+                    foreach (var ring in body.Config.Rings)
+                    {
+                        RingBuilder.MakeRingGraphics(proxy, null, ring, body.Mod);
+                        if (realSize < ring.outerRadius) realSize = ring.outerRadius;
+                    }
                 }
 
+                Renderer starAtmosphere = null;
+                Renderer starFog = null;
                 if (body.Config.Star != null)
                 {
-                    StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
+                    (_, starAtmosphere, starFog) = StarBuilder.MakeStarProxy(planetGO, proxy, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                     if (realSize < body.Config.Star.size) realSize = body.Config.Star.size;
                 }
@@ -217,9 +223,17 @@ namespace NewHorizons.Builder.Body
 
                 if (proxyController != null)
                 {
-                    proxyController._atmosphere = atmosphere;
-                    proxyController._fog = fog;
-                    proxyController._fogCurveMaxVal = fogCurveMaxVal;
+                    proxyController._atmosphere = atmosphere ?? starAtmosphere;
+                    if (fog != null)
+                    {
+                        proxyController._fog = fog;
+                        proxyController._fogCurveMaxVal = fogCurveMaxVal;
+                    }
+                    else if (starFog != null)
+                    {
+                        proxyController._fog = starFog;
+                        proxyController._fogCurveMaxVal = 0.05f;
+                    }
                     proxyController.topClouds = topClouds;
                     proxyController.lightningGenerator = lightningGenerator;
                     proxyController.supernovaPlanetEffectController = supernovaPlanetEffect;

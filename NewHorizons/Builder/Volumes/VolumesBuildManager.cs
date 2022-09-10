@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
@@ -47,6 +48,34 @@ namespace NewHorizons.Builder.Volumes
                 foreach (var hazardVolume in config.Volumes.hazardVolumes)
                 {
                     HazardVolumeBuilder.Make(go, sector, planetBody, hazardVolume, mod);
+                }
+            }
+            if (config.Volumes.mapRestrictionVolumes != null)
+            {
+                foreach (var mapRestrictionVolume in config.Volumes.mapRestrictionVolumes)
+                {
+                    VolumeBuilder.Make<MapRestrictionVolume>(go, sector, mapRestrictionVolume);
+                }
+            }
+            if (config.Volumes.interferenceVolumes != null)
+            {
+                foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
+                {
+                    VolumeBuilder.Make<Components.InterferenceVolume>(go, sector, interferenceVolume);
+                }
+            }
+            if (config.Volumes.reverbVolumes != null)
+            {
+                foreach (var reverbVolume in config.Volumes.reverbVolumes)
+                {
+                    VolumeBuilder.Make<ReverbTriggerVolume>(go, sector, reverbVolume);
+                }
+            }
+            if (config.Volumes.insulatingVolumes != null)
+            {
+                foreach (var insulatingVolume in config.Volumes.insulatingVolumes)
+                {
+                    VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
                 }
             }
         }
