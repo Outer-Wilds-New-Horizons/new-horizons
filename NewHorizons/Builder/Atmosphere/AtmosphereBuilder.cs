@@ -70,6 +70,8 @@ namespace NewHorizons.Builder.Atmosphere
                     {
                         // Do it based on distance
                         Skys.Add((planetGO, material));
+
+                        if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") material.SetFloat(SunIntensity, 0.2f);
                     }
                     else
                     {
