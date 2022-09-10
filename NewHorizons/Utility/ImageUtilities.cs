@@ -351,7 +351,16 @@ namespace NewHorizons.Utility
             newTexture.Apply();
             return newTexture;
         }
-        
+
+        public static Sprite GetButtonSprite(JoystickButton button) => GetButtonSprite(ButtonPromptLibrary.SharedInstance.GetButtonTexture(button));
+        public static Sprite GetButtonSprite(KeyCode key) => GetButtonSprite(ButtonPromptLibrary.SharedInstance.GetButtonTexture(key));
+        private static Sprite GetButtonSprite(Texture2D texture)
+        {
+            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
+            sprite.name = texture.name;
+            return sprite;
+        }
+
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {

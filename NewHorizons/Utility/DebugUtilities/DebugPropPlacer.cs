@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Handlers;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -39,14 +40,36 @@ namespace NewHorizons.Utility.DebugUtilities
         public GameObject mostRecentlyPlacedPropGO { get { return props.Count() <= 0 ? null : props[props.Count() - 1].gameObject; } }
         public string mostRecentlyPlacedPropPath { get { return props.Count() <= 0 ? "" : props[props.Count() - 1].detailInfo.path; } }
 
+        private ScreenPrompt _placePrompt;
+        private ScreenPrompt _undoPrompt;
+        private ScreenPrompt _redoPrompt;
+
         private void Awake()
         {
             _rc = this.GetRequiredComponent<DebugRaycaster>();
             currentObject = DEFAULT_OBJECT;
+
+            _placePrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_PLACE", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.G));
+            _undoPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_UNDO", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.Minus));
+            _redoPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_REDO", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.Equals));
+
+            Locator.GetPromptManager().AddScreenPrompt(_placePrompt, PromptPosition.UpperRight, false);
+            Locator.GetPromptManager().AddScreenPrompt(_undoPrompt, PromptPosition.UpperRight, false);
+            Locator.GetPromptManager().AddScreenPrompt(_redoPrompt, PromptPosition.UpperRight, false);
+        }
+
+        private void OnDestroy()
+        {
+            var promptManager = Locator.GetPromptManager();
+            if (promptManager == null) return;
+            promptManager.RemoveScreenPrompt(_placePrompt, PromptPosition.UpperRight);
+            promptManager.RemoveScreenPrompt(_undoPrompt, PromptPosition.UpperRight);
+            promptManager.RemoveScreenPrompt(_redoPrompt, PromptPosition.UpperRight);
         }
 
         private void Update()
         {
+            UpdatePromptVisibility();
             if (!Main.Debug) return;
             if (!active) return;
 
@@ -64,6 +87,14 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 UndoDelete();
             }
+        }
+
+        public void UpdatePromptVisibility()
+        {
+            var visible = !OWTime.IsPaused() && Main.Debug && active;
+            _placePrompt.SetVisibility(visible);
+            _undoPrompt.SetVisibility(visible && props.Count > 0);
+            _redoPrompt.SetVisibility(visible && deletedProps.Count > 0);
         }
 
         public void SetCurrentObject(string s)
