@@ -395,6 +395,8 @@ namespace NewHorizons
                     EyeState.ZoomOut
                 };
 
+                solarSystemRoot.AddComponent<EyeSunLightParamUpdater>();
+
                 if (IsWarpingFromShip && _ship != null)
                 {
                     var eyeShip = GameObject.Instantiate(_ship);
