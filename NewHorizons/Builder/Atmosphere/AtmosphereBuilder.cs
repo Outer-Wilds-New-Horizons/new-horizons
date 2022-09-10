@@ -33,9 +33,10 @@ namespace NewHorizons.Builder.Atmosphere
 
                 if (prefab != null)
                 {
-                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform, true);
+                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform);
                     atmo.name = "Atmosphere";
-                    atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+                    atmo.transform.localPosition = Vector3.zero;
+                    atmo.transform.localEulerAngles = Vector3.zero;
 
                     Material material;
 
