@@ -73,7 +73,7 @@ namespace NewHorizons.Builder.Body
                 return null;
             }
 
-            var ringGO = new GameObject("Ring");
+            var ringGO = new GameObject(!string.IsNullOrEmpty(ring.rename) ? ring.rename : "Ring");
             ringGO.transform.parent = sector?.transform ?? rootObject.transform;
             ringGO.transform.position = rootObject.transform.position;
             ringGO.transform.rotation = rootObject.transform.rotation;

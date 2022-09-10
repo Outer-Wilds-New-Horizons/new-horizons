@@ -120,10 +120,13 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                if (body.Config.Ring != null)
+                if (body.Config.Rings != null)
                 {
-                    RingBuilder.MakeRingGraphics(proxy, null, body.Config.Ring, body.Mod);
-                    if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
+                    foreach (var ring in body.Config.Rings)
+                    {
+                        RingBuilder.MakeRingGraphics(proxy, null, ring, body.Mod);
+                        if (realSize < ring.outerRadius) realSize = ring.outerRadius;
+                    }
                 }
 
                 Renderer starAtmosphere = null;

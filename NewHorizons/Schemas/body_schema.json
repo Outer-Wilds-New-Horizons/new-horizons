@@ -100,9 +100,12 @@
         "type": "string"
       }
     },
-    "Ring": {
-      "description": "Creates a ring around the planet",
-      "$ref": "#/definitions/RingModule"
+    "Rings": {
+      "type": "array",
+      "description": "Create rings around the planet",
+      "items": {
+        "$ref": "#/definitions/RingModule"
+      }
     },
     "Sand": {
       "description": "Add sand to this planet",
@@ -2062,6 +2065,10 @@
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
