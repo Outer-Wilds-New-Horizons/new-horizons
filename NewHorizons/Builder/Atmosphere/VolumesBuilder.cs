@@ -31,6 +31,7 @@ namespace NewHorizons.Builder.Atmosphere
             PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
+            PR._shuttleLandingRadius = sphereOfInfluence;
             PR._useMinimap = config.Base.showMinimap;
             PR._useAltimeter = config.Base.showMinimap;
 
