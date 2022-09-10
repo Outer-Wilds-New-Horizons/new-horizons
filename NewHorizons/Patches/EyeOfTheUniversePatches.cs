@@ -130,5 +130,14 @@ namespace NewHorizons.Patches
 
             return false;
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(EyeVortexTrigger), nameof(EyeVortexTrigger.OnEnterVortex))]
+        public static void EyeVortexTrigger_OnEnterVortex(EyeVortexTrigger __instance, GameObject hitObj)
+        {
+            if (!hitObj.CompareTag("PlayerDetector")) return;
+            __instance._tunnelObject.SetActive(true);
+        }
+
     }
 }
