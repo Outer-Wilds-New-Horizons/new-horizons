@@ -100,9 +100,9 @@ namespace NewHorizons.Handlers
             }
         }
 
-        public static void AddDialogue(string rawText, params string[] rawPreText)
+        public static void AddDialogue(string rawText, bool trimRawTextForKey = false, params string[] rawPreText)
         {
-            var key = string.Join(string.Empty, rawPreText) + rawText;
+            var key = string.Join(string.Empty, rawPreText) + (trimRawTextForKey? rawText.Trim() : rawText);
 
             var text = GetTranslation(rawText, TextType.DIALOGUE);
 
