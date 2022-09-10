@@ -16,7 +16,12 @@
     "RICH_PRESENCE_EXPLORING": "Exploring {0}.",
     "RICH_PRESENCE_WARPING": "Warping to {0}.",
     "OUTDATED_VERSION_WARNING": "WARNING\n\nNew Horizons only works on version {0} or higher. You're on version {1}.\n\nPlease update your game or uninstall NH.",
-    "JSON_FAILED_TO_LOAD": "Invalid file(s): {0}"
+    "JSON_FAILED_TO_LOAD": "Invalid file(s): {0}",
+    "DEBUG_RAYCAST": "Raycast",
+    "DEBUG_PLACE": "Place Object",
+    "DEBUG_PLACE_TEXT": "Place Nomai Text",
+    "DEBUG_UNDO": "Undo",
+    "DEBUG_REDO": "Redo"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
