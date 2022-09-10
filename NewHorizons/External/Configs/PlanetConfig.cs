@@ -67,6 +67,10 @@ namespace NewHorizons.External.Configs
 
         [Obsolete("Signal is deprecated, please use Props->signals")]
         public SignalModule Signal;
+
+        [Obsolete("Ring is deprecated, please use Rings")]
+        public RingModule Ring;
+
         #endregion Obsolete
 
         /// <summary>
@@ -135,9 +139,9 @@ namespace NewHorizons.External.Configs
         public string[] removeChildren;
 
         /// <summary>
-        /// Creates a ring around the planet
+        /// Create rings around the planet
         /// </summary>
-        public RingModule Ring;
+        public RingModule[] Rings;
 
         /// <summary>
         /// Add sand to this planet

@@ -547,9 +547,12 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (body.Config.Ring != null)
+            if (body.Config.Rings != null)
             {
-                RingBuilder.Make(go, sector, body.Config.Ring, body.Mod);
+                foreach (var ring in body.Config.Rings)
+                {
+                    RingBuilder.Make(go, sector, ring, body.Mod);
+                }
             }
 
             if (body.Config.AsteroidBelt != null)

@@ -107,13 +107,16 @@ namespace NewHorizons.Handlers
             }
             pivot.name = "Pivot";
 
-            if (body.Config.Ring != null)
+            if (body.Config.Rings != null && body.Config.Rings.Length > 0)
             {
-                RingModule newRing = new RingModule();
-                newRing.innerRadius = size * 1.2f;
-                newRing.outerRadius = size * 2f;
-                newRing.texture = body.Config.Ring.texture;
-                var ring = RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
+                foreach (var ring in body.Config.Rings)
+                {
+                    RingModule newRing = new RingModule();
+                    newRing.innerRadius = size * 1.2f;
+                    newRing.outerRadius = size * 2f;
+                    newRing.texture = ring.texture;
+                    RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
+                }
                 titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 
