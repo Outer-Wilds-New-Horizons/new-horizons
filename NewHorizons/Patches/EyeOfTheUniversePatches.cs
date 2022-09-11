@@ -6,12 +6,6 @@ namespace NewHorizons.Patches
     public static class EyeOfTheUniversePatches
     {
         // Funny eye of the universe stuff
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(DeathManager), nameof(DeathManager.KillPlayer))]
-        public static bool DeathManager_KillPlayer(DeathType deathType)
-        {
-            return Main.Instance.CurrentStarSystem != "EyeOfTheUniverse" || deathType == DeathType.BigBang;
-        }
 
         private static void OnLoadScene(OWScene scene)
         {
