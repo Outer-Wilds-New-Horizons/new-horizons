@@ -30,7 +30,7 @@ namespace NewHorizons.Patches
 
             if (!string.IsNullOrWhiteSpace(customName))
             {
-                __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI);
+                __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
             }
 
             return false;
