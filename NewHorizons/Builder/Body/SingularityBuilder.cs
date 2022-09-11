@@ -304,6 +304,7 @@ namespace NewHorizons.Builder.Body
             whiteHoleVolume._whiteHoleBody = OWRB;
             whiteHoleVolume._whiteHoleProxyShadowSuperGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             whiteHoleVolume._radius = size * 0.5f;
+            whiteHoleVolume._airlocksToOpen = new NomaiAirlock[0];
             if (sizeController != null) sizeController.volume = whiteHoleVolume;
 
             whiteHoleVolume.enabled = true;
