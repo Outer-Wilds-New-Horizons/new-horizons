@@ -14,31 +14,39 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int DensityExponent = Shader.PropertyToID("_DensityExp");
         private static readonly int ColorRampTexture = Shader.PropertyToID("_ColorRampTex");
 
-        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
+        private static Texture3D _lookupTexture;
+        private static Mesh _dbImpostorMesh;
+        private static Material[] _dbImpostorMaterials;
+
+        internal static void InitPrefabs()
         {
             if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
+
+            // Going to copy from dark bramble
+            if (_lookupTexture == null) _lookupTexture = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB")?.GetComponent<PlanetaryFogController>()?.fogLookupTexture.DontDestroyOnLoad();
+            if (_dbImpostorMesh == null) _dbImpostorMesh = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();
+            if (_dbImpostorMaterials == null) _dbImpostorMaterials = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
+        }
+
+        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
+        {
+            InitPrefabs();
 
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
             fogGO.transform.parent = sector?.transform ?? planetGO.transform;
             fogGO.transform.localScale = Vector3.one * atmo.fogSize;
 
-            // Going to copy from dark bramble
-            var dbFog = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD");
-            if (dbFog == null) return null;
-            var dbPlanetaryFogController = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB")?.GetComponent<PlanetaryFogController>();
-            if (dbPlanetaryFogController == null) return null;
-
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
-            MF.mesh = dbFog.GetComponent<MeshFilter>().mesh;
+            MF.mesh = _dbImpostorMesh;
 
             MeshRenderer MR = fogGO.AddComponent<MeshRenderer>();
-            MR.materials = dbFog.GetComponent<MeshRenderer>().materials;
+            MR.materials = _dbImpostorMaterials;
             MR.allowOcclusionWhenDynamic = true;
 
             PlanetaryFogController PFC = fogGO.AddComponent<PlanetaryFogController>();
             PFC._fogImpostor = MR;
-            PFC.fogLookupTexture = dbPlanetaryFogController.fogLookupTexture;
+            PFC.fogLookupTexture = _lookupTexture;
             PFC.fogRadius = atmo.fogSize;
             PFC.lodFadeDistance = PFC.fogRadius * 0.5f;
             PFC.fogDensity = atmo.fogDensity;
@@ -65,21 +73,18 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static Renderer MakeProxy(GameObject proxyGO, AtmosphereModule atmo)
         {
-            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
+            InitPrefabs();
 
             GameObject fogGO = new GameObject("FogSphere");
             fogGO.SetActive(false);
             fogGO.transform.parent = proxyGO.transform;
             fogGO.transform.localScale = Vector3.one * atmo.fogSize;
 
-            var fog = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?.FindChild("Atmosphere_TH/FogSphere");
-            if (fog == null) return null;
-
             MeshFilter MF = fogGO.AddComponent<MeshFilter>();
-            MF.mesh = fog.GetComponent<MeshFilter>().mesh;
+            MF.mesh = _dbImpostorMesh;
 
             MeshRenderer MR = fogGO.AddComponent<MeshRenderer>();
-            MR.materials = fog.GetComponent<MeshRenderer>().materials;
+            MR.materials = _dbImpostorMaterials;
             MR.allowOcclusionWhenDynamic = true;
 
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());

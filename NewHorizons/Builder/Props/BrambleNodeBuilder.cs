@@ -28,8 +28,8 @@ namespace NewHorizons.Builder.Props
         public static readonly Dictionary<string, InnerFogWarpVolume> namedNodes = new();
         public static readonly Dictionary<BrambleNodeInfo, GameObject> builtBrambleNodes = new();
 
-        private static string _brambleSeedPrefabPath = "DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)";
-        private static string _brambleNodePrefabPath = "DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster";
+        private static GameObject _brambleSeedPrefab;
+        private static GameObject _brambleNodePrefab;
 
         public static void Init(PlanetConfig[] dimensionConfigs)
         {
@@ -39,6 +39,12 @@ namespace NewHorizons.Builder.Props
             builtBrambleNodes.Clear();
 
             PropagateSignals(dimensionConfigs);
+        }
+
+        internal static void InitPrefabs()
+        {
+            if (_brambleSeedPrefab == null) _brambleSeedPrefab = SearchUtilities.Find("DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)").InstantiateInactive().Rename("Prefab_DB_Seed").DontDestroyOnLoad();
+            if (_brambleNodePrefab == null) _brambleNodePrefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster").InstantiateInactive().Rename("Prefab_DB_Node").DontDestroyOnLoad();
         }
 
         public static void FinishPairingNodesForDimension(string dimensionName, AstroObject dimensionAO = null)
@@ -165,7 +171,9 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject go, Sector sector, BrambleNodeInfo config, IModBehaviour mod)
         {
-            var prefab = SearchUtilities.Find(config.isSeed ? _brambleSeedPrefabPath : _brambleNodePrefabPath);
+            InitPrefabs();
+
+            var prefab = config.isSeed ? _brambleSeedPrefab : _brambleNodePrefab;
 
             // Spawn the bramble node
             var brambleNode = prefab.InstantiateInactive();

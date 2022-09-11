@@ -8,8 +8,69 @@ namespace NewHorizons.Builder.General
 {
     public static class DetectorBuilder
     {
+        private static List<SplashEffect> _splashEffects;
+
+        internal static void InitPrefabs()
+        {
+            if (_splashEffects == null)
+            {
+                _splashEffects = new List<SplashEffect>();
+
+                var cometDetector = SearchUtilities.Find("Comet_Body/Detector_CO")?.GetComponent<FluidDetector>();
+                if (cometDetector != null)
+                {
+                    foreach (var splashEffect in cometDetector._splashEffects)
+                    {
+                        _splashEffects.Add(new SplashEffect
+                        {
+                            fluidType = splashEffect.fluidType,
+                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                            triggerEvent = splashEffect.triggerEvent,
+                            minImpactSpeed = 15,
+                            splashPrefab = splashEffect.splashPrefab
+                        });
+                    }
+                }
+
+                var islandDetector = SearchUtilities.Find("GabbroIsland_Body/Detector_GabbroIsland")?.GetComponent<FluidDetector>();
+                if (islandDetector != null)
+                {
+                    foreach (var splashEffect in islandDetector._splashEffects)
+                    {
+                        _splashEffects.Add(new SplashEffect
+                        {
+                            fluidType = splashEffect.fluidType,
+                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                            triggerEvent = splashEffect.triggerEvent,
+                            minImpactSpeed = 15,
+                            splashPrefab = splashEffect.splashPrefab
+                        });
+                    }
+                }
+
+                var shipDetector = SearchUtilities.Find("Ship_Body/ShipDetector")?.GetComponent<FluidDetector>();
+                if (shipDetector != null)
+                {
+                    foreach (var splashEffect in shipDetector._splashEffects)
+                    {
+                        if (splashEffect.fluidType == FluidVolume.Type.SAND)
+                            _splashEffects.Add(new SplashEffect
+                            {
+                                fluidType = splashEffect.fluidType,
+                                ignoreSphereAligment = splashEffect.ignoreSphereAligment,
+                                triggerEvent = splashEffect.triggerEvent,
+                                minImpactSpeed = 15,
+                                splashPrefab = splashEffect.splashPrefab
+                            });
+                    }
+                }
+            }
+        }
+
         public static GameObject Make(GameObject planetGO, OWRigidbody OWRB, AstroObject primaryBody, AstroObject astroObject, PlanetConfig config)
         {
+            InitPrefabs();
+
             GameObject detectorGO = new GameObject("FieldDetector");
             detectorGO.SetActive(false);
             detectorGO.transform.parent = planetGO.transform;
@@ -35,58 +96,7 @@ namespace NewHorizons.Builder.General
 
                 OWRB.RegisterAttachedFluidDetector(fluidDetector);
 
-                var splashEffects = new List<SplashEffect>();
-
-                var cometDetector = SearchUtilities.Find("Comet_Body/Detector_CO")?.GetComponent<FluidDetector>();
-                if (cometDetector != null)
-                {
-                    foreach (var splashEffect in cometDetector._splashEffects)
-                    {
-                        splashEffects.Add(new SplashEffect
-                        {
-                            fluidType = splashEffect.fluidType,
-                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
-                            triggerEvent = splashEffect.triggerEvent,
-                            minImpactSpeed = 15,
-                            splashPrefab = splashEffect.splashPrefab
-                        });
-                    }
-                }
-
-                var islandDetector = SearchUtilities.Find("GabbroIsland_Body/Detector_GabbroIsland")?.GetComponent<FluidDetector>();
-                if (islandDetector != null)
-                {
-                    foreach (var splashEffect in islandDetector._splashEffects)
-                    {
-                        splashEffects.Add(new SplashEffect
-                        {
-                            fluidType = splashEffect.fluidType,
-                            ignoreSphereAligment = splashEffect.ignoreSphereAligment,
-                            triggerEvent = splashEffect.triggerEvent,
-                            minImpactSpeed = 15,
-                            splashPrefab = splashEffect.splashPrefab
-                        });
-                    }
-                }
-
-                var shipDetector = SearchUtilities.Find("Ship_Body/ShipDetector")?.GetComponent<FluidDetector>();
-                if (shipDetector != null)
-                {
-                    foreach (var splashEffect in shipDetector._splashEffects)
-                    {
-                        if (splashEffect.fluidType == FluidVolume.Type.SAND)
-                            splashEffects.Add(new SplashEffect
-                            {
-                                fluidType = splashEffect.fluidType,
-                                ignoreSphereAligment = splashEffect.ignoreSphereAligment,
-                                triggerEvent = splashEffect.triggerEvent,
-                                minImpactSpeed = 15,
-                                splashPrefab = splashEffect.splashPrefab
-                            });
-                    }
-                }
-
-                fluidDetector._splashEffects = splashEffects.ToArray();
+                fluidDetector._splashEffects = _splashEffects.ToArray();
             }
 
             if (!config.Orbit.isStatic) SetDetector(primaryBody, astroObject, forceDetector);

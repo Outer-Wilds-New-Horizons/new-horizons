@@ -13,7 +13,48 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _slideReelPrefab;
         private static GameObject _autoPrefab;
+        private static GameObject _visionTorchDetectorPrefab;
+        private static GameObject _standingVisionTorchPrefab;
         private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+
+        internal static void InitPrefabs()
+        {
+            if (_slideReelPrefab == null)
+            {
+                _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_Reel")?.DontDestroyOnLoad();
+                if (_slideReelPrefab == null)
+                    Logger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _slideReelPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_autoPrefab == null)
+            {
+                _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_AutoProjector")?.DontDestroyOnLoad();
+                if (_autoPrefab == null)
+                    Logger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _autoPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_visionTorchDetectorPrefab == null)
+            {
+                _visionTorchDetectorPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchDetector")?.DontDestroyOnLoad();
+                if (_visionTorchDetectorPrefab == null)
+                    Logger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _visionTorchDetectorPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_standingVisionTorchPrefab == null)
+            {
+                _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
+                if (_standingVisionTorchPrefab == null)
+                    Logger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+        }
 
         public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
@@ -37,18 +78,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (_slideReelPrefab == null)
-            {
-                _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
-                if (_slideReelPrefab == null)
-                {
-                    Logger.LogWarning($"Tried to make a slide reel but couldn't. Do you have the DLC installed?");
-                    return;
-                }
-                _slideReelPrefab.name = "Prefab_IP_Reel";
-            }
+            InitPrefabs();
+
+            if (_slideReelPrefab == null) return null;
 
             var slideReelObj = _slideReelPrefab.InstantiateInactive();
             slideReelObj.name = $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
@@ -146,20 +180,15 @@ namespace NewHorizons.Builder.Props
             StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
             slideReelObj.SetActive(true);
+
+            return slideReelObj;
         }
 
-        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (_autoPrefab == null)
-            {
-                _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive();
-                if (_autoPrefab == null)
-                {
-                    Logger.LogWarning($"Tried to make a auto projector but couldn't. Do you have the DLC installed?");
-                    return;
-                }
-                _autoPrefab.name = "Prefab_IP_AutoProjector";
-            }
+            InitPrefabs();
+
+            if (_autoPrefab == null) return null;
 
             var projectorObj = _autoPrefab.InstantiateInactive();
             projectorObj.name = $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
@@ -215,20 +244,24 @@ namespace NewHorizons.Builder.Props
             lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._image);
 
             projectorObj.SetActive(true);
+
+            return projectorObj;
         }
 
         // Makes a target for a vision torch to scan
         public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
+
+            if (_visionTorchDetectorPrefab == null) return null;
+
             // spawn a trigger for the vision torch
-            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            var prefab = SearchUtilities.Find(path);
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
                 scale = 2
             };
-            var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+            var g = DetailBuilder.Make(planetGO, sector, _visionTorchDetectorPrefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {
@@ -286,15 +319,17 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
+
+            if (_standingVisionTorchPrefab == null) return null;
+
             // Spawn the torch itself
-            var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
-            var prefab = SearchUtilities.Find(path);
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
                 rotation = info.rotation
             };
-            var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+            var standingTorch = DetailBuilder.Make(planetGO, sector, _standingVisionTorchPrefab, detailInfo);
 
             if (!string.IsNullOrEmpty(info.parentPath))
             {

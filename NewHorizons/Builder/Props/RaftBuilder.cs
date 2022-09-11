@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -10,18 +10,26 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _prefab;
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        internal static void InitPrefab()
         {
             if (_prefab == null)
             {
-                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
+                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
                     Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
-                _prefab.name = "Raft_Body_Prefab";
+                else
+                    _prefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        {
+            InitPrefab();
+
+            if (_prefab == null) return;
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";

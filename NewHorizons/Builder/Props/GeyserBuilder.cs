@@ -5,9 +5,18 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeyserBuilder
     {
+        private static GameObject _geyserPrefab;
+
+        internal static void InitPrefab()
+        {
+            if (_geyserPrefab == null) _geyserPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive().Rename("Prefab_TH_Geyser").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
         {
-            var geyserGO = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive();
+            InitPrefab();
+
+            var geyserGO = _geyserPrefab.InstantiateInactive();
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
             geyserGO.name = "Geyser";
 

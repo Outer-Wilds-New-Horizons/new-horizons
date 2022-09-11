@@ -15,7 +15,7 @@ namespace NewHorizons.Patches
 
         private static void OnLoadScene(OWScene scene)
         {
-            if (scene == OWScene.SolarSystem)
+            if (scene == OWScene.SolarSystem && !Main.Instance.IsWarpingBackToEye)
             {
                 PlayerData.SaveEyeCompletion();
 
@@ -39,7 +39,12 @@ namespace NewHorizons.Patches
         public static void SubmitActionLoadScene_ConfirmSubmit(SubmitActionLoadScene __instance)
         {
             // Title screen can warp you to eye and cause problems.
-            if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.EYE) Main.Instance._currentStarSystem = "EyeOfTheUniverse";
+            if (__instance._sceneToLoad == SubmitActionLoadScene.LoadableScenes.EYE)
+            {
+                Utility.Logger.LogWarning("Warping to solar system and then back to eye");
+                Main.Instance.IsWarpingBackToEye = true;
+                __instance._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
+            }
         }
 
         [HarmonyPrefix]

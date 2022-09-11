@@ -9,18 +9,32 @@ namespace NewHorizons.Builder.Body
 {
     public static class CloakBuilder
     {
+        private static GameObject _prefab;
+        
+        internal static void InitPrefab()
+        {
+            if (_prefab == null)
+            {
+                _prefab = SearchUtilities.Find("RingWorld_Body/CloakingField_IP")?.InstantiateInactive()?.Rename("CloakingField")?.DontDestroyOnLoad();
+                if (_prefab == null)
+                {
+                    Logger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
+                    return;
+                }
+                else
+                    _prefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+        }
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody OWRB, CloakModule module, bool keepReferenceFrame, IModBehaviour mod)
         {
+            InitPrefab();
+
+            if (_prefab == null) return;
+
             var radius = module.radius;
 
-            var cloak = SearchUtilities.Find("RingWorld_Body/CloakingField_IP");
-            if (cloak == null)
-            {
-                Logger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
-                return;
-            }
-
-            var newCloak = GameObject.Instantiate(cloak, sector?.transform ?? planetGO.transform);
+            var newCloak = GameObject.Instantiate(_prefab, sector?.transform ?? planetGO.transform);
             newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;

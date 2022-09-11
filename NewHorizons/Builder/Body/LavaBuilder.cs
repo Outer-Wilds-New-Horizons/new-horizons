@@ -10,8 +10,21 @@ namespace NewHorizons.Builder.Body
         private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
+        private static GameObject _lavaSphere;
+        private static GameObject _moltenCoreProxy;
+        private static GameObject _destructionVolume;
+
+        internal static void InitPrefabs()
+        {
+            if (_lavaSphere == null) _lavaSphere = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").InstantiateInactive().Rename("Prefab_VM_LavaSphere").DontDestroyOnLoad();
+            if (_moltenCoreProxy == null) _moltenCoreProxy = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/MoltenCore_Proxy").InstantiateInactive().Rename("Prefab_VM_MoltenCore_Proxy").DontDestroyOnLoad();
+            if (_destructionVolume == null) _destructionVolume = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume").InstantiateInactive().Rename("Prefab_VM_DestructionVolume").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, LavaModule module)
         {
+            InitPrefabs();
+
             var heightScale = module.size;
             if (module.curve != null)
             {
@@ -29,7 +42,7 @@ namespace NewHorizons.Builder.Body
             moltenCore.transform.position = planetGO.transform.position;
             moltenCore.transform.localScale = Vector3.one * module.size;
 
-            var lavaSphere = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere"), moltenCore.transform);
+            var lavaSphere = GameObject.Instantiate(_lavaSphere, moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
             lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
@@ -38,7 +51,7 @@ namespace NewHorizons.Builder.Body
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
 
-            var moltenCoreProxy = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/MoltenCore_Proxy"), moltenCore.transform); ;
+            var moltenCoreProxy = GameObject.Instantiate(_moltenCoreProxy, moltenCore.transform); ;
             moltenCoreProxy.name = "MoltenCore_Proxy";
 
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
@@ -51,7 +64,7 @@ namespace NewHorizons.Builder.Body
             sectorProxy._renderers = new List<Renderer> { proxyLavaSphere.GetComponent<MeshRenderer>() };
             sectorProxy.SetSector(sector);
 
-            var destructionVolume = GameObject.Instantiate(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume"), moltenCore.transform);
+            var destructionVolume = GameObject.Instantiate(_destructionVolume, moltenCore.transform);
             destructionVolume.name = "DestructionVolume";
             destructionVolume.GetComponent<SphereCollider>().radius = 1;
             destructionVolume.SetActive(true);

@@ -1,6 +1,7 @@
 using HarmonyLib;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
@@ -55,6 +56,7 @@ namespace NewHorizons
         public string CurrentStarSystem => _currentStarSystem;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
+        public bool IsWarpingBackToEye { get; internal set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
@@ -254,7 +256,52 @@ namespace NewHorizons
             var isCreditsFinal = scene.name == LoadManager.SceneToName(OWScene.Credits_Final);
             var isPostCredits = scene.name == LoadManager.SceneToName(OWScene.PostCreditsScene);
 
+            if (isSolarSystem)
+            {
+                try
+                {
+                    AtmosphereBuilder.InitPrefabs();
+                    BrambleDimensionBuilder.InitPrefabs();
+                    BrambleNodeBuilder.InitPrefabs();
+                    CloudsBuilder.InitPrefabs();
+                    CometTailBuilder.InitPrefab();
+                    DetectorBuilder.InitPrefabs();
+                    EffectsBuilder.InitPrefabs();
+                    FogBuilder.InitPrefabs();
+                    FunnelBuilder.InitPrefabs();
+                    GeometryBuilder.InitPrefab();
+                    GeyserBuilder.InitPrefab();
+                    LavaBuilder.InitPrefabs();
+                    NomaiTextBuilder.InitPrefabs();
+                    RemoteBuilder.InitPrefabs();
+                    SandBuilder.InitPrefabs();
+                    SingularityBuilder.InitPrefabs();
+                    StarBuilder.InitPrefabs();
+                    SupernovaEffectBuilder.InitPrefabs();
+                    TornadoBuilder.InitPrefabs();
+                    VolcanoBuilder.InitPrefab();
+                    VolumesBuilder.InitPrefabs();
+                    WaterBuilder.InitPrefabs();
+
+                    ProjectionBuilder.InitPrefabs();
+                    CloakBuilder.InitPrefab();
+                    RaftBuilder.InitPrefab();
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Couldn't init prefabs:\n{e}");
+                }
+            }
+
             if (isEyeOfTheUniverse) _currentStarSystem = "EyeOfTheUniverse";
+            else if (IsWarpingBackToEye)
+            {
+                IsWarpingBackToEye = false;
+                OWTime.Pause(OWTime.PauseType.Loading);
+                LoadManager.LoadSceneImmediate(OWScene.EyeOfTheUniverse);
+                OWTime.Unpause(OWTime.PauseType.Loading);
+                return;
+            }
 
             if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
             {

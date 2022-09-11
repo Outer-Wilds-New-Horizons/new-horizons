@@ -10,11 +10,18 @@ namespace NewHorizons.Builder.Props
         private static readonly int Color1 = Shader.PropertyToID("_Color");
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
+        private static GameObject _meteorLauncherPrefab;
+
+        internal static void InitPrefab()
+        {
+            if (_meteorLauncherPrefab == null) _meteorLauncherPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher").InstantiateInactive().Rename("Prefab_VM_MeteorLauncher").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
         {
-            var prefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher");
+            InitPrefab();
 
-            var launcherGO = prefab.InstantiateInactive();
+            var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
             launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
             launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;

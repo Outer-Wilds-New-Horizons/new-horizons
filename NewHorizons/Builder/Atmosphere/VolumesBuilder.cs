@@ -7,8 +7,19 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static readonly int FogColor = Shader.PropertyToID("_FogColor");
 
+        private static Material _gdMaterial;
+        private static Material _gdCloudMaterial;
+
+        internal static void InitPrefabs()
+        {
+            if (_gdMaterial == null) _gdMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
+            if (_gdCloudMaterial == null) _gdCloudMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._cloudMaterial).DontDestroyOnLoad();
+        }
+        
         public static void Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
         {
+            InitPrefabs();
+
             var innerRadius = config.Base.surfaceSize;
 
             GameObject volumesGO = new GameObject("Volumes");
@@ -37,21 +48,17 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
-            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD")?.GetComponent<EffectRuleset>();
-            if (gdRuleset != null)
+            EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
+            ER._type = EffectRuleset.BubbleType.Underwater;
+
+            ER._material = _gdMaterial;
+
+            var cloudMaterial = new Material(_gdCloudMaterial);
+            if (config.Atmosphere?.clouds?.tint != null)
             {
-                EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
-                ER._type = EffectRuleset.BubbleType.Underwater;
-
-                ER._material = gdRuleset._material;
-
-                var cloudMaterial = new Material(gdRuleset._cloudMaterial);
-                if (config.Atmosphere?.clouds?.tint != null)
-                {
-                    cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
-                }
-                ER._cloudMaterial = cloudMaterial;
+                cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
             }
+            ER._cloudMaterial = cloudMaterial;
 
             if (config.Base.zeroGravityRadius != 0)
             {

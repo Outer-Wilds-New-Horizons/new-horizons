@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -18,18 +19,26 @@ namespace NewHorizons.Builder.Atmosphere
             Skys.Clear();
         }
 
+        private static GameObject _atmospherePrefab;
+        private static GameObject _proxyAtmospherePrefab;
+
+        internal static void InitPrefabs()
+        {
+            if (_atmospherePrefab == null) _atmospherePrefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere").InstantiateInactive().Rename("Atmosphere").DontDestroyOnLoad();
+            if (_proxyAtmospherePrefab == null) _proxyAtmospherePrefab = GameObject.FindObjectOfType<DistantProxyManager>()._proxies.FirstOrDefault(apt => apt.astroName == AstroObject.Name.TimberHearth).proxyPrefab.FindChild("Atmosphere_TH/Atmosphere_LOD3").InstantiateInactive().Rename("ProxyAtmosphere").DontDestroyOnLoad();
+        }
+
         public static GameObject Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize, bool proxy = false)
         {
+            InitPrefabs();
+
             GameObject atmoGO = new GameObject("Atmosphere");
             atmoGO.SetActive(false);
             atmoGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                GameObject prefab;
-                if (proxy) prefab = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?
-                        .FindChild("Atmosphere_TH/Atmosphere_LOD3");
-                else prefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere");
+                GameObject prefab = proxy ? _proxyAtmospherePrefab : _atmospherePrefab;
 
                 if (prefab != null)
                 {
