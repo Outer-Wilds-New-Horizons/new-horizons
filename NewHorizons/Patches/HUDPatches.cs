@@ -84,7 +84,7 @@ namespace NewHorizons.Patches
             bool insideEYE = Locator.GetEyeStateManager() != null && Locator.GetEyeStateManager().IsInsideTheEye();
             bool insideQM = __instance._quantumMoon != null && (__instance._quantumMoon.IsPlayerInside() || __instance._quantumMoon.IsShipInside());
             bool insideRW = Locator.GetRingWorldController() != null && Locator.GetRingWorldController().isPlayerInside;
-            bool insideIP = Locator.GetCloakFieldController() != null ? true : Locator.GetCloakFieldController().isPlayerInsideCloak == Locator.GetCloakFieldController().isShipInsideCloak;
+            bool insideIP = Locator.GetCloakFieldController() != null && Locator.GetCloakFieldController().isPlayerInsideCloak == Locator.GetCloakFieldController().isShipInsideCloak;
             bool insideCloak = Components.CloakSectorController.isPlayerInside == Components.CloakSectorController.isShipInside;
             bool sameInterference = InterferenceHandler.IsPlayerSameAsShip();
 
