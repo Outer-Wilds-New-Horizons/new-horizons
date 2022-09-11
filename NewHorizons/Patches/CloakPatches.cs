@@ -7,7 +7,7 @@ namespace NewHorizons.Patches
 {
     public static class CloakPatches
     {
-        [HarmonyPostfix]
+        [HarmonyPrefix]
         [HarmonyPatch(typeof(CloakFieldController), nameof(CloakFieldController.FixedUpdate))]
         public static bool CloakFieldController_FixedUpdate(CloakFieldController __instance)
         {
