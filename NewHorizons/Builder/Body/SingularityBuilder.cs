@@ -130,8 +130,6 @@ namespace NewHorizons.Builder.Body
             }
 
             blackHoleVolume._whiteHole = whiteHoleVolume;
-
-
         }
 
         public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, 
@@ -155,6 +153,7 @@ namespace NewHorizons.Builder.Body
                 sizeController.material = blackHoleRender.material;
             }
 
+            OWAudioSource oneShotOWAudioSource = null;
             if (makeAudio)
             {
                 var blackHoleAmbience = GameObject.Instantiate(_blackHoleAmbience, blackHole.transform);
@@ -171,6 +170,7 @@ namespace NewHorizons.Builder.Body
                 var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, blackHole.transform);
                 blackHoleOneShot.name = "BlackHoleEmissionOneShot";
                 blackHoleOneShot.SetActive(true);
+                oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
                 var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
                 oneShotAudioSource.maxDistance = size * 3f;
                 oneShotAudioSource.minDistance = size * 0.4f;
@@ -202,6 +202,9 @@ namespace NewHorizons.Builder.Body
                 var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, blackHole.transform);
                 blackHoleVolume.name = "BlackHoleVolume";
                 blackHoleVolume.SetActive(true);
+                var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
+                bhVolume._audioSector = sector;
+                bhVolume._emissionSource = oneShotOWAudioSource;
                 var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                 blackHoleSphereCollider.radius = size * 0.4f;
                 if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
