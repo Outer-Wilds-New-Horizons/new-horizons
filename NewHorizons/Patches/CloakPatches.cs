@@ -11,7 +11,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(CloakFieldController), nameof(CloakFieldController.FixedUpdate))]
         public static bool CloakFieldController_FixedUpdate(CloakFieldController __instance)
         {
-            return __instance._cloakSphereShape != null;
+            return __instance != null && __instance._cloakSphereShape != null;
         }
 
         [HarmonyPostfix]
