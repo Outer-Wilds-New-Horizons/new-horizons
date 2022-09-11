@@ -8,6 +8,13 @@ namespace NewHorizons.Patches
     public static class CloakPatches
     {
         [HarmonyPostfix]
+        [HarmonyPatch(typeof(CloakFieldController), nameof(CloakFieldController.FixedUpdate))]
+        public static bool CloakFieldController_FixedUpdate(CloakFieldController __instance)
+        {
+            return __instance._cloakSphereShape != null;
+        }
+
+        [HarmonyPostfix]
         [HarmonyPatch(typeof(CloakFieldController), nameof(CloakFieldController.isPlayerInsideCloak), MethodType.Getter)]
         public static void CloakFieldController_isPlayerInsideCloak(CloakFieldController __instance, ref bool __result)
         {
