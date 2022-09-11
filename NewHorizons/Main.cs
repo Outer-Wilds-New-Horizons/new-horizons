@@ -447,10 +447,24 @@ namespace NewHorizons
 
                 var distantSun = eyeSector.gameObject.FindChild("DistantSun/Directional light");
                 var starController = distantSun.AddComponent<StarController>();
-                starController.Light = distantSun.GetComponent<Light>();
+                var sunLight = distantSun.GetComponent<Light>();
+                starController.Light = sunLight;
+                var ambientLightFake = new GameObject("AmbientLightFake", typeof(Light));
+                ambientLightFake.transform.SetParent(distantSun.transform, false);
+                ambientLightFake.SetActive(false);
+                var ambientLight = ambientLightFake.GetComponent<Light>();
+                ambientLight.intensity = 0;
+                ambientLight.range = 0;
+                ambientLight.enabled = false;
+                starController.AmbientLight = ambientLight;
                 starController.Intensity = 0.2f;
                 starController.SunColor = new Color(0.3569f, 0.7843f, 1, 1);
-                distantSun.AddComponent<StarLightController>().Awake();
+                var sunLightController = distantSun.AddComponent<SunLightController>();
+                sunLightController._sunLight = sunLight;
+                sunLightController._ambientLight = ambientLight;
+                sunLightController.Initialize();
+                var starLightController = distantSun.AddComponent<StarLightController>();
+                starLightController.Awake();
                 StarLightController.AddStar(starController);
 
                 if (IsWarpingFromShip && _ship != null)

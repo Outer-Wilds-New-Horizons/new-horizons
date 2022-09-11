@@ -12,6 +12,7 @@ namespace NewHorizons.Builder.Body
         private static MeshGroup _oceanMeshGroup;
         private static Material[] _oceanLowAltitudeMaterials;
         private static GameObject _oceanFog;
+        private static GameObject _oceanAmbientLight;
 
         internal static void InitPrefabs()
         {
@@ -30,6 +31,7 @@ namespace NewHorizons.Builder.Body
             }
             if (_oceanLowAltitudeMaterials == null) _oceanLowAltitudeMaterials = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials.MakePrefabMaterials();
             if (_oceanFog == null) _oceanFog = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog").InstantiateInactive().Rename("Prefab_GD_OceanFog").DontDestroyOnLoad();
+            if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
@@ -74,7 +76,7 @@ namespace NewHorizons.Builder.Body
 
             var OLC = waterGO.AddComponent<OceanLODController>();
             OLC._sector = sector;
-            OLC._ambientLight = null; // this needs to be set or else is black
+            OLC._ambientLight = _oceanAmbientLight.GetComponent<Light>(); // this needs to be set or else is black
             
             // trigger sector enter
             Delay.FireOnNextUpdate(() =>
