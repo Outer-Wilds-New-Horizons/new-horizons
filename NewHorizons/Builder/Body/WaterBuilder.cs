@@ -113,6 +113,7 @@ namespace NewHorizons.Builder.Body
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
+            fogGO.SetActive(true);
 
             if (module.tint != null)
             {

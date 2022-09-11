@@ -314,6 +314,8 @@ namespace NewHorizons.Builder.Props
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
+            g.SetActive(true);
+
             return g;
         }
 
@@ -409,6 +411,8 @@ namespace NewHorizons.Builder.Props
 
             // Idk why but it wants reveals to be comma delimited not a list
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+
+            standingTorch.SetActive(true);
 
             return standingTorch;
         }

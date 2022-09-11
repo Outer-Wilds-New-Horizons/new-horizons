@@ -277,6 +277,7 @@ namespace NewHorizons
                     SandBuilder.InitPrefabs();
                     SingularityBuilder.InitPrefabs();
                     StarBuilder.InitPrefabs();
+                    StarEvolutionController.Init();
                     SupernovaEffectBuilder.InitPrefabs();
                     TornadoBuilder.InitPrefabs();
                     VolcanoBuilder.InitPrefab();
@@ -444,6 +445,14 @@ namespace NewHorizons
 
                 solarSystemRoot.AddComponent<EyeSunLightParamUpdater>();
 
+                var distantSun = eyeSector.gameObject.FindChild("DistantSun/Directional light");
+                var starController = distantSun.AddComponent<StarController>();
+                starController.Light = distantSun.GetComponent<Light>();
+                starController.Intensity = 0.2f;
+                starController.SunColor = new Color(0.3569f, 0.7843f, 1, 1);
+                distantSun.AddComponent<StarLightController>().Awake();
+                StarLightController.AddStar(starController);
+
                 if (IsWarpingFromShip && _ship != null)
                 {
                     var eyeShip = GameObject.Instantiate(_ship);
@@ -470,7 +479,6 @@ namespace NewHorizons
                 RemoteHandler.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
-                StarEvolutionController.Init();
 
                 if (isSolarSystem)
                 {

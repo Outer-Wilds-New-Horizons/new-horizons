@@ -47,12 +47,14 @@ namespace NewHorizons.Builder.Body
             lavaSphere.transform.name = "LavaSphere";
             lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
             if (module.tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.tint.ToColor());
+            lavaSphere.SetActive(true);
 
             var sectorCullGroup = lavaSphere.GetComponent<SectorCullGroup>();
             sectorCullGroup.SetSector(sector);
 
             var moltenCoreProxy = GameObject.Instantiate(_moltenCoreProxy, moltenCore.transform); ;
             moltenCoreProxy.name = "MoltenCore_Proxy";
+            moltenCoreProxy.SetActive(true);
 
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
             proxyLavaSphere.transform.localScale = Vector3.one;

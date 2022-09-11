@@ -96,18 +96,18 @@ namespace NewHorizons.Components.SizeControllers
 
         public static void Init()
         {
-            var sun = GameObject.FindObjectOfType<SunController>();
+            var sun = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
 
             if (sun == null) return;
 
             // Need to grab all this early bc the star might only Start after the solar system was made (remnants)
-            _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
-            _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
-            _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial);
-            _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial);
+            if (_defaultCollapseStartSurfaceMaterial == null) _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultCollapseEndSurfaceMaterial == null) _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultStartSurfaceMaterial == null) _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultEndSurfaceMaterial == null) _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial).DontDestroyOnLoad();
 
-            _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
-            _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
+            if (_defaultNormalRamp == null) _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
+            if (_defaultCollapseRamp == null) _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
         }
 
         private void Start()

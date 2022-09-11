@@ -25,11 +25,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
         {
             InitPrefab();
 
-            if (_prefab == null) return;
+            if (_prefab == null) return null;
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
@@ -63,6 +63,8 @@ namespace NewHorizons.Builder.Props
             }
 
             raftObject.SetActive(true);
+
+            return raftObject;
         }
     }
 }

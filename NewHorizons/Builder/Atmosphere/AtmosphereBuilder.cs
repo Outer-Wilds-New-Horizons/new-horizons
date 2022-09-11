@@ -46,6 +46,7 @@ namespace NewHorizons.Builder.Atmosphere
                     atmo.name = "Atmosphere";
                     atmo.transform.localPosition = Vector3.zero;
                     atmo.transform.localEulerAngles = Vector3.zero;
+                    atmo.SetActive(true);
 
                     Material material;
 

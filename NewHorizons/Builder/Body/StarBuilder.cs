@@ -66,6 +66,7 @@ namespace NewHorizons.Builder.Body
             surfaceAudio.SetSector(sector);
 
             sunAudio.name = "Audio_Star";
+            sunAudio.SetActive(true);
 
             GameObject sunAtmosphere = null;
             if (starModule.hasAtmosphere)
@@ -74,6 +75,7 @@ namespace NewHorizons.Builder.Body
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
+                sunAtmosphere.SetActive(true);
 
                 var atmospheres = sunAtmosphere.transform.Find("AtmoSphere");
                 atmospheres.transform.localScale = Vector3.one;
@@ -102,6 +104,7 @@ namespace NewHorizons.Builder.Body
             var ambientLightGO = Object.Instantiate(_starAmbientLight, starGO.transform);
             ambientLightGO.transform.localPosition = Vector3.zero;
             ambientLightGO.name = "AmbientLight_Star";
+            ambientLightGO.SetActive(true);
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
             ambientLight.range = starModule.size * OuterRadiusRatio;
@@ -227,6 +230,7 @@ namespace NewHorizons.Builder.Body
                 sunAtmosphere.transform.position = proxyGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
+                sunAtmosphere.SetActive(true);
 
                 atmosphere = sunAtmosphere.transform.Find("Atmosphere_LOD2").GetComponent<MeshRenderer>();
                 atmosphere.transform.localScale = Vector3.one;
@@ -321,11 +325,13 @@ namespace NewHorizons.Builder.Body
             sunSurface.transform.position = rootObject.transform.position;
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
+            sunSurface.SetActive(true);
 
             var solarFlareEmitter = Object.Instantiate(_starSolarFlareEmitter, starGO.transform);
             solarFlareEmitter.transform.localPosition = Vector3.zero;
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
+            solarFlareEmitter.SetActive(true);
 
             if (starModule.tint != null)
             {

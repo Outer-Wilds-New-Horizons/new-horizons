@@ -28,6 +28,7 @@ namespace NewHorizons.Builder.Body
 
             var sandSphere = GameObject.Instantiate(_sandSphere, sandGO.transform);
             sandSphere.name = "Sphere";
+            sandSphere.SetActive(true);
             if (module.tint != null)
             {
                 var oldMR = sandSphere.GetComponent<TessellatedSphereRenderer>();
@@ -50,11 +51,13 @@ namespace NewHorizons.Builder.Body
 
             var occlusionSphere = GameObject.Instantiate(_sandOcclusion, sandGO.transform);
             occlusionSphere.name = "Occlusion";
+            occlusionSphere.SetActive(true);
 
             var proxyShadowCasterGO = GameObject.Instantiate(_sandProxyShadowCaster, sandGO.transform);
             proxyShadowCasterGO.name = "ProxyShadowCaster";
             var proxyShadowCaster = proxyShadowCasterGO.GetComponent<ProxyShadowCaster>();
             proxyShadowCaster.SetSuperGroup(sandGO.GetComponent<ProxyShadowCasterSuperGroup>());
+            proxyShadowCasterGO.SetActive(true);
 
             sandSphere.AddComponent<ChildColliderSettings>();
 

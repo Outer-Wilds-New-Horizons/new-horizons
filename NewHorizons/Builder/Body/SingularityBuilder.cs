@@ -159,6 +159,7 @@ namespace NewHorizons.Builder.Body
             {
                 var blackHoleAmbience = GameObject.Instantiate(_blackHoleAmbience, blackHole.transform);
                 blackHoleAmbience.name = "BlackHoleAmbience";
+                blackHoleAmbience.SetActive(true);
                 blackHoleAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
 
                 var blackHoleAudioSource = blackHoleAmbience.GetComponent<AudioSource>();
@@ -169,6 +170,7 @@ namespace NewHorizons.Builder.Body
 
                 var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, blackHole.transform);
                 blackHoleOneShot.name = "BlackHoleEmissionOneShot";
+                blackHoleOneShot.SetActive(true);
                 var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
                 oneShotAudioSource.maxDistance = size * 3f;
                 oneShotAudioSource.minDistance = size * 0.4f;
@@ -199,6 +201,7 @@ namespace NewHorizons.Builder.Body
             {
                 var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, blackHole.transform);
                 blackHoleVolume.name = "BlackHoleVolume";
+                blackHoleVolume.SetActive(true);
                 var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                 blackHoleSphereCollider.radius = size * 0.4f;
                 if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
@@ -270,6 +273,7 @@ namespace NewHorizons.Builder.Body
             ambientLight.transform.localScale = Vector3.one;
             ambientLight.transform.localPosition = Vector3.zero;
             ambientLight.name = "AmbientLight";
+            ambientLight.SetActive(true);
             var light = ambientLight.GetComponent<Light>();
             light.range = size * 7f;
             if (sizeController != null) sizeController.light = light;
@@ -280,6 +284,7 @@ namespace NewHorizons.Builder.Body
             whiteHoleVolumeGO.transform.localScale = Vector3.one;
             whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = size;
             whiteHoleVolumeGO.name = "WhiteHoleVolume";
+            whiteHoleVolumeGO.SetActive(true);
             if (sizeController != null) sizeController.sphereCollider = whiteHoleVolumeGO.GetComponent<SphereCollider>(); 
 
             var whiteHoleFluidVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleFluidVolume>();
@@ -306,6 +311,7 @@ namespace NewHorizons.Builder.Body
                 var zeroGVolume = GameObject.Instantiate(_whiteHoleZeroGVolume, whiteHole.transform);
                 zeroGVolume.name = "ZeroGVolume";
                 zeroGVolume.transform.localPosition = Vector3.zero;
+                zeroGVolume.SetActive(true);
                 zeroGVolume.GetComponent<SphereCollider>().radius = size * 10f;
                 zeroGVolume.GetComponent<ZeroGVolume>()._attachedBody = OWRB;
 
@@ -313,6 +319,7 @@ namespace NewHorizons.Builder.Body
                 rulesetVolume.name = "RulesetVolume";
                 rulesetVolume.transform.localPosition = Vector3.zero;
                 rulesetVolume.transform.localScale = Vector3.one * size / 100f;
+                rulesetVolume.SetActive(true);
                 rulesetVolume.GetComponent<SphereShape>().enabled = true;
 
                 if (sizeController != null)

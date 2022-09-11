@@ -25,6 +25,8 @@ namespace NewHorizons.Builder.Body
             if (config.Base.cometTailRotation != null) alignment = config.Base.cometTailRotation;
 
             cometTail.transform.rotation = Quaternion.Euler(alignment);
+
+            cometTail.SetActive(true);
         }
     }
 }

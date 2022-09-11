@@ -62,12 +62,15 @@ namespace NewHorizons.Builder.Body
 
             var proxyGO = GameObject.Instantiate(_proxySandFunnel, scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
+            proxyGO.SetActive(true);
 
             var geoGO = GameObject.Instantiate(_geoSandFunnel, scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
+            geoGO.SetActive(true);
 
             var volumesGO = GameObject.Instantiate(_volumesSandFunnel, scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
+            volumesGO.SetActive(true);
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
             var fluidVolume = sfv.gameObject;
             switch (funnelType)
