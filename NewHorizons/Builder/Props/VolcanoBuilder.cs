@@ -14,7 +14,17 @@ namespace NewHorizons.Builder.Props
 
         internal static void InitPrefab()
         {
-            if (_meteorLauncherPrefab == null) _meteorLauncherPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher").InstantiateInactive().Rename("Prefab_VM_MeteorLauncher").DontDestroyOnLoad();
+            if (_meteorLauncherPrefab == null)
+            {
+                _meteorLauncherPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher").InstantiateInactive().Rename("Prefab_VM_MeteorLauncher").DontDestroyOnLoad();
+                var meteorLauncher = _meteorLauncherPrefab.GetComponent<MeteorLauncher>();
+                meteorLauncher._audioSector = null;
+                meteorLauncher._dynamicMeteorPrefab = null;
+                meteorLauncher._detectableFluid = null;
+                meteorLauncher._detectableField = null;
+                meteorLauncher._launchDirection = Vector3.up;
+                meteorLauncher._dynamicProbability = 0f;
+            }
         }
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
@@ -28,14 +38,7 @@ namespace NewHorizons.Builder.Props
             launcherGO.name = "MeteorLauncher";
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
-            meteorLauncher._dynamicMeteorPrefab = null;
-            meteorLauncher._detectableFluid = null;
-            meteorLauncher._detectableField = null;
-
-            meteorLauncher._launchDirection = Vector3.up;
-
-            meteorLauncher._dynamicProbability = 0f;
-
+            meteorLauncher._audioSector = sector;
             meteorLauncher._minLaunchSpeed = info.minLaunchSpeed;
             meteorLauncher._maxLaunchSpeed = info.maxLaunchSpeed;
             meteorLauncher._minInterval = info.minInterval;
