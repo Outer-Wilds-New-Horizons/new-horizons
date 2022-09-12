@@ -21,7 +21,26 @@ namespace NewHorizons.Builder.Props
                     return;
                 }
                 else
+                {
                     _prefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+                    var raftController = _prefab.GetComponent<RaftController>();
+                    if (raftController._sector != null)
+                    {
+                        // Since awake already ran we have to unhook these events
+                        raftController._sector.OnOccupantEnterSector -= raftController.OnOccupantEnterSector;
+                        raftController._sector.OnOccupantExitSector -= raftController.OnOccupantExitSector;
+                        raftController._sector = null;
+                    }
+                    raftController._riverFluid = null;
+                    foreach (var lightSensor in _prefab.GetComponentsInChildren<SingleLightSensor>())
+                    {
+                        if (lightSensor._sector != null)
+                        {
+                            lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
+                            lightSensor._sector = null;
+                        }
+                    }
+                }
             }
         }
 
@@ -29,7 +48,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            if (_prefab == null) return null;
+            if (_prefab == null || sector == null) return null;
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
@@ -40,24 +59,18 @@ namespace NewHorizons.Builder.Props
             StreamingHandler.SetUpStreaming(raftObject, sector);
 
             var raftController = raftObject.GetComponent<RaftController>();
-            // Since awake already ran we have to unhook these events
-            raftController._sector.OnOccupantEnterSector -= raftController.OnOccupantEnterSector;
-            raftController._sector.OnOccupantExitSector -= raftController.OnOccupantExitSector;
-            raftController._riverFluid = null;
-
             raftController._sector = sector;
             sector.OnOccupantEnterSector += raftController.OnOccupantEnterSector;
             sector.OnOccupantExitSector += raftController.OnOccupantExitSector;
 
             // Detectors
             var fluidDetector = raftObject.transform.Find("Detector_Raft").GetComponent<RaftFluidDetector>();
-            var waterVolume = planetGO.GetComponentInChildren<NHFluidVolume>();
+            var waterVolume = (FluidVolume)planetGO.GetComponentInChildren<NHFluidVolume>() ?? planetGO.GetComponentInChildren<SphereOceanFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
             {
-                lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
