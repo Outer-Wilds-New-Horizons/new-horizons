@@ -95,7 +95,7 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
+                imageLoader.PathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide, mod);
 
@@ -197,7 +197,7 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = info.slides[i];
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
+                imageLoader.PathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide, mod);
 
@@ -263,7 +263,7 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
+                imageLoader.PathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide, mod);
 
@@ -336,7 +336,7 @@ namespace NewHorizons.Builder.Props
                 var slide = new Slide();
                 var slideInfo = slides[i];
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
+                imageLoader.PathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
 
                 AddModules(slideInfo, ref slide, mod);
 
