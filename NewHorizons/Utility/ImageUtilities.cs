@@ -403,6 +403,12 @@ namespace NewHorizons.Utility
 
             IEnumerator DownloadTexture(string url, int index)
             {
+                if (string.IsNullOrEmpty(url))
+                {
+                    imageLoadedEvent?.Invoke(Texture2D.blackTexture, index);
+                    yield break;
+                }
+
                 lock(_loadedTextures)
                 {
                     if (_loadedTextures.ContainsKey(url))
