@@ -4,8 +4,8 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
-using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
@@ -113,24 +113,22 @@ namespace NewHorizons.Builder.Props
                     slideCollection.slides[index]._image = ImageUtilities.Invert(tex); 
 
                     // Track the first 15 to put on the slide reel object
-                    if (index < 15) 
+                    if (index < textures.Length) 
                     {
                         textures[index] = tex;
-                        displaySlidesLoaded++; // threading moment
-                    }
+                        if (Interlocked.Increment(ref displaySlidesLoaded) == textures.Length)
+                        {
+                            // all textures required to build the reel's textures have been loaded
+                            var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back").GetComponent<MeshRenderer>();
+                            var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front").GetComponent<MeshRenderer>();
 
-                    if (displaySlidesLoaded >= textures.Length)
-                    {
-                        // all textures required to build the reel's textures have been loaded
-                        var slidesBack = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Back").GetComponent<MeshRenderer>();
-                        var slidesFront = slideReelObj.transform.Find("Props_IP_SlideReel_7/Slides_Front").GetComponent<MeshRenderer>();
-
-                        // Now put together the textures into a 4x4 thing for the materials
-                        var reelTexture = ImageUtilities.MakeReelTexture(textures);
-                        slidesBack.material.mainTexture = reelTexture;
-                        slidesBack.material.SetTexture(EmissionMap, reelTexture);
-                        slidesFront.material.mainTexture = reelTexture;
-                        slidesFront.material.SetTexture(EmissionMap, reelTexture);
+                            // Now put together the textures into a 4x4 thing for the materials
+                            var reelTexture = ImageUtilities.MakeReelTexture(textures);
+                            slidesBack.material.mainTexture = reelTexture;
+                            slidesBack.material.SetTexture(EmissionMap, reelTexture);
+                            slidesFront.material.mainTexture = reelTexture;
+                            slidesFront.material.SetTexture(EmissionMap, reelTexture);
+                        }
                     }
                 }
             );
@@ -352,9 +350,8 @@ namespace NewHorizons.Builder.Props
                 (Texture2D tex, int index) => 
                 { 
                     slideCollection.slides[index]._image = tex;
-                    displaySlidesLoaded++; // threading moment
 
-                    if (displaySlidesLoaded >= slides.Length)
+                    if (Interlocked.Increment(ref displaySlidesLoaded) == slides.Length)
                     {
                         mindSlideProjector.enabled = true;
                         visionBeamEffect.SetActive(true);
