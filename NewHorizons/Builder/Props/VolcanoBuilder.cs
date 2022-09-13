@@ -24,6 +24,18 @@ namespace NewHorizons.Builder.Props
                 meteorLauncher._detectableField = null;
                 meteorLauncher._launchDirection = Vector3.up;
                 meteorLauncher._dynamicProbability = 0f;
+                var meteorPrefab = meteorLauncher._meteorPrefab.InstantiateInactive().Rename("Prefab_VM_MoltenMeteor").DontDestroyOnLoad();
+                var meteor = meteorPrefab.GetComponent<MeteorController>();
+                GameObject.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
+                var detectors = meteorPrefab.FindChild("DynamicDetector");
+                var rigidbody = meteor.GetComponent<OWRigidbody>();
+                meteor._owRigidbody = rigidbody;
+                meteor._constantFluidDetector = null;
+                meteor._constantForceDetector = null;
+                rigidbody.RegisterAttachedFluidDetector(detectors.GetComponent<DynamicFluidDetector>());
+                rigidbody.RegisterAttachedForceDetector(detectors.AddComponent<DynamicForceDetector>());
+                meteor._owColliders = meteorPrefab.GetComponentsInChildren<OWCollider>();
+                meteorLauncher._meteorPrefab = meteorPrefab;
             }
         }
 
@@ -43,6 +55,10 @@ namespace NewHorizons.Builder.Props
             meteorLauncher._maxLaunchSpeed = info.maxLaunchSpeed;
             meteorLauncher._minInterval = info.minInterval;
             meteorLauncher._maxInterval = info.maxInterval;
+
+            var lavaMaterial = launcherGO.FindChild("EruptionParticles_Lava").GetComponent<ParticleSystemRenderer>().sharedMaterial;
+            lavaMaterial.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
+            lavaMaterial.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
 
             launcherGO.SetActive(true);
 
@@ -64,16 +80,6 @@ namespace NewHorizons.Builder.Props
             mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
             mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
 
-            GameObject.Destroy(meteor.transform.Find("ConstantDetectors").gameObject);
-
-            var detectors = meteor.transform.Find("DynamicDetector").gameObject;
-
-            meteor._constantFluidDetector = null;
-            meteor._constantForceDetector = null;
-
-            var forceDetector = detectors.gameObject.AddComponent<DynamicForceDetector>();
-
-            meteor._owColliders = meteor.gameObject.GetComponentsInChildren<OWCollider>();
         }
     }
 }
