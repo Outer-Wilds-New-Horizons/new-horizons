@@ -1,9 +1,11 @@
 using OWML.Common;
+using OWML.ModHelper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -364,7 +366,7 @@ namespace NewHorizons.Utility
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {
-            public List<string> PathsToLoad { get; private set; } = new ();
+            public List<(int index, string path)> PathsToLoad { get; private set; } = new ();
 
             public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
             public ImageLoadedEvent imageLoadedEvent = new ();
@@ -381,9 +383,9 @@ namespace NewHorizons.Utility
             void Start()
             {
                 imageLoadedEvent.AddListener(OnImageLoaded);
-                for (int i = 0; i < PathsToLoad.Count; i++)
+                foreach (var (index, path) in PathsToLoad)
                 {
-                    StartCoroutine(DownloadTexture(PathsToLoad[i], i));
+                    StartCoroutine(DownloadTexture(path, index));
                 }
             }
 
@@ -403,12 +405,6 @@ namespace NewHorizons.Utility
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                if (string.IsNullOrEmpty(url))
-                {
-                    imageLoadedEvent?.Invoke(Texture2D.blackTexture, index);
-                    yield break;
-                }
-
                 lock(_loadedTextures)
                 {
                     if (_loadedTextures.ContainsKey(url))
