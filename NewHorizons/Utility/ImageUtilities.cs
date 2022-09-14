@@ -1,12 +1,14 @@
 using OWML.Common;
+using OWML.ModHelper;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Policy;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using UnityEngine.UIElements;
 
 namespace NewHorizons.Utility
 {
@@ -128,7 +130,7 @@ namespace NewHorizons.Utility
             var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
             texture.name = "SlideReelAtlas";
 
-            Color[] fillPixels = new Color[size * size * 4 * 4];
+            var fillPixels = new Color[size * size * 4 * 4];
             for (int xIndex = 0; xIndex < 4; xIndex++)
             {
                 for (int yIndex = 0; yIndex < 4; yIndex++)
@@ -276,8 +278,8 @@ namespace NewHorizons.Utility
         {
             var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
             tex.name = "Clear";
-            Color fillColor = Color.clear;
-            Color[] fillPixels = new Color[tex.width * tex.height];
+            var fillColor = Color.clear;
+            var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < fillPixels.Length; i++)
             {
                 fillPixels[i] = fillColor;
@@ -296,7 +298,7 @@ namespace NewHorizons.Utility
         {
             var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
             tex.name = src.name + "CanvasScaled";
-            Color[] fillPixels = new Color[tex.width * tex.height];
+            var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
                 for (int j = 0; j < tex.height; j++)
@@ -339,14 +341,14 @@ namespace NewHorizons.Utility
         }
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
-            Color[] pixels = new Color[width*height];
+            var pixels = new Color[width*height];
  
             for(int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] = color;
             }
  
-            Texture2D newTexture = new Texture2D(width, height);
+            var newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
             return newTexture;
@@ -364,10 +366,15 @@ namespace NewHorizons.Utility
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {
-            public List<string> pathsToLoad = new List<string>();
+            public List<(int index, string path)> PathsToLoad { get; private set; } = new ();
 
             public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
-            public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+            public ImageLoadedEvent imageLoadedEvent = new ();
+
+            private readonly object _lockObj = new();
+
+            public bool FinishedLoading { get; private set; }
+            private int _loadedCount = 0;
 
             // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
             // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
@@ -375,39 +382,59 @@ namespace NewHorizons.Utility
 
             void Start()
             {
-                for (int i = 0; i < pathsToLoad.Count; i++)
+                imageLoadedEvent.AddListener(OnImageLoaded);
+                foreach (var (index, path) in PathsToLoad)
                 {
-                    StartCoroutine(DownloadTexture(pathsToLoad[i], i));
+                    StartCoroutine(DownloadTexture(path, index));
+                }
+            }
+
+            private void OnImageLoaded(Texture texture, int index)
+            {
+                lock (_lockObj)
+                {
+                    _loadedCount++;
+
+                    if (_loadedCount >= PathsToLoad.Count)
+                    {
+                        Logger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
+                        FinishedLoading = true;
+                    }
                 }
             }
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                if (_loadedTextures.ContainsKey(url))
+                lock(_loadedTextures)
                 {
-                    Logger.LogVerbose($"Already loaded image at path: {url}");
-                    var texture = _loadedTextures[url];
-                    imageLoadedEvent.Invoke(texture, index);
-                    yield break;
+                    if (_loadedTextures.ContainsKey(url))
+                    {
+                        Logger.LogVerbose($"Already loaded image {index}:{url}");
+                        var texture = _loadedTextures[url];
+                        imageLoadedEvent?.Invoke(texture, index);
+                        yield break;
+                    }
                 }
 
-                using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
+                using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
+
+                yield return uwr.SendWebRequest();
+
+                var hasError = uwr.error != null && uwr.error != "";
+
+                if (hasError) 
                 {
-                    yield return uwr.SendWebRequest();
+                    Logger.LogError($"Failed to load {index}:{url} - {uwr.error}");
+                }
+                else
+                {
+                    var texture = DownloadHandlerTexture.GetContent(uwr);
 
-                    var hasError = uwr.error != null && uwr.error != "";
-                
-                    if (hasError) // (uwr.result != UnityWebRequest.Result.Success)
+                    lock(_loadedTextures)
                     {
-                        Debug.Log(uwr.error);
-                    }
-                    else
-                    {
-                        var texture = DownloadHandlerTexture.GetContent(uwr);
-
                         if (_loadedTextures.ContainsKey(url))
                         {
-                            Logger.LogVerbose($"Already loaded image at path: {url}");
+                            Logger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
                             texture = _loadedTextures[url];
                         }
@@ -416,7 +443,7 @@ namespace NewHorizons.Utility
                             _loadedTextures.Add(url, texture);
                         }
 
-                        imageLoadedEvent.Invoke(texture, index);
+                        imageLoadedEvent?.Invoke(texture, index);
                     }
                 }
             }

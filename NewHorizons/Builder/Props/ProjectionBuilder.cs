@@ -2,9 +2,11 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Common.Menus;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.IO;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
@@ -89,19 +91,8 @@ namespace NewHorizons.Builder.Props
             // The base game ones only have 15 slides max
             var textures = new Texture2D[slidesCount >= 15 ? 15 : slidesCount];
 
-            var imageLoader = slideReelObj.AddComponent<ImageUtilities.AsyncImageLoader>();
-            for (int i = 0; i < slidesCount; i++)
-            {
-                var slide = new Slide();
-                var slideInfo = info.slides[i];
+            var imageLoader = AddAsyncLoader(slideReelObj, mod, info.slides, ref slideCollection);
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
-
-                AddModules(slideInfo, ref slide, mod);
-
-                slideCollection.slides[i] = slide;
-            }
-            
             // this variable just lets us track how many of the first 15 slides have been loaded.
             // this way as soon as the last one is loaded (due to async loading, this may be
             // slide 7, or slide 3, or whatever), we can build the slide reel texture. This allows us
@@ -189,18 +180,7 @@ namespace NewHorizons.Builder.Props
             int slidesCount = info.slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
             
-            var imageLoader = projectorObj.AddComponent<ImageUtilities.AsyncImageLoader>();
-            for (int i = 0; i < slidesCount; i++)
-            {
-                var slide = new Slide();
-                var slideInfo = info.slides[i];
-
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
-
-                AddModules(slideInfo, ref slide, mod);
-
-                slideCollection.slides[i] = slide;
-            }
+            var imageLoader = AddAsyncLoader(projectorObj, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = ImageUtilities.Invert(tex); });
 
             slideCollectionContainer.slideCollection = slideCollection;
@@ -254,19 +234,7 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
-        
-            var imageLoader = g.AddComponent<ImageUtilities.AsyncImageLoader>();
-            for (int i = 0; i < slidesCount; i++)
-            {
-                var slide = new Slide();
-                var slideInfo = slides[i];
-
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
-
-                AddModules(slideInfo, ref slide, mod);
-
-                slideCollection.slides[i] = slide;
-            }
+            var imageLoader = AddAsyncLoader(g, mod, info.slides, ref slideCollection);
             imageLoader.imageLoadedEvent.AddListener((Texture2D tex, int index) => { slideCollection.slides[index]._image = tex; });
 
             // attach a component to store all the data for the slides that play when a vision torch scans this target
@@ -328,19 +296,8 @@ namespace NewHorizons.Builder.Props
             var slidesCount = slides.Length;
             var slideCollection = new SlideCollection(slidesCount);
 
-            var imageLoader = standingTorch.AddComponent<ImageUtilities.AsyncImageLoader>();
-            for (int i = 0; i < slidesCount; i++)
-            {
-                var slide = new Slide();
-                var slideInfo = slides[i];
+            var imageLoader = AddAsyncLoader(standingTorch, mod, slides, ref slideCollection);
 
-                imageLoader.pathsToLoad.Add(mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath);
-
-                AddModules(slideInfo, ref slide, mod);
-
-                slideCollection.slides[i] = slide;
-            }
-            
             // This variable just lets us track how many of the slides have been loaded.
             // This way as soon as the last one is loaded (due to async loading, this may be
             // slide 7, or slide 3, or whatever), we can enable the vision torch. This allows us
@@ -373,6 +330,32 @@ namespace NewHorizons.Builder.Props
             if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
             return standingTorch;
+        }
+
+        private static ImageUtilities.AsyncImageLoader AddAsyncLoader(GameObject gameObject, IModBehaviour mod, SlideInfo[] slides, ref SlideCollection slideCollection)
+        {
+            var imageLoader = gameObject.AddComponent<ImageUtilities.AsyncImageLoader>();
+            for (int i = 0; i < slides.Length; i++)
+            {
+                var slide = new Slide();
+                var slideInfo = slides[i];
+
+                if (string.IsNullOrEmpty(slideInfo.imagePath))
+                {
+                    imageLoader.imageLoadedEvent?.Invoke(Texture2D.blackTexture, i);
+                }
+                else
+                {
+                    // Don't use Path.Combine here else you break the Vision
+                    imageLoader.PathsToLoad.Add((i, mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath));
+                }
+
+                AddModules(slideInfo, ref slide, mod);
+
+                slideCollection.slides[i] = slide;
+            }
+
+            return imageLoader;
         }
 
         private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
