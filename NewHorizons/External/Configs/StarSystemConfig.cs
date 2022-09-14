@@ -15,6 +15,11 @@ namespace NewHorizons.External.Configs
     public class StarSystemConfig
     {
         /// <summary>
+        /// An override value for the far clip plane. Allows you to see farther.
+        /// </summary>
+        public float farClipPlaneOverride;
+
+        /// <summary>
         /// Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.
         /// </summary>
         [DefaultValue(true)] public bool canEnterViaWarpDrive = true;

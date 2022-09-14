@@ -1,4 +1,5 @@
 using HarmonyLib;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Patches
@@ -10,11 +11,11 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(MapController), nameof(MapController.Awake))]
         public static void MapController_Awake(MapController __instance)
         {
-            __instance._maxPanDistance = Main.FurthestOrbit * 1.5f;
+            __instance._maxPanDistance = Mathf.Max(__instance._maxPanDistance, Main.FurthestOrbit * 1.5f);
             __instance._maxZoomDistance *= 6f;
             __instance._minPitchAngle = -90f;
             __instance._zoomSpeed *= 4f;
-            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
+            __instance._mapCamera.farClipPlane = Mathf.Max(__instance._mapCamera.farClipPlane, Main.FurthestOrbit * 10f);
         }
 
         [HarmonyPostfix]
