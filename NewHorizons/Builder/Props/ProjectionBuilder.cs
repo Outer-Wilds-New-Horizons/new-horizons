@@ -2,13 +2,13 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using OWML.Common.Menus;
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using System.IO;
 using UnityEngine;
+using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class ProjectionBuilder
