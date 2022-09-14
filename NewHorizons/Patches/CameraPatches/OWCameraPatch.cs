@@ -1,5 +1,6 @@
 using HarmonyLib;
-namespace NewHorizons.Patches
+
+namespace NewHorizons.Patches.CameraPatches
 {
     [HarmonyPatch]
     public static class OWCameraPatch
