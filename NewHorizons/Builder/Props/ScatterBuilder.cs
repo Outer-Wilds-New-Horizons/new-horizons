@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Props
                 {
                     scale = propInfo.scale
                 };
-                prefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
+                var scatterPrefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
 
                 for (int i = 0; i < propInfo.count; i++)
                 {
@@ -116,7 +116,7 @@ namespace NewHorizons.Builder.Props
                         point = Quaternion.Euler(90, 0, 0) * point;
                     }
 
-                    var prop = prefab.InstantiateInactive();
+                    var prop = scatterPrefab.InstantiateInactive();
                     prop.transform.SetParent(sector?.transform ?? go.transform);
                     prop.transform.localPosition = go.transform.TransformPoint(point * height);
                     var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
@@ -131,7 +131,7 @@ namespace NewHorizons.Builder.Props
                     prop.SetActive(true);
                 }
 
-                GameObject.Destroy(prefab);
+                GameObject.Destroy(scatterPrefab);
             }
         }
     }

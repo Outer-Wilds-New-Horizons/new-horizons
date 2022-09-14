@@ -5,8 +5,10 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
+using Component = UnityEngine.Component;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
@@ -71,6 +73,9 @@ namespace NewHorizons.Builder.Props
 
             var isTorch = prop.GetComponent<VisionTorchItem>() != null;
 
+            // Fix a bunch of stuff when done loading
+            var fixes = new List<Component>();
+
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
                 if (sector == null)
@@ -80,6 +85,16 @@ namespace NewHorizons.Builder.Props
                 else FixSectoredComponent(component, sector, isTorch);
 
                 FixComponent(component, go, prefab.name);
+
+                if (DetailFixer.fixes.Keys.Any(x => x.IsAssignableFrom(component.GetType())))
+                {
+                    fixes.Add(component);
+                }
+            }
+
+            if (fixes.Count > 0)
+            {
+                prop.AddComponent<DetailFixer>().SetFixes(fixes);
             }
 
             prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
@@ -277,44 +292,75 @@ namespace NewHorizons.Builder.Props
                 torchItem.mindProjectorTrigger.enabled = true;
                 torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
             }
+        }
 
-            // Fix a bunch of stuff when done loading
-            Delay.RunWhen(() => Main.IsSystemReady, () =>
+        /// <summary>
+        /// Performs fixes that have to be done after the system loads
+        /// Has to be done this way to ensure that scatter works
+        /// </summary>
+        private class DetailFixer : MonoBehaviour
+        {
+            public static Dictionary<Type, Action<Component>> fixes = new()
             {
-                try
+                [typeof(AnglerfishAnimController)] = (x) =>
                 {
-                    if (component == null) return;
-                    if (component is Animator animator) animator.enabled = true;
-                    else if (component is Collider collider) collider.enabled = true;
-                    else if (component is Renderer renderer) renderer.enabled = true;
-                    else if (component is Shape shape) shape.enabled = true;
-                    else if (component is SectorCullGroup sectorCullGroup)
+                    var angler = x as AnglerfishAnimController;
+
+                    Logger.LogVerbose("Enabling anglerfish animation");
+                    // Remove any reference to its angler
+                    if (angler._anglerfishController)
                     {
-                        sectorCullGroup._inMapView = false;
-                        sectorCullGroup._isFastForwarding = false;
-                        sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+                        angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                        angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                        angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                        angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                     }
-                    // If it's not a moving anglerfish make sure the anim controller is regular
-                    else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
+                    angler.enabled = true;
+                    angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                },
+                [typeof(SectorCullGroup)] = (x) =>
+                {
+                    var sectorCullGroup = x as SectorCullGroup;
+                    sectorCullGroup._inMapView = false;
+                    sectorCullGroup._isFastForwarding = false;
+                    sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+                },
+                [typeof(Shape)] = (x) => (x as Shape).enabled = true,
+                [typeof(Renderer)] = (x) => (x as Renderer).enabled = true,
+                [typeof(Collider)] = (x) => (x as Collider).enabled = true,
+                [typeof(Animator)] = (x) => (x as Animator).enabled = true
+            };   
+
+            // Have to be public to be copied by Instantiate
+            public Component[] componentsToFix;
+
+            public void SetFixes(List<Component> fixes)
+            {
+                // Components must be in a list for unity to properly deep copy
+                componentsToFix = fixes.ToArray();
+            }
+
+            public void Start()
+            {
+                for (int i = 0; i < componentsToFix.Length; i++)
+                {
+                    var component = componentsToFix[i];
+
+                    try
                     {
-                        Logger.LogVerbose("Enabling anglerfish animation");
-                        // Remove any reference to its angler
-                        if (angler._anglerfishController)
+                        if (component != null)
                         {
-                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
+                            var key = fixes.Keys.FirstOrDefault(x => x.IsAssignableFrom(component.GetType()));
+                            var fix = fixes[key];
+                            fix(component);
                         }
-                        angler.enabled = true;
-                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                    }
+                    catch (Exception)
+                    {
+                        Logger.LogWarning($"Failed to fix component {component} on {gameObject.name}");
                     }
                 }
-                catch (Exception e)
-                {
-                    Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] for prop [{prefab}]:\n{e}");
-                }
-            });
+            }
         }
     }
 }
