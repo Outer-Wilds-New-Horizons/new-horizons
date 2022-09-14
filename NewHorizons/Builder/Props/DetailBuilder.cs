@@ -87,7 +87,7 @@ namespace NewHorizons.Builder.Props
 
                 FixComponent(component, go, prefab.name);
 
-                if (DetailFixer.fixes.Keys.Any(x => x.IsAssignableFrom(component.GetType())))
+                if (DetailFixer.fixes.Keys.Any(x => x.IsInstanceOfType(component)))
                 {
                     fixes.Add(component);
                 }
@@ -352,7 +352,7 @@ namespace NewHorizons.Builder.Props
                     {
                         if (component != null)
                         {
-                            var key = fixes.Keys.FirstOrDefault(x => x.IsAssignableFrom(component.GetType()));
+                            var key = fixes.Keys.FirstOrDefault(x => x.IsInstanceOfType(component));
                             var fix = fixes[key];
                             fix(component);
                         }
