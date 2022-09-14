@@ -6,7 +6,7 @@
   "uniqueName": "xen.NewHorizons",
   "version": "1.5.1",
   "owmlVersion": "2.6.0",
-  "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework", "xen.CommonCameraUtility" ],
+  "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
