@@ -144,6 +144,11 @@ namespace NewHorizons.External.Modules
             /// Should we try to prevent overlap between the scattered details? True by default. If it's affecting load times turn it off.
             /// </summary>
             [DefaultValue(true)] public bool preventOverlap = true;
+            
+            /// <summary>
+            /// Should this detail stay loaded even if you're outside the sector (good for very large props)
+            /// </summary>
+            public bool keepLoaded;
         }
 
         [JsonObject]

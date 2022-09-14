@@ -42,6 +42,11 @@ namespace NewHorizons.Builder.ShipLog
             revealTriggerVolume.SetActive(false);
             revealTriggerVolume.transform.parent = sector?.transform ?? planetGO.transform;
 
+            if (!string.IsNullOrEmpty(info.rename))
+            {
+                revealTriggerVolume.name = info.rename;
+            }
+
             if (!string.IsNullOrEmpty(info.parentPath))
             {
                 var newParent = planetGO.transform.Find(info.parentPath);

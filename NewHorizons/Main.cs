@@ -1,16 +1,19 @@
 using HarmonyLib;
-using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
+using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.OtherMods.MenuFramework;
+using NewHorizons.OtherMods.OWRichPresence;
+using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.OtherMods.VoiceActing;
 using OWML.Common;
 using OWML.ModHelper;
 using System;
@@ -22,8 +25,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.OtherMods.OWRichPresence;
-using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons
 {
@@ -95,9 +96,9 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            if (VerboseLogs)          Logger.UpdateLogLevel(Logger.LogType.Verbose);
-            else if (Debug)           Logger.UpdateLogLevel(Logger.LogType.Log);
-            else                      Logger.UpdateLogLevel(Logger.LogType.Error);
+            if (VerboseLogs) Logger.UpdateLogLevel(Logger.LogType.Verbose);
+            else if (Debug) Logger.UpdateLogLevel(Logger.LogType.Log);
+            else Logger.UpdateLogLevel(Logger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
@@ -164,6 +165,11 @@ namespace NewHorizons
             TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
         }
 
+        public void Awake()
+        {
+            Instance = this;
+        }
+
         public void Start()
         {
             // Patches
@@ -176,7 +182,6 @@ namespace NewHorizons
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
-            Instance = this;
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
@@ -200,12 +205,14 @@ namespace NewHorizons
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
+            MenuHandler.Init();
             AchievementHandler.Init();
             VoiceHandler.Init();
             RichPresenceHandler.Init();
             OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
+            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
@@ -311,9 +318,6 @@ namespace NewHorizons
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
                 StarEvolutionController.Init();
 
-                // Has to go before loading planets else the Discord Rich Presence mod won't show the right text
-                LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
-
                 if (isSolarSystem)
                 {
                     foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
@@ -412,7 +416,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = Main.FurthestOrbit * (4f/3f);
+                ssrLight.range = Main.FurthestOrbit * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();
@@ -486,10 +490,22 @@ namespace NewHorizons
                 }
                 var folder = mod.ModHelper.Manifest.ModFolderPath;
 
+                var systemsFolder = Path.Combine(folder, "systems");
+                var planetsFolder = Path.Combine(folder, "planets");
+
                 // Load systems first so that when we load bodies later we can check for missing ones
-                if (Directory.Exists(folder + @"systems\"))
+                if (Directory.Exists(systemsFolder))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"systems\", "*.json?", SearchOption.AllDirectories))
+                    var systemFiles = Directory.GetFiles(systemsFolder, "*.json", SearchOption.AllDirectories)
+                        .Concat(Directory.GetFiles(systemsFolder, "*.jsonc", SearchOption.AllDirectories))
+                        .ToArray();
+
+                    if(systemFiles.Length == 0)
+                    {
+                        Logger.LogVerbose($"Found no JSON files in systems folder: {systemsFolder}");
+                    }
+
+                    foreach (var file in systemFiles)
                     {
                         var name = Path.GetFileNameWithoutExtension(file);
 
@@ -503,7 +519,7 @@ namespace NewHorizons
                         if (starSystemConfig.startHere)
                         {
                             // We always want to allow mods to overwrite setting the main SolarSystem as default but not the other way around
-                            if (name != "SolarSystem") 
+                            if (name != "SolarSystem")
                             {
                                 SetDefaultSystem(name);
                                 _currentStarSystem = name;
@@ -522,9 +538,18 @@ namespace NewHorizons
                         }
                     }
                 }
-                if (Directory.Exists(folder + "planets"))
+                if (Directory.Exists(planetsFolder))
                 {
-                    foreach (var file in Directory.GetFiles(folder + @"planets\", "*.json?", SearchOption.AllDirectories))
+                    var planetFiles = Directory.GetFiles(planetsFolder, "*.json", SearchOption.AllDirectories)
+                        .Concat(Directory.GetFiles(planetsFolder, "*.jsonc", SearchOption.AllDirectories))
+                        .ToArray();
+
+                    if(planetFiles.Length == 0)
+                    {
+                        Logger.LogVerbose($"Found no JSON files in planets folder: {planetsFolder}");
+                    }
+
+                    foreach (var file in planetFiles)
                     {
                         var relativeDirectory = file.Replace(folder, "");
                         var body = LoadConfig(mod, relativeDirectory);
@@ -565,6 +590,7 @@ namespace NewHorizons
 
             if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
             if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
+            if (!string.IsNullOrEmpty(addonConfig.popupMessage)) MenuHandler.RegisterOneTimePopup(mod, addonConfig.popupMessage);
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -604,6 +630,7 @@ namespace NewHorizons
                 if (config == null)
                 {
                     Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
+                    MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
                     return null;
                 }
 
@@ -635,6 +662,7 @@ namespace NewHorizons
             catch (Exception e)
             {
                 Logger.LogError($"Error encounter when loading {relativePath}:\n{e}");
+                MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
             }
 
             return body;

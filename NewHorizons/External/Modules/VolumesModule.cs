@@ -71,6 +71,11 @@ namespace NewHorizons.External.Modules
             /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// An optional rename of this volume.
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]

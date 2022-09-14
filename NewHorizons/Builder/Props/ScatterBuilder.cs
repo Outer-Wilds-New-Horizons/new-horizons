@@ -68,7 +68,8 @@ namespace NewHorizons.Builder.Props
                 // Run all the make detail stuff on it early and just copy it over and over instead
                 var detailInfo = new PropModule.DetailInfo()
                 {
-                    scale = propInfo.scale
+                    scale = propInfo.scale,
+					keepLoaded = propInfo.keepLoaded
                 };
                 var scatterPrefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
 
