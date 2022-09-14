@@ -226,7 +226,7 @@ namespace NewHorizons.Builder.Props
         {
             // Fix other components
             // I forget why this is here
-            if (component is GhostIK || component is GhostEffects)
+            if (component is GhostIK or GhostEffects)
             {
                 Component.DestroyImmediate(component);
                 return;
@@ -278,43 +278,35 @@ namespace NewHorizons.Builder.Props
                 torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
             }
 
-            // Fix a bunch of stuff when done loading
-            Delay.RunWhen(() => Main.IsSystemReady, () =>
+            if (component is Animator animator) animator.enabled = true;
+            if (component is Collider collider) collider.enabled = true;
+            if (component is Renderer renderer) renderer.enabled = true;
+            if (component is Shape shape) shape.enabled = true;
+            
+            // fixes sector cull group deactivating renderers on map view enter and fast foward
+            // TODO: does this actually worK? what? how?
+            if (component is SectorCullGroup sectorCullGroup)
             {
-                try
+                sectorCullGroup._inMapView = false;
+                sectorCullGroup._isFastForwarding = false;
+                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+            }
+            
+            // If it's not a moving anglerfish make sure the anim controller is regular
+            if (component is AnglerfishAnimController angler2 && angler2.GetComponentInParent<AnglerfishController>() == null)
+            {
+                Logger.LogVerbose("Enabling anglerfish animation");
+                // Remove any reference to its angler
+                if (angler2._anglerfishController)
                 {
-                    if (component == null) return;
-                    if (component is Animator animator) animator.enabled = true;
-                    else if (component is Collider collider) collider.enabled = true;
-                    else if (component is Renderer renderer) renderer.enabled = true;
-                    else if (component is Shape shape) shape.enabled = true;
-                    else if (component is SectorCullGroup sectorCullGroup)
-                    {
-                        sectorCullGroup._inMapView = false;
-                        sectorCullGroup._isFastForwarding = false;
-                        sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-                    }
-                    // If it's not a moving anglerfish make sure the anim controller is regular
-                    else if (component is AnglerfishAnimController angler && angler.GetComponentInParent<AnglerfishController>() == null)
-                    {
-                        Logger.LogVerbose("Enabling anglerfish animation");
-                        // Remove any reference to its angler
-                        if (angler._anglerfishController)
-                        {
-                            angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
-                            angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
-                            angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
-                            angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
-                        }
-                        angler.enabled = true;
-                        angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
-                    }
+                    angler2._anglerfishController.OnChangeAnglerState -= angler2.OnChangeAnglerState;
+                    angler2._anglerfishController.OnAnglerTurn -= angler2.OnAnglerTurn;
+                    angler2._anglerfishController.OnAnglerSuspended -= angler2.OnAnglerSuspended;
+                    angler2._anglerfishController.OnAnglerUnsuspended -= angler2.OnAnglerUnsuspended;
                 }
-                catch (Exception e)
-                {
-                    Logger.LogWarning($"Exception when modifying component [{component.GetType().Name}] on [{planetGO.name}] for prop [{prefab}]:\n{e}");
-                }
-            });
+                angler2.enabled = true;
+                angler2.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+            }
         }
     }
 }
