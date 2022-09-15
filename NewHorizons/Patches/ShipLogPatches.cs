@@ -1,7 +1,6 @@
 using HarmonyLib;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Components;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -10,6 +9,8 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
+using NewHorizons.Components.ShipLog;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]

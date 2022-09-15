@@ -1,7 +1,7 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
-using NewHorizons.Components;
+using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
@@ -61,7 +61,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var interferenceVolume in config.Volumes.interferenceVolumes)
                 {
-                    VolumeBuilder.Make<Components.InterferenceVolume>(go, sector, interferenceVolume);
+                    VolumeBuilder.Make<Components.Volumes.InterferenceVolume>(go, sector, interferenceVolume);
                 }
             }
             if (config.Volumes.reverbVolumes != null)

@@ -1,7 +1,7 @@
 ﻿using NewHorizons.Builder.General;
 using NewHorizons.External.Configs;
 using UnityEngine;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Fixers
 {
     public class MapSatelliteOrbitFix : MonoBehaviour
     {

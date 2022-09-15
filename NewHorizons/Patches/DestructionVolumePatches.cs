@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Components;
+using NewHorizons.Components.Quantum;
 using System;
 using System.Collections.Generic;
 using System.Linq;

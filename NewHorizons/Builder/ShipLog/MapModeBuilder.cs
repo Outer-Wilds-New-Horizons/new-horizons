@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -9,6 +8,8 @@ using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.ShipLog;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class MapModeBuilder

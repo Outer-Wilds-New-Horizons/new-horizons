@@ -2,29 +2,31 @@ using NewHorizons.Builder.Atmosphere;
 using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     [RequireComponent(typeof(SunLightController))]
     [RequireComponent(typeof(SunLightParamUpdater))]
-    public class StarLightController : MonoBehaviour
+    public class SunLightEffectsController : MonoBehaviour
     {
         private static readonly int SunIntensity = Shader.PropertyToID("_SunIntensity");
         private static readonly float hearthSunDistanceSqr = 8593 * 8593;
 
-        public static StarLightController Instance { get; private set; }
+        public static SunLightEffectsController Instance { get; private set; }
 
-        private List<StarController> _stars = new List<StarController>();
-        private List<Light> _lights = new List<Light>();
+        private readonly List<StarController> _stars = new();
+        private readonly List<Light> _lights = new();
+
         private StarController _activeStar;
-
         private SunLightController _sunLightController;
         private SunLightParamUpdater _sunLightParamUpdater;
 
         public void Awake()
         {
             Instance = this;
+
             _sunLightController = GetComponent<SunLightController>();
             _sunLightController.enabled = true;
+
             _sunLightParamUpdater = GetComponent<SunLightParamUpdater>();
             _sunLightParamUpdater._sunLightController = _sunLightController;
         }
@@ -70,60 +72,81 @@ namespace NewHorizons.Components
 
         public void Update()
         {
-            if (_activeStar == null || !_activeStar.gameObject.activeInHierarchy)
-            {
-                if (_stars.Contains(_activeStar)) _stars.Remove(_activeStar);
-                if (_stars.Count > 0) ChangeActiveStar(_stars[0]);
-                else gameObject.SetActive(false);
-
-                foreach (var (_, material) in AtmosphereBuilder.Skys)
-                {
-                    material.SetFloat(SunIntensity, 0);
-                }
-
-                return;
-            }
-
-            // Update atmo shaders
-            foreach (var (planet, material) in AtmosphereBuilder.Skys)
-            {
-                var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
-                var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
-
-                material.SetFloat(SunIntensity, intensity);
-            }
-
             // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
             var origin = Vector3.zero;
 
-            foreach (var star in _stars)
-            {
-                if (star == null) continue;
-                if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
-
-                if (PlayerState.InMapView())
-                {
-                    origin = Locator.GetActiveCamera().transform.position;
-                }
-
-                if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStar.Intensity * (_activeStar.transform.position - origin).sqrMagnitude)
-                {
-                    ChangeActiveStar(star);
-                    break;
-                }
-            }
-
             if (PlayerState.InMapView())
             {
-                foreach (var light in _lights) light.enabled = true;
-                return;
+                origin = Locator.GetActiveCamera().transform.position;
+
+                // Keep all star lights on in map
+                foreach (var light in _lights)
+                {
+                    light.enabled = true;
+                }
+            }
+            else
+            {
+                // Outside map, only show lights within 50km range or light.range
+                // For some reason outside of the actual range of the lights they still show reflection effects on water and glass
+                foreach (var light in _lights)
+                {
+                    // Minimum 50km range so it's not badly noticeable for dim stars
+                    if ((light.transform.position - origin).sqrMagnitude <= Mathf.Max(light.range * light.range, 2500000000))
+                    {
+                        light.enabled = true;
+                    }
+                    else
+                    {
+                        light.enabled = false;
+                    }
+                }
             }
 
-            foreach (var light in _lights)
+            if (_stars.Count > 0)
             {
-                // Minimum 50km range so it's not badly noticeable for dim stars
-                if ((light.transform.position - origin).sqrMagnitude <= Mathf.Max(light.range * light.range, 2500000000)) light.enabled = true;
-                else light.enabled = false;
+                if (_activeStar == null || !_activeStar.gameObject.activeInHierarchy)
+                {
+                    if (_stars.Contains(_activeStar))
+                    {
+                        _stars.Remove(_activeStar);
+                    }
+
+                    if (_stars.Count > 0)
+                    {
+                        ChangeActiveStar(_stars[0]);
+                    }
+                    else
+                    {
+                        foreach (var (_, material) in AtmosphereBuilder.Skys)
+                        {
+                            material.SetFloat(SunIntensity, 0);
+                        }
+                    }
+                }
+                else
+                {
+                    // Update atmo shaders
+                    foreach (var (planet, material) in AtmosphereBuilder.Skys)
+                    {
+                        var sqrDist = (planet.transform.position - _activeStar.transform.position).sqrMagnitude;
+                        var intensity = Mathf.Min(_activeStar.Intensity / (sqrDist / hearthSunDistanceSqr), 1f);
+
+                        material.SetFloat(SunIntensity, intensity);
+                    }
+
+                    foreach (var star in _stars)
+                    {
+                        if (star == null) continue;
+                        if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
+
+                        if (star.Intensity * (star.transform.position - origin).sqrMagnitude < _activeStar.Intensity * (_activeStar.transform.position - origin).sqrMagnitude)
+                        {
+                            ChangeActiveStar(star);
+                            break;
+                        }
+                    }
+                }
             }
         }
 
@@ -151,8 +174,8 @@ namespace NewHorizons.Components
             _sunLightParamUpdater._propID_OWSunColorIntensity = Shader.PropertyToID("_OWSunColorIntensity");
 
             // For the param thing to work it wants this to be on the star idk
-            this.transform.parent = star.transform;
-            this.transform.localPosition = Vector3.zero;
+            transform.parent = star.transform;
+            transform.localPosition = Vector3.zero;
         }
     }
 }

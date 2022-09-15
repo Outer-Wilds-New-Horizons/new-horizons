@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Volumes
 {
     public class InterferenceVolume : BaseVolume
     {

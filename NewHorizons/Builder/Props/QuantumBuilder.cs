@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Components;
+using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;

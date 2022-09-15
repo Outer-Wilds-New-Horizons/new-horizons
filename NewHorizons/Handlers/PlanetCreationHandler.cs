@@ -4,8 +4,9 @@ using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Volumes;
-using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Quantum;
+using NewHorizons.Components.Stars;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using System;
@@ -57,9 +58,9 @@ namespace NewHorizons.Handlers
             GameObject.Destroy(starLightGO.GetComponent<Light>());
             starLightGO.name = "StarLightController";
 
-            starLightGO.AddComponent<StarLightController>();
-            StarLightController.AddStar(starController);
-            StarLightController.AddStarLight(starController.Light);
+            starLightGO.AddComponent<SunLightEffectsController>();
+            SunLightEffectsController.AddStar(starController);
+            SunLightEffectsController.AddStarLight(starController.Light);
 
             starLightGO.SetActive(true);
 
@@ -499,10 +500,10 @@ namespace NewHorizons.Handlers
             {
                 var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
-                if (starController != null) StarLightController.AddStar(starController);
+                if (starController != null) SunLightEffectsController.AddStar(starController);
 
                 var starLight = star.FindChild("SunLight");
-                if (starLight != null) StarLightController.AddStarLight(starLight.GetComponent<Light>());
+                if (starLight != null) SunLightEffectsController.AddStarLight(starLight.GetComponent<Light>());
 
                 // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
                 if (starEvolutionController != null && !body.Config.isStellarRemnant)

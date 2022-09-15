@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using OWML.Utils;
@@ -9,6 +8,7 @@ using OWML.ModHelper;
 using OWML.Common;
 using UnityEngine.InputSystem.XR;
 using System.Linq;
+using NewHorizons.Components.Stars;
 
 namespace NewHorizons.Builder.Body
 {
