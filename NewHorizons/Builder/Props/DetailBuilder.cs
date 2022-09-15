@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else FixSectoredComponent(component, sector, isTorch);
 
-                FixComponent(component, go, prefab.name);
+                FixComponent(component, go);
             }
 
             prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
@@ -222,7 +222,7 @@ namespace NewHorizons.Builder.Props
             return false;
         }
 
-        private static void FixComponent(Component component, GameObject planetGO, string prefab)
+        private static void FixComponent(Component component, GameObject planetGO)
         {
             // Fix other components
             // I forget why this is here
