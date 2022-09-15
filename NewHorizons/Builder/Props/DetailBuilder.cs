@@ -298,9 +298,9 @@ namespace NewHorizons.Builder.Props
         }
 
         /// <summary>
-        /// needs to happen later to remove the funny angler anim events yippee.
-        /// 
-        /// cant do delay cuz it needs to work with scatter (which does copy detail thing).
+        /// Has to happen after AnglerfishAnimController awake to remove the events it has set up.
+        /// Otherwise results in the anglerfish 1) having its animations controlled by an actual fish 2) randomly having different animations on solarsystem load
+        /// Can't do delay because it needs to work with scatter (copies a prefab made using MakeDetail).
         /// </summary>
         [RequireComponent(typeof(AnglerfishAnimController))]
         private class AnglerAnimFixer : MonoBehaviour
@@ -310,7 +310,8 @@ namespace NewHorizons.Builder.Props
                 var angler = GetComponent<AnglerfishAnimController>();
                 
                 Logger.LogVerbose("Fixing anglerfish animation");
-                // Remove any reference to its angler
+
+                // Remove any event reference to its angler
                 if (angler._anglerfishController)
                 {
                     angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
