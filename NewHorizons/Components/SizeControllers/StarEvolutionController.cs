@@ -287,8 +287,6 @@ namespace NewHorizons.Components.SizeControllers
                 _stellarRemnant.SetActive(true);
                 var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
                 if (remnantStarController != null) StarLightController.AddStar(remnantStarController);
-                var remnantStarLight = _stellarRemnant.FindChild("SunLight");
-                if (remnantStarLight != null) StarLightController.AddStarLight(remnantStarLight.GetComponent<Light>());
             }
 
             if (Time.time > _supernovaStartTime + supernovaTime)
@@ -302,7 +300,6 @@ namespace NewHorizons.Components.SizeControllers
         private void DisableStar(bool start = false)
         {
             if (controller != null) StarLightController.RemoveStar(controller);
-            if (!isProxy) StarLightController.RemoveStarLight(gameObject.FindChild("SunLight").GetAddComponent<Light>());
 
             if (_stellarRemnant != null)
             {

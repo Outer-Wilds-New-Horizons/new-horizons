@@ -14,7 +14,6 @@ namespace NewHorizons.Components
         public static StarLightController Instance { get; private set; }
 
         private List<StarController> _stars = new List<StarController>();
-        private List<Light> _lights = new List<Light>();
         private StarController _activeStar;
 
         private SunLightController _sunLightController;
@@ -54,20 +53,6 @@ namespace NewHorizons.Components
             }
         }
 
-        public static void AddStarLight(Light light)
-        {
-            if (light == null) return;
-
-            Instance._lights.Add(light);
-        }
-
-        public static void RemoveStarLight(Light light)
-        {
-            if (light == null) return;
-
-            if (Instance._lights.Contains(light)) Instance._lights.Remove(light);
-        }
-
         public void Update()
         {
             if (_activeStar == null || !_activeStar.gameObject.activeInHierarchy)
@@ -93,14 +78,13 @@ namespace NewHorizons.Components
                 material.SetFloat(SunIntensity, intensity);
             }
 
-            // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
-            var origin = Vector3.zero;
-
             foreach (var star in _stars)
             {
                 if (star == null) continue;
                 if (!(star.gameObject.activeSelf && star.gameObject.activeInHierarchy)) continue;
 
+                // Player is always at 0,0,0 more or less so if they arent using the map camera then wtv
+                var origin = Vector3.zero;
                 if (PlayerState.InMapView())
                 {
                     origin = Locator.GetActiveCamera().transform.position;
@@ -111,19 +95,6 @@ namespace NewHorizons.Components
                     ChangeActiveStar(star);
                     break;
                 }
-            }
-
-            if (PlayerState.InMapView())
-            {
-                foreach (var light in _lights) light.enabled = true;
-                return;
-            }
-
-            foreach (var light in _lights)
-            {
-                // Minimum 50km range so it's not badly noticeable for dim stars
-                if ((light.transform.position - origin).sqrMagnitude <= Mathf.Max(light.range * light.range, 2500000000)) light.enabled = true;
-                else light.enabled = false;
             }
         }
 

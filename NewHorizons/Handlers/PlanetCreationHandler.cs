@@ -59,7 +59,6 @@ namespace NewHorizons.Handlers
 
             starLightGO.AddComponent<StarLightController>();
             StarLightController.AddStar(starController);
-            StarLightController.AddStarLight(starController.Light);
 
             starLightGO.SetActive(true);
 
@@ -500,9 +499,6 @@ namespace NewHorizons.Handlers
                 var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                 if (starController != null) StarLightController.AddStar(starController);
-
-                var starLight = star.FindChild("SunLight");
-                if (starLight != null) StarLightController.AddStarLight(starLight.GetComponent<Light>());
 
                 // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
                 if (starEvolutionController != null && !body.Config.isStellarRemnant)
