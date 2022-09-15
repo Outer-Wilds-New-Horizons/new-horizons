@@ -284,7 +284,7 @@ namespace NewHorizons.Builder.Props
             if (component is Shape shape) shape.enabled = true;
             
             // fixes sector cull group deactivating renderers on map view enter and fast foward
-            // TODO: does this actually worK? what? how?
+            // TODO: does this actually work? what? how?
             if (component is SectorCullGroup sectorCullGroup)
             {
                 sectorCullGroup._inMapView = false;
@@ -293,19 +293,35 @@ namespace NewHorizons.Builder.Props
             }
             
             // If it's not a moving anglerfish make sure the anim controller is regular
-            if (component is AnglerfishAnimController angler2 && angler2.GetComponentInParent<AnglerfishController>() == null)
+            if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+                component.gameObject.AddComponent<AnglerAnimFixer>();
+        }
+
+        /// <summary>
+        /// needs to happen later to remove the funny angler anim events yippee.
+        /// 
+        /// cant do delay cuz it needs to work with scatter (which does copy detail thing).
+        /// </summary>
+        [RequireComponent(typeof(AnglerfishAnimController))]
+        private class AnglerAnimFixer : MonoBehaviour
+        {
+            private void Start()
             {
-                Logger.LogVerbose("Enabling anglerfish animation");
+                var angler = GetComponent<AnglerfishAnimController>();
+                
+                Logger.LogVerbose("Fixing anglerfish animation");
                 // Remove any reference to its angler
-                if (angler2._anglerfishController)
+                if (angler._anglerfishController)
                 {
-                    angler2._anglerfishController.OnChangeAnglerState -= angler2.OnChangeAnglerState;
-                    angler2._anglerfishController.OnAnglerTurn -= angler2.OnAnglerTurn;
-                    angler2._anglerfishController.OnAnglerSuspended -= angler2.OnAnglerSuspended;
-                    angler2._anglerfishController.OnAnglerUnsuspended -= angler2.OnAnglerUnsuspended;
+                    angler._anglerfishController.OnChangeAnglerState -= angler.OnChangeAnglerState;
+                    angler._anglerfishController.OnAnglerTurn -= angler.OnAnglerTurn;
+                    angler._anglerfishController.OnAnglerSuspended -= angler.OnAnglerSuspended;
+                    angler._anglerfishController.OnAnglerUnsuspended -= angler.OnAnglerUnsuspended;
                 }
-                angler2.enabled = true;
-                angler2.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                angler.enabled = true;
+                angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
+                
+                Destroy(this);
             }
         }
     }
