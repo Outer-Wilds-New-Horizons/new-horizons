@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     public class StellarDeathController : MonoBehaviour
     {
@@ -71,7 +71,7 @@ namespace NewHorizons.Components
             surface.transform.localScale = Vector3.one * _currentSupernovaScale;
             _localSupernovaMat.color = Color.Lerp(Color.black, supernovaMaterial.color, supernovaAlpha.Evaluate(_time));
 
-            float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : (Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius());
+            float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius();
 
             if (_isProxy) return;
 

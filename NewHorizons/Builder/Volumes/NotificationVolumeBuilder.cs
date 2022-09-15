@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NHNotificationVolume = NewHorizons.Components.NotificationVolume;
+using NHNotificationVolume = NewHorizons.Components.Volumes.NotificationVolume;
 
 namespace NewHorizons.Builder.Volumes
 {

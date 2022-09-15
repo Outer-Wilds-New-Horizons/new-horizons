@@ -6,7 +6,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.ShipLog
 {
     public class ShipLogStarChartMode : ShipLogMode
     {
@@ -41,7 +41,7 @@ namespace NewHorizons.Components
 
         public override void Initialize(ScreenPromptList centerPromptList, ScreenPromptList upperRightPromptList, OWAudioSource oneShotSource)
         {
-            root = base.transform.Find("ScaleRoot/PanRoot");
+            root = transform.Find("ScaleRoot/PanRoot");
             _oneShotSource = oneShotSource;
 
             _centerPromptList = centerPromptList;
@@ -101,11 +101,11 @@ namespace NewHorizons.Components
             if (_cardTemplate == null)
             {
                 var panRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ScaleRoot/PanRoot");
-                _cardTemplate = GameObject.Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
+                _cardTemplate = Instantiate(panRoot.GetComponentInChildren<ShipLogEntryCard>().gameObject);
                 _cardTemplate.SetActive(false);
             }
 
-            var newCard = GameObject.Instantiate(_cardTemplate, parent);
+            var newCard = Instantiate(_cardTemplate, parent);
             var textComponent = newCard.transform.Find("EntryCardRoot/NameBackground/Name").GetComponent<Text>();
 
             var name = UniqueIDToName(uniqueID);
@@ -164,7 +164,7 @@ namespace NewHorizons.Components
 
         public override void EnterMode(string entryID = "", List<ShipLogFact> revealQueue = null)
         {
-            base.gameObject.SetActive(true);
+            gameObject.SetActive(true);
 
             Locator.GetPromptManager().AddScreenPrompt(_detectiveModePrompt, _upperRightPromptList, TextAnchor.MiddleRight, -1, true);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
@@ -172,7 +172,7 @@ namespace NewHorizons.Components
 
         public override void ExitMode()
         {
-            base.gameObject.SetActive(false);
+            gameObject.SetActive(false);
 
             Locator.GetPromptManager().RemoveScreenPrompt(_detectiveModePrompt);
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
@@ -223,7 +223,7 @@ namespace NewHorizons.Components
 
             if (oldIndex != _cardIndex)
             {
-                _oneShotSource.PlayOneShot(global::AudioType.ShipLogMoveBetweenPlanets, 1f);
+                _oneShotSource.PlayOneShot(AudioType.ShipLogMoveBetweenPlanets, 1f);
                 _startPanTime = Time.unscaledTime;
                 _startPanPos = _panRootPos;
                 _panDuration = 0.25f;
@@ -297,7 +297,7 @@ namespace NewHorizons.Components
         {
             if (_warpNotificationData != null) NotificationManager.SharedInstance.UnpinNotification(_warpNotificationData);
             if (_target == null) return;
-            if (playSound) _oneShotSource.PlayOneShot(global::AudioType.ShipLogMarkLocation, 1f);
+            if (playSound) _oneShotSource.PlayOneShot(AudioType.ShipLogMarkLocation, 1f);
             _target.SetMarkedOnHUD(false);
             _target = null;
         }

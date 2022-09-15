@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.Handlers
 {
-    using InterferenceVolume = NewHorizons.Components.InterferenceVolume;
+    using InterferenceVolume = Components.Volumes.InterferenceVolume;
 
     public static class InterferenceHandler
     {

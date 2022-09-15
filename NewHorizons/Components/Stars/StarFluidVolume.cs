@@ -1,6 +1,6 @@
 using NewHorizons.Components.SizeControllers;
 using UnityEngine;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     public class StarFluidVolume : SimpleFluidVolume
     {

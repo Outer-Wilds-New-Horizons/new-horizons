@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using OWML.Utils;
@@ -9,6 +8,7 @@ using OWML.ModHelper;
 using OWML.Common;
 using UnityEngine.InputSystem.XR;
 using System.Linq;
+using NewHorizons.Components.Stars;
 
 namespace NewHorizons.Builder.Body
 {
@@ -126,7 +126,6 @@ namespace NewHorizons.Builder.Body
             light.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
             light.intensity *= starModule.solarLuminosity;
             light.range = starModule.lightRadius;
-            light.range *= Mathf.Sqrt(starModule.solarLuminosity);
 
             Color lightColour = light.color;
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();

@@ -1,9 +1,9 @@
-using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
+using NewHorizons.Components.Volumes;
 
 namespace NewHorizons.Builder.Body
 {
