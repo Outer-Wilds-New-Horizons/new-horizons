@@ -28,6 +28,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.Stars;
 
 namespace NewHorizons
 {
@@ -476,9 +477,10 @@ namespace NewHorizons
                 sunLightController._sunLight = sunLight;
                 sunLightController._ambientLight = ambientLight;
                 sunLightController.Initialize();
-                var starLightController = distantSun.AddComponent<StarLightController>();
+                var starLightController = distantSun.AddComponent<SunLightEffectsController>();
                 starLightController.Awake();
-                StarLightController.AddStar(starController);
+                SunLightEffectsController.AddStar(starController);
+                SunLightEffectsController.AddStarLight(sunLight);
 
                 if (IsWarpingFromShip && _ship != null)
                 {
