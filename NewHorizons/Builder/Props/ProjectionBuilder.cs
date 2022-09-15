@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using UnityEngine;
 using static NewHorizons.External.Modules.PropModule;
@@ -346,8 +347,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    // Don't use Path.Combine here else you break the Vision
-                    imageLoader.PathsToLoad.Add((i, mod.ModHelper.Manifest.ModFolderPath + slideInfo.imagePath));
+                    imageLoader.PathsToLoad.Add((i, Path.Combine(mod.ModHelper.Manifest.ModFolderPath, slideInfo.imagePath)));
                 }
 
                 AddModules(slideInfo, ref slide, mod);

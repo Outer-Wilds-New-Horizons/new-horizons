@@ -1,6 +1,7 @@
 using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,7 +20,7 @@ namespace NewHorizons.Utility
             {
                 try
                 {
-                    var clip = LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audio);
+                    var clip = LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audio));
                     source._audioLibraryClip = AudioType.None;
                     source._clipArrayIndex = 0;
                     source._clipArrayLength = 0;
