@@ -126,6 +126,7 @@ namespace NewHorizons.Builder.Body
             light.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
             light.intensity *= starModule.solarLuminosity;
             light.range = starModule.lightRadius;
+            light.range *= Mathf.Sqrt(starModule.solarLuminosity);
 
             Color lightColour = light.color;
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
