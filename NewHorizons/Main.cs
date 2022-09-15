@@ -122,7 +122,7 @@ namespace NewHorizons
             _wasConfigured = true;
         }
 
-        public static void ResetConfigs(bool resetTranslation = true)
+        public void ResetConfigs(bool resetTranslation = true)
         {
             BodyDict.Clear();
             SystemDict.Clear();
@@ -161,9 +161,13 @@ namespace NewHorizons
                 }
             };
 
-            if (!resetTranslation) return;
-            TranslationHandler.ClearTables();
-            TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
+            if (resetTranslation)
+            {
+                TranslationHandler.ClearTables();
+                TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
+            }
+
+            LoadTranslations(Instance.ModHelper.Manifest.ModFolderPath + "Assets/", this);
         }
 
         public void Awake()
@@ -213,7 +217,6 @@ namespace NewHorizons
             OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
-            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 

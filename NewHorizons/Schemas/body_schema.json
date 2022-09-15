@@ -1395,6 +1395,11 @@
           "description": "The highest height that these objects will be placed at (only relevant if there's a heightmap)",
           "format": "float"
         },
+        "preventOverlap": {
+          "type": "boolean",
+          "description": "Should we try to prevent overlap between the scattered details? True by default. If it's affecting load times turn it off.",
+          "default": true
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
