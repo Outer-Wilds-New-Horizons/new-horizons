@@ -1,5 +1,5 @@
-﻿using UnityEngine;
-namespace NewHorizons.Components
+using UnityEngine;
+namespace NewHorizons.Components.Volumes
 {
     public class NHFluidVolume : RadialFluidVolume
     {

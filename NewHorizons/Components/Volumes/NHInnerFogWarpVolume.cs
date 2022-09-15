@@ -1,4 +1,4 @@
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Volumes
 {
     public class NHInnerFogWarpVolume : InnerFogWarpVolume
     {

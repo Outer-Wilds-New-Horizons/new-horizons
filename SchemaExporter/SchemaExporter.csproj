@@ -20,7 +20,7 @@
         </None>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="NJsonSchema" Version="10.7.2" />
-        <PackageReference Include="OuterWildsGameLibs" Version="1.1.12.201" IncludeAssets="compile" />
+        <PackageReference Include="OuterWildsGameLibs" Version="1.1.13.393" IncludeAssets="compile" />
         <PackageReference Include="System.ComponentModel.Annotations" Version="5.0.0" />
     </ItemGroup>
     <ItemGroup>

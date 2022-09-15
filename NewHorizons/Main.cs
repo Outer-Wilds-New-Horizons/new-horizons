@@ -5,6 +5,7 @@ using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -124,7 +125,7 @@ namespace NewHorizons
             _wasConfigured = true;
         }
 
-        public static void ResetConfigs(bool resetTranslation = true)
+        public void ResetConfigs(bool resetTranslation = true)
         {
             BodyDict.Clear();
             SystemDict.Clear();
@@ -165,9 +166,13 @@ namespace NewHorizons
                 }
             };
 
-            if (!resetTranslation) return;
-            TranslationHandler.ClearTables();
-            TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
+            if (resetTranslation)
+            {
+                TranslationHandler.ClearTables();
+                TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
+            }
+
+            LoadTranslations(Instance.ModHelper.Manifest.ModFolderPath + "Assets/", this);
         }
 
         public void Awake()
@@ -217,7 +222,6 @@ namespace NewHorizons
             OnStarSystemLoaded.AddListener(RichPresenceHandler.OnStarSystemLoaded);
             OnChangeStarSystem.AddListener(RichPresenceHandler.OnChangeStarSystem);
 
-            LoadTranslations(ModHelper.Manifest.ModFolderPath + "Assets/", this);
             LoadAddonManifest("Assets/addon-manifest.json", this);
         }
 
@@ -537,6 +541,7 @@ namespace NewHorizons
 
                     var map = GameObject.FindObjectOfType<MapController>();
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 

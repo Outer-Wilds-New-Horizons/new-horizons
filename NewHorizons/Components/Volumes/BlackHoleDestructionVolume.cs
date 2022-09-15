@@ -1,6 +1,6 @@
 using NewHorizons.OtherMods.AchievementsPlus.NH;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Volumes
 {
     public class BlackHoleDestructionVolume : DestructionVolume
     {
@@ -15,7 +15,7 @@ namespace NewHorizons.Components
             SurveyorProbe requiredComponent = probeBody.GetRequiredComponent<SurveyorProbe>();
             if (requiredComponent.IsLaunched())
             {
-                UnityEngine.Object.Destroy(requiredComponent.gameObject);
+                Destroy(requiredComponent.gameObject);
                 ProbeLostAchievement.Earn();
             }
         }

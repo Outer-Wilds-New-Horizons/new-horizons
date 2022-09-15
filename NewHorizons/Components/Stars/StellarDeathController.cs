@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     public class StellarDeathController : MonoBehaviour
     {
@@ -22,6 +22,7 @@ namespace NewHorizons.Components
         private float _currentSupernovaScale;
         private Material _localSupernovaMat;
         private bool _isProxy;
+        private bool _renderingEnabled = true;
         private ParticleSystemRenderer[] _cachedParticleRenderers;
 
         public void Awake()
@@ -34,8 +35,12 @@ namespace NewHorizons.Components
         public void Activate()
         {
             enabled = true;
-            shockwave.enabled = true;
-            foreach (var particle in explosionParticles) particle.Play();
+            shockwave.enabled = _renderingEnabled;
+            for (int i = 0; i < explosionParticles.Length; i++)
+            {
+                explosionParticles[i].Play();
+                _cachedParticleRenderers[i].enabled = _renderingEnabled;
+            }
             _time = 0.0f;
             _currentSupernovaScale = supernovaScale.Evaluate(0.0f);
             _localSupernovaMat = new Material(supernovaMaterial);
@@ -71,7 +76,7 @@ namespace NewHorizons.Components
             surface.transform.localScale = Vector3.one * _currentSupernovaScale;
             _localSupernovaMat.color = Color.Lerp(Color.black, supernovaMaterial.color, supernovaAlpha.Evaluate(_time));
 
-            float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : (Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius());
+            float distanceToPlayer = PlayerState.InDreamWorld() ? 20000f : Vector3.Distance(transform.position, Locator.GetPlayerCamera().transform.position) - GetSupernovaRadius();
 
             if (_isProxy) return;
 
@@ -97,6 +102,7 @@ namespace NewHorizons.Components
 
         public void SetRenderingEnabled(bool renderingEnabled)
         {
+            _renderingEnabled = renderingEnabled;
             if (!enabled) return;
             shockwave.enabled = renderingEnabled;
             SetParticlesVisibility(renderingEnabled);

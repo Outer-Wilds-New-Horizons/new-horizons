@@ -9,7 +9,7 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Quantum
 {
     public class QuantumPlanet : QuantumObject
     {
@@ -162,9 +162,9 @@ namespace NewHorizons.Components
 
         private void OnPlayerBlink()
         {
-            if (base.IsVisible())
+            if (IsVisible())
             {
-                base.Collapse(true);
+                Collapse(true);
             }
         }
 
