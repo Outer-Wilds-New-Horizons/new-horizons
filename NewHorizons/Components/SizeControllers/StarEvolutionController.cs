@@ -302,7 +302,7 @@ namespace NewHorizons.Components.SizeControllers
         private void DisableStar(bool start = false)
         {
             if (controller != null) StarLightController.RemoveStar(controller);
-            StarLightController.RemoveStarLight(gameObject.FindChild("SunLight").GetAddComponent<Light>());
+            if (!isProxy) StarLightController.RemoveStarLight(gameObject.FindChild("SunLight").GetAddComponent<Light>());
 
             if (_stellarRemnant != null)
             {
