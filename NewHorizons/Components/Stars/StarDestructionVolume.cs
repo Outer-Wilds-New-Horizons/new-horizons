@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     public class StarDestructionVolume : DestructionVolume
     {

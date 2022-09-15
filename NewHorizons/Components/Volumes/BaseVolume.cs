@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Volumes
 {
     [RequireComponent(typeof(OWTriggerVolume))]
     public abstract class BaseVolume : MonoBehaviour

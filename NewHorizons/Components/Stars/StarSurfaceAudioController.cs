@@ -1,7 +1,7 @@
 using UnityEngine;
 using NewHorizons.Components.SizeControllers;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Stars
 {
     [RequireComponent(typeof(OWAudioSource))]
     public class StarSurfaceAudioController : SectoredMonoBehaviour
@@ -34,7 +34,7 @@ namespace NewHorizons.Components
         public void Update()
         {
             _fade = Mathf.MoveTowards(_fade, 1, Time.deltaTime * 0.2f);
-            float value = Mathf.Max(0.0f, Vector3.Distance(Locator.GetPlayerCamera().transform.position, this.transform.position) - (_starEvolutionController != null ? _starEvolutionController.CurrentScale : _size));
+            float value = Mathf.Max(0.0f, Vector3.Distance(Locator.GetPlayerCamera().transform.position, transform.position) - (_starEvolutionController != null ? _starEvolutionController.CurrentScale : _size));
             float num = Mathf.InverseLerp(1600f, 100f, value);
             _audioSource.SetLocalVolume(num * num * _fade);
         }

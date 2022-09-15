@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Volumes
 {
     public class MapRestrictionVolume : BaseVolume
     {

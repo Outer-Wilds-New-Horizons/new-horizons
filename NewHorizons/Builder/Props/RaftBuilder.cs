@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+﻿using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

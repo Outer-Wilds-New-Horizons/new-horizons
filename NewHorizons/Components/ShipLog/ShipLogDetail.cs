@@ -1,8 +1,8 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.ShipLog
 {
     public class ShipLogDetail : MonoBehaviour
     {
@@ -51,7 +51,7 @@ namespace NewHorizons.Components
 
         private void SetGreyScale(bool greyScale)
         {
-            _revealedImage.material = (greyScale ? _greyScaleMaterial : null);
+            _revealedImage.material = greyScale ? _greyScaleMaterial : null;
         }
     }
 }

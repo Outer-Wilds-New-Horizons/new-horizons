@@ -3,6 +3,7 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Configs;
@@ -353,6 +354,7 @@ namespace NewHorizons
 
                     var map = GameObject.FindObjectOfType<MapController>();
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
+
                     // Fix the map satellite
                     SearchUtilities.Find("HearthianMapSatellite_Body", false).AddComponent<MapSatelliteOrbitFix>();
 
