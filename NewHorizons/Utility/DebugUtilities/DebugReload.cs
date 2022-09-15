@@ -31,7 +31,7 @@ namespace NewHorizons.Utility.DebugUtilities
         {
             Logger.Log("Begin reload of config files...");
 
-            Main.ResetConfigs();
+            Main.Instance.ResetConfigs();
 
             try
             {
