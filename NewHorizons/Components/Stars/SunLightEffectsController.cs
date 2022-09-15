@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Atmosphere;
+using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -31,6 +32,13 @@ namespace NewHorizons.Components.Stars
             _sunLightParamUpdater._sunLightController = _sunLightController;
         }
 
+        public void Start()
+        {
+            // Using GameObject.Find here so that if its null we just dont find it
+            var sunlight = GameObject.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+            if (sunlight != null) AddStarLight(sunlight);
+        }
+
         public static void AddStar(StarController star)
         {
             if (star == null) return;
@@ -58,16 +66,18 @@ namespace NewHorizons.Components.Stars
 
         public static void AddStarLight(Light light)
         {
-            if (light == null) return;
-
-            Instance._lights.Add(light);
+            if (light != null)
+            {
+                Instance._lights.SafeAdd(light);
+            }
         }
 
         public static void RemoveStarLight(Light light)
         {
-            if (light == null) return;
-
-            if (Instance._lights.Contains(light)) Instance._lights.Remove(light);
+            if (light != null && Instance._lights.Contains(light))
+            {
+                Instance._lights.Remove(light);
+            }
         }
 
         public void Update()
