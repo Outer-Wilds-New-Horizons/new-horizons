@@ -241,6 +241,7 @@ namespace NewHorizons
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
             AssetBundleUtilities.ClearCache();
+            TranslationHandler.OnSceneUnloaded();
             IsSystemReady = false;
         }
 
@@ -433,6 +434,9 @@ namespace NewHorizons
                     splashPrefab = SearchUtilities.Find("Probe_Body/ProbeDetector").GetComponent<FluidDetector>()._splashEffects.FirstOrDefault(sfx => sfx.fluidType == FluidVolume.Type.PLASMA).splashPrefab,
                     triggerEvent = SplashEffect.TriggerEvent.OnEntry
                 });
+
+                // Has to happen last, after all translations are loaded
+                TranslationHandler.OnSceneFinishLoading();
 
                 try
                 {

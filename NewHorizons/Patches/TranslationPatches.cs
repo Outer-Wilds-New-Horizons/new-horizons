@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
 using System;
@@ -39,5 +39,9 @@ namespace NewHorizons.Patches
         {
             __instance._label = TranslationHandler.GetTranslation(__instance._label, TranslationHandler.TextType.UI);
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(TextTranslation), nameof(TextTranslation.SetLanguage))]
+        public static void TextTranslation_SetLanguage() => TranslationHandler.OnLanguageChanged();
     }
 }

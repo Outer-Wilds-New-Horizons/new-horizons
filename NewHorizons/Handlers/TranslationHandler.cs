@@ -1,24 +1,60 @@
 using NewHorizons.External.Configs;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
+using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
     public static class TranslationHandler
     {
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
-        private static Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new Dictionary<TextTranslation.Language, Dictionary<string, string>>();
+        // Dictionary loaded from mods directly
+        private static readonly Dictionary<TextTranslation.Language, Dictionary<string, string>> _shipLogTranslationDictionary = new();
+        private static readonly Dictionary<TextTranslation.Language, Dictionary<string, string>> _dialogueTranslationDictionary = new();
+        private static readonly Dictionary<TextTranslation.Language, Dictionary<string, string>> _uiTranslationDictionary = new();
 
+        // Values we append to the base game TextTranslation dictionary for the currently selected language
+        private static readonly List<(string key, string rawText)> _shipLogTable = new(); 
+        private static readonly List<(string key, string rawText)> _dialogueTable = new(); 
+        private static readonly List<(int key, string text)> _uiTable = new(); 
         public enum TextType
         {
             SHIPLOG,
             DIALOGUE,
             UI
         }
+        public static void OnLanguageChanged()
+        {
+            if (SceneManager.GetActiveScene().name != "TitleScreen")
+            {
+                Logger.LogError("Language was changed outside of main menu. Please tell an NH dev about this!");
+            }
 
+            // Re-add everything to the list
+            OnSceneFinishLoading();
+        }
+
+        public static void OnSceneFinishLoading()
+        {
+            foreach (var (key, rawText) in _dialogueTable)
+                TextTranslation.Get().m_table.Insert(key, GetTranslation(rawText, TextType.DIALOGUE));
+
+            foreach (var (key, rawText) in _shipLogTable)
+                TextTranslation.Get().m_table.InsertShipLog(key, GetTranslation(rawText, TextType.SHIPLOG));
+
+            foreach (var (key, text) in _uiTable)
+                TextTranslation.Get().m_table.Insert_UI(key, text);
+        }
+
+        public static void OnSceneUnloaded()
+        {
+            _dialogueTable.Clear();
+            _shipLogTable.Clear();
+            _uiTable.Clear();
+        }
         public static string GetTranslation(string text, TextType type)
         {
             Dictionary<TextTranslation.Language, Dictionary<string, string>> dictionary;
@@ -103,19 +139,13 @@ namespace NewHorizons.Handlers
         public static void AddDialogue(string rawText, bool trimRawTextForKey = false, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + (trimRawTextForKey? rawText.Trim() : rawText);
-
-            var text = GetTranslation(rawText, TextType.DIALOGUE);
-
-            TextTranslation.Get().m_table.Insert(key, text);
+            _dialogueTable.Add((key, rawText));
         }
 
         public static void AddShipLog(string rawText, params string[] rawPreText)
         {
             var key = string.Join(string.Empty, rawPreText) + rawText;
-
-            string text = GetTranslation(rawText, TextType.SHIPLOG);
-
-            TextTranslation.Get().m_table.InsertShipLog(key, text);
+            _shipLogTable.Add((key, rawText));
         }
 
         public static int AddUI(string rawText)
@@ -133,7 +163,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception) { }
 
-            TextTranslation.Get().m_table.Insert_UI(key, text);
+            _uiTable.Add((key, text));
 
             return key;
         }
