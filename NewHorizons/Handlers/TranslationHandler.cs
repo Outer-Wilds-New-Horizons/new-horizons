@@ -39,14 +39,19 @@ namespace NewHorizons.Handlers
 
         public static void OnSceneFinishLoading()
         {
+            var table = TextTranslation.Get().m_table;
+
             foreach (var (key, rawText) in _dialogueTable)
-                TextTranslation.Get().m_table.Insert(key, GetTranslation(rawText, TextType.DIALOGUE));
+                if (!table.theTable.ContainsKey(key))
+                    table.Insert(key, GetTranslation(rawText, TextType.DIALOGUE));
 
             foreach (var (key, rawText) in _shipLogTable)
-                TextTranslation.Get().m_table.InsertShipLog(key, GetTranslation(rawText, TextType.SHIPLOG));
+                if (!table.theShipLogTable.ContainsKey(key))
+                    TextTranslation.Get().m_table.InsertShipLog(key, GetTranslation(rawText, TextType.SHIPLOG));
 
             foreach (var (key, text) in _uiTable)
-                TextTranslation.Get().m_table.Insert_UI(key, text);
+                if (!table.theUITable.ContainsKey(key))
+                    TextTranslation.Get().m_table.Insert_UI(key, text);
         }
 
         public static void OnSceneUnloaded()
