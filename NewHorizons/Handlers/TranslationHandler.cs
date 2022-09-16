@@ -154,7 +154,7 @@ namespace NewHorizons.Handlers
 
             var text = GetTranslation(rawText, TextType.UI).ToUpper();
 
-            var key = uiTable.Keys.Max() + 1;
+            var key = uiTable.Keys.Max() + _uiTable.Count + 1;
             try
             {
                 // Ensure it doesn't already contain our UI entry
