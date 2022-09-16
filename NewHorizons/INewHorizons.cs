@@ -44,6 +44,22 @@ namespace NewHorizons
         UnityEvent<string> GetStarSystemLoadedEvent();
 
         /// <summary>
+        /// An event invoked when NH has finished a planet for a star system.
+        /// Gives the name of the planet that was just loaded.
+        /// </summary>
+        UnityEvent<string> GetBodyLoadedEvent();
+
+        /// <summary>
+        /// Uses JSONPath to query a body
+        /// </summary>
+        object QueryBody(Type outType, string bodyName, string path);
+
+        /// <summary>
+        /// Uses JSONPath to query a system
+        /// </summary>
+        object QuerySystem(Type outType, string path);
+
+        /// <summary>
         /// Allows you to overwrite the default system. This is where the player is respawned after dying.
         /// </summary>
         bool SetDefaultSystem(string name);

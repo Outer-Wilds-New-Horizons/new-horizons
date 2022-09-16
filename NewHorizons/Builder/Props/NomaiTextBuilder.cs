@@ -2,12 +2,12 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using Enum = System.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
+using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 namespace NewHorizons.Builder.Props
@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
 
-            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign");
+            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive();
             _trailmarkerPrefab.name = "Prefab_NOM_Trailmarker";
             _trailmarkerPrefab.transform.rotation = Quaternion.identity;
         }
@@ -108,7 +108,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_scrollPrefab == null) InitPrefabs();
 
-            var xmlPath = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xmlPath = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
 
             switch (info.type)
             {
@@ -491,6 +491,9 @@ namespace NewHorizons.Builder.Props
                         }
 
                         trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+                        // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
+                        trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
 
                         if (info.rotation != null)
                         {

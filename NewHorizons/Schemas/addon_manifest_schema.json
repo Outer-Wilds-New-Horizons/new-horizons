@@ -19,6 +19,10 @@
         "type": "string"
       }
     },
+    "popupMessage": {
+      "type": "string",
+      "description": "A pop-up message for the first time a user runs the add-on"
+    },
     "$schema": {
       "type": "string",
       "description": "The schema to validate with"

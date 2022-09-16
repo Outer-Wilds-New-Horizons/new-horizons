@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.ShipLog;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;

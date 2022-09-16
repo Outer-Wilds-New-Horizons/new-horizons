@@ -1,5 +1,5 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "DialogueDictionary": {
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "Твой корабль теперь экипирован варп-двигателем!",
     "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "Ты можешь использовать новый \"Режим Interstellar\" на своем корабле, что-бы закрепить автопилот на выбранную звёздную систему.",

@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
@@ -10,6 +9,7 @@ using System.Linq;
 using NewHorizons.Components.SizeControllers;
 using System.Drawing;
 using Color = UnityEngine.Color;
+using NewHorizons.Components.Volumes;
 
 namespace NewHorizons.Builder.Body
 {

@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.ShipLog;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -47,7 +47,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").ToLowerInvariant());
+            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant());
         }
 
         public static void OnStarSystemLoaded(string name)

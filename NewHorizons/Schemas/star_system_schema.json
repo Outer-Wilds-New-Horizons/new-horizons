@@ -5,6 +5,11 @@
   "description": "Configuration for a specific star system",
   "additionalProperties": false,
   "properties": {
+    "farClipPlaneOverride": {
+      "type": "number",
+      "description": "An override value for the far clip plane. Allows you to see farther.",
+      "format": "float"
+    },
     "canEnterViaWarpDrive": {
       "type": "boolean",
       "description": "Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.",
@@ -69,6 +74,13 @@
       "description": "List colors of curiosity entries",
       "items": {
         "$ref": "#/definitions/CuriosityColorInfo"
+      }
+    },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
       }
     },
     "$schema": {

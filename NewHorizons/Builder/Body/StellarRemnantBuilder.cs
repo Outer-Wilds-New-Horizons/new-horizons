@@ -88,7 +88,7 @@ namespace NewHorizons.Builder.Body
                 lightRadius = 10000,
                 solarLuminosity = 0.5f
             };
-            if (proxy != null) return StarBuilder.MakeStarProxy(planetGO, proxy, whiteDwarfModule, mod, true);
+            if (proxy != null) return StarBuilder.MakeStarProxy(planetGO, proxy, whiteDwarfModule, mod, true).Item1;
             else return StarBuilder.Make(planetGO, sector, whiteDwarfModule, mod, true).Item1;
         }
 
@@ -107,7 +107,7 @@ namespace NewHorizons.Builder.Body
 
             // Instead of showing the typical star surface we use a tinted singularity
             GameObject neutronStar;
-            if (proxy != null) neutronStar = StarBuilder.MakeStarProxy(planetGO, proxy, neutronStarModule, mod, true);
+            if (proxy != null) neutronStar = StarBuilder.MakeStarProxy(planetGO, proxy, neutronStarModule, mod, true).Item1;
             else (neutronStar, _, _) = StarBuilder.Make(planetGO, sector, neutronStarModule, mod, true);
             neutronStar.FindChild("Surface").SetActive(false);
 

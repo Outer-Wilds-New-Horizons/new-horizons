@@ -1,7 +1,6 @@
 using HarmonyLib;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Components;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -10,6 +9,8 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
+using NewHorizons.Components.ShipLog;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -229,6 +230,21 @@ namespace NewHorizons.Patches
             StarChartHandler.OnRevealFact(__0);
 
             AchievementHandler.OnRevealFact();
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ShipLogFact), nameof(ShipLogFact.GetText))]
+        public static bool ShipLogFact_GetText(ShipLogFact __instance, ref string __result)
+        {
+            if (ShipLogHandler.IsModdedFact(__instance.GetID()))
+            {
+                __result = TranslationHandler.GetTranslation(__instance._text, TranslationHandler.TextType.SHIPLOG);
+                return false;
+            }
+            else
+            {
+                return true;
+            }
         }
     }
 }

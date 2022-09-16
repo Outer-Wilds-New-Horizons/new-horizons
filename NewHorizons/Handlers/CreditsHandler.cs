@@ -39,7 +39,7 @@ namespace NewHorizons.Handlers
 
         private static void AddCreditsSection(string sectionName, string[] entries, ref XmlDocument xml)
         {
-            var finalCredits = xml.SelectSingleNode("Credits/section");
+            var finalCredits = xml.SelectSingleNode("Credits/section[@name='CreditsFinal']");
 
             /*
              * Looks bad, would need more customization, complicated, messes up music timing, wont do for now
@@ -134,11 +134,8 @@ namespace NewHorizons.Handlers
         {
             var rootSection = MakeNode(doc, "section", new Dictionary<string, string>()
             {
-                { "platform", "All" },
-                { "type", "Scroll" },
-                { "scrollDuration", "214" },
-                { "spacing", "12" },
-                { "width", "1590" }
+                { "name", title },
+                { "credits-type", "Final Fast Krazy" }
             });
 
             var titleLayout = MakeNode(doc, "layout", new Dictionary<string, string>()
