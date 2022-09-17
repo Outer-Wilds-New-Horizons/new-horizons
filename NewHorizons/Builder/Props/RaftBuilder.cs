@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Props
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
             raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-            raftObject.transform.position = planetGO.transform.TransformPoint(info.position);
+            raftObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
             raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);

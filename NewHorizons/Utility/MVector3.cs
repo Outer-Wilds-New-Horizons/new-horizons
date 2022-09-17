@@ -23,7 +23,6 @@ namespace NewHorizons.Utility
 
         public static implicit operator Vector3(MVector3 vec)
         {
-            if (vec == null) return Vector3.zero;
             return new Vector3(vec.x, vec.y, vec.z);
         }
     }

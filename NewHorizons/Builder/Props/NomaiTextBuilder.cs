@@ -147,7 +147,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
+                        nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
                         if (info.normal != null)
                         {
                             // In global coordinates (normal was in local coordinates)
