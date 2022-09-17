@@ -2,12 +2,12 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using Enum = System.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
+using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 namespace NewHorizons.Builder.Props
@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefabs();
 
-            var xmlPath = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xmlPath = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
 
             switch (info.type)
             {

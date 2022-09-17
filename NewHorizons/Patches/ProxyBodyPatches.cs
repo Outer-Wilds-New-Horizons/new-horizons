@@ -32,6 +32,7 @@ namespace NewHorizons.Patches
                 ProxyPlanet_Initialize(__instance);
                 __instance._moon.SetOriginalBodies(Locator.GetAstroObject(AstroObject.Name.VolcanicMoon).transform, Locator.GetAstroObject(AstroObject.Name.BrittleHollow).transform);
                 if (!__instance._fragmentsResolved) __instance.ResolveFragments();
+                __instance.AssignBrittleHollowReference();
                 __instance._blackHoleMaterial = new Material(__instance._blackHoleRenderer.sharedMaterial);
                 __instance._blackHoleRenderer.sharedMaterial = __instance._blackHoleMaterial;
             }

@@ -1,13 +1,15 @@
-<!-- Enter the title of your PR here -->
-# My Changes
+<!-- A new module or something else important -->
+## Major features
+-
 
-<!-- (Only do this if you're targeting a specific issue) -->
-Fixes # .
+<!-- A new parameter added to a module, or API feature -->
+## Minor features
+-
 
-<!-- Enter what you changed here -->
-## What's new?
-- .
-- .
-- .
+<!-- Some improvement that requires no action on the part of add-on creators i.e., improved star graphics -->
+## Improvements
+-
 
-<!-- Enter any other information down here -->
+<!-- Be sure to reference the existing issue if it exists -->
+## Bug fixes
+-
