@@ -289,7 +289,7 @@ namespace NewHorizons.Components.SizeControllers
                 _stellarRemnant.SetActive(true);
                 var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
                 if (remnantStarController != null) SunLightEffectsController.AddStar(remnantStarController);
-                var remnantStarLight = _stellarRemnant.FindChild("SunLight");
+                var remnantStarLight = _stellarRemnant.FindChild("StarLight");
                 if (remnantStarLight != null) SunLightEffectsController.AddStarLight(remnantStarLight.GetComponent<Light>());
             }
 
