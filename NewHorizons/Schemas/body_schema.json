@@ -1376,7 +1376,12 @@
         "scale": {
           "type": "number",
           "description": "Scale this prop once it is placed",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "seed": {
           "type": "integer",
