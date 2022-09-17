@@ -45,6 +45,11 @@ namespace NewHorizons.Utility.DebugMenu
             Formatting = Formatting.Indented,
         };
 
+        public void PrintMahStuff()
+        {
+            (submenus[0] as DebugMenuPropPlacer).PrintMahStuff();
+        }
+
         private void Awake()
         {
             submenus = new List<DebugSubmenu>()

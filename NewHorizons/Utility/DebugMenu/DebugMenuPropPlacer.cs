@@ -330,12 +330,17 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void PreSave(DebugMenu menu)
         {
+            PrintMahStuff();
+            UpdateLoadedConfigsForRecentSystem(menu);
+        }
+
+        public void PrintMahStuff()
+        {
+            Debug.Log("Printin mah stuff");
             foreach(var body in _dpp.GetPropsConfigByBody())
             {
                 Debug.Log(body.Key.name + "\n" + JsonUtility.ToJson(body.Value));
             }
-
-            UpdateLoadedConfigsForRecentSystem(menu);
         }
 
         private void UpdateLoadedConfigsForRecentSystem(DebugMenu menu)
