@@ -2501,6 +2501,12 @@
           "type": "boolean",
           "description": "Whether to loop this audio while in this audio volume or just play it once",
           "default": true
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
