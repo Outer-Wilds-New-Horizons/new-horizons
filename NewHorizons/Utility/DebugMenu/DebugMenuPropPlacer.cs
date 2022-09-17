@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -336,10 +337,12 @@ namespace NewHorizons.Utility.DebugMenu
 
         public void PrintMahStuff()
         {
-            Debug.Log("Printin mah stuff");
+            Logger.Log("Printin mah stuff");
             foreach(var body in _dpp.GetPropsConfigByBody())
             {
-                Debug.Log(body.Key.name + "\n" + JsonUtility.ToJson(body.Value));
+                var json = "";
+                json = String.Join(",\n", body.Value.Select(detail => "    "+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
+                Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }
 
