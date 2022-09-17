@@ -4,6 +4,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -138,7 +139,9 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The loudness of the audio
             /// </summary>
-            [DefaultValue(1f)] public float volume = 1f;
+            [Range(0f, 1f)]
+            [DefaultValue(1f)]
+            public float volume = 1f;
         }
 
         [JsonObject]
