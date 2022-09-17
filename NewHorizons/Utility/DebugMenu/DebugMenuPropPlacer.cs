@@ -330,6 +330,11 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void PreSave(DebugMenu menu)
         {
+            foreach(var body in _dpp.GetPropsConfigByBody())
+            {
+                Debug.Log(body.Key.name + "\n" + JsonUtility.ToJson(body.Value));
+            }
+
             UpdateLoadedConfigsForRecentSystem(menu);
         }
 
