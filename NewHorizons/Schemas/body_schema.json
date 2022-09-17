@@ -2506,7 +2506,9 @@
           "type": "number",
           "description": "The loudness of the audio",
           "format": "float",
-          "default": 1.0
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
         }
       }
     },
