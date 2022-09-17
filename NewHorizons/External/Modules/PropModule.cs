@@ -123,7 +123,12 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Scale this prop once it is placed
             /// </summary>
-            public float scale = 1f;
+            [DefaultValue(1f)] public float scale = 1f;
+
+            /// <summary>
+            /// Scale each axis of the prop. Overrides `scale`.
+            /// </summary>
+            public MVector3 stretch;
 
             /// <summary>
             /// The number used as entropy for scattering the props
