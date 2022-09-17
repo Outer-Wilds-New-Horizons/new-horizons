@@ -98,7 +98,7 @@ namespace NewHorizons.Builder.Props
                 prop.transform.rotation = go.transform.TransformRotation(rot);
             }
 
-            prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
+            prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
             prop.SetActive(true);
 
