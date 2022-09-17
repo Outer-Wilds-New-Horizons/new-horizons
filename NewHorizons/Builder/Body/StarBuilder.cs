@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.Body
             if (_giantMaterial == null) _giantMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._endSurfaceMaterial).DontDestroyOnLoad();
         }
 
-        public static (GameObject, StarController, StarEvolutionController) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
+        public static (GameObject, StarController, StarEvolutionController, Light) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
             InitPrefabs();
 
@@ -158,6 +158,8 @@ namespace NewHorizons.Builder.Body
             light.intensity *= starModule.solarLuminosity;
             light.range = starModule.lightRadius;
 
+            sunLight.name = "StarLight";
+
             Color lightColour = light.color;
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
@@ -190,6 +192,7 @@ namespace NewHorizons.Builder.Body
 
             starEvolutionController.atmosphere = sunAtmosphere;
             starEvolutionController.controller = starController;
+            starEvolutionController.light = light;
 
             starEvolutionController.supernovaColour = starModule.supernovaTint;
             starFluidVolume.SetStarEvolutionController(starEvolutionController);
@@ -212,7 +215,7 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(true);
 
-            return (starGO, starController, starEvolutionController);
+            return (starGO, starController, starEvolutionController, light);
         }
 
         public static (GameObject, Renderer, Renderer) MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)

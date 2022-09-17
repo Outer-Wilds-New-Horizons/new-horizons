@@ -26,6 +26,7 @@ namespace NewHorizons.Components.SizeControllers
         public MColor supernovaColour;
         public Texture normalRamp;
         public Texture collapseRamp;
+        public Light light;
 
         private Color _startColour;
         private Color _endColour;
@@ -303,7 +304,7 @@ namespace NewHorizons.Components.SizeControllers
         private void DisableStar(bool start = false)
         {
             if (controller != null) SunLightEffectsController.RemoveStar(controller);
-            if (!isProxy) SunLightEffectsController.RemoveStarLight(gameObject.FindChild("SunLight").GetComponent<Light>());
+            if (light != null) SunLightEffectsController.RemoveStarLight(light);
 
             if (_stellarRemnant != null)
             {
