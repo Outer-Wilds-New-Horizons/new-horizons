@@ -134,6 +134,11 @@ namespace NewHorizons.External.Modules
             /// Whether to loop this audio while in this audio volume or just play it once
             /// </summary>
             [DefaultValue(true)] public bool loop = true;
+
+            /// <summary>
+            /// The loudness of the audio
+            /// </summary>
+            [DefaultValue(1f)] public float volume = 1f;
         }
 
         [JsonObject]
