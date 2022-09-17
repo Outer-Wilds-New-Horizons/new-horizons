@@ -56,9 +56,11 @@ namespace NewHorizons.Builder.Props
             meteorLauncher._minInterval = info.minInterval;
             meteorLauncher._maxInterval = info.maxInterval;
 
-            var lavaMaterial = launcherGO.FindChild("EruptionParticles_Lava").GetComponent<ParticleSystemRenderer>().sharedMaterial;
+            var lavaEruption = launcherGO.FindChild("EruptionParticles_Lava").GetComponent<ParticleSystemRenderer>();
+            var lavaMaterial = new Material(lavaEruption.sharedMaterial);
             lavaMaterial.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
             lavaMaterial.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
+            lavaEruption.sharedMaterial = lavaMaterial;
 
             launcherGO.SetActive(true);
 
@@ -76,10 +78,16 @@ namespace NewHorizons.Builder.Props
         {
             meteor.transform.localScale = Vector3.one * info.scale;
 
-            var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
+            var meteorRenderer = meteor.GetComponentInChildren<MeshRenderer>();
+            var mat = new Material(meteorRenderer.sharedMaterial);
             mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
             mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
+            meteorRenderer.sharedMaterial = mat;
 
+            foreach (var p in meteor.gameObject.FindChild("Effects_VM_MeteorParticles").GetComponentsInChildren<ParticleSystemRenderer>())
+            {
+                if (p.name.Contains("Shrapnel")) p.sharedMaterial = mat;
+            }
         }
     }
 }
