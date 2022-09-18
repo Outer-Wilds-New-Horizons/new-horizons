@@ -1,10 +1,10 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Builder.Props;
-using NewHorizons.Components;
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using System;
 using UnityEngine;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -115,15 +115,100 @@ namespace NewHorizons.Patches
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(AudioSignal), nameof(AudioSignal.UpdateSignalStrength))]
-        public static bool AudioSignal_UpdateSignalStrength(AudioSignal __instance, Signalscope __0, float __1)
+        public static bool AudioSignal_UpdateSignalStrength(AudioSignal __instance, Signalscope scope, float distToClosestScopeObstruction)
         {
-            // I hate this, just because I can't override the base method in CloakedAudioSignal
-            if (__instance is CloakedAudioSignal)
+            if (!SignalBuilder.Initialized) return true;
+
+            if (!SignalBuilder.CloakedSignals.Contains(__instance._name) && !SignalBuilder.QMSignals.Contains(__instance._name)) return true;
+
+            __instance._canBePickedUpByScope = false;
+            if (__instance._sunController != null && __instance._sunController.IsPointInsideSupernova(__instance.transform.position))
             {
-                ((CloakedAudioSignal)__instance).UpdateSignalStrength(__0, __1);
+                __instance._signalStrength = 0f;
+                __instance._degreesFromScope = 180f;
                 return false;
             }
-            return true;
+
+            // This part is modified from the original to include all QM signals
+            if (Locator.GetQuantumMoon() != null && Locator.GetQuantumMoon().IsPlayerInside() && !SignalBuilder.QMSignals.Contains(__instance._name))
+            {
+                __instance._signalStrength = 0f;
+                __instance._degreesFromScope = 180f;
+                return false;
+            }
+            if (!__instance._active || !__instance.gameObject.activeInHierarchy || __instance._outerFogWarpVolume != PlayerState.GetOuterFogWarpVolume() || (scope.GetFrequencyFilter() & __instance._frequency) != __instance._frequency)
+            {
+                __instance._signalStrength = 0f;
+                __instance._degreesFromScope = 180f;
+                return false;
+            }
+
+            __instance._scopeToSignal = __instance.transform.position - scope.transform.position;
+            __instance._distToScope = __instance._scopeToSignal.magnitude;
+            if (__instance._outerFogWarpVolume == null && distToClosestScopeObstruction < 1000f && __instance._distToScope > 1000f)
+            {
+                __instance._signalStrength = 0f;
+                __instance._degreesFromScope = 180f;
+                return false;
+            }
+            __instance._canBePickedUpByScope = true;
+            if (__instance._distToScope < __instance._sourceRadius)
+            {
+                __instance._signalStrength = 1f;
+            }
+            else
+            {
+                __instance._degreesFromScope = Vector3.Angle(scope.GetScopeDirection(), __instance._scopeToSignal);
+                float t = Mathf.InverseLerp(2000f, 1000f, __instance._distToScope);
+                float a = Mathf.Lerp(45f, 90f, t);
+                float a2 = 57.29578f * Mathf.Atan2(__instance._sourceRadius, __instance._distToScope);
+                float b = Mathf.Lerp(Mathf.Max(a2, 5f), Mathf.Max(a2, 1f), scope.GetZoomFraction());
+                __instance._signalStrength = Mathf.Clamp01(Mathf.InverseLerp(a, b, __instance._degreesFromScope));
+            }
+
+            // If it's a cloaked signal we don't want to hear it outside the cloak field
+            if (SignalBuilder.CloakedSignals.Contains(__instance._name))
+            {
+                if (!PlayerState.InCloakingField())
+                {
+                    __instance._signalStrength = 0f;
+                    __instance._degreesFromScope = 180f;
+                    return false;
+                }
+            }
+            else
+            {
+                // This part is taken from the regular method
+                if (Locator.GetCloakFieldController() != null)
+                {
+                    float num = 1f - Locator.GetCloakFieldController().playerCloakFactor;
+                    __instance._signalStrength *= num;
+                    if (OWMath.ApproxEquals(num, 0f, 0.001f))
+                    {
+                        __instance._signalStrength = 0f;
+                        __instance._degreesFromScope = 180f;
+                        return false;
+                    }
+                }
+            }
+
+            if (__instance._distToScope < __instance._identificationDistance + __instance._sourceRadius && __instance._signalStrength > 0.9f)
+            {
+                if (!PlayerData.KnowsFrequency(__instance._frequency) && !__instance._preventIdentification)
+                {
+                    __instance.IdentifyFrequency();
+                }
+                if (!PlayerData.KnowsSignal(__instance._name) && !__instance._preventIdentification)
+                {
+                    __instance.IdentifySignal();
+                }
+                if (__instance._revealFactID.Length > 0)
+                {
+                    Locator.GetShipLogManager().RevealFact(__instance._revealFactID, true, true);
+                }
+            }
+
+            return false;
         }
 
         [HarmonyPrefix]

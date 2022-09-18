@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
@@ -16,15 +17,16 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class SignalInfo
         {
-            /// <summary>
-            /// Name of an existing AudioClip in the game that will player over the signal.
-            /// </summary>
+            [Obsolete("audioClip is deprecated, please use audio instead")]
             public string audioClip;
 
-            /// <summary>
-            /// Relative filepath to the .wav file to use as the audio. Mutually exclusive with audioClip.
-            /// </summary>
+            [Obsolete("audioFilePath is deprecated, please use audio instead")]
             public string audioFilePath;
+
+            /// <summary>
+            /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
+            /// </summary>
+            public string audio;
 
             /// <summary>
             /// How close the player must get to the signal to detect it. This is when you get the "Unknown Signal Detected"
@@ -73,6 +75,11 @@ namespace NewHorizons.External.Modules
             /// Radius of the sphere giving off the signal.
             /// </summary>
             [DefaultValue(1f)] public float sourceRadius = 1f;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this signal. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
         }
     }
 }

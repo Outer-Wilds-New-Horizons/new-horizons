@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 using NewHorizons.Utility;
@@ -31,12 +31,6 @@ namespace NewHorizons.External.Modules
         public bool centerOfSolarSystem;
 
         /// <summary>
-        /// Radius of the cloaking field around the planet. It's a bit finicky so experiment with different values. If you
-        /// don't want a cloak, leave this as 0.
-        /// </summary>
-        public float cloakRadius;
-
-        /// <summary>
         /// If it has a comet tail, it'll be oriented according to these Euler angles.
         /// </summary>
         public MVector3 cometTailRotation;
@@ -44,7 +38,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.
         /// </summary>
-        public GravityFallOff gravityFallOff = GravityFallOff.Linear;
+        [DefaultValue("linear")] public GravityFallOff gravityFallOff = GravityFallOff.Linear;
 
         /// <summary>
         /// Radius of a simple sphere used as the ground for the planet. If you want to use more complex terrain, leave this as
@@ -63,11 +57,6 @@ namespace NewHorizons.External.Modules
         public bool hasMapMarker;
 
         /// <summary>
-        /// Allows the object to be targeted on the map.
-        /// </summary>
-        [DefaultValue(true)] public bool hasReferenceFrame = true;
-
-        /// <summary>
         /// Can this planet survive entering a star?
         /// </summary>
         public bool invulnerableToSun;
@@ -80,7 +69,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// An override for the radius of the planet's gravitational sphere of influence. Optional
         /// </summary>
-        public float sphereOfInfluence;
+        public float soiOverride;
 
         /// <summary>
         /// The acceleration due to gravity felt as the surfaceSize. Timber Hearth has 12 for reference
@@ -91,6 +80,11 @@ namespace NewHorizons.External.Modules
         /// A scale height used for a number of things. Should be the approximate radius of the body.
         /// </summary>
         public float surfaceSize;
+
+        /// <summary>
+        /// Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.
+        /// </summary>
+        public float zeroGravityRadius;
 
         #region Obsolete
 
@@ -111,6 +105,15 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
         public bool hasAmbientLight;
+
+        [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
+        [DefaultValue(true)] public bool hasReferenceFrame = true;
+
+        [Obsolete("CloakRadius is deprecated, please use CloakModule instead")]
+        public float cloakRadius;
+
+        [Obsolete("SphereOfInfluence is deprecated, please use soiOverride instead")]
+        public float sphereOfInfluence;
 
         #endregion Obsolete
     }

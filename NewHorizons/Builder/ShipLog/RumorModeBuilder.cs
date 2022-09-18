@@ -1,8 +1,10 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -52,7 +54,7 @@ namespace NewHorizons.Builder.ShipLog
         public static void AddBodyToShipLog(ShipLogManager manager, NewHorizonsBody body)
         {
             string systemName = body.Config.starSystem;
-            XElement astroBodyFile = XElement.Load(body.Mod.ModHelper.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
+            XElement astroBodyFile = XElement.Load(Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, body.Config.ShipLog.xmlFile));
             XElement astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {
@@ -113,7 +115,7 @@ namespace NewHorizons.Builder.ShipLog
                 if (manager._entryDataDict.ContainsKey(entry._id) == false)
                 {
                     NewHorizonsBody body = ShipLogHandler.GetConfigFromEntryID(entry._id);
-                    Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config.ShipLog);
+                    Vector2? manualEntryPosition = GetManualEntryPosition(entry._id, body.Config);
                     Vector2 entryPosition;
                     if (manualEntryPosition == null)
                     {
@@ -219,10 +221,14 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static Vector2? GetManualEntryPosition(string entryId, ShipLogModule config)
+        private static Vector2? GetManualEntryPosition(string entryId, PlanetConfig config)
         {
-            if (config.entryPositions == null) return null;
-            foreach (ShipLogModule.EntryPositionInfo position in config.entryPositions)
+            Main.SystemDict.TryGetValue(config.starSystem, out var system);
+            var entryPositions = system?.Config?.entryPositions;
+
+            if (entryPositions == null) return null;
+
+            foreach (ShipLogModule.EntryPositionInfo position in entryPositions)
             {
                 if (position.id == entryId)
                 {

@@ -27,6 +27,9 @@ public static class SchemaExporter
         var systemSchema =
             new Schema<StarSystemConfig>("Star System Schema", "Schema for a star system in New Horizons", $"{folderName}/star_system_schema", settings);
         systemSchema.Output();
+        var addonSchema = new Schema<AddonConfig>("Addon Manifest Schema",
+            "Schema for an addon manifest in New Horizons", $"{folderName}/addon_manifest_schema", settings);
+        addonSchema.Output();
         var translationSchema =
             new Schema<TranslationConfig>("Translation Schema", "Schema for a translation file in New Horizons", $"{folderName}/translation_schema", settings);
         translationSchema.Output();
@@ -74,6 +77,32 @@ public static class SchemaExporter
                 {"title", _title},
                 {"description", _description}
             });
+
+            switch (_title)
+            {
+                case "Celestial Body Schema":
+                    schema.Definitions["OrbitModule"].Properties["semiMajorAxis"].Default = 5000f;
+                    break;
+                case "Star System Schema":
+                    schema.Definitions["NomaiCoordinates"].Properties["x"].UniqueItems = true;
+                    schema.Definitions["NomaiCoordinates"].Properties["y"].UniqueItems = true;
+                    schema.Definitions["NomaiCoordinates"].Properties["z"].UniqueItems = true;
+                    break;
+            }
+
+            if (_title is "Star System Schema" or "Celestial Body Schema")
+            {
+                schema.Properties["extras"] = new JsonSchemaProperty {
+                    Type = JsonObjectType.Object,
+                    Description = "Extra data that may be used by extension mods",
+                    AllowAdditionalProperties = true,
+                    AdditionalPropertiesSchema = new JsonSchema
+                    {
+                        Type = JsonObjectType.Object
+                    }
+                };
+            }
+
             return schema;
         }
     }

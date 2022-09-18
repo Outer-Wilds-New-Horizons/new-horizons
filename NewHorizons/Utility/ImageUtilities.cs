@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -14,22 +15,29 @@ namespace NewHorizons.Utility
         private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
         private static List<Texture2D> _generatedTextures = new List<Texture2D>();
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename)
+        public static bool IsTextureLoaded(IModBehaviour mod, string filename)
+        {
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
+            return _loadedTextures.ContainsKey(path);
+        }
+
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false)
         {
             // Copied from OWML but without the print statement lol
-            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             if (_loadedTextures.ContainsKey(path))
             {
-                Logger.Log($"Already loaded image at path: {path}");
+                Logger.LogVerbose($"Already loaded image at path: {path}");
                 return _loadedTextures[path];
             }
 
-            Logger.Log($"Loading image at path: {path}");
+            Logger.LogVerbose($"Loading image at path: {path}");
             try
             {
                 var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2);
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
                 texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
 
@@ -37,14 +45,30 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogWarning($"Exception thrown while loading texture [{filename}]: {ex.Message}, {ex.StackTrace}");
+                // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
+                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
             }
         }
 
+        public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
+        {
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
+            if (_loadedTextures.ContainsKey(path))
+            {
+                if (_loadedTextures[path] == texture)
+                {
+                    _loadedTextures.Remove(path);
+                    UnityEngine.Object.Destroy(texture);
+                }
+            }
+
+            UnityEngine.Object.Destroy(texture);
+        }
+
         public static void ClearCache()
         {
-            Logger.Log("Cleaing image cache");
+            Logger.LogVerbose("Clearing image cache");
 
             foreach (var texture in _loadedTextures.Values)
             {
@@ -90,7 +114,7 @@ namespace NewHorizons.Utility
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
-            newTexture.wrapMode = TextureWrapMode.Clamp;
+            newTexture.wrapMode = texture.wrapMode;
 
             _generatedTextures.Add(newTexture);
 
@@ -104,7 +128,7 @@ namespace NewHorizons.Utility
             var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
             texture.name = "SlideReelAtlas";
 
-            Color[] fillPixels = new Color[size * size * 4 * 4];
+            var fillPixels = new Color[size * size * 4 * 4];
             for (int xIndex = 0; xIndex < 4; xIndex++)
             {
                 for (int yIndex = 0; yIndex < 4; yIndex++)
@@ -173,6 +197,8 @@ namespace NewHorizons.Utility
             outline.SetPixels(outlinePixels);
             outline.Apply();
 
+            outline.wrapMode = texture.wrapMode;
+
             _generatedTextures.Add(outline);
 
             return outline;
@@ -217,6 +243,8 @@ namespace NewHorizons.Utility
             newImage.SetPixels(pixels);
             newImage.Apply();
 
+            newImage.wrapMode = image.wrapMode;
+
             _generatedTextures.Add(newImage);
 
             return newImage;
@@ -237,23 +265,27 @@ namespace NewHorizons.Utility
             newImage.SetPixels(pixels);
             newImage.Apply();
 
+            newImage.wrapMode = image.wrapMode;
+
             _generatedTextures.Add(newImage);
 
             return newImage;
         }
 
-        public static Texture2D ClearTexture(int width, int height)
+        public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
             var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
             tex.name = "Clear";
-            Color fillColor = Color.clear;
-            Color[] fillPixels = new Color[tex.width * tex.height];
+            var fillColor = Color.clear;
+            var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < fillPixels.Length; i++)
             {
                 fillPixels[i] = fillColor;
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
             _generatedTextures.Add(tex);
 
@@ -264,7 +296,7 @@ namespace NewHorizons.Utility
         {
             var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
             tex.name = src.name + "CanvasScaled";
-            Color[] fillPixels = new Color[tex.width * tex.height];
+            var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
                 for (int j = 0; j < tex.height; j++)
@@ -280,6 +312,8 @@ namespace NewHorizons.Utility
             }
             tex.SetPixels(fillPixels);
             tex.Apply();
+
+            tex.wrapMode = src.wrapMode;
 
             _generatedTextures.Add(tex);
 
@@ -305,26 +339,40 @@ namespace NewHorizons.Utility
         }
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
-            Color[] pixels = new Color[width*height];
+            var pixels = new Color[width*height];
  
             for(int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] = color;
             }
  
-            Texture2D newTexture = new Texture2D(width, height);
+            var newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
             return newTexture;
         }
-        
+
+        public static Sprite GetButtonSprite(JoystickButton button) => GetButtonSprite(ButtonPromptLibrary.SharedInstance.GetButtonTexture(button));
+        public static Sprite GetButtonSprite(KeyCode key) => GetButtonSprite(ButtonPromptLibrary.SharedInstance.GetButtonTexture(key));
+        private static Sprite GetButtonSprite(Texture2D texture)
+        {
+            var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f), 100, 0, SpriteMeshType.FullRect, Vector4.zero, false);
+            sprite.name = texture.name;
+            return sprite;
+        }
+
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {
-            public List<string> pathsToLoad = new List<string>();
+            public List<(int index, string path)> PathsToLoad { get; private set; } = new ();
 
             public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
-            public ImageLoadedEvent imageLoadedEvent = new ImageLoadedEvent();
+            public ImageLoadedEvent imageLoadedEvent = new ();
+
+            private readonly object _lockObj = new();
+
+            public bool FinishedLoading { get; private set; }
+            private int _loadedCount = 0;
 
             // TODO: set up an optional “StartLoading” and “StartUnloading” condition on AsyncTextureLoader,
             // and make use of that for at least for projector stuff (require player to be in the same sector as the slides
@@ -332,39 +380,59 @@ namespace NewHorizons.Utility
 
             void Start()
             {
-                for (int i = 0; i < pathsToLoad.Count; i++)
+                imageLoadedEvent.AddListener(OnImageLoaded);
+                foreach (var (index, path) in PathsToLoad)
                 {
-                    StartCoroutine(DownloadTexture(pathsToLoad[i], i));
+                    StartCoroutine(DownloadTexture(path, index));
+                }
+            }
+
+            private void OnImageLoaded(Texture texture, int index)
+            {
+                lock (_lockObj)
+                {
+                    _loadedCount++;
+
+                    if (_loadedCount >= PathsToLoad.Count)
+                    {
+                        Logger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
+                        FinishedLoading = true;
+                    }
                 }
             }
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                if (_loadedTextures.ContainsKey(url))
+                lock(_loadedTextures)
                 {
-                    Logger.Log($"Already loaded image at path: {url}");
-                    var texture = _loadedTextures[url];
-                    imageLoadedEvent.Invoke(texture, index);
-                    yield break;
+                    if (_loadedTextures.ContainsKey(url))
+                    {
+                        Logger.LogVerbose($"Already loaded image {index}:{url}");
+                        var texture = _loadedTextures[url];
+                        imageLoadedEvent?.Invoke(texture, index);
+                        yield break;
+                    }
                 }
 
-                using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url))
+                using UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(url);
+
+                yield return uwr.SendWebRequest();
+
+                var hasError = uwr.error != null && uwr.error != "";
+
+                if (hasError) 
                 {
-                    yield return uwr.SendWebRequest();
+                    Logger.LogError($"Failed to load {index}:{url} - {uwr.error}");
+                }
+                else
+                {
+                    var texture = DownloadHandlerTexture.GetContent(uwr);
 
-                    var hasError = uwr.error != null && uwr.error != "";
-                
-                    if (hasError) // (uwr.result != UnityWebRequest.Result.Success)
+                    lock(_loadedTextures)
                     {
-                        Debug.Log(uwr.error);
-                    }
-                    else
-                    {
-                        var texture = DownloadHandlerTexture.GetContent(uwr);
-
                         if (_loadedTextures.ContainsKey(url))
                         {
-                            Logger.Log($"Already loaded image at path: {url}");
+                            Logger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
                             texture = _loadedTextures[url];
                         }
@@ -373,7 +441,7 @@ namespace NewHorizons.Utility
                             _loadedTextures.Add(url, texture);
                         }
 
-                        imageLoadedEvent.Invoke(texture, index);
+                        imageLoadedEvent?.Invoke(texture, index);
                     }
                 }
             }

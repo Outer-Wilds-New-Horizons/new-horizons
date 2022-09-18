@@ -1,4 +1,4 @@
-﻿using NewHorizons.Handlers;
+using NewHorizons.Handlers;
 using OWML.Common;
 using OWML.Common.Menus;
 using System;
@@ -29,9 +29,9 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private static void ReloadConfigs()
         {
-            Logger.Log("Begin reload of config files...", Logger.LogType.Log);
+            Logger.Log("Begin reload of config files...");
 
-            Main.ResetConfigs();
+            Main.Instance.ResetConfigs();
 
             try
             {
@@ -45,11 +45,11 @@ namespace NewHorizons.Utility.DebugUtilities
                 Logger.LogWarning("Error While Reloading");
             }
 
-            GameObject.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
+            SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();
 
             Main.Instance.ChangeCurrentStarSystem(Main.Instance.CurrentStarSystem);
 
-            Main.SecondsLeftInLoop = -1f;
+            Main.SecondsElapsedInLoop = -1f;
         }
     }
 }

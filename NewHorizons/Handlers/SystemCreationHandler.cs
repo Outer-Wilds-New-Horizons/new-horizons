@@ -1,7 +1,8 @@
-﻿using NewHorizons.Builder.StarSystem;
+using NewHorizons.Builder.StarSystem;
 using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 namespace NewHorizons.Handlers
 {
@@ -9,22 +10,35 @@ namespace NewHorizons.Handlers
     {
         public static void LoadSystem(NewHorizonsSystem system)
         {
-            var skybox = GameObject.Find("Skybox/Starfield");
-
-            if (system.Config.skybox?.destroyStarField ?? false)
+            if (system.Config.Skybox?.destroyStarField ?? false)
             {
-                Object.Destroy(skybox);
+                Object.Destroy(SearchUtilities.Find("Skybox/Starfield"));
             }
 
-            if (system.Config.skybox?.assetBundle != null && system.Config.skybox?.path != null)
+            if (system.Config.Skybox?.rightPath != null ||
+                system.Config.Skybox?.leftPath != null ||
+                system.Config.Skybox?.topPath != null ||
+                system.Config.Skybox?.bottomPath != null ||
+                system.Config.Skybox?.frontPath != null ||
+                system.Config.Skybox?.bottomPath != null)
             {
-                SkyboxBuilder.Make(system.Config.skybox, system.Mod);
+                SkyboxBuilder.Make(system.Config.Skybox, system.Mod);
             }
 
             if (system.Config.enableTimeLoop)
             {
                 var timeLoopController = new GameObject("TimeLoopController");
                 timeLoopController.AddComponent<TimeLoopController>();
+            }
+
+            if (system.Config.loopDuration != 22f)
+            {
+                TimeLoopUtilities.SetLoopDuration(system.Config.loopDuration);
+            }
+
+            if (!string.IsNullOrEmpty(system.Config.travelAudio))
+            {
+                Delay.FireOnNextUpdate(() => AudioUtilities.SetAudioClip(Locator.GetGlobalMusicController()._travelSource, system.Config.travelAudio, system.Mod));
             }
         }
     }

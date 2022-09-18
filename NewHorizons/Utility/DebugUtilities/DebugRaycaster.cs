@@ -1,3 +1,4 @@
+using NewHorizons.Handlers;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,15 +17,25 @@ namespace NewHorizons.Utility.DebugUtilities
         private GameObject _planeDownRightSphere;
         private GameObject _planeDownLeftSphere;
 
+        private ScreenPrompt _raycastPrompt;
 
         private void Awake()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
+
+            _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
+
+            Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
         }
         
+        private void OnDestroy()
+        {
+            Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+        }
 
         private void Update()
         {
+            UpdatePromptVisibility();
             if (!Main.Debug) return;
             if (Keyboard.current == null) return;
 
@@ -34,11 +45,23 @@ namespace NewHorizons.Utility.DebugUtilities
             }
         }
 
-       
+
+        public void UpdatePromptVisibility()
+        {
+            _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+        }
+
 
         internal void PrintRaycast()
         {
             DebugRaycastData data = Raycast();
+
+            if (!data.hit)
+            {
+                Logger.LogWarning("Debug Raycast Didn't Hit Anything! (Try moving closer)");
+                return;
+            }
+
             var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
             var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
         
@@ -92,9 +115,9 @@ namespace NewHorizons.Utility.DebugUtilities
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
 
                 data.bodyName = o.name;
-                data.bodyPath = SearchUtilities.GetPath(o.transform);
+                data.bodyPath = o.transform.GetPath();
                 data.hitObject = o;
-                data.hitBodyGameObject = hitAstroObject?.gameObject;
+                data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);
             }
             _rb.EnableCollisionDetection();
@@ -112,7 +135,7 @@ namespace NewHorizons.Utility.DebugUtilities
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 0, 1);
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 1, 0); // if 0,0,1 was actually the same vector U already was (lol), try (0,1,0) instead
 
-            Logger.Log("U is " + U.ToString());
+            Logger.LogVerbose("Up vector is " + U.ToString());
 
             // stackoverflow.com/a/9605695
             // I don't know exactly how this works, but I'm projecting a point that is located above the plane's origin, relative to the planet, onto the plane. this gets us our v vector

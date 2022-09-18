@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -6,7 +6,7 @@ namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder
     {
-        public static GravityVolume Make(GameObject planetGO, AstroObject ao, PlanetConfig config)
+        public static GravityVolume Make(GameObject planetGO, AstroObject ao, OWRigidbody owrb, PlanetConfig config)
         {
             var exponent = config.Base.gravityFallOff == GravityFallOff.Linear ? 1f : 2f;
             var GM = config.Base.surfaceGravity * Mathf.Pow(config.Base.surfaceSize, exponent);
@@ -15,10 +15,10 @@ namespace NewHorizons.Builder.General
             var gravityRadius = GM / 0.1f;
             if (exponent == 2f) gravityRadius = Mathf.Sqrt(gravityRadius);
 
-            // To let you actually orbit things the way you would expect we cap this at 4x the diameter if its not a star or black hole (this is what giants deep has)
-            if (config.Star == null && config.Singularity == null) gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
+            // To let you actually orbit things the way you would expect we cap this at 4x the diameter if its not a star (this is what giants deep has)
+            if (config.Star == null) gravityRadius = Mathf.Min(gravityRadius, 4 * config.Base.surfaceSize);
             else gravityRadius = Mathf.Min(gravityRadius, 15 * config.Base.surfaceSize);
-            if (config.Base.sphereOfInfluence != 0f) gravityRadius = config.Base.sphereOfInfluence;
+            if (config.Base.soiOverride != 0f) gravityRadius = config.Base.soiOverride;
 
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
@@ -60,6 +60,7 @@ namespace NewHorizons.Builder.General
             gravityGO.SetActive(true);
 
             ao._gravityVolume = gravityVolume;
+            owrb.RegisterAttachedGravityVolume(gravityVolume);
 
             return gravityVolume;
         }

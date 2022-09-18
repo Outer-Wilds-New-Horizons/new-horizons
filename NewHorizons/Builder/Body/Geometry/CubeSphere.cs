@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body.Geometry
@@ -7,13 +7,6 @@ namespace NewHorizons.Builder.Body.Geometry
     {
         public static Mesh Build(int resolution, Texture2D heightMap, float minHeight, float maxHeight, Vector3 stretch)
         {
-            // It breaks if resolution is greater than 100 I don't know why
-            if (resolution > 100)
-            {
-                Logger.LogWarning($"Can't make CubeSphere's with resolution higher than 100 for some reason");
-                resolution = 100;
-            }
-
             Mesh mesh = new Mesh();
             mesh.name = "CubeSphere";
 
@@ -109,6 +102,12 @@ namespace NewHorizons.Builder.Body.Geometry
                 }
             }
 
+            // Higher than this and we have to use a different indexFormat
+            if (vertices.Length > 65535)
+            {
+                mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+            }
+
             mesh.vertices = vertices;
             mesh.normals = normals;
             mesh.uv = uvs;
@@ -126,12 +125,15 @@ namespace NewHorizons.Builder.Body.Geometry
             v.y = v2.y * Mathf.Sqrt(1f - x2 / 2f - z2 / 2f + x2 * z2 / 3f);
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
-            var sphericals = CoordinateUtilities.CartesianToSpherical(v);
+            // The shader uses real coords
+            var sphericals = CoordinateUtilities.CartesianToSpherical(v, false);
             float longitude = sphericals.x;
             float latitude = sphericals.y;
 
             float sampleX = heightMap.width * longitude / 360f;
             float sampleY = heightMap.height * latitude / 180f;
+            if (sampleX > heightMap.width) sampleX -= heightMap.width; 
+            if (sampleX < 0) sampleX += heightMap.width;
 
             float relativeHeight = heightMap.GetPixel((int)sampleX, (int)sampleY).r;
 

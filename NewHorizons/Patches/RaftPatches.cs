@@ -1,10 +1,10 @@
-﻿using HarmonyLib;
-using NewHorizons.Components;
+using HarmonyLib;
+using NewHorizons.Components.Volumes;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
-    public class RaftPatches : HarmonyPatch
+    public static class RaftPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(RaftController), nameof(RaftController.FixedUpdate))]
@@ -104,14 +104,5 @@ namespace NewHorizons.Patches
 
             return false;
         }
-
-        /* For debugging
-        [HarmonyPrefix]
-        [HarmonyPatch(typeof(FluidDetector), nameof(FluidDetector.AddVolume), new Type[] { typeof(EffectVolume) })]
-        public static void FluidDetector_AddVolume(FluidDetector __instance, EffectVolume eVol)
-        {
-            Logger.Log($"[{__instance}] : AddVolume [{eVol}]");
-        }
-        */
     }
 }

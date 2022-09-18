@@ -1,4 +1,6 @@
-﻿using HarmonyLib;
+using HarmonyLib;
+using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.OtherMods.AchievementsPlus.NH;
 using NewHorizons.Builder.Props;
 using NewHorizons.External;
 using NewHorizons.Handlers;
@@ -31,6 +33,7 @@ namespace NewHorizons.Patches
             if (freqString != null && freqString != "")
             {
                 NewHorizonsData.LearnFrequency(freqString);
+                NewFrequencyAchievement.Earn();
                 return false;
             }
             return true;
@@ -56,7 +59,13 @@ namespace NewHorizons.Patches
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
             if (customSignalName != null)
             {
-                if (!NewHorizonsData.KnowsSignal(customSignalName)) NewHorizonsData.LearnSignal(customSignalName);
+                if (!NewHorizonsData.KnowsSignal(customSignalName)) 
+                {
+                    NewHorizonsData.LearnSignal(customSignalName);
+                }
+
+                AchievementHandler.OnLearnSignal();
+
                 return false;
             }
             return true;

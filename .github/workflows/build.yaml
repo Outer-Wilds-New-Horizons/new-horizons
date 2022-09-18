@@ -1,43 +1,41 @@
+# Usage:
+#
+# Build:
+#   uses: "./.github/workflows/build"
+#   with:
+#     build_type: Debug
+#
+#
+
 name: Build
 
 on:
-  push:
-    branches: [dev, main]
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - "NewHorizons/Schemas/**"
-      - "LICENSE"
-      - ".gitignore"
-  pull_request:
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - "NewHorizons/Schemas/**"
-      - "LICENSE"
-      - ".gitignore"
-  workflow_dispatch:
-  
-env:
-  GH_ACTIONS: 'true'
+  workflow_call:
+    inputs:
+      build_type:
+        description: 'Build type to pass to `dotnet`, should be either "Debug" or "Release"'
+        required: false
+        default: "Debug"
+        type: string
+    outputs:
+      schemas_changed:
+        description: 'Have the schemas been updated?'
+        value: ${{ jobs.Build.outputs.schemas_changed }}
 
+
+  
 jobs:
-  build:
+  Build:
     runs-on: windows-latest
+    outputs:
+      schemas_changed: ${{ steps.changed_files.outputs.files_changed }}
     steps:
 
-    - uses: actions/checkout@v2
-        
-    # Set to Release if we're in master, otherwise keep us in Debug
-    - name: Set Release
-      if: github.ref == 'refs/heads/main'
-      run: echo "BUILD_TYPE=Release" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
-      
-    - name: Set Debug
-      if: github.ref != 'refs/heads/main'
-      run: echo "BUILD_TYPE=Debug" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf-8 -Append
+    - name: Checkout Repo
+      uses: actions/checkout@v2
 
-    - uses: actions/setup-dotnet@v1
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
 
     # Disable Strong Name Verification to let us pull a switch-a-roo
     - name: Disable strong name validation
@@ -47,45 +45,29 @@ jobs:
       run: "rm .\\NewHorizons\\NewHorizons.csproj.user"
 
     - name: Build Project
-      run: dotnet build -c $Env:BUILD_TYPE
+      run: dotnet build -c ${{ inputs.build_type }}
         
     - name: Generate Schemas
-      run: .\SchemaExporter\bin\${{ env.BUILD_TYPE }}\SchemaExporter.exe
+      run: .\SchemaExporter\bin\${{ inputs.build_type }}\SchemaExporter.exe
       
     - name: Delete XML documentation
-      run: rm .\NewHorizons\bin\${{ env.BUILD_TYPE }}\NewHorizons.xml
+      run: rm .\NewHorizons\bin\${{ inputs.build_type }}\NewHorizons.xml
       
     - name: Upload Mod Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: xen.NewHorizons.${{ env.BUILD_TYPE }}
-        path: .\NewHorizons\bin\${{ env.BUILD_TYPE }}
+        name: xen.NewHorizons.${{ inputs.build_type }}
+        path: .\NewHorizons\bin\${{ inputs.build_type }}
         
     - name: Upload Schemas Artifact
       uses: actions/upload-artifact@v2
       with:
-        name: NewHorizons-Schemas-${{ env.BUILD_TYPE }}
+        name: NewHorizons-Schemas-${{ inputs.build_type }}
         path: .\NewHorizons\Schemas
-      
-    # Only want to commit schemas if they've actually changed
+
     - name: Verify Changed Schemas
       uses: tj-actions/verify-changed-files@v9.1
       id: changed_files
       with:
-        files: NewHorizons\Schemas\**
-        
-    - name: Commit Schemas
-      if: steps.changed_files.outputs.files_changed == 'true'
-      run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git config --local user.name "github-actions[bot]"
-        git add NewHorizons\Schemas\**
-        git commit -m "Updated Schemas"
-        
-    - name: Push Schemas
-      if: ${{ (steps.changed_files.outputs.files_changed == 'true') && (github.event_name != 'pull_request') }}
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.github_token }}
-        branch: ${{ github.ref }}
+        files: NewHorizons/Schemas/**
       

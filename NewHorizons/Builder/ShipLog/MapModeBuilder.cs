@@ -1,4 +1,3 @@
-﻿using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -9,6 +8,8 @@ using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.ShipLog;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class MapModeBuilder
@@ -16,7 +17,7 @@ namespace NewHorizons.Builder.ShipLog
         #region General
         public static ShipLogAstroObject[][] ConstructMapMode(string systemName, GameObject transformParent, ShipLogAstroObject[][] currentNav, int layer)
         {
-            Material greyScaleMaterial = GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
+            Material greyScaleMaterial = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/Sprite").GetComponent<Image>().material;
             List<NewHorizonsBody> bodies = Main.BodyDict[systemName].Where(
                 b => !(b.Config.ShipLog?.mapMode?.remove ?? false) && !b.Config.isQuantumState
             ).ToList();
@@ -99,7 +100,9 @@ namespace NewHorizons.Builder.ShipLog
         {
             const float unviewedIconOffset = 15;
 
-            GameObject unviewedReference = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
+            Logger.LogVerbose($"Adding ship log astro object for {body.Config.name}");
+
+            GameObject unviewedReference = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/TimberHearth/UnviewedIcon");
 
             ShipLogAstroObject astroObject = gameObject.AddComponent<ShipLogAstroObject>();
             astroObject._id = ShipLogHandler.GetAstroObjectId(body);
@@ -217,7 +220,7 @@ namespace NewHorizons.Builder.ShipLog
 
             foreach (NewHorizonsBody body in bodies)
             {
-                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
+                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null && body.Config.ShipLog?.mapMode?.details == null) continue;
 
                 // Sometimes they got other names idk
                 var name = body.Config.name.Replace(" ", "");
@@ -235,13 +238,19 @@ namespace NewHorizons.Builder.ShipLog
                 {
                     GameObject newMapModeGO = CreateMapModeGameObject(body, transformParent, layer, body.Config.ShipLog?.mapMode?.manualPosition);
                     ShipLogAstroObject newAstroObject = AddShipLogAstroObject(newMapModeGO, body, greyScaleMaterial, layer);
+                    if (body.Config.FocalPoint != null)
+                    {
+                        newAstroObject._imageObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._outlineObj.GetComponent<Image>().enabled = false;
+                        newAstroObject._unviewedObj.GetComponent<Image>().enabled = false;
+                    }
                     MakeDetails(body, newMapModeGO.transform, greyScaleMaterial);
                     Vector2 navigationPosition = body.Config.ShipLog?.mapMode?.manualNavigationPosition;
                     navMatrix[(int)navigationPosition.y][(int)navigationPosition.x] = newAstroObject;
                 }
                 else if (Main.Instance.CurrentStarSystem == "SolarSystem")
                 {
-                    GameObject gameObject = SearchUtilities.CachedFind(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
+                    GameObject gameObject = SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + name);
                     if (body.Config.destroy || (body.Config.ShipLog?.mapMode?.remove ?? false))
                     {
                         ShipLogAstroObject astroObject = gameObject.GetComponent<ShipLogAstroObject>();
@@ -251,12 +260,12 @@ namespace NewHorizons.Builder.ShipLog
                             navMatrix[navIndex[0]][navIndex[1]] = null;
                             if (astroObject.GetID() == "CAVE_TWIN" || astroObject.GetID() == "TOWER_TWIN")
                             {
-                                GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                                SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                             }
                         }
                         else if (name == "SandFunnel")
                         {
-                            GameObject.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
+                            SearchUtilities.Find(ShipLogHandler.PAN_ROOT_PATH + "/" + "SandFunnel").SetActive(false);
                         }
                         gameObject.SetActive(false);
                     }
@@ -275,6 +284,7 @@ namespace NewHorizons.Builder.ShipLog
                         {
                             gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale;
                         }
+                        MakeDetails(body, gameObject.transform, greyScaleMaterial);
                     }
                 }
             }
@@ -380,7 +390,7 @@ namespace NewHorizons.Builder.ShipLog
             return new MapModeObject();
         }
 
-        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "")
+        private static List<MapModeObject> ConstructChildrenNodes(MapModeObject parent, List<NewHorizonsBody> searchList, string secondaryName = "", string focalPointName = "")
         {
             List<MapModeObject> children = new List<MapModeObject>();
             int newX = parent.x;
@@ -388,7 +398,7 @@ namespace NewHorizons.Builder.ShipLog
             int newLevel = parent.level + 1;
             MapModeObject lastSibling = parent;
 
-            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || b.Config.name == secondaryName))
+            foreach (NewHorizonsBody body in searchList.Where(b => b.Config.Orbit.primaryBody == parent.mainBody.Config.name || (b.Config.Orbit.primaryBody == focalPointName && b.Config.name != parent.mainBody.Config.name) || b.Config.name == secondaryName))
             {
                 bool even = newLevel % 2 == 0;
                 newX = even ? newX : newX + 1;
@@ -403,13 +413,15 @@ namespace NewHorizons.Builder.ShipLog
                     lastSibling = lastSibling
                 };
                 string newSecondaryName = "";
+                string newFocalPointName = "";
                 if (body.Config.FocalPoint != null)
                 {
+                    newFocalPointName = body.Config.name;
                     newNode.mainBody = searchList.Find(b => b.Config.name == body.Config.FocalPoint.primary);
                     newSecondaryName = searchList.Find(b => b.Config.name == body.Config.FocalPoint.secondary).Config.name;
                 }
 
-                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName);
+                newNode.children = ConstructChildrenNodes(newNode, searchList, newSecondaryName, newFocalPointName);
                 if (even)
                 {
                     newY += newNode.branch_height;
@@ -481,7 +493,7 @@ namespace NewHorizons.Builder.ShipLog
             GameObject newNodeGO = CreateMapModeGameObject(node.mainBody, parent, layer, position);
             ShipLogAstroObject astroObject = AddShipLogAstroObject(newNodeGO, node.mainBody, greyScaleMaterial, layer);
             if (node.mainBody.Config.FocalPoint != null)
-            {
+            { 
                 astroObject._imageObj.GetComponent<Image>().enabled = false;
                 astroObject._outlineObj.GetComponent<Image>().enabled = false;
                 astroObject._unviewedObj.GetComponent<Image>().enabled = false;
@@ -496,9 +508,9 @@ namespace NewHorizons.Builder.ShipLog
         {
             Texture2D texture;
 
-            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModeStar.png");
-            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModNoAtmo.png");
-            else texture = ImageUtilities.GetTexture(Main.Instance, "AssetBundle/DefaultMapModePlanet.png");
+            if (body.Config.Star != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModeStar.png");
+            else if (body.Config.Atmosphere != null) texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModNoAtmo.png");
+            else texture = ImageUtilities.GetTexture(Main.Instance, "Assets/DefaultMapModePlanet.png");
 
             var color = GetDominantPlanetColor(body);
             var darkColor = new Color(color.r / 3f, color.g / 3f, color.b / 3f);
@@ -512,14 +524,6 @@ namespace NewHorizons.Builder.ShipLog
         {
             try
             {
-                switch (body.Config?.Singularity?.type)
-                {
-                    case SingularityModule.SingularityType.BlackHole:
-                        return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
-                        return Color.white;
-                }
-
                 var starColor = body.Config?.Star?.tint;
                 if (starColor != null) return starColor.ToColor();
 
@@ -545,6 +549,14 @@ namespace NewHorizons.Builder.ShipLog
 
                 var sandColor = body.Config.Sand?.tint;
                 if (sandColor != null) return sandColor.ToColor();
+
+                switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
+                {
+                    case SingularityModule.SingularityType.BlackHole:
+                        return Color.black;
+                    case SingularityModule.SingularityType.WhiteHole:
+                        return Color.white;
+                }
             }
             catch (Exception)
             {

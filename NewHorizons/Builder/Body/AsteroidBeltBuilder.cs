@@ -1,10 +1,11 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using UnityEngine;
 using Random = UnityEngine.Random;
+using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body
 {
     public static class AsteroidBeltBuilder
@@ -13,11 +14,13 @@ namespace NewHorizons.Builder.Body
         {
             var belt = parentConfig.AsteroidBelt;
 
-            float minSize = belt.minSize;
-            float maxSize = belt.maxSize;
-            int count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
+            var minSize = belt.minSize;
+            var maxSize = belt.maxSize;
+            var count = (int)(2f * Mathf.PI * belt.innerRadius / (10f * maxSize));
             if (belt.amount >= 0) count = belt.amount;
             if (count > 200) count = 200;
+
+            Logger.Log($"Generating {count} asteroid belt around {bodyName}");
 
             Random.InitState(belt.randomSeed);
 
@@ -34,7 +37,6 @@ namespace NewHorizons.Builder.Body
                     hasMapMarker = false,
                     surfaceGravity = 1,
                     surfaceSize = size,
-                    hasReferenceFrame = false,
                     gravityFallOff = GravityFallOff.InverseSquared
                 };
 
@@ -49,13 +51,18 @@ namespace NewHorizons.Builder.Body
                     showOrbitLine = false
                 };
 
+                config.ReferenceFrame = new ReferenceFrameModule()
+                {
+                    hideInMap = true
+                };
+
                 config.ProcGen = belt.procGen;
                 if (config.ProcGen == null)
                 {
                     config.ProcGen = new ProcGenModule()
                     {
                         scale = size,
-                        color = new MColor(126, 94, 73, 255)
+                        color = new MColor(126, 94, 73)
                     };
                 }
                 else
@@ -65,7 +72,7 @@ namespace NewHorizons.Builder.Body
                 }
 
                 var asteroid = new NewHorizonsBody(config, mod);
-                PlanetCreationHandler.NextPassBodies.Add(asteroid);
+                PlanetCreationHandler.GenerateBody(asteroid);
             }
         }
     }

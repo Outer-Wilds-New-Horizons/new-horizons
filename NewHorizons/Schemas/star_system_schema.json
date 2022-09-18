@@ -5,17 +5,20 @@
   "description": "Configuration for a specific star system",
   "additionalProperties": false,
   "properties": {
+    "farClipPlaneOverride": {
+      "type": "number",
+      "description": "An override value for the far clip plane. Allows you to see farther.",
+      "format": "float"
+    },
     "canEnterViaWarpDrive": {
       "type": "boolean",
-      "description": "Whether this system can be warped to via the warp drive"
-    },
-    "coords": {
-      "description": "[DEPRECATED] Not implemented",
-      "$ref": "#/definitions/NomaiCoordinates"
+      "description": "Whether this system can be warped to via the warp drive. If you set factRequiredForWarp, this will be true.",
+      "default": true
     },
     "destroyStockPlanets": {
       "type": "boolean",
-      "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original."
+      "description": "Do you want a clean slate for this star system? Or will it be a modified version of the original.",
+      "default": true
     },
     "enableTimeLoop": {
       "type": "boolean",
@@ -24,19 +27,61 @@
     },
     "factRequiredForWarp": {
       "type": "string",
-      "description": "Set to the FactID that must be revealed before it can be warped to. Don't set `CanEnterViaWarpDrive` to `false` if\nyou're using this, that would make no sense."
+      "description": "The FactID that must be revealed before it can be warped to. Don't set `canEnterViaWarpDrive` to `false` if\nyou're using this, because it will be overwritten."
+    },
+    "loopDuration": {
+      "type": "number",
+      "description": "The duration of the time loop in minutes. This is the time the sun explodes. End Times plays 85 seconds before this time, and your memories get sent back about 40 seconds after this time.",
+      "format": "float",
+      "default": 22.0
     },
     "mapRestricted": {
       "type": "boolean",
       "description": "Should the player not be able to view the map in this system?"
     },
-    "skybox": {
+    "Skybox": {
       "description": "Customize the skybox for this system",
-      "$ref": "#/definitions/SkyboxConfig"
+      "$ref": "#/definitions/SkyboxModule"
     },
     "startHere": {
       "type": "boolean",
       "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
+    },
+    "travelAudio": {
+      "type": "string",
+      "description": "The audio that will play when travelling in space. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+    },
+    "Vessel": {
+      "description": "Configure warping to this system with the vessel",
+      "$ref": "#/definitions/VesselModule"
+    },
+    "entryPositions": {
+      "type": "array",
+      "description": "Manually layout ship log entries in detective mode",
+      "items": {
+        "$ref": "#/definitions/EntryPositionInfo"
+      }
+    },
+    "initialReveal": {
+      "type": "array",
+      "description": "A list of fact IDs to reveal when the game starts.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "curiosities": {
+      "type": "array",
+      "description": "List colors of curiosity entries",
+      "items": {
+        "$ref": "#/definitions/CuriosityColorInfo"
+      }
+    },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
+      }
     },
     "$schema": {
       "type": "string",
@@ -44,12 +89,83 @@
     }
   },
   "definitions": {
+    "SkyboxModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destroyStarField": {
+          "type": "boolean",
+          "description": "Whether to destroy the star field around the player"
+        },
+        "useCube": {
+          "type": "boolean",
+          "description": "Whether to use a cube for the skybox instead of a smooth sphere"
+        },
+        "rightPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive X direction"
+        },
+        "leftPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative X direction"
+        },
+        "topPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive Y direction"
+        },
+        "bottomPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative Y direction"
+        },
+        "frontPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's positive Z direction"
+        },
+        "backPath": {
+          "type": "string",
+          "description": "Relative filepath to the texture to use for the skybox's negative Z direction"
+        }
+      }
+    },
+    "VesselModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "coords": {
+          "description": "Coordinates that the vessel can use to warp to your solar system.",
+          "$ref": "#/definitions/NomaiCoordinates"
+        },
+        "vesselPosition": {
+          "description": "The position in the solar system the vessel will warp to.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "vesselRotation": {
+          "description": "Euler angles by which the vessel will be oriented.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "warpExitPosition": {
+          "description": "The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "warpExitRotation": {
+          "description": "Euler angles by which the warp exit will be oriented.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "promptFact": {
+          "type": "string",
+          "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
+        }
+      }
+    },
     "NomaiCoordinates": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "x": {
           "type": "array",
+          "maxItems": 6,
+          "minItems": 2,
+          "uniqueItems": true,
           "items": {
             "type": "integer",
             "format": "int32"
@@ -57,6 +173,9 @@
         },
         "y": {
           "type": "array",
+          "maxItems": 6,
+          "minItems": 2,
+          "uniqueItems": true,
           "items": {
             "type": "integer",
             "format": "int32"
@@ -64,6 +183,9 @@
         },
         "z": {
           "type": "array",
+          "maxItems": 6,
+          "minItems": 2,
+          "uniqueItems": true,
           "items": {
             "type": "integer",
             "format": "int32"
@@ -71,21 +193,102 @@
         }
       }
     },
-    "SkyboxConfig": {
+    "MVector3": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "assetBundle": {
-          "type": "string",
-          "description": "Path to the Unity asset bundle to load the skybox material from"
+        "x": {
+          "type": "number",
+          "format": "float"
         },
-        "destroyStarField": {
-          "type": "boolean",
-          "description": "Whether to destroy the star field around the player"
+        "y": {
+          "type": "number",
+          "format": "float"
         },
-        "path": {
+        "z": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "EntryPositionInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
           "type": "string",
-          "description": "Path to the material within the asset bundle specified by `assetBundle` to use for the skybox"
+          "description": "The name of the entry to apply the position to."
+        },
+        "position": {
+          "description": "Position of the entry",
+          "$ref": "#/definitions/MVector2"
+        }
+      }
+    },
+    "MVector2": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "CuriosityColorInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "color": {
+          "description": "The color to apply to entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "highlightColor": {
+          "description": "The color to apply to highlighted entries with this curiosity.",
+          "$ref": "#/definitions/MColor"
+        },
+        "id": {
+          "type": "string",
+          "description": "The ID of the curiosity to apply the color to."
+        }
+      }
+    },
+    "MColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue component of this colour",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "a": {
+          "type": "integer",
+          "description": "The alpha (opacity) component of this colour",
+          "format": "int32",
+          "default": 255,
+          "maximum": 255.0,
+          "minimum": 0.0
         }
       }
     }

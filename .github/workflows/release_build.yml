@@ -1,0 +1,75 @@
+name: Release Build
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore"
+  pull_request:
+    branches: [main]
+    types:
+      - synchronize
+      - labeled
+    paths-ignore:
+      - "docs/**"
+      - "*.md"
+      - "NewHorizons/Schemas/**"
+      - "LICENSE"
+      - ".gitignore" 
+
+jobs:
+  Build:
+    if: ${{ github.ref == 'refs/heads/main' || contains(github.event.pull_request.labels.*.name, 'update-pr')  }}
+    uses: ./.github/workflows/build.yaml
+    with:
+      build_type: Release
+  Update_Schemas:
+    name: 'Update Schemas'
+    needs: Build
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Debug build will update schemas on push, so don't run if we're on pull request
+    uses: ./.github/workflows/update_schemas.yml
+    with:
+      artifact_name: NewHorizons-Schemas-Release
+  Update_Docs:
+    name: 'Update Docs'
+    needs: Build
+    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Same thing with docs
+    uses: './.github/workflows/docs_build.yml'
+    with:
+      schemas_artifact: NewHorizons-Schemas-Debug
+  Update_Release:
+    name: 'Create/Update Release Asset'
+    needs: Build
+    if: ${{ github.ref != 'refs/heads/main' && contains(github.event.pull_request.labels.*.name, 'update-pr') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Asset
+        uses: actions/download-artifact@v3
+        with:
+          name: xen.NewHorizons.Release
+          path: xen.NewHorizons
+
+      - name: Zip Asset
+        run: |
+          cd xen.NewHorizons/
+          zip -r xen.NewHorizons.zip *
+          mv xen.NewHorizons.zip ..
+          cd ..
+
+      - name: Upload Asset
+        uses: ncipollo/release-action@v1
+        with:
+          allowUpdates: true
+          commit: main
+          tag: v${{ github.event.pull_request.title }}
+          name: Version ${{ github.event.pull_request.title }}
+          omitBodyDuringUpdate: true
+          artifacts: "xen.NewHorizons.zip"
+          draft: true
+          prerelease: false
+
+

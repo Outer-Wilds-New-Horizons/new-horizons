@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Handlers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,9 @@ namespace NewHorizons.Utility.DebugUtilities
         public Action<DebugRaycastData> onRaycast;
 
         private DebugRaycaster _rc;
+
+        private ScreenPrompt _placePrompt;
+        
         public SpiralMesh spiralMesh;
         public static GameObject spiralMeshHolder;
 
@@ -31,11 +35,11 @@ namespace NewHorizons.Utility.DebugUtilities
                 g.transform.parent = spiralMeshHolder.transform;
                 g.transform.localPosition = Vector3.zero;
                 g.transform.localEulerAngles = Vector3.zero;
-                
+
                 m = new SpiralMesh(NomaiTextBuilder.adultSpiralProfile);
                 m.Randomize();
                 m.updateMesh();
-                
+
                 g.AddComponent<MeshFilter>().sharedMesh = m.mesh;
                 g.AddComponent<MeshRenderer>().sharedMaterial = _arcPrefabs[0].GetComponent<MeshRenderer>().sharedMaterial;
 
@@ -60,9 +64,17 @@ namespace NewHorizons.Utility.DebugUtilities
         private void Awake()
         {
             _rc = this.GetComponent<DebugRaycaster>();
+
+            _placePrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_PLACE_TEXT", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.G));
+            Locator.GetPromptManager().AddScreenPrompt(_placePrompt, PromptPosition.UpperRight, false);
         }
 
-        void Update()
+        private void OnDestroy()
+        {
+            Locator.GetPromptManager()?.RemoveScreenPrompt(_placePrompt, PromptPosition.UpperRight);
+        }
+
+        private void Update()
         {
             if (Keyboard.current[Key.G].wasReleasedThisFrame) // TODO: REMOVE THIS WHOLE IF STATEMENT, it's just for debug testing
             {
@@ -70,7 +82,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
 
                 DebugRaycastData data = _rc.Raycast();
-                
+
                 var sectorObject = data.hitBodyGameObject.GetComponentInChildren<Sector>()?.gameObject;
                 if (sectorObject == null) sectorObject = data.hitBodyGameObject.GetComponentInParent<Sector>()?.gameObject;
 
@@ -79,9 +91,9 @@ namespace NewHorizons.Utility.DebugUtilities
                 gameObject.transform.parent = sectorObject.transform;
                 gameObject.transform.localPosition = data.pos;
                 DebugPropPlacer.SetGameObjectRotation(gameObject, data, this.gameObject.transform.position);
-                
-                
-                
+
+
+
                 var rootArc = new SpiralTextArc();
                 rootArc.MakeChild();
                 spiralMesh.updateChildren();
@@ -98,6 +110,7 @@ namespace NewHorizons.Utility.DebugUtilities
             if (Keyboard.current[Key.Equals].wasReleasedThisFrame) { spiralMesh.a += 0.05f; spiralMesh.updateChildren(); }
             if (Keyboard.current[Key.Minus].wasReleasedThisFrame) { spiralMesh.a -= 0.05f; spiralMesh.updateChildren(); }
 
+            UpdatePromptVisibility();
             if (!Main.Debug) return;
             if (!active) return;
 
@@ -106,6 +119,11 @@ namespace NewHorizons.Utility.DebugUtilities
                 DebugRaycastData data = _rc.Raycast();
                 if (onRaycast != null) onRaycast.Invoke(data);
             }
+        }
+
+        public void UpdatePromptVisibility()
+        {
+            _placePrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug && active);
         }
     }
 }

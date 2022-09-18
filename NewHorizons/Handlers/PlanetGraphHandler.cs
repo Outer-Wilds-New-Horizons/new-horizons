@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Configs;
+using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
 using System.Collections;
@@ -42,7 +42,7 @@ namespace NewHorizons.Handlers
                 }
                 else
                 {
-                    Logger.LogError("There must be one and only one centerOfSolarSystem!");
+                    Logger.LogError($"There must be one and only one centerOfSolarSystem! Found [{centers.Length}]");
                 }
             }
         }
@@ -109,7 +109,7 @@ namespace NewHorizons.Handlers
             foreach (var node in nodeDict.Values.ToList())
             {
                 var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.name).ToList());
-                Logger.Log($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
+                Logger.LogVerbose($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
             }
 
             // Return all tree roots (no parents)

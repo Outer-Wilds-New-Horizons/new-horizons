@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+using HarmonyLib;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Patches
@@ -8,13 +9,13 @@ namespace NewHorizons.Patches
     {
         [HarmonyPostfix]
         [HarmonyPatch(typeof(MapController), nameof(MapController.Awake))]
-        public static void MapController_Awake(MapController __instance, ref float ____maxPanDistance, ref float ____maxZoomDistance, ref float ____minPitchAngle, ref float ____zoomSpeed)
+        public static void MapController_Awake(MapController __instance)
         {
-            ____maxPanDistance = Main.FurthestOrbit * 1.5f;
-            ____maxZoomDistance *= 6f;
-            ____minPitchAngle = -90f;
-            ____zoomSpeed *= 4f;
-            __instance._mapCamera.farClipPlane = Main.FurthestOrbit * 10f;
+            __instance._maxPanDistance = Mathf.Max(__instance._maxPanDistance, Main.FurthestOrbit * 1.5f);
+            __instance._maxZoomDistance *= 6f;
+            __instance._minPitchAngle = -90f;
+            __instance._zoomSpeed *= 4f;
+            __instance._mapCamera.farClipPlane = Mathf.Max(__instance._mapCamera.farClipPlane, Main.FurthestOrbit * 10f);
         }
 
         [HarmonyPostfix]
@@ -42,6 +43,13 @@ namespace NewHorizons.Patches
             catch { }
 
             return true;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ReferenceFrameTracker), nameof(ReferenceFrameTracker.UntargetReferenceFrame), new System.Type[] { typeof(bool) })]
+        public static bool ReferenceFrameTracker_UntargetReferenceFrame(ReferenceFrameTracker __instance, bool playAudio)
+        {
+            return __instance != null && __instance._hasTarget && __instance._currentReferenceFrame != null;
         }
     }
 }

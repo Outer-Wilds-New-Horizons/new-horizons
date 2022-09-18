@@ -1,5 +1,6 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Handlers;
+using NewHorizons.Utility;
 using UnityEngine;
 namespace NewHorizons.Patches
 {

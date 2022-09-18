@@ -45,22 +45,13 @@ namespace NewHorizons.Builder.Orbital
             {
                 orbitLine = orbitGO.AddComponent<NHOrbitLine>();
 
-                var a = astroObject.semiMajorAxis;
-                var e = astroObject.eccentricity;
-                var b = a * Mathf.Sqrt(1f - (e * e));
-                var l = astroObject.longitudeOfAscendingNode;
-                var p = astroObject.argumentOfPeriapsis;
-                var i = astroObject.inclination;
-
-                (orbitLine as NHOrbitLine).SemiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
-                (orbitLine as NHOrbitLine).SemiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
+                (orbitLine as NHOrbitLine).SetFromParameters(astroObject);
             }
 
             var color = Color.white;
             if (config.Orbit.tint != null) color = config.Orbit.tint.ToColor();
             else if (config.Star?.tint != null) color = config.Star.tint.ToColor();
             else if (config.Atmosphere?.clouds?.tint != null) color = config.Atmosphere.clouds.tint.ToColor();
-            else if (config.Singularity != null) color = new Color(1f, 0.5f, 1f);
             else if (config.Water != null) color = new Color(0.5f, 0.5f, 1f);
             else if (config.Lava != null) color = new Color(1f, 0.5f, 0.5f);
             else if (config.Atmosphere != null && config.Atmosphere.fogTint != null) color = config.Atmosphere.fogTint.ToColor();
@@ -78,6 +69,7 @@ namespace NewHorizons.Builder.Orbital
             */
 
             orbitLine._color = color;
+            lineRenderer.endColor = new Color(color.r, color.g, color.b, 0f);
 
             orbitLine._astroObject = astroObject;
             orbitLine._fade = fade;
@@ -86,7 +78,7 @@ namespace NewHorizons.Builder.Orbital
 
             orbitLine._numVerts = (int)Mathf.Clamp(config.Orbit.semiMajorAxis / 1000f, numVerts, 4096);
 
-            Main.Instance.ModHelper.Events.Unity.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
+            Delay.FireOnNextUpdate(orbitLine.InitializeLineRenderer);
 
             return orbitLine;
         }

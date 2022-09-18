@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Utility
@@ -61,14 +61,14 @@ namespace NewHorizons.Utility
         {
             var key = ao._name == AstroObject.Name.CustomString ? ao.GetCustomName() : ao._name.ToString();
 
-            if (_customAstroObjectDictionary.Keys.Contains(key))
+            if (_customAstroObjectDictionary.ContainsKey(key))
             {
                 Logger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary[key] = ao;
             }
             else
             {
-                Logger.Log($"Registering [{ao.name}] as [{key}]");
+                Logger.LogVerbose($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
             }
         }
@@ -89,6 +89,16 @@ namespace NewHorizons.Utility
             return _customAstroObjectDictionary.Values.Where(x => x._primaryBody == primary).Select(x => x.gameObject).ToArray();
         }
 
+        public static AstroObject[] GetAncestors(AstroObject astroObject)
+        {
+            List<AstroObject> ancestors = new List<AstroObject>();
+            for (AstroObject primaryBody = astroObject._primaryBody; primaryBody != null && !ancestors.Contains(primaryBody); primaryBody = primaryBody._primaryBody)
+            {
+                ancestors.Add(primaryBody);
+            }
+            return ancestors.ToArray();
+        }
+
         public static GameObject[] GetChildren(AstroObject primary)
         {
             if (primary == null) return new GameObject[0];
@@ -97,37 +107,58 @@ namespace NewHorizons.Utility
             switch (primary._name)
             {
                 case AstroObject.Name.TowerTwin:
-                    otherChildren.Add(GameObject.Find("TimeLoopRing_Body"));
+                    otherChildren.Add(SearchUtilities.Find("TimeLoopRing_Body"));
                     break;
                 case AstroObject.Name.ProbeCannon:
-                    otherChildren.Add(GameObject.Find("NomaiProbe_Body"));
-                    otherChildren.Add(GameObject.Find("CannonMuzzle_Body"));
-                    otherChildren.Add(GameObject.Find("FakeCannonMuzzle_Body (1)"));
-                    otherChildren.Add(GameObject.Find("CannonBarrel_Body"));
-                    otherChildren.Add(GameObject.Find("FakeCannonBarrel_Body (1)"));
-                    otherChildren.Add(GameObject.Find("Debris_Body (1)"));
+                    otherChildren.Add(SearchUtilities.Find("NomaiProbe_Body"));
+                    otherChildren.Add(SearchUtilities.Find("CannonMuzzle_Body"));
+                    otherChildren.Add(SearchUtilities.Find("FakeCannonMuzzle_Body (1)"));
+                    otherChildren.Add(SearchUtilities.Find("CannonBarrel_Body"));
+                    otherChildren.Add(SearchUtilities.Find("FakeCannonBarrel_Body (1)"));
+                    otherChildren.Add(SearchUtilities.Find("Debris_Body (1)"));
                     break;
                 case AstroObject.Name.GiantsDeep:
-                    otherChildren.Add(GameObject.Find("BrambleIsland_Body"));
-                    otherChildren.Add(GameObject.Find("GabbroIsland_Body"));
-                    otherChildren.Add(GameObject.Find("QuantumIsland_Body"));
-                    otherChildren.Add(GameObject.Find("StatueIsland_Body"));
-                    otherChildren.Add(GameObject.Find("ConstructionYardIsland_Body"));
-                    otherChildren.Add(GameObject.Find("GabbroShip_Body"));
+                    otherChildren.Add(SearchUtilities.Find("BrambleIsland_Body"));
+                    otherChildren.Add(SearchUtilities.Find("GabbroIsland_Body"));
+                    otherChildren.Add(SearchUtilities.Find("QuantumIsland_Body"));
+                    otherChildren.Add(SearchUtilities.Find("StatueIsland_Body"));
+                    otherChildren.Add(SearchUtilities.Find("ConstructionYardIsland_Body"));
+                    otherChildren.Add(SearchUtilities.Find("GabbroShip_Body"));
                     break;
                 case AstroObject.Name.WhiteHole:
-                    otherChildren.Add(GameObject.Find("WhiteholeStation_Body"));
-                    otherChildren.Add(GameObject.Find("WhiteholeStationSuperstructure_Body"));
+                    otherChildren.Add(SearchUtilities.Find("WhiteholeStation_Body"));
+                    otherChildren.Add(SearchUtilities.Find("WhiteholeStationSuperstructure_Body"));
                     break;
                 case AstroObject.Name.TimberHearth:
-                    otherChildren.Add(GameObject.Find("MiningRig_Body"));
-                    otherChildren.Add(GameObject.Find("Ship_Body"));
+                    otherChildren.Add(SearchUtilities.Find("MiningRig_Body"));
+                    otherChildren.Add(SearchUtilities.Find("Ship_Body"));
+                    otherChildren.Add(SearchUtilities.Find("ModelRocket_Body"));
                     break;
                 case AstroObject.Name.DreamWorld:
-                    otherChildren.Add(GameObject.Find("BackRaft_Body"));
-                    otherChildren.Add(GameObject.Find("SealRaft_Body"));
+                    otherChildren.Add(SearchUtilities.Find("BackRaft_Body"));
+                    otherChildren.Add(SearchUtilities.Find("SealRaft_Body"));
                     break;
-                // For some dumb reason the sun station doesn't use AstroObject.Name.SunStation
+                case AstroObject.Name.MapSatellite:
+                    otherChildren.Add(SearchUtilities.Find("HearthianRecorder_Body"));
+                    break;
+                case AstroObject.Name.DarkBramble:
+                    otherChildren.Add(SearchUtilities.Find("DB_ClusterDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_VesselDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_PioneerDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_HubDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_ExitOnlyDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_EscapePodDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_AnglerNestDimension_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_SmallNest_Body"));
+                    otherChildren.Add(SearchUtilities.Find("DB_Elsinore_Body"));
+                    break;
+                case AstroObject.Name.SunStation:
+                    // there are multiple debris with the same name
+                    otherChildren.AddRange(Object.FindObjectsOfType<AstroObject>()
+                        .Select(x => x.gameObject)
+                        .Where(x => x.name == "SS_Debris_Body"));
+                    break;
+                // Just in case GetChildren runs before sun station's name is changed
                 case AstroObject.Name.CustomString:
                     if (primary._customName.Equals("Sun Station"))
                     {

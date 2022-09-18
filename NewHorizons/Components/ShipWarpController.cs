@@ -1,4 +1,5 @@
-﻿using NewHorizons.Builder.General;
+using NewHorizons.Builder.General;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components
@@ -26,8 +27,8 @@ namespace NewHorizons.Components
 
         public void Init()
         {
-            _blackHolePrefab = GameObject.Find(_blackHolePath);
-            _whiteHolePrefab = GameObject.Find(_whiteHolePath);
+            _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
+            _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
         }
 
         public void Start()
@@ -37,7 +38,12 @@ namespace NewHorizons.Components
 
             _isWarpingIn = false;
 
-            _oneShotSource = base.gameObject.AddComponent<OWAudioSource>();
+            var audioObject = new GameObject("WarpOneShot");
+            audioObject.transform.parent = transform;
+            audioObject.SetActive(false);
+            _oneShotSource = audioObject.AddComponent<OWAudioSource>();
+            _oneShotSource._track = OWAudioMixer.TrackName.Ship;
+            audioObject.SetActive(true);
 
             GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
@@ -97,7 +103,7 @@ namespace NewHorizons.Components
 
         public void WarpIn(bool wearingSuit)
         {
-            Logger.Log("Starting warp-in");
+            Logger.LogVerbose("Starting warp-in");
             // Trying really hard to stop the player from dying while warping in
             _impactDeathSpeed = Locator.GetDeathManager()._impactDeathSpeed;
             Locator.GetDeathManager()._impactDeathSpeed = Mathf.Infinity;
@@ -110,7 +116,7 @@ namespace NewHorizons.Components
 
         public void WarpOut()
         {
-            Logger.Log("Starting warp-out");
+            Logger.LogVerbose("Starting warp-out");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
             _blackhole.Create();
         }
@@ -119,7 +125,7 @@ namespace NewHorizons.Components
         {
             if (_isWarpingIn && LateInitializerManager.isDoneInitializing)
             {
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => StartWarpInEffect(), 1);
+                Delay.FireInNUpdates(() => StartWarpInEffect(), 1);
                 _isWarpingIn = false;
             }
 
@@ -127,7 +133,7 @@ namespace NewHorizons.Components
             {
                 if (Locator.GetPlayerTransform().TryGetComponent<PlayerResources>(out var resources) && resources._currentHealth < 100f)
                 {
-                    Logger.Log("Player died in a warp drive accident, reviving them");
+                    Logger.LogVerbose("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
                     resources._currentHealth = 100f;
                     if (!PlayerState.AtFlightConsole()) TeleportToShip();
@@ -137,7 +143,7 @@ namespace NewHorizons.Components
             // Idk whats making this work but now it works and idc
             if (_waitingToBeSeated && PlayerState.IsInsideShip() && _eyesOpen)
             {
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => FinishWarpIn(), 1);
+                Delay.FireInNUpdates(() => FinishWarpIn(), 1);
                 _waitingToBeSeated = false;
             }
         }
@@ -149,7 +155,7 @@ namespace NewHorizons.Components
 
         private void StartWarpInEffect()
         {
-            Logger.Log("Starting warp-in effect");
+            Logger.LogVerbose("Starting warp-in effect");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
             if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
@@ -169,10 +175,10 @@ namespace NewHorizons.Components
 
         public void FinishWarpIn()
         {
-            Logger.Log("Finishing warp");
+            Logger.LogVerbose("Finishing warp");
             Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
             _waitingToBeSeated = false;
-            Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => _whitehole.Collapse(), 30);
+            Delay.FireInNUpdates(() => _whitehole.Collapse(), 30);
 
             var resources = Locator.GetPlayerTransform().GetComponent<PlayerResources>();
 
@@ -183,7 +189,7 @@ namespace NewHorizons.Components
             // For some reason warping into the ship makes you suffocate while in the ship
             if (_wearingSuit) resources.OnSuitUp();
             var o2Volume = Locator.GetShipBody().GetComponent<OxygenVolume>();
-            var atmoVolume = GameObject.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
+            var atmoVolume = SearchUtilities.Find("Ship_Body/Volumes/ShipAtmosphereVolume").GetComponent<SimpleFluidVolume>();
 
             resources._cameraFluidDetector.AddVolume(atmoVolume);
             resources._cameraFluidDetector.OnVolumeAdded(atmoVolume);

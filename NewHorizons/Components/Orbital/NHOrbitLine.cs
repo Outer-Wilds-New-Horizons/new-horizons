@@ -1,19 +1,16 @@
-﻿using System;
+using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Components.Orbital
 {
     public class NHOrbitLine : OrbitLine
     {
-        public Vector3 SemiMajorAxis { get; set; }
-        public Vector3 SemiMinorAxis { get; set; }
+        private Vector3 _semiMajorAxis;
+        private Vector3 _semiMinorAxis;
 
         private Vector3 _upAxis;
         private float _fociDistance;
         private Vector3[] _verts;
-
-        private float semiMajorAxis;
-        private float semiMinorAxis;
 
         public override void InitializeLineRenderer()
         {
@@ -36,10 +33,10 @@ namespace NewHorizons.Components.Orbital
         {
             base.Start();
 
-            var a = SemiMajorAxis.magnitude;
-            var b = SemiMinorAxis.magnitude;
+            var a = _semiMajorAxis.magnitude;
+            var b = _semiMinorAxis.magnitude;
 
-            _upAxis = Vector3.Cross(SemiMajorAxis.normalized, SemiMinorAxis.normalized);
+            _upAxis = Vector3.Cross(_semiMajorAxis.normalized, _semiMinorAxis.normalized);
 
             _fociDistance = Mathf.Sqrt(a * a - b * b);
             if (float.IsNaN(_fociDistance)) _fociDistance = 0f;
@@ -47,9 +44,6 @@ namespace NewHorizons.Components.Orbital
             _verts = new Vector3[this._numVerts];
 
             transform.localRotation = Quaternion.Euler(270, 90, 0);
-
-            semiMajorAxis = SemiMajorAxis.magnitude;
-            semiMinorAxis = SemiMinorAxis.magnitude;
 
             base.enabled = false;
         }
@@ -61,28 +55,28 @@ namespace NewHorizons.Components.Orbital
                 AstroObject primary = _astroObject?.GetPrimaryBody();
 
                 // If it has nothing to orbit then why is this here
-                if (primary == null)
+                if (primary == null || !primary.gameObject.activeSelf)
                 {
                     base.enabled = false;
                     return;
                 }
 
-                Vector3 origin = primary.transform.position + SemiMajorAxis.normalized * _fociDistance;
+                Vector3 origin = primary.transform.position + _semiMajorAxis.normalized * _fociDistance;
 
-                float num = CalcProjectedAngleToCenter(origin, SemiMajorAxis, SemiMinorAxis, _astroObject.transform.position);
+                float num = CalcProjectedAngleToCenter(origin, _semiMajorAxis, _semiMinorAxis, _astroObject.transform.position);
 
                 for (int i = 0; i < _numVerts; i++)
                 {
                     var stepSize = 2f * Mathf.PI / (float)(_numVerts - 1);
                     float f = num + stepSize * i;
-                    _verts[i] = SemiMajorAxis * Mathf.Cos(f) + SemiMinorAxis * Mathf.Sin(f);
+                    _verts[i] = _semiMajorAxis * Mathf.Cos(f) + _semiMinorAxis * Mathf.Sin(f);
                 }
                 _lineRenderer.SetPositions(_verts);
 
                 transform.position = origin;
                 transform.rotation = Quaternion.Euler(0, 0, 0); //Quaternion.LookRotation(-SemiMajorAxis, _upAxis);
 
-                float num2 = DistanceToEllipticalOrbitLine(origin, SemiMajorAxis, SemiMinorAxis, _upAxis, Locator.GetActiveCamera().transform.position);
+                float num2 = DistanceToEllipticalOrbitLine(origin, _semiMajorAxis, _semiMinorAxis, _upAxis, Locator.GetActiveCamera().transform.position);
                 float widthMultiplier = Mathf.Min(num2 * (_lineWidth / 1000f), _maxLineWidth);
                 float num3 = _fade ? (1f - Mathf.Clamp01((num2 - _fadeStartDist) / (_fadeEndDist - _fadeStartDist))) : 1f;
 
@@ -91,9 +85,22 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}] : {ex.Message}, {ex.StackTrace}");
+                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
+        }
+
+        public void SetFromParameters(IOrbitalParameters parameters)
+        {
+            var a = parameters.semiMajorAxis;
+            var e = parameters.eccentricity;
+            var b = a * Mathf.Sqrt(1f - (e * e));
+            var l = parameters.longitudeOfAscendingNode;
+            var p = parameters.argumentOfPeriapsis;
+            var i = parameters.inclination;
+
+            _semiMajorAxis = a * OrbitalParameters.Rotate(Vector3.left, l, i, p);
+            _semiMinorAxis = b * OrbitalParameters.Rotate(Vector3.forward, l, i, p);
         }
 
         private float CalcProjectedAngleToCenter(Vector3 foci, Vector3 semiMajorAxis, Vector3 semiMinorAxis, Vector3 point)
@@ -107,7 +114,7 @@ namespace NewHorizons.Components.Orbital
         private float DistanceToEllipticalOrbitLine(Vector3 foci, Vector3 semiMajorAxis, Vector3 semiMinorAxis, Vector3 upAxis, Vector3 point)
         {
             float f = CalcProjectedAngleToCenter(foci, semiMajorAxis, semiMinorAxis, point);
-            Vector3 b = foci + SemiMajorAxis * Mathf.Cos(f) + SemiMinorAxis * Mathf.Sin(f);
+            Vector3 b = foci + _semiMajorAxis * Mathf.Cos(f) + _semiMinorAxis * Mathf.Sin(f);
             return Vector3.Distance(point, b);
         }
     }

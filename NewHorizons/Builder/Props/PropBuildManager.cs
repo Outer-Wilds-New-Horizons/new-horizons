@@ -1,7 +1,9 @@
-﻿using NewHorizons.Builder.ShipLog;
+using NewHorizons.Builder.Body;
+using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
 using OWML.Common;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
@@ -18,7 +20,7 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make planet scatter for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                    Logger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
                 }
             }
             if (config.Props.details != null)
@@ -27,11 +29,12 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DetailBuilder.Make(go, sector, config, mod, detail);
+                        var detailGO = DetailBuilder.Make(go, sector, mod, detail);
+                        DetailBuilder.RegisterDetailInfo(detail, detailGO);
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -45,7 +48,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make geyser for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make geyser for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -59,7 +62,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make raft for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make raft for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -73,7 +76,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make tornado for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make tornado for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -87,7 +90,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make volcano for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make volcano for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -102,21 +105,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
-                    }
-                }
-            }
-            if (config.Props.reveal != null)
-            {
-                foreach (var revealInfo in config.Props.reveal)
-                {
-                    try
-                    {
-                        RevealBuilder.Make(go, sector, revealInfo, mod);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -130,7 +119,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -144,7 +133,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
 
                 }
@@ -159,7 +148,69 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make slide reel for [{go.name}] : {ex.Message}, {ex.StackTrace}");
+                        Logger.LogError($"Couldn't make slide reel for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.quantumGroups != null)
+            {
+                Dictionary<string, List<GameObject>> propsByGroup = new Dictionary<string, List<GameObject>>();
+                foreach (var detail in config.Props.details)
+                {
+                    if (detail.quantumGroupID != null)
+                    {
+                        if (!propsByGroup.ContainsKey(detail.quantumGroupID)) propsByGroup[detail.quantumGroupID] = new List<GameObject>();
+                        propsByGroup[detail.quantumGroupID].Add(DetailBuilder.GetSpawnedGameObjectByDetailInfo(detail));
+                    }
+                }
+
+                foreach (var quantumGroup in config.Props.quantumGroups)
+                {
+                    if (!propsByGroup.ContainsKey(quantumGroup.id)) continue;
+                    var propsInGroup = propsByGroup[quantumGroup.id];
+
+                    try
+                    {
+                        QuantumBuilder.Make(go, sector, config, mod, quantumGroup, propsInGroup.ToArray());
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.singularities != null)
+            {
+                foreach (var singularity in config.Props.singularities)
+                {
+                    try
+                    {
+                        SingularityBuilder.Make(go, sector, go.GetComponent<OWRigidbody>(), config, singularity);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}]::\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.signals != null)
+            {
+                foreach (var signal in config.Props.signals)
+                {
+                    SignalBuilder.Make(go, sector, signal, mod);
+                }
+            }
+            if (config.Props.remotes != null)
+            {
+                foreach (var remoteInfo in config.Props.remotes)
+                {
+                    try
+                    {
+                        RemoteBuilder.Make(go, sector, remoteInfo, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

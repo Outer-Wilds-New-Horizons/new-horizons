@@ -79,7 +79,10 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void OnBeginLoadMod(DebugMenu debugMenu) {}
 
-        internal override void GainActive() {} // intentionally blank. do not set `DebugNomaiTextPlacer.active = true;` here
+        /// <summary>
+        /// intentionally blank. do not set <see cref="DebugNomaiTextPlacer.active"/> to <see langword="true"/> here
+        /// </summary>
+        internal override void GainActive() {}
 
         internal override void LoseActive()
         {
@@ -101,7 +104,7 @@ namespace NewHorizons.Utility.DebugMenu
                     collapsed = true
                 };
 
-                Logger.Log("adding go " + conversationMetadata.conversationGo);
+                Logger.LogVerbose("Adding conversation Game Object " + conversationMetadata.conversationGo);
 
                 conversations.Add(conversationMetadata);
 
@@ -122,11 +125,14 @@ namespace NewHorizons.Utility.DebugMenu
                         id = id
                     };
                     
-                    string regex = @"Arc \d+ - Child of (\d*)"; // $"Arc {i} - Child of {parentID}";
-                    var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
-                    metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
-                    
-                    Logger.Log("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
+                    if (metadata.spiralGo != null)
+                    {
+                        string regex = @"Arc \d+ - Child of (\d*)"; // $"Arc {i} - Child of {parentID}";
+                        var parentID = (new Regex(regex)).Matches(metadata.spiralGo.name)[0].Groups[1].Value;
+                        metadata.parentID = parentID == "" ? -1 : int.Parse(parentID);
+
+                        Logger.LogVerbose("Parent id for '" + metadata.spiralGo.name + "' : " + parentID);
+                    }
 
                     conversationMetadata.spirals.Add(metadata);
                 }
@@ -174,7 +180,6 @@ namespace NewHorizons.Utility.DebugMenu
         {
             conversationsScrollPosition = GUILayout.BeginScrollView(conversationsScrollPosition);
             
-            
             GUILayout.BeginHorizontal(); GUILayout.Label("numSkeletonPoints: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.numSkeletonPoints = int.Parse(GUILayout.TextField(_dnp.spiralMesh.numSkeletonPoints+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("innerWidth: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.innerWidth = float.Parse(GUILayout.TextField(_dnp.spiralMesh.innerWidth+"")); GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); GUILayout.Label("outerWidth: ", GUILayout.ExpandWidth(false)); _dnp.spiralMesh.outerWidth = float.Parse(GUILayout.TextField(_dnp.spiralMesh.outerWidth+"")); GUILayout.EndHorizontal();
@@ -196,7 +201,6 @@ namespace NewHorizons.Utility.DebugMenu
             
             if (GUILayout.Button("Regenerate")) _dnp.spiralMesh.updateChildren();
             
-
             for(int i = 0; i < conversations.Count(); i++)
             {
                 ConversationMetadata conversationMeta = conversations[i];
@@ -210,7 +214,7 @@ namespace NewHorizons.Utility.DebugMenu
                         if (GUILayout.Button(arrow + conversationMeta.planetConfig.name + " - " + i, menu._submenuStyle)) 
                         {
                             conversationMeta.collapsed = !conversationMeta.collapsed;
-                            Logger.Log("BUTTON " + i);
+                            Logger.LogVerbose("BUTTON " + i);
                         }
 
                         if (!conversationMeta.collapsed)
@@ -224,7 +228,7 @@ namespace NewHorizons.Utility.DebugMenu
                                 //conversationMeta.conversation.type == PropModule.NomaiTextInfo.NomaiTextType.Wall &&
                                 GUILayout.Button("Place conversation with G")
                             ) {
-                                Logger.Log(conversationMeta.conversationGo+" 0");
+                                Logger.LogVerbose(conversationMeta.conversationGo+" 0");
                                 DebugNomaiTextPlacer.active = true;
                                 _dnp.onRaycast = (DebugRaycastData data) =>
                                 {
@@ -239,7 +243,7 @@ namespace NewHorizons.Utility.DebugMenu
                                         conversationMeta.conversation.rotation = null;
                                         UpdateConversationTransform(conversationMeta, sectorObject);
                                     }
-                                    else
+                                    else if (conversationMeta.conversationGo != null)
                                     {
                                         conversationMeta.conversationGo.transform.localPosition = data.pos;
                                         DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
@@ -268,26 +272,31 @@ namespace NewHorizons.Utility.DebugMenu
                                         GUILayout.Label("Spiral");
 
                                         // TODO: implement disabled feature: change spiral type and variation
-                                        //GUILayout.Label("Type");
-                                        //    GUILayout.BeginHorizontal();
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
-                                        //    if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
-                                        //    if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
-                                        //    GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
-                                        //    if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
-                                        //    GUI.enabled = true;
-                                        //    GUILayout.EndHorizontal();
+                                        GUILayout.Label("Type");
+                                            GUILayout.BeginHorizontal();
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Adult;
+                                            if (GUILayout.Button("Adult")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Adult; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Child;
+                                            if (GUILayout.Button("Child")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Child; changed = true; }
+                                            GUI.enabled = spiralMeta.spiral.type != NomaiTextArcInfo.NomaiTextArcType.Stranger;
+                                            if (GUILayout.Button("Stranger")) { spiralMeta.spiral.type = NomaiTextArcInfo.NomaiTextArcType.Stranger; changed = true; }
+                                            GUI.enabled = true;
+                                            GUILayout.EndHorizontal();
                                         
-                                        //GUILayout.Label("Variation");
-                                        //    GUILayout.BeginHorizontal();
-                                        //    var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
-                                        //    if (GUILayout.Button("Reroll variation"))
-                                        //    {
-                                        //        spiralMeta.spiral.variation = UnityEngine.Random.Range(0, varietyCount);
-                                        //    }
-                                        //    GUI.enabled = true;
-                                        //    GUILayout.EndHorizontal();
+                                        GUILayout.Label("Variation");
+                                            GUILayout.BeginHorizontal();
+                                            var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
+                                            //var newVariation = int.Parse(GUILayout.TextField(spiralMeta.spiral.variation+""));
+                                            //newVariation = Mathf.Min(Mathf.Max(0, newVariation), varietyCount);
+                                            //if (newVariation != spiralMeta.spiral.variation) changed = true;
+                                            //spiralMeta.spiral.variation = newVariation;
+                                            GUI.enabled = spiralMeta.spiral.variation > 0;
+                                            if (GUILayout.Button("-", GUILayout.ExpandWidth(false))) { spiralMeta.spiral.variation--; changed=true; } 
+                                            GUILayout.Label(spiralMeta.spiral.variation+"", GUILayout.ExpandWidth(false));
+                                            GUI.enabled = spiralMeta.spiral.variation < varietyCount-1;
+                                            if (GUILayout.Button("+", GUILayout.ExpandWidth(false))) { spiralMeta.spiral.variation++; changed=true; } 
+
+                                            GUILayout.EndHorizontal();
         
 
                                         // TODO: debug disabled feature: place spiral point on parent
@@ -369,9 +378,37 @@ namespace NewHorizons.Utility.DebugMenu
                                     // cache required stuff, destroy spiralMeta.go, call NomaiTextBuilder.MakeArc using spiralMeta.spiral and cached stuff
                                     // PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, int i
                                     var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
-                                    var textEntryId = spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._entryID;
+                                    var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
+                                    var oldTextLineComponent = spiralMeta.spiralGo.GetComponent<NomaiTextLine>();
+                                    var indexInParent = 0;
+                                    for (indexInParent = 0; indexInParent < wallTextComponent._textLines.Length; indexInParent++) if (oldTextLineComponent == wallTextComponent._textLines[indexInParent]) break;
+                                    var textEntryId = oldTextLineComponent._entryID;
                                     GameObject.Destroy(spiralMeta.spiralGo);
                                     spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId);
+                                    wallTextComponent._textLines[indexInParent] = spiralMeta.spiralGo.GetComponent<NomaiTextLine>();
+
+                                    spiralMeta.spiralGo.name = "Brandnewspiral";
+
+                                    var s = AddDebugShape.AddSphere(wallTextComponent._sector.gameObject, 0.1f, Color.green);
+                                    s.transform.localPosition = wallTextComponent._sector.transform.InverseTransformPoint(spiralMeta.spiralGo.transform.position);                        
+
+                                    //var conversationZone = spiralMeta.spiralGo.transform.parent.gameObject;
+                                    //var wallTextComponent = conversationZone.GetComponent<NomaiWallText>();
+                                    //foreach(NomaiTextLine l in wallTextComponent._textLines) GameObject.Destroy(l.gameObject);
+                                    //NomaiTextBuilder.RefreshArcs(wallTextComponent, conversationZone, spiralMeta.conversation);
+                                    
+                                    foreach(NomaiTextLine line in wallTextComponent._textLines)
+                                    {
+                                        line.GetComponent<NomaiTextLine>()._active = true;
+                                        line.GetComponent<NomaiTextLine>().SetTranslatedState(true);
+                                        line.GetComponent<NomaiTextLine>().SetTranslatedState(false);
+                                    }
+
+                                    //spiralMeta.spiralGo.GetComponent<NomaiTextLine>()._active = true;
+                                    //spiralMeta.spiralGo.GetComponent<NomaiTextLine>().SetTranslatedState(true);
+                                    ////wallTextComponent.ShowImmediate();
+
+                                    Locator.GetPlayerBody().gameObject.GetComponentInChildren<DebugArrow>().target = spiralMeta.spiralGo.transform;
                                 }
 
                                 GUILayout.Space(10);
@@ -410,7 +447,7 @@ namespace NewHorizons.Utility.DebugMenu
             SpiralMetadata parentSpiralMeta = GetParent(spiralMetadata);
             var parentPoints = parentSpiralMeta.spiralGo.GetComponent<NomaiTextLine>()._points;
             
-            Logger.Log("got parent and parent points");
+            Logger.Log("Got parent and parent points");
 
             var prevPointOnParent = parentPoints[Mathf.Max(0,                      spiralMetadata.pointOnParent-1)];
             var nextPointOnParent = parentPoints[Mathf.Min(parentPoints.Count()-1, spiralMetadata.pointOnParent+1)];
@@ -419,14 +456,14 @@ namespace NewHorizons.Utility.DebugMenu
             var newRotationRelativeToParent = parentTangent + 90;
             spiralMetadata.spiral.zRotation = parentSpiralMeta.spiral.zRotation + newRotationRelativeToParent;
 
-            Logger.Log("got zRotation: " + newRotationRelativeToParent + " -=- " + spiralMetadata.spiral.zRotation);
+            Logger.Log("Got zRotation: " + newRotationRelativeToParent + " -=- " + spiralMetadata.spiral.zRotation);
 
             var pointOnParent = parentPoints[spiralMetadata.pointOnParent];
             var selfBasePoint = spiralMetadata.spiralGo.GetComponent<NomaiTextLine>()._points[0];
             var newPointRelativeToParent = -selfBasePoint + pointOnParent;
             spiralMetadata.spiral.position = parentSpiralMeta.spiral.position + new Vector2(newPointRelativeToParent.x, newPointRelativeToParent.y);
 
-            Logger.Log("got position " + newPointRelativeToParent + " -=- " + spiralMetadata.spiral.position);
+            Logger.Log("Got position " + newPointRelativeToParent + " -=- " + spiralMetadata.spiral.position);
 
             spiralMetadata.spiralGo.transform.localPosition = new Vector3(spiralMetadata.spiral.position.x, spiralMetadata.spiral.position.y, 0);
             spiralMetadata.spiralGo.transform.localEulerAngles = new Vector3(0, 0, spiralMetadata.spiral.zRotation);
@@ -437,9 +474,9 @@ namespace NewHorizons.Utility.DebugMenu
 
         private void UpdateChildrenLocations(SpiralMetadata parentSprialMetadata)
         {
-            Logger.Log("updating children");
+            Logger.Log("Updating children");
             ConversationMetadata convoMeta = conversations.Where(m => m.conversation == parentSprialMetadata.conversation).First();
-            Logger.Log("got convo meta");
+            Logger.Log("Got conversation metadata");
 
             convoMeta.spirals
                 .Where(spiralMeta => spiralMeta.parentID == parentSprialMetadata.id && spiralMeta.id != parentSprialMetadata.id)
@@ -455,26 +492,24 @@ namespace NewHorizons.Utility.DebugMenu
         {
             switch(type)
             {
-                case NomaiTextArcInfo.NomaiTextArcType.Stranger: return NomaiTextBuilder._ghostArcPrefabs.Count();
-                case NomaiTextArcInfo.NomaiTextArcType.Child: return NomaiTextBuilder._childArcPrefabs.Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger: 
+                    return NomaiTextBuilder.GetGhostArcPrefabs().Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Child: 
+                    return NomaiTextBuilder.GetChildArcPrefabs().Count();
                 default:
-                case NomaiTextArcInfo.NomaiTextArcType.Adult: return NomaiTextBuilder._arcPrefabs.Count();
+                case NomaiTextArcInfo.NomaiTextArcType.Adult: 
+                    return NomaiTextBuilder.GetArcPrefabs().Count();
             }
-            //return 0;
         }
 
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
         {
             var nomaiWallTextObj = conversationMetadata.conversationGo;
+            if (nomaiWallTextObj == null) return;
+
             var planetGO = sectorParent;
             var info = conversationMetadata.conversation;
         
-            Logger.Log(nomaiWallTextObj + " 1");
-            Logger.Log(nomaiWallTextObj?.transform + " 2");
-            Logger.Log(planetGO + " 3");
-            Logger.Log(planetGO?.transform + " 4");
-            Logger.Log(info + " 5");
-            Logger.Log(info?.position + " 6");
             nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
             if (info.normal != null)
             {
@@ -495,6 +530,7 @@ namespace NewHorizons.Utility.DebugMenu
         {
             conversations.ForEach(metadata =>
             {
+                if (metadata.conversationGo == null) return;
                 metadata.conversation.position = metadata.conversationGo.transform.localPosition;
                 metadata.conversation.rotation = metadata.conversationGo.transform.localEulerAngles;           
             });

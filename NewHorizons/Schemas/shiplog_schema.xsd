@@ -67,7 +67,7 @@
             <xs:element name="IgnoreMoreToExploreCondition" type="xs:string" minOccurs="0">
                 <xs:annotation>
                     <xs:documentation>
-                        Ignore more to explore if a fact is known
+                        Ignore more to explore if a persistent condition is `true`
                     </xs:documentation>
                 </xs:annotation>
             </xs:element>

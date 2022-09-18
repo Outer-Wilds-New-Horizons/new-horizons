@@ -1,5 +1,6 @@
-﻿using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -10,6 +11,7 @@ namespace NewHorizons.Builder.General
         {
             NHAstroObject astroObject = body.AddComponent<NHAstroObject>();
             astroObject.HideDisplayName = !config.Base.hasMapMarker;
+            astroObject.invulnerableToSun = config.Base.invulnerableToSun;
 
             if (config.Orbit != null) astroObject.SetOrbitalParametersFromConfig(config.Orbit);
 
@@ -34,24 +36,30 @@ namespace NewHorizons.Builder.General
 
             if (config.Orbit.isTidallyLocked)
             {
+                var alignmentAxis = config.Orbit.alignmentAxis ?? new Vector3(0, -1, 0);
+
+                // Start it off facing the right way
+                var facing = body.transform.TransformDirection(alignmentAxis);
+                body.transform.rotation = Quaternion.FromToRotation(facing, alignmentAxis) * body.transform.rotation;
+
                 var alignment = body.AddComponent<AlignWithTargetBody>();
                 alignment.SetTargetBody(primaryBody?.GetAttachedOWRigidbody());
-                alignment._usePhysicsToRotate = true;
-                if (config.Orbit.alignmentAxis == null)
-                {
-                    alignment._localAlignmentAxis = new Vector3(0, -1, 0);
-                }
-                else
-                {
-                    alignment._localAlignmentAxis = config.Orbit.alignmentAxis;
-                }
+                alignment._usePhysicsToRotate = false;
+                alignment._localAlignmentAxis = alignmentAxis;
+
+                // Static bodies won't update rotation with physics for some reason
+                // Have to set it next tick else it flings the player into deep space on spawn (#171)
+                if (!config.Orbit.isStatic) Delay.FireOnNextUpdate(() => alignment._usePhysicsToRotate = true);
             }
 
             if (config.Base.centerOfSolarSystem)
             {
                 Logger.Log($"Setting center of universe to {config.name}");
-                // By the time it runs we'll be able to get the OWRB with the method
-                Main.Instance.ModHelper.Events.Unity.FireInNUpdates(() => Locator.GetCenterOfTheUniverse()._staticReferenceFrame = astroObject.GetAttachedOWRigidbody(), 2);
+
+                Delay.RunWhen(
+                    () => Locator._centerOfTheUniverse != null,
+                    () => Locator._centerOfTheUniverse._staticReferenceFrame = astroObject.GetComponent<OWRigidbody>()
+                    );
             }
 
             return astroObject;

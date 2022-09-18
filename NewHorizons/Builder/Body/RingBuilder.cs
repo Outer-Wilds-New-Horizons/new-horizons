@@ -1,4 +1,4 @@
-﻿using NewHorizons.Components;
+using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components.Volumes;
 
 namespace NewHorizons.Builder.Body
 {
@@ -45,20 +45,11 @@ namespace NewHorizons.Builder.Body
             var trigger = ringVolume.AddComponent<OWTriggerVolume>();
             trigger._shape = ringShape;
 
-            var sfv = ringVolume.AddComponent<SimpleFluidVolume>();
-            var fluidType = FluidVolume.Type.NONE;
-
-            try
-            {
-                fluidType = (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(CloudFluidType), ring.fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{ring.fluidType}]: {ex.Message}, {ex.StackTrace}");
-            }
-
-            sfv._fluidType = fluidType;
+            var sfv = ringVolume.AddComponent<RingFluidVolume>();
+            sfv._fluidType = ring.fluidType.ConvertToOW();
             sfv._density = 5f;
+
+            if (ringGO.TryGetComponent<RingOpacityController>(out var ringOC)) ringOC.SetRingFluidVolume(sfv);
 
             ringVolume.SetActive(true);
 
@@ -79,11 +70,11 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Ring texture, {e.Message}, {e.StackTrace}");
+                Logger.LogError($"Couldn't load Ring texture:\n{e}");
                 return null;
             }
 
-            var ringGO = new GameObject("Ring");
+            var ringGO = new GameObject(!string.IsNullOrEmpty(ring.rename) ? ring.rename : "Ring");
             ringGO.transform.parent = sector?.transform ?? rootObject.transform;
             ringGO.transform.position = rootObject.transform.position;
             ringGO.transform.rotation = rootObject.transform.rotation;
@@ -109,6 +100,10 @@ namespace NewHorizons.Builder.Body
             ringMR.receiveShadows = !ring.unlit;
 
             mat.mainTexture = texture;
+
+            // Black holes vanish behind rings
+            // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
+            // Vanishing black holes is the lesser bug
             mat.renderQueue = 3000;
             ringMR.material = mat;
 
@@ -123,15 +118,17 @@ namespace NewHorizons.Builder.Body
                 rot._localAxis = Vector3.down;
             }
 
-            if (ring.curve != null)
+            if (ring.scaleCurve != null)
             {
                 var levelController = ringGO.AddComponent<SizeController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in ring.curve)
-                {
-                    curve.AddKey(new Keyframe(pair.time, pair.value));
-                }
-                levelController.scaleCurve = curve;
+                levelController.SetScaleCurve(ring.scaleCurve);
+            }
+
+            if (ring.opacityCurve != null)
+            {
+                var ringOC = ringGO.AddComponent<RingOpacityController>();
+                ringOC.SetOpacityCurve(ring.opacityCurve);
+                ringOC.SetMeshRenderer(ringMR);
             }
 
             return ringGO;

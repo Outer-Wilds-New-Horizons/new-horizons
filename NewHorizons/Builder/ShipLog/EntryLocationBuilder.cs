@@ -1,4 +1,4 @@
-﻿using NewHorizons.External.Modules;
+using NewHorizons.External.Modules;
 using OWML.Common;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +15,7 @@ namespace NewHorizons.Builder.ShipLog
             entryLocationGameObject.transform.position = go.transform.TransformPoint(info.position ?? Vector3.zero);
             ShipLogEntryLocation newLocation = entryLocationGameObject.AddComponent<ShipLogEntryLocation>();
             newLocation._entryID = info.id;
+            newLocation._outerFogWarpVolume = go.GetComponentInChildren<OuterFogWarpVolume>();
             newLocation._isWithinCloakField = info.cloaked;
             _locationsToInitialize.Add(newLocation);
             entryLocationGameObject.SetActive(true);

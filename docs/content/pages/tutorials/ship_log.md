@@ -1,12 +1,14 @@
 ---
 Title: Ship Log
 Description: A guide to editing the ship log in New Horizons
-Sort_Priority: 70
+Sort_Priority: 40
 ---
 
 # Intro
 
 Welcome! this page outlines how to create a custom ship log.
+
+If you haven't already, you may want to take a look at [Understanding XML]({{ "Understanding XML"|route }}) to get a better idea of how XML works.
 
 # Understanding Ship Logs
 
@@ -62,7 +64,7 @@ navigate to ShipLogManager.
 <!-- Example File -->
 <!-- All files must have "AstroObjectEntry" as their root element, the xmlns:xsi=... and xsi:noNamespaceSchemaLocation=... is optional but heavily encouraged to reduce errors -->
 <AstroObjectEntry xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
+                  xsi:noNamespaceSchemaLocation="https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/shiplog_schema.xsd">
     <ID>EXAMPLE_PLANET</ID> <!-- The ID of the planet this xml file is for -->
 
     <Entry> <!-- An Entry For This Planet -->
@@ -159,13 +161,11 @@ You can load your XML file to your planet by doing adding the following to your 
 ## Entry Layout
 
 By default, entries in rumor mode are laid out by rows, where each row is one planet. This will not make for a perfect
-layout, so you can use the `entryPositions` property to change them  
+layout, so you can use the `entryPositions` property in your star system config to change them  
 For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and another with the ID of `EXAMPLE_ENTRY_2`:
 
 ```json
 {
-  "ShipLog": {
-    "xmlFile": "planets/example.xml",
     "entryPositions": [
       {
         "id": "EXAMPLE_ENTRY",
@@ -182,9 +182,10 @@ For example, if I want to change an entry with the ID of `EXAMPLE_ENTRY` and ano
         }
       }
     ]
-  }
 }
 ```
+
+To help with this, download the unity explorer mod and manually position entries, then simply use the dev tools to dump all the entries to a json string you can copy and paste into your config.
 
 ![autoDetectiveMode]({{ "images/ship_log/auto_rumor_mode.webp"|static }})
 *A set of entries laid out with auto mode*
@@ -491,7 +492,7 @@ Can be any of the following:
 
 #### Enter
 
-When the player enters the trigger, reveal the facts
+When the player or probe enters the trigger, reveal the facts
 
 #### Observe
 

@@ -18,6 +18,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- TOC -->
 
 - [Incompatible mods](#incompatible-mods)
+- [Supported mods](#supported-mods)
 - [Development](#development)
 - [Contact](#contact)
 - [Credits](#credits)
@@ -25,9 +26,14 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- /TOC -->
 
 ## Incompatible mods
-- Autoresume.
 - Quantum Space Buddies.
 - OW Randomizer.
+
+## Supported Mods
+New Horizons has optional support for a few other mods:
+- [Discord Rich Presence](https://outerwildsmods.com/mods/discordrichpresence/): Showcase what New Horizons worlds you're exploring in your Discord status!
+- [Voice Acting Mod](https://outerwildsmods.com/mods/voiceactingmod/): Characters in NH can be given voice lines which will work with this mod installed. Try it out by downloading NH Examples and talking to Ernesto!
+- [Achievements+](https://outerwildsmods.com/mods/achievements/): New Horizons and its addons have achievements you can unlock with this mod installed!
 
 ## Features
 - Load planet meshes or details from asset bundles 
@@ -35,8 +41,8 @@ Check the ship's log for how to use your warp drive to travel between star syste
 - Separate solar system scenes accessible via wormhole OR via the ship's new warp drive feature accessible via the ship's log
 - Remove or edit existing planets, including what they orbit around
 - Create custom planets from heightmaps/texturemaps
-- Create stars (and supernovae), comets, asteroid belts, satellites, and quantum planets/moons.
-- Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, and tornados.
+- Create stars (and supernovae), comets, asteroid belts, satellites, quantum planets/moons, and custom Dark Bramble dimensions.
+- Add stock planet features to custom ones, such as geysers, cloak fields, meteor-launching volcanoes, rafts, tornados, and Dark Bramble seeds/nodes.
 - Binary orbits
 - Signalscope signals and custom frequencies
 - Surface scatter: rocks, trees, etc, using in-game models, or custom ones 
@@ -56,22 +62,23 @@ Join the [Outer Wilds Modding Discord](https://discord.gg/MvbCbBz6Q6) if you hav
 Main authors:
 - xen (New Horizons v0.1.0 onwards)
 - [Bwc9876](https://github.com/Bwc9876) (New Horizons v0.9.0 onwards)
-- [Nageld](https://github.com/Nageld): (New Horizons v0.8.0)
 - [Mister_Nebula](https://github.com/misternebula) ([Marshmallow](https://github.com/misternebula/Marshmallow) v0.1 to v1.1.0)
 
 New Horizons was made with help from:
-- [jtsalomo](https://github.com/jtsalomo)
-- [Raicuparta](https://github.com/Raicuparta)
-- [MegaPiggy](https://github.com/MegaPiggy)
-- [Trifid](https://github.com/TerrificTrifid)
-- [JohnCorby](https://github.com/JohnCorby) 
 - [FreezeDriedMangos](https://github.com/FreezeDriedMangos)
+- [MegaPiggy](https://github.com/MegaPiggy)
+- [JohnCorby](https://github.com/JohnCorby) 
+- [Nageld](https://github.com/Nageld)
+- [Trifid](https://github.com/TerrificTrifid)
+- [Raicuparta](https://github.com/Raicuparta)
+- [jtsalomo](https://github.com/jtsalomo)
 - And the Outer Wilds modding server.
 
 Translation credits:
-- Russian: GrayFix and Tlya
+- Russian: Tlya
 - German: Nolram
-- Spanish: Ciborgm9 and Ink
+- Spanish: Ciborgm9, Ink, GayCoffee
+- French: xen
 
 Marshmallow was made with help from:
 - TAImatem

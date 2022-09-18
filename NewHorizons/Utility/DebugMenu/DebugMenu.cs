@@ -28,16 +28,15 @@ namespace NewHorizons.Utility.DebugMenu
         static bool openMenuOnPause;
         static bool staticInitialized;
 
-        // menu params
+        // Menu params
         internal static IModBehaviour loadedMod = null;
         internal Dictionary<string, PlanetConfig> loadedConfigFiles = new Dictionary<string, PlanetConfig>();
         private bool saveButtonUnlocked = false;
         private Vector2 recentModListScrollPosition = Vector2.zero;
 
-        // submenus
+        // Submenus
         private List<DebugSubmenu> submenus;
         private int activeSubmenu = 0;
-
 
         private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
@@ -55,7 +54,6 @@ namespace NewHorizons.Utility.DebugMenu
                 new DebugMenuNomaiText()
             };
 
-
             submenus.ForEach((submenu) => submenu.OnAwake(this));
         }
 
@@ -71,7 +69,13 @@ namespace NewHorizons.Utility.DebugMenu
 
                 PauseMenuInitHook();
 
-                Main.Instance.OnChangeStarSystem.AddListener((string s) => SaveLoadedConfigsForRecentSystem());
+                Main.Instance.OnChangeStarSystem.AddListener((string s) => {
+                    if (saveButtonUnlocked)
+                    {
+                        SaveLoadedConfigsForRecentSystem();
+                        saveButtonUnlocked = false;
+                    }
+                });
             }
             else
             {
@@ -86,9 +90,10 @@ namespace NewHorizons.Utility.DebugMenu
 
         private void PauseMenuInitHook()
         {
-            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Prop Placer Menu", TranslationHandler.TextType.UI).ToUpper());
+            pauseMenuButton = Main.Instance.ModHelper.Menus.PauseMenu.OptionsButton.Duplicate(TranslationHandler.GetTranslation("Toggle Dev Tools Menu", TranslationHandler.TextType.UI).ToUpper());
             InitMenu();
         }
+
         public static void UpdatePauseMenuButton()
         {
             if (pauseMenuButton != null)
@@ -99,10 +104,10 @@ namespace NewHorizons.Utility.DebugMenu
         }
 
         private void RestoreMenuOpennessState() { menuOpen = openMenuOnPause; }
+
         private void ToggleMenu() { menuOpen = !menuOpen; openMenuOnPause = !openMenuOnPause; }
 
         private void CloseMenu() { menuOpen = false; }
-
 
         private void OnGUI()
         {
@@ -113,8 +118,7 @@ namespace NewHorizons.Utility.DebugMenu
 
             GUILayout.BeginArea(new Rect(menuPosition.x, menuPosition.y, EditorMenuSize.x, EditorMenuSize.y), _editorMenuStyle);
 
-            // continue working on existing mod
-
+            // Continue working on existing mod
             GUILayout.Label("Name of your mod");
             if (loadedMod == null)
             {
@@ -138,9 +142,9 @@ namespace NewHorizons.Utility.DebugMenu
 
             GUILayout.Space(5);
 
-            // save your work
-
-            if (loadedMod != null) {
+            // Save your work
+            if (loadedMod != null)
+            {
                 GUILayout.BeginHorizontal();
                 if (GUILayout.Button(saveButtonUnlocked ? " O " : " | ", GUILayout.ExpandWidth(false)))
                 {
@@ -157,23 +161,23 @@ namespace NewHorizons.Utility.DebugMenu
             }
 
             GUILayout.Space(20);
-        
-            // draw submenu stuff
+
+            // Draw submenu stuff
             if (loadedMod != null)
             {
                 GUILayout.BeginHorizontal(_tabBarStyle);
                 GUILayout.Space(5);
-                for (int i = 0; i < submenus.Count; i++) 
+                for (int i = 0; i < submenus.Count; i++)
                 {
                     GUI.enabled = i != activeSubmenu;
                     var style = i == activeSubmenu ? _submenuStyle : _tabBarStyle;
-                    if (GUILayout.Button("  "+submenus[i].SubmenuName()+"  ", style, GUILayout.ExpandWidth(false))) 
-                    { 
+                    if (GUILayout.Button("  " + submenus[i].SubmenuName() + "  ", style, GUILayout.ExpandWidth(false)))
+                    {
                         GUI.enabled = true;
                         submenus[activeSubmenu].LoseActive();
                         activeSubmenu = i;
                         submenus[activeSubmenu].GainActive();
-                        
+
                     }
                     GUI.enabled = true;
 
@@ -186,7 +190,6 @@ namespace NewHorizons.Utility.DebugMenu
                 submenus[activeSubmenu].OnGUI(this);
                 GUILayout.EndVertical();
             }
-            
 
             GUILayout.EndArea();
         }
@@ -198,15 +201,16 @@ namespace NewHorizons.Utility.DebugMenu
 
             var folder = loadedMod.ModHelper.Manifest.ModFolderPath;
 
-            List<NewHorizonsBody> bodiesForThisMod = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).ToList();
-            foreach (NewHorizonsBody body in bodiesForThisMod)
+            var bodiesForThisMod = Main.BodyDict.Values.SelectMany(x => x).Where(x => x.Mod == loadedMod).ToList();
+            foreach (var body in bodiesForThisMod)
             {
                 if (body.RelativePath == null)
                 {
-                    Logger.Log("Error loading config for " + body.Config.name + " in " + body.Config.starSystem);
+                    Logger.LogWarning($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
+                    continue;
                 }
 
-                loadedConfigFiles[folder + body.RelativePath] = (body.Config as PlanetConfig);
+                loadedConfigFiles[Path.Combine(folder, body.RelativePath)] = body.Config;
                 submenus.ForEach(submenu => submenu.LoadConfigFile(this, body.Config));
             }
         }
@@ -215,40 +219,51 @@ namespace NewHorizons.Utility.DebugMenu
         {
             submenus.ForEach(submenu => submenu.PreSave(this));
 
-            string backupFolderName = "configBackups\\" + DateTime.Now.ToString("yyyyMMddTHHmmss") + "\\";
+            var backupFolderName = $"configBackups\\{DateTime.Now.ToString("yyyyMMddTHHmmss")}\\";
+
             Logger.Log($"Potentially saving {loadedConfigFiles.Keys.Count} files");
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                Logger.Log("Possibly Saving... " + loadedConfigFiles[filePath].name + " @ " + filePath);
+                Logger.LogVerbose($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
+
                 if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
 
                 var relativePath = filePath.Replace(loadedMod.ModHelper.Manifest.ModFolderPath, "");
 
-                var json = JsonConvert.SerializeObject(loadedConfigFiles[filePath], jsonSettings);
-                // Add the schema line
-                json = "{\n\t\"$schema\": \"https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/body_schema.json\"," + json.Substring(1);
+                var json = loadedConfigFiles[filePath].ToSerializedJson();
 
                 try
                 {
-                    Logger.Log("Saving... " + relativePath + " to " + filePath);
-                    var path = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
+                    var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, backupFolderName, relativePath);
+                    Logger.LogVerbose($"Backing up... {relativePath} to {path}");
+                    var oldPath = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
+                    var directoryName = Path.GetDirectoryName(path);
+                    Directory.CreateDirectory(directoryName);
+
+                    if (File.Exists(oldPath))
+                        File.WriteAllBytes(path, File.ReadAllBytes(oldPath));
+                    else
+                        File.WriteAllText(path, json);
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
+                }
+
+                try
+                {
+                    Logger.Log($"Saving... {relativePath} to {filePath}");
+                    var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
                     var directoryName = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(directoryName);
 
                     File.WriteAllText(path, json);
                 }
-                catch (Exception e) { Logger.LogError("Failed to save file " + backupFolderName + relativePath); Logger.LogError(e.Message + "\n" + e.StackTrace); }
-
-                try
+                catch (Exception e)
                 {
-                    var path = Main.Instance.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
-                    var directoryName = Path.GetDirectoryName(path);
-                    Directory.CreateDirectory(directoryName);
-
-                    File.WriteAllText(path, json);
+                    Logger.LogError($"Failed to save file {relativePath}:\n{e}");
                 }
-                catch (Exception e) { Logger.LogError("Failed to save backup file " + backupFolderName + relativePath); Logger.LogError(e.Message + "\n" + e.StackTrace); }
             }
         }
 
@@ -262,7 +277,6 @@ namespace NewHorizons.Utility.DebugMenu
             pauseMenuButton.OnClick += ToggleMenu;
 
             submenus.ForEach(submenu => submenu.OnInit(this));
-            
 
             _editorMenuStyle = new GUIStyle
             {
