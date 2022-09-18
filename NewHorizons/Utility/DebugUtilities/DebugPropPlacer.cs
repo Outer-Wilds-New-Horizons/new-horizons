@@ -72,6 +72,7 @@ namespace NewHorizons.Utility.DebugUtilities
             UpdatePromptVisibility();
             if (!Main.Debug) return;
             if (!active) return;
+            if (Keyboard.current == null) return;
 
             if (Keyboard.current[Key.G].wasReleasedThisFrame)
             {

@@ -76,6 +76,10 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private void Update()
         {
+            UpdatePromptVisibility();
+            if (!Main.Debug) return;
+            if (Keyboard.current == null) return;
+
             if (Keyboard.current[Key.G].wasReleasedThisFrame) // TODO: REMOVE THIS WHOLE IF STATEMENT, it's just for debug testing
             {
                 DebugRaycastData data = _rc.Raycast();
@@ -91,9 +95,8 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 var rootArc = new SpiralTextArc();
                 rootArc.MakeChild();
-                spiralMesh.updateChildren();
-
                 spiralMesh = rootArc.m.children[0];
+                spiralMesh.updateChildren();
 
                 // // add a sphere at each skeleton point
                 //spiralMesh.skeleton.ForEach(point => {
@@ -108,8 +111,6 @@ namespace NewHorizons.Utility.DebugUtilities
                 if (Keyboard.current[Key.Minus].wasReleasedThisFrame) { spiralMesh.a -= 0.05f; spiralMesh.updateChildren(); }
             }
 
-            UpdatePromptVisibility();
-            if (!Main.Debug) return;
             if (!active) return;
 
             if (Keyboard.current[Key.G].wasReleasedThisFrame)
