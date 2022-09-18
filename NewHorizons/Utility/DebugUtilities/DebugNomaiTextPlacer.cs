@@ -78,9 +78,6 @@ namespace NewHorizons.Utility.DebugUtilities
         {
             if (Keyboard.current[Key.G].wasReleasedThisFrame) // TODO: REMOVE THIS WHOLE IF STATEMENT, it's just for debug testing
             {
-
-
-
                 DebugRaycastData data = _rc.Raycast();
 
                 var sectorObject = data.hitBodyGameObject.GetComponentInChildren<Sector>()?.gameObject;
@@ -91,8 +88,6 @@ namespace NewHorizons.Utility.DebugUtilities
                 gameObject.transform.parent = sectorObject.transform;
                 gameObject.transform.localPosition = data.pos;
                 DebugPropPlacer.SetGameObjectRotation(gameObject, data, this.gameObject.transform.position);
-
-
 
                 var rootArc = new SpiralTextArc();
                 rootArc.MakeChild();
@@ -107,8 +102,11 @@ namespace NewHorizons.Utility.DebugUtilities
                 //});
             }
 
-            if (Keyboard.current[Key.Equals].wasReleasedThisFrame) { spiralMesh.a += 0.05f; spiralMesh.updateChildren(); }
-            if (Keyboard.current[Key.Minus].wasReleasedThisFrame) { spiralMesh.a -= 0.05f; spiralMesh.updateChildren(); }
+            if (spiralMesh != null)
+            {
+                if (Keyboard.current[Key.Equals].wasReleasedThisFrame) { spiralMesh.a += 0.05f; spiralMesh.updateChildren(); }
+                if (Keyboard.current[Key.Minus].wasReleasedThisFrame) { spiralMesh.a -= 0.05f; spiralMesh.updateChildren(); }
+            }
 
             UpdatePromptVisibility();
             if (!Main.Debug) return;
