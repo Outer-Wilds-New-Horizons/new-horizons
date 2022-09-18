@@ -6,6 +6,8 @@ using NewHorizons.External;
 using NewHorizons.Handlers;
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.Utility;
+
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
@@ -102,8 +104,17 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(PlayerData), nameof(PlayerData.GetNewlyRevealedFactIDs))]
         public static bool OnPlayerDataGetNewlyRevealedFactIDs(ref List<string> __result)
         {
-            __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(NewHorizonsData.GetNewlyRevealedFactIDs()).ToList();
-            return false;
+            var newHorizonsNewlyRevealedFactIDs = NewHorizonsData.GetNewlyRevealedFactIDs();
+            if (newHorizonsNewlyRevealedFactIDs != null)
+            {
+                __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(newHorizonsNewlyRevealedFactIDs).ToList();
+                return false;
+            }
+            else
+            {
+                Logger.LogError("Newly Revealed Fact IDs is null!");
+                return true;
+            }
         }
 
         [HarmonyPrefix]
