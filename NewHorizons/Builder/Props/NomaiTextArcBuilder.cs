@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.Props
     {
         //
         //
-        // TOOD: move all this code to NomaiTextBuilder and delete this file
+        // TODO: move all this code to NomaiTextBuilder and delete this file
         //
         //
 
