@@ -357,15 +357,15 @@ namespace NewHorizons.Builder.Props
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
+
+            // Idk why but it wants reveals to be comma delimited not a list
+            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
             // Make sure that these slides play when the player wanders into the beam
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
-
-
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
 
             standingTorch.SetActive(true);
 
