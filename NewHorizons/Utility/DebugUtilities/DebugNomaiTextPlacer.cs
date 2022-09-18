@@ -41,7 +41,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 m.updateMesh();
 
                 g.AddComponent<MeshFilter>().sharedMesh = m.mesh;
-                g.AddComponent<MeshRenderer>().sharedMaterial = _arcPrefabs[0].GetComponent<MeshRenderer>().sharedMaterial;
+                g.AddComponent<MeshRenderer>().sharedMaterial = GetArcPrefabs()[0].GetComponent<MeshRenderer>().sharedMaterial;
 
                 // (float arcLen, float offsetX, float offsetY, float offsetAngle, bool mirror, float scale, float a, float b, float startS)
                 GameObject p = AddDebugShape.AddSphere(g, 0.05f, Color.green);
