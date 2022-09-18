@@ -445,6 +445,18 @@ namespace NewHorizons.External.Modules
             /// Relative path to the xml file defining the dialogue.
             /// </summary>
             public string xmlFile;
+
+            /// <summary>
+            /// </summary>
+            [DefaultValue("none")] public FlashlightToggle flashlightToggle = FlashlightToggle.None;
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum FlashlightToggle
+            {
+                [EnumMember(Value = @"none")] None = -1,
+                [EnumMember(Value = @"turnOff")] TurnOff = 0,
+                [EnumMember(Value = @"turnOffThenOn")] TurnOffThenOn = 1,
+            }
         }
 
         [JsonObject]
