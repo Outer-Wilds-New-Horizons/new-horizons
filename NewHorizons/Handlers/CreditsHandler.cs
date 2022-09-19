@@ -134,7 +134,7 @@ namespace NewHorizons.Handlers
         {
             var rootSection = MakeNode(doc, "section", new Dictionary<string, string>()
             {
-                { "name", "Custom" },
+                { "name", title },
                 { "credits-type", "Final Fast Krazy" }
             });
 

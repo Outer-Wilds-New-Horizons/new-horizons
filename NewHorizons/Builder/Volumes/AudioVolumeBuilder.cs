@@ -47,6 +47,7 @@ namespace NewHorizons.Builder.Volumes
             var owAudioSource = go.AddComponent<OWAudioSource>();
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
+            owAudioSource.SetMaxVolume(info.volume);
             owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 

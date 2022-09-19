@@ -17,14 +17,14 @@ namespace NewHorizons.Utility
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
-            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             return _loadedTextures.ContainsKey(path);
         }
 
         public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false)
         {
             // Copied from OWML but without the print statement lol
-            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             if (_loadedTextures.ContainsKey(path))
             {
                 Logger.LogVerbose($"Already loaded image at path: {path}");
@@ -53,7 +53,7 @@ namespace NewHorizons.Utility
 
         public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
         {
-            var path = mod.ModHelper.Manifest.ModFolderPath + filename;
+            var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             if (_loadedTextures.ContainsKey(path))
             {
                 if (_loadedTextures[path] == texture)

@@ -3,6 +3,7 @@ using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -65,7 +66,7 @@ namespace NewHorizons.Handlers
             var id = mod.ModHelper.Manifest.UniqueName + "_" + audioPath;
             if (_customAudioTypes.TryGetValue(id, out audioType)) return audioType;
 
-            var audioClip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audioPath);
+            var audioClip = AudioUtilities.LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audioPath));
 
             if (audioClip == null)
             {

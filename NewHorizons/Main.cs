@@ -168,7 +168,7 @@ namespace NewHorizons
                 TextTranslation.Get().SetLanguage(TextTranslation.Get().GetLanguage());
             }
 
-            LoadTranslations(Instance.ModHelper.Manifest.ModFolderPath + "Assets/", this);
+            LoadTranslations(Path.Combine(Instance.ModHelper.Manifest.ModFolderPath, "Assets/"), this);
         }
 
         public void Awake()

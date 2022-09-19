@@ -5,6 +5,7 @@ using NewHorizons.Utility;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -51,7 +52,7 @@ namespace NewHorizons.Builder.ShipLog
         public static void AddBodyToShipLog(ShipLogManager manager, NewHorizonsBody body)
         {
             string systemName = body.Config.starSystem;
-            XElement astroBodyFile = XElement.Load(body.Mod.ModHelper.Manifest.ModFolderPath + "/" + body.Config.ShipLog.xmlFile);
+            XElement astroBodyFile = XElement.Load(Path.Combine(body.Mod.ModHelper.Manifest.ModFolderPath, body.Config.ShipLog.xmlFile));
             XElement astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {

@@ -210,7 +210,7 @@ namespace NewHorizons.Utility.DebugMenu
                     continue;
                 }
 
-                loadedConfigFiles[folder + body.RelativePath] = body.Config;
+                loadedConfigFiles[Path.Combine(folder, body.RelativePath)] = body.Config;
                 submenus.ForEach(submenu => submenu.LoadConfigFile(this, body.Config));
             }
         }
@@ -235,9 +235,9 @@ namespace NewHorizons.Utility.DebugMenu
 
                 try
                 {
-                    var path = loadedMod.ModHelper.Manifest.ModFolderPath + backupFolderName + relativePath;
+                    var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, backupFolderName, relativePath);
                     Logger.LogVerbose($"Backing up... {relativePath} to {path}");
-                    var oldPath = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
+                    var oldPath = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
                     var directoryName = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(directoryName);
 
@@ -254,7 +254,7 @@ namespace NewHorizons.Utility.DebugMenu
                 try
                 {
                     Logger.Log($"Saving... {relativePath} to {filePath}");
-                    var path = loadedMod.ModHelper.Manifest.ModFolderPath + relativePath;
+                    var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
                     var directoryName = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(directoryName);
 
