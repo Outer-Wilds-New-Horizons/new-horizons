@@ -191,9 +191,9 @@ namespace NewHorizons.Builder.ShipLog
             if (_entryIdToRawName.ContainsKey(entry._id))
             {
                 var raw = _entryIdToRawName[entry._id];
-                if (EnumUtils.IsDefined<CuriosityName>(raw))
+                if (EnumUtils.TryParse<CuriosityName>(raw, out CuriosityName name))
                 {
-                    entry._curiosity = EnumUtils.Parse<CuriosityName>(raw);
+                    entry._curiosity = name;
                 }
                 else
                 {

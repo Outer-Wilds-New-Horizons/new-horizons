@@ -41,13 +41,9 @@ namespace NewHorizons.Handlers
             try
             {
                 NomaiRemoteCameraPlatform.ID platformID;
-                if (_customPlatformIDs.TryGetValue(id, out platformID))
+                if (_customPlatformIDs.TryGetValue(id, out platformID) || EnumUtils.TryParse<NomaiRemoteCameraPlatform.ID>(id, out platformID))
                 {
                     return platformID;
-                }
-                else if (EnumUtils.IsDefined<NomaiRemoteCameraPlatform.ID>(id))
-                {
-                    return EnumUtils.Parse<NomaiRemoteCameraPlatform.ID>(id);
                 }
                 else
                 {

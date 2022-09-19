@@ -185,12 +185,12 @@ namespace NewHorizons.Builder.Props
 
         private static SignalFrequency StringToFrequency(string str)
         {
-            return EnumUtils.IsDefined<SignalFrequency>(str) ? EnumUtils.Parse(str, SignalFrequency.Default) : AddFrequency(str);
+            return EnumUtils.TryParse<SignalFrequency>(str, out SignalFrequency frequency) ? frequency : AddFrequency(str);
         }
 
         public static SignalName StringToSignalName(string str)
         {
-            return EnumUtils.IsDefined<SignalName>(str) ? EnumUtils.Parse(str, SignalName.Default) : AddSignalName(str);
+            return EnumUtils.TryParse<SignalName>(str, out SignalName name) ? name : AddSignalName(str);
         }
     }
 }
