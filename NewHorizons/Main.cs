@@ -419,6 +419,10 @@ namespace NewHorizons
                 vessel_ss._streamingGroup = eyeSector.gameObject.FindChild("StreamingGroup_EYE").GetComponent<StreamingGroup>();
                 vessel_ss.SetSector(vesselSector);
 
+                var eyeCoordinatePromptTrigger = vesselSector.GetComponentInChildren<EyeCoordinatePromptTrigger>(true);
+                eyeCoordinatePromptTrigger._warpController = eyeCoordinatePromptTrigger.GetComponentInParent<VesselWarpController>();
+                eyeCoordinatePromptTrigger.gameObject.SetActive(true);
+
                 var solarSystemRoot = SearchUtilities.Find("SolarSystemRoot");
 
                 // Disable forest and observatory so that a custom body doesn't accidentally pass through them. (they are 6.5km away from eye)
