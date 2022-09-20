@@ -889,20 +889,16 @@ namespace NewHorizons
                 IsWarpingFromShip = warp;
                 IsWarpingFromVessel = vessel;
 
+                var warpingToEye = newStarSystem == "EyeOfTheUniverse";
+
+                if (warpingToEye) PlayerData.SaveWarpedToTheEye(180);
+                else PlayerData.SaveEyeCompletion();
+
+                var loadableScene = warpingToEye ? SubmitActionLoadScene.LoadableScenes.EYE : SubmitActionLoadScene.LoadableScenes.GAME;
                 var newGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-NewGame")?.GetComponent<SubmitActionLoadScene>();
                 var resumeGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-ResumeGame")?.GetComponent<SubmitActionLoadScene>();
-                if (newStarSystem == "EyeOfTheUniverse")
-                {
-                    PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.LOOP_DURATION_IN_SECONDS);
-                    if (newGame != null) newGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.EYE;
-                    if (resumeGame != null) resumeGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.EYE;
-                }
-                else
-                {
-                    PlayerData.SaveEyeCompletion();
-                    if (newGame != null) newGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
-                    if (resumeGame != null) resumeGame._sceneToLoad = SubmitActionLoadScene.LoadableScenes.GAME;
-                }
+                if (newGame != null) newGame._sceneToLoad = loadableScene;
+                if (resumeGame != null) resumeGame._sceneToLoad = loadableScene;
 
                 return;
             }
