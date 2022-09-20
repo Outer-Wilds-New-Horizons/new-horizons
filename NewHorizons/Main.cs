@@ -886,6 +886,8 @@ namespace NewHorizons
             if (LoadManager.GetCurrentScene() == OWScene.TitleScreen)
             {
                 _currentStarSystem = newStarSystem;
+                IsWarpingFromShip = warp;
+                IsWarpingFromVessel = vessel;
 
                 var newGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-NewGame")?.GetComponent<SubmitActionLoadScene>();
                 var resumeGame = SearchUtilities.Find("TitleMenu/TitleCanvas/TitleLayoutGroup/MainMenuBlock/MainMenuLayoutGroup/Button-ResumeGame")?.GetComponent<SubmitActionLoadScene>();
