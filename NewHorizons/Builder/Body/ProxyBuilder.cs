@@ -32,6 +32,19 @@ namespace NewHorizons.Builder.Body
                 proxyController.planet = planetGO;
             }
 
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                // Disable any proxies when not at eye, vessel, or vortex.
+                EyeStateActivationController eyeStateActivation = SearchUtilities.Find("SolarSystemRoot").AddComponent<EyeStateActivationController>();
+                eyeStateActivation._object = proxy;
+                eyeStateActivation._activeStates = new EyeState[3]
+                {
+                    EyeState.AboardVessel,
+                    EyeState.WarpedToSurface,
+                    EyeState.IntoTheVortex
+                };
+            }
+
             var rootProxy = new GameObject("Root");
             rootProxy.transform.parent = proxy.transform;
             rootProxy.transform.localPosition = Vector3.zero;
