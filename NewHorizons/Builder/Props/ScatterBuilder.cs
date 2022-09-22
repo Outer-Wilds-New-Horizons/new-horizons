@@ -69,6 +69,7 @@ namespace NewHorizons.Builder.Props
                 var detailInfo = new PropModule.DetailInfo()
                 {
                     scale = propInfo.scale,
+                    stretch = propInfo.stretch,
 					keepLoaded = propInfo.keepLoaded
                 };
                 var scatterPrefab = DetailBuilder.Make(go, sector, prefab, detailInfo);
