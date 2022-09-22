@@ -25,8 +25,28 @@ namespace NewHorizons.Builder.Props
 
         internal static void InitPrefabs()
         {
-            if (_upPrefab == null) _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive().Rename("Tornado_Up_Prefab").DontDestroyOnLoad();
-            if (_downPrefab == null) _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive().Rename("Tornado_Down_Prefab").DontDestroyOnLoad();
+            if (_upPrefab == null)
+            {
+                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive().Rename("Tornado_Up_Prefab").DontDestroyOnLoad();
+                
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_UpTornado").InstantiateInactive().Rename("AudioRail_UpTornado");
+                audioRail.transform.parent = _upPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _upPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
+            }
+            if (_downPrefab == null)
+            {
+                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive().Rename("Tornado_Down_Prefab").DontDestroyOnLoad();
+
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_DownTornado").InstantiateInactive().Rename("AudioRail_DownTornado");
+                audioRail.transform.parent = _downPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _downPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
+            }
             if (_hurricanePrefab == null)
             {
                 _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive().Rename("Hurricane_Prefab").DontDestroyOnLoad();
