@@ -45,6 +45,6 @@ namespace NewHorizons.Utility
                 }
             }
         }
-        #endregion Migration
+        #endregion
     }
 }
