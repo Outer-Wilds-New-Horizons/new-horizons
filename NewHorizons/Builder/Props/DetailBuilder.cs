@@ -101,11 +101,6 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
-            if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
-            prop.SetActive(true);
-
-            if (prop == null) return null;
-
             if (detail.removeChildren != null)
             {
                 var detailPath = prop.transform.GetPath();
@@ -160,6 +155,9 @@ namespace NewHorizons.Builder.Props
                     prop.transform.parent = newParent.transform;
                 }
             }
+
+            if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+            prop.SetActive(true);
 
             return prop;
         }
