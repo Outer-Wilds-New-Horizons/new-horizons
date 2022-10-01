@@ -593,9 +593,19 @@ namespace NewHorizons
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
 
-            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
-            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
-            if (!string.IsNullOrEmpty(addonConfig.popupMessage)) MenuHandler.RegisterOneTimePopup(mod, addonConfig.popupMessage);
+            if (addonConfig.achievements != null)
+            {
+                AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            }
+            if (addonConfig.credits != null)
+            {
+                var translatedCredits = addonConfig.credits.Select(x => TranslationHandler.GetTranslation(x, TranslationHandler.TextType.UI)).ToArray();
+                CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, translatedCredits);
+            }
+            if (!string.IsNullOrEmpty(addonConfig.popupMessage))
+            {
+                MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI));
+            }
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
