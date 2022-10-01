@@ -1,3 +1,4 @@
+using NewHorizons.Builder.General;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -98,11 +99,7 @@ namespace NewHorizons.Builder.Props
                 prop.transform.rotation = go.transform.TransformRotation(rot);
             }
 
-            prop.transform.localScale = detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale;
-
-            prop.SetActive(true);
-
-            if (prop == null) return null;
+            prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
             if (detail.removeChildren != null)
             {
@@ -158,6 +155,9 @@ namespace NewHorizons.Builder.Props
                     prop.transform.parent = newParent.transform;
                 }
             }
+
+            if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+            prop.SetActive(true);
 
             return prop;
         }
