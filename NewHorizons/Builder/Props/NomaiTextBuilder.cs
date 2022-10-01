@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.Props
             var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
                 .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
                 .Where(x => x != null)
-                .OrderBy(x => x.transform.GetPath())
+                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
                 .ToArray();
             _arcPrefabs = new List<GameObject>();
             _childArcPrefabs = new List<GameObject>();
@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Props
             var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
                 .Select(x => x?._textLine?.gameObject)
                 .Where(x => x != null)
-                .OrderBy(x => x.transform.GetPath())
+                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
                 .ToArray();
             _ghostArcPrefabs = new List<GameObject>();
             foreach (var existingArc in existingGhostArcs)
