@@ -11,6 +11,8 @@ namespace NewHorizons.Utility
             Config = config;
             Mod = mod;
             RelativePath = relativePath;
+
+            Migrate();
         }
 
         public PlanetConfig Config;
@@ -43,6 +45,6 @@ namespace NewHorizons.Utility
                 }
             }
         }
-        #region Migration
+        #endregion Migration
     }
 }
