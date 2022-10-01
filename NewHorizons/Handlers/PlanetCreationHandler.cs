@@ -647,7 +647,7 @@ namespace NewHorizons.Handlers
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
 
-            if ((body.Config.ShockEffect == null && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null) || body.Config.ShockEffect?.hasSupernovaShockEffect == true)
+            if (body.Config.ShockEffect?.hasSupernovaShockEffect == true)
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }

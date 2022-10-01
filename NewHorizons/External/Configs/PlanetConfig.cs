@@ -420,6 +420,12 @@ namespace NewHorizons.External.Configs
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
             }
+
+            // So that old mods still have shock effects
+            if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
+            {
+                ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
+            }
         }
     }
 }
