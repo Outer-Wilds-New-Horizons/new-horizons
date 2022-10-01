@@ -27,8 +27,14 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
         private static readonly int Smoothness = Shader.PropertyToID("_Glossiness");
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD").InstantiateInactive().Rename("LightningGenerator").DontDestroyOnLoad();
             if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
             if (_gdTopCloudMesh == null) _gdTopCloudMesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();

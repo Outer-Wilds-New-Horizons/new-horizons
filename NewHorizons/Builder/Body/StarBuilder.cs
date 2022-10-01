@@ -34,8 +34,14 @@ namespace NewHorizons.Builder.Body
         private static Material _mainSequenceMaterial;
         private static Material _giantMaterial;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
             if (_starAudio == null) _starAudio = SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN").InstantiateInactive().Rename("Prefab_Audio_Star").DontDestroyOnLoad();
             if (_starAtmosphere == null) _starAtmosphere = SearchUtilities.Find("Sun_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_Atmosphere_Star").DontDestroyOnLoad();

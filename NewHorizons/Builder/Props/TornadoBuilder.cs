@@ -23,8 +23,14 @@ namespace NewHorizons.Builder.Props
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int FresnelColor = Shader.PropertyToID("_FresnelColor");
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_upPrefab == null)
             {
                 _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive().Rename("Tornado_Up_Prefab").DontDestroyOnLoad();

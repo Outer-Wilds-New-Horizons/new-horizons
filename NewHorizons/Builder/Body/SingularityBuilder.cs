@@ -41,8 +41,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _whiteHoleRulesetVolume;
         private static GameObject _whiteHoleVolume;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_blackHoleProxyPrefab == null) _blackHoleProxyPrefab = SearchUtilities.Find(_blackHoleProxyPath).InstantiateInactive().Rename("BlackHoleSingularity").DontDestroyOnLoad();
             if (_whiteHoleProxyPrefab == null) _whiteHoleProxyPrefab = SearchUtilities.Find(_whiteHoleProxyPath).InstantiateInactive().Rename("WhiteHoleSingularity").DontDestroyOnLoad();
 

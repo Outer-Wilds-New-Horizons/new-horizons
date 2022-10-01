@@ -20,8 +20,14 @@ namespace NewHorizons.Builder.Props
         private static GameObject _standingVisionTorchPrefab;
         private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_slideReelPrefab == null)
             {
                 _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_Reel")?.DontDestroyOnLoad();

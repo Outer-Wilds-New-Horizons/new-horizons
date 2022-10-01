@@ -13,8 +13,14 @@ namespace NewHorizons.Builder.Body
         private static Mesh _shockLayerMesh;
         private static Material _shockLayerMaterial;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_shockLayerMesh == null) _shockLayerMesh = SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD").GetComponent<MeshFilter>().sharedMesh.DontDestroyOnLoad();
             if (_shockLayerMaterial == null) _shockLayerMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD").GetComponent<MeshRenderer>().sharedMaterial).Rename("ShockLayer_mat").DontDestroyOnLoad();
         }

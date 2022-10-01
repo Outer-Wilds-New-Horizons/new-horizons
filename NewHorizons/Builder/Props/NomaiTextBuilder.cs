@@ -45,8 +45,14 @@ namespace NewHorizons.Builder.Props
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             // Just take every scroll and get the first arc
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {

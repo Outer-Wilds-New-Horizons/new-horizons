@@ -14,8 +14,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _oceanFog;
         private static GameObject _oceanAmbientLight;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_oceanMeshGroup == null)
             {
                 _oceanMeshGroup = ScriptableObject.CreateInstance<MeshGroup>().Rename("Ocean").DontDestroyOnLoad();

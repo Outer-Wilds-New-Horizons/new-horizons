@@ -10,8 +10,14 @@ namespace NewHorizons.Builder.General
     {
         private static List<SplashEffect> _splashEffects;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_splashEffects == null)
             {
                 _splashEffects = new List<SplashEffect>();

@@ -22,8 +22,14 @@ namespace NewHorizons.Builder.Atmosphere
         private static GameObject _atmospherePrefab;
         private static GameObject _proxyAtmospherePrefab;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_atmospherePrefab == null) _atmospherePrefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere").InstantiateInactive().Rename("Atmosphere").DontDestroyOnLoad();
             if (_proxyAtmospherePrefab == null) _proxyAtmospherePrefab = GameObject.FindObjectOfType<DistantProxyManager>()._proxies.FirstOrDefault(apt => apt.astroName == AstroObject.Name.TimberHearth).proxyPrefab.FindChild("Atmosphere_TH/Atmosphere_LOD3").InstantiateInactive().Rename("ProxyAtmosphere").DontDestroyOnLoad();
         }

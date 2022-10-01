@@ -14,8 +14,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _moltenCoreProxy;
         private static GameObject _destructionVolume;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_lavaSphere == null) _lavaSphere = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").InstantiateInactive().Rename("Prefab_VM_LavaSphere").DontDestroyOnLoad();
             if (_moltenCoreProxy == null) _moltenCoreProxy = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/MoltenCore_Proxy").InstantiateInactive().Rename("Prefab_VM_MoltenCore_Proxy").DontDestroyOnLoad();
             if (_destructionVolume == null) _destructionVolume = SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/DestructionVolume").InstantiateInactive().Rename("Prefab_VM_DestructionVolume").DontDestroyOnLoad();

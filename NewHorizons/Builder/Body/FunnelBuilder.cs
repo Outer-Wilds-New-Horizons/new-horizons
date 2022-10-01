@@ -19,8 +19,14 @@ namespace NewHorizons.Builder.Body
         private static Material[] _waterMaterials;
         private static Material _lavaMaterial;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_proxySandFunnel == null) _proxySandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Proxy").DontDestroyOnLoad();
             if (_geoSandFunnel == null) _geoSandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Geo").DontDestroyOnLoad();
             if (_volumesSandFunnel == null) _volumesSandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Volumes").DontDestroyOnLoad();

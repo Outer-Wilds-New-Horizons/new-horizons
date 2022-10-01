@@ -55,8 +55,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _repelVolume;
         private static Material _material;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_atmosphere == null) _atmosphere = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Atmosphere").DontDestroyOnLoad();
             if (_volumes == null) _volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Volumes").DontDestroyOnLoad();
             if (_effects == null) _effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Effects").DontDestroyOnLoad();

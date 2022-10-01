@@ -18,8 +18,14 @@ namespace NewHorizons.Builder.Atmosphere
         private static Mesh _dbImpostorMesh;
         private static Material[] _dbImpostorMaterials;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
 
             // Going to copy from dark bramble

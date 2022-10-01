@@ -9,8 +9,14 @@ namespace NewHorizons.Builder.Atmosphere
         private static GameObject _rainEmitterPrefab;
         private static GameObject _snowEmitterPrefab;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_rainEmitterPrefab == null) _rainEmitterPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain").InstantiateInactive().Rename("Prefab_Effects_Rain").DontDestroyOnLoad();
             if (_snowEmitterPrefab == null) _snowEmitterPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes").InstantiateInactive().Rename("Prefab_Effects_Snowflakes").DontDestroyOnLoad();
         }

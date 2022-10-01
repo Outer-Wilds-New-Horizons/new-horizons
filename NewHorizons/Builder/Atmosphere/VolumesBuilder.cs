@@ -10,8 +10,14 @@ namespace NewHorizons.Builder.Atmosphere
         private static Material _gdMaterial;
         private static Material _gdCloudMaterial;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_gdMaterial == null) _gdMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
             if (_gdCloudMaterial == null) _gdCloudMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._cloudMaterial).DontDestroyOnLoad();
         }

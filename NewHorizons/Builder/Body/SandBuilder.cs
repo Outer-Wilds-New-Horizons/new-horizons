@@ -11,8 +11,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _sandOcclusion;
         private static GameObject _sandProxyShadowCaster;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_sandSphere == null) _sandSphere = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/SandSphere").InstantiateInactive().Rename("Prefab_TT_SandSphere").DontDestroyOnLoad();
             if (_sandCollider == null) _sandCollider = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/Collider").InstantiateInactive().Rename("Prefab_TT_SandCollider").DontDestroyOnLoad();
             if (_sandOcclusion == null) _sandOcclusion = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere").InstantiateInactive().Rename("Prefab_TT_SandOcclusion").DontDestroyOnLoad();

@@ -41,8 +41,14 @@ namespace NewHorizons.Builder.Props
             PropagateSignals(dimensionConfigs);
         }
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_brambleSeedPrefab == null) _brambleSeedPrefab = SearchUtilities.Find("DB_PioneerDimension_Body/Sector_PioneerDimension/Interactables_PioneerDimension/SeedWarp_ToPioneer (1)").InstantiateInactive().Rename("Prefab_DB_Seed").DontDestroyOnLoad();
             if (_brambleNodePrefab == null) _brambleNodePrefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/InnerWarp_ToCluster").InstantiateInactive().Rename("Prefab_DB_Node").DontDestroyOnLoad();
         }

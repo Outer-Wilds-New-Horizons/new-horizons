@@ -17,8 +17,14 @@ namespace NewHorizons.Builder.Props
         private static GameObject _whiteboardPrefab;
         private static GameObject _shareStonePrefab;
 
+        private static bool _isInit;
+
         internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_decalMaterial == null)
             {
                 _decalMaterial = new Material(Shader.Find("Standard (Decal)")).DontDestroyOnLoad();
