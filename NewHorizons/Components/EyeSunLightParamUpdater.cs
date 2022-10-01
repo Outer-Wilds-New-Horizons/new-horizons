@@ -1,11 +1,9 @@
 using NewHorizons.Builder.Atmosphere;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Components
 {
+    /*
     public class EyeSunLightParamUpdater : MonoBehaviour
     {
         public static readonly int SunPosition = Shader.PropertyToID("_SunPosition");
@@ -21,13 +19,18 @@ namespace NewHorizons.Components
         public void LateUpdate()
         {
             var currentIntensity = TimeLoop.GetSecondsRemaining() > -10 ? intensity : 0;
+            
+            // Changing these global shader values breaks the CosmicInflationController orb shader
+            // So DON'T use this component (sad)
             Shader.SetGlobalVector(SunPosition, new Vector4(position.x, position.y, position.z, radius));
             Shader.SetGlobalVector(OWSunPositionRange, new Vector4(position.x, position.y, position.z, range * range));
             Shader.SetGlobalVector(OWSunColorIntensity, new Vector4(color.r, color.g, color.b, currentIntensity));
+            
             foreach (var (_, material) in AtmosphereBuilder.Skys)
             {
                 material.SetFloat(SunIntensity, currentIntensity);
             }
         }
     }
+    */
 }
