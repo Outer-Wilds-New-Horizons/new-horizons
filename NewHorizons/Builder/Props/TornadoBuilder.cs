@@ -27,6 +27,9 @@ namespace NewHorizons.Builder.Props
 
         internal static void InitPrefabs()
         {
+            if (_mainTexture == null) _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
+            if (_detailTexture == null) _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
+
             if (_isInit) return;
 
             _isInit = true;
@@ -68,8 +71,6 @@ namespace NewHorizons.Builder.Props
                 }
             }
             if (_soundPrefab == null) _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive().Rename("AudioRail_Prefab").DontDestroyOnLoad();
-            if (_mainTexture == null) _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
-            if (_detailTexture == null) _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
         }
 
         public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)

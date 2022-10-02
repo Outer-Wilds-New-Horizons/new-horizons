@@ -22,11 +22,11 @@ namespace NewHorizons.Builder.Atmosphere
 
         internal static void InitPrefabs()
         {
+            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
+
             if (_isInit) return;
 
             _isInit = true;
-
-            if (_ramp == null) _ramp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/FogColorRamp.png");
 
             // Going to copy from dark bramble
             if (_lookupTexture == null) _lookupTexture = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogSphere_DB")?.GetComponent<PlanetaryFogController>()?.fogLookupTexture.DontDestroyOnLoad();

@@ -31,12 +31,13 @@ namespace NewHorizons.Builder.Atmosphere
 
         internal static void InitPrefabs()
         {
+            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
+
             if (_isInit) return;
 
             _isInit = true;
 
             if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD").InstantiateInactive().Rename("LightningGenerator").DontDestroyOnLoad();
-            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
             if (_gdTopCloudMesh == null) _gdTopCloudMesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();
             if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
             if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
