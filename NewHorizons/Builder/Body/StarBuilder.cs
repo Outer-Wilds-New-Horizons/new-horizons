@@ -164,8 +164,6 @@ namespace NewHorizons.Builder.Body
             light.intensity *= starModule.solarLuminosity;
             light.range = starModule.lightRadius;
 
-            sunLight.name = "StarLight";
-
             Color lightColour = light.color;
             if (starModule.lightTint != null) lightColour = starModule.lightTint.ToColor();
 
@@ -180,6 +178,8 @@ namespace NewHorizons.Builder.Body
             var proxyShadowLight = sunLight.AddComponent<ProxyShadowLight>();
             proxyShadowLight.CopyPropertiesFrom(_sunLight.GetComponent<ProxyShadowLight>());
             proxyShadowLight._light = light;
+
+            sunLight.name = "SunLight";
 
             // Star controller (works on atmospheric shaders)
             StarController starController = null;
