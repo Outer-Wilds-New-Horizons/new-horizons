@@ -53,10 +53,14 @@ namespace NewHorizons.Builder.Props
 
             _isInit = true;
 
-            // Just take every scroll and get the first arc
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {
-                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>().Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject).Where(x => x != null).ToArray();
+                // Just take every scroll and get the first arc
+                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                    .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
+                    .Where(x => x != null)
+                    .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                    .ToArray();
                 _arcPrefabs = new List<GameObject>();
                 _childArcPrefabs = new List<GameObject>();
                 foreach (var existingArc in existingArcs)
@@ -74,7 +78,11 @@ namespace NewHorizons.Builder.Props
 
             if (_ghostArcPrefabs == null)
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>().Select(x => x?._textLine?.gameObject).Where(x => x != null).ToArray();
+                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                    .Select(x => x?._textLine?.gameObject)
+                    .Where(x => x != null)
+                    .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                    .ToArray();
                 _ghostArcPrefabs = new List<GameObject>();
                 foreach (var existingArc in existingGhostArcs)
                 {
