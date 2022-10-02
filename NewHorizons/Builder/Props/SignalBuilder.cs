@@ -22,8 +22,8 @@ namespace NewHorizons.Builder.Props
 
         public static int NumberOfFrequencies;
 
-        public static List<SignalName> QMSignals { get; private set; }
-        public static List<SignalName> CloakedSignals { get; private set; }
+        private static List<SignalName> _qmSignals;
+        private static List<SignalName> _cloakedSignals;
 
         public static bool Initialized;
 
@@ -77,10 +77,20 @@ namespace NewHorizons.Builder.Props
             _nextCustomFrequencyName = 256;
             NumberOfFrequencies = 8;
 
-            QMSignals = new List<SignalName>() { SignalName.Quantum_QM };
-            CloakedSignals = new List<SignalName>();
+            _qmSignals = new List<SignalName>() { SignalName.Quantum_QM };
+            _cloakedSignals = new List<SignalName>();
 
             Initialized = true;
+        }
+
+        public static bool IsCloaked(this SignalName signalName)
+        {
+            return _cloakedSignals.Contains(signalName);
+        }
+
+        public static bool IsOnQuantumMoon(this SignalName signalName)
+        {
+            return _qmSignals.Contains(signalName);
         }
 
         public static SignalFrequency AddFrequency(string str)
@@ -228,8 +238,8 @@ namespace NewHorizons.Builder.Props
             signalGO.SetActive(true);
 
             // Track certain special signal things
-            if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) QMSignals.Add(name);
-            if (info.insideCloak) CloakedSignals.Add(name);
+            if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) _qmSignals.Add(name);
+            if (info.insideCloak) _cloakedSignals.Add(name);
 
             return signalGO;
         }

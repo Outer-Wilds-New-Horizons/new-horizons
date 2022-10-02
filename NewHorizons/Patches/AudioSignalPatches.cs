@@ -118,7 +118,11 @@ namespace NewHorizons.Patches
         public static bool AudioSignal_UpdateSignalStrength(AudioSignal __instance, Signalscope scope, float distToClosestScopeObstruction)
         {
             if (!SignalBuilder.Initialized) return true;
-            if (!SignalBuilder.CloakedSignals.Contains(__instance._name) && !SignalBuilder.QMSignals.Contains(__instance._name)) return true;
+
+            var isCloaked = SignalBuilder.IsCloaked(__instance._name);
+            var isOnQuantumMoon = SignalBuilder.IsOnQuantumMoon(__instance._name);
+
+            if (!isCloaked && !isOnQuantumMoon) return true;
 
             __instance._canBePickedUpByScope = false;
             if (__instance._sunController != null && __instance._sunController.IsPointInsideSupernova(__instance.transform.position))
@@ -129,7 +133,7 @@ namespace NewHorizons.Patches
             }
 
             // This part is modified from the original to include all QM signals
-            if (Locator.GetQuantumMoon() != null && Locator.GetQuantumMoon().IsPlayerInside() && !SignalBuilder.QMSignals.Contains(__instance._name))
+            if (Locator.GetQuantumMoon() != null && Locator.GetQuantumMoon().IsPlayerInside() && !isOnQuantumMoon)
             {
                 __instance._signalStrength = 0f;
                 __instance._degreesFromScope = 180f;
@@ -166,7 +170,7 @@ namespace NewHorizons.Patches
             }
 
             // If it's a cloaked signal we don't want to hear it outside the cloak field
-            if (SignalBuilder.CloakedSignals.Contains(__instance._name))
+            if (isCloaked)
             {
                 if (!PlayerState.InCloakingField())
                 {
