@@ -83,12 +83,12 @@ namespace NewHorizons.Builder.Props
             Initialized = true;
         }
 
-        public static bool IsCloaked(SignalName signalName)
+        public static bool IsCloaked(this SignalName signalName)
         {
             return _cloakedSignals.Contains(signalName);
         }
 
-        public static bool IsOnQuantumMoon(SignalName signalName)
+        public static bool IsOnQuantumMoon(this SignalName signalName)
         {
             return _qmSignals.Contains(signalName);
         }
