@@ -204,7 +204,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static Sprite GetEntrySprite(string entryId, NewHorizonsBody body, bool logError)
         {
-            string relativePath = body.Config.ShipLog.spriteFolder + "/" + entryId + ".png";
+            string relativePath = Path.Combine(body.Config.ShipLog.spriteFolder, entryId + ".png");
             try
             {
                 Texture2D newTexture = ImageUtilities.GetTexture(body.Mod, relativePath);

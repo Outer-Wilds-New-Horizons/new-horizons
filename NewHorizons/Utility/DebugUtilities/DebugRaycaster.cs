@@ -19,24 +19,31 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private ScreenPrompt _raycastPrompt;
 
-        private void Awake()
+        private void Start()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
 
-            _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
-
-            Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
+            if (_raycastPrompt == null)
+            {
+                _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
+                Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
+            }
         }
         
         private void OnDestroy()
         {
-            Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+            if (_raycastPrompt != null)
+            {
+                Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+            }
         }
 
         private void Update()
         {
             UpdatePromptVisibility();
+
             if (!Main.Debug) return;
+
             if (Keyboard.current == null) return;
 
             if (Keyboard.current[Key.P].wasReleasedThisFrame)
@@ -48,7 +55,10 @@ namespace NewHorizons.Utility.DebugUtilities
 
         public void UpdatePromptVisibility()
         {
-            _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+            if (_raycastPrompt != null)
+            {
+                _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+            }
         }
 
 

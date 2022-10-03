@@ -573,11 +573,11 @@ namespace NewHorizons
                     }
                 }
                 // Has to go before translations for achievements
-                if (File.Exists(folder + "addon-manifest.json"))
+                if (File.Exists(Path.Combine(folder, "addon-manifest.json")))
                 {
                     LoadAddonManifest("addon-manifest.json", mod);
                 }
-                if (Directory.Exists(folder + @"translations\"))
+                if (Directory.Exists(Path.Combine(folder, "translations")))
                 {
                     LoadTranslations(folder, mod);
                 }
@@ -595,9 +595,19 @@ namespace NewHorizons
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file);
 
-            if (addonConfig.achievements != null) AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
-            if (addonConfig.credits != null) CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, addonConfig.credits);
-            if (!string.IsNullOrEmpty(addonConfig.popupMessage)) MenuHandler.RegisterOneTimePopup(mod, addonConfig.popupMessage);
+            if (addonConfig.achievements != null)
+            {
+                AchievementHandler.RegisterAddon(addonConfig, mod as ModBehaviour);
+            }
+            if (addonConfig.credits != null)
+            {
+                var translatedCredits = addonConfig.credits.Select(x => TranslationHandler.GetTranslation(x, TranslationHandler.TextType.UI)).ToArray();
+                CreditsHandler.RegisterCredits(mod.ModHelper.Manifest.Name, translatedCredits);
+            }
+            if (!string.IsNullOrEmpty(addonConfig.popupMessage))
+            {
+                MenuHandler.RegisterOneTimePopup(mod, TranslationHandler.GetTranslation(addonConfig.popupMessage, TranslationHandler.TextType.UI));
+            }
         }
 
         private void LoadTranslations(string folder, IModBehaviour mod)
@@ -605,15 +615,15 @@ namespace NewHorizons
             var foundFile = false;
             foreach (TextTranslation.Language language in EnumUtils.GetValues<TextTranslation.Language>())
             {
-                if (language == TextTranslation.Language.UNKNOWN || language == TextTranslation.Language.TOTAL) continue;
+                if (language is TextTranslation.Language.UNKNOWN or TextTranslation.Language.TOTAL) continue;
 
-                var relativeFile = $"translations/{language.ToString().ToLower()}.json";
+                var relativeFile = Path.Combine("translations", language.ToString().ToLower() + ".json");
 
-                if (File.Exists($"{folder}{relativeFile}"))
+                if (File.Exists(Path.Combine(folder, relativeFile)))
                 {
                     Logger.LogVerbose($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
 
-                    var config = new TranslationConfig($"{folder}{relativeFile}");
+                    var config = new TranslationConfig(Path.Combine(folder, relativeFile));
 
                     foundFile = true;
 
