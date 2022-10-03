@@ -59,6 +59,7 @@ namespace NewHorizons
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
+        public bool DidWarpFromVessel { get; private set; } = false;
         public bool WearingSuit { get; private set; } = false;
 
         public bool IsChangingStarSystem { get; private set; } = false;
@@ -414,6 +415,7 @@ namespace NewHorizons
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
+                    DidWarpFromVessel = shouldWarpInFromVessel;
 
                     var map = GameObject.FindObjectOfType<MapController>();
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
@@ -490,6 +492,7 @@ namespace NewHorizons
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
+                    DidWarpFromVessel = false;
                 }
 
                 //Stop starfield from disappearing when there is no lights
@@ -783,6 +786,7 @@ namespace NewHorizons
                 _currentStarSystem = newStarSystem;
                 IsWarpingFromShip = warp;
                 IsWarpingFromVessel = vessel;
+                DidWarpFromVessel = false;
 
                 var warpingToEye = newStarSystem == "EyeOfTheUniverse";
 
@@ -802,6 +806,7 @@ namespace NewHorizons
 
             IsWarpingFromShip = warp;
             IsWarpingFromVessel = vessel;
+            DidWarpFromVessel = false;
             OnChangeStarSystem?.Invoke(newStarSystem);
 
             Logger.Log($"Warping to {newStarSystem}");
