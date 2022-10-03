@@ -15,9 +15,6 @@ namespace NewHorizons.Patches
             return true;
         }
 
-        // TODO: Figure out what causes player to fall through vessel when warping. Saving relative location will be disabled until then.
-        public static bool saveRelativeLocation = false;
-
         [HarmonyPrefix]
         [HarmonyPatch(typeof(VesselWarpController), nameof(VesselWarpController.WarpVessel))]
         public static bool VesselWarpController_WarpVessel(VesselWarpController __instance, bool debugWarp)
@@ -25,11 +22,8 @@ namespace NewHorizons.Patches
             if (!Main.Instance.IsWarpingFromVessel && TimeLoop.GetLoopCount() < 2)
                 Achievements.Earn(Achievements.Type.BEGINNERS_LUCK);
 
-            if (saveRelativeLocation)
-            {
-                VesselWarpController.s_playerWarpLocation = new RelativeLocationData(Locator.GetPlayerBody(), __instance.transform);
-                VesselWarpController.s_relativeLocationSaved = !debugWarp;
-            }
+            VesselWarpController.s_playerWarpLocation = new RelativeLocationData(Locator.GetPlayerBody(), __instance.transform);
+            VesselWarpController.s_relativeLocationSaved = !debugWarp;
 
             if (!Main.Instance.IsWarpingFromVessel)
                 PlayerData.SaveWarpedToTheEye(TimeLoopUtilities.GetVanillaSecondsRemaining());
