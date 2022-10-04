@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +48,7 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
             owAudioSource.SetMaxVolume(info.volume);
-            owAudioSource.SetTrack((OWAudioMixer.TrackName)Enum.Parse(typeof(OWAudioMixer.TrackName), Enum.GetName(typeof(AudioMixerTrackName), info.track)));
+            owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();

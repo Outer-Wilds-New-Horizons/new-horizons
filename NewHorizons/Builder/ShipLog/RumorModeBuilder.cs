@@ -2,6 +2,7 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,14 +15,12 @@ namespace NewHorizons.Builder.ShipLog
     {
         private static Dictionary<CuriosityName, Color> _curiosityColors;
         private static Dictionary<CuriosityName, Color> _curiosityHighlightColors;
-        private static Dictionary<string, CuriosityName> _rawNameToCuriosityName;
         private static Dictionary<string, string> _entryIdToRawName;
 
         public static void Init()
         {
             _curiosityColors = new Dictionary<CuriosityName, Color>();
             _curiosityHighlightColors = new Dictionary<CuriosityName, Color>();
-            _rawNameToCuriosityName = new Dictionary<string, CuriosityName>();
             _entryIdToRawName = new Dictionary<string, string>();
         }
 
@@ -29,10 +28,9 @@ namespace NewHorizons.Builder.ShipLog
         {
             foreach (ShipLogModule.CuriosityColorInfo newColor in newColors)
             {
-                if (_rawNameToCuriosityName.ContainsKey(newColor.id) == false)
+                if (!EnumUtils.IsDefined<CuriosityName>(newColor.id))
                 {
-                    CuriosityName newName = (CuriosityName)8 + _rawNameToCuriosityName.Count;
-                    _rawNameToCuriosityName.Add(newColor.id, newName);
+                    CuriosityName newName = EnumUtilities.Create<CuriosityName>(newColor.id);
                     _curiosityColors.Add(newName, newColor.color.ToColor());
                     _curiosityHighlightColors.Add(newName, newColor.highlightColor.ToColor());
                 }
@@ -193,9 +191,9 @@ namespace NewHorizons.Builder.ShipLog
             if (_entryIdToRawName.ContainsKey(entry._id))
             {
                 var raw = _entryIdToRawName[entry._id];
-                if (_rawNameToCuriosityName.ContainsKey(raw))
+                if (EnumUtils.TryParse<CuriosityName>(raw, out CuriosityName name))
                 {
-                    entry._curiosity = _rawNameToCuriosityName[raw];
+                    entry._curiosity = name;
                 }
                 else
                 {

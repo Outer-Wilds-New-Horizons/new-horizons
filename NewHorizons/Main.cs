@@ -17,6 +17,7 @@ using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
 using OWML.Common;
 using OWML.ModHelper;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -241,6 +242,7 @@ namespace NewHorizons
             ImageUtilities.ClearCache();
             AudioUtilities.ClearCache();
             AssetBundleUtilities.ClearCache();
+            EnumUtilities.ClearCache();
             IsSystemReady = false;
         }
 
@@ -611,7 +613,7 @@ namespace NewHorizons
         private void LoadTranslations(string folder, IModBehaviour mod)
         {
             var foundFile = false;
-            foreach (TextTranslation.Language language in Enum.GetValues(typeof(TextTranslation.Language)))
+            foreach (TextTranslation.Language language in EnumUtils.GetValues<TextTranslation.Language>())
             {
                 if (language is TextTranslation.Language.UNKNOWN or TextTranslation.Language.TOTAL) continue;
 
