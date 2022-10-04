@@ -1,17 +1,20 @@
+using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
     public static class SectorBuilder
     {
+        private static readonly Sector.Name Name = EnumUtils.Create<Sector.Name>("NewHorizons");
+
         public static Sector Make(GameObject planetBody, OWRigidbody owRigidBody, float sphereOfInfluence)
         {
-            GameObject sectorGO = new GameObject("Sector");
+            var sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
             sectorGO.transform.parent = planetBody.transform;
             sectorGO.transform.localPosition = Vector3.zero;
 
-            SphereShape SS = sectorGO.AddComponent<SphereShape>();
+            var SS = sectorGO.AddComponent<SphereShape>();
             SS.SetCollisionMode(Shape.CollisionMode.Volume);
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
@@ -21,8 +24,8 @@ namespace NewHorizons.Builder.General
 
             sectorGO.AddComponent<OWTriggerVolume>();
 
-            Sector S = sectorGO.AddComponent<Sector>();
-            S._name = (Sector.Name)24;
+            var S = sectorGO.AddComponent<Sector>();
+            S._name = Name;
             S._attachedOWRigidbody = owRigidBody;
             S._subsectors = new List<Sector>();
 
@@ -36,12 +39,12 @@ namespace NewHorizons.Builder.General
         {
             if (parent == null) return null;
 
-            GameObject sectorGO = new GameObject("Sector");
+            var sectorGO = new GameObject("Sector");
             sectorGO.SetActive(false);
             sectorGO.transform.parent = planetBody.transform;
             sectorGO.transform.localPosition = Vector3.zero;
 
-            Sector S = sectorGO.AddComponent<Sector>();
+            var S = sectorGO.AddComponent<Sector>();
             S._idString = parent._idString;
             S._name = parent._name;
             S._attachedOWRigidbody = owRigidBody;
