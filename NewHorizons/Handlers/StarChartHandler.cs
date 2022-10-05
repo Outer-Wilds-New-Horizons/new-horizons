@@ -1,6 +1,7 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using NewHorizons.OtherMods.CustomShipLogModes;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Handlers
@@ -45,14 +46,7 @@ namespace NewHorizons.Handlers
                 panRoot.transform.localPosition = Vector3.zero;
                 panRoot.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-                var centerPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_Center")?.GetComponent<ScreenPromptList>();
-                var upperRightPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_UpperRight")?.GetComponent<ScreenPromptList>();
-                var oneShotSource = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")?.GetComponent<OWAudioSource>();
-
-                ShipLogStarChartMode.Initialize(
-                    centerPromptList,
-                    upperRightPromptList,
-                    oneShotSource);
+                CustomShipLogModesHandler.AddInterstellarMode();
             }
 
             _starSystemToFactID = new Dictionary<string, string>();
