@@ -4,12 +4,18 @@ namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
+        private static GameObject _ambientLightPrefab;
+
+        internal static void InitPrefab()
+        {
+            if (_ambientLightPrefab == null) _ambientLightPrefab = SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM").InstantiateInactive().Rename("Prefab_QM_AmbientLight").DontDestroyOnLoad();
+        }
+
         public static Light Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
-            var ambientLight = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" ? SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/QuantumMoonProxy_Pivot/QuantumMoonProxy_Root/MoonState_Root/AmbientLight_QM") : SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM");
-            if (ambientLight == null) return null;
+            InitPrefab();
 
-            GameObject lightGO = GameObject.Instantiate(ambientLight, sector?.transform ?? planetGO.transform);
+            GameObject lightGO = GameObject.Instantiate(_ambientLightPrefab, sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
             lightGO.name = "AmbientLight";
 
