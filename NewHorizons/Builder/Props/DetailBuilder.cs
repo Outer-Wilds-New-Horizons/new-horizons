@@ -70,10 +70,13 @@ namespace NewHorizons.Builder.Props
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
-            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
+            var isTorch = prop.GetComponentInChildren<VisionTorchItem>() != null;
+            var isItem = false;
 
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
             {
+                if (component.gameObject == prop && component is OWItem) isItem = true;
+
                 if (sector == null)
                 {
                     if (FixUnsectoredComponent(component)) continue;
@@ -82,6 +85,9 @@ namespace NewHorizons.Builder.Props
 
                 FixComponent(component, go);
             }
+
+            // Items shouldn't use these else they get weird
+            if (isItem) detail.keepLoaded = true;
 
             prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
 
@@ -154,6 +160,13 @@ namespace NewHorizons.Builder.Props
                 {
                     prop.transform.parent = newParent.transform;
                 }
+            }
+
+            if (isItem)
+            {
+                // Else when you put them down you can't pick them back up
+                var col = prop.GetComponent<OWCollider>();
+                if (col != null) col._physicsRemoved = false;
             }
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
