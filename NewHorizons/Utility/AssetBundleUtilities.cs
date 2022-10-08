@@ -1,4 +1,4 @@
-﻿using OWML.Common;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,7 +34,7 @@ namespace NewHorizons.Utility
                 }
                 else
                 {
-                    var completePath = mod.ModHelper.Manifest.ModFolderPath + assetBundleRelativeDir;
+                    var completePath = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, assetBundleRelativeDir);
                     bundle = AssetBundle.LoadFromFile(completePath);
                     if (bundle == null)
                     {

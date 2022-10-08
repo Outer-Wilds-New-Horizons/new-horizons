@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,25 @@ namespace NewHorizons.Builder.Volumes
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.rename))
+            {
+                go.name = info.rename;
+            }
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    go.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
@@ -27,7 +47,8 @@ namespace NewHorizons.Builder.Volumes
             var owAudioSource = go.AddComponent<OWAudioSource>();
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
-            owAudioSource.SetTrack((OWAudioMixer.TrackName)Enum.Parse(typeof(OWAudioMixer.TrackName), Enum.GetName(typeof(AudioMixerTrackName), info.track)));
+            owAudioSource.SetMaxVolume(info.volume);
+            owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();

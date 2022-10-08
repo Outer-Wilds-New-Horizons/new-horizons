@@ -4,8 +4,9 @@ using NewHorizons.Builder.General;
 using NewHorizons.Builder.Orbital;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Volumes;
-using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Quantum;
+using NewHorizons.Components.Stars;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using System;
@@ -57,8 +58,9 @@ namespace NewHorizons.Handlers
             GameObject.Destroy(starLightGO.GetComponent<Light>());
             starLightGO.name = "StarLightController";
 
-            starLightGO.AddComponent<StarLightController>();
-            StarLightController.AddStar(starController);
+            starLightGO.AddComponent<SunLightEffectsController>();
+            SunLightEffectsController.AddStar(starController);
+            SunLightEffectsController.AddStarLight(starController.Light);
 
             starLightGO.SetActive(true);
 
@@ -498,7 +500,10 @@ namespace NewHorizons.Handlers
             {
                 var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
-                if (starController != null) StarLightController.AddStar(starController);
+                if (starController != null) SunLightEffectsController.AddStar(starController);
+
+                var starLight = star.FindChild("SunLight");
+                if (starLight != null) SunLightEffectsController.AddStarLight(starLight.GetComponent<Light>());
 
                 // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
                 if (starEvolutionController != null && !body.Config.isStellarRemnant)
@@ -547,9 +552,12 @@ namespace NewHorizons.Handlers
                 }
             }
 
-            if (body.Config.Ring != null)
+            if (body.Config.Rings != null)
             {
-                RingBuilder.Make(go, sector, body.Config.Ring, body.Mod);
+                foreach (var ring in body.Config.Rings)
+                {
+                    RingBuilder.Make(go, sector, ring, body.Mod);
+                }
             }
 
             if (body.Config.AsteroidBelt != null)
@@ -590,7 +598,7 @@ namespace NewHorizons.Handlers
                 if (!string.IsNullOrEmpty(body.Config.Atmosphere?.clouds?.texturePath))
                 {
                     CloudsBuilder.Make(go, sector, body.Config.Atmosphere, willHaveCloak, body.Mod);
-                    SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
+                    if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) SunOverrideBuilder.Make(go, sector, body.Config.Atmosphere, body.Config.Water, surfaceSize);
                 }
 
                 if (body.Config.Atmosphere.hasRain || body.Config.Atmosphere.hasSnow)

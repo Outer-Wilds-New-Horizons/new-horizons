@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -9,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NHNotificationVolume = NewHorizons.Components.NotificationVolume;
+using NHNotificationVolume = NewHorizons.Components.Volumes.NotificationVolume;
 
 namespace NewHorizons.Builder.Volumes
 {
@@ -21,6 +20,25 @@ namespace NewHorizons.Builder.Volumes
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
+
+            if (!string.IsNullOrEmpty(info.rename))
+            {
+                go.name = info.rename;
+            }
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    go.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
             go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 

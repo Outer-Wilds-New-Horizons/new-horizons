@@ -4,6 +4,7 @@ using Newtonsoft.Json.Converters;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -15,27 +16,71 @@ namespace NewHorizons.External.Modules
     public class VolumesModule
     {
         /// <summary>
-        /// Add audio volumes to this planet
+        /// Add audio volumes to this planet.
         /// </summary>
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
-        /// Add hazard volumes to this planet
+        /// Add hazard volumes to this planet.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
 
         /// <summary>
-        /// Add notification volumes to this planet
+        /// Add interference volumes to this planet.
+        /// </summary>
+        public VolumeInfo[] interferenceVolumes;
+
+        /// <summary>
+        /// Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).
+        /// </summary>
+        public VolumeInfo[] insulatingVolumes;
+
+        /// <summary>
+        /// Add map restriction volumes to this planet.
+        /// </summary>
+        public VolumeInfo[] mapRestrictionVolumes;
+
+        /// <summary>
+        /// Add notification volumes to this planet.
         /// </summary>
         public NotificationVolumeInfo[] notificationVolumes;
 
         /// <summary>
-        /// Add triggers that reveal parts of the ship log on this planet
+        /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
 
+        /// <summary>
+        /// Add reverb volumes to this planet. Great for echoes in caves.
+        /// </summary>
+        public VolumeInfo[] reverbVolumes;
+
         [JsonObject]
-        public class RevealVolumeInfo
+        public class VolumeInfo
+        {
+            /// <summary>
+            /// The location of this volume. Optional (will default to 0,0,0).
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The radius of this volume.
+            /// </summary>
+            public float radius = 1f;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// An optional rename of this volume.
+            /// </summary>
+            public string rename;
+        }
+
+        [JsonObject]
+        public class RevealVolumeInfo : VolumeInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum RevealVolumeType
@@ -58,16 +103,6 @@ namespace NewHorizons.External.Modules
             public float maxDistance = -1f; // Snapshot & Observe Only
 
             /// <summary>
-            /// The position to place this volume at
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this reveal volume
-            /// </summary>
-            public float radius = 1f;
-
-            /// <summary>
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
             [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
@@ -84,18 +119,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class AudioVolumeInfo
+        public class AudioVolumeInfo : VolumeInfo
         {
-            /// <summary>
-            /// The location of this audio volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this audio volume
-            /// </summary>
-            public float radius;
-
             /// <summary>
             /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
             /// </summary>
@@ -110,25 +135,22 @@ namespace NewHorizons.External.Modules
             /// Whether to loop this audio while in this audio volume or just play it once
             /// </summary>
             [DefaultValue(true)] public bool loop = true;
+
+            /// <summary>
+            /// The loudness of the audio
+            /// </summary>
+            [Range(0f, 1f)]
+            [DefaultValue(1f)]
+            public float volume = 1f;
         }
 
         [JsonObject]
-        public class NotificationVolumeInfo
+        public class NotificationVolumeInfo : VolumeInfo
         {
             /// <summary>
             /// What the notification will show for.
             /// </summary>
             [DefaultValue("all")] public NotificationTarget target = NotificationTarget.All;
-
-            /// <summary>
-            /// The location of this notification volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this notification volume.
-            /// </summary>
-            public float radius;
 
             /// <summary>
             /// The notification that will play when you enter this volume.
@@ -165,18 +187,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class HazardVolumeInfo
+        public class HazardVolumeInfo : VolumeInfo
         {
-            /// <summary>
-            /// The location of this hazard volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The radius of this hazard volume.
-            /// </summary>
-            public float radius;
-
             /// <summary>
             /// The type of hazard for this volume.
             /// </summary>
@@ -202,7 +214,7 @@ namespace NewHorizons.External.Modules
             {
                 [EnumMember(Value = @"none")] NONE = 0,
                 [EnumMember(Value = @"general")] GENERAL = 1,
-                [EnumMember(Value = @"darkMatter")] DARKMATTER = 2,
+                [EnumMember(Value = @"ghostMatter")] DARKMATTER = 2,
                 [EnumMember(Value = @"heat")] HEAT = 4,
                 [EnumMember(Value = @"fire")] FIRE = 8,
                 [EnumMember(Value = @"sandfall")] SANDFALL = 16,

@@ -111,7 +111,8 @@ namespace NewHorizons.Builder.Body
 
                     if (body.Config.Atmosphere.clouds != null)
                     {
-                        topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        if (body.Config.Atmosphere.clouds.cloudsPrefab != External.Modules.CloudPrefabType.Transparent) topClouds = CloudsBuilder.MakeTopClouds(proxy, body.Config.Atmosphere, body.Mod).GetComponent<MeshRenderer>();
+                        else topClouds = CloudsBuilder.MakeTransparentClouds(proxy, body.Config.Atmosphere, body.Mod, true).GetAddComponent<MeshRenderer>();
 
                         if (body.Config.Atmosphere.clouds.hasLightning) lightningGenerator = CloudsBuilder.MakeLightning(proxy, null, body.Config.Atmosphere, true);
 
@@ -119,10 +120,13 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                if (body.Config.Ring != null)
+                if (body.Config.Rings != null)
                 {
-                    RingBuilder.MakeRingGraphics(proxy, null, body.Config.Ring, body.Mod);
-                    if (realSize < body.Config.Ring.outerRadius) realSize = body.Config.Ring.outerRadius;
+                    foreach (var ring in body.Config.Rings)
+                    {
+                        RingBuilder.MakeRingGraphics(proxy, null, ring, body.Mod);
+                        if (realSize < ring.outerRadius) realSize = ring.outerRadius;
+                    }
                 }
 
                 Renderer starAtmosphere = null;

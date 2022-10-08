@@ -23,7 +23,7 @@ Addon developers will add a key to the `extras` object in the root of the config
 }
 ```
 
-Your mod will then use the API's `QueryBody` method to obtain the `myCoolExtensionData` object.
+Your mod will then use the APIs `QueryBody` method to obtain the `myCoolExtensionData` object.
 
 **It's up to the addon dev to list your mod as a dependency!**
 
@@ -66,7 +66,7 @@ Extending systems is the exact same as extending planets, except you use the `Qu
 
 ## Accessing Other Values
 
-You can also use the `QueryBody` method to get values of the config outside of your extension object
+You can also use the `QueryBody` method to get values of the config outside your extension object
 
 ```csharp
 var primaryBody = api.QueryBody(typeof(string), "Wetrock", "$.Orbit.primaryBody");

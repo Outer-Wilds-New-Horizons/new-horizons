@@ -106,7 +106,9 @@ namespace NewHorizons.Builder.Props
 
             var id = RemoteHandler.GetPlatformID(info.id);
 
-            var decal = ImageUtilities.GetTexture(mod, info.decalPath, false, false);
+            Texture2D decal = Texture2D.whiteTexture;
+            if (!string.IsNullOrWhiteSpace(info.decalPath)) decal = ImageUtilities.GetTexture(mod, info.decalPath, false, false);
+            else Logger.LogError($"Missing decal path on [{info.id}] for [{go.name}]");
 
             if (info.platform != null)
             {

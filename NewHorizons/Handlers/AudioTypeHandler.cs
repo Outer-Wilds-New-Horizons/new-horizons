@@ -1,7 +1,9 @@
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -12,7 +14,6 @@ namespace NewHorizons.Handlers
     {
         private static Dictionary<string, AudioType> _customAudioTypes;
         private static List<AudioLibrary.AudioEntry> _audioEntries;
-        private static int _startingInt = 4000;
 
         public static void Init()
         {
@@ -47,7 +48,7 @@ namespace NewHorizons.Handlers
                 }
                 else
                 {
-                    return (AudioType)Enum.Parse(typeof(AudioType), audio);
+                    return EnumUtils.Parse<AudioType>(audio);
                 }
             }
             catch (Exception e)
@@ -65,7 +66,7 @@ namespace NewHorizons.Handlers
             var id = mod.ModHelper.Manifest.UniqueName + "_" + audioPath;
             if (_customAudioTypes.TryGetValue(id, out audioType)) return audioType;
 
-            var audioClip = AudioUtilities.LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audioPath);
+            var audioClip = AudioUtilities.LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audioPath));
 
             if (audioClip == null)
             {
@@ -79,9 +80,9 @@ namespace NewHorizons.Handlers
         // Create a custom audio type from a set of audio clips. Needs a unique ID
         public static AudioType AddCustomAudioType(string id, AudioClip[] audioClips)
         {
-            var audioType = (AudioType)_startingInt + _customAudioTypes.Count();
+            Logger.LogVerbose($"Registering new audio type [{id}]");
 
-            Logger.LogVerbose($"Registering custom audio type {id} as {audioType}");
+            var audioType = EnumUtilities.Create<AudioType>(id);
 
             _audioEntries.Add(new AudioLibrary.AudioEntry(audioType, audioClips));
             _customAudioTypes.Add(id, audioType);
