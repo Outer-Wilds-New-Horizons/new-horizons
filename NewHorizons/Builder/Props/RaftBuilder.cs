@@ -38,6 +38,7 @@ namespace NewHorizons.Builder.Props
             raftController._riverFluid = null;
 
             raftController._sector = sector;
+            raftController._acceleration = info?.acceleration ?? 5f;
             sector.OnOccupantEnterSector += raftController.OnOccupantEnterSector;
             sector.OnOccupantExitSector += raftController.OnOccupantExitSector;
 

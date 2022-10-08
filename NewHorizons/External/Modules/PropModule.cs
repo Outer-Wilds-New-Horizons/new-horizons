@@ -233,6 +233,11 @@ namespace NewHorizons.External.Modules
             /// Position of the raft
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// Acceleration of the raft
+            /// </summary>
+            [DefaultValue(5f)] public float acceleration = 5f;
         }
 
         [JsonObject]
