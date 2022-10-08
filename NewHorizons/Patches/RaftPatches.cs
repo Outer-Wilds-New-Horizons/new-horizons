@@ -84,7 +84,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
-            if (!(__instance._alignmentFluid is NHFluidVolume)) return true;
+            if (!(__instance._alignmentFluid is NHFluidVolume || __instance._alignmentFluid is SphereOceanFluidVolume)) return true;
 
             // Mostly copy pasting from the AlignWithDirection class
             AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
@@ -102,6 +102,15 @@ namespace NewHorizons.Patches
                 __instance._owRigidbody.AddAngularVelocityChange(a * adjustedSlerpRate);
             }
 
+            return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FluidVolume), "GetDepthAtPosition")]
+        public static bool SphereOceanFluidVolume_GetDepthAtPosition(SphereOceanFluidVolume __instance, ref float __result, Vector3 worldPosition)
+        {
+            Vector3 vector = __instance.transform.InverseTransformPoint(worldPosition);
+            __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - __instance._radius;
             return false;
         }
     }
