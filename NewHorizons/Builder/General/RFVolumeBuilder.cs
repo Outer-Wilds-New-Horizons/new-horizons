@@ -67,6 +67,7 @@ namespace NewHorizons.Builder.General
                 return null;
             }
 
+            rfGO.SetActive(true);
             return rfGO;
         }
     }
