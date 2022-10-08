@@ -34,12 +34,6 @@
       "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
       "$ref": "#/definitions/BrambleModule"
     },
-    "buildPriority": {
-      "type": "integer",
-      "description": "Set to a higher number if you wish for this body to be built sooner",
-      "format": "int32",
-      "default": -1
-    },
     "canShowOnTitle": {
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen?",

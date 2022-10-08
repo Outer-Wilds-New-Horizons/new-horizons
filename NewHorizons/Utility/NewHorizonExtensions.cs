@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using Newtonsoft.Json;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -217,17 +218,6 @@ namespace NewHorizons.Utility
             return xCorrect && yCorrect && zCorrect;
         }
 
-        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
-        {
-            try
-            {
-                return (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{fluidType}]:\n{ex}");
-                return @default;
-            }
-        }
+        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     }
 }

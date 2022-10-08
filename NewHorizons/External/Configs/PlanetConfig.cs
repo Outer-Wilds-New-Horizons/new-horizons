@@ -48,11 +48,6 @@ namespace NewHorizons.External.Configs
         public BrambleModule Bramble;
 
         /// <summary>
-        /// Set to a higher number if you wish for this body to be built sooner
-        /// </summary>
-        [DefaultValue(-1)] public int buildPriority = -1;
-
-        /// <summary>
         /// Should this planet ever be shown on the title screen?
         /// </summary>
         [DefaultValue(true)] public bool canShowOnTitle = true;
