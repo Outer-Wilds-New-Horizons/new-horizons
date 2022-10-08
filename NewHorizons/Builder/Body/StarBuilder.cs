@@ -182,7 +182,7 @@ namespace NewHorizons.Builder.Body
             proxyShadowLight.CopyPropertiesFrom(_sunLight.GetComponent<ProxyShadowLight>());
             proxyShadowLight._light = light;
 
-            sunLight.name = "SunLight";
+            sunLight.name = "StarLight";
 
             // Star controller (works on atmospheric shaders)
             StarController starController = null;
