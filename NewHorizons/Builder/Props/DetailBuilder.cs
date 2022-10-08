@@ -70,7 +70,8 @@ namespace NewHorizons.Builder.Props
 
             StreamingHandler.SetUpStreaming(prop, sector);
 
-            var isTorch = prop.GetComponentInChildren<VisionTorchItem>() != null;
+            // Could check this in the for loop but I'm not sure what order we need to know about this in
+            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
             var isItem = false;
 
             foreach (var component in prop.GetComponentsInChildren<Component>(true))
