@@ -21,10 +21,8 @@ namespace NewHorizons.Components.ShipLog
         private Vector2 _panRootPos = Vector2.zero;
         private Vector2 _startPanPos;
 
-        private ScreenPromptList _upperRightPromptList;
         private ScreenPromptList _centerPromptList;
 
-        private ScreenPrompt _detectiveModePrompt;
         private ScreenPrompt _targetSystemPrompt;
         private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
@@ -45,9 +43,7 @@ namespace NewHorizons.Components.ShipLog
             _oneShotSource = oneShotSource;
 
             _centerPromptList = centerPromptList;
-            _upperRightPromptList = upperRightPromptList;
 
-            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, UITextLibrary.GetString(UITextType.LogRumorModePrompt), 0, ScreenPrompt.DisplayState.Normal, false);
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, TranslationHandler.GetTranslation("LOCK_AUTOPILOT_WARP", TranslationHandler.TextType.UI), 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
@@ -169,7 +165,7 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(true);
 
-            Locator.GetPromptManager().AddScreenPrompt(_detectiveModePrompt, _upperRightPromptList, TextAnchor.MiddleRight, -1, true);
+            _oneShotSource.PlayOneShot(AudioType.ShipLogEnterMapMode);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
         }
 
@@ -177,7 +173,6 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(false);
 
-            Locator.GetPromptManager().RemoveScreenPrompt(_detectiveModePrompt);
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
         }
 

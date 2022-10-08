@@ -18,14 +18,25 @@ namespace NewHorizons.Builder.General
             // This radius ends up being set by min and max collider radius on the RFV but we set it anyway because why fix what aint broke
             SC.radius = sphereOfInfluence * 2;
 
-            var RFV = rfGO.AddComponent<ReferenceFrameVolume>();
+            float targetDistance = module.maxTargetDistance;
+
+            ReferenceFrameVolume RFV;
+            if (module.hideInMap)
+            {
+                var mapRFV = rfGO.AddComponent<MapReferenceFrameVolume>();
+                mapRFV._defaultMaxTargetDistance = targetDistance;
+                mapRFV._mapMaxTargetDistance = 0.001f; // Setting to 0 makes it targetable at any distance, so lets make this as small as possible.
+                RFV = mapRFV;
+            }
+            else
+                RFV = rfGO.AddComponent<ReferenceFrameVolume>();
 
             var minTargetDistance = module.targetWhenClose ? 0 : sphereOfInfluence;
 
             var RV = new ReferenceFrame(owrb);
             RV._minSuitTargetDistance = minTargetDistance;
             // The game raycasts to 100km, but if the target is farther than this max distance it ignores it
-            RV._maxTargetDistance = module.maxTargetDistance;
+            RV._maxTargetDistance = targetDistance;
             RV._autopilotArrivalDistance = 2.0f * sphereOfInfluence;
             RV._autoAlignmentDistance = sphereOfInfluence * 1.5f;
 
@@ -55,7 +66,6 @@ namespace NewHorizons.Builder.General
                 GameObject.Destroy(rfGO);
                 return null;
             }
-            else rfGO.SetActive(!module.hideInMap);
 
             return rfGO;
         }
