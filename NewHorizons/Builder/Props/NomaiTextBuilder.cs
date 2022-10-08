@@ -2,14 +2,16 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
-using Enum = System.Enum;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
+using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
+using OWML.Utils;
+
 namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextBuilder
@@ -48,7 +50,11 @@ namespace NewHorizons.Builder.Props
         private static void InitPrefabs()
         {
             // Just take every scroll and get the first arc
-            var existingArcs = GameObject.FindObjectsOfType<ScrollItem>().Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject).Where(x => x != null).ToArray();
+            var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
+                .Where(x => x != null)
+                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                .ToArray();
             _arcPrefabs = new List<GameObject>();
             _childArcPrefabs = new List<GameObject>();
             foreach (var existingArc in existingArcs)
@@ -67,7 +73,11 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>().Select(x => x?._textLine?.gameObject).Where(x => x != null).ToArray();
+            var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                .Select(x => x?._textLine?.gameObject)
+                .Where(x => x != null)
+                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                .ToArray();
             _ghostArcPrefabs = new List<GameObject>();
             foreach (var existingArc in existingGhostArcs)
             {
@@ -99,7 +109,7 @@ namespace NewHorizons.Builder.Props
             _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
             _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
 
-            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign");
+            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive();
             _trailmarkerPrefab.name = "Prefab_NOM_Trailmarker";
             _trailmarkerPrefab.transform.rotation = Quaternion.identity;
         }
@@ -108,7 +118,7 @@ namespace NewHorizons.Builder.Props
         {
             if (_scrollPrefab == null) InitPrefabs();
 
-            var xmlPath = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + info.xmlFile);
+            var xmlPath = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
 
             switch (info.type)
             {
@@ -273,7 +283,7 @@ namespace NewHorizons.Builder.Props
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
 
-                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        computer._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -321,7 +331,7 @@ namespace NewHorizons.Builder.Props
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
 
-                        computer._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        computer._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
                         computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         computer._nomaiTextAsset = new TextAsset(xmlPath);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -410,7 +420,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiWallText = cairnObject.transform.Find("Props_TH_ClutterSmall/Arc_Short").GetComponent<NomaiWallText>();
                         nomaiWallText.SetSector(sector);
 
-                        nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
                         nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -450,7 +460,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
                         nomaiText.SetSector(sector);
 
-                        nomaiText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        nomaiText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
                         nomaiText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -492,6 +502,9 @@ namespace NewHorizons.Builder.Props
 
                         trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
+                        // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
+                        trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
+
                         if (info.rotation != null)
                         {
                             trailmarkerObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
@@ -509,7 +522,7 @@ namespace NewHorizons.Builder.Props
                         var nomaiWallText = trailmarkerObject.transform.Find("Arc_Short").GetComponent<NomaiWallText>();
                         nomaiWallText.SetSector(sector);
 
-                        nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+                        nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
                         nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
                         nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
@@ -542,7 +555,7 @@ namespace NewHorizons.Builder.Props
 
             var nomaiWallText = nomaiWallTextObj.AddComponent<NomaiWallText>();
 
-            nomaiWallText._location = (NomaiText.Location)Enum.Parse(typeof(NomaiText.Location), Enum.GetName(typeof(PropModule.NomaiTextInfo.NomaiTextLocation), info.location));
+            nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
 
             var text = new TextAsset(xmlPath);
 

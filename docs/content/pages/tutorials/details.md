@@ -1,6 +1,6 @@
 ---
 Title: Detailing
-Sort_Priority: 85
+Sort_Priority: 80
 ---
 
 # Details/Scatterer
@@ -20,7 +20,7 @@ The Prop Placer is a convenience tool that lets you manually place details from 
 1. Pause the game. You will see an extra menu option titled "Toggle Prop Placer Menu". Click it
 2. The prop placer menu should now be open. At the bottom of the menu, you will see a list of mods. Click yours.
    1. This menu scrolls. If you do not see your mod, it may be further down the list.
-3. The Prop Placer is now active! Unpause the game and you can now place Nomai vases using "G"
+3. The Prop Placer is now active! Unpause the game, and you can now place Nomai vases using "G"
 
 ### How to Save
 
@@ -39,7 +39,7 @@ What's that? You want to place something other than just vases? Well I can't say
 ### How to Select Props
 
 1. Pause the game again. The prop placer menu should still be visible.
-2. At the top of the menu, you'll see a text box contianing the path for the vase. Replace this with the path for the prop you want to place. For example: `DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var`
+2. At the top of the menu, you'll see a text box containing the path for the vase. Replace this with the path for the prop you want to place. For example: `DreamWorld_Body/Sector_DreamWorld/Sector_DreamZone_1/Props_DreamZone_1/OtherComponentsGroup/Trees_Z1/DreamHouseIsland/Tree_DW_M_Var`
 3. Tip: use the Unity Explorer mod to find the path for the object you want to place. You only have to do this once.
 4. Unpause the game and press "G". Say hello to your new tree!
 5. Pause the game again. You will now see the prop you just placed on the list of recently placed props just below the "path" text box.

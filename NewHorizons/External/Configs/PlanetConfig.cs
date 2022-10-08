@@ -48,11 +48,6 @@ namespace NewHorizons.External.Configs
         public BrambleModule Bramble;
 
         /// <summary>
-        /// Set to a higher number if you wish for this body to be built sooner
-        /// </summary>
-        [DefaultValue(-1)] public int buildPriority = -1;
-
-        /// <summary>
         /// Should this planet ever be shown on the title screen?
         /// </summary>
         [DefaultValue(true)] public bool canShowOnTitle = true;
@@ -67,6 +62,10 @@ namespace NewHorizons.External.Configs
 
         [Obsolete("Signal is deprecated, please use Props->signals")]
         public SignalModule Signal;
+
+        [Obsolete("Ring is deprecated, please use Rings")]
+        public RingModule Ring;
+
         #endregion Obsolete
 
         /// <summary>
@@ -135,9 +134,9 @@ namespace NewHorizons.External.Configs
         public string[] removeChildren;
 
         /// <summary>
-        /// Creates a ring around the planet
+        /// Create rings around the planet
         /// </summary>
-        public RingModule Ring;
+        public RingModule[] Rings;
 
         /// <summary>
         /// Add sand to this planet
@@ -168,6 +167,16 @@ namespace NewHorizons.External.Configs
         /// Add water to this planet
         /// </summary>
         public WaterModule Water;
+
+        /// <summary>
+        /// Add various volumes on this body
+        /// </summary>
+        public VolumesModule Volumes;
+
+        /// <summary>
+        /// Extra data that may be used by extension mods
+        /// </summary>
+        public object extras;
 
         public PlanetConfig()
         {
@@ -312,6 +321,20 @@ namespace NewHorizons.External.Configs
                     if (tornado.downwards)
                         tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
 
+            if (Props?.audioVolumes != null)
+            {
+                if (Volumes == null) Volumes = new VolumesModule();
+                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new VolumesModule.AudioVolumeInfo[0];
+                Volumes.audioVolumes = Volumes.audioVolumes.Concat(Props.audioVolumes).ToArray();
+            }
+
+            if (Props?.reveal != null)
+            {
+                if (Volumes == null) Volumes = new VolumesModule();
+                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new VolumesModule.RevealVolumeInfo[0];
+                Volumes.revealVolumes = Volumes.revealVolumes.Concat(Props.reveal).ToArray();
+            }
+
             if (Base.sphereOfInfluence != 0f) Base.soiOverride = Base.sphereOfInfluence;
 
             // Moved a bunch of stuff off of shiplog module to star system module because it didnt exist when we made this
@@ -377,10 +400,20 @@ namespace NewHorizons.External.Configs
                 if (!string.IsNullOrEmpty(Cloak.audioFilePath)) Cloak.audio = Cloak.audioFilePath;
             }
 
-            // Rings are no longer variable size module
+            // Ring is now a list so you can have many per planet
             if (Ring != null)
             {
-                if (Ring.curve != null) Ring.scaleCurve = Ring.curve;
+                if (Rings == null) Rings = new RingModule[0];
+                Rings = Rings.Append(Ring).ToArray();
+            }
+
+            // Rings are no longer variable size module
+            if (Rings != null)
+            {
+                foreach (var ring in Rings)
+                {
+                    if (ring.curve != null) ring.scaleCurve = ring.curve;
+                }
             }
         }
     }

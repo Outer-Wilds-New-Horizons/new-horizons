@@ -34,12 +34,6 @@
       "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
       "$ref": "#/definitions/BrambleModule"
     },
-    "buildPriority": {
-      "type": "integer",
-      "description": "Set to a higher number if you wish for this body to be built sooner",
-      "format": "int32",
-      "default": -1
-    },
     "canShowOnTitle": {
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen?",
@@ -100,9 +94,12 @@
         "type": "string"
       }
     },
-    "Ring": {
-      "description": "Creates a ring around the planet",
-      "$ref": "#/definitions/RingModule"
+    "Rings": {
+      "type": "array",
+      "description": "Create rings around the planet",
+      "items": {
+        "$ref": "#/definitions/RingModule"
+      }
     },
     "Sand": {
       "description": "Add sand to this planet",
@@ -127,6 +124,17 @@
     "Water": {
       "description": "Add water to this planet",
       "$ref": "#/definitions/WaterModule"
+    },
+    "Volumes": {
+      "description": "Add various volumes on this body",
+      "$ref": "#/definitions/VolumesModule"
+    },
+    "extras": {
+      "type": "object",
+      "description": "Extra data that may be used by extension mods",
+      "additionalProperties": {
+        "type": "object"
+      }
     },
     "$schema": {
       "type": "string",
@@ -302,6 +310,11 @@
           "type": "boolean",
           "description": "Whether we use an atmospheric shader on the planet. Doesn't affect clouds, fog, rain, snow, oxygen, etc. Purely\nvisual."
         },
+        "hasShockLayer": {
+          "type": "boolean",
+          "description": "Whether this atmosphere will have flames appear when your ship goes a certain speed.",
+          "default": true
+        },
         "minShockSpeed": {
           "type": "number",
           "description": "Minimum speed that your ship can go in the atmosphere where flames will appear.",
@@ -384,12 +397,14 @@
       "x-enumNames": [
         "GiantsDeep",
         "QuantumMoon",
-        "Basic"
+        "Basic",
+        "Transparent"
       ],
       "enum": [
         "giantsDeep",
         "quantumMoon",
-        "basic"
+        "basic",
+        "transparent"
       ]
     },
     "FluidType": {
@@ -925,13 +940,6 @@
             "$ref": "#/definitions/RaftInfo"
           }
         },
-        "reveal": {
-          "type": "array",
-          "description": "Add triggers that reveal parts of the ship log on this planet",
-          "items": {
-            "$ref": "#/definitions/RevealInfo"
-          }
-        },
         "scatter": {
           "type": "array",
           "description": "Scatter props around this planet's surface",
@@ -972,13 +980,6 @@
           "description": "Add black/white-holes to this planet",
           "items": {
             "$ref": "#/definitions/SingularityModule"
-          }
-        },
-        "audioVolumes": {
-          "type": "array",
-          "description": "Add audio volumes to this planet",
-          "items": {
-            "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
         "signals": {
@@ -1041,6 +1042,10 @@
           "description": "Scale the prop",
           "format": "float",
           "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "quantumGroupID": {
           "type": "string",
@@ -1341,61 +1346,6 @@
         }
       }
     },
-    "RevealInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "maxAngle": {
-          "type": "number",
-          "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)",
-          "format": "float"
-        },
-        "maxDistance": {
-          "type": "number",
-          "description": "The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)",
-          "format": "float"
-        },
-        "position": {
-          "description": "The position to place this volume at",
-          "$ref": "#/definitions/MVector3"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this reveal volume",
-          "format": "float"
-        },
-        "revealOn": {
-          "description": "What needs to be done to the volume to unlock the facts",
-          "default": "enter",
-          "$ref": "#/definitions/RevealVolumeType"
-        },
-        "reveals": {
-          "type": "array",
-          "description": "A list of facts to reveal",
-          "items": {
-            "type": "string"
-          }
-        },
-        "achievementID": {
-          "type": "string",
-          "description": "An achievement to unlock. Optional."
-        }
-      }
-    },
-    "RevealVolumeType": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Enter",
-        "Observe",
-        "Snapshot"
-      ],
-      "enum": [
-        "enter",
-        "observe",
-        "snapshot"
-      ]
-    },
     "ScatterInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -1424,7 +1374,12 @@
         "scale": {
           "type": "number",
           "description": "Scale this prop once it is placed",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "seed": {
           "type": "integer",
@@ -1446,6 +1401,15 @@
           ],
           "description": "The highest height that these objects will be placed at (only relevant if there's a heightmap)",
           "format": "float"
+        },
+        "preventOverlap": {
+          "type": "boolean",
+          "description": "Should we try to prevent overlap between the scattered details? True by default. If it's affecting load times turn it off.",
+          "default": true
+        },
+        "keepLoaded": {
+          "type": "boolean",
+          "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
         }
       }
     },
@@ -1805,70 +1769,6 @@
         "whiteHole"
       ]
     },
-    "AudioVolumeInfo": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "position": {
-          "description": "The location of this audio volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this audio volume",
-          "format": "float"
-        },
-        "audio": {
-          "type": "string",
-          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
-        },
-        "track": {
-          "description": "The audio track of this audio volume",
-          "default": "environment",
-          "$ref": "#/definitions/AudioMixerTrackName"
-        }
-      }
-    },
-    "AudioMixerTrackName": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "Undefined",
-        "Menu",
-        "Music",
-        "Environment",
-        "Environment_Unfiltered",
-        "EndTimes_SFX",
-        "Signal",
-        "Death",
-        "Player",
-        "Player_External",
-        "Ship",
-        "Map",
-        "EndTimes_Music",
-        "MuffleWhileRafting",
-        "MuffleIndoors",
-        "SlideReelMusic"
-      ],
-      "enum": [
-        "undefined",
-        "menu",
-        "music",
-        "environment",
-        "environmentUnfiltered",
-        "endTimesSfx",
-        "signal",
-        "death",
-        "player",
-        "playerExternal",
-        "ship",
-        "map",
-        "endTimesMusic",
-        "muffleWhileRafting",
-        "muffleIndoors",
-        "slideReelMusic"
-      ]
-    },
     "SignalInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2177,6 +2077,10 @@
           "items": {
             "$ref": "#/definitions/TimeValuePair"
           }
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -2507,6 +2411,387 @@
           "$ref": "#/definitions/MColor"
         }
       }
+    },
+    "VolumesModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "audioVolumes": {
+          "type": "array",
+          "description": "Add audio volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/AudioVolumeInfo"
+          }
+        },
+        "hazardVolumes": {
+          "type": "array",
+          "description": "Add hazard volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/HazardVolumeInfo"
+          }
+        },
+        "interferenceVolumes": {
+          "type": "array",
+          "description": "Add interference volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "insulatingVolumes": {
+          "type": "array",
+          "description": "Add insulating volumes to this planet. These will stop electricty hazard volumes from affecting you (just like the jellyfish).",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "mapRestrictionVolumes": {
+          "type": "array",
+          "description": "Add map restriction volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "notificationVolumes": {
+          "type": "array",
+          "description": "Add notification volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/NotificationVolumeInfo"
+          }
+        },
+        "revealVolumes": {
+          "type": "array",
+          "description": "Add triggers that reveal parts of the ship log on this planet.",
+          "items": {
+            "$ref": "#/definitions/RevealVolumeInfo"
+          }
+        },
+        "reverbVolumes": {
+          "type": "array",
+          "description": "Add reverb volumes to this planet. Great for echoes in caves.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        }
+      }
+    },
+    "AudioVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "audio": {
+          "type": "string",
+          "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "track": {
+          "description": "The audio track of this audio volume",
+          "default": "environment",
+          "$ref": "#/definitions/AudioMixerTrackName"
+        },
+        "loop": {
+          "type": "boolean",
+          "description": "Whether to loop this audio while in this audio volume or just play it once",
+          "default": true
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "AudioMixerTrackName": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Undefined",
+        "Menu",
+        "Music",
+        "Environment",
+        "Environment_Unfiltered",
+        "EndTimes_SFX",
+        "Signal",
+        "Death",
+        "Player",
+        "Player_External",
+        "Ship",
+        "Map",
+        "EndTimes_Music",
+        "MuffleWhileRafting",
+        "MuffleIndoors",
+        "SlideReelMusic"
+      ],
+      "enum": [
+        "undefined",
+        "menu",
+        "music",
+        "environment",
+        "environmentUnfiltered",
+        "endTimesSfx",
+        "signal",
+        "death",
+        "player",
+        "playerExternal",
+        "ship",
+        "map",
+        "endTimesMusic",
+        "muffleWhileRafting",
+        "muffleIndoors",
+        "slideReelMusic"
+      ]
+    },
+    "HazardVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "type": {
+          "description": "The type of hazard for this volume.",
+          "default": "general",
+          "$ref": "#/definitions/HazardType"
+        },
+        "damagePerSecond": {
+          "type": "number",
+          "description": "The amount of damage you will take per second while inside this volume.",
+          "format": "float",
+          "default": 10.0
+        },
+        "firstContactDamageType": {
+          "description": "The type of damage you will take when you first touch this volume.",
+          "default": "impact",
+          "$ref": "#/definitions/InstantDamageType"
+        },
+        "firstContactDamage": {
+          "type": "number",
+          "description": "The amount of damage you will take when you first touch this volume.",
+          "format": "float"
+        }
+      }
+    },
+    "HazardType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NONE",
+        "GENERAL",
+        "DARKMATTER",
+        "HEAT",
+        "FIRE",
+        "SANDFALL",
+        "ELECTRICITY",
+        "RAPIDS"
+      ],
+      "enum": [
+        "none",
+        "general",
+        "ghostMatter",
+        "heat",
+        "fire",
+        "sandfall",
+        "electricity",
+        "rapids"
+      ]
+    },
+    "InstantDamageType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Impact",
+        "Puncture",
+        "Electrical"
+      ],
+      "enum": [
+        "impact",
+        "puncture",
+        "electrical"
+      ]
+    },
+    "VolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        }
+      }
+    },
+    "NotificationVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "target": {
+          "description": "What the notification will show for.",
+          "default": "all",
+          "$ref": "#/definitions/NotificationTarget"
+        },
+        "entryNotification": {
+          "description": "The notification that will play when you enter this volume.",
+          "$ref": "#/definitions/NotificationInfo"
+        },
+        "exitNotification": {
+          "description": "The notification that will play when you exit this volume.",
+          "$ref": "#/definitions/NotificationInfo"
+        }
+      }
+    },
+    "NotificationTarget": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "All",
+        "Ship",
+        "Player"
+      ],
+      "enum": [
+        "all",
+        "ship",
+        "player"
+      ]
+    },
+    "NotificationInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "displayMessage": {
+          "type": "string",
+          "description": "The message that will be displayed."
+        },
+        "duration": {
+          "type": "number",
+          "description": "The duration this notification will be displayed.",
+          "format": "float",
+          "default": 5.0
+        }
+      }
+    },
+    "RevealVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "maxAngle": {
+          "type": "number",
+          "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)",
+          "format": "float"
+        },
+        "maxDistance": {
+          "type": "number",
+          "description": "The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)",
+          "format": "float"
+        },
+        "revealOn": {
+          "description": "What needs to be done to the volume to unlock the facts",
+          "default": "enter",
+          "$ref": "#/definitions/RevealVolumeType"
+        },
+        "reveals": {
+          "type": "array",
+          "description": "A list of facts to reveal",
+          "items": {
+            "type": "string"
+          }
+        },
+        "achievementID": {
+          "type": "string",
+          "description": "An achievement to unlock. Optional."
+        }
+      }
+    },
+    "RevealVolumeType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Enter",
+        "Observe",
+        "Snapshot"
+      ],
+      "enum": [
+        "enter",
+        "observe",
+        "snapshot"
+      ]
     }
   },
   "$docs": {

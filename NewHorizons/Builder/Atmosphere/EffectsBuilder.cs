@@ -20,6 +20,18 @@ namespace NewHorizons.Builder.Atmosphere
             SCG._dynamicCullingBounds = false;
             SCG._waitForStreaming = false;
 
+            var minHeight = surfaceSize;
+            if (config.HeightMap?.minHeight != null)
+            {
+                if (config.Water?.size >= config.HeightMap.minHeight) minHeight = config.Water.size; // use sea level if its higher
+                else minHeight = config.HeightMap.minHeight;
+            }
+            else if (config.Water?.size != null) minHeight = config.Water.size;
+            else if (config.Lava?.size != null) minHeight = config.Lava.size;
+
+            var maxHeight = config.Atmosphere.size;
+            if (config.Atmosphere.clouds?.outerCloudRadius != null) maxHeight = config.Atmosphere.clouds.outerCloudRadius;
+
             if (config.Atmosphere.hasRain)
             {
                 var rainGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
@@ -29,9 +41,9 @@ namespace NewHorizons.Builder.Atmosphere
                 var pvc = rainGO.GetComponent<PlanetaryVectionController>();
                 pvc._densityByHeight = new AnimationCurve(new Keyframe[]
                 {
-                    new Keyframe(surfaceSize - 0.5f, 0),
-                    new Keyframe(surfaceSize, 10f),
-                    new Keyframe(config.Atmosphere.size, 0f)
+                    new Keyframe(minHeight - 0.5f, 0),
+                    new Keyframe(minHeight, 10f),
+                    new Keyframe(maxHeight, 0f)
                 });
 
                 rainGO.GetComponent<PlanetaryVectionController>()._activeInSector = sector;
@@ -53,9 +65,9 @@ namespace NewHorizons.Builder.Atmosphere
                     var pvc = snowEmitter.GetComponent<PlanetaryVectionController>();
                     pvc._densityByHeight = new AnimationCurve(new Keyframe[]
                     {
-                        new Keyframe(surfaceSize - 0.5f, 0),
-                        new Keyframe(surfaceSize, 10f),
-                        new Keyframe(config.Atmosphere.size, 0f)
+                        new Keyframe(minHeight - 0.5f, 0),
+                        new Keyframe(minHeight, 10f),
+                        new Keyframe(maxHeight, 0f)
                     });
 
                     snowEmitter.GetComponent<PlanetaryVectionController>()._activeInSector = sector;

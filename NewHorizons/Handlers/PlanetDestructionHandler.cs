@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.Stars;
 using NewHorizons.Utility;
 using OWML.Utils;
 using System;
@@ -117,7 +117,8 @@ namespace NewHorizons.Handlers
                         break;
                     case AstroObject.Name.Sun:
                         var starController = ao.gameObject.GetComponent<StarController>();
-                        StarLightController.RemoveStar(starController);
+                        SunLightEffectsController.RemoveStar(starController);
+                        SunLightEffectsController.RemoveStarLight(ao.transform.Find("Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
                         GameObject.Destroy(starController);
 
                         var audio = ao.GetComponentInChildren<SunSurfaceAudioController>();

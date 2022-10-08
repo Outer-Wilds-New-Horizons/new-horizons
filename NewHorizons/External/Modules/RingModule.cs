@@ -62,5 +62,10 @@ namespace NewHorizons.External.Modules
         /// Fade rings in/out over time. Optional. Value between 0-1, time is in minutes.
         /// </summary>
         public TimeValuePair[] opacityCurve;
+
+        /// <summary>
+        /// An optional rename of this object
+        /// </summary>
+        public string rename;
     }
 }

@@ -18,6 +18,7 @@ Check the ship's log for how to use your warp drive to travel between star syste
 <!-- TOC -->
 
 - [Incompatible mods](#incompatible-mods)
+- [Supported mods](#supported-mods)
 - [Development](#development)
 - [Contact](#contact)
 - [Credits](#credits)
@@ -27,6 +28,12 @@ Check the ship's log for how to use your warp drive to travel between star syste
 ## Incompatible mods
 - Quantum Space Buddies.
 - OW Randomizer.
+
+## Supported Mods
+New Horizons has optional support for a few other mods:
+- [Discord Rich Presence](https://outerwildsmods.com/mods/discordrichpresence/): Showcase what New Horizons worlds you're exploring in your Discord status!
+- [Voice Acting Mod](https://outerwildsmods.com/mods/voiceactingmod/): Characters in NH can be given voice lines which will work with this mod installed. Try it out by downloading NH Examples and talking to Ernesto!
+- [Achievements+](https://outerwildsmods.com/mods/achievements/): New Horizons and its addons have achievements you can unlock with this mod installed!
 
 ## Features
 - Load planet meshes or details from asset bundles 
