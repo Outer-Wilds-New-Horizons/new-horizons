@@ -6,6 +6,7 @@ using NewHorizons.Components;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Handlers
 {
@@ -89,6 +90,15 @@ namespace NewHorizons.Handlers
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
+
+            var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
+            vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
+            vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
+            vesselAO._customName = "Vessel";
+            vesselAO._name = AstroObject.Name.CustomString;
+            vesselAO._type = AstroObject.Type.SpaceStation;
+            vesselAO.Register();
+            vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
 
             VesselOrbLocker vesselOrbLocker = vesselObject.GetComponent<VesselOrbLocker>();
             vesselOrbLocker.InitializeOrbs();
