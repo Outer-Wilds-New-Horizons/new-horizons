@@ -268,7 +268,6 @@ namespace NewHorizons
             {
                 try
                 {
-                    AmbientLightBuilder.InitPrefab();
                     AtmosphereBuilder.InitPrefabs();
                     BrambleDimensionBuilder.InitPrefabs();
                     BrambleNodeBuilder.InitPrefabs();
