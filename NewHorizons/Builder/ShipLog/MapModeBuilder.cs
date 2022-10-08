@@ -1,4 +1,3 @@
-using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -9,6 +8,8 @@ using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components.ShipLog;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class MapModeBuilder
@@ -219,7 +220,7 @@ namespace NewHorizons.Builder.ShipLog
 
             foreach (NewHorizonsBody body in bodies)
             {
-                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null) continue;
+                if (body.Config.ShipLog?.mapMode?.manualNavigationPosition == null && body.Config.ShipLog?.mapMode?.details == null) continue;
 
                 // Sometimes they got other names idk
                 var name = body.Config.name.Replace(" ", "");
@@ -283,6 +284,7 @@ namespace NewHorizons.Builder.ShipLog
                         {
                             gameObject.transform.localScale = Vector3.one * body.Config.ShipLog.mapMode.scale;
                         }
+                        MakeDetails(body, gameObject.transform, greyScaleMaterial);
                     }
                 }
             }

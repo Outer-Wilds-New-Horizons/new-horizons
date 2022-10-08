@@ -1,36 +1,38 @@
 ---
 Title: Dialogue
 Description: Guide to making dialogue in New Horizons
-Sort_Priority: 50
+Sort_Priority: 30
 ---
 
 # Dialogue
 
 This page goes over how to use dialogue in New Horizons.
 
-# Understanding Dialogue
+You may want to view [Understanding XML]({{ "Understanding XML"|route }}) if you haven't already.
 
-## Dialogue Tree
+## Understanding Dialogue
+
+### Dialogue Tree
 
 A dialogue tree is an entire conversation, it's made up of dialogue nodes.
 
-## Dialogue Node
+### Dialogue Node
 
 A node is a set of pages shown to the player followed by options the player can choose from to change the flow of the conversation.
 
-## Condition
+### Condition
 
 A condition is a yes/no value stored **for this loop and this loop only**.  It can be used to show new dialogue options, stop someone from talking to you (looking at you Slate), and more.
 
-## Persistent Condition
+### Persistent Condition
 
-A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the player's save file.
+A persistent condition is similar to a condition, except it *persists* through loops, and is saved on the players save file.
 
-## Remote Trigger
+### Remote Trigger
 
 A remote trigger is used to have an NPC talk to you from a distance; ex: Slate stopping you for the umpteenth time to tell you information you already knew.
 
-# Example XML
+## Example XML
 
 Here's an example dialogue XML:
 
@@ -113,7 +115,7 @@ Here's an example dialogue XML:
 </DialogueTree>
 ```
 
-# Using the XML
+## Using the XML
 
 To use the dialogue XML you have created, you simply need to reference it in the `dialogue` prop
 
@@ -130,11 +132,11 @@ To use the dialogue XML you have created, you simply need to reference it in the
 }
 ```
 
-# Dialogue Config
+## Dialogue Config
 
 To view the options for the dialogue prop, check [the schema]({{ "Celestial Body Schema"|route }}#Props_dialogue)
 
-# Controlling Conditions
+## Controlling Conditions
 
 You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentCondition>` tags
 
@@ -147,18 +149,18 @@ You can set condition in dialogue with the `<SetCondition>` and `<SetPersistentC
 </DialogueNode>
 ```
 
-# Dialogue Options
+## Dialogue Options
 
 There are many control structures for dialogue options to hide/reveal them if conditions are met. Take a look at [the DialogueOption schema]({{ "Dialogue Schema"|route }}#DialogueTree-DialogueNode-DialogueOptionsList-DialogueOption-DialogueTarget) for more info.
 
-# Controlling Flow
+## Controlling Flow
 
 In addition to `<DialogueOptions>`, there are other ways to control the flow of the conversation.
 
-## DialogueTarget
+### DialogueTarget
 
 Defining `<DialogueTarget>` in the `<DialogueNode>` tag instead of a `<DialogueOption>` will make the conversation go directly to that target after the character is done talking.
 
-## DialogueTargetShipLogCondition
+### DialogueTargetShipLogCondition
 
-Used in tandum with `DialogueTarget`, makes it so you must have a [ship log fact]({{ "Ship Log"|route }}#explore-facts) to go to the next node.
+Used in tandem with `DialogueTarget`, makes it so you must have a [ship log fact]({{ "Ship Log"|route }}#explore-facts) to go to the next node.

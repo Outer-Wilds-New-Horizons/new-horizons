@@ -1,6 +1,8 @@
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -19,7 +21,7 @@ namespace NewHorizons.Utility
             {
                 try
                 {
-                    var clip = LoadAudio(mod.ModHelper.Manifest.ModFolderPath + "/" + audio);
+                    var clip = LoadAudio(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, audio));
                     source._audioLibraryClip = AudioType.None;
                     source._clipArrayIndex = 0;
                     source._clipArrayLength = 0;
@@ -33,12 +35,11 @@ namespace NewHorizons.Utility
                 }
             }
 
-            try
+            if (EnumUtils.TryParse<AudioType>(audio, out AudioType type))
             {
-                var audioType = (AudioType)Enum.Parse(typeof(AudioType), audio);
-                source._audioLibraryClip = audioType;
+                source._audioLibraryClip = type;
             }
-            catch
+            else
             {
                 var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
                 if (audioClip == null) Logger.Log($"Couldn't find audio clip {audio}");

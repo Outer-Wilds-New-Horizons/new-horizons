@@ -1,3 +1,4 @@
+using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
 using UnityEngine;

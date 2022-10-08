@@ -36,10 +36,10 @@ namespace NewHorizons
                 if (name == null) return;
 
                 var relativePath = $"temp/{name}.json";
-                var fullPath = Main.Instance.ModHelper.Manifest.ModFolderPath + relativePath;
-                if (!Directory.Exists(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp"))
+                var fullPath = Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, relativePath);
+                if (!Directory.Exists(Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "temp")))
                 {
-                    Directory.CreateDirectory(Main.Instance.ModHelper.Manifest.ModFolderPath + "temp");
+                    Directory.CreateDirectory(Path.Combine(Main.Instance.ModHelper.Manifest.ModFolderPath, "temp"));
                 }
                 JsonHelper.SaveJsonObject(fullPath, config);
                 var body = Main.Instance.LoadConfig(Main.Instance, relativePath);
@@ -126,7 +126,7 @@ namespace NewHorizons
             var planet = Main.BodyDict[Main.Instance.CurrentStarSystem].Find((b) => b.Config.name == bodyName);
             return planet == null
                 ? null
-                : QueryJson(outType, planet.Mod.ModHelper.Manifest.ModFolderPath + planet.RelativePath, jsonPath);
+                : QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
         }
 
         public object QuerySystem(Type outType, string jsonPath)
@@ -134,7 +134,7 @@ namespace NewHorizons
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
             return system == null 
                 ? null 
-                : QueryJson(outType, system.Mod.ModHelper.Manifest.ModFolderPath + system.RelativePath, jsonPath);
+                : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,

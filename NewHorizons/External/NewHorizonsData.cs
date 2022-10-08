@@ -19,7 +19,7 @@ namespace NewHorizons.External
             _activeProfileName = GetProfileName();
             if (_activeProfileName == null)
             {
-                Logger.LogError("Couldn't find active profile, are you on Gamepass?");
+                Logger.LogWarning("Couldn't find active profile, are you on Gamepass?");
                 _activeProfileName = "XboxGamepassDefaultProfile";
             }
 
@@ -82,12 +82,13 @@ namespace NewHorizons.External
                 KnownFrequencies = new List<string>();
                 KnownSignals = new List<string>();
                 NewlyRevealedFactIDs = new List<string>();
+                PopupsRead = new List<string>();
             }
 
             public List<string> KnownFrequencies { get; }
             public List<string> KnownSignals { get; }
-
             public List<string> NewlyRevealedFactIDs { get; }
+            public List<string> PopupsRead { get; }
         }
 
         #region Frequencies
@@ -152,6 +153,22 @@ namespace NewHorizons.External
         {
             _activeProfile?.NewlyRevealedFactIDs.Clear();
             Save();
+        }
+
+        #endregion
+
+        #region Read popups
+
+        public static void ReadOneTimePopup(string id)
+        {
+            _activeProfile?.PopupsRead.Add(id);
+            Save();
+        }
+
+        public static bool HasReadOneTimePopup(string id)
+        {
+            // To avoid spam, we'll just say the popup has been read if we can't load the profile
+            return _activeProfile?.PopupsRead.Contains(id) ?? true;
         }
 
         #endregion

@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Components;
+using NewHorizons.Components.Volumes;
 using UnityEngine;
 namespace NewHorizons.Patches
 {

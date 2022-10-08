@@ -1,5 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using System;
+using System.Reflection;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -89,38 +91,28 @@ namespace NewHorizons.Builder.General
         public static void SuitUp()
         {
             suitUpQueued = false;
-            if (Locator.GetPlayerController()._isWearingSuit) return;
-
-            Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
-
-            // Make the ship act as if the player took the suit
-            var spv = SearchUtilities.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
-
-            if (spv == null) return;
-
-            spv._containsSuit = false;
-
-            if (spv._allowSuitReturn)
+            if (!Locator.GetPlayerController()._isWearingSuit)
             {
-                spv._interactVolume.ChangePrompt(UITextType.ReturnSuitPrompt, spv._pickupSuitCommandIndex);
+                var spv = SearchUtilities.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
+                if (spv != null)
+                {
+                    var command = spv._interactVolume.GetInteractionAt(spv._pickupSuitCommandIndex).inputCommand;
+
+                    // Make the ship act as if the player took the suit
+                    var eventDelegate = (MulticastDelegate)typeof(MultipleInteractionVolume).GetField(
+                        nameof(MultipleInteractionVolume.OnPressInteract),
+                        BindingFlags.Instance | BindingFlags.NonPublic)
+                        .GetValue(spv._interactVolume);
+                    foreach (var handler in eventDelegate.GetInvocationList())
+                    {
+                        handler.Method.Invoke(handler.Target, new object[] { command });
+                    }
+                }
+                else
+                {
+                    Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
+                }
             }
-            else
-            {
-                spv._interactVolume.EnableSingleInteraction(false, spv._pickupSuitCommandIndex);
-            }
-
-            spv._timer = 0f;
-            spv._index = 0;
-
-            spv.OnSuitUp();
-
-            GameObject suitGeometry = spv._suitGeometry;
-            if (suitGeometry != null) suitGeometry.SetActive(false);
-
-            OWCollider suitOWCollider = spv._suitOWCollider;
-            if (suitOWCollider != null) suitOWCollider.SetActivation(false);
-
-            spv.enabled = true;
         }
     }
 }

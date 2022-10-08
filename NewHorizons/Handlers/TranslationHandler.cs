@@ -66,9 +66,10 @@ namespace NewHorizons.Handlers
                 foreach (var originalKey in config.ShipLogDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var value = config.ShipLogDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_shipLogTranslationDictionary[language].ContainsKey(key)) _shipLogTranslationDictionary[language].Add(key, config.ShipLogDictionary[originalKey]);
-                    else _shipLogTranslationDictionary[language][key] = config.ShipLogDictionary[originalKey];
+                    if (!_shipLogTranslationDictionary[language].ContainsKey(key)) _shipLogTranslationDictionary[language].Add(key, value);
+                    else _shipLogTranslationDictionary[language][key] = value;
                 }
             }
 
@@ -78,9 +79,10 @@ namespace NewHorizons.Handlers
                 foreach (var originalKey in config.DialogueDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var value = config.DialogueDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, config.DialogueDictionary[originalKey]);
-                    else _dialogueTranslationDictionary[language][key] = config.DialogueDictionary[originalKey];
+                    if (!_dialogueTranslationDictionary[language].ContainsKey(key)) _dialogueTranslationDictionary[language].Add(key, value);
+                    else _dialogueTranslationDictionary[language][key] = value;
                 }
             }
 
@@ -90,16 +92,17 @@ namespace NewHorizons.Handlers
                 foreach (var originalKey in config.UIDictionary.Keys)
                 {
                     var key = originalKey.Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
+                    var value = config.UIDictionary[originalKey].Replace("&lt;", "<").Replace("&gt;", ">").Replace("<![CDATA[", "").Replace("]]>", "");
 
-                    if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, config.UIDictionary[originalKey]);
-                    else _uiTranslationDictionary[language][key] = config.UIDictionary[originalKey];
+                    if (!_uiTranslationDictionary[language].ContainsKey(key)) _uiTranslationDictionary[language].Add(key, value);
+                    else _uiTranslationDictionary[language][key] = value;
                 }
             }
         }
 
-        public static void AddDialogue(string rawText, params string[] rawPreText)
+        public static void AddDialogue(string rawText, bool trimRawTextForKey = false, params string[] rawPreText)
         {
-            var key = string.Join(string.Empty, rawPreText) + rawText;
+            var key = string.Join(string.Empty, rawPreText) + (trimRawTextForKey? rawText.Trim() : rawText);
 
             var text = GetTranslation(rawText, TextType.DIALOGUE);
 
