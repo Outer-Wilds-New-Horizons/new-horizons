@@ -88,7 +88,7 @@ namespace NewHorizons.Components.ShipLog
         {
             GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
 
-            Locator.GetPromptManager().RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
+            Locator.GetPromptManager()?.RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
         }
 
         public GameObject CreateCard(string uniqueID, Transform parent, Vector2 position)
