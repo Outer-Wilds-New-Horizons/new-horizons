@@ -1342,7 +1342,7 @@
         },
         "acceleration": {
           "type": "number",
-          "description": "Acceleration of the raft",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
           "format": "float",
           "default": 5.0
         }
