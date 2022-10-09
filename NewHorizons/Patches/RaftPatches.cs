@@ -109,10 +109,10 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(FluidVolume), "GetDepthAtPosition")]
         public static bool FluidVolume_GetDepthAtPosition(FluidVolume __instance, ref float __result, Vector3 worldPosition)
         {
-            if (__instance is RadialFluidVolume radialFluidVolume)
+            if (__instance is SphereOceanFluidVolume sphereOceanFluidVolume)
             {
-                Vector3 vector = radialFluidVolume.transform.InverseTransformPoint(worldPosition);
-                __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - radialFluidVolume._radius;
+                Vector3 vector = sphereOceanFluidVolume.transform.InverseTransformPoint(worldPosition);
+                __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - sphereOceanFluidVolume._radius;
                 return false;
             }
             else
