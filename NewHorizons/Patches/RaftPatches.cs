@@ -74,17 +74,17 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(AsymmetricFluidDetector), "ManagedFixedUpdate")]
+        [HarmonyPatch(typeof(AsymmetricFluidDetector), nameof(AsymmetricFluidDetector.ManagedFixedUpdate))]
         public static void AsymmetricFluidDetector_ManagedFixedUpdate(AsymmetricFluidDetector __instance)
         {
             // This is like doing base.FixedUpdate
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
+        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), nameof(AlignToSurfaceFluidDetector.ManagedFixedUpdate))]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
-            if (!(__instance._alignmentFluid is NHFluidVolume || __instance._alignmentFluid is SphereOceanFluidVolume)) return true;
+            if (__instance._alignmentFluid is not (NHFluidVolume or SphereOceanFluidVolume)) return true;
 
             // Mostly copy pasting from the AlignWithDirection class
             AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
@@ -106,7 +106,7 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(FluidVolume), "GetDepthAtPosition")]
+        [HarmonyPatch(typeof(FluidVolume), nameof(FluidVolume.GetDepthAtPosition))]
         public static bool FluidVolume_GetDepthAtPosition(FluidVolume __instance, ref float __result, Vector3 worldPosition)
         {
             if (__instance is SphereOceanFluidVolume sphereOceanFluidVolume)
