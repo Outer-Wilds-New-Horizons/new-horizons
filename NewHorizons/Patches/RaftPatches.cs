@@ -1,5 +1,4 @@
 using HarmonyLib;
-using NewHorizons.Components.Volumes;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
@@ -84,7 +83,7 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), nameof(AlignToSurfaceFluidDetector.ManagedFixedUpdate))]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
-            if (__instance._alignmentFluid is not (NHFluidVolume or SphereOceanFluidVolume)) return true;
+            if (__instance._alignmentFluid is not RadialFluidVolume) return true;
 
             // Mostly copy pasting from the AlignWithDirection class
             AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
@@ -109,14 +108,11 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(FluidVolume), nameof(FluidVolume.GetDepthAtPosition))]
         public static bool FluidVolume_GetDepthAtPosition(FluidVolume __instance, ref float __result, Vector3 worldPosition)
         {
-            if (__instance is SphereOceanFluidVolume sphereOceanFluidVolume)
-            {
-                Vector3 vector = sphereOceanFluidVolume.transform.InverseTransformPoint(worldPosition);
-                __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - sphereOceanFluidVolume._radius;
-                return false;
-            }
-            else
-                return true;
+            if (__instance is not RadialFluidVolume radialFluidVolume) return true;
+
+            Vector3 vector = radialFluidVolume.transform.InverseTransformPoint(worldPosition);
+            __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - radialFluidVolume._radius;
+            return false;
         }
     }
 }
