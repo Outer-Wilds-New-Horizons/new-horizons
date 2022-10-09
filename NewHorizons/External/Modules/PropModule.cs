@@ -235,7 +235,7 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
-            /// Acceleration of the raft
+            /// Acceleration of the raft. Default acceleration is 5.
             /// </summary>
             [DefaultValue(5f)] public float acceleration = 5f;
         }
