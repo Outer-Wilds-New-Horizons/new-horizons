@@ -1,5 +1,4 @@
-﻿using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+﻿using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -38,13 +37,15 @@ namespace NewHorizons.Builder.Props
             raftController._riverFluid = null;
 
             raftController._sector = sector;
+            raftController._acceleration = info.acceleration;
             sector.OnOccupantEnterSector += raftController.OnOccupantEnterSector;
             sector.OnOccupantExitSector += raftController.OnOccupantExitSector;
 
             // Detectors
             var fluidDetector = raftObject.transform.Find("Detector_Raft").GetComponent<RaftFluidDetector>();
-            var waterVolume = planetGO.GetComponentInChildren<NHFluidVolume>();
+            var waterVolume = planetGO.GetComponentInChildren<RadialFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
+            fluidDetector._buoyancy.checkAgainstWaves = true;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())

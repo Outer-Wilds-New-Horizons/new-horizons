@@ -1339,6 +1339,12 @@
         "position": {
           "description": "Position of the raft",
           "$ref": "#/definitions/MVector3"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
