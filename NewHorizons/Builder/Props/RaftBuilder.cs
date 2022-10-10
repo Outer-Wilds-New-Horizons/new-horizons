@@ -61,13 +61,15 @@ namespace NewHorizons.Builder.Props
 
             var raftController = raftObject.GetComponent<RaftController>();
             raftController._sector = sector;
+            raftController._acceleration = info.acceleration;
             sector.OnOccupantEnterSector += raftController.OnOccupantEnterSector;
             sector.OnOccupantExitSector += raftController.OnOccupantExitSector;
 
             // Detectors
             var fluidDetector = raftObject.transform.Find("Detector_Raft").GetComponent<RaftFluidDetector>();
-            var waterVolume = (FluidVolume)planetGO.GetComponentInChildren<NHFluidVolume>() ?? planetGO.GetComponentInChildren<SphereOceanFluidVolume>();
+            var waterVolume = planetGO.GetComponentInChildren<RadialFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
+            fluidDetector._buoyancy.checkAgainstWaves = true;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())

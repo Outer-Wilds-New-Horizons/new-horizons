@@ -3,7 +3,6 @@ using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
-using NewHorizons.Components.Volumes;
 
 namespace NewHorizons.Builder.Body
 {
@@ -110,7 +109,7 @@ namespace NewHorizons.Builder.Body
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
 
-            var fluidVolume = buoyancyObject.AddComponent<NHFluidVolume>();
+            var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
