@@ -1105,6 +1105,14 @@
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
+        },
+        "rename": {
+          "type": "string",
+          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
         }
       }
     },
