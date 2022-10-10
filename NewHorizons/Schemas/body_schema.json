@@ -501,6 +501,11 @@
           "type": "number",
           "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
           "format": "float"
+        },
+        "gravityVolumePriority": {
+          "type": "integer",
+          "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
+          "format": "int32"
         }
       }
     },
