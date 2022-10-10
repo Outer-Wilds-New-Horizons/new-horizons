@@ -78,6 +78,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
                 }
             }
+            if (config.Volumes.zeroGravityVolumes != null)
+            {
+                foreach (var zeroGravityVolume in config.Volumes.zeroGravityVolumes)
+                {
+                    PriorityVolumeBuilder.Make<ZeroGVolume>(go, sector, zeroGravityVolume);
+                }
+            }
         }
     }
 }

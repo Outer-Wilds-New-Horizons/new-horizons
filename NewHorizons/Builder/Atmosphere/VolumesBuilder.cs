@@ -11,15 +11,15 @@ namespace NewHorizons.Builder.Atmosphere
         {
             var innerRadius = config.Base.surfaceSize;
 
-            GameObject volumesGO = new GameObject("Volumes");
+            var volumesGO = new GameObject("Volumes");
             volumesGO.SetActive(false);
             volumesGO.transform.parent = planetGO.transform;
 
-            GameObject rulesetGO = new GameObject("Ruleset");
+            var rulesetGO = new GameObject("Ruleset");
             rulesetGO.SetActive(false);
             rulesetGO.transform.parent = volumesGO.transform;
 
-            SphereShape SS = rulesetGO.AddComponent<SphereShape>();
+            var SS = rulesetGO.AddComponent<SphereShape>();
             SS.SetCollisionMode(Shape.CollisionMode.Volume);
             SS.SetLayer(Shape.Layer.Sector);
             SS.layerMask = -1;
@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<OWTriggerVolume>();
 
-            PlanetoidRuleset PR = rulesetGO.AddComponent<PlanetoidRuleset>();
+            var PR = rulesetGO.AddComponent<PlanetoidRuleset>();
             PR._altitudeFloor = innerRadius;
             PR._altitudeCeiling = sphereOfInfluence;
             PR._shuttleLandingRadius = sphereOfInfluence;
@@ -37,7 +37,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             rulesetGO.AddComponent<AntiTravelMusicRuleset>();
 
-            EffectRuleset ER = rulesetGO.AddComponent<EffectRuleset>();
+            var ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
             var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
 
@@ -49,32 +49,6 @@ namespace NewHorizons.Builder.Atmosphere
                 cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());
             }
             ER._cloudMaterial = cloudMaterial;
-
-            if (config.Base.zeroGravityRadius != 0)
-            {
-                var zeroGObject = new GameObject("ZeroGVolume");
-                zeroGObject.transform.parent = volumesGO.transform;
-                zeroGObject.transform.localPosition = Vector3.zero;
-                zeroGObject.transform.localScale = Vector3.one * config.Base.zeroGravityRadius;
-                zeroGObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
-
-                var sphereCollider = zeroGObject.AddComponent<SphereCollider>();
-                sphereCollider.radius = 1;
-                sphereCollider.isTrigger = true;
-
-                var owCollider = zeroGObject.AddComponent<OWCollider>();
-                owCollider._parentBody = owrb;
-                owCollider._collider = sphereCollider;
-
-                var triggerVolume = zeroGObject.AddComponent<OWTriggerVolume>();
-                triggerVolume._owCollider = owCollider;
-
-                var zeroGVolume = zeroGObject.AddComponent<ZeroGVolume>();
-                zeroGVolume._attachedBody = owrb;
-                zeroGVolume._triggerVolume = triggerVolume;
-                zeroGVolume._inheritable = true;
-                zeroGVolume._priority = 1;
-            }
 
             volumesGO.transform.position = planetGO.transform.position;
             rulesetGO.SetActive(true);
