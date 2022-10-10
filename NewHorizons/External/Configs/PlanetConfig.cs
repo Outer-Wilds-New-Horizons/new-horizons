@@ -425,7 +425,8 @@ namespace NewHorizons.External.Configs
                 {
                     priority = 1,
                     rename = "ZeroGVolume",
-                    radius = Base.zeroGravityRadius
+                    radius = Base.zeroGravityRadius,
+                    parentPath = "Volumes"
                 }).ToArray();
             }
         }
