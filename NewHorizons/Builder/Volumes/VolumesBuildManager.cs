@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.Volumes
             {
                 foreach (var zeroGravityVolume in config.Volumes.zeroGravityVolumes)
                 {
-                    PriorityVolumeBuilder.Make<ZeroGVolume>(go, sector, zeroGravityVolume);
+                    ZeroGVolumeBuilder.Make(go, sector, zeroGravityVolume);
                 }
             }
         }
