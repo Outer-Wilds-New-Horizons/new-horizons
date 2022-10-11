@@ -321,13 +321,9 @@ namespace NewHorizons.Builder.Props
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // Make sure that these slides play when the player wanders into the beam
-            slideCollectionContainer._initialized = true; // Hack to avoid initialization in the following call (it would throw NRE)
-            mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
-            slideCollectionContainer._initialized = false;
-
-
             LinkShipLogFacts(info, slideCollectionContainer);
+
+            mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
             return standingTorch;
         }
