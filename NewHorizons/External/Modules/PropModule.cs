@@ -450,6 +450,16 @@ namespace NewHorizons.External.Modules
             /// Relative path to the xml file defining the dialogue.
             /// </summary>
             public string xmlFile;
+
+            /// <summary>
+            /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
+            /// </summary>
+            public string rename;
+
+            /// <summary>
+            /// Optionally set the parent object that the dialogue and remote trigger will be attached to
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]
