@@ -1425,7 +1425,14 @@
         },
         "reveals": {
           "type": "array",
-          "description": "The ship log entries revealed after finishing this slide reel.",
+          "description": "The ship log facts revealed after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "playWithShipLogFacts": {
+          "type": "array",
+          "description": "The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).\nYou should probably include facts from `reveals` here.\nIf you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only\nrumor facts because an entry with revealed explore facts doesn't display rumor facts.",
           "items": {
             "type": "string"
           }
@@ -1504,7 +1511,7 @@
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log entry revealed when viewing this slide"
+          "description": "Ship log fact revealed when viewing this slide"
         },
         "spotIntensityMod": {
           "type": "number",

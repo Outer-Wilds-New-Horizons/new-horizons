@@ -617,9 +617,17 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
-            /// The ship log entries revealed after finishing this slide reel.
+            /// The ship log facts revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
+
+            /// <summary>
+            /// The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).
+            /// You should probably include facts from `reveals` here.
+            /// If you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only
+            /// rumor facts because an entry with revealed explore facts doesn't display rumor facts.
+            /// </summary>
+            public string[] playWithShipLogFacts;
 
             /// <summary>
             /// The rotation of this slideshow.
@@ -712,7 +720,7 @@ namespace NewHorizons.External.Modules
             // SlideShipLogEntryModule
 
             /// <summary>
-            /// Ship log entry revealed when viewing this slide
+            /// Ship log fact revealed when viewing this slide
             /// </summary>
             public string reveal;
 
