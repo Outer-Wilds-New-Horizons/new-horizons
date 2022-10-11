@@ -170,8 +170,7 @@ namespace NewHorizons.Builder.Props
 
             slideCollectionContainer.slideCollection = slideCollection;
 
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            LinkShipLogFacts(info, slideCollectionContainer);
 
             StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
@@ -284,8 +283,7 @@ namespace NewHorizons.Builder.Props
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            LinkShipLogFacts(info, slideCollectionContainer);
 
             g.SetActive(true);
 
@@ -370,7 +368,8 @@ namespace NewHorizons.Builder.Props
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // Make sure that these slides play when the player wanders into the beam
+            LinkShipLogFacts(info, slideCollectionContainer);
+
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
 
             standingTorch.SetActive(true);
@@ -449,6 +448,14 @@ namespace NewHorizons.Builder.Props
             }
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
+        }
+        
+        private static void LinkShipLogFacts(ProjectionInfo info, SlideCollectionContainer slideCollectionContainer)
+        {
+            // Idk why but it wants reveals to be comma delimited not a list
+            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            // Don't use null value, NRE in SlideCollectionContainer.Initialize
+            slideCollectionContainer._playWithShipLogFacts = info.playWithShipLogFacts ?? Array.Empty<string>();
         }
     }
 
