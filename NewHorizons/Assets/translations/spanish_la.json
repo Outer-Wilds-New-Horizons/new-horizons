@@ -12,8 +12,7 @@
     "FREQ_UNKNOWN": "???",
     "ENGAGE_WARP_PROMPT": "Iniciar teletransporte a {0}",
     "WARP_LOCKED": "Piloto automático fijado en:\n{0}",
-    "Vessel": "Nave",
-    "VESSEL": "NAVE"
+    "Vessel": "Nave"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

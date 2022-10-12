@@ -1,7 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
   "UIDictionary": {
-    "Vessel": "Vascello",
-    "VESSEL": "VASCELLO"
+    "Vessel": "Vascello"
   }
 }
