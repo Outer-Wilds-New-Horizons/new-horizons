@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.Body
 
                 config.ReferenceFrame = new ReferenceFrameModule()
                 {
-                    hideInMap = true
+                    enabled = false
                 };
 
                 config.ProcGen = belt.procGen;
