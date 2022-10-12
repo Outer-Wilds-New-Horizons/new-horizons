@@ -41,26 +41,26 @@ namespace NewHorizons.Components
 
             // The star part cant be disabled like the rest and we have to manually disable the renderers
             // Else it can stop the supernova effect mid way through
-            StarEvolutionControllers = GetComponentsInChildren<StarEvolutionController>();
+            StarEvolutionControllers = GetComponentsInChildren<StarEvolutionController>(true);
             _stars = StarEvolutionControllers.Select(x => x.gameObject).ToArray();
 
             foreach (var star in _stars)
             {
-                _starRenderers = _starRenderers.Concat(star.GetComponentsInChildren<Renderer>());
-                _starTessellatedRenderers = _starTessellatedRenderers.Concat(star.GetComponentsInChildren<TessellatedRenderer>());
-                _starParticleRenderers = _starParticleRenderers.Concat(star.GetComponentsInChildren<ParticleSystemRenderer>());
-                _solarFlareEmitter = _solarFlareEmitter.Append(star.GetComponentInChildren<SolarFlareEmitter>());
+                _starRenderers = _starRenderers.Concat(star.GetComponentsInChildren<Renderer>(true));
+                _starTessellatedRenderers = _starTessellatedRenderers.Concat(star.GetComponentsInChildren<TessellatedRenderer>(true));
+                _starParticleRenderers = _starParticleRenderers.Concat(star.GetComponentsInChildren<ParticleSystemRenderer>(true));
+                _solarFlareEmitter = _solarFlareEmitter.Append(star.GetComponentInChildren<SolarFlareEmitter>(true));
             }
 
-            var progenitorEvolutionController = root.GetComponentInChildren<StarEvolutionController>();
+            var progenitorEvolutionController = root.GetComponentInChildren<StarEvolutionController>(true);
             if (progenitorEvolutionController != null && stellarRemnantGO != null)
             {
                 progenitorEvolutionController.SetStellarRemnant(stellarRemnantGO);
             }
 
-            if (lightningGenerator == null) lightningGenerator = GetComponentInChildren<CloudLightningGenerator>();
+            if (lightningGenerator == null) lightningGenerator = GetComponentInChildren<CloudLightningGenerator>(true);
 
-            if (supernovaPlanetEffectController == null) supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>();
+            if (supernovaPlanetEffectController == null) supernovaPlanetEffectController = GetComponentInChildren<NHSupernovaPlanetEffectController>(true);
             
             // Start off
             _outOfRange = false;

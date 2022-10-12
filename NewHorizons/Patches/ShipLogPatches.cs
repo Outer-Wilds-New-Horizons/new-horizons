@@ -20,6 +20,8 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Awake))]
         public static void ShipLogManager_Awake_Prefix(ShipLogManager __instance)
         {
+            if (Main.Instance.IsWarpingBackToEye) return;
+
             RumorModeBuilder.Init();
             ShipLogHandler.Init();
 
@@ -60,6 +62,8 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(ShipLogManager), nameof(ShipLogManager.Awake))]
         public static void ShipLogManager_Awake_Postfix(ShipLogManager __instance)
         {
+            if (Main.Instance.IsWarpingBackToEye) return;
+
             ShipLogHandler.CheckForModdedFacts(__instance);
             RumorModeBuilder.GenerateEntryData(__instance);
             for (var i = 0; i < __instance._entryList.Count; i++)

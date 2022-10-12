@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Handlers;
 using System;
@@ -14,16 +14,26 @@ namespace NewHorizons.Patches
         {
             var ao = __instance.GetAstroObject();
 
-            if (ao == null || ao._name != AstroObject.Name.CustomString) return true;
+            if (ao == null) return true;
 
-            if (ao is NHAstroObject)
+            if (ao._name != AstroObject.Name.CustomString)
             {
-                if ((ao as NHAstroObject).HideDisplayName) __result = "";
-                else __result = TranslationHandler.GetTranslation(ao.GetCustomName(), TranslationHandler.TextType.UI);
+                __result = AstroObject.AstroObjectNameToString(ao._name);
                 return false;
             }
 
-            return true;
+            __result = string.Empty;
+
+            if (ao is NHAstroObject nhao && nhao.HideDisplayName) return false;
+
+            var customName = ao.GetCustomName();
+
+            if (!string.IsNullOrWhiteSpace(customName))
+            {
+                __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false);
+            }
+
+            return false;
         }
 
         [HarmonyPostfix]

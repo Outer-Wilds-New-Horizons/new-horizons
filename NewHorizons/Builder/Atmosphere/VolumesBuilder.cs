@@ -7,8 +7,25 @@ namespace NewHorizons.Builder.Atmosphere
     {
         private static readonly int FogColor = Shader.PropertyToID("_FogColor");
 
+        private static Material _gdMaterial;
+        private static Material _gdCloudMaterial;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_gdMaterial == null) _gdMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
+            if (_gdCloudMaterial == null) _gdCloudMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>()._cloudMaterial).DontDestroyOnLoad();
+        }
+        
         public static void Make(GameObject planetGO, OWRigidbody owrb, PlanetConfig config, float sphereOfInfluence)
         {
+            InitPrefabs();
+
             var innerRadius = config.Base.surfaceSize;
 
             var volumesGO = new GameObject("Volumes");
@@ -39,11 +56,10 @@ namespace NewHorizons.Builder.Atmosphere
 
             var ER = rulesetGO.AddComponent<EffectRuleset>();
             ER._type = EffectRuleset.BubbleType.Underwater;
-            var gdRuleset = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Volumes_GD/RulesetVolumes_GD").GetComponent<EffectRuleset>();
 
-            ER._material = gdRuleset._material;
+            ER._material = _gdMaterial;
 
-            var cloudMaterial = new Material(gdRuleset._cloudMaterial);
+            var cloudMaterial = new Material(_gdCloudMaterial);
             if (config.Atmosphere?.clouds?.tint != null)
             {
                 cloudMaterial.SetColor(FogColor, config.Atmosphere.clouds.tint.ToColor());

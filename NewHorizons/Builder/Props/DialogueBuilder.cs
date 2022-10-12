@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.Props
                 conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
             }
             
-            conversationZone.transform.position = planetGO.transform.TransformPoint(info.position);
+            conversationZone.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
             conversationZone.SetActive(true);
 
             return dialogueTree;

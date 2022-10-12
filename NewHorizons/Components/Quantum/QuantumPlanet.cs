@@ -34,7 +34,7 @@ namespace NewHorizons.Components.Quantum
             _rb = GetComponent<OWRigidbody>();
             _orbitLine = GetComponent<OrbitLine>();
 
-            GlobalMessenger.AddListener("PlayerBlink", new Callback(OnPlayerBlink));
+            GlobalMessenger.AddListener("PlayerBlink", OnPlayerBlink);
 
             _maxSnapshotLockRange = 300000f;
         }
@@ -49,6 +49,13 @@ namespace NewHorizons.Components.Quantum
             }
 
             ChangeQuantumState(true);
+        }
+
+        public override void OnDestroy()
+        {
+            base.OnDestroy();
+
+            GlobalMessenger.RemoveListener("PlayerBlink", OnPlayerBlink);
         }
 
         public int GetRandomNewState()

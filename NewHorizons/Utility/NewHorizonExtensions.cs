@@ -188,6 +188,29 @@ namespace NewHorizons.Utility
             return copy;
         }
 
+        public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
+        {
+            UnityEngine.Object.DontDestroyOnLoad(target);
+            return target;
+        }
+
+        public static Material[] MakePrefabMaterials(this Material[] target)
+        {
+            var materials = new List<Material>();
+            foreach (var material in target)
+            {
+                materials.Add(new Material(material).DontDestroyOnLoad());
+            }
+            return materials.ToArray();
+        }
+
+        public static T Rename<T>(this T target, string name) where T : UnityEngine.Object
+        {
+            target.name = name;
+            return target;
+        }
+
+
         public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
         {
             return transform.rotation * localRotation;

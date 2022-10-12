@@ -43,7 +43,8 @@ namespace NewHorizons.Handlers
         private static void RegisterPrompt(string systemID, string fact, NomaiCoordinates coords)
         {
             var texture = MakeTexture(coords.x, coords.y, coords.z);
-            
+
+            if (_textureCache == null) _textureCache = new List<Texture2D>();
             _textureCache.Add(texture);
 
             var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(texture.width / 2f, texture.height / 2f));
@@ -61,26 +62,30 @@ namespace NewHorizons.Handlers
         // Gets called from the patches
         public static void SetPromptVisibility(bool visible)
         {
+            if (_factSystemIDPrompt == null) return;
             foreach (var pair in _factSystemIDPrompt)
             {
                 var fact = pair.Item1;
                 var systemID = pair.Item2;
                 var prompt = pair.Item3;
 
-                if (visible)
+                if (prompt != null)
                 {
-                    if (Main.Instance.CurrentStarSystem != systemID && (string.IsNullOrEmpty(fact) || Locator.GetShipLogManager().IsFactRevealed(fact)))
+                    if (visible)
                     {
-                        prompt.SetVisibility(true);
+                        if (Main.Instance.CurrentStarSystem != systemID && (string.IsNullOrEmpty(fact) || ShipLogHandler.KnowsFact(fact)))
+                        {
+                            prompt.SetVisibility(true);
+                        }
+                        else
+                        {
+                            prompt.SetVisibility(false);
+                        }
                     }
                     else
                     {
                         prompt.SetVisibility(false);
                     }
-                }
-                else
-                {
-                    prompt.SetVisibility(false);
                 }
             }
         }
@@ -190,12 +195,7 @@ namespace NewHorizons.Handlers
                 }
             }
         }
-        
-        public static bool KnowsEyeCoordinates()
-        {
-            // Works normally in the main system, else check save data directly
-            if (Main.Instance.CurrentStarSystem == "SolarSystem") return Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1");
-            else return PlayerData._currentGameSave.shipLogFactSaves.ContainsKey("OPC_EYE_COORDINATES_X1") && PlayerData._currentGameSave.shipLogFactSaves["OPC_EYE_COORDINATES_X1"].revealOrder > -1;
-        }
+
+        public static bool KnowsEyeCoordinates() => ShipLogHandler.KnowsFact("OPC_EYE_COORDINATES_X1");
     }
 }

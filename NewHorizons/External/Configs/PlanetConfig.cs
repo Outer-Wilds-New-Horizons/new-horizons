@@ -415,7 +415,7 @@ namespace NewHorizons.External.Configs
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
             }
-
+            
             if (Base.zeroGravityRadius != 0f)
             {
                 Volumes ??= new VolumesModule();
@@ -428,6 +428,12 @@ namespace NewHorizons.External.Configs
                     radius = Base.zeroGravityRadius,
                     parentPath = "Volumes"
                 }).ToArray();
+            }
+
+            // So that old mods still have shock effects
+            if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
+            {
+                ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
             }
         }
     }
