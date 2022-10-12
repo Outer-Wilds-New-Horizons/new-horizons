@@ -54,7 +54,7 @@ namespace NewHorizons.Handlers
             vesselSectorTriggerBox.size = new Vector3(600, 600, 600);
             vesselSectorTriggerBox.SetLayer(Shape.Layer.Sector);
 
-            // Why were the vessel's lights inside the eye? Let's move them from the eye to vessel.
+            // Why were the vessel's lights inside the eye? Let's move them from the eye to vessel. Doesn't need to be moved positionally, only need to have the parent changed to vessel.
             var vesselPointlight = eyeSector.gameObject.FindChild("Pointlight_NOM_Vessel");
             vesselPointlight.transform.SetParent(vesselSector.transform, true);
             var vesselSpotlight = eyeSector.gameObject.FindChild("Spotlight_NOM_Vessel");
