@@ -7,6 +7,8 @@ namespace NewHorizons.Builder.General
     {
         public static GameObject Make(GameObject planetGO, OWRigidbody owrb, float sphereOfInfluence, ReferenceFrameModule module)
         {
+            if (!module.enabled) return null;
+            
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
@@ -60,12 +62,6 @@ namespace NewHorizons.Builder.General
             }
 
             owrb.SetAttachedReferenceFrameVolume(RFV);
-
-            if (!module.enabled)
-            {
-                GameObject.Destroy(rfGO);
-                return null;
-            }
 
             rfGO.SetActive(true);
             return rfGO;
