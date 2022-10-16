@@ -16,7 +16,7 @@ namespace NewHorizons.Builder.Props
         {
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
-            if (info.blockAfterPersistentCondition != null && PlayerData._currentGameSave.GetPersistentCondition(info.blockAfterPersistentCondition)) return (null, null);
+            if (info.blockAfterPersistentCondition != null && PlayerData.GetPersistentCondition(info.blockAfterPersistentCondition)) return (null, null);
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
             
