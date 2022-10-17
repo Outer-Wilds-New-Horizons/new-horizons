@@ -1,5 +1,4 @@
 using NewHorizons.Builder.General;
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -8,22 +7,37 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static Dictionary<PropModule.DetailInfo, GameObject> detailInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.DetailInfo, GameObject>();
+        private static readonly Dictionary<PropModule.DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
+        private static readonly Dictionary<string, (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+
+        static DetailBuilder()
+        {
+            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+        }
+
+        private static void SceneManager_sceneUnloaded(Scene scene)
+        {
+            _fixedPrefabCache.Clear();
+            _detailInfoToCorrespondingSpawnedGameObject.Clear();
+        }
 
         public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
         {
-            if (!detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail)) return null;
-            return detailInfoToCorrespondingSpawnedGameObject[detail];
-        }
-
-        public static void RegisterDetailInfo(PropModule.DetailInfo detail, GameObject detailGO)
-        {
-            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
+            if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
+            {
+                return null;
+            }
+            else
+            {
+                return _detailInfoToCorrespondingSpawnedGameObject[detail];
+            }
         }
 
         /// <summary>
@@ -64,28 +78,47 @@ namespace NewHorizons.Builder.Props
         {
             if (prefab == null) return null;
 
-            GameObject prop = prefab.InstantiateInactive();
-            prop.name = prefab.name;
-            prop.transform.parent = sector?.transform ?? go.transform;
+            GameObject prop;
+            bool isItem;
 
-            StreamingHandler.SetUpStreaming(prop, sector);
-
-            // Could check this in the for loop but I'm not sure what order we need to know about this in
-            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
-            var isItem = false;
-
-            foreach (var component in prop.GetComponentsInChildren<Component>(true))
+            // We save copies with all their components fixed, good if the user is placing the same detail more than once
+            if (detail?.path != null && _fixedPrefabCache.TryGetValue(detail.path, out var storedPrefab))
             {
-                if (component.gameObject == prop && component is OWItem) isItem = true;
-
-                if (sector == null)
-                {
-                    if (FixUnsectoredComponent(component)) continue;
-                }
-                else FixSectoredComponent(component, sector, isTorch);
-
-                FixComponent(component, go);
+                prop = storedPrefab.prefab.InstantiateInactive();
+                prop.name = prefab.name;
+                isItem = storedPrefab.isItem;
             }
+            else
+            {
+                prop = prefab.InstantiateInactive();
+                prop.name = prefab.name;
+
+                StreamingHandler.SetUpStreaming(prop, sector);
+
+                // Could check this in the for loop but I'm not sure what order we need to know about this in
+                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
+                isItem = false;
+
+                foreach (var component in prop.GetComponentsInChildren<Component>(true))
+                {
+                    if (component.gameObject == prop && component is OWItem) isItem = true;
+
+                    if (sector == null)
+                    {
+                        if (FixUnsectoredComponent(component)) continue;
+                    }
+                    else FixSectoredComponent(component, sector, isTorch);
+
+                    FixComponent(component, go);
+                }
+
+                if (detail.path != null)
+                {
+                    _fixedPrefabCache.Add(detail.path, (prop.InstantiateInactive(), isItem));
+                }
+            }
+
+            prop.transform.parent = sector?.transform ?? go.transform;
 
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
@@ -172,6 +205,8 @@ namespace NewHorizons.Builder.Props
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
+
+            _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
         }
@@ -319,7 +354,7 @@ namespace NewHorizons.Builder.Props
         [RequireComponent(typeof(AnglerfishAnimController))]
         private class AnglerAnimFixer : MonoBehaviour
         {
-            private void Start()
+            public void Start()
             {
                 var angler = GetComponent<AnglerfishAnimController>();
                 

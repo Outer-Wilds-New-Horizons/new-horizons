@@ -30,7 +30,6 @@ namespace NewHorizons.Builder.Props
                     try
                     {
                         var detailGO = DetailBuilder.Make(go, sector, mod, detail);
-                        DetailBuilder.RegisterDetailInfo(detail, detailGO);
                     }
                     catch (Exception ex)
                     {
