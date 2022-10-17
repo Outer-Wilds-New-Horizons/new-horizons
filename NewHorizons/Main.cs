@@ -78,9 +78,6 @@ namespace NewHorizons
         public StarSystemEvent OnStarSystemLoaded;
         public StarSystemEvent OnPlanetLoaded;
 
-        // For warping to the eye system
-        private GameObject _ship;
-
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
         public override object GetApi()
@@ -351,18 +348,6 @@ namespace NewHorizons
                 TitleSceneHandler.InitSubtitles();
             }
 
-            if (isSolarSystem && _ship == null)
-            {
-                var ship = SearchUtilities.Find("Ship_Body", false);
-                if (ship != null)
-                {
-                    _ship = ship.InstantiateInactive();
-                    _ship.name = ship.name;
-                    _ship.AddComponent<ShipWarpController>().Init();
-                    DontDestroyOnLoad(_ship);
-                }
-            }
-
             // EOTU fixes
             if (isEyeOfTheUniverse)
             {
@@ -482,15 +467,6 @@ namespace NewHorizons
                         IsSystemReady = true;
                         OnSystemReady(false, false);
                     });
-
-                    if (IsWarpingFromShip && _ship != null)
-                    {
-                        var eyeShip = GameObject.Instantiate(_ship);
-                        eyeShip.name = "Ship_Body";
-                        _shipWarpController = eyeShip.GetComponent<ShipWarpController>();
-                        SceneManager.MoveGameObjectToScene(eyeShip, scene);
-                        eyeShip.SetActive(true);
-                    }
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
