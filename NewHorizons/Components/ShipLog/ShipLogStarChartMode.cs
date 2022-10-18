@@ -2,6 +2,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -131,7 +132,7 @@ namespace NewHorizons.Components.ShipLog
                 }
                 else
                 {
-                    var path = $"planets/{uniqueID}.png";
+                    var path = Path.Combine("planets", uniqueID + ".png");
                     Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
