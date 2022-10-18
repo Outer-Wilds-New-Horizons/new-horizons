@@ -134,9 +134,8 @@ namespace NewHorizons
             var data = QueryBody(typeof(T), bodyName, jsonPath);
             if (data is T result) {
                 return result;
-            } else {
-                return default(T);
             }
+            return default;
         }
 
         public object QuerySystem(Type outType, string jsonPath)
@@ -151,9 +150,8 @@ namespace NewHorizons
             var data = QuerySystem(typeof(T), jsonPath);
             if (data is T result) {
                 return result;
-            } else {
-                return default(T);
             }
+            return default;
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
