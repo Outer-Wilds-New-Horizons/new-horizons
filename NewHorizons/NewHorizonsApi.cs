@@ -129,12 +129,31 @@ namespace NewHorizons
                 : QueryJson(outType, Path.Combine(planet.Mod.ModHelper.Manifest.ModFolderPath, planet.RelativePath), jsonPath);
         }
 
+        public T QueryBody<T>(string bodyName, string jsonPath)
+        {
+            var data = QueryBody(typeof(T), bodyName, jsonPath);
+            if (data is T result) {
+                return result;
+            } else {
+                return default(T);
+            }
+        }
+
         public object QuerySystem(Type outType, string jsonPath)
         {
             var system = Main.SystemDict[Main.Instance.CurrentStarSystem];
             return system == null 
                 ? null 
                 : QueryJson(outType, Path.Combine(system.Mod.ModHelper.Manifest.ModFolderPath, system.RelativePath), jsonPath);
+        }
+
+        public T QuerySystem<T>(string jsonPath) {
+            var data = QuerySystem(typeof(T), jsonPath);
+            if (data is T result) {
+                return result;
+            } else {
+                return default(T);
+            }
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
