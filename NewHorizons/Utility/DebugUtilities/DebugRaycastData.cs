@@ -14,7 +14,7 @@ namespace NewHorizons.Utility.DebugUtilities
         public Vector3 norm;
         public DebugRaycastPlane plane;
 
-        public string bodyName;
+        public string colliderPath;
         public string bodyPath;
         public GameObject hitBodyGameObject;
         public GameObject hitObject;
