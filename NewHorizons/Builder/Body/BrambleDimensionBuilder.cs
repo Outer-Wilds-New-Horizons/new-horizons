@@ -47,23 +47,49 @@ namespace NewHorizons.Builder.Body
             _unpairedDimensions = new();
         }
 
+        private static GameObject _atmosphere;
+        private static GameObject _volumes;
+        private static GameObject _effects;
+        private static GameObject _geometry;
+        private static GameObject _exitWarps;
+        private static GameObject _repelVolume;
+        private static Material _material;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_atmosphere == null) _atmosphere = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Atmosphere").DontDestroyOnLoad();
+            if (_volumes == null) _volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Volumes").DontDestroyOnLoad();
+            if (_effects == null) _effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Effects").DontDestroyOnLoad();
+            if (_geometry == null) _geometry = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Geometry").DontDestroyOnLoad();
+            if (_exitWarps == null) _exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive().Rename("Prefab_Bramble_OuterWarp").DontDestroyOnLoad();
+            if (_repelVolume == null) _repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive().Rename("Prefab_Bramble_RepelVolume").DontDestroyOnLoad();
+            if (_material == null) _material = new Material(GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
+        }
+
         public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
         {
+            InitPrefabs();
+
             var config = body.Config.Bramble.dimension;
 
             ao.IsDimension = true;
             sector._name = Sector.Name.BrambleDimension;
 
-            var atmo = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive();
-            var volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive();
-            var effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive();
+            var atmo = _atmosphere.InstantiateInactive();
+            var volumes = _volumes.InstantiateInactive();
+            var effects = _effects.InstantiateInactive();
 
-            var prefab = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension");
             var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, prefab, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, _geometry, detailInfo);
 
-            var exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive();
-            var repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive();
+            var exitWarps = _exitWarps.InstantiateInactive();
+            var repelVolume = _repelVolume.InstantiateInactive();
 
             atmo.name = "Atmosphere";
             atmo.transform.parent = sector.transform;
@@ -124,7 +150,7 @@ namespace NewHorizons.Builder.Body
             effectRuleset._underwaterDistortScale = 0.001f;
             effectRuleset._underwaterMaxDistort = 0.1f;
             effectRuleset._underwaterMinDistort = 0.005f;
-            effectRuleset._material = GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material; // TODO: cache this
+            effectRuleset._material = _material;
 
             var antiTravelMusicRuleset = sector.gameObject.AddComponent<AntiTravelMusicRuleset>();
             antiTravelMusicRuleset._attachedBody = owRigidBody;

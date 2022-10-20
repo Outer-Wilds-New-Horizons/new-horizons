@@ -6,7 +6,10 @@ namespace NewHorizons.Builder.General
     {
         public static Light Make(GameObject planetGO, Sector sector, float scale, float intensity)
         {
-            GameObject lightGO = GameObject.Instantiate(SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM"), sector?.transform ?? planetGO.transform);
+            var ambientLight = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" ? SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/QuantumMoonProxy_Pivot/QuantumMoonProxy_Root/MoonState_Root/AmbientLight_QM") : SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM");
+            if (ambientLight == null) return null;
+
+            GameObject lightGO = GameObject.Instantiate(ambientLight, sector?.transform ?? planetGO.transform);
             lightGO.transform.position = planetGO.transform.position;
             lightGO.name = "AmbientLight";
 

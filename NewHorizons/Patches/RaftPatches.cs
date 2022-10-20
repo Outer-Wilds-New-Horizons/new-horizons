@@ -1,5 +1,4 @@
 using HarmonyLib;
-using NewHorizons.Components.Volumes;
 using UnityEngine;
 namespace NewHorizons.Patches
 {
@@ -74,17 +73,17 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyReversePatch]
-        [HarmonyPatch(typeof(AsymmetricFluidDetector), "ManagedFixedUpdate")]
+        [HarmonyPatch(typeof(AsymmetricFluidDetector), nameof(AsymmetricFluidDetector.ManagedFixedUpdate))]
         public static void AsymmetricFluidDetector_ManagedFixedUpdate(AsymmetricFluidDetector __instance)
         {
             // This is like doing base.FixedUpdate
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), "ManagedFixedUpdate")]
+        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), nameof(AlignToSurfaceFluidDetector.ManagedFixedUpdate))]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
-            if (!(__instance._alignmentFluid is NHFluidVolume)) return true;
+            if (__instance._alignmentFluid is not RadialFluidVolume) return true;
 
             // Mostly copy pasting from the AlignWithDirection class
             AsymmetricFluidDetector_ManagedFixedUpdate(__instance);
@@ -102,6 +101,17 @@ namespace NewHorizons.Patches
                 __instance._owRigidbody.AddAngularVelocityChange(a * adjustedSlerpRate);
             }
 
+            return false;
+        }
+
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(FluidVolume), nameof(FluidVolume.GetDepthAtPosition))]
+        public static bool FluidVolume_GetDepthAtPosition(FluidVolume __instance, ref float __result, Vector3 worldPosition)
+        {
+            if (__instance is not RadialFluidVolume radialFluidVolume) return true;
+
+            Vector3 vector = radialFluidVolume.transform.InverseTransformPoint(worldPosition);
+            __result = Mathf.Sqrt(vector.x * vector.x + vector.z * vector.z + vector.y * vector.y) - radialFluidVolume._radius;
             return false;
         }
     }

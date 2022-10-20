@@ -3,14 +3,46 @@ using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
-using NewHorizons.Components.Volumes;
 
 namespace NewHorizons.Builder.Body
 {
     public static class WaterBuilder
     {
+        private static MeshGroup _oceanMeshGroup;
+        private static Material[] _oceanLowAltitudeMaterials;
+        private static GameObject _oceanFog;
+        private static GameObject _oceanAmbientLight;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_oceanMeshGroup == null)
+            {
+                _oceanMeshGroup = ScriptableObject.CreateInstance<MeshGroup>().Rename("Ocean").DontDestroyOnLoad();
+                var gdVariants = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup.variants;
+                for (int i = 0; i < 16; i++)
+                {
+                    var mesh = new Mesh();
+                    mesh.CopyPropertiesFrom(gdVariants[i]);
+                    mesh.name = gdVariants[i].name;
+                    mesh.DontDestroyOnLoad();
+                    _oceanMeshGroup.variants[i] = mesh;
+                }
+            }
+            if (_oceanLowAltitudeMaterials == null) _oceanLowAltitudeMaterials = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials.MakePrefabMaterials();
+            if (_oceanFog == null) _oceanFog = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog").InstantiateInactive().Rename("Prefab_GD_OceanFog").DontDestroyOnLoad();
+            if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
+            InitPrefabs();
+
             var waterSize = module.size;
 
             GameObject waterGO = new GameObject("Water");
@@ -19,18 +51,16 @@ namespace NewHorizons.Builder.Body
             waterGO.transform.parent = sector?.transform ?? planetGO.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
 
-            var GDTSR = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereRenderer>();
-
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
             for (int i = 0; i < 16; i++)
             {
                 var mesh = new Mesh();
-                mesh.CopyPropertiesFrom(GDTSR.tessellationMeshGroup.variants[i]);
+                mesh.CopyPropertiesFrom(_oceanMeshGroup.variants[i]);
                 TSR.tessellationMeshGroup.variants[i] = mesh;
             }
 
-            var GDSharedMaterials = SearchUtilities.Find("Ocean_GD").GetComponent<TessellatedSphereLOD>()._lowAltitudeMaterials;
+            var GDSharedMaterials = _oceanLowAltitudeMaterials;
             var tempArray = new Material[GDSharedMaterials.Length];
             for (int i = 0; i < GDSharedMaterials.Length; i++)
             {
@@ -49,10 +79,9 @@ namespace NewHorizons.Builder.Body
             OEC._sector = sector;
             OEC._ocean = TSR;
 
-            var GDOLC = GDTSR.GetComponent<OceanLODController>();
             var OLC = waterGO.AddComponent<OceanLODController>();
             OLC._sector = sector;
-            OLC._ambientLight = GDOLC._ambientLight; // this needs to be set or else is black
+            OLC._ambientLight = _oceanAmbientLight.GetComponent<Light>(); // this needs to be set or else is black
             
             // trigger sector enter
             Delay.FireOnNextUpdate(() =>
@@ -80,17 +109,18 @@ namespace NewHorizons.Builder.Body
             var buoyancyTriggerVolume = buoyancyObject.AddComponent<OWTriggerVolume>();
             buoyancyTriggerVolume._owCollider = owCollider;
 
-            var fluidVolume = buoyancyObject.AddComponent<NHFluidVolume>();
+            var fluidVolume = buoyancyObject.AddComponent<RadialFluidVolume>();
             fluidVolume._fluidType = FluidVolume.Type.WATER;
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-            var fogGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/OceanFog"), waterGO.transform);
+            var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;
+            fogGO.SetActive(true);
 
             if (module.tint != null)
             {

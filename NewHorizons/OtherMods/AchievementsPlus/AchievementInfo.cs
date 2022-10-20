@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Handlers;
 using Newtonsoft.Json;
 using System.Linq;
 
@@ -61,7 +62,7 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             {
                 foreach (var fact in factIDs)
                 {
-                    if (!Locator.GetShipLogManager().IsFactRevealed(fact)) return false;
+                    if (!ShipLogHandler.KnowsFact(fact)) return false;
                 }
             }
 

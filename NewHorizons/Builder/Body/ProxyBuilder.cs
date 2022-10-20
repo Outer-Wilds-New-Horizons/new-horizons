@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, NewHorizonsBody body, NewHorizonsBody remnant)
         {
-            if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body").transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
+            if (lavaMaterial == null) lavaMaterial = SearchUtilities.FindObjectOfTypeAndName<ProxyOrbiter>("VolcanicMoon_Body")?.transform.Find("LavaSphere").GetComponent<MeshRenderer>().material;
 
             var proxyController = ProxyHandler.GetProxy(body.Config.name);
             var proxy = proxyController != null ? proxyController.gameObject : new GameObject($"{body.Config.name}_Proxy");
@@ -30,6 +30,19 @@ namespace NewHorizons.Builder.Body
                 proxyController = proxy.AddComponent<NHProxy>();
                 proxyController.astroName = body.Config.name;
                 proxyController.planet = planetGO;
+            }
+
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                // Disable any proxies when not at eye, vessel, or vortex.
+                EyeStateActivationController eyeStateActivation = SearchUtilities.Find("SolarSystemRoot").AddComponent<EyeStateActivationController>();
+                eyeStateActivation._object = proxy;
+                eyeStateActivation._activeStates = new EyeState[3]
+                {
+                    EyeState.AboardVessel,
+                    EyeState.WarpedToSurface,
+                    EyeState.IntoTheVortex
+                };
             }
 
             var rootProxy = new GameObject("Root");

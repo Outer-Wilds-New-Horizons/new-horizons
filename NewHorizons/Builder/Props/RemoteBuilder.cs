@@ -17,92 +17,108 @@ namespace NewHorizons.Builder.Props
         private static GameObject _whiteboardPrefab;
         private static GameObject _shareStonePrefab;
 
-        private static void InitPrefabs()
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
-            _decalMaterial = new Material(Shader.Find("Standard (Decal)"));
-            _decalMaterial.name = "Decal";
-            _decalMaterial.SetTexture("_MainTex", Texture2D.whiteTexture);
-            _decalMaterial.SetTexture("_EmissionMap", Texture2D.whiteTexture);
-            _decalMaterial.SetFloat("_Glossiness", 0);
-            _decalMaterial.SetFloat("_BumpScale", 0);
-            _decalMaterial.SetColor("_Color", new Color(0.3529412f, 0.3843137f, 1));
-            _decalMaterial.SetColor("_EmissionColor", new Color(0.2422811f, 0.2917706f, 2.440062f));
-            _decalMaterialGold = new Material(_decalMaterial);
-            _decalMaterialGold.name = "DecalGold";
-            _decalMaterialGold.SetColor("_Color", new Color(1, 0.6392157f, 0.3803922f));
-            _decalMaterialGold.SetColor("_EmissionColor", new Color(1, 0.3662527f, 0.1195384f));
+            if (_isInit) return;
 
-            _remoteCameraPlatformPrefab = SearchUtilities.Find("OrbitalProbeCannon_Body/Sector_OrbitalProbeCannon/Sector_Module_Broken/Interactables_Module_Broken/Prefab_NOM_RemoteViewer").InstantiateInactive();
-            _remoteCameraPlatformPrefab.name = "Prefab_NOM_RemoteViewer";
-            var remoteCameraPlatform = _remoteCameraPlatformPrefab.GetComponent<NomaiRemoteCameraPlatform>();
-            remoteCameraPlatform.enabled = true;
-            remoteCameraPlatform._id = NomaiRemoteCameraPlatform.ID.None;
-            remoteCameraPlatform._platformState = NomaiRemoteCameraPlatform.State.Disconnected;
-            remoteCameraPlatform._dataPointID = string.Empty;
-            remoteCameraPlatform._visualSector = null;
-            var AstroBodySymbolRenderer = _remoteCameraPlatformPrefab.FindChild("PedestalAnchor/Prefab_NOM_SharedPedestal/SharedPedestal_side01_bottom_jnt/SharedPedestal_side01_top_jnt/AstroBodySymbolRenderer");
-            var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quad.transform.parent = AstroBodySymbolRenderer.transform.parent;
-            quad.transform.localPosition = AstroBodySymbolRenderer.transform.localPosition;
-            quad.transform.localRotation = AstroBodySymbolRenderer.transform.localRotation;
-            quad.transform.localScale = AstroBodySymbolRenderer.transform.localScale;
-            quad.AddComponent<OWRenderer>();
-            quad.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
-            quad.name = "AstroBodySymbolRenderer";
-            GameObject.DestroyImmediate(AstroBodySymbolRenderer);
+            _isInit = true;
 
-            _whiteboardPrefab = SearchUtilities.Find("OrbitalProbeCannon_Body/Sector_OrbitalProbeCannon/Sector_Module_Broken/Interactables_Module_Broken/Prefab_NOM_Whiteboard_Shared").InstantiateInactive();
-            _whiteboardPrefab.name = "Prefab_NOM_Whiteboard_Shared";
-            var whiteboard = _whiteboardPrefab.GetComponent<NomaiSharedWhiteboard>();
-            whiteboard.enabled = true;
-            whiteboard._id = NomaiRemoteCameraPlatform.ID.None;
-            _whiteboardPrefab.FindChild("ArcSocket").transform.DestroyAllChildrenImmediate();
-            whiteboard._remoteIDs = new NomaiRemoteCameraPlatform.ID[0];
-            whiteboard._nomaiTexts = new NomaiWallText[0];
-            var AstroBodySymbolRendererW = _whiteboardPrefab.FindChild("PedestalAnchor/Prefab_NOM_SharedPedestal/SharedPedestal_side01_bottom_jnt/SharedPedestal_side01_top_jnt/AstroBodySymbolRenderer");
-            var quadW = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            quadW.transform.parent = AstroBodySymbolRendererW.transform.parent;
-            quadW.transform.localPosition = AstroBodySymbolRendererW.transform.localPosition;
-            quadW.transform.localRotation = AstroBodySymbolRendererW.transform.localRotation;
-            quadW.transform.localScale = AstroBodySymbolRendererW.transform.localScale;
-            quadW.AddComponent<OWRenderer>();
-            quadW.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
-            quadW.name = "AstroBodySymbolRenderer";
-            GameObject.DestroyImmediate(AstroBodySymbolRendererW);
+            if (_decalMaterial == null)
+            {
+                _decalMaterial = new Material(Shader.Find("Standard (Decal)")).DontDestroyOnLoad();
+                _decalMaterial.name = "Decal";
+                _decalMaterial.SetTexture("_MainTex", Texture2D.whiteTexture);
+                _decalMaterial.SetTexture("_EmissionMap", Texture2D.whiteTexture);
+                _decalMaterial.SetFloat("_Glossiness", 0);
+                _decalMaterial.SetFloat("_BumpScale", 0);
+                _decalMaterial.SetColor("_Color", new Color(0.3529412f, 0.3843137f, 1));
+                _decalMaterial.SetColor("_EmissionColor", new Color(0.2422811f, 0.2917706f, 2.440062f));
+                _decalMaterialGold = new Material(_decalMaterial);
+                _decalMaterialGold.name = "DecalGold";
+                _decalMaterialGold.SetColor("_Color", new Color(1, 0.6392157f, 0.3803922f));
+                _decalMaterialGold.SetColor("_EmissionColor", new Color(1, 0.3662527f, 0.1195384f));
+            }
 
-            GameObject stone = new GameObject("ShareStoneFallback");
-            stone.layer = LayerMask.NameToLayer("Interactible");
-            stone.SetActive(false);
-            SphereCollider sc = stone.AddComponent<SphereCollider>();
-            sc.center = Vector3.zero;
-            sc.radius = 0.4f;
-            sc.isTrigger = false;
-            OWCollider owc = stone.AddComponent<OWCollider>();
-            owc._collider = sc;
-            SharedStone item = stone.AddComponent<SharedStone>();
-            item._connectedPlatform = NomaiRemoteCameraPlatform.ID.None;
-            item._animDuration = 0.4f;
-            item._animOffsetY = 0.08f;
-            GameObject animRoot = new GameObject("AnimRoot");
-            animRoot.transform.parent = stone.transform;
-            TransformAnimator transformAnimator = animRoot.AddComponent<TransformAnimator>();
-            item._animator = transformAnimator;
-            OWRenderer renderer = SearchUtilities.FindResourceOfTypeAndName<OWRenderer>("Props_NOM_SharedStone");
-            if (renderer != null) GameObject.Instantiate(renderer.gameObject, animRoot.transform);
-            GameObject planetDecal = GameObject.CreatePrimitive(PrimitiveType.Quad);
-            planetDecal.name = "PlanetDecal";
-            planetDecal.transform.parent = animRoot.transform;
-            planetDecal.transform.localPosition = new Vector3(0, 0.053f, 0);
-            planetDecal.transform.localEulerAngles = new Vector3(90, 0, 0);
-            planetDecal.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-            planetDecal.AddComponent<OWRenderer>();
-            planetDecal.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterialGold;
-            _shareStonePrefab = stone;
+            if (_remoteCameraPlatformPrefab == null)
+            {
+                _remoteCameraPlatformPrefab = SearchUtilities.Find("OrbitalProbeCannon_Body/Sector_OrbitalProbeCannon/Sector_Module_Broken/Interactables_Module_Broken/Prefab_NOM_RemoteViewer").InstantiateInactive().Rename("Prefab_NOM_RemoteViewer").DontDestroyOnLoad();
+                var remoteCameraPlatform = _remoteCameraPlatformPrefab.GetComponent<NomaiRemoteCameraPlatform>();
+                remoteCameraPlatform.enabled = true;
+                remoteCameraPlatform._id = NomaiRemoteCameraPlatform.ID.None;
+                remoteCameraPlatform._platformState = NomaiRemoteCameraPlatform.State.Disconnected;
+                remoteCameraPlatform._dataPointID = string.Empty;
+                remoteCameraPlatform._visualSector = null;
+                var AstroBodySymbolRenderer = _remoteCameraPlatformPrefab.FindChild("PedestalAnchor/Prefab_NOM_SharedPedestal/SharedPedestal_side01_bottom_jnt/SharedPedestal_side01_top_jnt/AstroBodySymbolRenderer");
+                var quad = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                quad.transform.parent = AstroBodySymbolRenderer.transform.parent;
+                quad.transform.localPosition = AstroBodySymbolRenderer.transform.localPosition;
+                quad.transform.localRotation = AstroBodySymbolRenderer.transform.localRotation;
+                quad.transform.localScale = AstroBodySymbolRenderer.transform.localScale;
+                quad.AddComponent<OWRenderer>();
+                quad.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
+                quad.name = "AstroBodySymbolRenderer";
+                GameObject.DestroyImmediate(AstroBodySymbolRenderer);
+            }
+
+            if (_whiteboardPrefab == null)
+            {
+                _whiteboardPrefab = SearchUtilities.Find("OrbitalProbeCannon_Body/Sector_OrbitalProbeCannon/Sector_Module_Broken/Interactables_Module_Broken/Prefab_NOM_Whiteboard_Shared").InstantiateInactive().Rename("Prefab_NOM_Whiteboard_Shared").DontDestroyOnLoad();
+                var whiteboard = _whiteboardPrefab.GetComponent<NomaiSharedWhiteboard>();
+                whiteboard.enabled = true;
+                whiteboard._id = NomaiRemoteCameraPlatform.ID.None;
+                _whiteboardPrefab.FindChild("ArcSocket").transform.DestroyAllChildrenImmediate();
+                whiteboard._remoteIDs = new NomaiRemoteCameraPlatform.ID[0];
+                whiteboard._nomaiTexts = new NomaiWallText[0];
+                var AstroBodySymbolRendererW = _whiteboardPrefab.FindChild("PedestalAnchor/Prefab_NOM_SharedPedestal/SharedPedestal_side01_bottom_jnt/SharedPedestal_side01_top_jnt/AstroBodySymbolRenderer");
+                var quadW = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                quadW.transform.parent = AstroBodySymbolRendererW.transform.parent;
+                quadW.transform.localPosition = AstroBodySymbolRendererW.transform.localPosition;
+                quadW.transform.localRotation = AstroBodySymbolRendererW.transform.localRotation;
+                quadW.transform.localScale = AstroBodySymbolRendererW.transform.localScale;
+                quadW.AddComponent<OWRenderer>();
+                quadW.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
+                quadW.name = "AstroBodySymbolRenderer";
+                GameObject.DestroyImmediate(AstroBodySymbolRendererW);
+            }
+
+            if (_shareStonePrefab == null)
+            {
+                GameObject stone = new GameObject("ShareStoneFallback");
+                stone.layer = LayerMask.NameToLayer("Interactible");
+                stone.SetActive(false);
+                SphereCollider sc = stone.AddComponent<SphereCollider>();
+                sc.center = Vector3.zero;
+                sc.radius = 0.4f;
+                sc.isTrigger = false;
+                OWCollider owc = stone.AddComponent<OWCollider>();
+                owc._collider = sc;
+                SharedStone item = stone.AddComponent<SharedStone>();
+                item._connectedPlatform = NomaiRemoteCameraPlatform.ID.None;
+                item._animDuration = 0.4f;
+                item._animOffsetY = 0.08f;
+                GameObject animRoot = new GameObject("AnimRoot");
+                animRoot.transform.parent = stone.transform;
+                TransformAnimator transformAnimator = animRoot.AddComponent<TransformAnimator>();
+                item._animator = transformAnimator;
+                OWRenderer renderer = SearchUtilities.FindResourceOfTypeAndName<OWRenderer>("Props_NOM_SharedStone");
+                if (renderer != null) GameObject.Instantiate(renderer.gameObject, animRoot.transform);
+                GameObject planetDecal = GameObject.CreatePrimitive(PrimitiveType.Quad);
+                planetDecal.name = "PlanetDecal";
+                planetDecal.transform.parent = animRoot.transform;
+                planetDecal.transform.localPosition = new Vector3(0, 0.053f, 0);
+                planetDecal.transform.localEulerAngles = new Vector3(90, 0, 0);
+                planetDecal.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                planetDecal.AddComponent<OWRenderer>();
+                planetDecal.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterialGold;
+                _shareStonePrefab = stone.DontDestroyOnLoad();
+            }
         }
 
         public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, IModBehaviour mod)
         {
-            if (_shareStonePrefab == null) InitPrefabs();
+            InitPrefabs();
 
             var id = RemoteHandler.GetPlatformID(info.id);
 
