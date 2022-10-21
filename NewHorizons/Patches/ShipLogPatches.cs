@@ -97,7 +97,7 @@ namespace NewHorizons.Patches
         {
             foreach (KeyValuePair<string, ShipLogFact> keyValuePair in __instance._factDict)
             {
-                if (ShipLogHandler.IsVanillaAstroID(__instance.GetEntry(keyValuePair.Value.GetEntryID()).GetAstroObjectID()) && !keyValuePair.Value.IsRumor() && !keyValuePair.Value.IsRevealed() && !keyValuePair.Key.Equals("TH_VILLAGE_X3") && !keyValuePair.Key.Equals("GD_GABBRO_ISLAND_X1") && __instance.GetEntry(keyValuePair.Value.GetEntryID()).GetCuriosityName() != CuriosityName.InvisiblePlanet)
+                if (!ShipLogHandler.IsModdedFact(keyValuePair.Key) && !keyValuePair.Value.IsRumor() && !keyValuePair.Value.IsRevealed() && !keyValuePair.Key.Equals("TH_VILLAGE_X3") && !keyValuePair.Key.Equals("GD_GABBRO_ISLAND_X1") && __instance.GetEntry(keyValuePair.Value.GetEntryID()).GetCuriosityName() != CuriosityName.InvisiblePlanet)
                 {
                     return false;
                 }
