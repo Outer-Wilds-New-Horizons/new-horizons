@@ -4,7 +4,7 @@
   "author": "xen, Bwc9876, clay, MegaPiggy, John, Hawkbar, Trifid, Book",
   "name": "New Horizons",
   "uniqueName": "xen.NewHorizons",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "owmlVersion": "2.7.2",
   "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
   "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
