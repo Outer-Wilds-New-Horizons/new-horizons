@@ -15,7 +15,7 @@ namespace NewHorizons.Builder.Props
     public static class DetailBuilder
     {
         private static readonly Dictionary<PropModule.DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
-        private static readonly Dictionary<string, (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+        private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
 
         static DetailBuilder()
         {
@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.Props
             bool isItem;
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
-            if (detail?.path != null && _fixedPrefabCache.TryGetValue(detail.path, out var storedPrefab))
+            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
             {
                 prop = storedPrefab.prefab.InstantiateInactive();
                 prop.name = prefab.name;
@@ -114,7 +114,7 @@ namespace NewHorizons.Builder.Props
 
                 if (detail.path != null)
                 {
-                    _fixedPrefabCache.Add(detail.path, (prop.InstantiateInactive(), isItem));
+                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive(), isItem));
                 }
             }
 
