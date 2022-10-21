@@ -104,7 +104,8 @@ namespace NewHorizons.Utility.DebugUtilities
             _planeDownLeftSphere .transform.localPosition = data.plane.origin + data.plane.u*-1*planeSize + data.plane.v*-1*planeSize;
             _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*-1*planeSize;
 
-            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
+            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on collider [{data.colliderPath}] " +
+                       (data.bodyPath != null? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
         internal DebugRaycastData Raycast()
         {
@@ -124,8 +125,8 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
 
-                data.bodyName = o.name;
-                data.bodyPath = o.transform.GetPath();
+                data.colliderPath = hitInfo.collider.transform.GetPath();
+                data.bodyPath = hitInfo.rigidbody?.transform.GetPath();
                 data.hitObject = o;
                 data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);
