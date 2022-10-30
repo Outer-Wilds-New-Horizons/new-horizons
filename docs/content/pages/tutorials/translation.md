@@ -98,3 +98,4 @@ Please enter the DeepL API key for the first time only. The API key will be save
 
 - Parsing errors may occur when trying to translate manually created JSON files
     - In many cases, this is due to a specific comment in the JSON. Please remove the comments and try again.
+    - Most comments are processed normally, but errors may occur if the comment contains special symbols or if the comment is located at the end of a JSON object.
