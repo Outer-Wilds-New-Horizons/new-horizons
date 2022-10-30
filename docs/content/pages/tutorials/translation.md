@@ -35,7 +35,7 @@ Here's an example, for `russian.json`:
 
 # CLI Tool
 
-Are you tired of manually translating JSON? Do you want an automatic translator? Well then the [nh-translation-helper](https://www.npmjs.com/package/nh-translation-helper) may be for you!
+Are you tired of manually translating JSON? Do you want an automatic translator? Well then the [nh-translation-helper](https://www.npmjs.com/package/nh-translation-helper){ target="_blank" } may be for you!
 
 This tool has the following features:
 
