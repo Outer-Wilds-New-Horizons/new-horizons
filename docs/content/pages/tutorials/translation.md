@@ -46,7 +46,7 @@ This section outlines how to install and use the nh-translation-helper.
 
 ## Installation
 
-To get started, head over to the [repo for the tool](https://github.com/96-38/nh-translation-helper) and prepare the requirements:
+To get started, head over to the [repo for the tool](https://github.com/96-38/nh-translation-helper){ target="_blank" } and prepare the requirements:
 
 - Install [Node.js](https://nodejs.org/) >= 12.0.0
     - Install the LTS version.
