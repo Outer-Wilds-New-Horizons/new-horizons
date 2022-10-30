@@ -48,7 +48,7 @@ This section outlines how to install and use the nh-translation-helper.
 
 To get started, head over to the [repo for the tool](https://github.com/96-38/nh-translation-helper){ target="_blank" } and prepare the requirements:
 
-- Install [Node.js](https://nodejs.org/) >= 12.0.0
+- Install [Node.js](https://nodejs.org/){ target="_blank" } >= 12.0.0
     - Install the LTS version.
 - Get [DeepL API](https://www.deepl.com/docs-api) Key (Free or Pro)
     - Sign up [here](https://www.deepl.com/pro#developer)
