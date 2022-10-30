@@ -50,7 +50,7 @@ To get started, head over to the [repo for the tool](https://github.com/96-38/nh
 
 - Install [Node.js](https://nodejs.org/){ target="_blank" } >= 12.0.0
     - Install the LTS version.
-- Get [DeepL API](https://www.deepl.com/docs-api) Key (Free or Pro)
+- Get [DeepL API](https://www.deepl.com/docs-api){ target="_blank" } Key (Free or Pro)
     - Sign up [here](https://www.deepl.com/pro#developer)
 
 When you are ready, execute the following command in a terminal or command prompt:
