@@ -130,7 +130,7 @@ namespace NewHorizons.Builder.Props
             if (detail.alignToNormal)
             {
                 // Apply the rotation after aligning it with normal
-                var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
+                var up = (prop.transform.position - go.transform.position).normalized;
                 prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 prop.transform.rotation *= rot;
             }
