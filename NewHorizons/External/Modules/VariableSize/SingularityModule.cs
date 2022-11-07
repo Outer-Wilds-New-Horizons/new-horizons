@@ -47,7 +47,7 @@ namespace NewHorizons.External.Modules.VariableSize
         [Range(0f, double.MaxValue)] public float horizonRadius;
 
         /// <summary>
-        /// Radius of the distortion effects. Defaults to 2 * horizonRadius
+        /// Radius of the distortion effects. Defaults to 2.5 * horizonRadius
         /// </summary>
         [Range(0f, double.MaxValue)] public float distortRadius;
 

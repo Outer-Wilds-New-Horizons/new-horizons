@@ -77,7 +77,7 @@ namespace NewHorizons.Builder.Body
             if (_singularitiesByID?.Values?.FirstOrDefault() == null) _singularitiesByID = new Dictionary<string, GameObject>();
 
             var horizonRadius = singularity.horizonRadius;
-            var distortRadius = singularity.distortRadius;
+            var distortRadius = singularity.distortRadius != 0f ? singularity.distortRadius : horizonRadius * 2.5f;
             var pairedSingularity = singularity.pairedSingularity;
 
             bool polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
