@@ -12,6 +12,7 @@ namespace NewHorizons.Utility.DebugUtilities
         public bool hit;
         public Vector3 pos;
         public Vector3 norm;
+        public Quaternion rot;
         public DebugRaycastPlane plane;
 
         public string colliderPath;

@@ -211,6 +211,12 @@ namespace NewHorizons.Utility
         }
 
 
+        /// <summary>
+        /// Transform rotation from Local Space to World Space
+        /// </summary>
+        /// <param name="transform"></param>
+        /// <param name="localRotation"></param>
+        /// <returns></returns>
         public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
         {
             return transform.rotation * localRotation;

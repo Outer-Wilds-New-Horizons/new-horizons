@@ -1,3 +1,5 @@
+using NewHorizons.Builder.Props;
+using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -61,6 +63,7 @@ namespace NewHorizons.Utility.DebugUtilities
             }
         }
 
+        internal string Vector3ToString(Vector3 v) => $"{{\"x\": {v.x}, \"y\": {v.y}, \"z\": {v.z}}}";
 
         internal void PrintRaycast()
         {
@@ -72,8 +75,9 @@ namespace NewHorizons.Utility.DebugUtilities
                 return;
             }
 
-            var posText = $"{{\"x\": {data.pos.x}, \"y\": {data.pos.y}, \"z\": {data.pos.z}}}";
-            var normText = $"{{\"x\": {data.norm.x}, \"y\": {data.norm.y}, \"z\": {data.norm.z}}}";
+            var posText = Vector3ToString(data.pos);
+            var normText = Vector3ToString(data.norm);
+            var rotText = Vector3ToString(data.rot.eulerAngles);
         
             if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
             if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
@@ -104,7 +108,7 @@ namespace NewHorizons.Utility.DebugUtilities
             _planeDownLeftSphere .transform.localPosition = data.plane.origin + data.plane.u*-1*planeSize + data.plane.v*-1*planeSize;
             _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*-1*planeSize;
 
-            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on collider [{data.colliderPath}] " +
+            Logger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
                        (data.bodyPath != null? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
         internal DebugRaycastData Raycast()
@@ -121,6 +125,7 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 data.pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
                 data.norm = hitInfo.transform.InverseTransformDirection(hitInfo.normal);
+
                 var o = hitInfo.transform.gameObject;
 
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
@@ -130,13 +135,16 @@ namespace NewHorizons.Utility.DebugUtilities
                 data.hitObject = o;
                 data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);
+
+                var toPlayer = Vector3.ProjectOnPlane((transform.position - hitInfo.point).normalized, hitInfo.normal);
+                var worldSpaceRot = Quaternion.LookRotation(toPlayer, hitInfo.normal);
+                data.rot = hitAstroObject.transform.InverseTransformRotation(worldSpaceRot);
             }
             _rb.EnableCollisionDetection();
 
             return data;
         }
 
-        
         internal DebugRaycastPlane ConstructPlane(DebugRaycastData data)
         {
             var U = data.pos - Vector3.zero; // U is the local "up" direction. the direction directly away from the center of the planet at this point. // pos is always relative to the body, so the body is considered to be at 0,0,0.
