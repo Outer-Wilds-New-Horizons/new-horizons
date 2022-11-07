@@ -225,7 +225,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     else if (conversationMeta.conversationGo != null)
                                     {
                                         conversationMeta.conversationGo.transform.localPosition = data.pos;
-                                        DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
+                                        conversationMeta.conversationGo.transform.rotation = data.rot;
                                         
                                         conversationMeta.conversation.position = conversationMeta.conversationGo.transform.localPosition;
                                         conversationMeta.conversation.rotation = conversationMeta.conversationGo.transform.localEulerAngles;
