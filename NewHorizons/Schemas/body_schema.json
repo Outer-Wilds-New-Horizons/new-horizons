@@ -1761,7 +1761,7 @@
         },
         "distortRadius": {
           "type": "number",
-          "description": "Radius of the distortion effects. Defaults to 2 * horizonRadius",
+          "description": "Radius of the distortion effects. Defaults to 2.5 * horizonRadius",
           "format": "float",
           "minimum": 0.0
         },
