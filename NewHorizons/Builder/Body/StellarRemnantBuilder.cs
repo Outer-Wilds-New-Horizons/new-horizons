@@ -118,7 +118,7 @@ namespace NewHorizons.Builder.Body
             flares.gameObject.transform.localScale = new Vector3(0.85f, 0.85f, 0.85f);
 
             // Add singularity
-            var singularityRenderer = SingularityBuilder.MakeBlackHoleGraphics(planetGO, neutronStarSize * 2.5f);
+            var singularityRenderer = SingularityBuilder.MakeSingularityGraphics(planetGO, true, neutronStarSize, neutronStarSize * 2.5f);
             singularityRenderer.GetComponent<MeshRenderer>().material.color = new Color(0.5f, 2f, 2f, 1f);
 
             return neutronStar;
@@ -128,8 +128,8 @@ namespace NewHorizons.Builder.Body
         {
             var blackHoleSize = progenitor.size / 100;
 
-            if (proxy != null) return SingularityBuilder.MakeBlackHoleProxy(proxy, Vector3.zero, blackHoleSize);
-            else return SingularityBuilder.MakeBlackHole(planetGO, sector, Vector3.zero, blackHoleSize, true, string.Empty);
+            if (proxy != null) return SingularityBuilder.MakeSingularityProxy(proxy, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f);
+            else return SingularityBuilder.MakeSingularity(planetGO, sector, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f, true, string.Empty);
         }
 
         public static GameObject MakeProxyRemnant(GameObject planet, GameObject proxy, IModBehaviour mod, StarModule progenitor)

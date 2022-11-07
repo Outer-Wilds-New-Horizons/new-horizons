@@ -369,6 +369,27 @@ namespace NewHorizons.External.Configs
                 Props.singularities = Props.singularities.Append(Singularity).ToArray();
             }
 
+            // Old singularity size
+            if (Props?.singularities != null)
+            {
+                foreach (var singularity in Props.singularities)
+                {
+                    if (singularity.size != 0f)
+                    {
+                        singularity.horizonRadius = singularity.size * 0.4f;
+                        switch (singularity.type)
+                        {
+                            case SingularityModule.SingularityType.BlackHole:
+                                singularity.distortRadius = singularity.size * 0.95f;
+                                break;
+                            case SingularityModule.SingularityType.WhiteHole:
+                                singularity.distortRadius = singularity.size * 2.8f;
+                                break;
+                        }
+                    }
+                }
+            }
+
             // Signals are now in props
             if (Signal?.signals != null)
             {

@@ -187,16 +187,9 @@ namespace NewHorizons.Builder.Body
                 {
                     foreach (var singularity in body.Config.Props.singularities)
                     {
-                        if (singularity.type == SingularityModule.SingularityType.BlackHole)
-                        {
-                            SingularityBuilder.MakeBlackHoleProxy(proxy, singularity.position, singularity.size, singularity.curve);
-                        }
-                        else
-                        {
-                            SingularityBuilder.MakeWhiteHoleProxy(proxy, singularity.position, singularity.size, singularity.curve);
-                        }
-
-                        if (realSize < singularity.size) realSize = singularity.size;
+                        var polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
+                        SingularityBuilder.MakeSingularityProxy(proxy, singularity.position, polarity, singularity.horizonRadius, singularity.distortRadius, singularity.curve);
+                        if (realSize < singularity.distortRadius) realSize = singularity.distortRadius;
                     }
                 }
 

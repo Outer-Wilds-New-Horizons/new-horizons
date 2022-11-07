@@ -37,6 +37,7 @@ namespace NewHorizons.Builder.Body
 
         private static Mesh _whiteHoleMesh;
         private static GameObject _whiteHoleAmbientLight;
+        private static GameObject _whiteHoleAmbience;
         private static GameObject _whiteHoleZeroGVolume;
         private static GameObject _whiteHoleRulesetVolume;
         private static GameObject _whiteHoleVolume;
@@ -62,6 +63,7 @@ namespace NewHorizons.Builder.Body
 
             if (_whiteHoleMesh == null) _whiteHoleMesh = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVisuals/Singularity").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();
             if (_whiteHoleAmbientLight == null) _whiteHoleAmbientLight = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVisuals/AmbientLight_WH").InstantiateInactive().Rename("WhiteHoleAmbientLight").DontDestroyOnLoad();
+            if (_whiteHoleAmbience == null) _whiteHoleAmbience = SearchUtilities.Find("WhiteHole_Body/Ambience_WhiteHole").InstantiateInactive().Rename("WhiteHoleAmbience").DontDestroyOnLoad();
             if (_whiteHoleZeroGVolume == null) _whiteHoleZeroGVolume = SearchUtilities.Find("WhiteHole_Body/ZeroGVolume").InstantiateInactive().Rename("WhiteHoleZeroGVolume").DontDestroyOnLoad();
             if (_whiteHoleRulesetVolume == null) _whiteHoleRulesetVolume = SearchUtilities.Find("WhiteHole_Body/Sector_WhiteHole/RulesetVolumes_WhiteHole").InstantiateInactive().Rename("WhiteHoleRulesetVolume").DontDestroyOnLoad();
             if (_whiteHoleVolume == null) _whiteHoleVolume = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVolume").InstantiateInactive().Rename("WhiteHoleVolume").DontDestroyOnLoad();
@@ -74,28 +76,20 @@ namespace NewHorizons.Builder.Body
             // If we've reloaded the first one will now be null so we have to refresh the list
             if (_singularitiesByID?.Values?.FirstOrDefault() == null) _singularitiesByID = new Dictionary<string, GameObject>();
 
-            var size = singularity.size;
+            var horizonRadius = singularity.horizonRadius;
+            var distortRadius = singularity.distortRadius;
             var pairedSingularity = singularity.pairedSingularity;
 
-            var polarity = singularity.type;
+            bool polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
 
             bool isWormHole = singularity?.targetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
-            bool makeZeroGVolume = singularity == null ? true : singularity.makeZeroGVolume;
-
             Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
 
             GameObject newSingularity = null;
-            switch (polarity)
-            {
-                case SingularityModule.SingularityType.BlackHole:
-                    newSingularity = MakeBlackHole(go, sector, localPosition, size, hasHazardVolume, singularity.targetStarSystem, singularity.curve);
-                    break;
-                case SingularityModule.SingularityType.WhiteHole:
-                    newSingularity = MakeWhiteHole(go, sector, OWRB, localPosition, size, singularity.curve, makeZeroGVolume);
-                    break;
-            }
+            newSingularity = MakeSingularity(go, sector, localPosition, polarity, horizonRadius, distortRadius, 
+                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasAudio);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             _singularitiesByID.Add(uniqueID, newSingularity);
@@ -107,10 +101,10 @@ namespace NewHorizons.Builder.Body
                 {
                     switch (polarity)
                     {
-                        case SingularityModule.SingularityType.BlackHole:
+                        case true:
                             PairSingularities(uniqueID, pairedSingularity, newSingularity, pairedSingularityGO);
                             break;
-                        case SingularityModule.SingularityType.WhiteHole:
+                        case false:
                             PairSingularities(pairedSingularity, uniqueID, pairedSingularityGO, newSingularity);
                             break;
                     }
@@ -138,275 +132,183 @@ namespace NewHorizons.Builder.Body
             blackHoleVolume._whiteHole = whiteHoleVolume;
         }
 
-        public static GameObject MakeBlackHole(GameObject planetGO, Sector sector, Vector3 localPosition, float size, 
-            bool hasDestructionVolume, string targetSolarSystem = null, TimeValuePair[] curve = null, bool makeAudio = true)
+        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, bool polarity, float horizon, float distort,
+            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool makeAudio = true)
         {
             InitPrefabs();
 
-            var blackHole = new GameObject("BlackHole");
-            blackHole.SetActive(false);
-            blackHole.transform.parent = sector?.transform ?? planetGO.transform;
-            blackHole.transform.position = planetGO.transform.TransformPoint(localPosition);
+            // polarity true = black, false = white
 
-            var blackHoleRender = MakeBlackHoleGraphics(blackHole, size);
+            var singularity = new GameObject(polarity ? "BlackHole" : "WhiteHole");
+            singularity.transform.parent = sector?.transform ?? planetGO.transform;
+            singularity.transform.position = planetGO.transform.TransformPoint(position);
 
-            BlackHoleSizeController sizeController = null;
+            var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort);
+
+            SingularitySizeController sizeController = null;
             if (curve != null)
             {
-                sizeController = blackHoleRender.gameObject.AddComponent<BlackHoleSizeController>();
+                sizeController = singularityRenderer.gameObject.AddComponent<SingularitySizeController>();
                 sizeController.SetScaleCurve(curve);
-                sizeController.size = size;
-                sizeController.material = blackHoleRender.material;
+                sizeController.size = distort;
+                sizeController.innerScale = horizon;
+                sizeController.material = singularityRenderer.material;
             }
 
             OWAudioSource oneShotOWAudioSource = null;
             if (makeAudio)
             {
-                var blackHoleAmbience = GameObject.Instantiate(_blackHoleAmbience, blackHole.transform);
-                blackHoleAmbience.name = "BlackHoleAmbience";
-                blackHoleAmbience.SetActive(true);
-                blackHoleAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
+                var singularityAmbience = GameObject.Instantiate(_blackHoleAmbience, singularity.transform);
+                singularityAmbience.name = polarity ? "BlackHoleAmbience" : "WhiteHoleAmbience";
+                singularityAmbience.SetActive(true);
+                singularityAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
 
-                var blackHoleAudioSource = blackHoleAmbience.GetComponent<AudioSource>();
-                blackHoleAudioSource.maxDistance = size * 2.5f;
-                blackHoleAudioSource.minDistance = size * 0.4f;
-                blackHoleAmbience.transform.localPosition = Vector3.zero;
-                if (sizeController != null) sizeController.audioSource = blackHoleAudioSource;
+                var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
+                singularityAudioSource.maxDistance = distort * 2.5f;
+                singularityAudioSource.minDistance = horizon;
+                singularityAmbience.transform.localPosition = Vector3.zero;
+                if (sizeController != null) sizeController.audioSource = singularityAudioSource;
 
-                var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, blackHole.transform);
-                blackHoleOneShot.name = "BlackHoleEmissionOneShot";
-                blackHoleOneShot.SetActive(true);
-                oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
-                var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
-                oneShotAudioSource.maxDistance = size * 3f;
-                oneShotAudioSource.minDistance = size * 0.4f;
-                if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
+                if (polarity)
+                {
+                    var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
+                    blackHoleOneShot.name = "BlackHoleEmissionOneShot";
+                    blackHoleOneShot.SetActive(true);
+                    oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
+                    var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
+                    oneShotAudioSource.maxDistance = distort * 3f;
+                    oneShotAudioSource.minDistance = horizon;
+                    if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
+                }
             }
 
-            if (hasDestructionVolume || targetSolarSystem != null)
+            if (polarity)
             {
-                var destructionVolumeGO = new GameObject("DestructionVolume");
-                destructionVolumeGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
-                destructionVolumeGO.transform.parent = blackHole.transform;
-                destructionVolumeGO.transform.localScale = Vector3.one;
-                destructionVolumeGO.transform.localPosition = Vector3.zero;
-
-                var sphereCollider = destructionVolumeGO.AddComponent<SphereCollider>();
-                sphereCollider.radius = size * 0.4f;
-                sphereCollider.isTrigger = true;
-                if (sizeController != null) sizeController.sphereCollider = sphereCollider;
-
-                if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
-                else if (targetSolarSystem != null)
+                if (hasDestructionVolume || targetStarSystem != null)
                 {
-                    var wormholeVolume = destructionVolumeGO.AddComponent<ChangeStarSystemVolume>();
-                    wormholeVolume.TargetSolarSystem = targetSolarSystem;
+                    var destructionVolumeGO = new GameObject("DestructionVolume");
+                    destructionVolumeGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                    destructionVolumeGO.transform.parent = singularity.transform;
+                    destructionVolumeGO.transform.localScale = Vector3.one;
+                    destructionVolumeGO.transform.localPosition = Vector3.zero;
+
+                    var sphereCollider = destructionVolumeGO.AddComponent<SphereCollider>();
+                    sphereCollider.radius = horizon;
+                    sphereCollider.isTrigger = true;
+                    if (sizeController != null) sizeController.sphereCollider = sphereCollider;
+
+                    if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
+                    else if (targetStarSystem != null)
+                    {
+                        var wormholeVolume = destructionVolumeGO.AddComponent<ChangeStarSystemVolume>();
+                        wormholeVolume.TargetSolarSystem = targetStarSystem;
+                    }
+                }
+                else
+                {
+                    var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, singularity.transform);
+                    blackHoleVolume.name = "BlackHoleVolume";
+                    blackHoleVolume.SetActive(true);
+                    var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
+                    bhVolume._audioSector = sector;
+                    bhVolume._emissionSource = oneShotOWAudioSource;
+                    var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
+                    blackHoleSphereCollider.radius = horizon;
+                    if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
                 }
             }
             else
             {
-                var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, blackHole.transform);
-                blackHoleVolume.name = "BlackHoleVolume";
-                blackHoleVolume.SetActive(true);
-                var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
-                bhVolume._audioSector = sector;
-                bhVolume._emissionSource = oneShotOWAudioSource;
-                var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
-                blackHoleSphereCollider.radius = size * 0.4f;
-                if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
+                /*
+                var ambientLight = GameObject.Instantiate(_whiteHoleAmbientLight);
+                ambientLight.transform.parent = singularity.transform;
+                ambientLight.transform.localScale = Vector3.one;
+                ambientLight.transform.localPosition = Vector3.zero;
+                ambientLight.name = "AmbientLight";
+                ambientLight.SetActive(true);
+                var light = ambientLight.GetComponent<Light>();
+                light.range = distort * 7f;
+                if (sizeController != null) sizeController.light = light;
+                */
+
+                GameObject whiteHoleVolumeGO = GameObject.Instantiate(_whiteHoleVolume);
+                whiteHoleVolumeGO.transform.parent = singularity.transform;
+                whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
+                whiteHoleVolumeGO.transform.localScale = Vector3.one;
+                whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = horizon;
+                whiteHoleVolumeGO.name = "WhiteHoleVolume";
+                whiteHoleVolumeGO.SetActive(true);
+                if (sizeController != null) sizeController.sphereCollider = whiteHoleVolumeGO.GetComponent<SphereCollider>();
+
+                var OWRB = planetGO.GetComponent<OWRigidbody>();
+
+                var whiteHoleFluidVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleFluidVolume>();
+                whiteHoleFluidVolume._innerRadius = horizon;
+                whiteHoleFluidVolume._outerRadius = distort;
+                whiteHoleFluidVolume._attachedBody = OWRB;
+                if (sizeController != null) sizeController.fluidVolume = whiteHoleFluidVolume;
+
+                var whiteHoleVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleVolume>();
+                whiteHoleVolume._debrisDistMax = distort * 6.5f;
+                whiteHoleVolume._debrisDistMin = distort * 2f;
+                whiteHoleVolume._whiteHoleSector = sector;
+                whiteHoleVolume._fluidVolume = whiteHoleFluidVolume;
+                whiteHoleVolume._whiteHoleBody = OWRB;
+                whiteHoleVolume._whiteHoleProxyShadowSuperGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
+                whiteHoleVolume._radius = horizon;
+                whiteHoleVolume._airlocksToOpen = new NomaiAirlock[0];
+                if (sizeController != null) sizeController.volume = whiteHoleVolume;
+
+                whiteHoleVolume.enabled = true;
+                whiteHoleFluidVolume.enabled = true;
             }
 
-            blackHole.SetActive(true);
-            return blackHole;
+            singularity.SetActive(true);
+            return singularity;
         }
-
-        public static MeshRenderer MakeBlackHoleGraphics(GameObject blackHole, float size)
+        
+        public static MeshRenderer MakeSingularityGraphics(GameObject singularity, bool polarity, float horizon, float distort)
         {
             InitPrefabs();
 
-            var blackHoleRender = new GameObject("BlackHoleRender");
-            blackHoleRender.transform.parent = blackHole.transform;
-            blackHoleRender.transform.localPosition = Vector3.zero;
-            blackHoleRender.transform.localScale = Vector3.one * size;
+            var singularityRenderer = new GameObject(polarity ? "BlackHoleRenderer" : "WhiteHoleRenderer");
+            singularityRenderer.transform.parent = singularity.transform;
+            singularityRenderer.transform.localPosition = Vector3.zero;
+            singularityRenderer.transform.localScale = Vector3.one * distort;
 
-            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
-            meshFilter.mesh = _blackHoleMesh;
+            var meshFilter = singularityRenderer.AddComponent<MeshFilter>();
+            meshFilter.mesh = polarity ? _blackHoleMesh : _whiteHoleMesh;
 
-            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
-            meshRenderer.material = new Material(blackHoleShader);
-            meshRenderer.material.SetFloat(Radius, size * 0.4f);
-            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
-            meshRenderer.material.SetFloat(MassScale, 1);
-            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
+            var meshRenderer = singularityRenderer.AddComponent<MeshRenderer>();
+            meshRenderer.material = new Material(polarity ? blackHoleShader : whiteHoleShader);
+            meshRenderer.material.SetFloat(Radius, horizon);
+            meshRenderer.material.SetFloat(MaxDistortRadius, distort);
+            meshRenderer.material.SetFloat(MassScale, polarity ? 1f : -1f);
+            meshRenderer.material.SetFloat(DistortFadeDist, distort - horizon);
+            if (!polarity) meshRenderer.material.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
 
             return meshRenderer;
         }
 
-        public static GameObject MakeWhiteHole(GameObject planetGO, Sector sector, OWRigidbody OWRB, Vector3 localPosition, float size,
-            TimeValuePair[] curve, bool makeZeroGVolume = true)
+        public static GameObject MakeSingularityProxy(GameObject rootObject, MVector3 position, bool polarity, float horizon, float distort, TimeValuePair[] curve = null)
         {
             InitPrefabs();
 
-            var whiteHole = new GameObject("WhiteHole");
-            whiteHole.SetActive(false);
-            whiteHole.transform.parent = sector?.transform ?? planetGO.transform;
-            whiteHole.transform.position = planetGO.transform.TransformPoint(localPosition);
+            var singularityRenderer = MakeSingularityGraphics(rootObject, polarity, horizon, distort);
+            if (position != null) singularityRenderer.transform.localPosition = position;
 
-            var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
-            whiteHoleRenderer.transform.parent = whiteHole.transform;
-            whiteHoleRenderer.transform.localPosition = Vector3.zero;
-            whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
-
-            WhiteHoleSizeController sizeController = null;
+            SingularitySizeController sizeController = null;
             if (curve != null)
             {
-                sizeController = whiteHoleRenderer.AddComponent<WhiteHoleSizeController>();
+                sizeController = singularityRenderer.gameObject.AddComponent<SingularitySizeController>();
                 sizeController.SetScaleCurve(curve);
-                sizeController.size = size * 2.8f; // Gets goofy because of this
+                sizeController.size = distort;
+                sizeController.innerScale = horizon;
+                sizeController.material = singularityRenderer.material;
             }
 
-            var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
-            meshFilter.mesh = _whiteHoleMesh;
-
-            var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
-            meshRenderer.material = new Material(whiteHoleShader);
-            meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
-            meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
-            meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
-            meshRenderer.sharedMaterial.SetFloat(MassScale, -1);
-            meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
-            if (sizeController != null) sizeController.material = meshRenderer.sharedMaterial;
-
-            var ambientLight = GameObject.Instantiate(_whiteHoleAmbientLight);
-            ambientLight.transform.parent = whiteHole.transform;
-            ambientLight.transform.localScale = Vector3.one;
-            ambientLight.transform.localPosition = Vector3.zero;
-            ambientLight.name = "AmbientLight";
-            ambientLight.SetActive(true);
-            var light = ambientLight.GetComponent<Light>();
-            light.range = size * 7f;
-            if (sizeController != null) sizeController.light = light;
-
-            GameObject whiteHoleVolumeGO = GameObject.Instantiate(_whiteHoleVolume);
-            whiteHoleVolumeGO.transform.parent = whiteHole.transform;
-            whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
-            whiteHoleVolumeGO.transform.localScale = Vector3.one;
-            whiteHoleVolumeGO.GetComponent<SphereCollider>().radius = size;
-            whiteHoleVolumeGO.name = "WhiteHoleVolume";
-            whiteHoleVolumeGO.SetActive(true);
-            if (sizeController != null) sizeController.sphereCollider = whiteHoleVolumeGO.GetComponent<SphereCollider>(); 
-
-            var whiteHoleFluidVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleFluidVolume>();
-            whiteHoleFluidVolume._innerRadius = size * 0.5f;
-            whiteHoleFluidVolume._outerRadius = size;
-            whiteHoleFluidVolume._attachedBody = OWRB;
-            if (sizeController != null) sizeController.fluidVolume = whiteHoleFluidVolume;
-
-            var whiteHoleVolume = whiteHoleVolumeGO.GetComponent<WhiteHoleVolume>();
-            whiteHoleVolume._debrisDistMax = size * 6.5f;
-            whiteHoleVolume._debrisDistMin = size * 2f;
-            whiteHoleVolume._whiteHoleSector = sector;
-            whiteHoleVolume._fluidVolume = whiteHoleFluidVolume;
-            whiteHoleVolume._whiteHoleBody = OWRB;
-            whiteHoleVolume._whiteHoleProxyShadowSuperGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
-            whiteHoleVolume._radius = size * 0.5f;
-            whiteHoleVolume._airlocksToOpen = new NomaiAirlock[0];
-            if (sizeController != null) sizeController.volume = whiteHoleVolume;
-
-            whiteHoleVolume.enabled = true;
-            whiteHoleFluidVolume.enabled = true;
-
-            if (makeZeroGVolume)
-            {
-                var zeroGVolume = GameObject.Instantiate(_whiteHoleZeroGVolume, whiteHole.transform);
-                zeroGVolume.name = "ZeroGVolume";
-                zeroGVolume.transform.localPosition = Vector3.zero;
-                zeroGVolume.SetActive(true);
-                zeroGVolume.GetComponent<SphereCollider>().radius = size * 10f;
-                zeroGVolume.GetComponent<ZeroGVolume>()._attachedBody = OWRB;
-
-                var rulesetVolume = GameObject.Instantiate(_whiteHoleRulesetVolume, planetGO.transform);
-                rulesetVolume.name = "RulesetVolume";
-                rulesetVolume.transform.localPosition = Vector3.zero;
-                rulesetVolume.transform.localScale = Vector3.one * size / 100f;
-                rulesetVolume.SetActive(true);
-                rulesetVolume.GetComponent<SphereShape>().enabled = true;
-
-                if (sizeController != null)
-                {
-                    sizeController.zeroGSphereCollider = zeroGVolume.GetComponent<SphereCollider>();
-                    sizeController.rulesetVolume = rulesetVolume;
-                }
-            }
-
-            whiteHole.SetActive(true);
-            return whiteHole;
-        }
-
-        public static GameObject MakeBlackHoleProxy(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
-        {
-            InitPrefabs();
-
-            var blackHoleShader = _blackHoleProxyPrefab.GetComponent<MeshRenderer>().material.shader;
-            if (blackHoleShader == null) blackHoleShader = _blackHoleProxyPrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
-
-            var blackHoleRender = new GameObject("BlackHoleRender");
-            blackHoleRender.transform.parent = rootObject.transform;
-            if (position != null) blackHoleRender.transform.localPosition = position;
-            else blackHoleRender.transform.localPosition = Vector3.zero;
-            blackHoleRender.transform.localScale = Vector3.one * size;
-
-            var meshFilter = blackHoleRender.AddComponent<MeshFilter>();
-            meshFilter.mesh = _blackHoleProxyPrefab.GetComponent<MeshFilter>().mesh;
-
-            var meshRenderer = blackHoleRender.AddComponent<MeshRenderer>();
-            meshRenderer.material = new Material(blackHoleShader);
-            meshRenderer.material.SetFloat(Radius, size * 0.4f);
-            meshRenderer.material.SetFloat(MaxDistortRadius, size * 0.95f);
-            meshRenderer.material.SetFloat(MassScale, 1);
-            meshRenderer.material.SetFloat(DistortFadeDist, size * 0.55f);
-
-            if (curve != null) AddSizeController(blackHoleRender, curve, size);
-
-            blackHoleRender.SetActive(true);
-            return blackHoleRender;
-        }
-
-        public static GameObject MakeWhiteHoleProxy(GameObject rootObject, MVector3 position, float size, TimeValuePair[] curve = null)
-        {
-            InitPrefabs();
-
-            var whiteHoleShader = _whiteHoleProxyPrefab.GetComponent<MeshRenderer>().material.shader;
-            if (whiteHoleShader == null) whiteHoleShader = _whiteHoleProxyPrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
-
-            var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
-            whiteHoleRenderer.transform.parent = rootObject.transform;
-            if (position != null) whiteHoleRenderer.transform.localPosition = position;
-            else whiteHoleRenderer.transform.localPosition = Vector3.zero;
-            whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
-
-            var meshFilter = whiteHoleRenderer.AddComponent<MeshFilter>();
-            meshFilter.mesh = _whiteHoleProxyPrefab.GetComponent<MeshFilter>().mesh;
-
-            var meshRenderer = whiteHoleRenderer.AddComponent<MeshRenderer>();
-            meshRenderer.material = new Material(whiteHoleShader);
-            meshRenderer.sharedMaterial.SetFloat(Radius, size * 0.4f);
-            meshRenderer.sharedMaterial.SetFloat(DistortFadeDist, size);
-            meshRenderer.sharedMaterial.SetFloat(MaxDistortRadius, size * 2.8f);
-            meshRenderer.sharedMaterial.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
-
-            if (curve != null) AddSizeController(whiteHoleRenderer, curve, size);
-
-            whiteHoleRenderer.SetActive(true);
-            return whiteHoleRenderer;
-        }
-
-        private static SizeController AddSizeController(GameObject go, TimeValuePair[] curve, float size)
-        {
-            var sizeController = go.AddComponent<SizeController>();
-            sizeController.SetScaleCurve(curve);
-            sizeController.size = size;
-            return sizeController;
+            singularityRenderer.gameObject.SetActive(true);
+            return singularityRenderer.gameObject;
         }
     }
 }
