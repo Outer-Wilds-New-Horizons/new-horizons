@@ -1741,11 +1741,6 @@
             "$ref": "#/definitions/TimeValuePair"
           }
         },
-        "makeZeroGVolume": {
-          "type": "boolean",
-          "description": "Only for White Holes. Should this white hole repel the player from it.",
-          "default": true
-        },
         "pairedSingularity": {
           "type": "string",
           "description": "The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
@@ -1758,9 +1753,15 @@
           "description": "Position of the singularity",
           "$ref": "#/definitions/MVector3"
         },
-        "size": {
+        "horizonRadius": {
           "type": "number",
-          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "description": "Radius of the event horizon (solid part)",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "distortRadius": {
+          "type": "number",
+          "description": "Radius of the distortion effects. Defaults to 2 * horizonRadius",
           "format": "float",
           "minimum": 0.0
         },
@@ -1771,6 +1772,10 @@
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
+        },
+        "hasAudio": {
+          "type": "boolean",
+          "description": "Whether it has ambient audio"
         }
       }
     },
