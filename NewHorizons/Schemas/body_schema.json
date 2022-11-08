@@ -1773,9 +1773,16 @@
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
         },
-        "hasAudio": {
+        "hasWarpEffects": {
           "type": "boolean",
-          "description": "Whether it has ambient audio"
+          "description": "Whether a black hole emits blue particles upon warping. It doesn't scale, so disabling this for small black holes is recommended"
+        },
+        "renderQueueOverride": {
+          "type": "integer",
+          "description": "Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help",
+          "format": "int32",
+          "maximum": 3500.0,
+          "minimum": 2501.0
         }
       }
     },
