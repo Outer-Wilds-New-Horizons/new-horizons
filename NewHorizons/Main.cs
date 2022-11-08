@@ -74,9 +74,9 @@ namespace NewHorizons
 
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
-        public StarSystemEvent OnChangeStarSystem;
-        public StarSystemEvent OnStarSystemLoaded;
-        public StarSystemEvent OnPlanetLoaded;
+        public StarSystemEvent OnChangeStarSystem = new();
+        public StarSystemEvent OnStarSystemLoaded = new();
+        public StarSystemEvent OnPlanetLoaded = new();
 
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
@@ -184,10 +184,6 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            OnChangeStarSystem = new StarSystemEvent();
-            OnStarSystemLoaded = new StarSystemEvent();
-            OnPlanetLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
