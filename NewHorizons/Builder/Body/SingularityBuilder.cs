@@ -143,7 +143,6 @@ namespace NewHorizons.Builder.Body
             var singularity = new GameObject(polarity ? "BlackHole" : "WhiteHole");
             singularity.transform.parent = sector?.transform ?? planetGO.transform;
             singularity.transform.position = planetGO.transform.TransformPoint(position);
-            singularity.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(rotation));
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
@@ -269,6 +268,8 @@ namespace NewHorizons.Builder.Body
                 whiteHoleVolume.enabled = true;
                 whiteHoleFluidVolume.enabled = true;
             }
+
+            singularity.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(rotation));
 
             singularity.SetActive(true);
             return singularity;
