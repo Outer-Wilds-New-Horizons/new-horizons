@@ -62,8 +62,13 @@ namespace NewHorizons.External.Modules.VariableSize
         public SingularityType type;
 
         /// <summary>
-        /// Whether it has ambient audio
+        /// Whether a black hole emits blue particles upon warping. It doesn't scale, so disabling this for small black holes is recommended
         /// </summary>
-        public bool hasAudio = true;
+        public bool hasWarpEffects = true;
+
+        /// <summary>
+        /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
+        /// </summary>
+        [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
     }
 }

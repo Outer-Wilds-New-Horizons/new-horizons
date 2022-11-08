@@ -89,7 +89,7 @@ namespace NewHorizons.Builder.Body
 
             GameObject newSingularity = null;
             newSingularity = MakeSingularity(go, sector, localPosition, polarity, horizonRadius, distortRadius, 
-                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasAudio);
+                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             _singularitiesByID.Add(uniqueID, newSingularity);
@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, bool polarity, float horizon, float distort,
-            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool makeAudio = true)
+            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985)
         {
             InitPrefabs();
 
@@ -143,7 +143,7 @@ namespace NewHorizons.Builder.Body
             singularity.transform.parent = sector?.transform ?? planetGO.transform;
             singularity.transform.position = planetGO.transform.TransformPoint(position);
 
-            var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort);
+            var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
             SingularitySizeController sizeController = null;
             if (curve != null)
@@ -156,31 +156,17 @@ namespace NewHorizons.Builder.Body
             }
 
             OWAudioSource oneShotOWAudioSource = null;
-            if (makeAudio)
-            {
-                var singularityAmbience = GameObject.Instantiate(_blackHoleAmbience, singularity.transform);
-                singularityAmbience.name = polarity ? "BlackHoleAmbience" : "WhiteHoleAmbience";
-                singularityAmbience.SetActive(true);
-                singularityAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
+            
+            var singularityAmbience = GameObject.Instantiate(_blackHoleAmbience, singularity.transform);
+            singularityAmbience.name = polarity ? "BlackHoleAmbience" : "WhiteHoleAmbience";
+            singularityAmbience.SetActive(true);
+            singularityAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
 
-                var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
-                singularityAudioSource.maxDistance = distort * 2.5f;
-                singularityAudioSource.minDistance = horizon;
-                singularityAmbience.transform.localPosition = Vector3.zero;
-                if (sizeController != null) sizeController.audioSource = singularityAudioSource;
-
-                if (polarity)
-                {
-                    var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
-                    blackHoleOneShot.name = "BlackHoleEmissionOneShot";
-                    blackHoleOneShot.SetActive(true);
-                    oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
-                    var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
-                    oneShotAudioSource.maxDistance = distort * 3f;
-                    oneShotAudioSource.minDistance = horizon;
-                    if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
-                }
-            }
+            var singularityAudioSource = singularityAmbience.GetComponent<AudioSource>();
+            singularityAudioSource.maxDistance = distort * 2.5f;
+            singularityAudioSource.minDistance = horizon;
+            singularityAmbience.transform.localPosition = Vector3.zero;
+            if (sizeController != null) sizeController.audioSource = singularityAudioSource;
 
             if (polarity)
             {
@@ -206,6 +192,15 @@ namespace NewHorizons.Builder.Body
                 }
                 else
                 {
+                    var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
+                    blackHoleOneShot.name = "BlackHoleEmissionOneShot";
+                    blackHoleOneShot.SetActive(true);
+                    oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
+                    var oneShotAudioSource = blackHoleOneShot.GetComponent<AudioSource>();
+                    oneShotAudioSource.maxDistance = distort * 3f;
+                    oneShotAudioSource.minDistance = horizon;
+                    if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
+
                     var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, singularity.transform);
                     blackHoleVolume.name = "BlackHoleVolume";
                     blackHoleVolume.SetActive(true);
@@ -215,6 +210,16 @@ namespace NewHorizons.Builder.Body
                     var blackHoleSphereCollider = blackHoleVolume.GetComponent<SphereCollider>();
                     blackHoleSphereCollider.radius = horizon;
                     if (sizeController != null) sizeController.sphereCollider = blackHoleSphereCollider;
+                    if (!warpEffects)
+                    {
+                        Delay.FireOnNextUpdate(() =>
+                        {
+                            foreach (var renderer in blackHoleVolume.GetComponentsInChildren<ParticleSystemRenderer>(true))
+                            {
+                                UnityEngine.Object.Destroy(renderer);
+                            } 
+                        });
+                    }
                 }
             }
             else
@@ -267,7 +272,7 @@ namespace NewHorizons.Builder.Body
             return singularity;
         }
         
-        public static MeshRenderer MakeSingularityGraphics(GameObject singularity, bool polarity, float horizon, float distort)
+        public static MeshRenderer MakeSingularityGraphics(GameObject singularity, bool polarity, float horizon, float distort, int queue = 2985)
         {
             InitPrefabs();
 
@@ -286,15 +291,16 @@ namespace NewHorizons.Builder.Body
             meshRenderer.material.SetFloat(MassScale, polarity ? 1f : -1f);
             meshRenderer.material.SetFloat(DistortFadeDist, distort - horizon);
             if (!polarity) meshRenderer.material.SetColor(Color1, new Color(1.88f, 1.88f, 1.88f, 1f));
+            meshRenderer.material.renderQueue = queue;
 
             return meshRenderer;
         }
 
-        public static GameObject MakeSingularityProxy(GameObject rootObject, MVector3 position, bool polarity, float horizon, float distort, TimeValuePair[] curve = null)
+        public static GameObject MakeSingularityProxy(GameObject rootObject, MVector3 position, bool polarity, float horizon, float distort, TimeValuePair[] curve = null, int queue = 2985)
         {
             InitPrefabs();
 
-            var singularityRenderer = MakeSingularityGraphics(rootObject, polarity, horizon, distort);
+            var singularityRenderer = MakeSingularityGraphics(rootObject, polarity, horizon, distort, queue);
             if (position != null) singularityRenderer.transform.localPosition = position;
 
             SingularitySizeController sizeController = null;
