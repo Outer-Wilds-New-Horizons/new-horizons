@@ -1753,6 +1753,10 @@
           "description": "Position of the singularity",
           "$ref": "#/definitions/MVector3"
         },
+        "rotation": {
+          "description": "Rotation of the singularity. Determines the direction you come out of a white hole",
+          "$ref": "#/definitions/MVector3"
+        },
         "horizonRadius": {
           "type": "number",
           "description": "Radius of the event horizon (solid part)",
