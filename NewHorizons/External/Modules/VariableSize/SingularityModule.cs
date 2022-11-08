@@ -36,6 +36,11 @@ namespace NewHorizons.External.Modules.VariableSize
         public MVector3 position;
 
         /// <summary>
+        /// Rotation of the singularity. Determines the direction you come out of a white hole
+        /// </summary>
+        public MVector3 rotation;
+
+        /// <summary>
         /// Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that
         /// has warped effects in it.
         /// </summary>

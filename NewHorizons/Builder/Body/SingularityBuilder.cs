@@ -86,9 +86,10 @@ namespace NewHorizons.Builder.Body
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
 
             Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
+            Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
 
             GameObject newSingularity = null;
-            newSingularity = MakeSingularity(go, sector, localPosition, polarity, horizonRadius, distortRadius, 
+            newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
                 hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
@@ -132,7 +133,7 @@ namespace NewHorizons.Builder.Body
             blackHoleVolume._whiteHole = whiteHoleVolume;
         }
 
-        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, bool polarity, float horizon, float distort,
+        public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
             bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985)
         {
             InitPrefabs();
@@ -142,6 +143,7 @@ namespace NewHorizons.Builder.Body
             var singularity = new GameObject(polarity ? "BlackHole" : "WhiteHole");
             singularity.transform.parent = sector?.transform ?? planetGO.transform;
             singularity.transform.position = planetGO.transform.TransformPoint(position);
+            singularity.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(rotation));
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 

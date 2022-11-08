@@ -129,7 +129,7 @@ namespace NewHorizons.Builder.Body
             var blackHoleSize = progenitor.size / 100;
 
             if (proxy != null) return SingularityBuilder.MakeSingularityProxy(proxy, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f);
-            else return SingularityBuilder.MakeSingularity(planetGO, sector, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f, true, string.Empty);
+            else return SingularityBuilder.MakeSingularity(planetGO, sector, Vector3.zero, Vector3.zero, true, blackHoleSize, blackHoleSize * 2.5f, true, string.Empty);
         }
 
         public static GameObject MakeProxyRemnant(GameObject planet, GameObject proxy, IModBehaviour mod, StarModule progenitor)
