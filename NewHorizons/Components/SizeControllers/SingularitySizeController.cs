@@ -12,7 +12,6 @@ namespace NewHorizons.Components.SizeControllers
     {
         public Material material;
         public float innerScale;
-        public Light light;
         public AudioSource audioSource;
         public AudioSource oneShotAudioSource;
         public SphereCollider sphereCollider;
@@ -26,11 +25,6 @@ namespace NewHorizons.Components.SizeControllers
             material.SetFloat(SingularityBuilder.Radius, CurrentScale * innerScale);
             material.SetFloat(SingularityBuilder.MaxDistortRadius, CurrentScale);
             material.SetFloat(SingularityBuilder.DistortFadeDist, CurrentScale - CurrentScale * innerScale);
-
-            if (light != null)
-            {
-                light.range = CurrentScale * 7f;
-            }
 
             if (audioSource != null)
             {

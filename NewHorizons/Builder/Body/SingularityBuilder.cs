@@ -225,18 +225,6 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                /*
-                var ambientLight = GameObject.Instantiate(_whiteHoleAmbientLight);
-                ambientLight.transform.parent = singularity.transform;
-                ambientLight.transform.localScale = Vector3.one;
-                ambientLight.transform.localPosition = Vector3.zero;
-                ambientLight.name = "AmbientLight";
-                ambientLight.SetActive(true);
-                var light = ambientLight.GetComponent<Light>();
-                light.range = distort * 7f;
-                if (sizeController != null) sizeController.light = light;
-                */
-
                 GameObject whiteHoleVolumeGO = GameObject.Instantiate(_whiteHoleVolume);
                 whiteHoleVolumeGO.transform.parent = singularity.transform;
                 whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
