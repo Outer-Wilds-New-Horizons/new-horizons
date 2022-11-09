@@ -2,6 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules.VariableSize;
+using System.Linq;
+using UnityEngine.Assertions.Must;
 
 namespace NewHorizons.Builder.Body
 {
@@ -34,11 +36,7 @@ namespace NewHorizons.Builder.Body
             var heightScale = module.size;
             if (module.curve != null)
             {
-                var modifier = 1f;
-                foreach (var pair in module.curve)
-                {
-                    if (pair.value < modifier) modifier = pair.value;
-                }
+                var modifier = module.curve.Max(pair => pair.value);
                 heightScale = Mathf.Max(0.1f, heightScale * modifier);
             }
 
