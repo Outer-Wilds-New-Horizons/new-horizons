@@ -108,7 +108,7 @@ namespace NewHorizons.Builder.Body
             // Instead of showing the typical star surface we use a tinted singularity
             GameObject neutronStar;
             if (proxy != null) neutronStar = StarBuilder.MakeStarProxy(planetGO, proxy, neutronStarModule, mod, true).Item1;
-            else (neutronStar, _, _) = StarBuilder.Make(planetGO, sector, neutronStarModule, mod, true);
+            else (neutronStar, _, _, _) = StarBuilder.Make(planetGO, sector, neutronStarModule, mod, true);
             neutronStar.FindChild("Surface").SetActive(false);
 
             // Modify solar flares

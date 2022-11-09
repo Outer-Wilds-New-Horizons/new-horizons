@@ -238,6 +238,11 @@ namespace NewHorizons.External.Modules
             /// Position of the raft
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// Acceleration of the raft. Default acceleration is 5.
+            /// </summary>
+            [DefaultValue(5f)] public float acceleration = 5f;
         }
 
         [JsonObject]
@@ -457,9 +462,14 @@ namespace NewHorizons.External.Modules
             public bool isRelativeToParent;
 
             /// <summary>
-            /// An optional rename of this object
+            /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
             /// </summary>
             public string rename;
+
+            /// <summary>
+            /// Optionally set the parent object that the dialogue and remote trigger will be attached to
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]
@@ -632,9 +642,17 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
-            /// The ship log entries revealed after finishing this slide reel.
+            /// The ship log facts revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
+
+            /// <summary>
+            /// The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).
+            /// You should probably include facts from `reveals` here.
+            /// If you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only
+            /// rumor facts because an entry with revealed explore facts doesn't display rumor facts.
+            /// </summary>
+            public string[] playWithShipLogFacts;
 
             /// <summary>
             /// The rotation of this slideshow.
@@ -732,7 +750,7 @@ namespace NewHorizons.External.Modules
             // SlideShipLogEntryModule
 
             /// <summary>
-            /// Ship log entry revealed when viewing this slide
+            /// Ship log fact revealed when viewing this slide
             /// </summary>
             public string reveal;
 

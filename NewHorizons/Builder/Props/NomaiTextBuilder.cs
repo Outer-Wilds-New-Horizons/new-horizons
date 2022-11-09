@@ -47,76 +47,93 @@ namespace NewHorizons.Builder.Props
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
-        private static void InitPrefabs()
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
-            // Just take every scroll and get the first arc
-            var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
-                .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
-                .Where(x => x != null)
-                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
-                .ToArray();
-            _arcPrefabs = new List<GameObject>();
-            _childArcPrefabs = new List<GameObject>();
-            foreach (var existingArc in existingArcs)
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_arcPrefabs == null || _childArcPrefabs == null)
             {
-                if (existingArc.GetComponent<MeshRenderer>().material.name.Contains("Child"))
+                // Just take every scroll and get the first arc
+                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                    .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
+                    .Where(x => x != null)
+                    .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                    .ToArray();
+                _arcPrefabs = new List<GameObject>();
+                _childArcPrefabs = new List<GameObject>();
+                foreach (var existingArc in existingArcs)
                 {
-                    var arc = existingArc.InstantiateInactive();
-                    arc.name = "Arc (Child)";
-                    _childArcPrefabs.Add(arc);
-                }
-                else
-                {
-                    var arc = existingArc.InstantiateInactive();
-                    arc.name = "Arc";
-                    _arcPrefabs.Add(arc);
+                    if (existingArc.GetComponent<MeshRenderer>().material.name.Contains("Child"))
+                    {
+                        _childArcPrefabs.Add(existingArc.InstantiateInactive().Rename("Arc (Child)").DontDestroyOnLoad());
+                    }
+                    else
+                    {
+                        _arcPrefabs.Add(existingArc.InstantiateInactive().Rename("Arc").DontDestroyOnLoad());
+                    }
                 }
             }
 
-            var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
-                .Select(x => x?._textLine?.gameObject)
-                .Where(x => x != null)
-                .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
-                .ToArray();
-            _ghostArcPrefabs = new List<GameObject>();
-            foreach (var existingArc in existingGhostArcs)
+            if (_ghostArcPrefabs == null)
             {
-                var arc = existingArc.InstantiateInactive();
-                arc.name = "Arc (Ghost)";
-                _ghostArcPrefabs.Add(arc);
+                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                    .Select(x => x?._textLine?.gameObject)
+                    .Where(x => x != null)
+                    .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
+                    .ToArray();
+                _ghostArcPrefabs = new List<GameObject>();
+                foreach (var existingArc in existingGhostArcs)
+                {
+                    _ghostArcPrefabs.Add(existingArc.InstantiateInactive().Rename("Arc (Ghost)").DontDestroyOnLoad());
+                }
             }
 
-            _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive();
-            _scrollPrefab.name = "Prefab_NOM_Scroll";
+            if (_scrollPrefab == null) _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
 
-            _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive();
-            _computerPrefab.name = "Prefab_NOM_Computer";
-            _computerPrefab.transform.rotation = Quaternion.identity;
+            if (_computerPrefab == null)
+            {
+                _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
+                _computerPrefab.transform.rotation = Quaternion.identity;
+            }
 
-            _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive();
-            _preCrashComputerPrefab.name = "Prefab_NOM_Vessel_Computer";
-            _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
+            if (_preCrashComputerPrefab == null)
+            {
+                _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
+                _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
+            }
 
-            _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive();
-            _cairnPrefab.name = "Prefab_NOM_Cairn";
-            _cairnPrefab.transform.rotation = Quaternion.identity;
+            if (_cairnPrefab == null)
+            {
+                _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnPrefab.transform.rotation = Quaternion.identity;
+            }
 
-            _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive();
-            _recorderPrefab.name = "Prefab_NOM_Recorder";
-            _recorderPrefab.transform.rotation = Quaternion.identity;
+            if (_recorderPrefab == null)
+            {
+                _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder").DontDestroyOnLoad();
+                _recorderPrefab.transform.rotation = Quaternion.identity;
+            }
 
-            _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive();
-            _preCrashRecorderPrefab.name = "Prefab_NOM_Recorder_Vessel";
-            _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
+            if (_preCrashRecorderPrefab == null)
+            {
+                _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder_Vessel").DontDestroyOnLoad();
+                _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
+            }
 
-            _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive();
-            _trailmarkerPrefab.name = "Prefab_NOM_Trailmarker";
-            _trailmarkerPrefab.transform.rotation = Quaternion.identity;
+            if (_trailmarkerPrefab == null)
+            {
+                _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive().Rename("Prefab_NOM_Trailmarker").DontDestroyOnLoad();
+                _trailmarkerPrefab.transform.rotation = Quaternion.identity;
+            }
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
         {
-            if (_scrollPrefab == null) InitPrefabs();
+            InitPrefabs();
 
             var xmlPath = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
 

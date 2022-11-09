@@ -108,5 +108,13 @@ namespace NewHorizons.Handlers
         {
             return _nhBodyToAstroIDs.ContainsKey(body) && _nhBodyToAstroIDs[body].Length > 0;
         }
+
+        public static bool KnowsFact(string fact)
+        {
+            // Works normally in the main system, else check save data directly
+            var shipLogManager = Locator.GetShipLogManager();
+            if (Main.Instance.CurrentStarSystem == "SolarSystem" && shipLogManager != null) return shipLogManager.IsFactRevealed(fact);
+            else return PlayerData.GetShipLogFactSave(fact)?.revealOrder > -1;
+        }
     }
 }

@@ -21,7 +21,8 @@
     "DEBUG_PLACE": "Place Object",
     "DEBUG_PLACE_TEXT": "Place Nomai Text",
     "DEBUG_UNDO": "Undo",
-    "DEBUG_REDO": "Redo"
+    "DEBUG_REDO": "Redo",
+    "Vessel": "Vessel"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {

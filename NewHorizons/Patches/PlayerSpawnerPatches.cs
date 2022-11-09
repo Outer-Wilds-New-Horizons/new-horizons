@@ -7,10 +7,19 @@ namespace NewHorizons.Patches
     {
         [HarmonyPrefix]
         [HarmonyPatch(typeof(PlayerSpawner), nameof(PlayerSpawner.SpawnPlayer))]
-        public static void PlayerSpawner_SpawnPlayer(PlayerSpawner __instance)
+        public static bool PlayerSpawner_SpawnPlayer(PlayerSpawner __instance)
         {
-            Logger.LogVerbose("Player spawning");
-            __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
+            if (Main.Instance.IsWarpingFromVessel || Main.Instance.DidWarpFromVessel)
+            {
+                Logger.LogWarning("Abort player spawn. Vessel will handle it.");
+                return false;
+            }
+            else
+            {
+                Logger.LogVerbose("Player spawning");
+                __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
+                return true;
+            }
         }
     }
 }

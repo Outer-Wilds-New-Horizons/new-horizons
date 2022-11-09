@@ -6,6 +6,7 @@ using NewHorizons.Components;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Handlers
 {
@@ -27,6 +28,12 @@ namespace NewHorizons.Handlers
 
         public static void LoadVessel()
         {
+            if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
+                return;
+            }
+
             if (Instance.IsWarpingFromVessel)
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
@@ -83,6 +90,15 @@ namespace NewHorizons.Handlers
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
+
+            var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
+            vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
+            vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
+            vesselAO._customName = "Vessel";
+            vesselAO._name = AstroObject.Name.CustomString;
+            vesselAO._type = AstroObject.Type.SpaceStation;
+            vesselAO.Register();
+            vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
 
             VesselOrbLocker vesselOrbLocker = vesselObject.GetComponent<VesselOrbLocker>();
             vesselOrbLocker.InitializeOrbs();
@@ -148,7 +164,7 @@ namespace NewHorizons.Handlers
             if (system.Config.Vessel?.warpExitRotation != null)
                 vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
 
-            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
+            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
