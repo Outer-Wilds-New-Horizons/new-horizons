@@ -120,7 +120,7 @@ namespace NewHorizons.Utility.DebugUtilities
             {
                 int layerMask = OWLayerMask.physicalMask;
                 var origin = Locator.GetActiveCamera().transform.position;
-                var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
+                var direction = Locator.GetActiveCamera().transform.forward;
 
                 data.hit = Physics.Raycast(origin, direction, out var hitInfo, 100f, layerMask);
                 if (data.hit)
