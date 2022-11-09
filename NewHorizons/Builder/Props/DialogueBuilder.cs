@@ -137,7 +137,7 @@ namespace NewHorizons.Builder.Props
                 conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
             }
 
-            Vector3 pos = (Vector3)(info?.position ?? Vector3.zero)
+            Vector3 pos = (Vector3)(info?.position ?? Vector3.zero);
             if (info.isRelativeToParent) conversationZone.transform.localPosition = pos;
             else conversationZone.transform.position = planetGO.transform.TransformPoint(pos);
 
