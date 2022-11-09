@@ -259,7 +259,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        var pos = info.position ?? Vector3.zero;
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
                         if (info.isRelativeToParent) customScroll.transform.localPosition = pos;
                         else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
 
@@ -314,7 +314,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        var pos = info.position ?? Vector3.zero;
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
                         if (info.isRelativeToParent) computerObject.transform.localPosition = pos;
                         else computerObject.transform.position = planetGO.transform.TransformPoint(pos);
 
@@ -417,7 +417,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        var pos = info.position ?? Vector3.zero;
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
                         if (info.isRelativeToParent) cairnObject.transform.localPosition = pos;
                         else cairnObject.transform.position = planetGO.transform.TransformPoint(pos);
 
@@ -526,7 +526,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        var pos = info.position ?? Vector3.zero;
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
                         if (info.isRelativeToParent) trailmarkerObject.transform.localPosition = pos;
                         else trailmarkerObject.transform.position = planetGO.transform.TransformPoint(pos);
 
