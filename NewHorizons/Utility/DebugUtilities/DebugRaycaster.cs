@@ -128,8 +128,8 @@ namespace NewHorizons.Utility.DebugUtilities
                     data.pos = hitInfo.rigidbody.transform.InverseTransformPoint(hitInfo.point);
                     data.norm = hitInfo.rigidbody.transform.InverseTransformDirection(hitInfo.normal);
 
-                    var toPlayer = Vector3.ProjectOnPlane((transform.position - hitInfo.point).normalized, hitInfo.normal);
-                    var worldSpaceRot = Quaternion.LookRotation(toPlayer, hitInfo.normal);
+                    var toOrigin = Vector3.ProjectOnPlane((origin - hitInfo.point).normalized, hitInfo.normal);
+                    var worldSpaceRot = Quaternion.LookRotation(toOrigin, hitInfo.normal);
                     data.rot = hitInfo.rigidbody.transform.InverseTransformRotation(worldSpaceRot);
                     
                     data.colliderPath = hitInfo.collider.transform.GetPath();
