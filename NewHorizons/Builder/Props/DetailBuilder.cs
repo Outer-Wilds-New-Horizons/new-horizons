@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.Props
         {
             foreach (var prefab in _fixedPrefabCache.Values)
             {
-                SceneManager.MoveGameObjectToScene(prefab.prefab, scene);
+                GameObject.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
