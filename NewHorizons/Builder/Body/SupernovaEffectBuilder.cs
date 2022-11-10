@@ -134,7 +134,7 @@ namespace NewHorizons.Builder.Body
                     noMeshChange = true;
                     foreach (var singularity in config.Props.singularities)
                     {
-                        if (singularity.size > biggestSize) biggestSize = singularity.size;
+                        if (singularity.distortRadius > biggestSize) biggestSize = singularity.distortRadius;
                     }
                 }
 
