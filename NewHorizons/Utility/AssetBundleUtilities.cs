@@ -67,7 +67,7 @@ namespace NewHorizons.Utility
             return prefab;
         }
 
-        private static void ReplaceShaders(GameObject prefab)
+        public static void ReplaceShaders(GameObject prefab)
         {
             foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
             {
