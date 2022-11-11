@@ -221,6 +221,11 @@ namespace NewHorizons.External.Modules
             public string parentPath;
 
             /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
             /// </summary>
             public bool keepLoaded;
@@ -452,6 +457,11 @@ namespace NewHorizons.External.Modules
             public string xmlFile;
 
             /// <summary>
+            /// Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
             /// </summary>
             public string rename;
@@ -561,6 +571,11 @@ namespace NewHorizons.External.Modules
             public string parentPath;
 
             /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// An optional rename of this object
             /// </summary>
             public string rename;
@@ -658,6 +673,11 @@ namespace NewHorizons.External.Modules
             /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
         }
 
         [JsonObject]
@@ -858,6 +878,11 @@ namespace NewHorizons.External.Modules
                 public string parentPath;
 
                 /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
+
+                /// <summary>
                 /// An optional rename of this object
                 /// </summary>
                 public string rename;
@@ -921,6 +946,11 @@ namespace NewHorizons.External.Modules
                 public string parentPath;
 
                 /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
+
+                /// <summary>
                 /// An optional rename of this object
                 /// </summary>
                 public string rename;
@@ -958,6 +988,11 @@ namespace NewHorizons.External.Modules
                 /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
                 /// </summary>
                 public string parentPath;
+
+                /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
 
                 /// <summary>
                 /// An optional rename of this object

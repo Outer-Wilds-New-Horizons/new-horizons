@@ -128,12 +128,19 @@ namespace NewHorizons.Builder.Props
 
             conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
             
-            if (!string.IsNullOrEmpty(info.pathToAnimController))
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                conversationZone.transform.parent = planetGO.transform.Find(info.parentPath);
+            }
+            else if (!string.IsNullOrEmpty(info.pathToAnimController))
             {
                 conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
             }
-            
-            conversationZone.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) conversationZone.transform.localPosition = pos;
+            else conversationZone.transform.position = planetGO.transform.TransformPoint(pos);
+
             conversationZone.SetActive(true);
 
             return dialogueTree;
