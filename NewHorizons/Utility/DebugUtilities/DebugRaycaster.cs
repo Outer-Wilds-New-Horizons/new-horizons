@@ -113,32 +113,36 @@ namespace NewHorizons.Utility.DebugUtilities
         }
         internal DebugRaycastData Raycast()
         {
-            DebugRaycastData data = new DebugRaycastData();
+            var data = new DebugRaycastData();
 
             _rb.DisableCollisionDetection();
-            int layerMask = OWLayerMask.physicalMask;
-            var origin = Locator.GetActiveCamera().transform.position;
-            var direction = Locator.GetActiveCamera().transform.TransformDirection(Vector3.forward);
-            
-            data.hit = Physics.Raycast(origin, direction, out RaycastHit hitInfo, 100f, layerMask);
-            if (data.hit)
+            try
             {
-                data.pos = hitInfo.transform.InverseTransformPoint(hitInfo.point);
-                data.norm = hitInfo.transform.InverseTransformDirection(hitInfo.normal);
+                int layerMask = OWLayerMask.physicalMask;
+                var origin = Locator.GetActiveCamera().transform.position;
+                var direction = Locator.GetActiveCamera().transform.forward;
 
-                var o = hitInfo.transform.gameObject;
+                data.hit = Physics.Raycast(origin, direction, out var hitInfo, 100f, layerMask);
+                if (data.hit)
+                {
+                    data.pos = hitInfo.rigidbody.transform.InverseTransformPoint(hitInfo.point);
+                    data.norm = hitInfo.rigidbody.transform.InverseTransformDirection(hitInfo.normal);
 
-                var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
-
-                data.colliderPath = hitInfo.collider.transform.GetPath();
-                data.bodyPath = hitInfo.rigidbody?.transform.GetPath();
-                data.hitObject = o;
-                data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
-                data.plane = ConstructPlane(data);
-
-                var toPlayer = Vector3.ProjectOnPlane((transform.position - hitInfo.point).normalized, hitInfo.normal);
-                var worldSpaceRot = Quaternion.LookRotation(toPlayer, hitInfo.normal);
-                data.rot = hitAstroObject.transform.InverseTransformRotation(worldSpaceRot);
+                    var toOrigin = Vector3.ProjectOnPlane((origin - hitInfo.point).normalized, hitInfo.normal);
+                    var worldSpaceRot = Quaternion.LookRotation(toOrigin, hitInfo.normal);
+                    data.rot = hitInfo.rigidbody.transform.InverseTransformRotation(worldSpaceRot);
+                    
+                    data.colliderPath = hitInfo.collider.transform.GetPath();
+                    data.bodyPath = hitInfo.rigidbody.transform.GetPath();
+                    data.hitBodyGameObject = hitInfo.rigidbody.gameObject;
+                    data.hitObject = hitInfo.collider.gameObject;
+                    
+                    data.plane = ConstructPlane(data);
+                }
+            }
+            catch
+            {
+                // ignored
             }
             _rb.EnableCollisionDetection();
 

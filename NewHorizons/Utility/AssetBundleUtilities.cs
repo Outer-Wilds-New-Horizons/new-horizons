@@ -67,19 +67,24 @@ namespace NewHorizons.Utility
             return prefab;
         }
 
-        private static void ReplaceShaders(GameObject prefab)
+        public static void ReplaceShaders(GameObject prefab)
         {
             foreach (var renderer in prefab.GetComponentsInChildren<Renderer>(true))
             {
                 foreach (var material in renderer.sharedMaterials)
                 {
-                    if (material == null)
-                    {
-                        continue;
-                    }
+                    if (material == null) continue;
 
                     var replacementShader = Shader.Find(material.shader.name);
-                    if (replacementShader != null) material.shader = replacementShader;
+                    if (replacementShader == null) continue;
+
+                    // preserve override tag and render queue (for Standard shader)
+                    // keywords and properties are already preserved
+                    var renderType = material.GetTag("RenderType", false);
+                    var renderQueue = material.renderQueue;
+                    material.shader = replacementShader;
+                    material.SetOverrideTag("RenderType", renderType);
+                    material.renderQueue = renderQueue;
                 }
             }
         }

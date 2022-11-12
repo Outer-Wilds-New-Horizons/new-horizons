@@ -1055,6 +1055,10 @@
           "type": "string",
           "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
@@ -1105,6 +1109,10 @@
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -1235,6 +1243,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -1464,6 +1476,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1858,6 +1874,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1912,6 +1932,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -1974,6 +1998,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
@@ -2008,6 +2036,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
