@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Celestial Body Schema",
   "type": "object",
-  "description": "Describes a body to generate",
+  "description": "Describes a celestial body to generate",
   "additionalProperties": false,
   "required": [
     "name"
