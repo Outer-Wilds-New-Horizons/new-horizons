@@ -23,3 +23,5 @@ jobs:
     uses: './.github/workflows/update_schemas.yml'
     with:
       artifact_name: NewHorizons-Schemas-Debug
+    secrets:
+      SCHEMAS_TOKEN: ${{ secrets.SCHEMAS_TOKEN }}
