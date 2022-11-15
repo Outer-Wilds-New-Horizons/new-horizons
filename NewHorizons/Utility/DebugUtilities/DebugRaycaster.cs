@@ -95,6 +95,10 @@ namespace NewHorizons.Utility.DebugUtilities
             _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*-1*planeSize;
 
             Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
+            var ppos = data.hitBodyGameObject.GetComponent<AstroObject>().GetRootSector().transform.InverseTransformPoint(Locator.GetPlayerTransform().position);
+            posText = $"{{\"x\": {ppos.x}, \"y\": {ppos.y}, \"z\": {ppos.z}}}";
+            Logger.Log($"Player, relative to raycasted sector \"position\": {posText} on [{data.bodyName}] at [{data.bodyPath}]");
+            
         }
         internal DebugRaycastData Raycast()
         {
