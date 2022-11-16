@@ -2839,7 +2839,7 @@
           "$ref": "#/definitions/RevealVolumeType"
         },
         "revealFor": {
-          "description": "What needs to be enter the volume to unlock the facts (`enter` only)",
+          "description": "What needs to enter the volume to unlock the facts (`enter` only)",
           "default": "both",
           "$ref": "#/definitions/EnterType"
         },
