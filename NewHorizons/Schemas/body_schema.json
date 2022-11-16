@@ -2838,6 +2838,11 @@
           "default": "enter",
           "$ref": "#/definitions/RevealVolumeType"
         },
+        "revealFor": {
+          "description": "What can enter the volume to unlock the facts (`enter` only)",
+          "default": "both",
+          "$ref": "#/definitions/EnterType"
+        },
         "reveals": {
           "type": "array",
           "description": "A list of facts to reveal",
@@ -2863,6 +2868,20 @@
         "enter",
         "observe",
         "snapshot"
+      ]
+    },
+    "EnterType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Both",
+        "Player",
+        "Probe"
+      ],
+      "enum": [
+        "both",
+        "player",
+        "probe"
       ]
     },
     "PriorityVolumeInfo": {
