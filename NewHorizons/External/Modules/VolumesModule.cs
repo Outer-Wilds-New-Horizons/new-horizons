@@ -109,6 +109,16 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"snapshot")] Snapshot = 2
             }
 
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum EnterType
+            {
+                [EnumMember(Value = @"both")] Both = 0,
+
+                [EnumMember(Value = @"player")] Player = 1,
+
+                [EnumMember(Value = @"probe")] Probe = 2
+            }
+
             /// <summary>
             /// The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)
             /// </summary>
@@ -123,6 +133,11 @@ namespace NewHorizons.External.Modules
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
             [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
+
+            /// <summary>
+            /// What needs to be enter the volume to unlock the facts (`enter` only)
+            /// </summary>
+            [DefaultValue("both")] public EnterType revealFor = EnterType.Both;
 
             /// <summary>
             /// A list of facts to reveal
