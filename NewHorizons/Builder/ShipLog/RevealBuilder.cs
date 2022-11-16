@@ -88,6 +88,7 @@ namespace NewHorizons.Builder.ShipLog
                         break;
                     case VolumesModule.RevealVolumeInfo.EnterType.Both:
                     default:
+                        // if you want both player and probe to able to trigger the thing you have to set both player and probe to false. setting both to true will make nothing trigger it
                         factRevealVolume._player = false;
                         factRevealVolume._probe = false;
                         break;
