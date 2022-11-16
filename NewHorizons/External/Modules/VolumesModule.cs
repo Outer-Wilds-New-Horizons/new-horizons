@@ -135,7 +135,7 @@ namespace NewHorizons.External.Modules
             [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
 
             /// <summary>
-            /// What needs to enter the volume to unlock the facts (`enter` only)
+            /// What can enter the volume to unlock the facts (`enter` only)
             /// </summary>
             [DefaultValue("both")] public EnterType revealFor = EnterType.Both;
 
