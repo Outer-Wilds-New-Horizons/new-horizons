@@ -2,6 +2,7 @@ using UnityEngine;
 
 namespace NewHorizons.Components
 {
+    [UsedInUnityProject]
     public class VesselOrbLocker : MonoBehaviour
     {
         public GameObject _coordinateInterfaceOrbObject;
