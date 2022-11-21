@@ -100,18 +100,11 @@ namespace NewHorizons.Handlers
             vesselAO.Register();
             vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
 
-            VesselOrbLocker vesselOrbLocker = vesselObject.GetComponent<VesselOrbLocker>();
-            vesselOrbLocker.InitializeOrbs();
-            vesselOrbLocker.AddLocks();
-
             if (system.Config.Vessel?.vesselPosition != null)
                 vesselObject.transform.position = system.Config.Vessel.vesselPosition;
 
             if (system.Config.Vessel?.vesselRotation != null)
                 vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
-
-            vesselOrbLocker.RemoveLocks();
-            vesselOrbLocker.AddLockToWarpOrb();
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 

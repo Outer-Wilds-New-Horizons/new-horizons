@@ -14,6 +14,14 @@ namespace NewHorizons.Components
         public GameObject _powerOrbObject;
         private NomaiInterfaceOrb _powerOrb;
 
+        private void Awake()
+        {
+            InitializeOrbs();
+            AddLocks();
+            RemoveLocks();
+            AddLockToWarpOrb();
+        }
+
         public void InitializeOrbs()
         {
             _coordinateInterfaceOrb = _coordinateInterfaceOrbObject.GetComponent<NomaiInterfaceOrb>();
