@@ -12,6 +12,20 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
         {
+            if (config.Props.shuttles != null)
+            {
+                foreach (var shuttleInfo in config.Props.shuttles)
+                {
+                    try
+                    {
+                        ShuttleBuilder.Make(go, sector, shuttleInfo);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make shuttle [{shuttleInfo.id}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
             if (config.Props.scatter != null)
             {
                 try

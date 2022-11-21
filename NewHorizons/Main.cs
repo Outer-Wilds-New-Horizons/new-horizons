@@ -288,6 +288,7 @@ namespace NewHorizons
                     VolcanoBuilder.InitPrefab();
                     VolumesBuilder.InitPrefabs();
                     WaterBuilder.InitPrefabs();
+                    ShuttleBuilder.InitPrefab();
 
                     ProjectionBuilder.InitPrefabs();
                     CloakBuilder.InitPrefab();

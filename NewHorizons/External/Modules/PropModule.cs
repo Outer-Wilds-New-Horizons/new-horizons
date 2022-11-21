@@ -84,6 +84,11 @@ namespace NewHorizons.External.Modules
         public SignalModule.SignalInfo[] signals;
 
         /// <summary>
+        /// Add shuttles to this planet
+        /// </summary>
+        public ShuttleInfo[] shuttles;
+
+        /// <summary>
         /// Add projection pools/platforms, whiteboards, and stones to this planet
         /// </summary>
         public RemoteInfo[] remotes;
@@ -999,6 +1004,40 @@ namespace NewHorizons.External.Modules
                 /// </summary>
                 public string rename;
             }
+        }
+
+        [JsonObject]
+        public class ShuttleInfo
+        {
+            /// <summary>
+            /// The unique shuttle id
+            /// </summary>
+            public string id;
+
+            /// <summary>
+            /// The location of this shuttle.
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The rotation of this shuttle.
+            /// </summary>
+            public MVector3 rotation;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
     }
 }
