@@ -86,7 +86,7 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = GameObject.Instantiate(VesselPrefab);
+            var vesselObject = VesselPrefab.InstantiateInactive();
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
@@ -154,8 +154,6 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
-            vesselObject.SetActive(true);
-
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
             if (system.Config.Vessel?.warpExitPosition != null)
@@ -168,6 +166,8 @@ namespace NewHorizons.Handlers
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
+
+            vesselObject.SetActive(true);
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
 
