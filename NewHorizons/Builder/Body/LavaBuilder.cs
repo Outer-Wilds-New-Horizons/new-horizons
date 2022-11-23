@@ -82,7 +82,6 @@ namespace NewHorizons.Builder.Body
                 var sizeController = moltenCore.AddComponent<LavaSizeController>();
                 sizeController.SetScaleCurve(module.curve);
                 sizeController.size = module.size;
-                sizeController.multiplier = multiplier;
                 sizeController.material = lavaSphere.GetComponent<MeshRenderer>().material;
                 sizeController.proxyMaterial = proxyLavaSphere.GetComponent<MeshRenderer>().material;
             }

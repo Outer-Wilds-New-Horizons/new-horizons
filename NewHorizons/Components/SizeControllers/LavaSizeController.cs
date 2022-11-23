@@ -12,19 +12,18 @@ namespace NewHorizons.Components.SizeControllers
     {
         public Material material;
         public Material proxyMaterial;
-        public float multiplier;
 
         protected new void FixedUpdate()
         {
             base.FixedUpdate();
 
-            material.SetFloat(LavaBuilder.HeightScale, 150f * multiplier * CurrentScale);
-            material.SetFloat(LavaBuilder.EdgeFade, 15f * multiplier * CurrentScale);
-            material.SetFloat(LavaBuilder.TexHeight, 15f * multiplier * CurrentScale);
+            material.SetFloat(LavaBuilder.HeightScale, 150f * CurrentScale / 100f);
+            material.SetFloat(LavaBuilder.EdgeFade, 15f * CurrentScale / 100f);
+            material.SetFloat(LavaBuilder.TexHeight, 15f * CurrentScale / 100f);
 
-            proxyMaterial.SetFloat(LavaBuilder.HeightScale, 150f * multiplier * CurrentScale);
-            proxyMaterial.SetFloat(LavaBuilder.EdgeFade, 15f * multiplier * CurrentScale);
-            proxyMaterial.SetFloat(LavaBuilder.TexHeight, 15f * multiplier * CurrentScale);
+            proxyMaterial.SetFloat(LavaBuilder.HeightScale, 150f * CurrentScale / 100f);
+            proxyMaterial.SetFloat(LavaBuilder.EdgeFade, 15f * CurrentScale / 100f);
+            proxyMaterial.SetFloat(LavaBuilder.TexHeight, 15f * CurrentScale / 100f);
         }
     }
 }
