@@ -11,6 +11,7 @@ namespace NewHorizons.Components.SizeControllers
     public class LavaSizeController : SizeController
     {
         public Material material;
+        public Material proxyMaterial;
         public float multiplier;
 
         protected new void FixedUpdate()
@@ -20,6 +21,10 @@ namespace NewHorizons.Components.SizeControllers
             material.SetFloat(LavaBuilder.HeightScale, 150f * multiplier * CurrentScale);
             material.SetFloat(LavaBuilder.EdgeFade, 15f * multiplier * CurrentScale);
             material.SetFloat(LavaBuilder.TexHeight, 15f * multiplier * CurrentScale);
+
+            proxyMaterial.SetFloat(LavaBuilder.HeightScale, 150f * multiplier * CurrentScale);
+            proxyMaterial.SetFloat(LavaBuilder.EdgeFade, 15f * multiplier * CurrentScale);
+            proxyMaterial.SetFloat(LavaBuilder.TexHeight, 15f * multiplier * CurrentScale);
         }
     }
 }
