@@ -414,6 +414,7 @@ namespace NewHorizons.Builder.Props
             var detector = new GameObject("Detector");
             detector.transform.parent = prop.transform;
             detector.transform.localPosition = Vector3.zero;
+            detector.tag = "DynamicPropDetector";
 
             var shape = detector.AddComponent<SphereShape>();
             detector.AddComponent<DynamicForceDetector>();
