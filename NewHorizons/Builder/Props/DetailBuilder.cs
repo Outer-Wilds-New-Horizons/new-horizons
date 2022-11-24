@@ -394,31 +394,30 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        // TODO: simulate in sector
+        // BUG: detector collider is not included in groups
         private class AddPhysics : MonoBehaviour
         {
             private IEnumerator Start()
             {
                 yield return new WaitForSeconds(.1f);
-       
+
                 var parentBody = GetComponentInParent<OWRigidbody>();
-                
+
                 foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
-                {
-                    meshCollider.convex = true;
-                }
+                    // hack. doesnt work for all meshes but seems to for most
+                    if (!meshCollider.isTrigger)
+                        meshCollider.convex = true;
 
-                var go = new GameObject($"{name}_Body");
-                go.transform.position = transform.position;
-                go.transform.rotation = transform.rotation;
-                transform.parent = go.transform;
-
-                go.layer = LayerMask.NameToLayer("PhysicalDetector");
-                go.AddComponent<SphereCollider>();
-                var owRigidbody = go.AddComponent<OWRigidbody>();
-                go.AddComponent<DynamicForceDetector>();
-                go.AddComponent<DynamicFluidDetector>();
+                var owRigidbody = gameObject.AddComponent<OWRigidbody>();
                 owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
-                owRigidbody.SetMass(0.0001f);
+
+                var detector = new GameObject("Detector");
+                detector.transform.SetParent(transform, false);
+                detector.layer = LayerMask.NameToLayer("AdvancedDetector");
+                detector.AddComponent<SphereCollider>();
+                detector.AddComponent<DynamicForceDetector>();
+                detector.AddComponent<DynamicFluidDetector>();
 
                 Destroy(this);
             }
