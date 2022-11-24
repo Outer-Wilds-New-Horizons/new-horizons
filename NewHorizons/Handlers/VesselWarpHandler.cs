@@ -22,7 +22,7 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselBundle = Instance.ModHelper.Assets.LoadBundle("Assets/vessel.newhorizons");
+            VesselBundle = Instance.ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
             VesselPrefab = VesselBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
