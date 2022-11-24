@@ -195,7 +195,7 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
-            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/xen.newhorizons");
+            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);

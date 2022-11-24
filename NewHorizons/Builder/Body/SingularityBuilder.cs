@@ -300,7 +300,7 @@ namespace NewHorizons.Builder.Body
                 sizeController = singularityRenderer.gameObject.AddComponent<SingularitySizeController>();
                 sizeController.SetScaleCurve(curve);
                 sizeController.size = distort;
-                sizeController.innerScale = horizon;
+                sizeController.innerScale = horizon / distort;
                 sizeController.material = singularityRenderer.material;
             }
 
