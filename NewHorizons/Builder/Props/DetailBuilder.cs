@@ -417,6 +417,9 @@ namespace NewHorizons.Builder.Props
             detector.tag = "DynamicPropDetector";
 
             var shape = detector.AddComponent<SphereShape>();
+            shape.SetCollisionMode(Shape.CollisionMode.Detector);
+            shape.SetLayer(Shape.Layer.Default);
+            shape.layerMask = 5;
             detector.AddComponent<DynamicForceDetector>();
             detector.AddComponent<ForceApplier>();
         }
