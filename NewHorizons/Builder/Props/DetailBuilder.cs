@@ -223,7 +223,7 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
-            prop.AddComponent<AddPhysics>();
+            if (detail.hasPhysics) prop.AddComponent<AddPhysics>();
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
