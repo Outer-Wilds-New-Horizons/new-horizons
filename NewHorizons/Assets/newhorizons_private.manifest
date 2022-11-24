@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1541488892
+CRC: 1932961951
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a2716f51c51e3a466cac07f647f7b0ef
+    Hash: 79142e7d68648a06c0ed2fc15ebbac48
   TypeTreeHash:
     serializedVersion: 2
     Hash: fae511e2df3c6c74353879b4753cf2eb
@@ -167,6 +167,7 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 199
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Vessel_Body.prefab
 Dependencies: []
