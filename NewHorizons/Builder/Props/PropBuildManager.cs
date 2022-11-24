@@ -12,6 +12,20 @@ namespace NewHorizons.Builder.Props
     {
         public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
         {
+            if (config.Props.gravityCannons != null)
+            {
+                foreach (var gravityCannonInfo in config.Props.gravityCannons)
+                {
+                    try
+                    {
+                        GravityCannonBuilder.Make(go, sector, gravityCannonInfo, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make gravity cannon [{gravityCannonInfo.shuttleID}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
             if (config.Props.shuttles != null)
             {
                 foreach (var shuttleInfo in config.Props.shuttles)

@@ -84,6 +84,11 @@ namespace NewHorizons.External.Modules
         public SignalModule.SignalInfo[] signals;
 
         /// <summary>
+        /// Add gravity cannons to this planet
+        /// </summary>
+        public GravityCannonInfo[] gravityCannons;
+
+        /// <summary>
         /// Add shuttles to this planet
         /// </summary>
         public ShuttleInfo[] shuttles;
@@ -1038,6 +1043,105 @@ namespace NewHorizons.External.Modules
             /// An optional rename of this object
             /// </summary>
             public string rename;
+        }
+
+        [JsonObject]
+        public class GravityCannonInfo
+        {
+            /// <summary>
+            /// The id of the shuttle to link this cannon to
+            /// </summary>
+            public string shuttleID;
+
+            /// <summary>
+            /// Ship log fact revealed when retrieving the linked shuttle
+            /// </summary>
+            public string retrieveReveal;
+
+            /// <summary>
+            /// Ship log fact revealed when launching the linked shuttle
+            /// </summary>
+            public string launchReveal;
+
+            /// <summary>
+            /// The location of this gravity cannon.
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The rotation of this gravity cannon.
+            /// </summary>
+            public MVector3 rotation;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
+
+            /// <summary>
+            /// 
+            /// </summary>
+            public ComputerInfo computer;
+
+            [JsonObject]
+            public class ComputerInfo
+            {
+                /// <summary>
+                /// The location of this computer. 
+                /// </summary>
+                [DefaultValue("unspecified")] public NomaiTextInfo.NomaiTextLocation location = NomaiTextInfo.NomaiTextLocation.UNSPECIFIED;
+
+                /// <summary>
+                /// The relative path to the xml file for this computer.
+                /// </summary>
+                public string xmlFile;
+
+                /// <summary>
+                /// The normal vector for this computer. Used for positioning.
+                /// </summary>
+                public MVector3 normal;
+
+                /// <summary>
+                /// Position of the root of this computer
+                /// </summary>
+                public MVector3 position;
+
+                /// <summary>
+                /// The euler angle rotation of this computer. Not required if setting the normal. Computers will orient
+                /// themselves to the surface of the planet automatically.
+                /// </summary>
+                public MVector3 rotation;
+
+                /// <summary>
+                /// The relative path from the planet to the parent of this computer. Optional (will default to the root sector).
+                /// </summary>
+                public string parentPath;
+
+                /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
+
+                /// <summary>
+                /// An optional rename of this computer
+                /// </summary>
+                public string rename;
+
+                /// <summary>
+                /// Whether to use the escape pod computers or not.
+                /// </summary>
+                public bool isPreCrash;
+            }
         }
     }
 }
