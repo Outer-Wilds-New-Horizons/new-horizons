@@ -416,6 +416,7 @@ namespace NewHorizons.Builder.Props
                 var detector = new GameObject("Detector");
                 detector.transform.SetParent(transform, false);
                 detector.layer = LayerMask.NameToLayer("AdvancedDetector");
+                detector.tag = "DynamicPropDetector";
                 detector.AddComponent<SphereCollider>();
                 detector.AddComponent<DynamicForceDetector>();
                 detector.AddComponent<DynamicFluidDetector>();
