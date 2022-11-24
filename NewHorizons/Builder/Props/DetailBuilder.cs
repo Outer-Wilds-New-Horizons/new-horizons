@@ -421,6 +421,23 @@ namespace NewHorizons.Builder.Props
                 detector.AddComponent<DynamicForceDetector>();
                 detector.AddComponent<DynamicFluidDetector>();
 
+                var impactSensor = gameObject.AddComponent<ImpactSensor>();
+                var impactAudio = new GameObject("ImpactAudio");
+                impactAudio.transform.SetParent(transform, false);
+                var audioSource = impactAudio.AddComponent<AudioSource>();
+                audioSource.maxDistance = 30;
+                audioSource.dopplerLevel = 0;
+                audioSource.rolloffMode = AudioRolloffMode.Custom;
+                audioSource.playOnAwake = false;
+                audioSource.spatialBlend = 1;
+                var owAudioSource = impactAudio.AddComponent<OWAudioSource>();
+                owAudioSource._audioSource = audioSource;
+                owAudioSource.SetTrack(OWAudioMixer.TrackName.Environment);
+                var objectImpactAudio = impactAudio.AddComponent<ObjectImpactAudio>();
+                objectImpactAudio._minPitch = 0.4f;
+                objectImpactAudio._maxPitch = 0.6f;
+                objectImpactAudio._impactSensor = impactSensor;
+
                 Destroy(this);
             }
         }
