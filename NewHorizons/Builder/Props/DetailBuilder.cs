@@ -4,6 +4,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -141,8 +142,6 @@ namespace NewHorizons.Builder.Props
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
-            if (detail.hasPhysics) AddPhysics(prop, sector);
-
             if (detail.removeChildren != null)
             {
                 var detailPath = prop.transform.GetPath();
@@ -223,6 +222,8 @@ namespace NewHorizons.Builder.Props
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
+
+            prop.AddComponent<AddPhysics>();
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
@@ -393,6 +394,37 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        private class AddPhysics : MonoBehaviour
+        {
+            private IEnumerator Start()
+            {
+                yield return new WaitForSeconds(.1f);
+       
+                var parentBody = GetComponentInParent<OWRigidbody>();
+                
+                foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
+                {
+                    meshCollider.convex = true;
+                }
+
+                var go = new GameObject($"{name}_Body");
+                go.transform.position = transform.position;
+                go.transform.rotation = transform.rotation;
+                transform.parent = go.transform;
+
+                go.layer = LayerMask.NameToLayer("PhysicalDetector");
+                go.AddComponent<SphereCollider>();
+                var owRigidbody = go.AddComponent<OWRigidbody>();
+                go.AddComponent<DynamicForceDetector>();
+                go.AddComponent<DynamicFluidDetector>();
+                owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+                owRigidbody.SetMass(0.0001f);
+
+                Destroy(this);
+            }
+        }
+
+        /*
         private static void AddPhysics(GameObject prop, Sector sector)
         {
             var primaryBody = prop.GetComponentInParent<OWRigidbody>();
@@ -419,5 +451,6 @@ namespace NewHorizons.Builder.Props
             detector.AddComponent<DynamicForceDetector>();
             detector.AddComponent<ForceApplier>();
         }
+        */
     }
 }
