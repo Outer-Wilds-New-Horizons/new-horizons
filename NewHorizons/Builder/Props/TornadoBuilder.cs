@@ -23,22 +23,42 @@ namespace NewHorizons.Builder.Props
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int FresnelColor = Shader.PropertyToID("_FresnelColor");
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
+            if (_mainTexture == null) _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
+            if (_detailTexture == null) _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
+
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_upPrefab == null)
             {
-                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
-                _upPrefab.name = "Tornado_Up_Prefab";
+                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive().Rename("Tornado_Up_Prefab").DontDestroyOnLoad();
+                
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_UpTornado").InstantiateInactive().Rename("AudioRail_UpTornado");
+                audioRail.transform.parent = _upPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _upPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
             }
             if (_downPrefab == null)
             {
-                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
-                _downPrefab.name = "Tornado_Down_Prefab";
+                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive().Rename("Tornado_Down_Prefab").DontDestroyOnLoad();
+
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_DownTornado").InstantiateInactive().Rename("AudioRail_DownTornado");
+                audioRail.transform.parent = _downPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _downPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
             }
             if (_hurricanePrefab == null)
             {
-                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive();
-                _hurricanePrefab.name = "Hurricane_Prefab";
+                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive().Rename("Hurricane_Prefab").DontDestroyOnLoad();
                 // For some reason they put the hurricane at the origin and offset all its children (450)
                 // Increasing by 40 will keep the bottom above the ground
                 foreach (Transform child in _hurricanePrefab.transform)
@@ -50,19 +70,12 @@ namespace NewHorizons.Builder.Props
                     renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 }
             }
-            if (_soundPrefab == null)
-            {
-                _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
-                _soundPrefab.name = "AudioRail_Prefab";
-            }
-            if (_mainTexture == null)
-            {
-                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
-            }
-            if (_detailTexture == null)
-            {
-                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
-            }
+            if (_soundPrefab == null) _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive().Rename("AudioRail_Prefab").DontDestroyOnLoad();
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        {
+            InitPrefabs();
 
             Vector3 position;
             if (info.position != null)

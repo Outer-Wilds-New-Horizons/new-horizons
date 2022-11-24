@@ -55,6 +55,12 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public VolumeInfo[] reverbVolumes;
 
+        /// <summary>
+        /// Add zero-gravity volumes to this planet. 
+        /// Good for surrounding planets which are using a static position to stop the player being pulled away.
+        /// </summary>
+        public PriorityVolumeInfo[] zeroGravityVolumes;
+
         [JsonObject]
         public class VolumeInfo
         {
@@ -80,6 +86,17 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
+        public class PriorityVolumeInfo : VolumeInfo
+        {
+            /// <summary>
+            /// The priority for this volume's effects to be applied. 
+            /// Ex, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.
+            /// </summary>
+            [DefaultValue(1)]
+            public int priority = 1;
+        }
+
+        [JsonObject]
         public class RevealVolumeInfo : VolumeInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
@@ -90,6 +107,16 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"observe")] Observe = 1,
 
                 [EnumMember(Value = @"snapshot")] Snapshot = 2
+            }
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum EnterType
+            {
+                [EnumMember(Value = @"both")] Both = 0,
+
+                [EnumMember(Value = @"player")] Player = 1,
+
+                [EnumMember(Value = @"probe")] Probe = 2
             }
 
             /// <summary>
@@ -106,6 +133,11 @@ namespace NewHorizons.External.Modules
             /// What needs to be done to the volume to unlock the facts
             /// </summary>
             [DefaultValue("enter")] public RevealVolumeType revealOn = RevealVolumeType.Enter;
+
+            /// <summary>
+            /// What can enter the volume to unlock the facts (`enter` only)
+            /// </summary>
+            [DefaultValue("both")] public EnterType revealFor = EnterType.Both;
 
             /// <summary>
             /// A list of facts to reveal

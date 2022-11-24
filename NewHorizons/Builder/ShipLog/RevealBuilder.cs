@@ -76,6 +76,23 @@ namespace NewHorizons.Builder.ShipLog
             {
                 var factRevealVolume = go.AddComponent<ShipLogFactListTriggerVolume>();
                 factRevealVolume._factIDs = info.reveals;
+                switch (info.revealFor)
+                {
+                    case VolumesModule.RevealVolumeInfo.EnterType.Player:
+                        factRevealVolume._player = true;
+                        factRevealVolume._probe = false;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Probe:
+                        factRevealVolume._player = false;
+                        factRevealVolume._probe = true;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Both:
+                    default:
+                        // if you want both player and probe to able to trigger the thing you have to set both player and probe to false. setting both to true will make nothing trigger it
+                        factRevealVolume._player = false;
+                        factRevealVolume._probe = false;
+                        break;
+                }
             }
 
             if (!string.IsNullOrEmpty(info.achievementID))

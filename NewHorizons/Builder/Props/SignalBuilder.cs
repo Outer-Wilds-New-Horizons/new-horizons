@@ -55,6 +55,8 @@ namespace NewHorizons.Builder.Props
 
         public static SignalFrequency AddFrequency(string str)
         {
+            if (_customFrequencyNames == null) Init();
+            
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
@@ -79,12 +81,16 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomFrequencyName(SignalFrequency frequencyName)
         {
+            if (_customFrequencyNames == null) Init();
+
             _customFrequencyNames.TryGetValue(frequencyName, out string name);
             return name;
         }
 
         public static SignalName AddSignalName(string str)
         {
+            if (_customSignalNames == null) Init();
+            
             var name = CollectionUtilities.KeyByValue(_customSignalNames, str);
             if (name != default) return name;
 
@@ -98,6 +104,8 @@ namespace NewHorizons.Builder.Props
 
         public static string GetCustomSignalName(SignalName signalName)
         {
+            if (_customSignalNames == null) Init();
+
             _customSignalNames.TryGetValue(signalName, out string name);
             return name;
         }
@@ -121,7 +129,9 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            signalGO.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) signalGO.transform.localPosition = pos;
+            else signalGO.transform.position = planetGO.transform.TransformPoint(pos);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();

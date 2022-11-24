@@ -26,6 +26,7 @@ namespace NewHorizons.Components.SizeControllers
         public MColor supernovaColour;
         public Texture normalRamp;
         public Texture collapseRamp;
+        public Light light;
 
         private Color _startColour;
         private Color _endColour;
@@ -97,18 +98,18 @@ namespace NewHorizons.Components.SizeControllers
 
         public static void Init()
         {
-            var sun = GameObject.FindObjectOfType<SunController>();
+            var sun = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
 
             if (sun == null) return;
 
             // Need to grab all this early bc the star might only Start after the solar system was made (remnants)
-            _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial);
-            _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial);
-            _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial);
-            _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial);
+            if (_defaultCollapseStartSurfaceMaterial == null) _defaultCollapseStartSurfaceMaterial = new Material(sun._collapseStartSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultCollapseEndSurfaceMaterial == null) _defaultCollapseEndSurfaceMaterial = new Material(sun._collapseEndSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultStartSurfaceMaterial == null) _defaultStartSurfaceMaterial = new Material(sun._startSurfaceMaterial).DontDestroyOnLoad();
+            if (_defaultEndSurfaceMaterial == null) _defaultEndSurfaceMaterial = new Material(sun._endSurfaceMaterial).DontDestroyOnLoad();
 
-            _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp);
-            _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp);
+            if (_defaultNormalRamp == null) _defaultNormalRamp = sun._startSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
+            if (_defaultCollapseRamp == null) _defaultCollapseRamp = sun._collapseStartSurfaceMaterial.GetTexture(ColorRamp).DontDestroyOnLoad();
         }
 
         private void Start()
@@ -288,7 +289,7 @@ namespace NewHorizons.Components.SizeControllers
                 _stellarRemnant.SetActive(true);
                 var remnantStarController = _stellarRemnant.GetComponentInChildren<StarController>();
                 if (remnantStarController != null) SunLightEffectsController.AddStar(remnantStarController);
-                var remnantStarLight = _stellarRemnant.FindChild("SunLight");
+                var remnantStarLight = _stellarRemnant.FindChild("StarLight");
                 if (remnantStarLight != null) SunLightEffectsController.AddStarLight(remnantStarLight.GetComponent<Light>());
             }
 
@@ -303,7 +304,7 @@ namespace NewHorizons.Components.SizeControllers
         private void DisableStar(bool start = false)
         {
             if (controller != null) SunLightEffectsController.RemoveStar(controller);
-            if (!isProxy) SunLightEffectsController.RemoveStarLight(gameObject.FindChild("SunLight").GetComponent<Light>());
+            if (light != null) SunLightEffectsController.RemoveStarLight(light);
 
             if (_stellarRemnant != null)
             {

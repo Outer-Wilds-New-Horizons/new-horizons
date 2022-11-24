@@ -5,12 +5,18 @@ using OWML.Common;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using System.Collections.Generic;
+using Tessellation;
+
 namespace NewHorizons.Builder.Atmosphere
 {
     public static class CloudsBuilder
     {
         private static Material[] _gdCloudMaterials;
         private static Material[] _qmCloudMaterials;
+        private static Material[] _qmBottomMaterials;
+        private static Mesh _gdTopCloudMesh;
+        private static Tessellation.MeshGroup _qmBottomMeshGroup;
         private static Material _transparentCloud;
         private static GameObject _lightningPrefab;
         private static Texture2D _colorRamp;
@@ -21,10 +27,42 @@ namespace NewHorizons.Builder.Atmosphere
         private static readonly int CapTex = Shader.PropertyToID("_CapTex");
         private static readonly int Smoothness = Shader.PropertyToID("_Glossiness");
 
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
+
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD").InstantiateInactive().Rename("LightningGenerator").DontDestroyOnLoad();
+            if (_gdTopCloudMesh == null) _gdTopCloudMesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh.DontDestroyOnLoad();
+            if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
+            if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
+            if (_qmBottomMaterials == null) _qmBottomMaterials = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials.MakePrefabMaterials();
+            if (_qmBottomMeshGroup == null)
+            {
+                var originalMeshGroup = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
+                _qmBottomMeshGroup = ScriptableObject.CreateInstance<MeshGroup>().Rename("BottomClouds").DontDestroyOnLoad();
+                var variants = new List<Mesh>();
+                foreach (var variant in originalMeshGroup.variants)
+                {
+                    var mesh = new Mesh();
+                    mesh.CopyPropertiesFrom(variant);
+                    mesh.name = variant.name;
+                    mesh.DontDestroyOnLoad();
+                    variants.Add(mesh);
+                }
+                _qmBottomMeshGroup.variants = variants.ToArray();
+            }
+            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
+        }
+
         public static void Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, bool cloaked, IModBehaviour mod)
         {
-            if (_lightningPrefab == null) _lightningPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Clouds_GD/LightningGenerator_GD");
-            if (_colorRamp == null) _colorRamp = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Clouds_Bottom_ramp.png");
+            InitPrefabs();
 
             GameObject cloudsMainGO = new GameObject("Clouds");
             cloudsMainGO.SetActive(false);
@@ -46,8 +84,8 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsBottomGO.transform.localScale = Vector3.one * atmo.clouds.innerCloudRadius;
 
             TessellatedSphereRenderer bottomTSR = cloudsBottomGO.AddComponent<TessellatedSphereRenderer>();
-            bottomTSR.tessellationMeshGroup = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().tessellationMeshGroup;
-            var bottomTSRMaterials = SearchUtilities.Find("CloudsBottomLayer_QM").GetComponent<TessellatedSphereRenderer>().sharedMaterials;
+            bottomTSR.tessellationMeshGroup = _qmBottomMeshGroup;
+            var bottomTSRMaterials = _qmBottomMaterials;
 
             // If they set a colour apply it to all the materials else keep the default QM one
             if (atmo.clouds.tint != null)
@@ -118,6 +156,8 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static CloudLightningGenerator MakeLightning(GameObject rootObject, Sector sector, AtmosphereModule atmo, bool noAudio = false)
         {
+            InitPrefabs();
+
             var lightning = _lightningPrefab.InstantiateInactive();
             lightning.name = "LightningGenerator";
             lightning.transform.parent = rootObject.transform;
@@ -149,6 +189,8 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTopClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod)
         {
+            InitPrefabs();
+
             Texture2D image, cap, ramp;
 
             try
@@ -173,12 +215,10 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsTopGO.transform.localScale = Vector3.one * atmo.clouds.outerCloudRadius;
 
             MeshFilter topMF = cloudsTopGO.AddComponent<MeshFilter>();
-            topMF.mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+            topMF.mesh = _gdTopCloudMesh;
 
             MeshRenderer topMR = cloudsTopGO.AddComponent<MeshRenderer>();
 
-            if (_gdCloudMaterials == null) _gdCloudMaterials = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshRenderer>().sharedMaterials;
-            if (_qmCloudMaterials == null) _qmCloudMaterials = SearchUtilities.Find("CloudsTopLayer_QM").GetComponent<MeshRenderer>().sharedMaterials;
             Material[] prefabMaterials = atmo.clouds.cloudsPrefab == CloudPrefabType.GiantsDeep ? _gdCloudMaterials : _qmCloudMaterials;
             var tempArray = new Material[2];
 
@@ -231,6 +271,8 @@ namespace NewHorizons.Builder.Atmosphere
 
         public static GameObject MakeTransparentClouds(GameObject rootObject, AtmosphereModule atmo, IModBehaviour mod, bool isProxy = false)
         {
+            InitPrefabs();
+
             Texture2D image;
 
             try
@@ -249,10 +291,9 @@ namespace NewHorizons.Builder.Atmosphere
             cloudsTransparentGO.transform.localScale = Vector3.one * atmo.clouds.outerCloudRadius;
 
             MeshFilter filter = cloudsTransparentGO.AddComponent<MeshFilter>();
-            filter.mesh = SearchUtilities.Find("CloudsTopLayer_GD").GetComponent<MeshFilter>().mesh;
+            filter.mesh = _gdTopCloudMesh;
 
             MeshRenderer renderer = cloudsTransparentGO.AddComponent<MeshRenderer>();
-            if (_transparentCloud == null) _transparentCloud = Main.NHAssetBundle.LoadAsset<Material>("Assets/Resources/TransparentCloud.mat");
             var material = new Material(_transparentCloud);
             material.name = "TransparentClouds_" + image.name;
             material.SetTexture(MainTex, image);

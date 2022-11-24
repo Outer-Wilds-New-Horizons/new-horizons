@@ -221,6 +221,11 @@ namespace NewHorizons.External.Modules
             public string parentPath;
 
             /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
             /// </summary>
             public bool keepLoaded;
@@ -238,6 +243,11 @@ namespace NewHorizons.External.Modules
             /// Position of the raft
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// Acceleration of the raft. Default acceleration is 5.
+            /// </summary>
+            [DefaultValue(5f)] public float acceleration = 5f;
         }
 
         [JsonObject]
@@ -450,6 +460,21 @@ namespace NewHorizons.External.Modules
             /// Relative path to the xml file defining the dialogue.
             /// </summary>
             public string xmlFile;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
+            /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
+            /// </summary>
+            public string rename;
+
+            /// <summary>
+            /// Optionally set the parent object that the dialogue and remote trigger will be attached to
+            /// </summary>
+            public string parentPath;
         }
 
         [JsonObject]
@@ -551,6 +576,11 @@ namespace NewHorizons.External.Modules
             public string parentPath;
 
             /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// An optional rename of this object
             /// </summary>
             public string rename;
@@ -617,9 +647,17 @@ namespace NewHorizons.External.Modules
             public MVector3 position;
 
             /// <summary>
-            /// The ship log entries revealed after finishing this slide reel.
+            /// The ship log facts revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
+
+            /// <summary>
+            /// The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).
+            /// You should probably include facts from `reveals` here.
+            /// If you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only
+            /// rumor facts because an entry with revealed explore facts doesn't display rumor facts.
+            /// </summary>
+            public string[] playWithShipLogFacts;
 
             /// <summary>
             /// The rotation of this slideshow.
@@ -640,6 +678,11 @@ namespace NewHorizons.External.Modules
             /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
         }
 
         [JsonObject]
@@ -712,7 +755,7 @@ namespace NewHorizons.External.Modules
             // SlideShipLogEntryModule
 
             /// <summary>
-            /// Ship log entry revealed when viewing this slide
+            /// Ship log fact revealed when viewing this slide
             /// </summary>
             public string reveal;
 
@@ -840,6 +883,11 @@ namespace NewHorizons.External.Modules
                 public string parentPath;
 
                 /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
+
+                /// <summary>
                 /// An optional rename of this object
                 /// </summary>
                 public string rename;
@@ -903,6 +951,11 @@ namespace NewHorizons.External.Modules
                 public string parentPath;
 
                 /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
+
+                /// <summary>
                 /// An optional rename of this object
                 /// </summary>
                 public string rename;
@@ -940,6 +993,11 @@ namespace NewHorizons.External.Modules
                 /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
                 /// </summary>
                 public string parentPath;
+
+                /// <summary>
+                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+                /// </summary>
+                public bool isRelativeToParent;
 
                 /// <summary>
                 /// An optional rename of this object

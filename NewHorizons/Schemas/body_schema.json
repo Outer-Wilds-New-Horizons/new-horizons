@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Celestial Body Schema",
   "type": "object",
-  "description": "Describes a body to generate",
+  "description": "Describes a celestial body to generate",
   "additionalProperties": false,
   "required": [
     "name"
@@ -221,21 +221,21 @@
       "properties": {
         "r": {
           "type": "integer",
-          "description": "The red component of this colour",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "g": {
           "type": "integer",
-          "description": "The green component of this colour",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "b": {
           "type": "integer",
-          "description": "The blue component of this colour",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
@@ -497,10 +497,10 @@
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
           "format": "float"
         },
-        "zeroGravityRadius": {
-          "type": "number",
-          "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
-          "format": "float"
+        "gravityVolumePriority": {
+          "type": "integer",
+          "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
+          "format": "int32"
         }
       }
     },
@@ -1055,6 +1055,10 @@
           "type": "string",
           "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
@@ -1109,6 +1113,18 @@
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
         }
       }
     },
@@ -1232,6 +1248,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
@@ -1343,6 +1363,12 @@
         "position": {
           "description": "Position of the raft",
           "$ref": "#/definitions/MVector3"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
@@ -1423,7 +1449,14 @@
         },
         "reveals": {
           "type": "array",
-          "description": "The ship log entries revealed after finishing this slide reel.",
+          "description": "The ship log facts revealed after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "playWithShipLogFacts": {
+          "type": "array",
+          "description": "The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).\nYou should probably include facts from `reveals` here.\nIf you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only\nrumor facts because an entry with revealed explore facts doesn't display rumor facts.",
           "items": {
             "type": "string"
           }
@@ -1447,6 +1480,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1502,7 +1539,7 @@
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log entry revealed when viewing this slide"
+          "description": "Ship log fact revealed when viewing this slide"
         },
         "spotIntensityMod": {
           "type": "number",
@@ -1724,11 +1761,6 @@
             "$ref": "#/definitions/TimeValuePair"
           }
         },
-        "makeZeroGVolume": {
-          "type": "boolean",
-          "description": "Only for White Holes. Should this white hole repel the player from it.",
-          "default": true
-        },
         "pairedSingularity": {
           "type": "string",
           "description": "The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
@@ -1741,9 +1773,19 @@
           "description": "Position of the singularity",
           "$ref": "#/definitions/MVector3"
         },
-        "size": {
+        "rotation": {
+          "description": "Rotation of the singularity. Determines the direction you come out of a white hole",
+          "$ref": "#/definitions/MVector3"
+        },
+        "horizonRadius": {
           "type": "number",
-          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "description": "Radius of the event horizon (solid part)",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "distortRadius": {
+          "type": "number",
+          "description": "Radius of the distortion effects. Defaults to 2.5 * horizonRadius",
           "format": "float",
           "minimum": 0.0
         },
@@ -1754,6 +1796,17 @@
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
+        },
+        "hasWarpEffects": {
+          "type": "boolean",
+          "description": "Whether a black hole emits blue particles upon warping. It doesn't scale, so disabling this for small black holes is recommended"
+        },
+        "renderQueueOverride": {
+          "type": "integer",
+          "description": "Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help",
+          "format": "int32",
+          "maximum": 3500.0,
+          "minimum": 2501.0
         }
       }
     },
@@ -1825,6 +1878,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1879,6 +1936,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -1941,6 +2002,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
@@ -1975,6 +2040,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2471,6 +2540,13 @@
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
+        },
+        "zeroGravityVolumes": {
+          "type": "array",
+          "description": "Add zero-gravity volumes to this planet. \nGood for surrounding planets which are using a static position to stop the player being pulled away.",
+          "items": {
+            "$ref": "#/definitions/PriorityVolumeInfo"
+          }
         }
       }
     },
@@ -2766,6 +2842,11 @@
           "default": "enter",
           "$ref": "#/definitions/RevealVolumeType"
         },
+        "revealFor": {
+          "description": "What can enter the volume to unlock the facts (`enter` only)",
+          "default": "both",
+          "$ref": "#/definitions/EnterType"
+        },
         "reveals": {
           "type": "array",
           "description": "A list of facts to reveal",
@@ -2792,6 +2873,49 @@
         "observe",
         "snapshot"
       ]
+    },
+    "EnterType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Both",
+        "Player",
+        "Probe"
+      ],
+      "enum": [
+        "both",
+        "player",
+        "probe"
+      ]
+    },
+    "PriorityVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        }
+      }
     }
   },
   "$docs": {

@@ -225,7 +225,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     else if (conversationMeta.conversationGo != null)
                                     {
                                         conversationMeta.conversationGo.transform.localPosition = data.pos;
-                                        DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
+                                        conversationMeta.conversationGo.transform.rotation = data.rot;
                                         
                                         conversationMeta.conversation.position = conversationMeta.conversationGo.transform.localPosition;
                                         conversationMeta.conversation.rotation = conversationMeta.conversationGo.transform.localEulerAngles;
@@ -489,7 +489,7 @@ namespace NewHorizons.Utility.DebugMenu
             var planetGO = sectorParent;
             var info = conversationMetadata.conversation;
         
-            nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info.position);
+            nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
             if (info.normal != null)
             {
                 // In global coordinates (normal was in local coordinates)

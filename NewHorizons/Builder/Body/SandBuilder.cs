@@ -6,12 +6,35 @@ namespace NewHorizons.Builder.Body
 {
     public static class SandBuilder
     {
+        private static GameObject _sandSphere;
+        private static GameObject _sandCollider;
+        private static GameObject _sandOcclusion;
+        private static GameObject _sandProxyShadowCaster;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_sandSphere == null) _sandSphere = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/SandSphere").InstantiateInactive().Rename("Prefab_TT_SandSphere").DontDestroyOnLoad();
+            if (_sandCollider == null) _sandCollider = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/Collider").InstantiateInactive().Rename("Prefab_TT_SandCollider").DontDestroyOnLoad();
+            if (_sandOcclusion == null) _sandOcclusion = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere").InstantiateInactive().Rename("Prefab_TT_SandOcclusion").DontDestroyOnLoad();
+            if (_sandProxyShadowCaster == null) _sandProxyShadowCaster = SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/ProxyShadowCaster").InstantiateInactive().Rename("Prefab_TT_SandProxyShadowCaster").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, SandModule module)
         {
+            InitPrefabs();
+
             var sandGO = new GameObject("Sand");
             sandGO.SetActive(false);
 
-            var sandSphere = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/SandSphere"), sandGO.transform);
+            var sandSphere = GameObject.Instantiate(_sandSphere, sandGO.transform);
+            sandSphere.name = "Sphere";
+            sandSphere.SetActive(true);
             if (module.tint != null)
             {
                 var oldMR = sandSphere.GetComponent<TessellatedSphereRenderer>();
@@ -28,15 +51,19 @@ namespace NewHorizons.Builder.Body
                 sandMR.sharedMaterials[1].color = module.tint.ToColor();
             }
 
-            var collider = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/Collider"), sandGO.transform);
-            var sphereCollider = collider.GetComponent<SphereCollider>();
+            var collider = GameObject.Instantiate(_sandCollider, sandGO.transform);
+            collider.name = "Collider";
             collider.SetActive(true);
 
-            var occlusionSphere = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/OcclusionSphere"), sandGO.transform);
+            var occlusionSphere = GameObject.Instantiate(_sandOcclusion, sandGO.transform);
+            occlusionSphere.name = "Occlusion";
+            occlusionSphere.SetActive(true);
 
-            var proxyShadowCasterGO = GameObject.Instantiate(SearchUtilities.Find("TowerTwin_Body/SandSphere_Draining/ProxyShadowCaster"), sandGO.transform);
+            var proxyShadowCasterGO = GameObject.Instantiate(_sandProxyShadowCaster, sandGO.transform);
+            proxyShadowCasterGO.name = "ProxyShadowCaster";
             var proxyShadowCaster = proxyShadowCasterGO.GetComponent<ProxyShadowCaster>();
             proxyShadowCaster.SetSuperGroup(sandGO.GetComponent<ProxyShadowCasterSuperGroup>());
+            proxyShadowCasterGO.SetActive(true);
 
             sandSphere.AddComponent<ChildColliderSettings>();
 
