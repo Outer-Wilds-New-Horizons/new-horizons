@@ -396,6 +396,7 @@ namespace NewHorizons.Builder.Props
 
         // TODO: simulate in sector
         // BUG: detector collider is not included in groups
+        // TODO: mass
         private class AddPhysics : MonoBehaviour
         {
             private IEnumerator Start()
