@@ -48,6 +48,7 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
             owAudioSource.SetMaxVolume(info.volume);
+            owAudioSource.SetClipSelectionType(EnumUtils.Parse<OWAudioSource.ClipSelectionOnPlay>(info.clipSelection.ToString()));
             owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 

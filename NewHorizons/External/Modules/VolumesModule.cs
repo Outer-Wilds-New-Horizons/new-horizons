@@ -187,6 +187,8 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public string audio;
 
+            [DefaultValue("random")] public ClipSelectionType clipSelection = ClipSelectionType.RANDOM;
+
             /// <summary>
             /// The audio track of this audio volume
             /// </summary>
@@ -424,6 +426,14 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public VolumeInfo[] safetyVolumes;
         }
+    }
+
+    [JsonConverter(typeof(StringEnumConverter))]
+    public enum ClipSelectionType
+    {
+        [EnumMember(Value = @"random")] RANDOM,
+        [EnumMember(Value = @"sequential")] SEQUENTIAL,
+        [EnumMember(Value = @"manual")] MANUAL
     }
 
     [JsonConverter(typeof(StringEnumConverter))]
