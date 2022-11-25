@@ -140,6 +140,37 @@ namespace NewHorizons.Builder.Volumes
                     }
                 }
             }
+            if (config.Volumes.rulesets != null)
+            {
+                if (config.Volumes.rulesets.antiTravelMusicRulesets != null)
+                {
+                    foreach (var antiTravelMusicRuleset in config.Volumes.rulesets.antiTravelMusicRulesets)
+                    {
+                        VolumeBuilder.Make<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.playerImpactRulesets != null)
+                {
+                    foreach (var playerImpactRuleset in config.Volumes.rulesets.playerImpactRulesets)
+                    {
+                        PlayerImpactRulesetBuilder.Make(go, sector, playerImpactRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.probeRulesets != null)
+                {
+                    foreach (var probeRuleset in config.Volumes.rulesets.probeRulesets)
+                    {
+                        ProbeRulesetBuilder.Make(go, sector, probeRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.thrustRulesets != null)
+                {
+                    foreach (var thrustRuleset in config.Volumes.rulesets.thrustRulesets)
+                    {
+                        ThrustRulesetBuilder.Make(go, sector, thrustRuleset);
+                    }
+                }
+            }
         }
     }
 }
