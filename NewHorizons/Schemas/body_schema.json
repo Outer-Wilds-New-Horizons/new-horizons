@@ -291,7 +291,7 @@
         },
         "hasTrees": {
           "type": "boolean",
-          "description": "Does this planet have trees? This will change the \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+          "description": "Does this planet have trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
         },
         "hasRain": {
           "type": "boolean",
@@ -2530,6 +2530,13 @@
             "$ref": "#/definitions/NotificationVolumeInfo"
           }
         },
+        "oxygenVolumes": {
+          "type": "array",
+          "description": "Add oxygen volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/OxygenVolumeInfo"
+          }
+        },
         "revealVolumes": {
           "type": "array",
           "description": "Add triggers that reveal parts of the ship log on this planet.",
@@ -2564,7 +2571,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2658,7 +2666,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2724,7 +2733,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2806,7 +2816,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2829,7 +2840,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2884,6 +2896,39 @@
         }
       }
     },
+    "OxygenVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "treeVolume": {
+          "type": "boolean",
+          "description": "Does this volume contain trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+        },
+        "playRefillAudio": {
+          "type": "boolean",
+          "description": "Whether to play the oxygen tank refill sound or just fill quietly.",
+          "default": true
+        }
+      }
+    },
     "RevealVolumeInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2895,7 +2940,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2908,12 +2954,14 @@
         "maxAngle": {
           "type": "number",
           "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)",
-          "format": "float"
+          "format": "float",
+          "default": 180.0
         },
         "maxDistance": {
           "type": "number",
           "description": "The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)",
-          "format": "float"
+          "format": "float",
+          "default": -1.0
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
@@ -2977,7 +3025,8 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -2986,6 +3035,12 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
+        },
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
         },
         "priority": {
           "type": "integer",
