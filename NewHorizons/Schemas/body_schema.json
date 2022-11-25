@@ -575,6 +575,11 @@
           "format": "float",
           "default": 750.0
         },
+        "hasVines": {
+          "type": "boolean",
+          "description": "Whether this dimensions has vines.\nSet to false if you want to create your own vines.",
+          "default": true
+        },
         "allowedEntrances": {
           "type": "array",
           "description": "An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.",
