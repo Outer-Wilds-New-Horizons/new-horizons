@@ -123,6 +123,23 @@ namespace NewHorizons.Builder.Volumes
                     }
                 }
             }
+            if (config.Volumes.visorEffects != null)
+            {
+                if (config.Volumes.visorEffects.frostEffectVolumes != null)
+                {
+                    foreach (var frostEffectVolume in config.Volumes.visorEffects.frostEffectVolumes)
+                    {
+                        VisorFrostEffectVolumeBuilder.Make(go, sector, frostEffectVolume);
+                    }
+                }
+                if (config.Volumes.visorEffects.rainEffectVolumes != null)
+                {
+                    foreach (var rainEffectVolume in config.Volumes.visorEffects.rainEffectVolumes)
+                    {
+                        VisorRainEffectVolumeBuilder.Make(go, sector, rainEffectVolume);
+                    }
+                }
+            }
         }
     }
 }
