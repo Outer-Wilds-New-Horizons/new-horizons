@@ -85,6 +85,13 @@ namespace NewHorizons.Builder.Volumes
                     ZeroGVolumeBuilder.Make(go, sector, zeroGravityVolume);
                 }
             }
+            if (config.Volumes.destructionVolumes != null)
+            {
+                foreach (var destructionVolume in config.Volumes.destructionVolumes)
+                {
+                    DestructionVolumeBuilder.Make(go, sector, destructionVolume);
+                }
+            }
         }
     }
 }

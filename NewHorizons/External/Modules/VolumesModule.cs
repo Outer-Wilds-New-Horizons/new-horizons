@@ -21,6 +21,11 @@ namespace NewHorizons.External.Modules
         public AudioVolumeInfo[] audioVolumes;
 
         /// <summary>
+        /// Add destruction volumes to this planet.
+        /// </summary>
+        public DestructionVolumeInfo[] destructionVolumes;
+
+        /// <summary>
         /// Add hazard volumes to this planet.
         /// </summary>
         public HazardVolumeInfo[] hazardVolumes;
@@ -260,6 +265,49 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"impact")] Impact,
                 [EnumMember(Value = @"puncture")] Puncture,
                 [EnumMember(Value = @"electrical")] Electrical
+            }
+        }
+
+        [JsonObject]
+        public class VanishVolumeInfo : VolumeInfo
+        {
+            /// <summary>
+            /// Whether the bodies will shrink when they enter this volume or just disappear instantly.
+            /// </summary>
+            [DefaultValue(true)] public bool shrinkBodies = true;
+
+            /// <summary>
+            /// Whether this volume only affects the player and ship.
+            /// </summary>
+            public bool onlyAffectsPlayerAndShip;
+        }
+
+        [JsonObject]
+        public class DestructionVolumeInfo : VanishVolumeInfo
+        {
+            /// <summary>
+            /// The type of death the player will have if they enter this volume.
+            /// </summary>
+            [DefaultValue("default")] public DeathType deathType = DeathType.Default;
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum DeathType
+            {
+                [EnumMember(Value = @"default")] Default,
+                [EnumMember(Value = @"impact")] Impact,
+                [EnumMember(Value = @"asphyxiation")] Asphyxiation,
+                [EnumMember(Value = @"energy")] Energy,
+                [EnumMember(Value = @"supernova")] Supernova,
+                [EnumMember(Value = @"digestion")] Digestion,
+                [EnumMember(Value = @"bigBang")] BigBang,
+                [EnumMember(Value = @"crushed")] Crushed,
+                [EnumMember(Value = @"meditation")] Meditation,
+                [EnumMember(Value = @"timeLoop")] TimeLoop,
+                [EnumMember(Value = @"lava")] Lava,
+                [EnumMember(Value = @"blackHole")] BlackHole,
+                [EnumMember(Value = @"dream")] Dream,
+                [EnumMember(Value = @"dreamExplosion")] DreamExplosion,
+                [EnumMember(Value = @"crushedByElevator")] CrushedByElevator
             }
         }
     }
