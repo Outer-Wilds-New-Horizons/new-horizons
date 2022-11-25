@@ -37,6 +37,7 @@ namespace NewHorizons
     public class Main : ModBehaviour
     {
         public static AssetBundle NHAssetBundle { get; private set; }
+        public static AssetBundle NHPrivateAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -196,6 +197,7 @@ namespace NewHorizons
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
+            NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
