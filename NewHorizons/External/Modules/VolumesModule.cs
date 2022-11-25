@@ -106,6 +106,11 @@ namespace NewHorizons.External.Modules
             public string parentPath;
 
             /// <summary>
+            /// Whether the positional coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// An optional rename of this volume.
             /// </summary>
             public string rename;

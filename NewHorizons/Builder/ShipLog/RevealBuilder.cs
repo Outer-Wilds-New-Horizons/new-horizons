@@ -60,7 +60,9 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) revealTriggerVolume.transform.localPosition = pos;
+            else revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(pos);
 
             return revealTriggerVolume;
         }
