@@ -77,6 +77,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The radius of this volume.
             /// </summary>
+            [DefaultValue(1f)]
             public float radius = 1f;
 
             /// <summary>
@@ -133,11 +134,13 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)
             /// </summary>
+            [DefaultValue(180f)]
             public float maxAngle = 180f; // Observe Only
 
             /// <summary>
             /// The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)
             /// </summary>
+            [DefaultValue(-1f)]
             public float maxDistance = -1f; // Snapshot & Observe Only
 
             /// <summary>
