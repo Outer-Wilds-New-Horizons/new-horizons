@@ -76,15 +76,15 @@ namespace NewHorizons.External.Modules
         public VolumeInfo[] reverbVolumes;
 
         /// <summary>
+        /// Add visor effect volumes to this planet.
+        /// </summary>
+        public VisorEffectModule visorEffects;
+
+        /// <summary>
         /// Add zero-gravity volumes to this planet. 
         /// Good for surrounding planets which are using a static position to stop the player being pulled away.
         /// </summary>
         public PriorityVolumeInfo[] zeroGravityVolumes;
-
-        /// <summary>
-        /// Add visor effect volumes to this planet.
-        /// </summary>
-        public VisorEffectModule visorEffects;
 
         [JsonObject]
         public class VolumeInfo
