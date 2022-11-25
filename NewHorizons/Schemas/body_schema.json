@@ -2609,6 +2609,10 @@
           "type": "string",
           "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
         },
+        "clipSelection": {
+          "default": "random",
+          "$ref": "#/definitions/ClipSelectionType"
+        },
         "track": {
           "description": "The audio track of this audio volume",
           "default": "environment",
@@ -2646,6 +2650,20 @@
           "description": "Pause the music when exiting the volume."
         }
       }
+    },
+    "ClipSelectionType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "RANDOM",
+        "SEQUENTIAL",
+        "MANUAL"
+      ],
+      "enum": [
+        "random",
+        "sequential",
+        "manual"
+      ]
     },
     "AudioMixerTrackName": {
       "type": "string",
