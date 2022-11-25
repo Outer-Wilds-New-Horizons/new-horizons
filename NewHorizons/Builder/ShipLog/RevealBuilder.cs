@@ -99,6 +99,22 @@ namespace NewHorizons.Builder.ShipLog
             {
                 var achievementVolume = go.AddComponent<AchievementVolume>();
                 achievementVolume.achievementID = info.achievementID;
+                switch (info.revealFor)
+                {
+                    case VolumesModule.RevealVolumeInfo.EnterType.Player:
+                        achievementVolume.player = true;
+                        achievementVolume.probe = false;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Probe:
+                        achievementVolume.player = false;
+                        achievementVolume.probe = true;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Both:
+                    default:
+                        achievementVolume.player = true;
+                        achievementVolume.probe = true;
+                        break;
+                }
             }
         }
 
