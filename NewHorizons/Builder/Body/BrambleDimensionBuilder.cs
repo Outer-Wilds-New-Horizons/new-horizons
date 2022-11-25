@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using static NewHorizons.Main;
 
 namespace NewHorizons.Builder.Body
 {
@@ -54,6 +55,7 @@ namespace NewHorizons.Builder.Body
         private static GameObject _exitWarps;
         private static GameObject _repelVolume;
         private static Material _material;
+        private static GameObject _wallCollision;
 
         private static bool _isInit;
 
@@ -70,6 +72,7 @@ namespace NewHorizons.Builder.Body
             if (_exitWarps == null) _exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive().Rename("Prefab_Bramble_OuterWarp").DontDestroyOnLoad();
             if (_repelVolume == null) _repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive().Rename("Prefab_Bramble_RepelVolume").DontDestroyOnLoad();
             if (_material == null) _material = new Material(GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
+            if (_wallCollision == null) _wallCollision = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("BrambleCollision");
         }
 
         public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
@@ -115,18 +118,22 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
-            // TODO: Remove default vines (once we create an asset bundle version of the outer sphere that has collisions
-            /*
-            var geoBatchedGroup = geometry.FindChild("BatchedGroup");
-            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_0");
-            collider.transform.parent = geometry.transform;
-            GameObject.Destroy(geoBatchedGroup);
+            // Replace batched collision with our own if removing vines
+            if (!config.hasVines)
+            {
+                GameObject.Destroy(geometry.FindChild("BatchedGroup"));
+                var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
+                var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
+                dimensionWalls.transform.parent = geometry.transform;
+                GameObject.Destroy(geoOtherComponentsGroup);
 
-            var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
-            var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
-            dimensionWalls.transform.parent = geometry.transform;
-            GameObject.Destroy(geoOtherComponentsGroup);
-            */
+                var newCollider = _wallCollision.InstantiateInactive();
+                newCollider.transform.parent = dimensionWalls.transform;
+                newCollider.transform.localPosition = Vector3.zero;
+                newCollider.transform.localRotation = Quaternion.identity;
+                newCollider.transform.localScale = Vector3.one;
+                newCollider.SetActive(true);
+            }
 
             // fix some cull groups
             volumes.GetComponent<SectorCollisionGroup>()._sector = sector;

@@ -50,6 +50,12 @@ namespace NewHorizons.External.Modules
             [DefaultValue(750f)] public float radius = 750f;
 
             /// <summary>
+            /// Whether this dimensions has vines.
+            /// Set to false if you want to create your own vines.
+            /// </summary>
+            [DefaultValue(true)] public bool hasVines = true;
+
+            /// <summary>
             /// An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.
             /// </summary>
             public int[] allowedEntrances;
