@@ -9,6 +9,7 @@ namespace NewHorizons.Builder.Volumes
         {
             var volume = PriorityVolumeBuilder.Make<VisorRainEffectVolume>(planetGO, sector, info);
 
+            volume._rainDirection = VisorRainEffectVolume.RainDirection.Radial;
             volume._dropletRate = info.dropletRate;
             volume._streakRate = info.streakRate;
 
