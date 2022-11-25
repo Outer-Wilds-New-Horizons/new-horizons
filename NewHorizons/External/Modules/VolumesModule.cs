@@ -180,7 +180,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class AudioVolumeInfo : VolumeInfo
+        public class AudioVolumeInfo : PriorityVolumeInfo
         {
             /// <summary>
             /// The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list.
@@ -203,6 +203,27 @@ namespace NewHorizons.External.Modules
             [Range(0f, 1f)]
             [DefaultValue(1f)]
             public float volume = 1f;
+
+            /// <summary>
+            /// How long it will take to fade this sound in and out when entering/exiting this volume.
+            /// </summary>
+            [DefaultValue(2f)]
+            public float fadeSeconds = 2f;
+
+            /// <summary>
+            /// Play the sound instantly without any fading.
+            /// </summary>
+            public bool noFadeFromBeginning;
+
+            /// <summary>
+            /// Randomize what time the audio starts at.
+            /// </summary>
+            public bool randomizePlayhead;
+
+            /// <summary>
+            /// Pause the music when exiting the volume.
+            /// </summary>
+            public bool pauseOnFadeOut;
         }
 
         [JsonObject]

@@ -52,6 +52,12 @@ namespace NewHorizons.Builder.Volumes
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();
+            audioVolume._layer = info.layer;
+            audioVolume.SetPriority(info.priority);
+            audioVolume._fadeSeconds = info.fadeSeconds;
+            audioVolume._noFadeFromBeginning = info.noFadeFromBeginning;
+            audioVolume._randomizePlayhead = info.randomizePlayhead;
+            audioVolume._pauseOnFadeOut = info.pauseOnFadeOut;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;
