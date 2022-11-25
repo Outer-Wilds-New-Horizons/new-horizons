@@ -989,6 +989,13 @@
             "$ref": "#/definitions/SignalInfo"
           }
         },
+        "gravityCannons": {
+          "type": "array",
+          "description": "Add gravity cannons to this planet",
+          "items": {
+            "$ref": "#/definitions/GravityCannonInfo"
+          }
+        },
         "shuttles": {
           "type": "array",
           "description": "Add shuttles to this planet",
@@ -1885,6 +1892,90 @@
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        }
+      }
+    },
+    "GravityCannonInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shuttleID": {
+          "type": "string",
+          "description": "The id of the shuttle to link this cannon to"
+        },
+        "retrieveReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when retrieving the linked shuttle"
+        },
+        "launchReveal": {
+          "type": "string",
+          "description": "Ship log fact revealed when launching the linked shuttle"
+        },
+        "position": {
+          "description": "The location of this gravity cannon.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The rotation of this gravity cannon.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "computer": {
+          "$ref": "#/definitions/ComputerInfo"
+        }
+      }
+    },
+    "ComputerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "location": {
+          "description": "The location of this computer. ",
+          "default": "unspecified",
+          "$ref": "#/definitions/NomaiTextLocation"
+        },
+        "xmlFile": {
+          "type": "string",
+          "description": "The relative path to the xml file for this computer."
+        },
+        "normal": {
+          "description": "The normal vector for this computer. Used for positioning.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the root of this computer",
+          "$ref": "#/definitions/MVector3"
+        },
+        "rotation": {
+          "description": "The euler angle rotation of this computer. Not required if setting the normal. Computers will orient\nthemselves to the surface of the planet automatically.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this computer. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this computer"
+        },
+        "isPreCrash": {
+          "type": "boolean",
+          "description": "Whether to use the escape pod computers or not."
         }
       }
     },
