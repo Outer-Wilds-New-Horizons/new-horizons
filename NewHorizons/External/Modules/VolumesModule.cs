@@ -51,6 +51,11 @@ namespace NewHorizons.External.Modules
         public NotificationVolumeInfo[] notificationVolumes;
 
         /// <summary>
+        /// Add oxygen volumes to this planet.
+        /// </summary>
+        public OxygenVolumeInfo[] oxygenVolumes;
+
+        /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
@@ -318,6 +323,20 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"dreamExplosion")] DreamExplosion,
                 [EnumMember(Value = @"crushedByElevator")] CrushedByElevator
             }
+        }
+
+        [JsonObject]
+        public class OxygenVolumeInfo : VolumeInfo
+        {
+            /// <summary>
+            /// Does this volume contain trees? This will change the notification from "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
+            /// </summary>
+            public bool treeVolume;
+
+            /// <summary>
+            /// Whether to play the oxygen tank refill sound or just fill quietly.
+            /// </summary>
+            [DefaultValue(true)] public bool playRefillAudio = true;
         }
     }
 

@@ -92,6 +92,13 @@ namespace NewHorizons.Builder.Volumes
                     DestructionVolumeBuilder.Make(go, sector, destructionVolume);
                 }
             }
+            if (config.Volumes.oxygenVolumes != null)
+            {
+                foreach (var oxygenVolume in config.Volumes.oxygenVolumes)
+                {
+                    OxygenVolumeBuilder.Make(go, sector, oxygenVolume);
+                }
+            }
         }
     }
 }
