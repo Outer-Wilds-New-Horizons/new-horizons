@@ -2488,6 +2488,13 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "destructionVolumes": {
+          "type": "array",
+          "description": "Add destruction volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/DestructionVolumeInfo"
+          }
+        },
         "hazardVolumes": {
           "type": "array",
           "description": "Add hazard volumes to this planet.",
@@ -2629,6 +2636,81 @@
         "muffleWhileRafting",
         "muffleIndoors",
         "slideReelMusic"
+      ]
+    },
+    "DestructionVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shrinkBodies": {
+          "type": "boolean",
+          "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
+          "default": true
+        },
+        "onlyAffectsPlayerAndShip": {
+          "type": "boolean",
+          "description": "Whether this volume only affects the player and ship."
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume.",
+          "default": "default",
+          "$ref": "#/definitions/DeathType"
+        }
+      }
+    },
+    "DeathType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Impact",
+        "Asphyxiation",
+        "Energy",
+        "Supernova",
+        "Digestion",
+        "BigBang",
+        "Crushed",
+        "Meditation",
+        "TimeLoop",
+        "Lava",
+        "BlackHole",
+        "Dream",
+        "DreamExplosion",
+        "CrushedByElevator"
+      ],
+      "enum": [
+        "default",
+        "impact",
+        "asphyxiation",
+        "energy",
+        "supernova",
+        "digestion",
+        "bigBang",
+        "crushed",
+        "meditation",
+        "timeLoop",
+        "lava",
+        "blackHole",
+        "dream",
+        "dreamExplosion",
+        "crushedByElevator"
       ]
     },
     "HazardVolumeInfo": {
