@@ -2568,6 +2568,10 @@
           "items": {
             "$ref": "#/definitions/PriorityVolumeInfo"
           }
+        },
+        "visorEffects": {
+          "description": "Add visor effect volumes to this planet.",
+          "$ref": "#/definitions/VisorEffectModule"
         }
       }
     },
@@ -3207,6 +3211,124 @@
           "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
           "format": "int32",
           "default": 1
+        }
+      }
+    },
+    "VisorEffectModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frostEffectVolumes": {
+          "type": "array",
+          "description": "Add visor frost effect volumes to this planet. This is the ghost matter effect.",
+          "items": {
+            "$ref": "#/definitions/FrostEffectVolumeInfo"
+          }
+        },
+        "rainEffectVolumes": {
+          "type": "array",
+          "description": "Add visor rain effect volumes to this planet. You can see this on Giant's Deep.",
+          "items": {
+            "$ref": "#/definitions/RainEffectVolumeInfo"
+          }
+        }
+      }
+    },
+    "FrostEffectVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "frostRate": {
+          "type": "number",
+          "description": "The rate at which the frost effect will get stronger",
+          "format": "float",
+          "default": 0.1
+        },
+        "maxFrost": {
+          "type": "number",
+          "description": "The maximum strength of frost this volume can give",
+          "format": "float",
+          "default": 0.5,
+          "maximum": 1.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "RainEffectVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "dropletRate": {
+          "type": "number",
+          "description": "The rate at which the rain droplet effect will happen",
+          "format": "float",
+          "default": 0.1
+        },
+        "streakRate": {
+          "type": "number",
+          "description": "The rate at which the rain streak effect will happen",
+          "format": "float",
+          "default": 1.0
         }
       }
     }
