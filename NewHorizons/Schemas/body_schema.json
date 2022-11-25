@@ -2605,6 +2605,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -2736,6 +2740,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -2815,6 +2823,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -2883,6 +2895,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2967,6 +2983,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -2990,6 +3010,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -3058,6 +3082,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -3110,6 +3138,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -3196,6 +3228,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -3264,6 +3300,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this volume."
@@ -3313,6 +3353,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
