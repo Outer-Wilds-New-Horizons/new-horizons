@@ -2575,6 +2575,18 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
         "position": {
           "description": "The location of this volume. Optional (will default to 0,0,0).",
           "$ref": "#/definitions/MVector3"
@@ -2614,6 +2626,24 @@
           "default": 1.0,
           "maximum": 1.0,
           "minimum": 0.0
+        },
+        "fadeSeconds": {
+          "type": "number",
+          "description": "How long it will take to fade this sound in and out when entering/exiting this volume.",
+          "format": "float",
+          "default": 2.0
+        },
+        "noFadeFromBeginning": {
+          "type": "boolean",
+          "description": "Play the sound instantly without any fading."
+        },
+        "randomizePlayhead": {
+          "type": "boolean",
+          "description": "Randomize what time the audio starts at."
+        },
+        "pauseOnFadeOut": {
+          "type": "boolean",
+          "description": "Pause the music when exiting the volume."
         }
       }
     },
