@@ -106,6 +106,23 @@ namespace NewHorizons.Builder.Volumes
                     FluidVolumeBuilder.Make(go, sector, fluidVolume);
                 }
             }
+            if (config.Volumes.probe != null)
+            {
+                if (config.Volumes.probe.destructionVolumes != null)
+                {
+                    foreach (var destructionVolume in config.Volumes.probe.destructionVolumes)
+                    {
+                        VolumeBuilder.Make<ProbeDestructionVolume>(go, sector, destructionVolume);
+                    }
+                }
+                if (config.Volumes.probe.safetyVolumes != null)
+                {
+                    foreach (var safetyVolume in config.Volumes.probe.safetyVolumes)
+                    {
+                        VolumeBuilder.Make<ProbeSafetyVolume>(go, sector, safetyVolume);
+                    }
+                }
+            }
         }
     }
 }
