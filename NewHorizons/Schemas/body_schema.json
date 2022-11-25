@@ -2562,6 +2562,10 @@
             "$ref": "#/definitions/VolumeInfo"
           }
         },
+        "rulesets": {
+          "description": "Add ruleset volumes to this planet.",
+          "$ref": "#/definitions/RulesetModule"
+        },
         "visorEffects": {
           "description": "Add visor effect volumes to this planet.",
           "$ref": "#/definitions/VisorEffectModule"
@@ -3209,6 +3213,174 @@
         "player",
         "probe"
       ]
+    },
+    "RulesetModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "antiTravelMusicRulesets": {
+          "type": "array",
+          "description": "Add anti travel music rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "playerImpactRulesets": {
+          "type": "array",
+          "description": "Add player impact rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/PlayerImpactRulesetInfo"
+          }
+        },
+        "probeRulesets": {
+          "type": "array",
+          "description": "Add probe rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/ProbeRulesetInfo"
+          }
+        },
+        "thrustRulesets": {
+          "type": "array",
+          "description": "Add thrust rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/ThrustRulesetInfo"
+          }
+        }
+      }
+    },
+    "PlayerImpactRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "minImpactSpeed": {
+          "type": "number",
+          "description": "Minimum player impact speed. Player will take the minimum amount of damage if they impact something at this speed.",
+          "format": "float",
+          "default": 20.0
+        },
+        "maxImpactSpeed": {
+          "type": "number",
+          "description": "Maximum player impact speed. Players will die if they impact something at this speed.",
+          "format": "float",
+          "default": 40.0
+        }
+      }
+    },
+    "ProbeRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "overrideProbeSpeed": {
+          "type": "boolean",
+          "description": "Should this ruleset override the probe's speed?"
+        },
+        "probeSpeed": {
+          "type": "number",
+          "description": "The speed of the probe while in this ruleset volume.",
+          "format": "float"
+        },
+        "overrideLanternRange": {
+          "type": "boolean",
+          "description": "Should this ruleset override the range of probe's light?"
+        },
+        "lanternRange": {
+          "type": "number",
+          "description": "The range of probe's light while in this ruleset volume.",
+          "format": "float"
+        },
+        "ignoreAnchor": {
+          "type": "boolean",
+          "description": "Stop the probe from attaching to anything while in this ruleset volume."
+        }
+      }
+    },
+    "ThrustRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "thrustLimit": {
+          "type": "number",
+          "description": "Limit how fast you can fly with your jetpack while in this ruleset volume.",
+          "format": "float",
+          "default": "Infinity"
+        },
+        "nerfJetpackBooster": {
+          "type": "boolean",
+          "description": "Nerf the jetpack booster."
+        },
+        "nerfDuration": {
+          "type": "number",
+          "description": "How long the jetpack booster will be nerfed.",
+          "format": "float",
+          "default": 0.5
+        }
+      }
     },
     "VisorEffectModule": {
       "type": "object",
