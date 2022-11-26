@@ -3453,13 +3453,13 @@
           "type": "number",
           "description": "The rate at which the frost effect will get stronger",
           "format": "float",
-          "default": 0.1
+          "default": 0.5
         },
         "maxFrost": {
           "type": "number",
           "description": "The maximum strength of frost this volume can give",
           "format": "float",
-          "default": 0.5,
+          "default": 0.91,
           "maximum": 1.0,
           "minimum": 0.0
         }
