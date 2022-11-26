@@ -18,7 +18,7 @@ namespace NewHorizons.OtherMods.AchievementsPlus.NH
 
         public static void OnPlayerDeath(DeathType deathType)
         {
-            if (deathType == DeathType.Energy && Locator.GetPlayerDetector().GetComponent<FluidDetector>()._activeVolumes.Any(fluidVolume => fluidVolume is TornadoFluidVolume or TornadoBaseFluidVolume or HurricaneFluidVolume))
+            if (deathType == DeathType.Lava && Locator.GetPlayerDetector().GetComponent<FluidDetector>()._activeVolumes.Any(fluidVolume => fluidVolume is TornadoFluidVolume or TornadoBaseFluidVolume or HurricaneFluidVolume))
             {
                 AchievementHandler.Earn(UNIQUE_ID);
             }
