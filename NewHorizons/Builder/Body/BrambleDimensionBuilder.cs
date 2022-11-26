@@ -51,7 +51,10 @@ namespace NewHorizons.Builder.Body
         private static GameObject _atmosphere;
         private static GameObject _volumes;
         private static GameObject _effects;
-        private static GameObject _geometry;
+        private static GameObject _hubGeometry;
+        private static GameObject _clusterGeometry;
+        private static GameObject _smallNestGeometry;
+        private static GameObject _exitOnlyGeometry;
         private static GameObject _exitWarps;
         private static GameObject _repelVolume;
         private static Material _material;
@@ -68,7 +71,10 @@ namespace NewHorizons.Builder.Body
             if (_atmosphere == null) _atmosphere = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Atmosphere").DontDestroyOnLoad();
             if (_volumes == null) _volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Volumes").DontDestroyOnLoad();
             if (_effects == null) _effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Effects").DontDestroyOnLoad();
-            if (_geometry == null) _geometry = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Geometry").DontDestroyOnLoad();
+            if (_hubGeometry == null) _hubGeometry = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_HubGeometry").DontDestroyOnLoad();
+            if (_clusterGeometry == null) _clusterGeometry = SearchUtilities.Find("DB_ClusterDimension_Body/Sector_ClusterDimension/Geometry_ClusterDimension").InstantiateInactive().Rename("Prefab_Bramble_ClusterGeometry").DontDestroyOnLoad();
+            if (_smallNestGeometry == null) _smallNestGeometry = SearchUtilities.Find("DB_SmallNest_Body/Sector_SmallNestDimension/Geometry_SmallNestDimension").InstantiateInactive().Rename("Prefab_Bramble_SmallNestGeometry").DontDestroyOnLoad();
+            if (_exitOnlyGeometry == null) _exitOnlyGeometry = SearchUtilities.Find("DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Geometry_ExitOnlyDimension").InstantiateInactive().Rename("Prefab_Bramble_ExitOnlyGeometry").DontDestroyOnLoad();
             if (_exitWarps == null) _exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive().Rename("Prefab_Bramble_OuterWarp").DontDestroyOnLoad();
             if (_repelVolume == null) _repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive().Rename("Prefab_Bramble_RepelVolume").DontDestroyOnLoad();
             if (_material == null) _material = new Material(GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
@@ -88,8 +94,17 @@ namespace NewHorizons.Builder.Body
             var volumes = _volumes.InstantiateInactive();
             var effects = _effects.InstantiateInactive();
 
+            GameObject geometryPrefab;
+            switch (config.vinePrefab)
+            {
+                case VinePrefabType.Cluster: geometryPrefab = _clusterGeometry; break;
+                case VinePrefabType.SmallNest: geometryPrefab = _smallNestGeometry; break;
+                case VinePrefabType.ExitOnly: geometryPrefab = _exitOnlyGeometry; break;
+                default: geometryPrefab = _hubGeometry; break;
+            }
+
             var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, _geometry, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
@@ -118,9 +133,9 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
-            // Replace batched collision with our own if removing vines
-            if (!config.hasVines)
+            if (config.vinePrefab == VinePrefabType.None)
             {
+                // Replace batched collision with our own if removing vines
                 GameObject.Destroy(geometry.FindChild("BatchedGroup"));
                 var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
                 var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
@@ -133,6 +148,11 @@ namespace NewHorizons.Builder.Body
                 newCollider.transform.localRotation = Quaternion.identity;
                 newCollider.transform.localScale = Vector3.one;
                 newCollider.SetActive(true);
+            }
+            else if (config.vinePrefab != VinePrefabType.Hub)
+            {
+                // Other stuff depends on Hub having this rotation
+                geometry.transform.rotation = Quaternion.Euler(new Vector3(43.5599f, 358.1138f, 24.2412f));
             }
 
             // fix some cull groups
@@ -191,6 +211,7 @@ namespace NewHorizons.Builder.Body
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
             geometry.transform.localScale = Vector3.one * scale;
+            if (config.vinePrefab is not VinePrefabType.None and not VinePrefabType.Hub) geometry.transform.localScale *= 1.5f; // other dimensions are 500 instead of 750
             sector.gameObject.GetComponent<SphereShape>().radius *= scale;
             outerFogWarpVolume._warpRadius *= scale;
             outerFogWarpVolume._exitRadius *= scale;
