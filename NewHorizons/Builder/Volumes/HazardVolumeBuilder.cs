@@ -59,6 +59,9 @@ namespace NewHorizons.Builder.Volumes
             else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.DARKMATTER)
             {
                 hazardVolume = go.AddComponent<DarkMatterVolume>();
+                var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
+                visorFrostEffectVolume._frostRate = 0.5f;
+                visorFrostEffectVolume._maxFrost = 0.91f;
             }
             else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.ELECTRICITY)
             {
