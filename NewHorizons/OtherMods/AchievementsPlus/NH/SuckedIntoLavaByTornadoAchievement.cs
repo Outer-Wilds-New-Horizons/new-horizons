@@ -13,11 +13,15 @@ namespace NewHorizons.OtherMods.AchievementsPlus.NH
         public static void Init()
         {
             AchievementHandler.Register(UNIQUE_ID, false, Main.Instance);
+            GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnPlayerDeath);
         }
 
-        public static void Earn()
+        public static void OnPlayerDeath(DeathType deathType)
         {
-            AchievementHandler.Earn(UNIQUE_ID);
+            if (deathType == DeathType.Energy && Locator.GetPlayerDetector().GetComponent<FluidDetector>()._activeVolumes.Any(fluidVolume => fluidVolume is TornadoFluidVolume or TornadoBaseFluidVolume or HurricaneFluidVolume))
+            {
+                AchievementHandler.Earn(UNIQUE_ID);
+            }
         }
     }
 }

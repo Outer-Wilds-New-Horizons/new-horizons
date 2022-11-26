@@ -9,16 +9,6 @@ namespace NewHorizons.Patches
     public static class AchievementPatches
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(DeathManager), nameof(DeathManager.KillPlayer))]
-        public static void DeathManager_KillPlayer(DeathType deathType)
-        {
-            if (deathType == DeathType.Energy && Locator.GetPlayerDetector().GetComponent<FluidDetector>()._activeVolumes.Any(fluidVolume => fluidVolume is TornadoFluidVolume or TornadoBaseFluidVolume or HurricaneFluidVolume))
-            {
-                SuckedIntoLavaByTornadoAchievement.Earn();
-            }
-        }
-
-        [HarmonyPrefix]
         [HarmonyPatch(typeof(ProbeDestructionDetector), nameof(ProbeDestructionDetector.FixedUpdate))]
         public static bool ProbeDestructionDetector_FixedUpdate(ProbeDestructionDetector __instance)
         {
