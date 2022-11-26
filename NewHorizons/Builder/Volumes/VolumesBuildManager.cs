@@ -171,6 +171,13 @@ namespace NewHorizons.Builder.Volumes
                     }
                 }
             }
+            if (config.Volumes.referenceFrameBlockerVolumes != null)
+            {
+                foreach (var referenceFrameBlockerVolume in config.Volumes.referenceFrameBlockerVolumes)
+                {
+                    VolumeBuilder.Make<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
+                }
+            }
         }
     }
 }

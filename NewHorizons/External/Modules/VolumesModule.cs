@@ -66,6 +66,11 @@ namespace NewHorizons.External.Modules
         public ProbeModule probe;
 
         /// <summary>
+        /// Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.
+        /// </summary>
+        public VolumeInfo[] referenceFrameBlockerVolumes;
+
+        /// <summary>
         /// Add triggers that reveal parts of the ship log on this planet.
         /// </summary>
         public RevealVolumeInfo[] revealVolumes;
