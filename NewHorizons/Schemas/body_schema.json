@@ -2548,6 +2548,13 @@
           "description": "Add probe-specific volumes to this planet.",
           "$ref": "#/definitions/ProbeModule"
         },
+        "referenceFrameBlockerVolumes": {
+          "type": "array",
+          "description": "Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
         "revealVolumes": {
           "type": "array",
           "description": "Add triggers that reveal parts of the ship log on this planet.",
