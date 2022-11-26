@@ -6,6 +6,7 @@ using System.Xml;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components;
 
 namespace NewHorizons.Builder.Props
 {
@@ -114,7 +115,7 @@ namespace NewHorizons.Builder.Props
                 interact.enabled = false;
             }
 
-            var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
+            var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
             var xml = File.ReadAllText(Path.Combine(mod.Manifest.ModFolderPath, info.xmlFile));
             var text = new TextAsset(xml)

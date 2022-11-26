@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components;
 using NewHorizons.OtherMods.AchievementsPlus.NH;
 using System.Linq;
 using UnityEngine;
@@ -31,6 +32,12 @@ namespace NewHorizons.Patches
 
         [HarmonyPostfix]
         [HarmonyPatch(typeof(CharacterDialogueTree), nameof(CharacterDialogueTree.StartConversation))]
-        public static void CharacterDialogueTree_StartConversation(CharacterDialogueTree __instance) => TalkToFiveCharactersAchievement.OnTalkedToCharacter(__instance._characterName);
+        public static void CharacterDialogueTree_StartConversation(CharacterDialogueTree __instance)
+        {
+            if (__instance is NHCharacterDialogueTree)
+            {
+                TalkToFiveCharactersAchievement.OnTalkedToCharacter(__instance._characterName);
+            }
+        }
     }
 }
