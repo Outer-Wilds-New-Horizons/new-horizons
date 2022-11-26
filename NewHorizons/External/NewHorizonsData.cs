@@ -180,7 +180,7 @@ namespace NewHorizons.External
         public static void OnTalkedToCharacter(string name)
         {
             if (name == CharacterDialogueTree.RECORDING_NAME || name == CharacterDialogueTree.SIGN_NAME) return;
-            _activeProfile?.PopupsRead.SafeAdd(name);
+            _activeProfile?.CharactersTalkedTo.SafeAdd(name);
             Save();
         }
 
