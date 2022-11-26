@@ -1,22 +1,15 @@
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
-using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NHNotificationVolume = NewHorizons.Components.Volumes.NotificationVolume;
 
 namespace NewHorizons.Builder.Volumes
 {
-    public static class NotificationVolumeBuilder
+    public static class VanishVolumeBuilder
     {
-        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, VolumesModule.NotificationVolumeInfo info, IModBehaviour mod)
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VanishVolumeInfo info) where TVolume : VanishVolume
         {
-            var go = new GameObject("NotificationVolume");
+            var go = new GameObject(typeof(TVolume).Name);
             go.SetActive(false);
 
             go.transform.parent = sector?.transform ?? planetGO.transform;
@@ -44,20 +37,25 @@ namespace NewHorizons.Builder.Volumes
             else go.transform.position = planetGO.transform.TransformPoint(pos);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-            var shape = go.AddComponent<SphereShape>();
-            shape.radius = info.radius;
+            var collider = go.AddComponent<SphereCollider>();
+            collider.isTrigger = true;
+            collider.radius = info.radius;
+
+            var owCollider = go.AddComponent<OWCollider>();
+            owCollider._collider = collider;
 
             var owTriggerVolume = go.AddComponent<OWTriggerVolume>();
-            owTriggerVolume._shape = shape;
+            owTriggerVolume._owCollider = owCollider;
 
-            var notificationVolume = go.AddComponent<NHNotificationVolume>();
-            notificationVolume.SetTarget(info.target);
-            if (info.entryNotification != null) notificationVolume.SetEntryNotification(info.entryNotification.displayMessage, info.entryNotification.duration);
-            if (info.exitNotification != null) notificationVolume.SetExitNotification(info.exitNotification.displayMessage, info.exitNotification.duration);
+            var volume = go.AddComponent<TVolume>();
+
+            volume._collider = collider;
+            volume._shrinkBodies = info.shrinkBodies;
+            volume._onlyAffectsPlayerAndShip = info.onlyAffectsPlayerAndShip;
 
             go.SetActive(true);
 
-            return notificationVolume;
+            return volume;
         }
     }
 }

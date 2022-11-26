@@ -60,7 +60,9 @@ namespace NewHorizons.Builder.ShipLog
                 }
             }
 
-            revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) revealTriggerVolume.transform.localPosition = pos;
+            else revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(pos);
 
             return revealTriggerVolume;
         }
@@ -99,6 +101,22 @@ namespace NewHorizons.Builder.ShipLog
             {
                 var achievementVolume = go.AddComponent<AchievementVolume>();
                 achievementVolume.achievementID = info.achievementID;
+                switch (info.revealFor)
+                {
+                    case VolumesModule.RevealVolumeInfo.EnterType.Player:
+                        achievementVolume.player = true;
+                        achievementVolume.probe = false;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Probe:
+                        achievementVolume.player = false;
+                        achievementVolume.probe = true;
+                        break;
+                    case VolumesModule.RevealVolumeInfo.EnterType.Both:
+                    default:
+                        achievementVolume.player = true;
+                        achievementVolume.probe = true;
+                        break;
+                }
             }
         }
 
