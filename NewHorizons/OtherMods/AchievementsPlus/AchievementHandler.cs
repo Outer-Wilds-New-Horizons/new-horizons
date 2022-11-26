@@ -90,6 +90,27 @@ namespace NewHorizons.OtherMods.AchievementsPlus
             API.RegisterAchievement(unique_id, secret, mod);
         }
 
+        public static bool HasAchievement(string unique_id)
+        {
+            if (!Enabled) return false;
+
+            return API.HasAchievement(unique_id);
+        }
+
+        public static void UpdateProgess(string unique_id, int current, int final, bool showPopup)
+        {
+            if (!Enabled) return;
+
+            API.UpdateProgress(unique_id, current, final, showPopup);
+        }
+
+        public static int GetProgress(string unique_id)
+        {
+            if (!Enabled) return 0;
+
+            return API.GetProgress(unique_id);
+        }
+
         public static void OnLearnSignal()
         {
             if (!Enabled) return;

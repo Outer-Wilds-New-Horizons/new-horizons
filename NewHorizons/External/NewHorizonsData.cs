@@ -190,6 +190,12 @@ namespace NewHorizons.External
             return _activeProfile.CharactersTalkedTo.Count >= 5;
         }
 
+        public static int GetCharactersTalkedTo()
+        {
+            if (_activeProfile == null) return 0;
+            return _activeProfile.CharactersTalkedTo.Count;
+        }
+
         #endregion
     }
 }

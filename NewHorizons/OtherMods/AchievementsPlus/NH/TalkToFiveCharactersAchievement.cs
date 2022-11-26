@@ -14,18 +14,30 @@ namespace NewHorizons.OtherMods.AchievementsPlus.NH
         public static void Init()
         {
             AchievementHandler.Register(UNIQUE_ID, false, Main.Instance);
+            UpdateProgress(false);
             if (NewHorizonsData.HasTalkedToFiveCharacters()) Earn();
         }
 
         public static void OnTalkedToCharacter(string name)
         {
             NewHorizonsData.OnTalkedToCharacter(name);
-            if (NewHorizonsData.HasTalkedToFiveCharacters()) Earn();
+            if (NewHorizonsData.HasTalkedToFiveCharacters())
+            {
+                UpdateProgress(false);
+                Earn();
+            }
+            else
+                UpdateProgress(true);
         }
 
         public static void Earn()
         {
             AchievementHandler.Earn(UNIQUE_ID);
+        }
+
+        public static void UpdateProgress(bool showPopup)
+        {
+            AchievementHandler.UpdateProgess(UNIQUE_ID, NewHorizonsData.GetCharactersTalkedTo(), 5, showPopup);
         }
     }
 }
