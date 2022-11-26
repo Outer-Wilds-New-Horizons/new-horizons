@@ -86,6 +86,11 @@ namespace NewHorizons.External.Modules
         public RulesetModule rulesets;
 
         /// <summary>
+        /// Add speed trap volumes to this planet. Slows down the player when they enter this volume.
+        /// </summary>
+        public SpeedTrapVolumeInfo[] speedTrapVolumes;
+
+        /// <summary>
         /// Add visor effect volumes to this planet.
         /// </summary>
         public VisorEffectModule visorEffects;
@@ -576,6 +581,22 @@ namespace NewHorizons.External.Modules
                 /// </summary>
                 [DefaultValue(0.5f)] public float nerfDuration = 0.5f;
             }
+        }
+
+        [JsonObject]
+        public class SpeedTrapVolumeInfo : VolumeInfo
+        {
+            /// <summary>
+            /// The speed the volume will slow you down to when you enter it.
+            /// </summary>
+            [DefaultValue(10f)]
+            public float speedLimit = 10f;
+
+            /// <summary>
+            /// How fast it will slow down the player to the speed limit.
+            /// </summary>
+            [DefaultValue(3f)]
+            public float acceleration = 3f;
         }
     }
 

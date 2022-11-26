@@ -178,6 +178,13 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
                 }
             }
+            if (config.Volumes.speedTrapVolumes != null)
+            {
+                foreach (var speedTrapVolume in config.Volumes.speedTrapVolumes)
+                {
+                    SpeedTrapVolumeBuilder.Make(go, sector, speedTrapVolume);
+                }
+            }
         }
     }
 }
