@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 1932961951
+CRC: 2314570133
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 79142e7d68648a06c0ed2fc15ebbac48
+    Hash: 73793e57d83c10dbd917c9f721a4e60e
   TypeTreeHash:
     serializedVersion: 2
     Hash: fae511e2df3c6c74353879b4753cf2eb
@@ -169,5 +169,6 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/BrambleCollision.prefab
 - Assets/Vessel_Body.prefab
 Dependencies: []
