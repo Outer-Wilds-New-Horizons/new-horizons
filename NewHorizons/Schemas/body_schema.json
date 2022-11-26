@@ -2523,6 +2523,13 @@
             "$ref": "#/definitions/VolumeInfo"
           }
         },
+        "lightSourceVolumes": {
+          "type": "array",
+          "description": "Add light source volumes to this planet. These will activate rafts and other light detectors.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
         "mapRestrictionVolumes": {
           "type": "array",
           "description": "Add map restriction volumes to this planet.",
