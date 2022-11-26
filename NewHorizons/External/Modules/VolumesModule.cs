@@ -46,6 +46,11 @@ namespace NewHorizons.External.Modules
         public VolumeInfo[] insulatingVolumes;
 
         /// <summary>
+        /// Add light source volumes to this planet. These will activate rafts and other light detectors.
+        /// </summary>
+        public VolumeInfo[] lightSourceVolumes;
+
+        /// <summary>
         /// Add map restriction volumes to this planet.
         /// </summary>
         public VolumeInfo[] mapRestrictionVolumes;
