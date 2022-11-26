@@ -1,3 +1,4 @@
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,13 @@ namespace NewHorizons.OtherMods.AchievementsPlus.NH
         public static void Init()
         {
             AchievementHandler.Register(UNIQUE_ID, false, Main.Instance);
+            if (NewHorizonsData.HasTalkedToFiveCharacters()) Earn();
+        }
+
+        public static void OnTalkedToCharacter(string name)
+        {
+            NewHorizonsData.OnTalkedToCharacter(name);
+            if (NewHorizonsData.HasTalkedToFiveCharacters()) Earn();
         }
 
         public static void Earn()

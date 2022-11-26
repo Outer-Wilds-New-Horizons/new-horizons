@@ -38,5 +38,9 @@ namespace NewHorizons.Patches
             __instance.enabled = false;
             return false;
         }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(typeof(CharacterDialogueTree), nameof(CharacterDialogueTree.StartConversation))]
+        public static void CharacterDialogueTree_StartConversation(CharacterDialogueTree __instance) => TalkToFiveCharactersAchievement.OnTalkedToCharacter(__instance._characterName);
     }
 }
