@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -18,24 +19,40 @@ namespace NewHorizons.Builder.Atmosphere
             Skys.Clear();
         }
 
+        private static GameObject _atmospherePrefab;
+        private static GameObject _proxyAtmospherePrefab;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_atmospherePrefab == null) _atmospherePrefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere").InstantiateInactive().Rename("Atmosphere").DontDestroyOnLoad();
+            if (_proxyAtmospherePrefab == null) _proxyAtmospherePrefab = GameObject.FindObjectOfType<DistantProxyManager>()._proxies.FirstOrDefault(apt => apt.astroName == AstroObject.Name.TimberHearth).proxyPrefab.FindChild("Atmosphere_TH/Atmosphere_LOD3").InstantiateInactive().Rename("ProxyAtmosphere").DontDestroyOnLoad();
+        }
+
         public static GameObject Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize, bool proxy = false)
         {
+            InitPrefabs();
+
             GameObject atmoGO = new GameObject("Atmosphere");
             atmoGO.SetActive(false);
             atmoGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             if (atmosphereModule.useAtmosphereShader)
             {
-                GameObject prefab;
-                if (proxy) prefab = (SearchUtilities.Find("TimberHearth_DistantProxy", false) ?? SearchUtilities.Find("TimberHearth_DistantProxy(Clone)", false))?
-                        .FindChild("Atmosphere_TH/Atmosphere_LOD3");
-                else prefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere");
+                GameObject prefab = proxy ? _proxyAtmospherePrefab : _atmospherePrefab;
 
                 if (prefab != null)
                 {
-                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform, true);
+                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform);
                     atmo.name = "Atmosphere";
-                    atmo.transform.position = planetGO.transform.TransformPoint(Vector3.zero);
+                    atmo.transform.localPosition = Vector3.zero;
+                    atmo.transform.localEulerAngles = Vector3.zero;
+                    atmo.SetActive(true);
 
                     Material material;
 
@@ -69,6 +86,8 @@ namespace NewHorizons.Builder.Atmosphere
                     {
                         // Do it based on distance
                         Skys.Add((planetGO, material));
+
+                        if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse") material.SetFloat(SunIntensity, 0.2f);
                     }
                     else
                     {

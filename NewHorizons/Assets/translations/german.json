@@ -9,6 +9,7 @@
     "INTERSTELLAR_MODE": "Interstellar Modus",
     "FREQ_STATUE": "Nomai-Statue",
     "FREQ_WARP_CORE": "Anti-Gravitations Flux",
-    "FREQ_UNKNOWN": "???"
+    "FREQ_UNKNOWN": "???",
+    "Vessel": "Gefährts"
   }
 }

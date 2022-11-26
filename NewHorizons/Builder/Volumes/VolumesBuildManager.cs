@@ -78,6 +78,120 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<InsulatingVolume>(go, sector, insulatingVolume);
                 }
             }
+            if (config.Volumes.zeroGravityVolumes != null)
+            {
+                foreach (var zeroGravityVolume in config.Volumes.zeroGravityVolumes)
+                {
+                    ZeroGVolumeBuilder.Make(go, sector, zeroGravityVolume);
+                }
+            }
+            if (config.Volumes.destructionVolumes != null)
+            {
+                foreach (var destructionVolume in config.Volumes.destructionVolumes)
+                {
+                    DestructionVolumeBuilder.Make(go, sector, destructionVolume);
+                }
+            }
+            if (config.Volumes.oxygenVolumes != null)
+            {
+                foreach (var oxygenVolume in config.Volumes.oxygenVolumes)
+                {
+                    OxygenVolumeBuilder.Make(go, sector, oxygenVolume);
+                }
+            }
+            if (config.Volumes.fluidVolumes != null)
+            {
+                foreach (var fluidVolume in config.Volumes.fluidVolumes)
+                {
+                    FluidVolumeBuilder.Make(go, sector, fluidVolume);
+                }
+            }
+            if (config.Volumes.probe != null)
+            {
+                if (config.Volumes.probe.destructionVolumes != null)
+                {
+                    foreach (var destructionVolume in config.Volumes.probe.destructionVolumes)
+                    {
+                        VolumeBuilder.Make<ProbeDestructionVolume>(go, sector, destructionVolume);
+                    }
+                }
+                if (config.Volumes.probe.safetyVolumes != null)
+                {
+                    foreach (var safetyVolume in config.Volumes.probe.safetyVolumes)
+                    {
+                        VolumeBuilder.Make<ProbeSafetyVolume>(go, sector, safetyVolume);
+                    }
+                }
+            }
+            if (config.Volumes.visorEffects != null)
+            {
+                if (config.Volumes.visorEffects.frostEffectVolumes != null)
+                {
+                    foreach (var frostEffectVolume in config.Volumes.visorEffects.frostEffectVolumes)
+                    {
+                        VisorFrostEffectVolumeBuilder.Make(go, sector, frostEffectVolume);
+                    }
+                }
+                if (config.Volumes.visorEffects.rainEffectVolumes != null)
+                {
+                    foreach (var rainEffectVolume in config.Volumes.visorEffects.rainEffectVolumes)
+                    {
+                        VisorRainEffectVolumeBuilder.Make(go, sector, rainEffectVolume);
+                    }
+                }
+            }
+            if (config.Volumes.rulesets != null)
+            {
+                if (config.Volumes.rulesets.antiTravelMusicRulesets != null)
+                {
+                    foreach (var antiTravelMusicRuleset in config.Volumes.rulesets.antiTravelMusicRulesets)
+                    {
+                        VolumeBuilder.Make<AntiTravelMusicRuleset>(go, sector, antiTravelMusicRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.playerImpactRulesets != null)
+                {
+                    foreach (var playerImpactRuleset in config.Volumes.rulesets.playerImpactRulesets)
+                    {
+                        PlayerImpactRulesetBuilder.Make(go, sector, playerImpactRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.probeRulesets != null)
+                {
+                    foreach (var probeRuleset in config.Volumes.rulesets.probeRulesets)
+                    {
+                        ProbeRulesetBuilder.Make(go, sector, probeRuleset);
+                    }
+                }
+                if (config.Volumes.rulesets.thrustRulesets != null)
+                {
+                    foreach (var thrustRuleset in config.Volumes.rulesets.thrustRulesets)
+                    {
+                        ThrustRulesetBuilder.Make(go, sector, thrustRuleset);
+                    }
+                }
+            }
+            if (config.Volumes.referenceFrameBlockerVolumes != null)
+            {
+                foreach (var referenceFrameBlockerVolume in config.Volumes.referenceFrameBlockerVolumes)
+                {
+                    VolumeBuilder.Make<ReferenceFrameBlockerVolume>(go, sector, referenceFrameBlockerVolume);
+                }
+            }
+            if (config.Volumes.speedTrapVolumes != null)
+            {
+                foreach (var speedTrapVolume in config.Volumes.speedTrapVolumes)
+                {
+                    SpeedTrapVolumeBuilder.Make(go, sector, speedTrapVolume);
+                }
+            }
+            if (config.Volumes.lightSourceVolumes != null)
+            {
+                foreach (var lightSourceVolume in config.Volumes.lightSourceVolumes)
+                {
+                    VolumeBuilder.Make<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
+                }
+            }
         }
     }
 }

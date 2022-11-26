@@ -12,46 +12,69 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _prefab;
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        internal static void InitPrefab()
         {
             if (_prefab == null)
             {
-                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive();
+                _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
                     Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
-                _prefab.name = "Raft_Body_Prefab";
+                else
+                {
+                    _prefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+                    var raftController = _prefab.GetComponent<RaftController>();
+                    if (raftController._sector != null)
+                    {
+                        // Since awake already ran we have to unhook these events
+                        raftController._sector.OnOccupantEnterSector -= raftController.OnOccupantEnterSector;
+                        raftController._sector.OnOccupantExitSector -= raftController.OnOccupantExitSector;
+                        raftController._sector = null;
+                    }
+                    raftController._riverFluid = null;
+                    foreach (var lightSensor in _prefab.GetComponentsInChildren<SingleLightSensor>())
+                    {
+                        if (lightSensor._sector != null)
+                        {
+                            lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
+                            lightSensor._sector = null;
+                        }
+                    }
+                }
             }
+        }
+
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        {
+            InitPrefab();
+
+            if (_prefab == null || sector == null) return null;
 
             GameObject raftObject = _prefab.InstantiateInactive();
             raftObject.name = "Raft_Body";
             raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-            raftObject.transform.position = planetGO.transform.TransformPoint(info.position);
+            raftObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
             raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 
             var raftController = raftObject.GetComponent<RaftController>();
-            // Since awake already ran we have to unhook these events
-            raftController._sector.OnOccupantEnterSector -= raftController.OnOccupantEnterSector;
-            raftController._sector.OnOccupantExitSector -= raftController.OnOccupantExitSector;
-            raftController._riverFluid = null;
-
             raftController._sector = sector;
+            raftController._acceleration = info.acceleration;
             sector.OnOccupantEnterSector += raftController.OnOccupantEnterSector;
             sector.OnOccupantExitSector += raftController.OnOccupantExitSector;
 
             // Detectors
             var fluidDetector = raftObject.transform.Find("Detector_Raft").GetComponent<RaftFluidDetector>();
-            var waterVolume = planetGO.GetComponentInChildren<NHFluidVolume>();
+            var waterVolume = planetGO.GetComponentInChildren<RadialFluidVolume>();
             fluidDetector._alignmentFluid = waterVolume;
+            fluidDetector._buoyancy.checkAgainstWaves = true;
 
             // Light sensors
             foreach (var lightSensor in raftObject.GetComponentsInChildren<SingleLightSensor>())
             {
-                lightSensor._sector.OnSectorOccupantsUpdated -= lightSensor.OnSectorOccupantsUpdated;
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
@@ -67,6 +90,8 @@ namespace NewHorizons.Builder.Props
             achievementObject.AddComponent<OtherMods.AchievementsPlus.NH.RaftingAchievement>();
 
             raftObject.SetActive(true);
+
+            return raftObject;
         }
     }
 }

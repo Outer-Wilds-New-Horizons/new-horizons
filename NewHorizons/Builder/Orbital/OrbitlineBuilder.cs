@@ -14,6 +14,8 @@ namespace NewHorizons.Builder.Orbital
             if (_dottedLineMaterial == null) _dottedLineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_Dotted_mat");
             if (_lineMaterial == null) _lineMaterial = SearchUtilities.FindResourceOfTypeAndName<Material>("Effects_SPA_OrbitLine_mat");
 
+            if (_dottedLineMaterial == null || _lineMaterial == null) return null;
+
             GameObject orbitGO = new GameObject("Orbit");
             orbitGO.transform.parent = planetGO.transform;
             orbitGO.transform.localPosition = Vector3.zero;

@@ -39,7 +39,9 @@ namespace NewHorizons.Builder.Volumes
                 }
             }
 
-            go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) go.transform.localPosition = pos;
+            else go.transform.position = planetGO.transform.TransformPoint(pos);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var shape = go.AddComponent<SphereShape>();

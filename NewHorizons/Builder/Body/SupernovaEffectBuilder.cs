@@ -10,8 +10,25 @@ namespace NewHorizons.Builder.Body
 {
     public static class SupernovaEffectBuilder
     {
+        private static Mesh _shockLayerMesh;
+        private static Material _shockLayerMaterial;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_shockLayerMesh == null) _shockLayerMesh = SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD").GetComponent<MeshFilter>().sharedMesh.DontDestroyOnLoad();
+            if (_shockLayerMaterial == null) _shockLayerMaterial = new Material(SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD").GetComponent<MeshRenderer>().sharedMaterial).Rename("ShockLayer_mat").DontDestroyOnLoad();
+        }
+
         public static NHSupernovaPlanetEffectController Make(GameObject planetGO, Sector sector, PlanetConfig config, IModBehaviour mod, GameObject procGen, Light ambientLight, PlanetaryFogController fog, LODGroup atmosphere, Renderer atmosphereRenderer, Renderer fogImpostor)
         {
+            InitPrefabs();
+
             var vanillaController = planetGO.GetComponentInChildren<SupernovaPlanetEffectController>();
             if (vanillaController != null)
             {
@@ -48,16 +65,12 @@ namespace NewHorizons.Builder.Body
                 supernovaEffectController._fog = fog;
                 supernovaEffectController._fogImpostor = fogImpostor;
 
-                var shockLayerGD = SearchUtilities.Find("GiantsDeep_Body/Shocklayer_GD");
                 var shockLayer = new GameObject("ShockLayer");
                 shockLayer.transform.SetParent(sector?.transform ?? planetGO.transform, false);
-                shockLayer.AddComponent<MeshFilter>().sharedMesh = shockLayerGD.GetComponent<MeshFilter>().sharedMesh;
-
-                var shockLayerMaterial = new Material(shockLayerGD.GetComponent<MeshRenderer>().sharedMaterial);
-                shockLayerMaterial.name = "ShockLayer_mat";
+                shockLayer.AddComponent<MeshFilter>().sharedMesh = _shockLayerMesh;
 
                 var shockLayerRenderer = shockLayer.AddComponent<MeshRenderer>();
-                shockLayerRenderer.sharedMaterial = shockLayerMaterial;
+                shockLayerRenderer.sharedMaterial = new Material(_shockLayerMaterial);
                 supernovaEffectController._shockLayer = shockLayerRenderer;
 
                 var biggestSize = config.Base.surfaceSize;
@@ -121,7 +134,7 @@ namespace NewHorizons.Builder.Body
                     noMeshChange = true;
                     foreach (var singularity in config.Props.singularities)
                     {
-                        if (singularity.size > biggestSize) biggestSize = singularity.size;
+                        if (singularity.distortRadius > biggestSize) biggestSize = singularity.distortRadius;
                     }
                 }
 
@@ -178,7 +191,7 @@ namespace NewHorizons.Builder.Body
             supernovaEffectController.shockLayerStartRadius = vanillaController._shockLayerStartRadius;
             supernovaEffectController.shockLayerTrailFlare = vanillaController._shockLayerTrailFlare;
             supernovaEffectController.shockLayerTrailLength = vanillaController._shockLayerTrailLength;
-            supernovaEffectController.SunController = SearchUtilities.Find("Sun_Body").GetComponent<SunController>();
+            supernovaEffectController.SunController = SearchUtilities.Find("Sun_Body")?.GetComponent<SunController>();
             Object.Destroy(vanillaController);
         }
     }

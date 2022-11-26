@@ -11,7 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.External.Configs
 {
     /// <summary>
-    /// Describes a body to generate
+    /// Describes a celestial body to generate
     /// </summary>
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig
@@ -369,6 +369,27 @@ namespace NewHorizons.External.Configs
                 Props.singularities = Props.singularities.Append(Singularity).ToArray();
             }
 
+            // Old singularity size
+            if (Props?.singularities != null)
+            {
+                foreach (var singularity in Props.singularities)
+                {
+                    if (singularity.size != 0f)
+                    {
+                        singularity.horizonRadius = singularity.size * 0.4f;
+                        switch (singularity.type)
+                        {
+                            case SingularityModule.SingularityType.BlackHole:
+                                singularity.distortRadius = singularity.size * 0.95f;
+                                break;
+                            case SingularityModule.SingularityType.WhiteHole:
+                                singularity.distortRadius = singularity.size * 2.8f;
+                                break;
+                        }
+                    }
+                }
+            }
+
             // Signals are now in props
             if (Signal?.signals != null)
             {
@@ -414,6 +435,26 @@ namespace NewHorizons.External.Configs
                 {
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
+            }
+            
+            if (Base.zeroGravityRadius != 0f)
+            {
+                Volumes ??= new VolumesModule();
+                Volumes.zeroGravityVolumes ??= new VolumesModule.PriorityVolumeInfo[0];
+
+                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new VolumesModule.PriorityVolumeInfo()
+                {
+                    priority = 1,
+                    rename = "ZeroGVolume",
+                    radius = Base.zeroGravityRadius,
+                    parentPath = "Volumes"
+                }).ToArray();
+            }
+
+            // So that old mods still have shock effects
+            if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
+            {
+                ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
             }
         }
     }

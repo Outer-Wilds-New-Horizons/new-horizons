@@ -16,6 +16,7 @@ namespace NewHorizons.Builder.Body
     {
         public const float OuterRadiusRatio = 1.5f;
         private static Texture2D _colorOverTime;
+        private static Texture2D _supernovaEffects;
         private static readonly int ColorRamp = Shader.PropertyToID("_ColorRamp");
         private static readonly int SkyColor = Shader.PropertyToID("_SkyColor");
         private static readonly int Tint = Shader.PropertyToID("_Tint");
@@ -23,11 +24,47 @@ namespace NewHorizons.Builder.Body
         private static readonly int InnerRadius = Shader.PropertyToID("_InnerRadius");
         private static readonly int OuterRadius = Shader.PropertyToID("_OuterRadius");
 
-        public static (GameObject, StarController, StarEvolutionController) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
+        private static GameObject _starAudio;
+        private static GameObject _starAtmosphere;
+        private static GameObject _starProxyAtmosphere;
+        private static GameObject _starAmbientLight;
+        private static GameObject _sunLight;
+        private static GameObject _starSurface;
+        private static GameObject _starSolarFlareEmitter;
+        private static GameObject _supernovaPrefab;
+        private static Material _mainSequenceMaterial;
+        private static Material _giantMaterial;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
+            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
+            if (_supernovaEffects == null) _supernovaEffects = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_SUN_Supernova_d.png");
+
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_starAudio == null) _starAudio = SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN").InstantiateInactive().Rename("Prefab_Audio_Star").DontDestroyOnLoad();
+            if (_starAtmosphere == null) _starAtmosphere = SearchUtilities.Find("Sun_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_Atmosphere_Star").DontDestroyOnLoad();
+            if (_starAmbientLight == null) _starAmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").InstantiateInactive().Rename("Prefab_AmbientLight_Star").DontDestroyOnLoad();
+            if (_sunLight == null) _sunLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").InstantiateInactive().Rename("Prefab_SunLight").DontDestroyOnLoad();
+            if (_starProxyAtmosphere == null) _starProxyAtmosphere = GameObject.FindObjectOfType<DistantProxyManager>()._sunProxyPrefab.FindChild("Sun_Proxy_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_ProxyAtmosphere_Star").DontDestroyOnLoad();
+            if (_starSurface == null) _starSurface = SearchUtilities.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface").InstantiateInactive().Rename("Prefab_Surface_Star").DontDestroyOnLoad();
+            if (_starSolarFlareEmitter == null) _starSolarFlareEmitter = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter").InstantiateInactive().Rename("Prefab_SolarFlareEmitter_Star").DontDestroyOnLoad();
+            if (_supernovaPrefab == null) _supernovaPrefab = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive().Rename("Prefab_Supernova").DontDestroyOnLoad();
+            if (_mainSequenceMaterial == null) _mainSequenceMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._startSurfaceMaterial).DontDestroyOnLoad();
+            if (_giantMaterial == null) _giantMaterial = new Material(SearchUtilities.Find("Sun_Body").GetComponent<SunController>()._endSurfaceMaterial).DontDestroyOnLoad();
+        }
+
+        public static (GameObject, StarController, StarEvolutionController, Light) Make(GameObject planetGO, Sector sector, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
+        {
+            InitPrefabs();
+
             var (starGO, starEvolutionController, supernova) = SharedStarGeneration(planetGO, sector, mod, starModule, isStellarRemnant);
 
-            var sunAudio = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Audio_SUN"), starGO.transform);
+            var sunAudio = Object.Instantiate(_starAudio, starGO.transform);
             sunAudio.transform.localPosition = Vector3.zero;
             sunAudio.transform.localScale = Vector3.one;
             sunAudio.transform.Find("SurfaceAudio_Sun").GetComponent<AudioSource>().maxDistance = starModule.size * 2f;
@@ -38,14 +75,16 @@ namespace NewHorizons.Builder.Body
             surfaceAudio.SetSector(sector);
 
             sunAudio.name = "Audio_Star";
+            sunAudio.SetActive(true);
 
             GameObject sunAtmosphere = null;
             if (starModule.hasAtmosphere)
             {
-                sunAtmosphere = Object.Instantiate(SearchUtilities.Find("Sun_Body/Atmosphere_SUN"), starGO.transform);
+                sunAtmosphere = Object.Instantiate(_starAtmosphere, starGO.transform);
                 sunAtmosphere.transform.position = planetGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
+                sunAtmosphere.SetActive(true);
 
                 var atmospheres = sunAtmosphere.transform.Find("AtmoSphere");
                 atmospheres.transform.localScale = Vector3.one;
@@ -71,9 +110,10 @@ namespace NewHorizons.Builder.Body
                 }
             }
 
-            var ambientLightGO = Object.Instantiate(SearchUtilities.Find("Sun_Body/AmbientLight_SUN"), starGO.transform);
+            var ambientLightGO = Object.Instantiate(_starAmbientLight, starGO.transform);
             ambientLightGO.transform.localPosition = Vector3.zero;
             ambientLightGO.name = "AmbientLight_Star";
+            ambientLightGO.SetActive(true);
 
             Light ambientLight = ambientLightGO.GetComponent<Light>();
             ambientLight.range = starModule.size * OuterRadiusRatio;
@@ -123,7 +163,7 @@ namespace NewHorizons.Builder.Body
             sunLight.transform.localScale = Vector3.one;
 
             var light = sunLight.AddComponent<Light>();
-            light.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>());
+            light.CopyPropertiesFrom(_sunLight.GetComponent<Light>());
             light.intensity *= starModule.solarLuminosity;
             light.range = starModule.lightRadius;
 
@@ -134,13 +174,15 @@ namespace NewHorizons.Builder.Body
             ambientLight.color = new Color(lightColour.r, lightColour.g, lightColour.b, lightColour.a == 0 ? 0.0001f : lightColour.a);
 
             var faceActiveCamera = sunLight.AddComponent<FaceActiveCamera>();
-            faceActiveCamera.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>());
+            faceActiveCamera.CopyPropertiesFrom(_sunLight.GetComponent<FaceActiveCamera>());
             var csmTextureCacher = sunLight.AddComponent<CSMTextureCacher>();
-            csmTextureCacher.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>());
+            csmTextureCacher.CopyPropertiesFrom(_sunLight.GetComponent<CSMTextureCacher>());
             csmTextureCacher._light = light;
             var proxyShadowLight = sunLight.AddComponent<ProxyShadowLight>();
-            proxyShadowLight.CopyPropertiesFrom(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>());
+            proxyShadowLight.CopyPropertiesFrom(_sunLight.GetComponent<ProxyShadowLight>());
             proxyShadowLight._light = light;
+
+            sunLight.name = "StarLight";
 
             // Star controller (works on atmospheric shaders)
             StarController starController = null;
@@ -159,6 +201,7 @@ namespace NewHorizons.Builder.Body
 
             starEvolutionController.atmosphere = sunAtmosphere;
             starEvolutionController.controller = starController;
+            starEvolutionController.light = light;
 
             starEvolutionController.supernovaColour = starModule.supernovaTint;
             starFluidVolume.SetStarEvolutionController(starEvolutionController);
@@ -181,21 +224,24 @@ namespace NewHorizons.Builder.Body
 
             starGO.SetActive(true);
 
-            return (starGO, starController, starEvolutionController);
+            return (starGO, starController, starEvolutionController, light);
         }
 
         public static (GameObject, Renderer, Renderer) MakeStarProxy(GameObject planet, GameObject proxyGO, StarModule starModule, IModBehaviour mod, bool isStellarRemnant)
         {
+            InitPrefabs();
+
             var (starGO, controller, supernova) = SharedStarGeneration(proxyGO, null, mod, starModule, isStellarRemnant);
 
             Renderer atmosphere = null;
             Renderer fog = null;
             if (starModule.hasAtmosphere)
             {
-                GameObject sunAtmosphere = Object.Instantiate(SearchUtilities.Find("SunProxy/Sun_Proxy_Body/Atmosphere_SUN", false) ?? SearchUtilities.Find("SunProxy(Clone)/Sun_Proxy_Body/Atmosphere_SUN"), starGO.transform);
+                GameObject sunAtmosphere = Object.Instantiate(_starProxyAtmosphere, starGO.transform);
                 sunAtmosphere.transform.position = proxyGO.transform.position;
                 sunAtmosphere.transform.localScale = Vector3.one * OuterRadiusRatio;
                 sunAtmosphere.name = "Atmosphere_Star";
+                sunAtmosphere.SetActive(true);
 
                 atmosphere = sunAtmosphere.transform.Find("Atmosphere_LOD2").GetComponent<MeshRenderer>();
                 atmosphere.transform.localScale = Vector3.one;
@@ -235,6 +281,8 @@ namespace NewHorizons.Builder.Body
 
         private static (GameObject, StarEvolutionController, StellarDeathController) SharedStarGeneration(GameObject planetGO, Sector sector, IModBehaviour mod, StarModule starModule, bool isStellarRemnant)
         {
+            InitPrefabs();
+
             var starGO = MakeStarGraphics(planetGO, sector, starModule, mod);
             starGO.SetActive(false);
 
@@ -279,20 +327,22 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeStarGraphics(GameObject rootObject, Sector sector, StarModule starModule, IModBehaviour mod)
         {
-            if (_colorOverTime == null) _colorOverTime = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/StarColorOverTime.png");
+            InitPrefabs();
 
             var starGO = new GameObject("Star");
             starGO.transform.parent = sector?.transform ?? rootObject.transform;
 
-            var sunSurface = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface"), starGO.transform);
+            var sunSurface = Object.Instantiate(_starSurface, starGO.transform);
             sunSurface.transform.position = rootObject.transform.position;
             sunSurface.transform.localScale = Vector3.one;
             sunSurface.name = "Surface";
+            sunSurface.SetActive(true);
 
-            var solarFlareEmitter = Object.Instantiate(SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter"), starGO.transform);
+            var solarFlareEmitter = Object.Instantiate(_starSolarFlareEmitter, starGO.transform);
             solarFlareEmitter.transform.localPosition = Vector3.zero;
             solarFlareEmitter.transform.localScale = Vector3.one;
             solarFlareEmitter.name = "SolarFlareEmitter";
+            solarFlareEmitter.SetActive(true);
 
             if (starModule.tint != null)
             {
@@ -317,11 +367,7 @@ namespace NewHorizons.Builder.Body
             {
                 var colour = starModule.tint.ToColor();
 
-                var sun = SearchUtilities.Find("Sun_Body");
-                var mainSequenceMaterial = sun.GetComponent<SunController>()._startSurfaceMaterial;
-                var giantMaterial = sun.GetComponent<SunController>()._endSurfaceMaterial;
-
-                surface.sharedMaterial = new Material(starModule.size >= 3000 ? giantMaterial : mainSequenceMaterial);
+                surface.sharedMaterial = new Material(starModule.size >= 3000 ? _giantMaterial : _mainSequenceMaterial);
                 var modifier = Mathf.Max(1f, 2f * Mathf.Sqrt(starModule.solarLuminosity));
                 var adjustedColour = new Color(colour.r * modifier, colour.g * modifier, colour.b * modifier);
                 surface.sharedMaterial.color = adjustedColour;
@@ -352,7 +398,9 @@ namespace NewHorizons.Builder.Body
 
         public static StellarDeathController MakeSupernova(GameObject starGO, StarModule starModule, bool noAudio = false)
         {
-            var supernovaGO = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive();
+            InitPrefabs();
+
+            var supernovaGO = _supernovaPrefab.InstantiateInactive();
             supernovaGO.name = "Supernova";
             supernovaGO.transform.SetParent(starGO.transform);
             supernovaGO.transform.localPosition = Vector3.zero;
@@ -377,7 +425,7 @@ namespace NewHorizons.Builder.Body
                 var colour = starModule.supernovaTint.ToColor();
 
                 var supernovaMaterial = new Material(stellarDeath.supernovaMaterial);
-                var ramp = ImageUtilities.LerpGreyscaleImage(ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_SUN_Supernova_d.png"), Color.white, colour);
+                var ramp = ImageUtilities.LerpGreyscaleImage(_supernovaEffects, Color.white, colour);
                 supernovaMaterial.SetTexture(ColorRamp, ramp);
                 stellarDeath.supernovaMaterial = supernovaMaterial;
 
