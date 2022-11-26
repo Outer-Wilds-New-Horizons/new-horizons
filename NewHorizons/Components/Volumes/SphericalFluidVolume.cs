@@ -20,8 +20,6 @@ namespace NewHorizons.Components.Volumes
             if (shape != null) shape.radius = radius;
         }
 
-        public override Vector3 GetPointFluidVelocity(Vector3 worldPosition, FluidDetector detector) => _attachedBody.GetPointVelocity(worldPosition);
-
         public override bool IsSpherical() => true;
 
         public override float GetFractionSubmerged(FluidDetector detector) => detector.GetBuoyancyData().CalculateSubmergedFraction((detector.transform.position - transform.position).magnitude, radius);
