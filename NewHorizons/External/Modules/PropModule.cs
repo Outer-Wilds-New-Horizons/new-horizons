@@ -512,6 +512,8 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
 
                 [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+
+                [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
             }
 
             [JsonConverter(typeof(StringEnumConverter))]

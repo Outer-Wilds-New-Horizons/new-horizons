@@ -1330,7 +1330,8 @@
         "Recorder",
         "PreCrashRecorder",
         "PreCrashComputer",
-        "Trailmarker"
+        "Trailmarker",
+        "CairnVariant"
       ],
       "enum": [
         "wall",
@@ -1340,7 +1341,8 @@
         "recorder",
         "preCrashRecorder",
         "preCrashComputer",
-        "trailmarker"
+        "trailmarker",
+        "cairnVariant"
       ]
     },
     "NomaiTextLocation": {

@@ -23,6 +23,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
+        private static GameObject _cairnVariantPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -110,6 +111,12 @@ namespace NewHorizons.Builder.Props
             {
                 _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
                 _cairnPrefab.transform.rotation = Quaternion.identity;
+            }
+
+            if (_cairnVariantPrefab == null)
+            {
+                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_recorderPrefab == null)
@@ -390,8 +397,9 @@ namespace NewHorizons.Builder.Props
                         return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
+                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
                     {
-                        var cairnObject = _cairnPrefab.InstantiateInactive();
+                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
