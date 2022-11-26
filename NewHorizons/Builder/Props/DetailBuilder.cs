@@ -424,6 +424,7 @@ namespace NewHorizons.Builder.Props
                 var impactSensor = gameObject.AddComponent<ImpactSensor>();
                 var impactAudio = new GameObject("ImpactAudio");
                 impactAudio.transform.SetParent(transform, false);
+                impactAudio.SetActive(false);
                 var audioSource = impactAudio.AddComponent<AudioSource>();
                 audioSource.maxDistance = 30;
                 audioSource.dopplerLevel = 0;
@@ -437,6 +438,7 @@ namespace NewHorizons.Builder.Props
                 objectImpactAudio._minPitch = 0.4f;
                 objectImpactAudio._maxPitch = 0.6f;
                 objectImpactAudio._impactSensor = impactSensor;
+                impactAudio.SetActive(true);
 
                 Destroy(this);
             }
