@@ -2573,6 +2573,13 @@
           "description": "Add ruleset volumes to this planet.",
           "$ref": "#/definitions/RulesetModule"
         },
+        "speedTrapVolumes": {
+          "type": "array",
+          "description": "Add speed trap volumes to this planet. Slows down the player when they enter this volume.",
+          "items": {
+            "$ref": "#/definitions/SpeedTrapVolumeInfo"
+          }
+        },
         "visorEffects": {
           "description": "Add visor effect volumes to this planet.",
           "$ref": "#/definitions/VisorEffectModule"
@@ -3388,6 +3395,46 @@
           "description": "How long the jetpack booster will be nerfed.",
           "format": "float",
           "default": 0.5
+        }
+      }
+    },
+    "SpeedTrapVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "speedLimit": {
+          "type": "number",
+          "description": "The speed the volume will slow you down to when you enter it.",
+          "format": "float",
+          "default": 10.0
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "How fast it will slow down the player to the speed limit.",
+          "format": "float",
+          "default": 3.0
         }
       }
     },
