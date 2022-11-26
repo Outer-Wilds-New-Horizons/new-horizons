@@ -83,12 +83,14 @@ namespace NewHorizons.External
                 KnownSignals = new List<string>();
                 NewlyRevealedFactIDs = new List<string>();
                 PopupsRead = new List<string>();
+                CharactersTalkedTo = new List<string>();
             }
 
             public List<string> KnownFrequencies { get; }
             public List<string> KnownSignals { get; }
             public List<string> NewlyRevealedFactIDs { get; }
             public List<string> PopupsRead { get; }
+            public List<string> CharactersTalkedTo { get; }
         }
 
         #region Frequencies
@@ -169,6 +171,29 @@ namespace NewHorizons.External
         {
             // To avoid spam, we'll just say the popup has been read if we can't load the profile
             return _activeProfile?.PopupsRead.Contains(id) ?? true;
+        }
+
+        #endregion
+
+        #region Characters talked to
+
+        public static void OnTalkedToCharacter(string name)
+        {
+            if (name == CharacterDialogueTree.RECORDING_NAME || name == CharacterDialogueTree.SIGN_NAME) return;
+            _activeProfile?.CharactersTalkedTo.SafeAdd(name);
+            Save();
+        }
+
+        public static bool HasTalkedToFiveCharacters()
+        {
+            if (_activeProfile == null) return false;
+            return _activeProfile.CharactersTalkedTo.Count >= 5;
+        }
+
+        public static int GetCharactersTalkedTo()
+        {
+            if (_activeProfile == null) return 0;
+            return _activeProfile.CharactersTalkedTo.Count;
         }
 
         #endregion
