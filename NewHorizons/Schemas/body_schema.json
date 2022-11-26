@@ -575,10 +575,10 @@
           "format": "float",
           "default": 750.0
         },
-        "hasVines": {
-          "type": "boolean",
-          "description": "Whether this dimensions has vines.\nSet to false if you want to create your own vines.",
-          "default": true
+        "vinePrefab": {
+          "description": "The dimension the vines will be copied from.\nOnly a handful are available due to batched colliders.",
+          "default": "hub",
+          "$ref": "#/definitions/VinePrefabType"
         },
         "allowedEntrances": {
           "type": "array",
@@ -589,6 +589,24 @@
           }
         }
       }
+    },
+    "VinePrefabType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "None",
+        "Hub",
+        "Cluster",
+        "SmallNest",
+        "ExitOnly"
+      ],
+      "enum": [
+        "none",
+        "hub",
+        "cluster",
+        "smallNest",
+        "exitOnly"
+      ]
     },
     "BrambleNodeInfo": {
       "type": "object",
