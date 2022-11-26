@@ -467,15 +467,15 @@ namespace NewHorizons.External.Modules
                 /// <summary>
                 /// The rate at which the frost effect will get stronger
                 /// </summary>
-                [DefaultValue(0.1f)]
-                public float frostRate = 0.1f;
+                [DefaultValue(0.5f)]
+                public float frostRate = 0.5f;
 
                 /// <summary>
                 /// The maximum strength of frost this volume can give
                 /// </summary>
                 [Range(0f, 1f)]
-                [DefaultValue(0.5f)]
-                public float maxFrost = 0.5f;
+                [DefaultValue(0.91f)]
+                public float maxFrost = 0.91f;
             }
 
             [JsonObject]
