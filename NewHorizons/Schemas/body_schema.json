@@ -59,6 +59,10 @@
       "description": "Generate the surface of this planet using a heightmap",
       "$ref": "#/definitions/HeightMapModule"
     },
+    "isIsland": {
+      "type": "boolean",
+      "description": "Does this config describe an island of a custom planet defined in another file?"
+    },
     "isQuantumState": {
       "type": "boolean",
       "description": "Does this config describe a quantum state of a custom planet defined in another file?"
