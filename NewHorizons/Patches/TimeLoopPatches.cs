@@ -46,5 +46,12 @@ namespace NewHorizons.Patches
         [HarmonyPrefix]
         [HarmonyPatch(typeof(GlobalMusicController), nameof(GlobalMusicController.UpdateEndTimesMusic))]
         public static bool GlobalMusicController_UpdateEndTimesMusic() => Main.Instance.TimeLoopEnabled;
+
+        /// <summary>
+        /// Disables supernova trigger
+        /// </summary>
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(TimeLoop), nameof(TimeLoop.Update))]
+        public static bool TimeLoop_Update() => Main.Instance.TimeLoopEnabled;
     }
 }
