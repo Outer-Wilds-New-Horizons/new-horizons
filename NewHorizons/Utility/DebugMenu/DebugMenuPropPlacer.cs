@@ -390,7 +390,7 @@ namespace NewHorizons.Utility.DebugMenu
         {
             foreach(var body in _dpp.GetPropsConfigByBody())
             {
-                let json = String.Join(",\n", body.Value.Select(detail => "    "+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
+                var json = string.Join(",\n", body.Value.Select(detail => "\t"+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
                 Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }

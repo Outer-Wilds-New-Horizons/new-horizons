@@ -37,14 +37,12 @@ namespace NewHorizons.Utility.DebugMenu
 
         private string GetEntryPositionsJSON()
         {
-            return String.Join("\n", 
+            return string.Join(",\n", 
                 Resources
                     .FindObjectsOfTypeAll<ShipLogEntryCard>()
-                    .ToList()
                     .Select(go => 
-                        ("{ \"id\": \"" +go.name+ "\", \"position\": {\"x\": "+go.transform.localPosition.x+", \"y\": "+go.transform.localPosition.y+" } ")
+                        "{ \"id\": \"" +go.name+ "\", \"position\": {\"x\": "+go.transform.localPosition.x+", \"y\": "+go.transform.localPosition.y+" } "
                     )
-                    .ToList()
             );
         }
 
