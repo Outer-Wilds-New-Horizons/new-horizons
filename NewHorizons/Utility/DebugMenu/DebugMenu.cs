@@ -158,6 +158,12 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 GUI.enabled = true;
                 GUILayout.EndHorizontal();
+        
+                if (GUILayout.Button("Print config changes for your mod"))
+                {
+                    PrintLoadedConfigChangesForRecentSystem();
+                    saveButtonUnlocked = false;
+                }
             }
 
             GUILayout.Space(20);
@@ -264,6 +270,14 @@ namespace NewHorizons.Utility.DebugMenu
                 {
                     Logger.LogError($"Failed to save file {relativePath}:\n{e}");
                 }
+            }
+        }
+
+        private void PrintLoadedConfigChangesForRecentSystem()
+        {
+            foreach(DebugSubmenu menu in submenus)
+            {
+                menu.PrintNewConfigSection(this);
             }
         }
 
