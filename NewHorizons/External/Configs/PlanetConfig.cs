@@ -11,7 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.External.Configs
 {
     /// <summary>
-    /// Describes a body to generate
+    /// Describes a celestial body to generate
     /// </summary>
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig
@@ -367,6 +367,27 @@ namespace NewHorizons.External.Configs
                 if (Props == null) Props = new PropModule();
                 if (Props.singularities == null) Props.singularities = new SingularityModule[0];
                 Props.singularities = Props.singularities.Append(Singularity).ToArray();
+            }
+
+            // Old singularity size
+            if (Props?.singularities != null)
+            {
+                foreach (var singularity in Props.singularities)
+                {
+                    if (singularity.size != 0f)
+                    {
+                        singularity.horizonRadius = singularity.size * 0.4f;
+                        switch (singularity.type)
+                        {
+                            case SingularityModule.SingularityType.BlackHole:
+                                singularity.distortRadius = singularity.size * 0.95f;
+                                break;
+                            case SingularityModule.SingularityType.WhiteHole:
+                                singularity.distortRadius = singularity.size * 2.8f;
+                                break;
+                        }
+                    }
+                }
             }
 
             // Signals are now in props

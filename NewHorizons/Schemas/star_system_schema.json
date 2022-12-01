@@ -263,21 +263,21 @@
       "properties": {
         "r": {
           "type": "integer",
-          "description": "The red component of this colour",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "g": {
           "type": "integer",
-          "description": "The green component of this colour",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "b": {
           "type": "integer",
-          "description": "The blue component of this colour",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0

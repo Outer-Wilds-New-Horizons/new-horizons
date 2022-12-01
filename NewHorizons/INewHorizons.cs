@@ -54,10 +54,20 @@ namespace NewHorizons
         /// </summary>
         object QueryBody(Type outType, string bodyName, string path);
 
+        ///<summary>
+        /// Uses JSONPath to query a body
+        /// </summary>
+        T QueryBody<T>(string bodyName, string path);
+
         /// <summary>
-        /// Uses JSONPath to query a system
+        /// Uses JSONPath to query the current star system
         /// </summary>
         object QuerySystem(Type outType, string path);
+
+        ///<summary>
+        /// Uses JSONPath to query the current star system
+        ///</summary>
+        T QuerySystem<T>(string path);
 
         /// <summary>
         /// Allows you to overwrite the default system. This is where the player is respawned after dying.

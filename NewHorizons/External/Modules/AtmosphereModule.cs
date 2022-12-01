@@ -77,7 +77,7 @@ namespace NewHorizons.External.Modules
         public bool hasOxygen;
 
         /// <summary>
-        /// Does this planet have trees? This will change the "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
+        /// Does this planet have trees? This will change the notification from "Oxygen tank refilled" to "Trees detected, oxygen tank refilled".
         /// </summary>
         public bool hasTrees;
 

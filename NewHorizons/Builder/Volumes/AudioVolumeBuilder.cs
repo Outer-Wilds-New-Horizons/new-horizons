@@ -39,7 +39,9 @@ namespace NewHorizons.Builder.Volumes
                 }
             }
 
-            go.transform.position = planetGO.transform.TransformPoint(info.position != null ? (Vector3)info.position : Vector3.zero);
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) go.transform.localPosition = pos;
+            else go.transform.position = planetGO.transform.TransformPoint(pos);
             go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var audioSource = go.AddComponent<AudioSource>();
@@ -48,10 +50,17 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
             owAudioSource.SetMaxVolume(info.volume);
+            owAudioSource.SetClipSelectionType(EnumUtils.Parse<OWAudioSource.ClipSelectionOnPlay>(info.clipSelection.ToString()));
             owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();
+            audioVolume._layer = info.layer;
+            audioVolume.SetPriority(info.priority);
+            audioVolume._fadeSeconds = info.fadeSeconds;
+            audioVolume._noFadeFromBeginning = info.noFadeFromBeginning;
+            audioVolume._randomizePlayhead = info.randomizePlayhead;
+            audioVolume._pauseOnFadeOut = info.pauseOnFadeOut;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;

@@ -34,6 +34,7 @@ jobs:
     uses: ./.github/workflows/update_schemas.yml
     with:
       artifact_name: NewHorizons-Schemas-Release
+    secrets: inherit
   Update_Docs:
     name: 'Update Docs'
     needs: Build
