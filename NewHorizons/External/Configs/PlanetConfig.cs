@@ -48,11 +48,6 @@ namespace NewHorizons.External.Configs
         public BrambleModule Bramble;
 
         /// <summary>
-        /// Set to a higher number if you wish for this body to be built sooner
-        /// </summary>
-        [DefaultValue(-1)] public int buildPriority = -1;
-
-        /// <summary>
         /// Should this planet ever be shown on the title screen?
         /// </summary>
         [DefaultValue(true)] public bool canShowOnTitle = true;
@@ -419,6 +414,26 @@ namespace NewHorizons.External.Configs
                 {
                     if (ring.curve != null) ring.scaleCurve = ring.curve;
                 }
+            }
+            
+            if (Base.zeroGravityRadius != 0f)
+            {
+                Volumes ??= new VolumesModule();
+                Volumes.zeroGravityVolumes ??= new VolumesModule.PriorityVolumeInfo[0];
+
+                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new VolumesModule.PriorityVolumeInfo()
+                {
+                    priority = 1,
+                    rename = "ZeroGVolume",
+                    radius = Base.zeroGravityRadius,
+                    parentPath = "Volumes"
+                }).ToArray();
+            }
+
+            // So that old mods still have shock effects
+            if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
+            {
+                ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
             }
         }
     }

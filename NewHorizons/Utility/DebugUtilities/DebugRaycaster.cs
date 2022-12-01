@@ -19,24 +19,31 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private ScreenPrompt _raycastPrompt;
 
-        private void Awake()
+        private void Start()
         {
             _rb = this.GetRequiredComponent<OWRigidbody>();
 
-            _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
-
-            Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
+            if (_raycastPrompt == null)
+            {
+                _raycastPrompt = new ScreenPrompt(TranslationHandler.GetTranslation("DEBUG_RAYCAST", TranslationHandler.TextType.UI) + " <CMD>", ImageUtilities.GetButtonSprite(KeyCode.P));
+                Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
+            }
         }
         
         private void OnDestroy()
         {
-            Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+            if (_raycastPrompt != null)
+            {
+                Locator.GetPromptManager()?.RemoveScreenPrompt(_raycastPrompt, PromptPosition.UpperRight);
+            }
         }
 
         private void Update()
         {
             UpdatePromptVisibility();
+
             if (!Main.Debug) return;
+
             if (Keyboard.current == null) return;
 
             if (Keyboard.current[Key.P].wasReleasedThisFrame)
@@ -48,7 +55,10 @@ namespace NewHorizons.Utility.DebugUtilities
 
         public void UpdatePromptVisibility()
         {
-            _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+            if (_raycastPrompt != null)
+            {
+                _raycastPrompt.SetVisibility(!OWTime.IsPaused() && Main.Debug);
+            }
         }
 
 
@@ -94,11 +104,13 @@ namespace NewHorizons.Utility.DebugUtilities
             _planeDownLeftSphere .transform.localPosition = data.plane.origin + data.plane.u*-1*planeSize + data.plane.v*-1*planeSize;
             _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*-1*planeSize;
 
-            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
-            var ppos = data.hitBodyGameObject.GetComponent<AstroObject>().GetRootSector().transform.InverseTransformPoint(Locator.GetPlayerTransform().position);
-            posText = $"{{\"x\": {ppos.x}, \"y\": {ppos.y}, \"z\": {ppos.z}}}";
-            Logger.Log($"Player, relative to raycasted sector \"position\": {posText} on [{data.bodyName}] at [{data.bodyPath}]");
-            
+            //Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on [{data.bodyName}] at [{data.bodyPath}]");
+            //var ppos = data.hitBodyGameObject.GetComponent<AstroObject>().GetRootSector().transform.InverseTransformPoint(Locator.GetPlayerTransform().position);
+            //posText = $"{{\"x\": {ppos.x}, \"y\": {ppos.y}, \"z\": {ppos.z}}}";
+            //Logger.Log($"Player, relative to raycasted sector \"position\": {posText} on [{data.bodyName}] at [{data.bodyPath}]");
+
+            Logger.Log($"Raycast hit \"position\": {posText}, \"normal\": {normText} on collider [{data.colliderPath}] " +
+                       (data.bodyPath != null? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
         internal DebugRaycastData Raycast()
         {
@@ -118,8 +130,8 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 var hitAstroObject = o.GetComponent<AstroObject>() ?? o.GetComponentInParent<AstroObject>();
 
-                data.bodyName = o.name;
-                data.bodyPath = o.transform.GetPath();
+                data.colliderPath = hitInfo.collider.transform.GetPath();
+                data.bodyPath = hitInfo.rigidbody?.transform.GetPath();
                 data.hitObject = o;
                 data.hitBodyGameObject = hitAstroObject?.gameObject ?? o; 
                 data.plane = ConstructPlane(data);

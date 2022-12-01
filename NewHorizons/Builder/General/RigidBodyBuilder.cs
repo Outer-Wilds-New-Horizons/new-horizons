@@ -27,7 +27,7 @@ namespace NewHorizons.Builder.General
             owRigidBody._maintainOriginalCenterOfMass = true;
             owRigidBody._rigidbody = rigidBody;
             owRigidBody._kinematicRigidbody = kinematicRigidBody;
-            owRigidBody._origParent = SearchUtilities.Find("SolarSystemRoot").transform;
+            owRigidBody._origParent = SearchUtilities.Find("SolarSystemRoot")?.transform;
             owRigidBody.EnableKinematicSimulation();
             owRigidBody.MakeKinematic();
 

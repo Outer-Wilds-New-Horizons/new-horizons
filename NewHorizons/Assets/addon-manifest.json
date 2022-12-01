@@ -1,4 +1,5 @@
 {
+  "$schema": "https://raw.githubusercontent.com/Outer-Wilds-New-Horizons/new-horizons/main/NewHorizons/Schemas/addon_manifest_schema.json",
   "credits": [
     "xen#Mod Director\n#Programmer",
     "Bwc9876#Mod Manager\n#Programmer\n#Dev Ops",

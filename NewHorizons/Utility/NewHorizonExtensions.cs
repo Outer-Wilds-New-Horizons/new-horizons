@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using Newtonsoft.Json;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -187,6 +188,29 @@ namespace NewHorizons.Utility
             return copy;
         }
 
+        public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
+        {
+            UnityEngine.Object.DontDestroyOnLoad(target);
+            return target;
+        }
+
+        public static Material[] MakePrefabMaterials(this Material[] target)
+        {
+            var materials = new List<Material>();
+            foreach (var material in target)
+            {
+                materials.Add(new Material(material).DontDestroyOnLoad());
+            }
+            return materials.ToArray();
+        }
+
+        public static T Rename<T>(this T target, string name) where T : UnityEngine.Object
+        {
+            target.name = name;
+            return target;
+        }
+
+
         public static Quaternion TransformRotation(this Transform transform, Quaternion localRotation)
         {
             return transform.rotation * localRotation;
@@ -217,17 +241,6 @@ namespace NewHorizons.Utility
             return xCorrect && yCorrect && zCorrect;
         }
 
-        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
-        {
-            try
-            {
-                return (FluidVolume.Type)Enum.Parse(typeof(FluidVolume.Type), Enum.GetName(typeof(FluidType), fluidType).ToUpper());
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"Couldn't parse fluid volume type [{fluidType}]:\n{ex}");
-                return @default;
-            }
-        }
+        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     }
 }

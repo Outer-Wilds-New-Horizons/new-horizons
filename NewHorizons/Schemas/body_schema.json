@@ -34,12 +34,6 @@
       "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
       "$ref": "#/definitions/BrambleModule"
     },
-    "buildPriority": {
-      "type": "integer",
-      "description": "Set to a higher number if you wish for this body to be built sooner",
-      "format": "int32",
-      "default": -1
-    },
     "canShowOnTitle": {
       "type": "boolean",
       "description": "Should this planet ever be shown on the title screen?",
@@ -503,10 +497,10 @@
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
           "format": "float"
         },
-        "zeroGravityRadius": {
-          "type": "number",
-          "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
-          "format": "float"
+        "gravityVolumePriority": {
+          "type": "integer",
+          "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
+          "format": "int32"
         }
       }
     },
@@ -1049,6 +1043,10 @@
           "format": "float",
           "default": 1.0
         },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
+        },
         "quantumGroupID": {
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
@@ -1107,6 +1105,14 @@
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
+        },
+        "rename": {
+          "type": "string",
+          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
         }
       }
     },
@@ -1341,6 +1347,12 @@
         "position": {
           "description": "Position of the raft",
           "$ref": "#/definitions/MVector3"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
@@ -1372,7 +1384,12 @@
         "scale": {
           "type": "number",
           "description": "Scale this prop once it is placed",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
+        },
+        "stretch": {
+          "description": "Scale each axis of the prop. Overrides `scale`.",
+          "$ref": "#/definitions/MVector3"
         },
         "seed": {
           "type": "integer",
@@ -1416,7 +1433,14 @@
         },
         "reveals": {
           "type": "array",
-          "description": "The ship log entries revealed after finishing this slide reel.",
+          "description": "The ship log facts revealed after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "playWithShipLogFacts": {
+          "type": "array",
+          "description": "The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).\nYou should probably include facts from `reveals` here.\nIf you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only\nrumor facts because an entry with revealed explore facts doesn't display rumor facts.",
           "items": {
             "type": "string"
           }
@@ -1495,7 +1519,7 @@
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log entry revealed when viewing this slide"
+          "description": "Ship log fact revealed when viewing this slide"
         },
         "spotIntensityMod": {
           "type": "number",
@@ -2464,6 +2488,13 @@
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
+        },
+        "zeroGravityVolumes": {
+          "type": "array",
+          "description": "Add zero-gravity volumes to this planet. \nGood for surrounding planets which are using a static position to stop the player being pulled away.",
+          "items": {
+            "$ref": "#/definitions/PriorityVolumeInfo"
+          }
         }
       }
     },
@@ -2501,6 +2532,14 @@
           "type": "boolean",
           "description": "Whether to loop this audio while in this audio volume or just play it once",
           "default": true
+        },
+        "volume": {
+          "type": "number",
+          "description": "The loudness of the audio",
+          "format": "float",
+          "default": 1.0,
+          "maximum": 1.0,
+          "minimum": 0.0
         }
       }
     },
@@ -2777,6 +2816,35 @@
         "observe",
         "snapshot"
       ]
+    },
+    "PriorityVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        }
+      }
     }
   },
   "$docs": {

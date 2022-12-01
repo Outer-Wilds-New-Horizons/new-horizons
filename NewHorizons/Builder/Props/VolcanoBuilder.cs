@@ -10,29 +10,57 @@ namespace NewHorizons.Builder.Props
         private static readonly int Color1 = Shader.PropertyToID("_Color");
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
+        private static GameObject _meteorLauncherPrefab;
+
+        internal static void InitPrefab()
+        {
+            if (_meteorLauncherPrefab == null)
+            {
+                _meteorLauncherPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher").InstantiateInactive().Rename("Prefab_VM_MeteorLauncher").DontDestroyOnLoad();
+                var meteorLauncher = _meteorLauncherPrefab.GetComponent<MeteorLauncher>();
+                meteorLauncher._audioSector = null;
+                meteorLauncher._dynamicMeteorPrefab = null;
+                meteorLauncher._detectableFluid = null;
+                meteorLauncher._detectableField = null;
+                meteorLauncher._launchDirection = Vector3.up;
+                meteorLauncher._dynamicProbability = 0f;
+                var meteorPrefab = meteorLauncher._meteorPrefab.InstantiateInactive().Rename("Prefab_VM_MoltenMeteor").DontDestroyOnLoad();
+                var meteor = meteorPrefab.GetComponent<MeteorController>();
+                GameObject.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
+                var detectors = meteorPrefab.FindChild("DynamicDetector");
+                var rigidbody = meteor.GetComponent<OWRigidbody>();
+                meteor._owRigidbody = rigidbody;
+                meteor._constantFluidDetector = null;
+                meteor._constantForceDetector = null;
+                rigidbody.RegisterAttachedFluidDetector(detectors.GetComponent<DynamicFluidDetector>());
+                rigidbody.RegisterAttachedForceDetector(detectors.AddComponent<DynamicForceDetector>());
+                meteor._owColliders = meteorPrefab.GetComponentsInChildren<OWCollider>();
+                meteorLauncher._meteorPrefab = meteorPrefab;
+            }
+        }
+
         public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
         {
-            var prefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Effects_VM/VolcanoPivot (2)/MeteorLauncher");
+            InitPrefab();
 
-            var launcherGO = prefab.InstantiateInactive();
+            var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
             launcherGO.transform.parent = sector.transform;
             launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
             launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
-            meteorLauncher._dynamicMeteorPrefab = null;
-            meteorLauncher._detectableFluid = null;
-            meteorLauncher._detectableField = null;
-
-            meteorLauncher._launchDirection = Vector3.up;
-
-            meteorLauncher._dynamicProbability = 0f;
-
+            meteorLauncher._audioSector = sector;
             meteorLauncher._minLaunchSpeed = info.minLaunchSpeed;
             meteorLauncher._maxLaunchSpeed = info.maxLaunchSpeed;
             meteorLauncher._minInterval = info.minInterval;
             meteorLauncher._maxInterval = info.maxInterval;
+
+            var lavaEruption = launcherGO.FindChild("EruptionParticles_Lava").GetComponent<ParticleSystemRenderer>();
+            var lavaMaterial = new Material(lavaEruption.sharedMaterial);
+            lavaMaterial.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
+            lavaMaterial.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
+            lavaEruption.sharedMaterial = lavaMaterial;
 
             launcherGO.SetActive(true);
 
@@ -50,20 +78,16 @@ namespace NewHorizons.Builder.Props
         {
             meteor.transform.localScale = Vector3.one * info.scale;
 
-            var mat = meteor.GetComponentInChildren<MeshRenderer>().material;
+            var meteorRenderer = meteor.GetComponentInChildren<MeshRenderer>();
+            var mat = new Material(meteorRenderer.sharedMaterial);
             mat.SetColor(Color1, info.stoneTint?.ToColor() ?? defaultStoneTint);
             mat.SetColor(EmissionColor, info.lavaTint?.ToColor() ?? defaultLavaTint);
+            meteorRenderer.sharedMaterial = mat;
 
-            GameObject.Destroy(meteor.transform.Find("ConstantDetectors").gameObject);
-
-            var detectors = meteor.transform.Find("DynamicDetector").gameObject;
-
-            meteor._constantFluidDetector = null;
-            meteor._constantForceDetector = null;
-
-            var forceDetector = detectors.gameObject.AddComponent<DynamicForceDetector>();
-
-            meteor._owColliders = meteor.gameObject.GetComponentsInChildren<OWCollider>();
+            foreach (var p in meteor.gameObject.FindChild("Effects_VM_MeteorParticles").GetComponentsInChildren<ParticleSystemRenderer>())
+            {
+                if (p.name.Contains("Shrapnel")) p.sharedMaterial = mat;
+            }
         }
     }
 }

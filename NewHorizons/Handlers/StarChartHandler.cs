@@ -1,6 +1,7 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.Utility;
 using System.Collections.Generic;
+using NewHorizons.OtherMods.CustomShipLogModes;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Handlers
@@ -19,8 +20,9 @@ namespace NewHorizons.Handlers
             _systems = systems;
 
             var shipLogRoot = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas");
+            var reticleImage = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/");
 
-            if (shipLogRoot != null)
+            if (shipLogRoot != null && reticleImage != null)
             {
                 var starChartLog = new GameObject("StarChartMode");
                 starChartLog.SetActive(false);
@@ -31,7 +33,7 @@ namespace NewHorizons.Handlers
 
                 ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-                var reticleImage = GameObject.Instantiate(SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/ShipLogPivot/ShipLogCanvas/DetectiveMode/ReticleImage (1)/"), starChartLog.transform);
+                GameObject.Instantiate(reticleImage, starChartLog.transform);
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;
@@ -45,14 +47,7 @@ namespace NewHorizons.Handlers
                 panRoot.transform.localPosition = Vector3.zero;
                 panRoot.transform.localRotation = Quaternion.Euler(0, 0, 0);
 
-                var centerPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_Center")?.GetComponent<ScreenPromptList>();
-                var upperRightPromptList = shipLogRoot.transform.Find("ScreenPromptListScaleRoot/ScreenPromptList_UpperRight")?.GetComponent<ScreenPromptList>();
-                var oneShotSource = SearchUtilities.Find("Ship_Body/Module_Cabin/Systems_Cabin/ShipLogPivot/ShipLog/OneShotAudio_ShipLog")?.GetComponent<OWAudioSource>();
-
-                ShipLogStarChartMode.Initialize(
-                    centerPromptList,
-                    upperRightPromptList,
-                    oneShotSource);
+                CustomShipLogModesHandler.AddInterstellarMode();
             }
 
             _starSystemToFactID = new Dictionary<string, string>();
@@ -88,12 +83,8 @@ namespace NewHorizons.Handlers
             if (!_starSystemToFactID.TryGetValue(system, out var factID))
                 return true;
 
-            // If we got a fact but now can't find it elsewhere, its not unlocked
-            if (!GameObject.FindObjectOfType<ShipLogManager>()._factDict.TryGetValue(factID, out var fact))
-                return false;
-
-            // It's unlocked if revealed
-            return fact.IsRevealed();
+            // It's unlocked if known
+            return ShipLogHandler.KnowsFact(factID);
         }
 
         public static void OnRevealFact(string factID)

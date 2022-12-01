@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.General
             gravityVolume._upperSurfaceRadius = config.Base.surfaceSize;
             gravityVolume._lowerSurfaceRadius = 0;
             gravityVolume._layer = 3;
-            gravityVolume._priority = 0;
+            gravityVolume._priority = config.Base.gravityVolumePriority;
             gravityVolume._alignmentPriority = 0;
             gravityVolume._surfaceAcceleration = config.Base.surfaceGravity;
             gravityVolume._inheritable = false;
