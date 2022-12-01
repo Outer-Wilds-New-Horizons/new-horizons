@@ -108,27 +108,8 @@ namespace NewHorizons.Utility.DebugUtilities
             DebugRaycastData data = _rc.Raycast();
             PlaceObject(data, this.gameObject.transform.position);
 
-            //use DropItem logic to make props not clip through the ground when placed
-            
-//public virtual void DropItem(Vector3 position, Vector3 normal, Transform parent, Sector sector, IItemDropTarget customDropTarget)
-//{
-//	base.transform.SetParent(parent);
-//	base.transform.localScale = Vector3.one;
-//	Quaternion quaternion = Quaternion.FromToRotation(base.transform.TransformDirection(_localDropNormal), normal);
-//	base.transform.rotation = quaternion * base.transform.rotation;
-//	base.transform.position = position + base.transform.TransformDirection(_localDropOffset);
-//	if (_parentFragment != null)
-//	{
-//		_parentFragment.OnChangeSector -= OnParentFragmentChangeSector;
-//	}
-//	_parentFragment = customDropTarget as DetachableFragment;
-//	if (_parentFragment != null)
-//	{
-//		_parentFragment.OnChangeSector += OnParentFragmentChangeSector;
-//	}
-//	SetSector(sector);
-//	SetColliderActivation(active: true);
-//}
+            //TODO: use DropItem logic to make props not clip through the ground when placed
+            //public virtual void DropItem(Vector3 position, Vector3 normal, Transform parent, Sector sector, IItemDropTarget customDropTarget)
 
             if (!hasAddedCurrentObjectToRecentsList)
             {

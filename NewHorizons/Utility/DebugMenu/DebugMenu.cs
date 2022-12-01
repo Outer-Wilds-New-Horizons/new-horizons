@@ -37,12 +37,12 @@ namespace NewHorizons.Utility.DebugMenu
         // Submenus
         private List<DebugSubmenu> submenus;
         private int activeSubmenu = 0;
-
-        internal static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+        
+        private static JsonSerializerSettings jsonSettings = new JsonSerializerSettings
         {
             NullValueHandling = NullValueHandling.Ignore,
             DefaultValueHandling = DefaultValueHandling.Ignore,
-            Formatting = Formatting.None,
+            Formatting = Formatting.Indented,
         };
 
         private void Awake()
