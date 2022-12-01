@@ -331,19 +331,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void PreSave(DebugMenu menu)
         {
-            PrintMahStuff();
             UpdateLoadedConfigsForRecentSystem(menu);
-        }
-
-        public void PrintMahStuff()
-        {
-            Logger.Log("Printin mah stuff");
-            foreach(var body in _dpp.GetPropsConfigByBody())
-            {
-                var json = "";
-                json = String.Join(",\n", body.Value.Select(detail => "    "+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
-                Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
-            }
         }
 
         private void UpdateLoadedConfigsForRecentSystem(DebugMenu menu)
@@ -395,6 +383,16 @@ namespace NewHorizons.Utility.DebugMenu
                 config.Props.details = newDetails[astroObject];
 
                 menu.loadedConfigFiles[filepath] = config;
+            }
+        }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            foreach(var body in _dpp.GetPropsConfigByBody())
+            {
+                var json = "";
+                json = String.Join(",\n", body.Value.Select(detail => "    "+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
+                Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }
     }

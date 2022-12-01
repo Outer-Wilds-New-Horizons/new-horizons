@@ -521,5 +521,10 @@ namespace NewHorizons.Utility.DebugMenu
             //    metadata.spiral.zRotation = metadata.spiral.zRotation;
             //});
         }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -45,12 +45,6 @@ namespace NewHorizons.Utility.DebugMenu
             Formatting = Formatting.None,
         };
 
-        public void PrintMahStuff()
-        {
-            Logger.Log("Printin mah stuff please");
-            (submenus[0] as DebugMenuPropPlacer).PrintMahStuff();
-        }
-
         private void Awake()
         {
             submenus = new List<DebugSubmenu>()
