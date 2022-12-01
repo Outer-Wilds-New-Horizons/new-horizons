@@ -531,7 +531,7 @@ namespace NewHorizons.Utility.DebugMenu
                     "\n[" + 
                     allConversationsOnBody.Select(conversation => 
                         $"\t{{\n" +
-                        $"\t\t\"position\": {conversation.conversation.position},\n" +
+                        $"\t\t\"position\": {conversation.conversation.position}, \n" +
                         $"\t\t\"normal\": {conversation.conversation.normal}, \n" +
                         $"\t\t\"parentPath\": {conversation.conversation.parentPath}, \n" +
                         $"\t\t\"location\": {conversation.conversation.location}, \n" +
@@ -549,9 +549,10 @@ namespace NewHorizons.Utility.DebugMenu
                             $"\"type\": {spiral.spiral.type}, " +
                             $"\"variation\": {spiral.spiral.variation}" +
                             $"}}"
-                        ))
+                        )) +
+                        $"\t\t]"
                     )
-                );;
+                );
 
             foreach(string json in conversationsJSON)
             {
