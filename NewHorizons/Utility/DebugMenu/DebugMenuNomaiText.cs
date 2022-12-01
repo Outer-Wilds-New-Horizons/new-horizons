@@ -533,21 +533,21 @@ namespace NewHorizons.Utility.DebugMenu
                         "\t{\n" +
                         $"\t\t\"position\": {conversation.conversation.position},\n" +
                         $"\t\t\"normal\": {conversation.conversation.normal},\n" +
-                        $"\t\t\"parentPath\": {conversation.conversation.parentPath},\n" +
-                        $"\t\t\"location\": {conversation.conversation.location},\n" +
-                        $"\t\t\"rotation\": {conversation.conversation.rotation},\n" +
-                        $"\t\t\"rename\": {conversation.conversation.rename},\n" +
-                        $"\t\t\"seed\": {conversation.conversation.seed},\n" +
-                        $"\t\t\"type\": {conversation.conversation.type},\n" +
-                        $"\t\t\"xmlFile\": {conversation.conversation.xmlFile},\n" +
+                        (conversation.conversation.parentPath == ""                                          ? "" : $"\t\t\"parentPath\": \"{conversation.conversation.parentPath}\",\n") +
+                        (conversation.conversation.location   == NomaiTextInfo.NomaiTextLocation.UNSPECIFIED ? "" : $"\t\t\"location\": {conversation.conversation.location},\n") +
+                        (conversation.conversation.rotation   == new MVector3(0, 0, 0)                       ? "" : $"\t\t\"rotation\": {conversation.conversation.rotation},\n") +
+                        (conversation.conversation.rename     == ""                                          ? "" : $"\t\t\"rename\": \"{conversation.conversation.rename}\",\n") +
+                        (conversation.conversation.seed       == 0                                           ? "" : $"\t\t\"seed\": {conversation.conversation.seed},\n") +
+                        (conversation.conversation.type       == NomaiTextInfo.NomaiTextType.Wall            ? "" : $"\t\t\"type\": \"{conversation.conversation.type}\",\n") +
+                        $"\t\t\"xmlFile\": \"{conversation.conversation.xmlFile}\",\n" +
                         "\t\t\"arcInfo\": [\n" +
                         string.Join(",\n", conversation.spirals.Select(spiral => 
                             "\t\t\t{" +
                             $"\"position\": {spiral.spiral.position}, " +
                             $"\"zRotation\": {spiral.spiral.zRotation}, " +
-                            $"\"mirror\": {spiral.spiral.mirror}, " +
-                            $"\"type\": {spiral.spiral.type}, " +
-                            $"\"variation\": {spiral.spiral.variation}" +
+                            (spiral.spiral.mirror    == false                                   ? "" : $"\"mirror\": {spiral.spiral.mirror}, ") +
+                            (spiral.spiral.type      == NomaiTextArcInfo.NomaiTextArcType.Adult ? "" : $"\"type\": \"{spiral.spiral.type}\", ") +
+                            (spiral.spiral.variation == -1                                      ? "" : $"\"variation\": {spiral.spiral.variation}" +
                             "}"
                         )) +
                         "\t\t]"
