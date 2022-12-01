@@ -532,14 +532,14 @@ namespace NewHorizons.Utility.DebugMenu
                     allConversationsOnBody.Select(conversation => 
                         $"\t{{\n" +
                         $"\t\t\"position\": {conversation.conversation.position},\n" +
-                        $"\t\t\"normal\": {conversation.conversation.normal} \n" +
-                        $"\t\t\"parentPath\": {conversation.conversation.parentPath} \n" +
-                        $"\t\t\"location\": {conversation.conversation.location} \n" +
-                        $"\t\t\"rotation\": {conversation.conversation.rotation} \n" +
-                        $"\t\t\"rename\": {conversation.conversation.rename} \n" +
-                        $"\t\t\"seed\": {conversation.conversation.seed} \n" +
-                        $"\t\t\"type\": {conversation.conversation.type} \n" +
-                        $"\t\t\"xmlFile\": {conversation.conversation.xmlFile} \n" +
+                        $"\t\t\"normal\": {conversation.conversation.normal}, \n" +
+                        $"\t\t\"parentPath\": {conversation.conversation.parentPath}, \n" +
+                        $"\t\t\"location\": {conversation.conversation.location}, \n" +
+                        $"\t\t\"rotation\": {conversation.conversation.rotation}, \n" +
+                        $"\t\t\"rename\": {conversation.conversation.rename}, \n" +
+                        $"\t\t\"seed\": {conversation.conversation.seed}, \n" +
+                        $"\t\t\"type\": {conversation.conversation.type}, \n" +
+                        $"\t\t\"xmlFile\": {conversation.conversation.xmlFile}, \n" +
                         $"\t\t\"arcInfo\": [\n" +
                         String.Join(",\n", conversation.spirals.Select(spiral => 
                             $"\t\t\t{{" +
