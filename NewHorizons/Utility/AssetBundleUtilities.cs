@@ -88,6 +88,10 @@ namespace NewHorizons.Utility
                         material.SetOverrideTag("RenderType", renderType);
                         material.renderQueue = renderQueue;
                     }
+                    else
+                    {
+                        material.shader = replacementShader;
+                    }
                 }
             }
         }
