@@ -521,5 +521,43 @@ namespace NewHorizons.Utility.DebugMenu
             //    metadata.spiral.zRotation = metadata.spiral.zRotation;
             //});
         }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            var conversationsJSON = conversations
+                .GroupBy(conversation => conversation.planetConfig.name)
+                .Select(allConversationsOnBody => 
+                    allConversationsOnBody.Key + 
+                    "\n[" + 
+                    allConversationsOnBody.Select(conversation => 
+                        "\t{\n" +
+                        $"\t\t\"position\": {conversation.conversation.position},\n" +
+                        $"\t\t\"normal\": {conversation.conversation.normal},\n" +
+                        (conversation.conversation.parentPath == default                                     ? "" : $"\t\t\"parentPath\": \"{conversation.conversation.parentPath}\",\n") +
+                        (conversation.conversation.location   == NomaiTextInfo.NomaiTextLocation.UNSPECIFIED ? "" : $"\t\t\"location\": {conversation.conversation.location},\n") +
+                        (conversation.conversation.rotation   == default                                     ? "" : $"\t\t\"rotation\": {conversation.conversation.rotation},\n") +
+                        (conversation.conversation.rename     == default                                     ? "" : $"\t\t\"rename\": \"{conversation.conversation.rename}\",\n") +
+                        (conversation.conversation.seed       == default                                     ? "" : $"\t\t\"seed\": {conversation.conversation.seed},\n") +
+                        (conversation.conversation.type       == NomaiTextInfo.NomaiTextType.Wall            ? "" : $"\t\t\"type\": \"{conversation.conversation.type}\",\n") +
+                        $"\t\t\"xmlFile\": \"{conversation.conversation.xmlFile}\",\n" +
+                        "\t\t\"arcInfo\": [\n" +
+                        string.Join(",\n", conversation.spirals.Select(spiral => 
+                            "\t\t\t{" +
+                            $"\"position\": {spiral.spiral.position}, " +
+                            $"\"zRotation\": {spiral.spiral.zRotation}, " +
+                            (spiral.spiral.mirror    == default                                 ? "" : $"\"mirror\": {spiral.spiral.mirror}, ") +
+                            (spiral.spiral.type      == NomaiTextArcInfo.NomaiTextArcType.Adult ? "" : $"\"type\": \"{spiral.spiral.type}\", ") +
+                            (spiral.spiral.variation == -1                                      ? "" : $"\"variation\": {spiral.spiral.variation}") +
+                            "}"
+                        )) +
+                        "\t\t]"
+                    )
+                );
+
+            foreach(string json in conversationsJSON)
+            {
+                Logger.Log(json);
+            }
+        }
     }
 }
