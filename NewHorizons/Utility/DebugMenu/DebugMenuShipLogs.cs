@@ -42,10 +42,10 @@ namespace NewHorizons.Utility.DebugMenu
             Resources
                 .FindObjectsOfTypeAll<ShipLogEntryCard>()
                 .Join(
-                    go => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
+                    entry => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
                     {
-                        id = go.name,
-                        position = new MVector2(go.transform.localPosition.x, go.transform.localPosition.y)
+                        id = entry.name,
+                        position = new MVector2(entry.transform.localPosition.x, entry.transform.localPosition.y)
                     }, DebugMenu.jsonSettings),
                     ",\n"
                 );
