@@ -1,4 +1,6 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,14 +37,16 @@ namespace NewHorizons.Utility.DebugMenu
         {
         }
 
-        private string GetEntryPositionsJSON()
+        private string GetEntryPositionsJSON() 
         {
-            return string.Join(",\n", 
+            return string.Join(",\n",
                 Resources
                     .FindObjectsOfTypeAll<ShipLogEntryCard>()
-                    .Select(go => 
-                        "{ \"id\": \"" +go.name+ "\", \"position\": {\"x\": "+go.transform.localPosition.x+", \"y\": "+go.transform.localPosition.y+" } "
-                    )
+                    .Select(go => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
+                    {
+                        id = go.name,
+                        position = new MVector2(go.transform.localPosition.x, go.transform.localPosition.y)
+                    }, DebugMenu.jsonSettings))
             );
         }
 
