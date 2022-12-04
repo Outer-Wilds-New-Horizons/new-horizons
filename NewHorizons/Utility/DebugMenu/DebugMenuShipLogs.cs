@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using Newtonsoft.Json;
@@ -37,18 +38,17 @@ namespace NewHorizons.Utility.DebugMenu
         {
         }
 
-        private string GetEntryPositionsJSON() 
-        {
-            return string.Join(",\n",
-                Resources
-                    .FindObjectsOfTypeAll<ShipLogEntryCard>()
-                    .Select(go => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
+        private string GetEntryPositionsJSON() =>
+            Resources
+                .FindObjectsOfTypeAll<ShipLogEntryCard>()
+                .Join(
+                    go => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
                     {
                         id = go.name,
                         position = new MVector2(go.transform.localPosition.x, go.transform.localPosition.y)
-                    }, DebugMenu.jsonSettings))
-            );
-        }
+                    }, DebugMenu.jsonSettings),
+                    ",\n"
+                );
 
         internal override void OnGUI(DebugMenu menu)
         {

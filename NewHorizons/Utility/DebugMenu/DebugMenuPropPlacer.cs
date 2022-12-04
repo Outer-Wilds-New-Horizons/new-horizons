@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
@@ -388,9 +389,12 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void PrintNewConfigSection(DebugMenu menu)
         {
-            foreach(var body in _dpp.GetPropsConfigByBody())
+            foreach (var body in _dpp.GetPropsConfigByBody())
             {
-                var json = string.Join(",\n", body.Value.Select(detail => "\t"+ JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings)));
+                var json = body.Value.Join(
+                    detail => "\t" + JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings),
+                    ",\n"
+                );
                 Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }

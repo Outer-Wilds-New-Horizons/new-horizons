@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
@@ -527,12 +528,14 @@ namespace NewHorizons.Utility.DebugMenu
         {
             var conversationsJSON = conversations
                 .GroupBy(conversation => conversation.planetConfig.name)
-                .Select(allConversationsOnBody => 
-                    allConversationsOnBody.Key + 
-                    "\n[\n" +
-                    string.Join(",\n", allConversationsOnBody.Select(conversation => "\t"+ JsonConvert.SerializeObject(conversation.conversation, DebugMenu.jsonSettings))) +
-                    "\n]"
-                );
+                .Select(allConversationsOnBody =>
+                {
+                    var json = allConversationsOnBody.Join(
+                        conversation => "\t" + JsonConvert.SerializeObject(conversation.conversation, DebugMenu.jsonSettings),
+                        ",\n"
+                    );
+                    return $"{allConversationsOnBody.Key}\n[\n{json}\n]";
+                });
 
             foreach(string json in conversationsJSON)
             {
