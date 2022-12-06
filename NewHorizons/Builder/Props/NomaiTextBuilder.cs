@@ -718,6 +718,11 @@ namespace NewHorizons.Builder.Props
                     arc.transform.localPosition += parentPointLocalPosition + parent.transform.localPosition; 
                 }
 
+                var arcBounds = arc.GetComponent<MeshFilter>().sharedMesh.bounds;
+                var rect = AddDebugShape.AddRect(arc, arcBounds.size.x, arcBounds.size.y, Color.blue);
+                rect.transform.localPosition = arcBounds.center;
+                Logger.Log("shape: " + arcBounds.size + "    loc: " + arcBounds.center);
+
                 var i = 0;
                 var pts = arc.GetComponent<NomaiTextLine>().GetPoints();
                 foreach (var point in pts)
