@@ -659,10 +659,11 @@ namespace NewHorizons.Builder.Props
 
                 arcsByID.Add(textEntryID, arc);
 
+                var allParentPoints = parent.GetComponent<NomaiTextLine>().GetPoints();
                 arcDatas.Add(new ArcPlacementData {
                     arc=arc,
                     parent=parent,
-                    parentPoints=parent.GetComponent<NomaiTextLine>().GetPoints().Reverse().s,
+                    parentPoints=allParentPoints.Reverse().Take((int)(allParentPoints.Length * AVAILABLE_BASE_POINT_FRACTION)).ToArray(),
                     arcBasePoint=arc.GetComponent<NomaiTextLine>().GetPoints().Last(),
                     locatedAtParentPointIndex=0
                 }); // TODO: this (note: parentPoints should be parent.GetPoints().Reverse().Subarray(0, numPoints * AVAILABLE_BASE_POINT_FRACTION).Shuffle() )
