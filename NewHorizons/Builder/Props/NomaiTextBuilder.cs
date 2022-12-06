@@ -28,6 +28,8 @@ namespace NewHorizons.Builder.Props
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
 
+        private static float AVAILABLE_BASE_POINT_FRACTION = 0.1f;
+
         private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
         public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
         {
@@ -618,8 +620,19 @@ namespace NewHorizons.Builder.Props
             RefreshArcs(nomaiWallText, conversationZone, info);
         }
 
+        struct ArcPlacementData { 
+            public GameObject arc; 
+            public GameObject parent; 
+            public Vector3[] parentPoints; 
+            public Vector3 arcBasePoint; 
+            public int locatedAtParentPointIndex; // for caching, to help with placement backtracking algorithm
+        }
+
         internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
+            // TODO: check cache to see if this guy has a generated placement already
+            // cache key: hash of info.Serialized() + readFile(info.xmlFile)
+
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed);
 
@@ -631,6 +644,7 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
+            List<ArcPlacementData> arcDatas = new();
             var i = 0;
             foreach (var textData in dict.Values)
             {
@@ -641,12 +655,61 @@ namespace NewHorizons.Builder.Props
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
                 GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
-                arc.name = $"Arc {i} - Child of {parentID-1}";
+                arc.name = $"Arc {i} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
 
+                arcDatas.Add(new ArcPlacementData {
+                    arc=arc,
+                    parent=parent,
+                    parentPoints=parent.GetComponent<NomaiTextLine>().GetPoints().Reverse().s,
+                    arcBasePoint=arc.GetComponent<NomaiTextLine>().GetPoints().Last(),
+                    locatedAtParentPointIndex=0
+                }); // TODO: this (note: parentPoints should be parent.GetPoints().Reverse().Subarray(0, numPoints * AVAILABLE_BASE_POINT_FRACTION).Shuffle() )
+
                 i++;
             }
+
+            // TODO: implement backtracking for arc placement: place arcs in a row, if at any step there's an overlap with the newly placed arc, reposition arc and try again
+            // if already tried everything (or some maximum number of things), go back a step in the loop
+            for (var arcIndex = 0; arcIndex < arcDatas.Count; arcIndex++)
+            {
+                var currentArc = arcDatas[arcIndex];
+
+                bool valid = true;
+                for (; currentArc.locatedAtParentPointIndex < currentArc.parentPoints.Length; currentArc.locatedAtParentPointIndex++)
+                {
+                    // place currentArc at currentArc.parentPoints[currentArc.locatedAtParentPointIndex]
+
+                    // check for overlap with any previously placed arcs
+                    for(var k = 0; k < arcIndex; k++)
+                    {
+                        if (arcDatas[k].arc == currentArc.parent) continue; // children are allowed, expected even, to overlap their parent
+                        if (overlap(currentArc, arcDatas[k]))
+                        {
+                            valid = false;
+                            break;
+                        }
+                    }
+
+                    if (valid) break; // if we have a good placement, continue
+                    // if the placement isn't valid, start the loop over, trying the next parent point for placement
+                }
+
+                // backtrack - this arc has no valid placements (this needs to be re-worked. Maybe just re-place the spiral that it overlapped with?)
+                // actually, this is fine. we just need to sort the arcs with a tree traversal. Preorder is the best bet since we start with the root spiral already placed
+                //       0
+                //    1     2
+                //   3 4   5 6
+                //
+                //  0134256
+                if (!valid) { 
+                    currentArc.locatedAtParentPointIndex = 0;  // mark this spiral as "not started" (since we're scrapping this and trying again)
+                    i--; 
+                }
+            }
+
+            // TODO: cache these placements
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
@@ -719,7 +782,7 @@ namespace NewHorizons.Builder.Props
                 }
 
                 var arcBounds = arc.GetComponent<MeshFilter>().sharedMesh.bounds;
-                var rect = AddDebugShape.AddRect(arc, arcBounds.size.x, arcBounds.size.y, Color.blue);
+                var rect = AddDebugShape.AddRect(arc, arcBounds.size.x, arcBounds.size.y, new Color(Random.value, Random.value, Random.value) );
                 rect.transform.localPosition = arcBounds.center;
                 Logger.Log("shape: " + arcBounds.size + "    loc: " + arcBounds.center);
 
@@ -728,8 +791,10 @@ namespace NewHorizons.Builder.Props
                 foreach (var point in pts)
                 {
                     var color = Color.green;
+                    if (i <= pts.Length * AVAILABLE_BASE_POINT_FRACTION) color = new Color(0, 0.8f, 0);
                     if (i++ == 0) color = Color.red;
                     if (i == pts.Length) color = Color.yellow;
+
                     AddDebugShape.AddSphere(arc, 0.1f, color).transform.localPosition = point;
                 }
             }
