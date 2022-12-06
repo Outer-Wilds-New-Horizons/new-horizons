@@ -237,6 +237,18 @@ namespace NewHorizons.Utility.DebugMenu
                                 };
                             }
 
+                            if (GUILayout.Button("Print arcInfo config"))
+                            {
+                                var str = "\"arcInfo\": [\n";
+                                foreach (Transform spiral in conversationMeta.conversationGo.transform)
+                                {
+                                    str += $"{{\"position\": {{\"x\": {spiral.localPosition.x}, \"y\": {spiral.localPosition.y}}}, \"zRotation\": {spiral.localRotation.z}";
+                                    if (spiral.transform.localScale.x < 0) str += ", \"mirror\": true "; 
+                                    str += "},\n";
+                                }
+                                Logger.Log(str.Substring(0, str.Length-2) + "\n]");
+                            }
+
                             //
                             // spirals
                             //
