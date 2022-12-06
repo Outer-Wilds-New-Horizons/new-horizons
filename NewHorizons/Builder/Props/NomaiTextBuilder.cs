@@ -641,7 +641,7 @@ namespace NewHorizons.Builder.Props
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
                 GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
-                arc.name = $"Arc {i} - Child of {parentID}";
+                arc.name = $"Arc {i} - Child of {parentID-1}";
 
                 arcsByID.Add(textEntryID, arc);
 
@@ -699,11 +699,33 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
+                    arc.transform.localPosition = Vector3.zero; //point + parent.transform.localPosition; // set the spiral base to be at the same location as the point "point" is on the parent spiral
+
                     var points = parent.GetComponent<NomaiTextLine>().GetPoints();
                     var point = points[points.Count() / 2];
 
-                    arc.transform.localPosition = point;
-                    arc.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
+                    // step 1: rotate
+                    var rotation = Random.Range(0, 360);
+                    arc.transform.localRotation = Quaternion.Euler(0, 0, rotation);
+
+                    // step 2: recenter the spiral (aka move it so that its base (aka last point) is at its local 0, 0)
+                    // spirals often have a baked in offset, we want to undo this so the base (which is the last point, spiral points are reversed) is at the location we wanted in the previous line
+                    var baseLocation = Quaternion.AngleAxis(rotation, new Vector3(0, 0, 1)) * arc.GetComponent<NomaiTextLine>().GetPoints().Last();
+                    arc.transform.localPosition -= baseLocation; 
+
+                    // step 3: translate it so that the base is at the desired location
+                    var parentPointLocalPosition = Quaternion.AngleAxis(parent.transform.localEulerAngles.z, new Vector3(0, 0, 1)) * point;
+                    arc.transform.localPosition += parentPointLocalPosition + parent.transform.localPosition; 
+                }
+
+                var i = 0;
+                var pts = arc.GetComponent<NomaiTextLine>().GetPoints();
+                foreach (var point in pts)
+                {
+                    var color = Color.green;
+                    if (i++ == 0) color = Color.red;
+                    if (i == pts.Length) color = Color.yellow;
+                    AddDebugShape.AddSphere(arc, 0.1f, color).transform.localPosition = point;
                 }
             }
 
