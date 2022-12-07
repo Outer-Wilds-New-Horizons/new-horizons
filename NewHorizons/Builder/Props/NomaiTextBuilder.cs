@@ -11,6 +11,7 @@ using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 using OWML.Utils;
+using System;
 
 namespace NewHorizons.Builder.Props
 {
@@ -625,7 +626,8 @@ namespace NewHorizons.Builder.Props
             public GameObject parent; 
             public Vector3[] parentPoints; 
             public Vector3 arcBasePoint; 
-            public int locatedAtParentPointIndex; // for caching, to help with placement backtracking algorithm
+            public int locatedAtParentPointIndex; // for caching during placement backtracking algorithm
+            public Bounds localBounds;
         }
 
         internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
@@ -659,14 +661,18 @@ namespace NewHorizons.Builder.Props
 
                 arcsByID.Add(textEntryID, arc);
 
+                // note: spirals' points are reversed - the first point is the very tip of the spiral and the last is the base
+                // we only want the first AVAILABLE_BASE_POINT_FRACTION points, starting at the base (this is because we don't want to consider a point hidden within the spiral a valid starting point, the child spirals will cross the parent spiral if we do)
+                // and we want to order them randomly so spiral placement looks more organic - the order that the parentPoints array is in determines the order in which the backtracking algorithm prefers them
                 var allParentPoints = parent.GetComponent<NomaiTextLine>().GetPoints();
                 arcDatas.Add(new ArcPlacementData {
                     arc=arc,
                     parent=parent,
-                    parentPoints=allParentPoints.Reverse().Take((int)(allParentPoints.Length * AVAILABLE_BASE_POINT_FRACTION)).ToArray(),
+                    parentPoints=allParentPoints.Reverse().Take((int)(allParentPoints.Length * AVAILABLE_BASE_POINT_FRACTION)).OrderBy(point => Random.value).ToArray(),
                     arcBasePoint=arc.GetComponent<NomaiTextLine>().GetPoints().Last(),
-                    locatedAtParentPointIndex=0
-                }); // TODO: this (note: parentPoints should be parent.GetPoints().Reverse().Subarray(0, numPoints * AVAILABLE_BASE_POINT_FRACTION).Shuffle() )
+                    locatedAtParentPointIndex=0,
+                    localBounds=arc.GetComponent<MeshFilter>().sharedMesh.bounds
+                }); 
 
                 i++;
             }
@@ -686,7 +692,7 @@ namespace NewHorizons.Builder.Props
                     for(var k = 0; k < arcIndex; k++)
                     {
                         if (arcDatas[k].arc == currentArc.parent) continue; // children are allowed, expected even, to overlap their parent
-                        if (overlap(currentArc, arcDatas[k]))
+                        if (ArcsOverlap(currentArc, arcDatas[k]))
                         {
                             valid = false;
                             break;
@@ -711,6 +717,34 @@ namespace NewHorizons.Builder.Props
             }
 
             // TODO: cache these placements
+        }
+
+        internal static Boolean ArcsOverlap(ArcPlacementData arc1, ArcPlacementData arc2)
+        {
+            // TODO optimizations:
+            // 1) rotate and translate both arc bounds so that arc1 is at origin with 0 rotation
+
+            // https://www.gamedev.net/tutorials/_/technical/game-programming/2d-rotated-rectangle-collision-r2604/
+            
+            var getBoundsCorners = new Func<ArcPlacementData, Vector3[]>(arc =>
+                {
+                    var arcRotation = Quaternion.AngleAxis(arc.arc.transform.eulerAngles.z, new Vector3(0, 0, 1));
+                    var arcBoxRadius = arc.localBounds.size / 2f;
+            
+                    var arcCorner1 = arcRotation * (new Vector3( arcBoxRadius.x,  arcBoxRadius.y, 0) + arc.localBounds.center) + arc.arc.transform.localPosition;
+                    var arcCorner2 = arcRotation * (new Vector3(-arcBoxRadius.x,  arcBoxRadius.y, 0) + arc.localBounds.center) + arc.arc.transform.localPosition;
+                    var arcCorner3 = arcRotation * (new Vector3(-arcBoxRadius.x, -arcBoxRadius.y, 0) + arc.localBounds.center) + arc.arc.transform.localPosition;
+                    var arcCorner4 = arcRotation * (new Vector3( arcBoxRadius.x, -arcBoxRadius.y, 0) + arc.localBounds.center) + arc.arc.transform.localPosition;
+                    var arcCorners = new Vector3[]{ arcCorner1, arcCorner2, arcCorner3, arcCorner4 };
+                    return arcCorners;
+                }
+            );
+
+            var arc1corners = getBoundsCorners(arc1);
+            var arc2corners = getBoundsCorners(arc2);
+            
+            // axies are arc1corners[0] - arc1corners[1], arc1corners[1] - arc1corners[2], and the same for arc2corners
+            
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
