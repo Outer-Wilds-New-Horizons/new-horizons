@@ -677,7 +677,11 @@ namespace NewHorizons.Builder.Props
                 i++;
             }
 
-            // TODO: implement backtracking for arc placement: place arcs in a row, if at any step there's an overlap with the newly placed arc, reposition arc and try again
+                        
+            // TODO, big optimization: reorder arcDatas to be in the preorder tree traversal order
+
+
+            // backtracking for arc placement: place arcs one at a time, if at any step there's an overlap with the newly placed arc, reposition arc and try again
             // if already tried everything (or some maximum number of things), go back a step in the loop
             for (var arcIndex = 0; arcIndex < arcDatas.Count; arcIndex++)
             {
