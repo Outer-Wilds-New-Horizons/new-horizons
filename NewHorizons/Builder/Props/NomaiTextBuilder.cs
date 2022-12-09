@@ -621,7 +621,7 @@ namespace NewHorizons.Builder.Props
             RefreshArcs(nomaiWallText, conversationZone, info);
         }
 
-        struct ArcPlacementData { 
+        private struct ArcPlacementData { 
             public GameObject arc; 
             public GameObject parent; 
             public Vector3[] parentPoints; 
@@ -719,7 +719,7 @@ namespace NewHorizons.Builder.Props
             // TODO: cache these placements
         }
 
-        internal static Boolean ArcsOverlap(ArcPlacementData arc1, ArcPlacementData arc2)
+        private static Boolean ArcsOverlap(ArcPlacementData arc1, ArcPlacementData arc2)
         {
             // TODO optimizations:
             // 1) rotate and translate both arc bounds so that arc1 is at origin with 0 rotation
@@ -743,8 +743,48 @@ namespace NewHorizons.Builder.Props
             var arc1corners = getBoundsCorners(arc1);
             var arc2corners = getBoundsCorners(arc2);
             
-            // axies are arc1corners[0] - arc1corners[1], arc1corners[1] - arc1corners[2], and the same for arc2corners
-            
+            Vector3[] axies = new Vector3[]
+            {
+                arc1corners[0] - arc1corners[1], 
+                arc1corners[1] - arc1corners[2],
+                arc2corners[0] - arc2corners[1], 
+                arc2corners[1] - arc2corners[2],
+            };
+
+            var collision = true;
+            foreach (var axis in axies)
+            {
+                float arc1min = Mathf.Infinity;
+                float arc1max = Mathf.NegativeInfinity;
+                float arc2min = Mathf.Infinity;
+                float arc2max = Mathf.NegativeInfinity;
+                
+                foreach(var corner in arc1corners)
+                {
+                    var projection = Vector3.Project(corner, axis);
+                    var axisVal = Vector3.Dot(projection, axis);
+                    arc1min = Mathf.Min(arc1min, axisVal);
+                    arc1max = Mathf.Max(arc1min, axisVal);
+                }
+                
+                foreach(var corner in arc2corners)
+                {
+                    var projection = Vector3.Project(corner, axis);
+                    var axisVal = Vector3.Dot(projection, axis);
+                    arc1min = Mathf.Min(arc1min, axisVal);
+                    arc1max = Mathf.Max(arc1min, axisVal);
+                }
+
+                // if either of these conditions are true, then this is not a separating axis
+                if (arc1max >= arc2min && arc1min <= arc2min) continue;
+                if (arc2max >= arc1min && arc2min <= arc1min) continue;
+
+                // we've found a separating axis so there's no collision
+                collision = false;
+                break;
+            }
+
+            return collision;
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
