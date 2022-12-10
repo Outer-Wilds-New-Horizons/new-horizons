@@ -19,7 +19,9 @@ namespace NewHorizons.Handlers
             UI
         }
 
-        public static string GetTranslation(string text, TextType type)
+        public static string GetTranslation(string text, TextType type) => GetTranslation(text, type, true);
+
+        public static string GetTranslation(string text, TextType type, bool warn)
         {
             Dictionary<TextTranslation.Language, Dictionary<string, string>> dictionary;
             var language = TextTranslation.Get().m_language;
@@ -36,7 +38,7 @@ namespace NewHorizons.Handlers
                     dictionary = _uiTranslationDictionary;
                     break;
                 default:
-                    Logger.LogVerbose($"Invalid TextType {type}");
+                    if (warn) Logger.LogVerbose($"Invalid TextType {type}");
                     return text;
             }
 
@@ -45,14 +47,14 @@ namespace NewHorizons.Handlers
                 if (table.TryGetValue(text, out var translatedText))
                     return translatedText;
 
-            Logger.LogVerbose($"Defaulting to english for {text}");
+            if (warn) Logger.LogVerbose($"Defaulting to english for {text}");
 
             // Try to default to English
             if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
                 if (englishTable.TryGetValue(text, out var englishText))
                     return englishText;
 
-            Logger.LogVerbose($"Defaulting to key for {text}");
+            if (warn) Logger.LogVerbose($"Defaulting to key for {text}");
 
             // Default to the key
             return text;

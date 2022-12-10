@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "Celestial Body Schema",
   "type": "object",
-  "description": "Describes a body to generate",
+  "description": "Describes a celestial body to generate",
   "additionalProperties": false,
   "required": [
     "name"
@@ -33,12 +33,6 @@
     "Bramble": {
       "description": "Add bramble nodes to this planet and/or make this planet a bramble dimension",
       "$ref": "#/definitions/BrambleModule"
-    },
-    "buildPriority": {
-      "type": "integer",
-      "description": "Set to a higher number if you wish for this body to be built sooner",
-      "format": "int32",
-      "default": -1
     },
     "canShowOnTitle": {
       "type": "boolean",
@@ -227,21 +221,21 @@
       "properties": {
         "r": {
           "type": "integer",
-          "description": "The red component of this colour",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "g": {
           "type": "integer",
-          "description": "The green component of this colour",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "b": {
           "type": "integer",
-          "description": "The blue component of this colour",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
@@ -297,7 +291,7 @@
         },
         "hasTrees": {
           "type": "boolean",
-          "description": "Does this planet have trees? This will change the \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+          "description": "Does this planet have trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
         },
         "hasRain": {
           "type": "boolean",
@@ -503,10 +497,10 @@
           "description": "A scale height used for a number of things. Should be the approximate radius of the body.",
           "format": "float"
         },
-        "zeroGravityRadius": {
-          "type": "number",
-          "description": "Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.",
-          "format": "float"
+        "gravityVolumePriority": {
+          "type": "integer",
+          "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
+          "format": "int32"
         }
       }
     },
@@ -581,6 +575,11 @@
           "format": "float",
           "default": 750.0
         },
+        "vinePrefab": {
+          "description": "The dimension the vines will be copied from.\nOnly a handful are available due to batched colliders.",
+          "default": "hub",
+          "$ref": "#/definitions/VinePrefabType"
+        },
         "allowedEntrances": {
           "type": "array",
           "description": "An array of integers from 0-5. By default, all entrances are allowed. To force this dimension to warp players in from only one point (like the anglerfish nest dimension in the base game) set this value to [3], [5], or similar. Values of 0-5 only.",
@@ -590,6 +589,24 @@
           }
         }
       }
+    },
+    "VinePrefabType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "None",
+        "Hub",
+        "Cluster",
+        "SmallNest",
+        "ExitOnly"
+      ],
+      "enum": [
+        "none",
+        "hub",
+        "cluster",
+        "smallNest",
+        "exitOnly"
+      ]
     },
     "BrambleNodeInfo": {
       "type": "object",
@@ -1061,6 +1078,10 @@
           "type": "string",
           "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
@@ -1111,6 +1132,18 @@
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
         }
       }
     },
@@ -1234,6 +1267,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
@@ -1311,7 +1348,8 @@
         "Recorder",
         "PreCrashRecorder",
         "PreCrashComputer",
-        "Trailmarker"
+        "Trailmarker",
+        "CairnVariant"
       ],
       "enum": [
         "wall",
@@ -1321,7 +1359,8 @@
         "recorder",
         "preCrashRecorder",
         "preCrashComputer",
-        "trailmarker"
+        "trailmarker",
+        "cairnVariant"
       ]
     },
     "NomaiTextLocation": {
@@ -1345,6 +1384,12 @@
         "position": {
           "description": "Position of the raft",
           "$ref": "#/definitions/MVector3"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
@@ -1425,7 +1470,14 @@
         },
         "reveals": {
           "type": "array",
-          "description": "The ship log entries revealed after finishing this slide reel.",
+          "description": "The ship log facts revealed after finishing this slide reel.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "playWithShipLogFacts": {
+          "type": "array",
+          "description": "The ship log facts that make the reel play when they are displayed in the computer (by selecting entries or arrows).\nYou should probably include facts from `reveals` here.\nIf you only specify a rumor fact, then it would only play in its ship log entry if this has revealed only\nrumor facts because an entry with revealed explore facts doesn't display rumor facts.",
           "items": {
             "type": "string"
           }
@@ -1449,6 +1501,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1504,7 +1560,7 @@
         },
         "reveal": {
           "type": "string",
-          "description": "Ship log entry revealed when viewing this slide"
+          "description": "Ship log fact revealed when viewing this slide"
         },
         "spotIntensityMod": {
           "type": "number",
@@ -1726,11 +1782,6 @@
             "$ref": "#/definitions/TimeValuePair"
           }
         },
-        "makeZeroGVolume": {
-          "type": "boolean",
-          "description": "Only for White Holes. Should this white hole repel the player from it.",
-          "default": true
-        },
         "pairedSingularity": {
           "type": "string",
           "description": "The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill\nthe player"
@@ -1743,9 +1794,19 @@
           "description": "Position of the singularity",
           "$ref": "#/definitions/MVector3"
         },
-        "size": {
+        "rotation": {
+          "description": "Rotation of the singularity. Determines the direction you come out of a white hole",
+          "$ref": "#/definitions/MVector3"
+        },
+        "horizonRadius": {
           "type": "number",
-          "description": "Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that\nhas warped effects in it.",
+          "description": "Radius of the event horizon (solid part)",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "distortRadius": {
+          "type": "number",
+          "description": "Radius of the distortion effects. Defaults to 2.5 * horizonRadius",
           "format": "float",
           "minimum": 0.0
         },
@@ -1756,6 +1817,17 @@
         "type": {
           "description": "Type of singularity (white hole or black hole)",
           "$ref": "#/definitions/SingularityType"
+        },
+        "hasWarpEffects": {
+          "type": "boolean",
+          "description": "Whether a black hole emits blue particles upon warping. It doesn't scale, so disabling this for small black holes is recommended"
+        },
+        "renderQueueOverride": {
+          "type": "integer",
+          "description": "Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help",
+          "format": "int32",
+          "maximum": 3500.0,
+          "minimum": 2501.0
         }
       }
     },
@@ -1827,6 +1899,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -1881,6 +1957,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -1943,6 +2023,10 @@
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
         },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
@@ -1977,6 +2061,10 @@
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2425,6 +2513,20 @@
             "$ref": "#/definitions/AudioVolumeInfo"
           }
         },
+        "destructionVolumes": {
+          "type": "array",
+          "description": "Add destruction volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/DestructionVolumeInfo"
+          }
+        },
+        "fluidVolumes": {
+          "type": "array",
+          "description": "Add fluid volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/FluidVolumeInfo"
+          }
+        },
         "hazardVolumes": {
           "type": "array",
           "description": "Add hazard volumes to this planet.",
@@ -2446,6 +2548,13 @@
             "$ref": "#/definitions/VolumeInfo"
           }
         },
+        "lightSourceVolumes": {
+          "type": "array",
+          "description": "Add light source volumes to this planet. These will activate rafts and other light detectors.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
         "mapRestrictionVolumes": {
           "type": "array",
           "description": "Add map restriction volumes to this planet.",
@@ -2458,6 +2567,24 @@
           "description": "Add notification volumes to this planet.",
           "items": {
             "$ref": "#/definitions/NotificationVolumeInfo"
+          }
+        },
+        "oxygenVolumes": {
+          "type": "array",
+          "description": "Add oxygen volumes to this planet.",
+          "items": {
+            "$ref": "#/definitions/OxygenVolumeInfo"
+          }
+        },
+        "probe": {
+          "description": "Add probe-specific volumes to this planet.",
+          "$ref": "#/definitions/ProbeModule"
+        },
+        "referenceFrameBlockerVolumes": {
+          "type": "array",
+          "description": "Add reference frame blocker volumes to this planet. These will stop the player from seeing/targeting any reference frames.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
           }
         },
         "revealVolumes": {
@@ -2473,6 +2600,28 @@
           "items": {
             "$ref": "#/definitions/VolumeInfo"
           }
+        },
+        "rulesets": {
+          "description": "Add ruleset volumes to this planet.",
+          "$ref": "#/definitions/RulesetModule"
+        },
+        "speedTrapVolumes": {
+          "type": "array",
+          "description": "Add speed trap volumes to this planet. Slows down the player when they enter this volume.",
+          "items": {
+            "$ref": "#/definitions/SpeedTrapVolumeInfo"
+          }
+        },
+        "visorEffects": {
+          "description": "Add visor effect volumes to this planet.",
+          "$ref": "#/definitions/VisorEffectModule"
+        },
+        "zeroGravityVolumes": {
+          "type": "array",
+          "description": "Add zero-gravity volumes to this planet. \nGood for surrounding planets which are using a static position to stop the player being pulled away.",
+          "items": {
+            "$ref": "#/definitions/PriorityVolumeInfo"
+          }
         }
       }
     },
@@ -2480,6 +2629,18 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
         "position": {
           "description": "The location of this volume. Optional (will default to 0,0,0).",
           "$ref": "#/definitions/MVector3"
@@ -2487,11 +2648,16 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2500,6 +2666,10 @@
         "audio": {
           "type": "string",
           "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
+        },
+        "clipSelection": {
+          "default": "random",
+          "$ref": "#/definitions/ClipSelectionType"
         },
         "track": {
           "description": "The audio track of this audio volume",
@@ -2518,8 +2688,40 @@
           "default": 1.0,
           "maximum": 1.0,
           "minimum": 0.0
+        },
+        "fadeSeconds": {
+          "type": "number",
+          "description": "How long it will take to fade this sound in and out when entering/exiting this volume.",
+          "format": "float",
+          "default": 2.0
+        },
+        "noFadeFromBeginning": {
+          "type": "boolean",
+          "description": "Play the sound instantly without any fading."
+        },
+        "randomizePlayhead": {
+          "type": "boolean",
+          "description": "Randomize what time the audio starts at."
+        },
+        "pauseOnFadeOut": {
+          "type": "boolean",
+          "description": "Pause the music when exiting the volume."
         }
       }
+    },
+    "ClipSelectionType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "RANDOM",
+        "SEQUENTIAL",
+        "MANUAL"
+      ],
+      "enum": [
+        "random",
+        "sequential",
+        "manual"
+      ]
     },
     "AudioMixerTrackName": {
       "type": "string",
@@ -2561,6 +2763,171 @@
         "slideReelMusic"
       ]
     },
+    "DestructionVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shrinkBodies": {
+          "type": "boolean",
+          "description": "Whether the bodies will shrink when they enter this volume or just disappear instantly.",
+          "default": true
+        },
+        "onlyAffectsPlayerAndShip": {
+          "type": "boolean",
+          "description": "Whether this volume only affects the player and ship."
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume.",
+          "default": "default",
+          "$ref": "#/definitions/DeathType"
+        }
+      }
+    },
+    "DeathType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Default",
+        "Impact",
+        "Asphyxiation",
+        "Energy",
+        "Supernova",
+        "Digestion",
+        "BigBang",
+        "Crushed",
+        "Meditation",
+        "TimeLoop",
+        "Lava",
+        "BlackHole",
+        "Dream",
+        "DreamExplosion",
+        "CrushedByElevator"
+      ],
+      "enum": [
+        "default",
+        "impact",
+        "asphyxiation",
+        "energy",
+        "supernova",
+        "digestion",
+        "bigBang",
+        "crushed",
+        "meditation",
+        "timeLoop",
+        "lava",
+        "blackHole",
+        "dream",
+        "dreamExplosion",
+        "crushedByElevator"
+      ]
+    },
+    "FluidVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "density": {
+          "type": "number",
+          "description": "Density of the fluid. The higher the density, the harder it is to go through this fluid.",
+          "format": "float",
+          "default": 1.2
+        },
+        "type": {
+          "description": "The type of fluid for this volume.",
+          "$ref": "#/definitions/FluidType2"
+        },
+        "alignmentFluid": {
+          "type": "boolean",
+          "description": "Should the player and rafts align to this fluid.",
+          "default": true
+        },
+        "allowShipAutoroll": {
+          "type": "boolean",
+          "description": "Should the ship align to the fluid by rolling."
+        },
+        "disableOnStart": {
+          "type": "boolean",
+          "description": "Disable this fluid volume immediately?"
+        }
+      }
+    },
+    "FluidType2": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "NONE",
+        "AIR",
+        "WATER",
+        "CLOUD",
+        "SAND",
+        "PLASMA",
+        "FOG"
+      ],
+      "enum": [
+        "none",
+        "air",
+        "water",
+        "cloud",
+        "sand",
+        "plasma",
+        "fog"
+      ]
+    },
     "HazardVolumeInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2572,11 +2939,16 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2616,7 +2988,8 @@
         "FIRE",
         "SANDFALL",
         "ELECTRICITY",
-        "RAPIDS"
+        "RAPIDS",
+        "RIVERHEAT"
       ],
       "enum": [
         "none",
@@ -2626,7 +2999,8 @@
         "fire",
         "sandfall",
         "electricity",
-        "rapids"
+        "rapids",
+        "riverHeat"
       ]
     },
     "InstantDamageType": {
@@ -2654,11 +3028,16 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2677,11 +3056,16 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2732,6 +3116,63 @@
         }
       }
     },
+    "OxygenVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "treeVolume": {
+          "type": "boolean",
+          "description": "Does this volume contain trees? This will change the notification from \"Oxygen tank refilled\" to \"Trees detected, oxygen tank refilled\"."
+        },
+        "playRefillAudio": {
+          "type": "boolean",
+          "description": "Whether to play the oxygen tank refill sound or just fill quietly.",
+          "default": true
+        }
+      }
+    },
+    "ProbeModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "destructionVolumes": {
+          "type": "array",
+          "description": "Add probe destruction volumes to this planet. These will delete your probe.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "safetyVolumes": {
+          "type": "array",
+          "description": "Add probe safety volumes to this planet. These will stop the probe destruction volumes from working.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        }
+      }
+    },
     "RevealVolumeInfo": {
       "type": "object",
       "additionalProperties": false,
@@ -2743,11 +3184,16 @@
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         },
         "parentPath": {
           "type": "string",
           "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
@@ -2756,17 +3202,24 @@
         "maxAngle": {
           "type": "number",
           "description": "The max view angle (in degrees) the player can see the volume with to unlock the fact (`observe` only)",
-          "format": "float"
+          "format": "float",
+          "default": 180.0
         },
         "maxDistance": {
           "type": "number",
           "description": "The max distance the user can be away from the volume to reveal the fact (`snapshot` and `observe` only)",
-          "format": "float"
+          "format": "float",
+          "default": -1.0
         },
         "revealOn": {
           "description": "What needs to be done to the volume to unlock the facts",
           "default": "enter",
           "$ref": "#/definitions/RevealVolumeType"
+        },
+        "revealFor": {
+          "description": "What can enter the volume to unlock the facts (`enter` only)",
+          "default": "both",
+          "$ref": "#/definitions/EnterType"
         },
         "reveals": {
           "type": "array",
@@ -2794,6 +3247,394 @@
         "observe",
         "snapshot"
       ]
+    },
+    "EnterType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Both",
+        "Player",
+        "Probe"
+      ],
+      "enum": [
+        "both",
+        "player",
+        "probe"
+      ]
+    },
+    "RulesetModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "antiTravelMusicRulesets": {
+          "type": "array",
+          "description": "Add anti travel music rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/VolumeInfo"
+          }
+        },
+        "playerImpactRulesets": {
+          "type": "array",
+          "description": "Add player impact rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/PlayerImpactRulesetInfo"
+          }
+        },
+        "probeRulesets": {
+          "type": "array",
+          "description": "Add probe rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/ProbeRulesetInfo"
+          }
+        },
+        "thrustRulesets": {
+          "type": "array",
+          "description": "Add thrust rulesets to this planet.",
+          "items": {
+            "$ref": "#/definitions/ThrustRulesetInfo"
+          }
+        }
+      }
+    },
+    "PlayerImpactRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "minImpactSpeed": {
+          "type": "number",
+          "description": "Minimum player impact speed. Player will take the minimum amount of damage if they impact something at this speed.",
+          "format": "float",
+          "default": 20.0
+        },
+        "maxImpactSpeed": {
+          "type": "number",
+          "description": "Maximum player impact speed. Players will die if they impact something at this speed.",
+          "format": "float",
+          "default": 40.0
+        }
+      }
+    },
+    "ProbeRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "overrideProbeSpeed": {
+          "type": "boolean",
+          "description": "Should this ruleset override the probe's speed?"
+        },
+        "probeSpeed": {
+          "type": "number",
+          "description": "The speed of the probe while in this ruleset volume.",
+          "format": "float"
+        },
+        "overrideLanternRange": {
+          "type": "boolean",
+          "description": "Should this ruleset override the range of probe's light?"
+        },
+        "lanternRange": {
+          "type": "number",
+          "description": "The range of probe's light while in this ruleset volume.",
+          "format": "float"
+        },
+        "ignoreAnchor": {
+          "type": "boolean",
+          "description": "Stop the probe from attaching to anything while in this ruleset volume."
+        }
+      }
+    },
+    "ThrustRulesetInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "thrustLimit": {
+          "type": "number",
+          "description": "Limit how fast you can fly with your jetpack while in this ruleset volume.",
+          "format": "float",
+          "default": "Infinity"
+        },
+        "nerfJetpackBooster": {
+          "type": "boolean",
+          "description": "Nerf the jetpack booster."
+        },
+        "nerfDuration": {
+          "type": "number",
+          "description": "How long the jetpack booster will be nerfed.",
+          "format": "float",
+          "default": 0.5
+        }
+      }
+    },
+    "SpeedTrapVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "speedLimit": {
+          "type": "number",
+          "description": "The speed the volume will slow you down to when you enter it.",
+          "format": "float",
+          "default": 10.0
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "How fast it will slow down the player to the speed limit.",
+          "format": "float",
+          "default": 3.0
+        }
+      }
+    },
+    "VisorEffectModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frostEffectVolumes": {
+          "type": "array",
+          "description": "Add visor frost effect volumes to this planet. This is the ghost matter effect.",
+          "items": {
+            "$ref": "#/definitions/FrostEffectVolumeInfo"
+          }
+        },
+        "rainEffectVolumes": {
+          "type": "array",
+          "description": "Add visor rain effect volumes to this planet. You can see this on Giant's Deep.",
+          "items": {
+            "$ref": "#/definitions/RainEffectVolumeInfo"
+          }
+        }
+      }
+    },
+    "FrostEffectVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "frostRate": {
+          "type": "number",
+          "description": "The rate at which the frost effect will get stronger",
+          "format": "float",
+          "default": 0.5
+        },
+        "maxFrost": {
+          "type": "number",
+          "description": "The maximum strength of frost this volume can give",
+          "format": "float",
+          "default": 0.91,
+          "maximum": 1.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "RainEffectVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        },
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "dropletRate": {
+          "type": "number",
+          "description": "The rate at which the rain droplet effect will happen",
+          "format": "float",
+          "default": 0.1
+        },
+        "streakRate": {
+          "type": "number",
+          "description": "The rate at which the rain streak effect will happen",
+          "format": "float",
+          "default": 1.0
+        }
+      }
+    },
+    "PriorityVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "layer": {
+          "type": "integer",
+          "description": "The layer of this volume.",
+          "format": "int32",
+          "default": 0
+        },
+        "priority": {
+          "type": "integer",
+          "description": "The priority for this volume's effects to be applied. \nEx, a player in a gravity volume with priority 0, and zero-gravity volume with priority 1, will feel zero gravity.",
+          "format": "int32",
+          "default": 1
+        }
+      }
     }
   },
   "$docs": {

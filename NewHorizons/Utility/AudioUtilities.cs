@@ -1,4 +1,5 @@
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,12 +35,11 @@ namespace NewHorizons.Utility
                 }
             }
 
-            try
+            if (EnumUtils.TryParse<AudioType>(audio, out AudioType type))
             {
-                var audioType = (AudioType)Enum.Parse(typeof(AudioType), audio);
-                source._audioLibraryClip = audioType;
+                source._audioLibraryClip = type;
             }
-            catch
+            else
             {
                 var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
                 if (audioClip == null) Logger.Log($"Couldn't find audio clip {audio}");

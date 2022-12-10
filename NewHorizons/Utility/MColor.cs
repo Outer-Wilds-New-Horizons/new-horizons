@@ -15,19 +15,19 @@ namespace NewHorizons.Utility
         }
 
         /// <summary>
-        /// The red component of this colour
+        /// The red component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
         [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
         public int r;
 
         /// <summary>
-        /// The green component of this colour
+        /// The green component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
         [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
         public int g;
-        
+
         /// <summary>
-        /// The blue component of this colour
+        /// The blue component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
         [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
         public int b;

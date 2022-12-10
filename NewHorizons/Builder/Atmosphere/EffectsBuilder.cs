@@ -6,8 +6,25 @@ namespace NewHorizons.Builder.Atmosphere
 {
     public static class EffectsBuilder
     {
+        private static GameObject _rainEmitterPrefab;
+        private static GameObject _snowEmitterPrefab;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_rainEmitterPrefab == null) _rainEmitterPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain").InstantiateInactive().Rename("Prefab_Effects_Rain").DontDestroyOnLoad();
+            if (_snowEmitterPrefab == null) _snowEmitterPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes").InstantiateInactive().Rename("Prefab_Effects_Snowflakes").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, PlanetConfig config, float surfaceSize)
         {
+            InitPrefabs();
+
             GameObject effectsGO = new GameObject("Effects");
             effectsGO.SetActive(false);
             effectsGO.transform.parent = sector?.transform ?? planetGO.transform;
@@ -34,7 +51,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (config.Atmosphere.hasRain)
             {
-                var rainGO = GameObject.Instantiate(SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Effects_GDInterior/Effects_GD_Rain"), effectsGO.transform);
+                var rainGO = GameObject.Instantiate(_rainEmitterPrefab, effectsGO.transform);
                 rainGO.name = "RainEmitter";
                 rainGO.transform.position = planetGO.transform.position;
 
@@ -58,7 +75,7 @@ namespace NewHorizons.Builder.Atmosphere
                 snowGO.transform.position = planetGO.transform.position;
                 for (int i = 0; i < 5; i++)
                 {
-                    var snowEmitter = GameObject.Instantiate(SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Effects_BH/Effects_BH_Snowflakes"), snowGO.transform);
+                    var snowEmitter = GameObject.Instantiate(_snowEmitterPrefab, snowGO.transform);
                     snowEmitter.name = "SnowEmitter";
                     snowEmitter.transform.position = planetGO.transform.position;
 

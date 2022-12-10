@@ -47,33 +47,36 @@ namespace NewHorizons.Builder.General
                 spawnPoint._triggerVolumes = new OWTriggerVolume[0];
 
                 var ship = SearchUtilities.Find("Ship_Body");
-                ship.transform.position = spawnPoint.transform.position;
-
-                if (module.shipSpawnRotation != null)
+                if (ship != null)
                 {
-                    ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
-                }
-                else
-                {
-                    ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
-                    // Move it up a bit more when aligning to surface
-                    ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
-                }
+                    ship.transform.position = spawnPoint.transform.position;
 
-                ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
+                    if (module.shipSpawnRotation != null)
+                    {
+                        ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
+                    }
+                    else
+                    {
+                        ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
+                        // Move it up a bit more when aligning to surface
+                        ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
+                    }
 
-                if (Main.Instance.IsWarpingFromShip)
-                {
-                    Logger.LogVerbose("Overriding player spawn to be inside ship");
-                    GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
-                    playerSpawnGO.transform.parent = ship.transform;
-                    playerSpawnGO.layer = 8;
+                    ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
 
-                    playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
+                    if (Main.Instance.IsWarpingFromShip)
+                    {
+                        Logger.LogVerbose("Overriding player spawn to be inside ship");
+                        GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
+                        playerSpawnGO.transform.parent = ship.transform;
+                        playerSpawnGO.layer = 8;
 
-                    playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
-                    playerSpawn._triggerVolumes = new OWTriggerVolume[0];
-                    playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                        playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
+
+                        playerSpawn = playerSpawnGO.AddComponent<SpawnPoint>();
+                        playerSpawn._triggerVolumes = new OWTriggerVolume[0];
+                        playerSpawnGO.transform.localRotation = Quaternion.Euler(0, 0, 0);
+                    }
                 }
             }
 
@@ -93,6 +96,7 @@ namespace NewHorizons.Builder.General
             suitUpQueued = false;
             if (!Locator.GetPlayerController()._isWearingSuit)
             {
+                Locator.GetPlayerSuit().SuitUp(false, true, true);
                 var spv = SearchUtilities.Find("Ship_Body/Module_Supplies/Systems_Supplies/ExpeditionGear")?.GetComponent<SuitPickupVolume>();
                 if (spv != null)
                 {
@@ -107,10 +111,6 @@ namespace NewHorizons.Builder.General
                     {
                         handler.Method.Invoke(handler.Target, new object[] { command });
                     }
-                }
-                else
-                {
-                    Locator.GetPlayerTransform().GetComponent<PlayerSpacesuit>().SuitUp(false, true, true);
                 }
             }
         }

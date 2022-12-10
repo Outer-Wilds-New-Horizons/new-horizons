@@ -29,22 +29,24 @@ namespace NewHorizons.Components
         {
             _blackHolePrefab = SearchUtilities.Find(_blackHolePath);
             _whiteHolePrefab = SearchUtilities.Find(_whiteHolePath);
+
+            MakeBlackHole();
+            MakeWhiteHole();
+
+            if (_oneShotSource == null)
+            {
+                var audioObject = new GameObject("WarpOneShot");
+                audioObject.transform.parent = transform;
+                audioObject.SetActive(false);
+                _oneShotSource = audioObject.AddComponent<OWAudioSource>();
+                _oneShotSource._track = OWAudioMixer.TrackName.Ship;
+                audioObject.SetActive(true);
+            }
         }
 
         public void Start()
         {
-            MakeBlackHole();
-            MakeWhiteHole();
-
             _isWarpingIn = false;
-
-            var audioObject = new GameObject("WarpOneShot");
-            audioObject.transform.parent = transform;
-            audioObject.SetActive(false);
-            _oneShotSource = audioObject.AddComponent<OWAudioSource>();
-            _oneShotSource._track = OWAudioMixer.TrackName.Ship;
-            audioObject.SetActive(true);
-
             GlobalMessenger.AddListener("FinishOpenEyes", new Callback(OnFinishOpenEyes));
         }
 
@@ -55,6 +57,9 @@ namespace NewHorizons.Components
 
         private void MakeBlackHole()
         {
+            if (_blackhole != null) return;
+            if (_blackHolePrefab == null) return;
+
             var blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().material.shader;
             if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
@@ -79,6 +84,9 @@ namespace NewHorizons.Components
 
         private void MakeWhiteHole()
         {
+            if (_whitehole != null) return;
+            if (_whiteHolePrefab == null) return;
+
             var whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().material.shader;
             if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
