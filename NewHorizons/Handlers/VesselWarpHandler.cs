@@ -160,7 +160,7 @@ namespace NewHorizons.Handlers
 
             vesselObject.SetActive(true);
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
 
             return eyeSpawnPoint;
         }
@@ -188,7 +188,7 @@ namespace NewHorizons.Handlers
                 vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             }
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
 
             return spawnPoint;
         }
