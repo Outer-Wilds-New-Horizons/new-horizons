@@ -613,6 +613,12 @@ namespace NewHorizons.Builder.Props
 
             nomaiWallText.SetTextAsset(text);
 
+            // #433 fuzzy stranger text
+            if (info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            {
+                StreamingHandler.SetUpStreaming(_ghostArcPrefabs.First(), sector);
+            }
+
             return nomaiWallText;
         }
 
