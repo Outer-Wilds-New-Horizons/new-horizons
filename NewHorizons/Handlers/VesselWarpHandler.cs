@@ -12,7 +12,6 @@ namespace NewHorizons.Handlers
 {
     public static class VesselWarpHandler
     {
-        public static AssetBundle VesselBundle { get; private set; }
         public static GameObject VesselPrefab { get; private set; }
         public static GameObject VesselObject { get; private set; }
         public static VesselWarpController WarpController { get; private set; }
@@ -22,8 +21,7 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselBundle = Instance.ModHelper.Assets.LoadBundle("Assets/vessel.newhorizons");
-            VesselPrefab = VesselBundle.LoadAsset<GameObject>("Vessel_Body");
+            VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
         public static void LoadVessel()
@@ -86,7 +84,7 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = GameObject.Instantiate(VesselPrefab);
+            var vesselObject = VesselPrefab.InstantiateInactive();
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
@@ -100,18 +98,11 @@ namespace NewHorizons.Handlers
             vesselAO.Register();
             vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
 
-            VesselOrbLocker vesselOrbLocker = vesselObject.GetComponent<VesselOrbLocker>();
-            vesselOrbLocker.InitializeOrbs();
-            vesselOrbLocker.AddLocks();
-
             if (system.Config.Vessel?.vesselPosition != null)
                 vesselObject.transform.position = system.Config.Vessel.vesselPosition;
 
             if (system.Config.Vessel?.vesselRotation != null)
                 vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
-
-            vesselOrbLocker.RemoveLocks();
-            vesselOrbLocker.AddLockToWarpOrb();
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 
@@ -154,8 +145,6 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
-            vesselObject.SetActive(true);
-
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
             if (system.Config.Vessel?.warpExitPosition != null)
@@ -168,6 +157,8 @@ namespace NewHorizons.Handlers
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
+
+            vesselObject.SetActive(true);
 
             Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
 

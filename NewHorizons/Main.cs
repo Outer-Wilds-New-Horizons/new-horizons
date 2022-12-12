@@ -37,6 +37,7 @@ namespace NewHorizons
     public class Main : ModBehaviour
     {
         public static AssetBundle NHAssetBundle { get; private set; }
+        public static AssetBundle NHPrivateAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -57,6 +58,7 @@ namespace NewHorizons
 
         public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem => _currentStarSystem;
+        public bool TimeLoopEnabled => SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
@@ -195,7 +197,8 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
-            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/xen.newhorizons");
+            NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
+            NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);

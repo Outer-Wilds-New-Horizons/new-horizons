@@ -6,6 +6,7 @@ using System.Xml;
 using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Components;
 
 namespace NewHorizons.Builder.Props
 {
@@ -114,7 +115,7 @@ namespace NewHorizons.Builder.Props
                 interact.enabled = false;
             }
 
-            var dialogueTree = conversationZone.AddComponent<CharacterDialogueTree>();
+            var dialogueTree = conversationZone.AddComponent<NHCharacterDialogueTree>();
 
             var xml = File.ReadAllText(Path.Combine(mod.Manifest.ModFolderPath, info.xmlFile));
             var text = new TextAsset(xml)
@@ -128,12 +129,19 @@ namespace NewHorizons.Builder.Props
 
             conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
             
-            if (!string.IsNullOrEmpty(info.pathToAnimController))
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                conversationZone.transform.parent = planetGO.transform.Find(info.parentPath);
+            }
+            else if (!string.IsNullOrEmpty(info.pathToAnimController))
             {
                 conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
             }
-            
-            conversationZone.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent) conversationZone.transform.localPosition = pos;
+            else conversationZone.transform.position = planetGO.transform.TransformPoint(pos);
+
             conversationZone.SetActive(true);
 
             return dialogueTree;

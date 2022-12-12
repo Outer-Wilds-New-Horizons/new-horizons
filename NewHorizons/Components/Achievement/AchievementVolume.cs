@@ -18,7 +18,7 @@ namespace NewHorizons.Components.Achievement
 
         private void OnEntry(GameObject hitObj)
         {
-            if ((!player || hitObj.CompareTag("PlayerDetector")) && (!probe || hitObj.CompareTag("ProbeDetector")))
+            if ((player && hitObj.CompareTag("PlayerDetector")) || (probe && hitObj.CompareTag("ProbeDetector")))
             {
                 AchievementHandler.Earn(achievementID);
 

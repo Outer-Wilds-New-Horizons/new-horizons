@@ -23,6 +23,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
+        private static GameObject _cairnVariantPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -112,6 +113,12 @@ namespace NewHorizons.Builder.Props
                 _cairnPrefab.transform.rotation = Quaternion.identity;
             }
 
+            if (_cairnVariantPrefab == null)
+            {
+                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
+            }
+
             if (_recorderPrefab == null)
             {
                 _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder").DontDestroyOnLoad();
@@ -163,19 +170,40 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
-                        if (info.normal != null)
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
+                        if (info.isRelativeToParent)
                         {
-                            // In global coordinates (normal was in local coordinates)
-                            var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
-                            var forward = planetGO.transform.TransformDirection(info.normal).normalized;
+                            nomaiWallTextObj.transform.localPosition = pos;
+                            if (info.normal != null)
+                            {
+                                // In global coordinates (normal was in local coordinates)
+                                var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
+                                var forward = planetGO.transform.TransformDirection(info.normal).normalized;
 
-                            nomaiWallTextObj.transform.up = up;
-                            nomaiWallTextObj.transform.forward = forward;
+                                nomaiWallTextObj.transform.up = up;
+                                nomaiWallTextObj.transform.forward = forward;
+                            }
+                            if (info.rotation != null)
+                            {
+                                nomaiWallTextObj.transform.localRotation = Quaternion.Euler(info.rotation);
+                            }
                         }
-                        if (info.rotation != null)
+                        else
                         {
-                            nomaiWallTextObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                            nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(pos);
+                            if (info.normal != null)
+                            {
+                                // In global coordinates (normal was in local coordinates)
+                                var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
+                                var forward = planetGO.transform.TransformDirection(info.normal).normalized;
+
+                                nomaiWallTextObj.transform.up = up;
+                                nomaiWallTextObj.transform.forward = forward;
+                            }
+                            if (info.rotation != null)
+                            {
+                                nomaiWallTextObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                            }
                         }
 
                         nomaiWallTextObj.SetActive(true);
@@ -238,7 +266,9 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        customScroll.transform.position = planetGO.transform.TransformPoint(info.position ?? Vector3.zero);
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
+                        if (info.isRelativeToParent) customScroll.transform.localPosition = pos;
+                        else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
                         customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
@@ -291,7 +321,9 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        computerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
+                        if (info.isRelativeToParent) computerObject.transform.localPosition = pos;
+                        else computerObject.transform.position = planetGO.transform.TransformPoint(pos);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
@@ -318,28 +350,13 @@ namespace NewHorizons.Builder.Props
                     {
                         var detailInfo = new PropModule.DetailInfo()
                         {
-                            position = info.position
+                            position = info.position,
+                            parentPath = info.parentPath,
+                            isRelativeToParent = info.isRelativeToParent,
+                            rename = info.rename
                         };
                         var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
                         computerObject.SetActive(false);
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            computerObject.name = info.rename;
-                        }
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                computerObject.transform.SetParent(newParent, true);
-                            }
-                            else
-                            {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
 
                         var up = computerObject.transform.position - planetGO.transform.position;
                         if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
@@ -380,8 +397,9 @@ namespace NewHorizons.Builder.Props
                         return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
+                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
                     {
-                        var cairnObject = _cairnPrefab.InstantiateInactive();
+                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
@@ -407,11 +425,15 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        cairnObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
+                        if (info.isRelativeToParent) cairnObject.transform.localPosition = pos;
+                        else cairnObject.transform.position = planetGO.transform.TransformPoint(pos);
 
                         if (info.rotation != null)
                         {
-                            cairnObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                            var rot = Quaternion.Euler(info.rotation);
+                            if (info.isRelativeToParent) cairnObject.transform.localRotation = rot;
+                            else cairnObject.transform.rotation = planetGO.transform.TransformRotation(rot);
                         }
                         else
                         {
@@ -456,17 +478,12 @@ namespace NewHorizons.Builder.Props
                         var detailInfo = new PropModule.DetailInfo {
                             parentPath = info.parentPath,
                             rotation = info.rotation,
-                            position = info.position
+                            position = info.position,
+                            isRelativeToParent = info.isRelativeToParent,
+                            rename = info.rename
                         };
                         var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
                         recorderObject.SetActive(false);
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            recorderObject.name = info.rename;
-                        }
-
-                        recorderObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
 
                         if (info.rotation == null)
                         {
@@ -517,14 +534,18 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        trailmarkerObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
+                        var pos = (Vector3)(info.position ?? Vector3.zero);
+                        if (info.isRelativeToParent) trailmarkerObject.transform.localPosition = pos;
+                        else trailmarkerObject.transform.position = planetGO.transform.TransformPoint(pos);
 
                         // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
                         trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
 
                         if (info.rotation != null)
                         {
-                            trailmarkerObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                            var rot = Quaternion.Euler(info.rotation);
+                            if (info.isRelativeToParent) trailmarkerObject.transform.localRotation = rot;
+                            else trailmarkerObject.transform.rotation = planetGO.transform.TransformRotation(rot);
                         }
                         else
                         {

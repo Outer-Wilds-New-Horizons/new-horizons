@@ -7,6 +7,7 @@ namespace NewHorizons.Components
     /// <summary>
     /// Used by vessel asset bundle to change materials to the in-game ones.
     /// </summary>
+    [UsedInUnityProject]
     public class MaterialReplacer : MonoBehaviour
     {
         public string[] materialNames;

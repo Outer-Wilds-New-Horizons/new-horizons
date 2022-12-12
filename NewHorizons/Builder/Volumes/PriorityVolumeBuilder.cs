@@ -9,6 +9,7 @@ namespace NewHorizons.Builder.Volumes
         {
             var volume = VolumeBuilder.Make<TVolume>(planetGO, sector, info);
 
+            volume._layer = info.layer;
             volume.SetPriority(info.priority);
 
             return volume;

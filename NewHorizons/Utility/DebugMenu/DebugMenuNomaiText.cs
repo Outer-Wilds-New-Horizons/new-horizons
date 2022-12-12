@@ -1,7 +1,9 @@
+using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -225,7 +227,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     else if (conversationMeta.conversationGo != null)
                                     {
                                         conversationMeta.conversationGo.transform.localPosition = data.pos;
-                                        DebugPropPlacer.SetGameObjectRotation(conversationMeta.conversationGo, data, _dnp.gameObject.transform.position);
+                                        conversationMeta.conversationGo.transform.rotation = data.rot;
                                         
                                         conversationMeta.conversation.position = conversationMeta.conversationGo.transform.localPosition;
                                         conversationMeta.conversation.rotation = conversationMeta.conversationGo.transform.localEulerAngles;
@@ -234,7 +236,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     DebugNomaiTextPlacer.active = false;
                                 };
                             }
-
+                            
                             //
                             // spirals
                             //
@@ -520,6 +522,25 @@ namespace NewHorizons.Utility.DebugMenu
             //    metadata.spiral.position = metadata.spiral.position;
             //    metadata.spiral.zRotation = metadata.spiral.zRotation;
             //});
+        }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            var conversationsJSON = conversations
+                .GroupBy(conversation => conversation.planetConfig.name)
+                .Select(allConversationsOnBody =>
+                {
+                    var json = allConversationsOnBody.Join(
+                        conversation => "\t" + JsonConvert.SerializeObject(conversation.conversation, DebugMenu.jsonSettings),
+                        ",\n"
+                    );
+                    return $"{allConversationsOnBody.Key}\n[\n{json}\n]";
+                });
+
+            foreach(string json in conversationsJSON)
+            {
+                Logger.Log(json);
+            }
         }
     }
 }

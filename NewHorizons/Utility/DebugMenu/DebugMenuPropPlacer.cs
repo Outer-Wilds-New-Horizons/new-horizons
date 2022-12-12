@@ -1,6 +1,8 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -382,6 +384,18 @@ namespace NewHorizons.Utility.DebugMenu
                 config.Props.details = newDetails[astroObject];
 
                 menu.loadedConfigFiles[filepath] = config;
+            }
+        }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            foreach (var body in _dpp.GetPropsConfigByBody())
+            {
+                var json = body.Value.Join(
+                    detail => "\t" + JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings),
+                    ",\n"
+                );
+                Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }
     }

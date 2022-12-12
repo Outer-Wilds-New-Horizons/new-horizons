@@ -1,4 +1,7 @@
+using HarmonyLib;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,19 +38,23 @@ namespace NewHorizons.Utility.DebugMenu
         {
         }
 
+        private string GetEntryPositionsJSON() =>
+            Resources
+                .FindObjectsOfTypeAll<ShipLogEntryCard>()
+                .Join(
+                    entry => JsonConvert.SerializeObject(new ShipLogModule.EntryPositionInfo
+                    {
+                        id = entry.name,
+                        position = new MVector2(entry.transform.localPosition.x, entry.transform.localPosition.y)
+                    }, DebugMenu.jsonSettings),
+                    ",\n"
+                );
+
         internal override void OnGUI(DebugMenu menu)
         {
             if (GUILayout.Button("Print Ship Log Positions"))
             {
-                entryPositionsText = String.Join("\n", 
-                    Resources
-                        .FindObjectsOfTypeAll<ShipLogEntryCard>()
-                        .ToList()
-                        .Select(go => 
-                            ("{ \"id\": \"" +go.name+ "\", \"position\": {\"x\": "+go.transform.localPosition.x+", \"y\": "+go.transform.localPosition.y+" } ")
-                        )
-                        .ToList()
-                );
+                entryPositionsText = GetEntryPositionsJSON();
             }
 
             GUILayout.TextArea(entryPositionsText);
@@ -66,6 +73,11 @@ namespace NewHorizons.Utility.DebugMenu
         internal override string SubmenuName()
         {
             return "Ship Log";
+        }
+
+        internal override void PrintNewConfigSection(DebugMenu menu)
+        {
+            Logger.Log(GetEntryPositionsJSON());
         }
     }
 }

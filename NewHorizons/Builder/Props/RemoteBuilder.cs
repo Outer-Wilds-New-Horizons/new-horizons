@@ -171,30 +171,13 @@ namespace NewHorizons.Builder.Props
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
-                rotation = info.rotation
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent,
+                rename = info.rename
             };
             var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, detailInfo);
             whiteboard.SetActive(false);
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                whiteboard.name = info.rename;
-            }
-
-            whiteboard.transform.parent = sector?.transform ?? go.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = go.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    whiteboard.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
-            }
 
             var decalMat = new Material(_decalMaterial);
             decalMat.SetTexture("_MainTex", decal);
@@ -236,30 +219,13 @@ namespace NewHorizons.Builder.Props
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
-                rotation = info.rotation
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent,
+                rename = info.rename
             };
             var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, detailInfo);
             platform.SetActive(false);
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                platform.name = info.rename;
-            }
-
-            platform.transform.parent = sector?.transform ?? go.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = go.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    platform.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
-            }
 
             var decalMat = new Material(_decalMaterial);
             decalMat.SetTexture("_MainTex", decal);
@@ -310,8 +276,18 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            shareStone.transform.position = go.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            shareStone.transform.rotation = go.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            if (info.isRelativeToParent)
+            {
+                shareStone.transform.localPosition = pos;
+                shareStone.transform.localRotation = rot;
+            }
+            else
+            {
+                shareStone.transform.position = go.transform.TransformPoint(pos);
+                shareStone.transform.rotation = go.transform.TransformRotation(rot);
+            }
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;
 

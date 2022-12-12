@@ -2,12 +2,17 @@ using System.Collections.Generic;
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules.VariableSize;
+using System.Linq;
+using UnityEngine.Assertions.Must;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {
     public static class LavaBuilder
     {
-        private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
+        public static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
+        public static readonly int EdgeFade = Shader.PropertyToID("_EdgeFade");
+        public static readonly int TexHeight = Shader.PropertyToID("_TexHeight");
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
         private static GameObject _lavaSphere;
@@ -31,16 +36,7 @@ namespace NewHorizons.Builder.Body
         {
             InitPrefabs();
 
-            var heightScale = module.size;
-            if (module.curve != null)
-            {
-                var modifier = 1f;
-                foreach (var pair in module.curve)
-                {
-                    if (pair.value < modifier) modifier = pair.value;
-                }
-                heightScale = Mathf.Max(0.1f, heightScale * modifier);
-            }
+            var multiplier = module.size / 100f;
 
             var moltenCore = new GameObject("MoltenCore");
             moltenCore.SetActive(false);
@@ -51,7 +47,9 @@ namespace NewHorizons.Builder.Body
             var lavaSphere = GameObject.Instantiate(_lavaSphere, moltenCore.transform);
             lavaSphere.transform.localScale = Vector3.one;
             lavaSphere.transform.name = "LavaSphere";
-            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, 150f * multiplier);
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(EdgeFade, 15f * multiplier);
+            lavaSphere.GetComponent<MeshRenderer>().material.SetFloat(TexHeight, 15f * multiplier);
             if (module.tint != null) lavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.tint.ToColor());
             lavaSphere.SetActive(true);
 
@@ -65,7 +63,9 @@ namespace NewHorizons.Builder.Body
             var proxyLavaSphere = moltenCoreProxy.transform.Find("LavaSphere (1)");
             proxyLavaSphere.transform.localScale = Vector3.one;
             proxyLavaSphere.name = "LavaSphere_Proxy";
-            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, heightScale);
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(HeightScale, 150f * multiplier);
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(EdgeFade, 15f * multiplier);
+            proxyLavaSphere.GetComponent<MeshRenderer>().material.SetFloat(TexHeight, 15f * multiplier);
             if (module.tint != null) proxyLavaSphere.GetComponent<MeshRenderer>().material.SetColor(EmissionColor, module.tint.ToColor());
 
             var sectorProxy = moltenCoreProxy.GetComponent<SectorProxy>();
@@ -79,13 +79,11 @@ namespace NewHorizons.Builder.Body
 
             if (module.curve != null)
             {
-                var levelController = moltenCore.AddComponent<SandLevelController>();
-                var curve = new AnimationCurve();
-                foreach (var pair in module.curve)
-                {
-                    curve.AddKey(new Keyframe(pair.time, module.size * pair.value));
-                }
-                levelController._scaleCurve = curve;
+                var sizeController = moltenCore.AddComponent<LavaSizeController>();
+                sizeController.SetScaleCurve(module.curve);
+                sizeController.size = module.size;
+                sizeController.material = lavaSphere.GetComponent<MeshRenderer>().material;
+                sizeController.proxyMaterial = proxyLavaSphere.GetComponent<MeshRenderer>().material;
             }
 
             moltenCore.SetActive(true);
