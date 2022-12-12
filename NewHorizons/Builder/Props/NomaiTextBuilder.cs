@@ -271,7 +271,14 @@ namespace NewHorizons.Builder.Props
                         else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
-                        customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        if (info.rotation != null)
+                        {
+                            customScroll.transform.rotation = Quaternion.Euler(info.rotation);
+                        }
+                        else
+                        {
+                            customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        }
 
                         customScroll.SetActive(true);
 
