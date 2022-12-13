@@ -24,16 +24,16 @@ namespace NewHorizons.Handlers
         {
             var group = GetStreamingGroup(name);
 
+            // no null check. idc
             sector.OnOccupantEnterSector += _ =>
             {
-                group.LoadRequiredAssets();
+                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                    group.RequestGeneralAssets();
             };
             sector.OnOccupantExitSector += _ =>
             {
                 if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
-                {
-                    group.UnloadRequiredAssets();
-                }
+                    group.ReleaseGeneralAssets();
             };
         }
 
@@ -129,9 +129,9 @@ namespace NewHorizons.Handlers
             return false;
         }
 
-        public static StreamingGroup GetStreamingGroup(AstroObject.Name name)
+        private static StreamingGroup GetStreamingGroup(AstroObject.Name name)
         {
-            if (name == AstroObject.Name.CaveTwin || name == AstroObject.Name.TowerTwin)
+            if (name is AstroObject.Name.CaveTwin or AstroObject.Name.TowerTwin)
             {
                 return GameObject.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
             }
