@@ -245,12 +245,26 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
-            // Cull stuff
             // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
+                // Cull stuff
                 var cullController = go.AddComponent<BrambleSectorController>();
                 cullController.SetSector(sector);
+
+                // Prevent recursion from causing hard crash
+                foreach (var senderWarp in outerFogWarpVolume._senderWarps)
+                {
+                    var currentWarp = senderWarp;
+                    while (currentWarp.GetContainerWarpVolume() != null)
+                    {
+                        if (currentWarp.GetContainerWarpVolume() == outerFogWarpVolume && currentWarp != senderWarp) // game already fixes here to here recursion
+                        {
+                            outerFogWarpVolume._senderWarps.Remove(senderWarp);
+                        }
+                        else currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
+                    }
+                }
             });
 
             // finalize
