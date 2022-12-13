@@ -129,7 +129,7 @@ namespace NewHorizons.Handlers
             return false;
         }
 
-        private static StreamingGroup GetStreamingGroup(AstroObject.Name name)
+        public static StreamingGroup GetStreamingGroup(AstroObject.Name name)
         {
             if (name is AstroObject.Name.CaveTwin or AstroObject.Name.TowerTwin)
             {
