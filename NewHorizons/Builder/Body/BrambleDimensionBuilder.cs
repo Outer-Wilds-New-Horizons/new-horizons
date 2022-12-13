@@ -260,7 +260,7 @@ namespace NewHorizons.Builder.Body
                     {
                         if (currentWarp.GetContainerWarpVolume() == outerFogWarpVolume && currentWarp != senderWarp) // game already fixes here to here recursion
                         {
-                            outerFogWarpVolume._senderWarps.Remove(senderWarp);
+                            outerFogWarpVolume._senderWarps.Remove(senderWarp); break;
                         }
                         else currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
                     }
