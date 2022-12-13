@@ -616,7 +616,7 @@ namespace NewHorizons.Builder.Props
             // #433 fuzzy stranger text
             if (info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
             {
-                StreamingHandler.SetUpStreaming(_ghostArcPrefabs.First(), sector);
+                StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
             }
 
             return nomaiWallText;
