@@ -24,7 +24,6 @@ namespace NewHorizons.Handlers
         {
             var group = GetStreamingGroup(name);
 
-            // no null check. idc
             sector.OnOccupantEnterSector += _ =>
             {
                 if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
