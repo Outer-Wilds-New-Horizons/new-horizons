@@ -250,12 +250,13 @@ namespace NewHorizons.Builder.Props
                 brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
                 fogLight._maxVisibleDistance = float.PositiveInfinity; // Prefab does have working foglight aside from this
                 fogLight._minVisibleDistance *= config.scale / 15f;
+                fogLight._occlusionRange = 175f;
             }
             else
             {
                 brambleNode.FindChild("Effects/PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
                 brambleNode.FindChild("Effects/FogOverrideVolume").GetComponent<FogOverrideVolume>().blendDistance *= config.scale;
-                fogLight._minVisibleDistance *= config.scale;
+                //fogLight._minVisibleDistance *= config.scale;
 
                 // Seed fog works differently, so it doesn't need to be fixed
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
@@ -332,6 +333,24 @@ namespace NewHorizons.Builder.Props
                     }
 
                     SetNodeColors(brambleNode, fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint);
+                }
+
+                // Redo the foglight data after everything is colored
+                if (fogLight._linkedFogLights != null)
+                {
+                    Delay.FireOnNextUpdate(() =>
+                    {
+                        FogLightManager fogLightManager = Locator.GetFogLightManager();
+                        fogLight._linkedLightData.Clear();
+                        for (int i = 0; i < fogLight._linkedFogLights.Count; i++)
+                        {
+                            FogLight.LightData lightData = new FogLight.LightData();
+                            lightData.color = fogLight._linkedFogLights[i].GetTint();
+                            lightData.maxAlpha = fogLight._linkedFogLights[i]._maxAlpha;
+                            fogLight._linkedLightData.Add(lightData);
+                            fogLightManager.RegisterLightData(lightData);
+                        }
+                    });
                 }
             });
 
