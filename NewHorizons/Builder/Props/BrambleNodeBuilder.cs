@@ -334,6 +334,24 @@ namespace NewHorizons.Builder.Props
 
                     SetNodeColors(brambleNode, fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint);
                 }
+
+                // Redo the foglight data after everything is colored
+                if (fogLight._linkedFogLights != null)
+                {
+                    Delay.FireOnNextUpdate(() =>
+                    {
+                        FogLightManager fogLightManager = Locator.GetFogLightManager();
+                        fogLight._linkedLightData.Clear();
+                        for (int i = 0; i < fogLight._linkedFogLights.Count; i++)
+                        {
+                            FogLight.LightData lightData = new FogLight.LightData();
+                            lightData.color = fogLight._linkedFogLights[i].GetTint();
+                            lightData.maxAlpha = fogLight._linkedFogLights[i]._maxAlpha;
+                            fogLight._linkedLightData.Add(lightData);
+                            fogLightManager.RegisterLightData(lightData);
+                        }
+                    });
+                }
             });
 
             // Set up warps
