@@ -11,7 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.External.Configs
 {
     /// <summary>
-    /// Describes a body to generate
+    /// Describes a celestial body to generate
     /// </summary>
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig

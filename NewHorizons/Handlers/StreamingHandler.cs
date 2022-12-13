@@ -20,6 +20,23 @@ namespace NewHorizons.Handlers
             _sectorCache.Clear();
         }
 
+        public static void SetUpStreaming(AstroObject.Name name, Sector sector)
+        {
+            var group = GetStreamingGroup(name);
+
+            sector.OnOccupantEnterSector += _ =>
+            {
+                group.LoadRequiredAssets();
+            };
+            sector.OnOccupantExitSector += _ =>
+            {
+                if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                {
+                    group.UnloadRequiredAssets();
+                }
+            };
+        }
+
         /// <summary>
         /// makes it so that this object's streaming stuff will be connected to the given sector
         /// </summary>
@@ -110,6 +127,18 @@ namespace NewHorizons.Handlers
                     if (sector == null || sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         return true;
             return false;
+        }
+
+        public static StreamingGroup GetStreamingGroup(AstroObject.Name name)
+        {
+            if (name == AstroObject.Name.CaveTwin || name == AstroObject.Name.TowerTwin)
+            {
+                return GameObject.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
+            }
+            else
+            {
+                return Locator.GetAstroObject(name)?.GetComponentInChildren<StreamingGroup>();
+            }
         }
     }
 }
