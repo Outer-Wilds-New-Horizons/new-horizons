@@ -253,23 +253,18 @@ namespace NewHorizons.Builder.Body
                 cullController.SetSector(sector);
 
                 // Prevent recursion from causing hard crash
-                List<InnerFogWarpVolume> removeList = new List<InnerFogWarpVolume>();
-                foreach (var senderWarp in outerFogWarpVolume._senderWarps)
+                foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
                 {
                     var currentWarp = senderWarp;
                     while (currentWarp.GetContainerWarpVolume() != null)
                     {
                         if (currentWarp.GetContainerWarpVolume() == outerFogWarpVolume && currentWarp != senderWarp) // game already fixes here to here recursion
                         {
-                            removeList.Add(senderWarp); break;
+                            outerFogWarpVolume._senderWarps.Remove(senderWarp); 
+                            break;
                         }
-                        else currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
+                        currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
                     }
-                    
-                }
-                foreach (var recursiveWarp in removeList)
-                {
-                    outerFogWarpVolume._senderWarps.Remove(recursiveWarp);
                 }
             });
 
