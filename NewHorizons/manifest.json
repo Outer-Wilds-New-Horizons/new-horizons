@@ -7,6 +7,6 @@
   "version": "1.8.1",
   "owmlVersion": "2.8.0",
   "dependencies": [ "JohnCorby.VanillaFix", "_nebula.MenuFramework", "xen.CommonCameraUtility", "dgarro.CustomShipLogModes" ],
-  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_CommonResources" ],
+  "conflicts": [ "Raicuparta.QuantumSpaceBuddies", "PacificEngine.OW_Randomizer" ],
   "pathsToPreserve": [ "planets", "systems", "translations" ]
 }
