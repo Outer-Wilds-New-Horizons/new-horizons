@@ -112,7 +112,7 @@ namespace NewHorizons.Utility
                 {
                     var result = www.SendWebRequest();
 
-                    while (!result.isDone) { await Task.Delay(100); }
+                    while (!result.isDone) await Task.Yield();
 
                     if (www.isNetworkError || www.isHttpError)
                     {
@@ -131,7 +131,7 @@ namespace NewHorizons.Utility
                 {
                     var result = www.SendWebRequest();
 
-                    while (!result.isDone) { await Task.Delay(100); }
+                    while (!result.isDone) await Task.Yield();
 
                     if (www.isNetworkError || www.isHttpError)
                     {
