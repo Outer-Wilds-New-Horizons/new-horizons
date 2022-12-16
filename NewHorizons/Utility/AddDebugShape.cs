@@ -26,6 +26,31 @@ namespace NewHorizons.Utility
             return sphere.gameObject;
         }
 
+        
+        public static GameObject AddCylinder(GameObject obj, float radius, float height, Color color)
+        {
+            var cylinder = GameObject.CreatePrimitive(PrimitiveType.Cylinder);
+            cylinder.transform.name = "DebugCylinder";
+
+            try
+            {
+                cylinder.GetComponent<Collider>().enabled = false;
+                cylinder.transform.parent = obj.transform;
+                cylinder.transform.localScale = new Vector3(2*radius, height, 2*radius); // cylinder has a DIAMETER of 1, not a radius
+
+                cylinder.GetComponent<MeshRenderer>().material = new Material(Shader.Find("Sprites/Default"));
+                cylinder.GetComponent<MeshRenderer>().material.color = color;
+            }
+            catch
+            {
+                // Something went wrong so make sure the sphere is deleted
+                GameObject.Destroy(cylinder);
+            }
+
+            return cylinder.gameObject;
+        }
+
+
         public static GameObject AddRect(GameObject obj, float width, float height, Color color)
         {
             var plane = GameObject.CreatePrimitive(PrimitiveType.Plane);

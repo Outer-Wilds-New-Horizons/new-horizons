@@ -38,6 +38,7 @@ namespace NewHorizons
     {
         public static AssetBundle NHAssetBundle { get; private set; }
         public static AssetBundle NHPrivateAssetBundle { get; private set; }
+        public static AssetBundle TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -199,6 +200,7 @@ namespace NewHorizons
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
             NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
+            TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease = ModHelper.Assets.LoadBundle("Assets/nomaitextarcs");
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
