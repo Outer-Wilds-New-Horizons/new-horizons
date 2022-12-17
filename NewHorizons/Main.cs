@@ -214,8 +214,8 @@ namespace NewHorizons
                 Logger.LogWarning("Couldn't find planets folder");
             }
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
+            Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
+            Delay.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             MenuHandler.Init();
@@ -401,7 +401,7 @@ namespace NewHorizons
 
                     var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
-                    Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
+                    Delay.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
@@ -465,7 +465,7 @@ namespace NewHorizons
                 else if (isEyeOfTheUniverse)
                 {
                     // There is no wake up in eye scene
-                    Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                    Delay.FireOnNextUpdate(() =>
                     {
                         IsSystemReady = true;
                         OnSystemReady(false, false);

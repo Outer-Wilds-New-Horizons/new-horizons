@@ -271,7 +271,14 @@ namespace NewHorizons.Builder.Props
                         else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
-                        customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        if (info.rotation != null)
+                        {
+                            customScroll.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                        }
+                        else
+                        {
+                            customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        }
 
                         customScroll.SetActive(true);
 
@@ -605,6 +612,12 @@ namespace NewHorizons.Builder.Props
             nomaiWallText._nomaiTextAsset = text;
 
             nomaiWallText.SetTextAsset(text);
+
+            // #433 fuzzy stranger text
+            if (info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            {
+                StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
+            }
 
             return nomaiWallText;
         }
