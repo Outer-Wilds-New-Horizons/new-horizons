@@ -195,7 +195,7 @@ namespace NewHorizons.Builder.Props
             brambleNode.transform.parent = sector.transform;
             brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
             brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
-            brambleNode.name = "Bramble Node to " + config.linksTo;
+            brambleNode.name = config.name ?? "Bramble Node to " + config.linksTo;
 
             // This node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
