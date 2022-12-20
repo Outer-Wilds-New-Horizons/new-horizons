@@ -86,12 +86,12 @@ namespace NewHorizons.Builder.Props
                 var adultArcs = Main.TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease.LoadAsset<GameObject>("Adult Text Arcs");
                 var childArcs = Main.TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease.LoadAsset<GameObject>("Child Text Arcs");
                 
-                foreach(GameObject arc in adultArcs.transform) 
+                foreach(Transform arc in adultArcs.transform) 
                 {
                     _arcPrefabs.Add(arc.gameObject);
                 }
 
-                foreach(GameObject arc in childArcs.transform) 
+                foreach(Transform arc in childArcs.transform) 
                 {
                     _childArcPrefabs.Add(arc.gameObject);
                 }
@@ -645,8 +645,6 @@ namespace NewHorizons.Builder.Props
             public Bounds localBounds;
         }
 
-        static GameObject rotationHelper = new GameObject();
-
         internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
             // TODO: check cache to see if this guy has a generated placement already
@@ -726,7 +724,7 @@ namespace NewHorizons.Builder.Props
                 {
                     // place currentArc at currentArc.parentPoints[currentArc.locatedAtParentPointIndex]
                     var pointTriplet = currentArc.parentPoints[currentArc.locatedAtParentPointIndex];
-                    PlaceArcBaseAtParentPoint(currentArc.arc, currentArc.parent, pointTriplet[0], pointTriplet[1], pointTriplet[2]);
+                    PlaceArcBaseAtParentPoint(currentArc.arc, currentArc.parent, pointTriplet[0], pointTriplet[1], pointTriplet[2], parentIsMirrored: currentArc.parent.transform.localScale.x < 0);
 
                     // check for overlap with any previously placed arcs
                     for(var k = 0; k < arcIndex; k++)
@@ -851,6 +849,7 @@ namespace NewHorizons.Builder.Props
                     variation = variation < 0
                         ? Random.Range(0, _arcPrefabs.Count())
                         : (variation % _arcPrefabs.Count());
+                    if (variation < 0 || variation >= _arcPrefabs.Count()) Logger.Log($"using variation {variation}");
                     arc = _arcPrefabs[variation].InstantiateInactive();
                     break;
             }
@@ -891,17 +890,19 @@ namespace NewHorizons.Builder.Props
                 //circle.transform.localPosition = line._center;
                 //circle.transform.localEulerAngles = new Vector3(90, 0 ,0);
 
-                var i = 0;
-                var pts = arc.GetComponent<NomaiTextLine>().GetPoints();
-                foreach (var point in pts)
-                {
-                    var color = Color.green;
-                    if (i <= pts.Length * AVAILABLE_BASE_POINT_FRACTION) color = new Color(0, 0.8f, 0);
-                    if (i++ == 0) color = Color.red;
-                    if (i == pts.Length) color = Color.yellow;
 
-                    AddDebugShape.AddSphere(arc, 0.1f, color).transform.localPosition = point;
-                }
+
+                //var i = 0;
+                //var pts = arc.GetComponent<NomaiTextLine>().GetPoints();
+                //foreach (var point in pts)
+                //{
+                //    var color = Color.green;
+                //    if (i <= pts.Length * AVAILABLE_BASE_POINT_FRACTION) color = new Color(0, 0.8f, 0);
+                //    if (i++ == 0) color = Color.red;
+                //    if (i == pts.Length) color = Color.yellow;
+
+                //    AddDebugShape.AddSphere(arc, 0.1f, color).transform.localPosition = point;
+                //}
             }
 
             arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
@@ -924,54 +925,19 @@ namespace NewHorizons.Builder.Props
         }
         
         // note: parent refers to the "parent" arc. ie the arc that `arc` branches off from
-        public static void PlaceArcBaseAtParentPoint(GameObject arc, GameObject parent, Vector3 previousPoint, Vector3 point, Vector3 nextPoint)
+        public static void PlaceArcBaseAtParentPoint(GameObject arc, GameObject parent, Vector3 previousPoint, Vector3 point, Vector3 nextPoint, bool parentIsMirrored=false)
         { 
-            // NOTE: this all assumes that arc.transform.parent == parent.transform.parent
-            // step 0: reset the spiral's transform
-            arc.transform.localPosition = Vector3.zero;
-            arc.transform.localEulerAngles = Vector3.zero;
+            // Note: all "local" variables are local to the mesh (ie they don't take into account gameobject transform)
+            // all "non-local" variables are local to the actual gameobject
+            var parentRotation = Quaternion.Euler(0, 0, parent.transform.localEulerAngles.z);
+            var parentPointPos = parent.transform.localPosition + (parentRotation * point);
 
-            
-            // step 1: rotate
-            var tangentApprox = previousPoint - nextPoint;
-            var pointIsLeftOfTangent = (tangentApprox.x*point.y - tangentApprox.y*point.x) > 0;
-            var normalVector = pointIsLeftOfTangent 
-                ? new Vector3(-tangentApprox.y, tangentApprox.x, 0)
-                : new Vector3(tangentApprox.y, -tangentApprox.x, 0);
-            var perpendicularRotation = Mathf.Atan2(normalVector.y, normalVector.x);
+            var parentNormalAtPoint = (parentRotation * nextPoint) - (parentRotation * previousPoint);
+            float rotationAtParentPoint = Mathf.Atan2(-parentNormalAtPoint .z, parentNormalAtPoint .x) * Mathf.Rad2Deg;
+            if (parentIsMirrored) rotationAtParentPoint += 180; // if it's mirrored, we want the spiral to be sticking out the other side of the spiral (bc it'll default to sticking out towards the inside)
 
-            var points = arc.GetComponent<NomaiTextLine>().GetPoints().Reverse().ToArray();
-            var spiralBaseDir = Mathf.Atan2(points[1].y-points[0].y, points[1].x-points[0].x); // the direction that the spiral's base points in (helps with rectifying the arbitrary rotation they have)
-            rotationHelper.transform.parent = arc.transform.parent;
-            rotationHelper.transform.localEulerAngles = Vector3.zero;
-            rotationHelper.transform.localPosition = arc.transform.localPosition;
-            arc.transform.parent = rotationHelper.transform;
-            arc.transform.localPosition = -points.First();
-            //rotationHelper.transform.localEulerAngles = new Vector3(0, 0, -spiralBaseDir+90 + perpendicularRotation);
-
-            var spiralCenter = arc.GetComponent<NomaiTextLine>()._center - points.First(); // position of center
-            rotationHelper.transform.localEulerAngles = new Vector3(0, 0, 90 + Mathf.Acos(Vector3.Dot(normalVector, spiralCenter) / (normalVector.magnitude * arc.GetComponent<NomaiTextLine>()._radius)));
-            
-            var parentPointLocalPosition = Quaternion.AngleAxis(parent.transform.localEulerAngles.z, new Vector3(0, 0, 1)) * point;
-            rotationHelper.transform.localPosition = parentPointLocalPosition + parent.transform.localPosition; 
-
-            arc.transform.parent = rotationHelper.transform.parent;
-            //var rotation = arc.transform.localEulerAngles.z;
-
-
-            //var rotation = Random.Range(0, 360); // TODO: make rotation be perpendicular to previousPoint-nextPoint. to pick between the two perpendicular options, choose the one on the same side of (previousPoint-nextPoint) as point
-            //arc.transform.localRotation = Quaternion.Euler(0, 0, rotation);
-            //var rotation = -spiralBaseDir+90; //Mathf.Atan2(normalVector.y, normalVector.x) - spiralBaseDir;
-            //arc.transform.localEulerAngles += new Vector3(0, 0, rotation);
-
-            // step 2: recenter the spiral (aka move it so that its base (aka last point) is at its local 0, 0)
-            // spirals often have a baked in offset, we want to undo this so the base (which is the last point, spiral points are reversed) is at the location we wanted in the previous line
-            //var baseLocation = Quaternion.AngleAxis(rotation, new Vector3(0, 0, 1)) * arc.GetComponent<NomaiTextLine>().GetPoints().Last();
-            //arc.transform.localPosition -= baseLocation; 
-
-            // step 3: translate it so that the base is at the desired location
-            //var parentPointLocalPosition = Quaternion.AngleAxis(parent.transform.localEulerAngles.z, new Vector3(0, 0, 1)) * point;
-            //arc.transform.localPosition += parentPointLocalPosition + parent.transform.localPosition; 
+            arc.transform.localPosition = parentPointPos;
+            arc.transform.localEulerAngles = new Vector3(0, 0, rotationAtParentPoint);
         }
 
         private static Dictionary<int, NomaiText.NomaiTextData> MakeNomaiTextDict(string xmlPath)
