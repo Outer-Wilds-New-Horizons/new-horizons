@@ -11,6 +11,7 @@ using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 using OWML.Utils;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace NewHorizons.Builder.Props
 {
@@ -86,13 +87,37 @@ namespace NewHorizons.Builder.Props
                 var adultArcs = Main.TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease.LoadAsset<GameObject>("Adult Text Arcs");
                 var childArcs = Main.TEMPSpiralsBundleTEMP_MergeIntoPrivateBundleForRelease.LoadAsset<GameObject>("Child Text Arcs");
                 
+                // TODO: steal existing Effects_NOM_TextMain_mat material and apply it to the arcs as I load them in
+                // TODO: do the same for child arcs
+
+                //var material = GameObject.FindObjectOfType<NomaiTextLine>().GetComponent<MeshRenderer>().sharedMaterial;
+
+                //var adultArcMaterial = GameObject
+                //    .Find("Vessel_Body/Sector_VesselBridge/Interactibles_VesselBridge/Arc_DB_Vessel_OutgoingMessage/Arc 3")
+                //    .GetComponent<MeshRenderer>()
+                //    .sharedMaterial;
+
+                // just a random arc with the adults' writing material
+                var mat = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (2)/Props_TH_ClutterSmall/Arc_Short/Arc") 
+                    .GetComponent<MeshRenderer>()
+                    .sharedMaterial;
+                var mat2 = mat;
+                // TODO: find an arc with the child writing material and save it as mat2
+                // TODO: change the name of mat and mat2
+
+
+                // TODO: find an arc, gameobject find it, then steal its material
+                // do this for both adult and child mat
+
                 foreach(Transform arc in adultArcs.transform) 
                 {
+                    arc.GetComponent<MeshRenderer>().sharedMaterial = mat;
                     _arcPrefabs.Add(arc.gameObject);
                 }
 
                 foreach(Transform arc in childArcs.transform) 
                 {
+                    arc.GetComponent<MeshRenderer>().sharedMaterial = mat2;
                     _childArcPrefabs.Add(arc.gameObject);
                 }
             }
