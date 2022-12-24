@@ -100,9 +100,9 @@ namespace NewHorizons.Builder.Props
         {
             var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
             tornadoGO.name = downwards ? "Tornado_Down" : "Tornado_Up";
-            tornadoGO.transform.parent = sector.transform;
+            tornadoGO.transform.parent = sector?.transform ?? planetGO.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
-            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
+            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
 
             // Add the sound thing before changing the scale
             var soundGO = _soundPrefab.InstantiateInactive();
@@ -168,7 +168,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.wanderRate != 0)
             {
-                ApplyWanderer(tornadoGO, sector, info);
+                ApplyWanderer(tornadoGO, planetGO, info);
             }
 
             soundGO.SetActive(true);
@@ -179,9 +179,9 @@ namespace NewHorizons.Builder.Props
         {
             var hurricaneGO = _hurricanePrefab.InstantiateInactive();
             hurricaneGO.name = "Hurricane";
-            hurricaneGO.transform.parent = sector.transform;
+            hurricaneGO.transform.parent = sector?.transform ?? planetGO.transform;
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
-            hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
+            hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
 
             var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
             fluidVolume._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
@@ -227,7 +227,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.wanderRate != 0)
             {
-                ApplyWanderer(hurricaneGO, sector, info);
+                ApplyWanderer(hurricaneGO, planetGO, info);
             }
 
             hurricaneGO.SetActive(true);
@@ -263,13 +263,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void ApplyWanderer(GameObject go, Sector sector, PropModule.TornadoInfo info)
+        private static void ApplyWanderer(GameObject go, GameObject planetGO, PropModule.TornadoInfo info)
         {
             var wanderer = go.AddComponent<NHTornadoWanderController>();
             wanderer.wanderRate = info.wanderRate;
             wanderer.wanderDegreesX = info.wanderDegreesX;
             wanderer.wanderDegreesZ = info.wanderDegreesZ;
-            wanderer.sector = sector;
+            wanderer.planetGO = planetGO;
         }
     }
 }

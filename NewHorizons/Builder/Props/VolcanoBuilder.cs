@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props
             InitPrefab();
 
             var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
-            launcherGO.transform.parent = sector.transform;
+            launcherGO.transform.parent = sector?.transform ?? planetGO.transform;
             launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
             launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
             launcherGO.name = "MeteorLauncher";
