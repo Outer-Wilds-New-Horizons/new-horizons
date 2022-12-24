@@ -99,7 +99,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
         {
             var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
-            tornadoGO.name = downwards ? "Tornado_Down" : "Tornado_Up";
+            tornadoGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : (downwards ? "Tornado_Down" : "Tornado_Up");
             tornadoGO.transform.parent = sector?.transform ?? planetGO.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
