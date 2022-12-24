@@ -245,6 +245,16 @@ namespace NewHorizons.External.Modules
             [DefaultValue(5f)] public float acceleration = 5f;
 
             /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// An optional rename of this object
             /// </summary>
             public string rename;
@@ -292,6 +302,11 @@ namespace NewHorizons.External.Modules
             /// Loudness of the geyser
             /// </summary>
             [DefaultValue(0.7f)] public float volume = 0.7f;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
 
             /// <summary>
             /// An optional rename of this object
@@ -366,6 +381,16 @@ namespace NewHorizons.External.Modules
             [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
 
             /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
             /// An optional rename of this object
             /// </summary>
             public string rename;
@@ -417,6 +442,16 @@ namespace NewHorizons.External.Modules
             /// The colour of the meteor's stone.
             /// </summary>
             public MColor stoneTint;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
 
             /// <summary>
             /// An optional rename of this object
@@ -509,6 +544,16 @@ namespace NewHorizons.External.Modules
             /// The position of this entry location
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
 
             /// <summary>
             /// An optional rename of this object
