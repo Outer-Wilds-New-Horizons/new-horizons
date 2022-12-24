@@ -11,7 +11,7 @@ namespace NewHorizons.External
         private static string _activeProfileName;
         private static readonly string FileName = "save.json";
 
-        private static object _lock;
+        private static object _lock = new();
 
         // This is its own method so it can be patched by NH-QSB compat
         public static string GetProfileName() => StandaloneProfileManager.SharedInstance?.currentProfile?.profileName;
