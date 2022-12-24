@@ -75,5 +75,10 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
         /// </summary>
         [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
+
+        /// <summary>
+        /// An optional rename of this object
+        /// </summary>
+        public string rename;
     }
 }

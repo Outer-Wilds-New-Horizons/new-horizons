@@ -243,6 +243,11 @@ namespace NewHorizons.External.Modules
             /// Acceleration of the raft. Default acceleration is 5.
             /// </summary>
             [DefaultValue(5f)] public float acceleration = 5f;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
@@ -287,6 +292,11 @@ namespace NewHorizons.External.Modules
             /// Loudness of the geyser
             /// </summary>
             [DefaultValue(0.7f)] public float volume = 0.7f;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
@@ -354,6 +364,11 @@ namespace NewHorizons.External.Modules
             /// Fluid type for sounds/effects when colliding with this tornado.
             /// </summary>
             [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
@@ -402,6 +417,11 @@ namespace NewHorizons.External.Modules
             /// The colour of the meteor's stone.
             /// </summary>
             public MColor stoneTint;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
@@ -489,6 +509,11 @@ namespace NewHorizons.External.Modules
             /// The position of this entry location
             /// </summary>
             public MVector3 position;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
@@ -680,6 +705,11 @@ namespace NewHorizons.External.Modules
             /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
             /// </summary>
             public bool isRelativeToParent;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
         }
 
         [JsonObject]
