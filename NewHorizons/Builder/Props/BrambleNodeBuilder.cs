@@ -192,7 +192,7 @@ namespace NewHorizons.Builder.Props
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
 
-            brambleNode.transform.parent = sector.transform;
+            brambleNode.transform.parent = sector?.transform ?? go.transform;
             brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
             brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
             brambleNode.name = config.name ?? "Bramble Node to " + config.linksTo;
