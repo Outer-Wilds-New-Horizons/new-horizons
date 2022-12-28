@@ -53,10 +53,34 @@ namespace NewHorizons.Builder.Props
             if (_prefab == null || sector == null) return null;
 
             GameObject raftObject = _prefab.InstantiateInactive();
-            raftObject.name = "Raft_Body";
+            raftObject.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Raft_Body";
             raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-            raftObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
-            raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    raftObject.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.identity;
+            if (info.isRelativeToParent)
+            {
+                raftObject.transform.localPosition = pos;
+                raftObject.transform.localRotation = rot;
+            }
+            else
+            {
+                raftObject.transform.position = planetGO.transform.TransformPoint(pos);
+                raftObject.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 

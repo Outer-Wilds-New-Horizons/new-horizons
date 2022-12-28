@@ -160,14 +160,48 @@ namespace NewHorizons.Builder.Props
             // At most one of these should ever not be null
             var nomaiController = character.GetComponent<SolanumAnimController>();
             var controller = character.GetComponent<CharacterAnimController>();
+            var traveler = character.GetComponent<TravelerController>();
+            var travelerEye = character.GetComponent<TravelerEyeController>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
             // To have them look when you start talking
             if (controller != null)
             {
+                if (controller._dialogueTree != null)
+                {
+                    controller._dialogueTree.OnStartConversation -= controller.OnStartConversation;
+                    controller._dialogueTree.OnEndConversation -= controller.OnEndConversation;
+                }
+
                 controller._dialogueTree = dialogue;
                 controller.lookOnlyWhenTalking = lookOnlyWhenTalking;
+                controller._dialogueTree.OnStartConversation += controller.OnStartConversation;
+                controller._dialogueTree.OnEndConversation += controller.OnEndConversation;
+            }
+            else if (traveler != null)
+            {
+                if (traveler._dialogueSystem != null)
+                {
+                    traveler._dialogueSystem.OnStartConversation -= traveler.OnStartConversation;
+                    traveler._dialogueSystem.OnEndConversation -= traveler.OnEndConversation;
+                }
+
+                traveler._dialogueSystem = dialogue;
+                traveler._dialogueSystem.OnStartConversation += traveler.OnStartConversation;
+                traveler._dialogueSystem.OnEndConversation += traveler.OnEndConversation;
+            }
+            else if (travelerEye != null)
+            {
+                if (travelerEye._dialogueTree != null)
+                {
+                    travelerEye._dialogueTree.OnStartConversation -= travelerEye.OnStartConversation;
+                    travelerEye._dialogueTree.OnEndConversation -= travelerEye.OnEndConversation;
+                }
+
+                travelerEye._dialogueTree = dialogue;
+                travelerEye._dialogueTree.OnStartConversation += travelerEye.OnStartConversation;
+                travelerEye._dialogueTree.OnEndConversation += travelerEye.OnEndConversation;
             }
             else if (nomaiController != null)
             {
@@ -179,7 +213,22 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                // TODO: make a custom controller for basic characters to just turn them to face you
+                // If they have nothing else just put the face player when talking thing on them
+                character.gameObject.GetAddComponent<FacePlayerWhenTalking>();
+            }
+
+            var facePlayerWhenTalking = character.GetComponent<FacePlayerWhenTalking>();
+            if (facePlayerWhenTalking != null)
+            {
+                if (facePlayerWhenTalking._dialogueTree != null)
+                {
+                    facePlayerWhenTalking._dialogueTree.OnStartConversation -= facePlayerWhenTalking.OnStartConversation;
+                    facePlayerWhenTalking._dialogueTree.OnEndConversation -= facePlayerWhenTalking.OnEndConversation;
+                }
+
+                facePlayerWhenTalking._dialogueTree = dialogue;
+                facePlayerWhenTalking._dialogueTree.OnStartConversation += facePlayerWhenTalking.OnStartConversation;
+                facePlayerWhenTalking._dialogueTree.OnEndConversation += facePlayerWhenTalking.OnEndConversation;
             }
 
             if (info.lookAtRadius > 0)

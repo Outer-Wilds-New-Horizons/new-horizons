@@ -7,7 +7,7 @@ namespace NewHorizons.Components
         public float wanderRate;
         public float wanderDegreesX;
         public float wanderDegreesZ;
-        public Sector sector;
+        public GameObject planetGO;
 
         private float noiseOffset;
         private float startDegreesX;
@@ -47,7 +47,7 @@ namespace NewHorizons.Components
             var newPos = new Vector3(newX, newY, newZ);
 
             transform.localPosition = newPos;
-            transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(newPos.normalized));
+            transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(newPos.normalized));
         }
     }
 }

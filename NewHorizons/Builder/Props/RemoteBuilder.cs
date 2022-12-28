@@ -252,14 +252,7 @@ namespace NewHorizons.Builder.Props
         {
             var shareStone = _shareStonePrefab.InstantiateInactive();
 
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                shareStone.name = info.rename;
-            }
-            else
-            {
-                shareStone.name = "ShareStone_" + id.ToString();
-            }
+            shareStone.name = !string.IsNullOrEmpty(info.rename) ? info.rename : ("ShareStone_" + id.ToString());
 
             shareStone.transform.parent = sector?.transform ?? go.transform;
 
