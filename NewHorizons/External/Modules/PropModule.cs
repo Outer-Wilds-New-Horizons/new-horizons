@@ -421,7 +421,7 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// If this dialogue is meant for a character, this is the relative path from the planet to that character's
-            /// CharacterAnimController or SolanumAnimController.
+            /// CharacterAnimController, TavelerController, or SolanumAnimController.
             /// </summary>
             public string pathToAnimController;
 
