@@ -216,6 +216,20 @@ namespace NewHorizons.Builder.Props
                 // TODO: make a custom controller for basic characters to just turn them to face you
             }
 
+            var facePlayerWhenTalking = character.GetComponent<FacePlayerWhenTalking>();
+            if (facePlayerWhenTalking != null)
+            {
+                if (facePlayerWhenTalking._dialogueTree != null)
+                {
+                    facePlayerWhenTalking._dialogueTree.OnStartConversation -= facePlayerWhenTalking.OnStartConversation;
+                    facePlayerWhenTalking._dialogueTree.OnEndConversation -= facePlayerWhenTalking.OnEndConversation;
+                }
+
+                facePlayerWhenTalking._dialogueTree = dialogue;
+                facePlayerWhenTalking._dialogueTree.OnStartConversation += facePlayerWhenTalking.OnStartConversation;
+                facePlayerWhenTalking._dialogueTree.OnEndConversation += facePlayerWhenTalking.OnEndConversation;
+            }
+
             if (info.lookAtRadius > 0)
             {
                 var playerTrackingZone = new GameObject("PlayerTrackingZone");
