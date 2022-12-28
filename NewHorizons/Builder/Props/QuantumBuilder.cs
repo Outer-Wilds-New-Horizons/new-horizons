@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.Props
         public static void MakeSocketGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum Sockets - " + quantumGroup.id);
-            groupRoot.transform.parent = sector.transform;
+            groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
             groupRoot.transform.localEulerAngles = Vector3.zero;
             
@@ -79,7 +79,7 @@ namespace NewHorizons.Builder.Props
         public static void MakeStateGroup(GameObject go, Sector sector, PlanetConfig config, IModBehaviour mod, PropModule.QuantumGroupInfo quantumGroup, GameObject[] propsInGroup)
         {
             var groupRoot = new GameObject("Quantum States - " + quantumGroup.id);
-            groupRoot.transform.parent = sector.transform;
+            groupRoot.transform.parent = sector?.transform ?? go.transform;
             groupRoot.transform.localPosition = Vector3.zero;
 
             var states = new List<QuantumState>();
@@ -128,7 +128,7 @@ namespace NewHorizons.Builder.Props
             //var averagePosition = propsInGroup.Aggregate(Vector3.zero, (avg, prop) => avg + prop.transform.position) / propsInGroup.Count();
             GameObject shuffleParent = new GameObject("Quantum Shuffle - " + quantumGroup.id);
             shuffleParent.SetActive(false);
-            shuffleParent.transform.parent = sector.transform;
+            shuffleParent.transform.parent = sector?.transform ?? go.transform;
             shuffleParent.transform.localPosition = Vector3.zero;
             propsInGroup.ToList().ForEach(p => p.transform.parent = shuffleParent.transform);    
 

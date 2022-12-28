@@ -75,5 +75,20 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
         /// </summary>
         [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
+
+        /// <summary>
+        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+        /// </summary>
+        public string parentPath;
+
+        /// <summary>
+        /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+        /// </summary>
+        public bool isRelativeToParent;
+
+        /// <summary>
+        /// An optional rename of this object
+        /// </summary>
+        public string rename;
     }
 }

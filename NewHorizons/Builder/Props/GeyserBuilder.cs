@@ -1,6 +1,8 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class GeyserBuilder
@@ -17,8 +19,21 @@ namespace NewHorizons.Builder.Props
             InitPrefab();
 
             var geyserGO = _geyserPrefab.InstantiateInactive();
+            geyserGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Geyser";
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
-            geyserGO.name = "Geyser";
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    geyserGO.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             var pos = (Vector3)info.position;
 
