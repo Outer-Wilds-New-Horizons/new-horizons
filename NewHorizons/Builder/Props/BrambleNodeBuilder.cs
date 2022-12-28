@@ -199,6 +199,8 @@ namespace NewHorizons.Builder.Props
 
             // This node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
+            
+            StreamingHandler.SetUpStreaming(brambleNode, sector);
 
             // Fix some components
             fogLight._parentBody = go.GetComponent<OWRigidbody>();
