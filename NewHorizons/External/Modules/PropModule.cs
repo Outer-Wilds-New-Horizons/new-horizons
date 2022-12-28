@@ -477,6 +477,8 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// If this dialogue is meant for a character, this is the relative path from the planet to that character's
             /// CharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.
+            /// 
+            /// If none of those components are present it will add a FacePlayerWhenTalking component.
             /// </summary>
             public string pathToAnimController;
 

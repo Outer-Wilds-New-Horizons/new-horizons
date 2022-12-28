@@ -213,7 +213,8 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                // TODO: make a custom controller for basic characters to just turn them to face you
+                // If they have nothing else just put the face player when talking thing on them
+                character.gameObject.GetAddComponent<FacePlayerWhenTalking>();
             }
 
             var facePlayerWhenTalking = character.GetComponent<FacePlayerWhenTalking>();
