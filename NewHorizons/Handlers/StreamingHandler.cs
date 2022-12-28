@@ -24,16 +24,23 @@ namespace NewHorizons.Handlers
         {
             var group = GetStreamingGroup(name);
 
-            sector.OnOccupantEnterSector += _ =>
+            if (sector)
             {
-                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
-                    group.RequestGeneralAssets();
-            };
-            sector.OnOccupantExitSector += _ =>
+                sector.OnOccupantEnterSector += _ =>
+                {
+                    if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        group.RequestGeneralAssets();
+                };
+                sector.OnOccupantExitSector += _ =>
+                {
+                    if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        group.ReleaseGeneralAssets();
+                };
+            }
+            else
             {
-                if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
-                    group.ReleaseGeneralAssets();
-            };
+                group.RequestGeneralAssets();
+            }
         }
 
         /// <summary>
@@ -87,8 +94,6 @@ namespace NewHorizons.Handlers
 
             foreach (var assetBundle in assetBundles)
             {
-                StreamingManager.LoadStreamingAssets(assetBundle);
-
                 // Track the sector even if its null. null means stay loaded forever
                 if (!_sectorCache.TryGetValue(assetBundle, out var sectors))
                 {
@@ -106,15 +111,17 @@ namespace NewHorizons.Handlers
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.LoadStreamingAssets(assetBundle);
                 };
-                /*
                 sector.OnOccupantExitSector += _ =>
                 {
-                    // UnloadStreamingAssets is patched to check IsBundleInUse first before unloading
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                 };
-                */
+            }
+            else
+            {
+                foreach (var assetBundle in assetBundles)
+                    StreamingManager.LoadStreamingAssets(assetBundle);
             }
         }
 
@@ -136,7 +143,7 @@ namespace NewHorizons.Handlers
             }
             else
             {
-                return Locator.GetAstroObject(name)?.GetComponentInChildren<StreamingGroup>();
+                return Locator.GetAstroObject(name).GetComponentInChildren<StreamingGroup>();
             }
         }
     }

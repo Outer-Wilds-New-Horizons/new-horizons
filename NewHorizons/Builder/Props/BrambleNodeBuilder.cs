@@ -385,6 +385,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            StreamingHandler.SetUpStreaming(brambleNode, sector);
+
             // Done!
             brambleNode.SetActive(true);
             return brambleNode;
