@@ -20,7 +20,7 @@ namespace NewHorizons.Patches
         public static bool UnityLogger_OnLogMessageReceived(string message)
         {
             // Filter out goofy error that doesn't actually break anything
-            return !message.Contains(" is out of bounds (size=0)");
+            return !message.EndsWith(" is out of bounds (size=0)");
         }
     }
 }
