@@ -161,6 +161,7 @@ namespace NewHorizons.Builder.Props
             var nomaiController = character.GetComponent<SolanumAnimController>();
             var controller = character.GetComponent<CharacterAnimController>();
             var traveler = character.GetComponent<TravelerController>();
+            var travelerEye = character.GetComponent<TravelerEyeController>();
 
             var lookOnlyWhenTalking = info.lookAtRadius <= 0;
 
@@ -189,6 +190,18 @@ namespace NewHorizons.Builder.Props
                 traveler._dialogueSystem = dialogue;
                 traveler._dialogueSystem.OnStartConversation += traveler.OnStartConversation;
                 traveler._dialogueSystem.OnEndConversation += traveler.OnEndConversation;
+            }
+            else if (travelerEye != null)
+            {
+                if (travelerEye._dialogueTree != null)
+                {
+                    travelerEye._dialogueTree.OnStartConversation -= travelerEye.OnStartConversation;
+                    travelerEye._dialogueTree.OnEndConversation -= travelerEye.OnEndConversation;
+                }
+
+                travelerEye._dialogueTree = dialogue;
+                travelerEye._dialogueTree.OnStartConversation += travelerEye.OnStartConversation;
+                travelerEye._dialogueTree.OnEndConversation += travelerEye.OnEndConversation;
             }
             else if (nomaiController != null)
             {
