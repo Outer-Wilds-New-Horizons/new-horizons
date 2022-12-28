@@ -106,15 +106,12 @@ namespace NewHorizons.Handlers
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.LoadStreamingAssets(assetBundle);
                 };
-                /*
                 sector.OnOccupantExitSector += _ =>
                 {
-                    // UnloadStreamingAssets is patched to check IsBundleInUse first before unloading
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                 };
-                */
             }
         }
 
