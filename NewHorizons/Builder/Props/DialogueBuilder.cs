@@ -47,6 +47,10 @@ namespace NewHorizons.Builder.Props
                         remoteTrigger.transform.parent = parent;
                     }
                 }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
+                }
             }
 
             // Make the character look at the player

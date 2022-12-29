@@ -194,6 +194,10 @@ namespace NewHorizons.Builder.Props
                 {
                     prop.transform.parent = newParent.transform;
                 }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
+                }
             }
 
             if (detail.isRelativeToParent)
