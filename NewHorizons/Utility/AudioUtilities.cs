@@ -89,13 +89,13 @@ namespace NewHorizons.Utility
 
             switch (extension)
             {
-                case ("wav"):
+                case (".wav"):
                     audioType = UnityEngine.AudioType.WAV;
                     break;
-                case ("ogg"):
+                case (".ogg"):
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
-                case ("mp3"):
+                case (".mp3"):
                     audioType = UnityEngine.AudioType.MPEG;
                     break;
                 default:
