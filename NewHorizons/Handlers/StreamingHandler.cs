@@ -23,7 +23,7 @@ namespace NewHorizons.Handlers
             _tables = Resources.FindObjectsOfTypeAll<StreamingMaterialTable>();
 
             // Track base game assets
-            foreach (var streamingGroup in GameObject.FindObjectsOfType<StreamingGroup>())
+            foreach (var streamingGroup in StreamingGroup.s_streamingGroups)
             {
                 var sector = streamingGroup.GetAttachedOWRigidbody().GetComponentInChildren<Sector>();
                 var assetBundles = streamingGroup._streamingMaterialTables.Select(x => x.assetBundle);
