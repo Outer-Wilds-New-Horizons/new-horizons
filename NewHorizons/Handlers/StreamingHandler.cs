@@ -26,7 +26,26 @@ namespace NewHorizons.Handlers
             foreach (var streamingGroup in StreamingGroup.s_streamingGroups)
             {
                 var sector = streamingGroup.GetAttachedOWRigidbody().GetComponentInChildren<Sector>();
-                var assetBundles = streamingGroup._streamingMaterialTables.Select(x => x.assetBundle);
+                var assetBundles = new[]
+                    {
+                        streamingGroup._bakedTerrainsBundle,
+                        streamingGroup._batchedRenderersBundle,
+                        streamingGroup._batchedRenderersColliderBundle,
+                        streamingGroup._bakedVISRenderersBundle,
+                        streamingGroup._detailPatchesBundle,
+                        streamingGroup._decalsBundle,
+                        streamingGroup._terrainSceneMeshBundle,
+                        streamingGroup._terrainColliderSceneMeshBundle,
+                        streamingGroup._structuresSceneMeshBundle,
+                        streamingGroup._structuresColliderSceneMeshBundle,
+                        streamingGroup._propsSceneMeshBundle,
+                        streamingGroup._propsColliderSceneMeshBundle,
+                        streamingGroup._charactersSceneMeshBundle,
+                        streamingGroup._charactersColliderSceneMeshBundle,
+                        streamingGroup._effectsSceneMeshBundle,
+                        streamingGroup._effectsColliderSceneMeshBundle
+                    }
+                    .Concat(streamingGroup._streamingMaterialTables.Select(x => x.assetBundle));
 
                 foreach (var assetBundle in assetBundles)
                 {
