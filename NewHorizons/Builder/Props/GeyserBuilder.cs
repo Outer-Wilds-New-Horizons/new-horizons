@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 

@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {go.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
                 }
             }
 
