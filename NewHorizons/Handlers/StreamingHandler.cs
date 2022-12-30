@@ -31,11 +31,13 @@ namespace NewHorizons.Handlers
                     if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         group.RequestGeneralAssets();
                 };
+                /*
                 sector.OnOccupantExitSector += _ =>
                 {
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         group.ReleaseGeneralAssets();
                 };
+                */
             }
             else
             {
@@ -111,12 +113,14 @@ namespace NewHorizons.Handlers
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.LoadStreamingAssets(assetBundle);
                 };
+                /*
                 sector.OnOccupantExitSector += _ =>
                 {
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                 };
+                */
             }
             else
             {
