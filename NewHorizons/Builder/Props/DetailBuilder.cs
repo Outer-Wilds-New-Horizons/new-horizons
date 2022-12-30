@@ -93,7 +93,7 @@ namespace NewHorizons.Builder.Props
                 prop = prefab.InstantiateInactive();
                 prop.name = prefab.name;
 
-                StreamingHandler.SetUpStreaming(prop, sector);
+                StreamingHandler.SetUpStreaming(prop, detail.keepLoaded ? null : sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 var isTorch = prop.GetComponent<VisionTorchItem>() != null;
