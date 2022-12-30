@@ -87,13 +87,14 @@ namespace NewHorizons.Builder.Props
                 prop = storedPrefab.prefab.InstantiateInactive();
                 prop.name = prefab.name;
                 isItem = storedPrefab.isItem;
+                
+                // Items shouldn't use these else they get weird
+                if (isItem) detail.keepLoaded = true;
             }
             else
             {
                 prop = prefab.InstantiateInactive();
                 prop.name = prefab.name;
-
-                StreamingHandler.SetUpStreaming(prop, sector);
 
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 var isTorch = prop.GetComponent<VisionTorchItem>() != null;
@@ -112,6 +113,10 @@ namespace NewHorizons.Builder.Props
                     FixComponent(component, go);
                 }
 
+                // Items shouldn't use these else they get weird
+                if (isItem) detail.keepLoaded = true;
+                StreamingHandler.SetUpStreaming(prop, sector, detail.keepLoaded);
+
                 if (detail.path != null)
                 {
                     _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive(), isItem));
@@ -119,9 +124,6 @@ namespace NewHorizons.Builder.Props
             }
 
             prop.transform.parent = sector?.transform ?? go.transform;
-
-            // Items shouldn't use these else they get weird
-            if (isItem) detail.keepLoaded = true;
 
             prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
 

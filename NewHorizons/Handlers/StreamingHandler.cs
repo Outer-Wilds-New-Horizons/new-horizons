@@ -20,11 +20,15 @@ namespace NewHorizons.Handlers
             _sectorCache.Clear();
         }
 
-        public static void SetUpStreaming(AstroObject.Name name, Sector sector)
+        public static void SetUpStreaming(AstroObject.Name name, Sector sector, bool keepLoaded = false)
         {
             var group = GetStreamingGroup(name);
 
-            if (sector)
+            if (sector == null || keepLoaded)
+            {
+                group.RequestGeneralAssets();
+            }
+            else
             {
                 sector.OnOccupantEnterSector += _ =>
                 {
@@ -37,16 +41,12 @@ namespace NewHorizons.Handlers
                         group.ReleaseGeneralAssets();
                 };
             }
-            else
-            {
-                group.RequestGeneralAssets();
-            }
         }
 
         /// <summary>
         /// makes it so that this object's streaming stuff will be connected to the given sector
         /// </summary>
-        public static void SetUpStreaming(GameObject obj, Sector sector)
+        public static void SetUpStreaming(GameObject obj, Sector sector, bool keepLoaded = false)
         {
             // find the asset bundles to load
             // tries the cache first, then builds
@@ -103,7 +103,12 @@ namespace NewHorizons.Handlers
                 sectors.SafeAdd(sector);
             }
 
-            if (sector)
+            if (sector == null || keepLoaded)
+            {
+                foreach (var assetBundle in assetBundles)
+                    StreamingManager.LoadStreamingAssets(assetBundle);
+            }
+            else
             {
                 sector.OnOccupantEnterSector += _ =>
                 {
@@ -115,14 +120,10 @@ namespace NewHorizons.Handlers
                 {
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
+                            // BUG: is this check needed? the patch for StreamingManager.UnloadStreamingAssets already does this check
                             if (!IsBundleInUse(assetBundle))
                                 StreamingManager.UnloadStreamingAssets(assetBundle);
                 };
-            }
-            else
-            {
-                foreach (var assetBundle in assetBundles)
-                    StreamingManager.LoadStreamingAssets(assetBundle);
             }
         }
 
