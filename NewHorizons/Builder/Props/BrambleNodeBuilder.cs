@@ -385,7 +385,8 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            StreamingHandler.SetUpStreaming(brambleNode, sector);
+            // null sector means it's always loaded
+            StreamingHandler.SetUpStreaming(brambleNode, null);
 
             // Done!
             brambleNode.SetActive(true);
