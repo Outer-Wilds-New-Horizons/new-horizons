@@ -93,6 +93,7 @@ namespace NewHorizons.Builder.Props
             public bool canMirror;
             public Vector2 a;
             public Vector2 b;
+            public Vector2 startS;
             public Vector2 endS;
             public Vector2 skeletonScale;
             public int numSkeletonPoints;
@@ -107,6 +108,7 @@ namespace NewHorizons.Builder.Props
             canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.5f, 0.5f),
             b = new Vector2(0.3f, 0.6f),
+            startS = new Vector2(342.8796f, 342.8796f),
             endS = new Vector2(0, 50f),
             skeletonScale = new Vector2(0.01f, 0.01f),
             numSkeletonPoints = 51,
@@ -121,6 +123,7 @@ namespace NewHorizons.Builder.Props
             canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.9f, 0.9f),
             b = new Vector2(0.305f, 0.4f),
+            startS = new Vector2(342.8796f, 342.8796f),
             endS = new Vector2(16f, 60f), 
             skeletonScale = new Vector2(0.002f, 0.005f),
             numSkeletonPoints = 51,
@@ -128,6 +131,29 @@ namespace NewHorizons.Builder.Props
             innerWidth = 0.001f/10f, 
             outerWidth = 2f*0.05f, 
             uvScale = 4.9f/3.5f, 
+        };
+        
+        // location of example stranger writing:
+        // RingWorld_Body/Sector_RingInterior/Sector_Zone1/Interactables_Zone1/Props_IP_ZoneSign_1/Arc_TestAlienWriting/Arc 1
+        // 17 points
+        // length of 1.8505
+        // width of 1
+        // _revealDuration of 0.5633
+        // _targetColor of 1 1 1 0
+        // I think this'll do it
+        public static SpiralProfile strangerSpiralProfile = new SpiralProfile() {
+            profileName="Stranger",
+            canMirror = false,
+            a = new Vector2(0.9f, 0.9f), // this value doesn't really matter for this
+            b = new Vector2(5f, 5f),
+            startS = new Vector2(1.8505f, 1.8505f), 
+            endS = new Vector2(0, 0), 
+            skeletonScale = new Vector2(1, 1),
+            numSkeletonPoints = 17,
+
+            innerWidth = 1, 
+            outerWidth = 1, 
+            uvScale = 1f/1.8505f, 
         };
 
         //
@@ -297,7 +323,8 @@ namespace NewHorizons.Builder.Props
             public virtual void Randomize() {
                 this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y); //0.5f;
                 this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
-                this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);
+                this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);   // idk why I flipped these, please don't hate me
+                this.endS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
                 this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
                 if (profile.canMirror) this.mirror = UnityEngine.Random.value<0.5f;
             }
