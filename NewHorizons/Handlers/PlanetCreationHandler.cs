@@ -793,9 +793,9 @@ namespace NewHorizons.Handlers
 
         public static void SetPositionFromVector(GameObject go, Vector3 position)
         {
-            if (go.GetAttachedOWRigidbody() != null)
+            var rb = go.GetAttachedOWRigidbody();
+            if (rb)
             {
-                var rb = go.GetAttachedOWRigidbody();
                 var allChildren = CenterOfTheUniverse.s_rigidbodies.Where(x => x.GetOrigParentBody() == rb).ToArray();
 
                 var localPositions = allChildren.Select(x => rb.transform.InverseTransformPoint(x.transform.position)).ToArray();
@@ -803,11 +803,10 @@ namespace NewHorizons.Handlers
                 go.transform.parent = Locator.GetRootTransform();
                 go.transform.position = position;
 
-                for (var i = 0; i < allChildren.Count(); i++)
+                for (var i = 0; i < allChildren.Length; i++)
                 {
-                    if (allChildren[i].GetComponent<NomaiInterfaceOrb>() != null)
+                    if (allChildren[i].TryGetComponent<NomaiInterfaceOrb>(out var orb))
                     {
-                        var orb = allChildren[i].GetComponent<NomaiInterfaceOrb>();
                         orb.SetOrbPosition(go.transform.TransformPoint(localPositions[i]));
                     }
                     else
