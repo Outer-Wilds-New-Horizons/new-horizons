@@ -249,7 +249,6 @@ namespace NewHorizons.Builder.Body
             var cullController = go.AddComponent<BrambleSectorController>();
             cullController.SetSector(sector);
 
-            // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
                 // Prevent recursion from causing hard crash
