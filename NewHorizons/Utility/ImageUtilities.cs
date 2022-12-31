@@ -112,7 +112,6 @@ namespace NewHorizons.Utility
 
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = texture.name + "Inverted";
-            newTexture.wrapMode = texture.wrapMode;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
@@ -177,7 +176,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
-            var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
+            var outline = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             outline.name = texture.name + "Outline";
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
@@ -242,7 +241,6 @@ namespace NewHorizons.Utility
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "Tinted";
-            newImage.wrapMode = image.wrapMode;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
@@ -265,7 +263,6 @@ namespace NewHorizons.Utility
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "LerpedGrayscale";
-            newImage.wrapMode = image.wrapMode;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
@@ -298,7 +295,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
-            var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
+            var tex = (new Texture2D(width, height, src.format, src.mipmapCount != 1));
             tex.name = src.name + "CanvasScaled";
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
@@ -436,7 +433,7 @@ namespace NewHorizons.Utility
                     };
 
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
-                    ImageConversion.LoadImage(texture, handler.data);
+                    texture.LoadImage(handler.data);
 
                     lock (_loadedTextures)
                     {
