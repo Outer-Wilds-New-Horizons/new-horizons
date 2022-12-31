@@ -7,8 +7,6 @@ namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextArcBuilder {
         public static int i = 0;
-
-        public static SpiralProfile spiralProfile;
         public static bool removeBakedInRotationAndPosition = true;        
 
         public static void PlaceAdult() 
@@ -18,6 +16,10 @@ namespace NewHorizons.Builder.Props
         public static void PlaceChild() 
         {
             BuildSpiralGameObject(childSpiralProfile, "Text Arc Prefab " + (i++));
+        }
+        public static void PlaceStranger() 
+        {
+            BuildSpiralGameObject(strangerSpiralProfile, "Text Arc Prefab " + (i++));
         }
 
         public static GameObject BuildSpiralGameObject(SpiralProfile profile, string goName="New Nomai Spiral") 
