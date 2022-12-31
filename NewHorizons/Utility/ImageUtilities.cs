@@ -427,7 +427,7 @@ namespace NewHorizons.Utility
                 }
                 else
                 {
-                    var texture = new Texture2D(2, 2, TextureFormat.RGB24, false)
+                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
                     {
                         wrapMode = TextureWrapMode.Clamp
                     };
