@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 namespace NewHorizons.Utility
 {
@@ -109,8 +110,9 @@ namespace NewHorizons.Utility
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = texture.name + "Inverted";
+            newTexture.wrapMode = texture.wrapMode;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
@@ -238,8 +240,9 @@ namespace NewHorizons.Utility
                 pixels[i].b *= tint.b;
             }
 
-            var newImage = new Texture2D(image.width, image.height);
+            var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "Tinted";
+            newImage.wrapMode = image.wrapMode;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
@@ -260,8 +263,9 @@ namespace NewHorizons.Utility
                 pixels[i].b = Mathf.Lerp(darkTint.b, lightTint.b, pixels[i].b);
             }
 
-            var newImage = new Texture2D(image.width, image.height);
+            var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "LerpedGrayscale";
+            newImage.wrapMode = image.wrapMode;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
@@ -426,9 +430,15 @@ namespace NewHorizons.Utility
                 }
                 else
                 {
-                    var texture = DownloadHandlerTexture.GetContent(uwr);
+                    var texture = new Texture2D(2, 2, TextureFormat.RGB24, false)
+                    {
+                        wrapMode = TextureWrapMode.Clamp
+                    };
 
-                    lock(_loadedTextures)
+                    var handler = (DownloadHandlerTexture)uwr.downloadHandler;
+                    ImageConversion.LoadImage(texture, handler.data);
+
+                    lock (_loadedTextures)
                     {
                         if (_loadedTextures.ContainsKey(url))
                         {
