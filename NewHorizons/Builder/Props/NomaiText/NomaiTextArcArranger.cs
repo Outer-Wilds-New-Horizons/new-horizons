@@ -217,15 +217,20 @@ namespace NewHorizons.Builder.Props
         public Vector2 position {
             get { return new Vector2(this.transform.position.x, this.transform.position.y); }
         }
-
+        
         public SpiralManipulator AddChild() {
+            return AddChild(NomaiTextArcArranger.Place(this.transform.parent.gameObject).gameObject);
+        }
+        
+        public SpiralManipulator AddChild(GameObject prebuiltChild) {
             var index = Random.Range(MIN_PARENT_POINT, MAX_PARENT_POINT);
-            var child = NomaiTextArcArranger.Place(this.transform.parent.gameObject);
+            prebuiltChild.transform.parent = this.transform.parent;
+            var child = prebuiltChild.gameObject.GetAddComponent<SpiralManipulator>();
             PlaceChildOnParentPoint(child, this, index);
 
-            child.GetComponent<SpiralManipulator>().parent = this;
-            this.children.Add(child.GetComponent<SpiralManipulator>());
-            return child.GetComponent<SpiralManipulator>();
+            child.parent = this;
+            this.children.Add(child);
+            return child;
         }
 
         public void Mirror() 
