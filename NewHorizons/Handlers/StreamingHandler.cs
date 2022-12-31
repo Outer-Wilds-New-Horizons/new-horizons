@@ -152,7 +152,9 @@ namespace NewHorizons.Handlers
                 {
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
-                            StreamingManager.UnloadStreamingAssets(assetBundle);
+                        {
+                            StreamingManager.UnloadStreamingAssets(assetBundle, 5f);
+                        }
                 };
             }
             else
