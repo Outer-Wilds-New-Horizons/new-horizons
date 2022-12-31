@@ -2,8 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEditor;
-using System.Reflection;
 
 namespace NewHorizons.Builder.Props
 {
@@ -72,22 +70,13 @@ namespace NewHorizons.Builder.Props
                 )
                 .ToList();
 
-            var _lengths = _points.Take(_points.Count()-1).Select((point, i) => Vector3.Distance(point, _points[i+1])).ToArray();
-            var _totalLength = _lengths.Aggregate(0f, (acc, length) => acc + length);
-            var _state = NomaiTextLine.VisualState.UNREAD;
-            var _textLineLocation = NomaiText.Location.UNSPECIFIED;
-            var _center = _points.Aggregate(Vector3.zero, (acc, point) => acc + point) / (float)_points.Count();
-            var _radius = _points.Aggregate(0f,                     (acc, point) => Mathf.Max(Vector3.Distance(_center, point), acc));
-            var _active = true;
-
-            (typeof (NomaiTextLine)).InvokeMember("_points", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _points.ToArray() });
-            (typeof (NomaiTextLine)).InvokeMember("_lengths", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _lengths });
-            (typeof (NomaiTextLine)).InvokeMember("_totalLength", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _totalLength });
-            (typeof (NomaiTextLine)).InvokeMember("_state", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _state });
-            (typeof (NomaiTextLine)).InvokeMember("_textLineLocation", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _textLineLocation });
-            (typeof (NomaiTextLine)).InvokeMember("_center", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _center });
-            (typeof (NomaiTextLine)).InvokeMember("_radius", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _radius });
-            (typeof (NomaiTextLine)).InvokeMember("_active", BindingFlags.SetField | BindingFlags.Instance | BindingFlags.NonPublic, null, owNomaiTextLine, new object[] { _active });
+            owNomaiTextLine._lengths = _points.Take(_points.Count()-1).Select((point, i) => Vector3.Distance(point, _points[i+1])).ToArray();
+            owNomaiTextLine._totalLength = owNomaiTextLine._lengths.Aggregate(0f, (acc, length) => acc + length);
+            owNomaiTextLine._state = NomaiTextLine.VisualState.UNREAD;
+            owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
+            owNomaiTextLine._center = _points.Aggregate(Vector3.zero, (acc, point) => acc + point) / (float)_points.Count();
+            owNomaiTextLine._radius = _points.Aggregate(0f,                     (acc, point) => Mathf.Max(Vector3.Distance(owNomaiTextLine._center, point), acc));
+            owNomaiTextLine._active = true;
 
             return g;
         }
