@@ -16,14 +16,8 @@ namespace NewHorizons.Builder.Props
         public float maxY = 5f;
         public float minY = -1f;
 
-        public static SpiralManipulator Place(GameObject spiralMeshHolder = null) {
-            if (spiralMeshHolder == null) 
-            {
-                spiralMeshHolder = new GameObject("spiral holder");
-                spiralMeshHolder.AddComponent<NomaiTextArcArranger>();
-            }
-
-            var rootArc = NomaiTextArcBuilder.BuildSpiralGameObject(NomaiTextArcBuilder.adultSpiralProfile);
+        public static SpiralManipulator Place(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) {
+            var rootArc = NomaiTextArcBuilder.BuildSpiralGameObject(profile);
             rootArc.transform.parent = spiralMeshHolder.transform;
             rootArc.transform.localEulerAngles = new Vector3(0, 0, Random.Range(-60, 60));
 
@@ -218,8 +212,8 @@ namespace NewHorizons.Builder.Props
             get { return new Vector2(this.transform.position.x, this.transform.position.y); }
         }
         
-        public SpiralManipulator AddChild() {
-            return AddChild(NomaiTextArcArranger.Place(this.transform.parent.gameObject).gameObject);
+        public SpiralManipulator AddChild(NomaiTextArcBuilder.SpiralProfile profile) {
+            return AddChild(NomaiTextArcArranger.Place(profile, this.transform.parent.gameObject).gameObject);
         }
         
         public SpiralManipulator AddChild(GameObject prebuiltChild) {
