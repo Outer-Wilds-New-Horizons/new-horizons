@@ -24,17 +24,25 @@ namespace NewHorizons.Handlers
         {
             var group = GetStreamingGroup(name);
 
-            sector.OnOccupantEnterSector += _ =>
+            if (sector)
             {
-                group.LoadRequiredAssets();
-            };
-            sector.OnOccupantExitSector += _ =>
-            {
-                if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                sector.OnOccupantEnterSector += _ =>
                 {
-                    group.UnloadRequiredAssets();
-                }
-            };
+                    if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        group.RequestGeneralAssets();
+                };
+                /*
+                sector.OnOccupantExitSector += _ =>
+                {
+                    if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                        group.ReleaseGeneralAssets();
+                };
+                */
+            }
+            else
+            {
+                group.RequestGeneralAssets();
+            }
         }
 
         /// <summary>
@@ -88,8 +96,6 @@ namespace NewHorizons.Handlers
 
             foreach (var assetBundle in assetBundles)
             {
-                StreamingManager.LoadStreamingAssets(assetBundle);
-
                 // Track the sector even if its null. null means stay loaded forever
                 if (!_sectorCache.TryGetValue(assetBundle, out var sectors))
                 {
@@ -110,12 +116,16 @@ namespace NewHorizons.Handlers
                 /*
                 sector.OnOccupantExitSector += _ =>
                 {
-                    // UnloadStreamingAssets is patched to check IsBundleInUse first before unloading
                     if (!sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
                         foreach (var assetBundle in assetBundles)
                             StreamingManager.UnloadStreamingAssets(assetBundle);
                 };
                 */
+            }
+            else
+            {
+                foreach (var assetBundle in assetBundles)
+                    StreamingManager.LoadStreamingAssets(assetBundle);
             }
         }
 
@@ -131,13 +141,13 @@ namespace NewHorizons.Handlers
 
         public static StreamingGroup GetStreamingGroup(AstroObject.Name name)
         {
-            if (name == AstroObject.Name.CaveTwin || name == AstroObject.Name.TowerTwin)
+            if (name is AstroObject.Name.CaveTwin or AstroObject.Name.TowerTwin)
             {
                 return GameObject.Find("FocalBody/StreamingGroup_HGT").GetComponent<StreamingGroup>();
             }
             else
             {
-                return Locator.GetAstroObject(name)?.GetComponentInChildren<StreamingGroup>();
+                return Locator.GetAstroObject(name).GetComponentInChildren<StreamingGroup>();
             }
         }
     }

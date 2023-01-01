@@ -88,9 +88,8 @@ namespace NewHorizons.Builder.Body
             Vector3 localPosition = singularity?.position == null ? Vector3.zero : singularity.position;
             Vector3 localRotation = singularity?.rotation == null ? Vector3.zero : singularity.rotation;
 
-            GameObject newSingularity = null;
-            newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
-                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride);
+            GameObject newSingularity = MakeSingularity(go, sector, localPosition, localRotation, polarity, horizonRadius, distortRadius, 
+                hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
             _singularitiesByID.Add(uniqueID, newSingularity);
@@ -134,15 +133,32 @@ namespace NewHorizons.Builder.Body
         }
 
         public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
-            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985)
+            bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
         {
             InitPrefabs();
 
             // polarity true = black, false = white
 
-            var singularity = new GameObject(polarity ? "BlackHole" : "WhiteHole");
+            var singularity = new GameObject(!string.IsNullOrEmpty(rename) ? rename : (polarity ? "BlackHole" : "WhiteHole"));
             singularity.transform.parent = sector?.transform ?? planetGO.transform;
-            singularity.transform.position = planetGO.transform.TransformPoint(position);
+
+            if (!string.IsNullOrEmpty(parentPath))
+            {
+                var newParent = planetGO.transform.Find(parentPath);
+                if (newParent != null)
+                {
+                    singularity.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
+                }
+            }
+
+            if (isRelativeToParent)
+                singularity.transform.localPosition = position;
+            else
+                singularity.transform.position = planetGO.transform.TransformPoint(position);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
@@ -257,7 +273,11 @@ namespace NewHorizons.Builder.Body
                 whiteHoleFluidVolume.enabled = true;
             }
 
-            singularity.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(rotation));
+            var rot = Quaternion.Euler(rotation);
+            if (isRelativeToParent)
+                singularity.transform.localRotation = rot;
+            else
+                singularity.transform.rotation = planetGO.transform.TransformRotation(rot);
 
             singularity.SetActive(true);
             return singularity;

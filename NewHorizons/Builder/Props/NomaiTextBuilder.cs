@@ -166,7 +166,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -262,7 +262,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -324,7 +324,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -428,7 +428,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -537,7 +537,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -614,7 +614,7 @@ namespace NewHorizons.Builder.Props
             nomaiWallText.SetTextAsset(text);
 
             // #433 fuzzy stranger text
-            if (info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
             {
                 StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
             }

@@ -1103,7 +1103,7 @@
         },
         "pathToAnimController": {
           "type": "string",
-          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController or SolanumAnimController."
+          "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
         },
         "position": {
           "description": "When you enter into dialogue, you will look here.",
@@ -1162,6 +1162,18 @@
         "position": {
           "description": "The position of this entry location",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1218,6 +1230,14 @@
           "description": "Loudness of the geyser",
           "format": "float",
           "default": 0.7
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1390,6 +1410,18 @@
           "description": "Acceleration of the raft. Default acceleration is 5.",
           "format": "float",
           "default": 5.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1505,6 +1537,10 @@
         "isRelativeToParent": {
           "type": "boolean",
           "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1707,6 +1743,18 @@
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
           "$ref": "#/definitions/FluidType"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1768,6 +1816,18 @@
         "stoneTint": {
           "description": "The colour of the meteor's stone.",
           "$ref": "#/definitions/MColor"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -1828,6 +1888,18 @@
           "format": "int32",
           "maximum": 3500.0,
           "minimum": 2501.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
