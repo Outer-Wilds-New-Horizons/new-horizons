@@ -25,6 +25,7 @@ namespace NewHorizons.Builder.Props
         public static GameObject BuildSpiralGameObject(SpiralProfile profile, string goName="New Nomai Spiral") 
         {
             var g = new GameObject(goName);
+            g.SetActive(false);
             g.transform.localPosition = Vector3.zero;
             g.transform.localEulerAngles = Vector3.zero;
 
@@ -70,16 +71,18 @@ namespace NewHorizons.Builder.Props
                 .Select((compiled) => 
                     Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * (new Vector3(compiled.x, 0, compiled.y)) // decompile them, rotate them by ang, and then rotate them to be vertical, like the base game spirals are
                 )
-                .ToList();
+                .ToArray();
 
-            owNomaiTextLine._lengths = _points.Take(_points.Count()-1).Select((point, i) => Vector3.Distance(point, _points[i+1])).ToArray();
-            owNomaiTextLine._totalLength = owNomaiTextLine._lengths.Aggregate(0f, (acc, length) => acc + length);
+            owNomaiTextLine._points = _points;
+            //owNomaiTextLine._lengths = _points.Take(_points.Count()-1).Select((point, i) => Vector3.Distance(point, _points[i+1])).ToArray();
+            //owNomaiTextLine._totalLength = owNomaiTextLine._lengths.Aggregate(0f, (acc, length) => acc + length);
             owNomaiTextLine._state = NomaiTextLine.VisualState.UNREAD;
             owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
-            owNomaiTextLine._center = _points.Aggregate(Vector3.zero, (acc, point) => acc + point) / (float)_points.Count();
-            owNomaiTextLine._radius = _points.Aggregate(0f,                     (acc, point) => Mathf.Max(Vector3.Distance(owNomaiTextLine._center, point), acc));
+            //owNomaiTextLine._center = _points.Aggregate(Vector3.zero, (acc, point) => acc + point) / (float)_points.Count();
+            //owNomaiTextLine._radius = _points.Aggregate(0f,                     (acc, point) => Mathf.Max(Vector3.Distance(owNomaiTextLine._center, point), acc));
             owNomaiTextLine._active = true;
 
+            g.SetActive(true);
             return g;
         }
 
@@ -112,7 +115,7 @@ namespace NewHorizons.Builder.Props
             b = new Vector2(0.3f, 0.6f),
             startS = new Vector2(342.8796f, 342.8796f),
             endS = new Vector2(0, 50f),
-            skeletonScale = new Vector2(0.01f, 0.01f),
+            skeletonScale = 0.75f * new Vector2(0.01f, 0.01f),
             numSkeletonPoints = 51,
 
             innerWidth = 0.001f, 
@@ -127,7 +130,7 @@ namespace NewHorizons.Builder.Props
             b = new Vector2(0.305f, 0.4f),
             startS = new Vector2(342.8796f, 342.8796f),
             endS = new Vector2(16f, 60f), 
-            skeletonScale = new Vector2(0.002f, 0.005f),
+            skeletonScale = 0.75f * new Vector2(0.002f, 0.005f),
             numSkeletonPoints = 51,
 
             innerWidth = 0.001f/10f, 

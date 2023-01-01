@@ -16,7 +16,9 @@ namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextBuilder
     {
-        private static List<GameObject> _ghostArcPrefabs;
+        private static Material _ghostArcMaterial;
+        private static Material _adultArcMaterial;
+        private static Material _childArcMaterial;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
@@ -41,8 +43,6 @@ namespace NewHorizons.Builder.Props
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
-        
-        public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static bool _isInit;
 
@@ -52,18 +52,18 @@ namespace NewHorizons.Builder.Props
 
             _isInit = true;
 
-            if (_ghostArcPrefabs == null)
+            if (_adultArcMaterial == null) 
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
-                    .Select(x => x?._textLine?.gameObject)
-                    .Where(x => x != null)
-                    .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
-                    .ToArray();
-                _ghostArcPrefabs = new List<GameObject>();
-                foreach (var existingArc in existingGhostArcs)
-                {
-                    _ghostArcPrefabs.Add(existingArc.InstantiateInactive().Rename("Arc (Ghost)").DontDestroyOnLoad());
-                }
+                _adultArcMaterial = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (2)/Props_TH_ClutterSmall/Arc_Short/Arc") 
+                    .GetComponent<MeshRenderer>()
+                    .sharedMaterial;
+            }
+
+            if (_ghostArcMaterial == null)
+            {
+                _ghostArcMaterial = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Interactables_Zone1/Props_IP_ZoneSign_1/Arc_TestAlienWriting/Arc 1") 
+                    .GetComponent<MeshRenderer>()
+                    .sharedMaterial;
             }
 
             if (_scrollPrefab == null) _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
@@ -644,7 +644,6 @@ namespace NewHorizons.Builder.Props
                 arranger.AttemptOverlapResolution(overlap);
                 for(var a = 0; a < 10; a++) arranger.Step();
             }
-
             Logger.LogError("Overlap resolution failed!");
         }
 
@@ -658,16 +657,16 @@ namespace NewHorizons.Builder.Props
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
                     profile = NomaiTextArcBuilder.childSpiralProfile;
-                    // TODO: set mat
+                    mat = _childArcMaterial;
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
+                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
-                    // TODO: set mat
+                    mat = _ghostArcMaterial;
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
-                    // TODO: set mat
+                    mat = _adultArcMaterial;
                     break;
             }
             

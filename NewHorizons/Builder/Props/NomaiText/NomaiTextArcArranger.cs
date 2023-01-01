@@ -11,9 +11,9 @@ namespace NewHorizons.Builder.Props
 
         private static int MAX_MOVE_DISTANCE = 2;
 
-        public float maxX = 4;
-        public float minX = -4;
-        public float maxY = 5f;
+        public float maxX = 3;
+        public float minX = -3;
+        public float maxY = 2f;
         public float minY = -1f;
 
         public static SpiralManipulator Place(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) {
@@ -91,7 +91,8 @@ namespace NewHorizons.Builder.Props
             return new Vector2Int(-1, -1);
         }
 
-        public void Step() {
+        public void Step() 
+        {
             // TODO: after setting child position on parent in Step(), check to see if this spiral exits the bounds - if so, move it away until it no longer does
             // this ensures that a spiral can never be outside the bounds, it makes them rigid
 
