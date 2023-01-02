@@ -134,6 +134,12 @@ namespace NewHorizons.External.Modules
             /// </summary>
             public int[] possibleExits;
 
+            /// <summary>
+            /// If your game hard crashes upon entering bramble, it's most likely because you have indirectly recursive dimensions, i.e. one leads to another that leads back to the first one.
+            /// Set this to true for one of the nodes in the recursion to fix this, at the cost of it no longer showing markers for the scout, ship, etc.
+            /// </summary>
+            [DefaultValue(false)] public bool preventRecursionCrash = false;
+
             #region Obsolete
 
             [Obsolete("farFogTint is deprecated, please use fogTint instead")]
