@@ -256,6 +256,7 @@ namespace NewHorizons.Builder.Body
                 foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
                 {
                     var currentWarp = senderWarp;
+                    var n = 0;
                     while (currentWarp.GetContainerWarpVolume() != null)
                     {
                         if (currentWarp.GetContainerWarpVolume() == outerFogWarpVolume && currentWarp != senderWarp) // game already fixes here to here recursion
@@ -264,6 +265,8 @@ namespace NewHorizons.Builder.Body
                             break;
                         }
                         currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
+                        n++;
+                        if (n > 100) break; // just in case it gets caught in something else's recursion or there's no outside exit
                     }
                 }
             });
