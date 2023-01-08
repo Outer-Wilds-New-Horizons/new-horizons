@@ -65,6 +65,9 @@ namespace NewHorizons.Handlers
 
             if (sector)
             {
+                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                    group.RequestGeneralAssets();
+
                 sector.OnOccupantEnterSector += _ =>
                 {
                     if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
@@ -142,6 +145,10 @@ namespace NewHorizons.Handlers
 
             if (sector)
             {
+                if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
+                    foreach (var assetBundle in assetBundles)
+                        StreamingManager.LoadStreamingAssets(assetBundle);
+
                 sector.OnOccupantEnterSector += _ =>
                 {
                     if (sector.ContainsAnyOccupants(DynamicOccupant.Player | DynamicOccupant.Probe))
