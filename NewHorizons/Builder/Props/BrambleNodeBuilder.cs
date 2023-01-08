@@ -365,6 +365,15 @@ namespace NewHorizons.Builder.Props
             var success = PairEntrance(innerFogWarpVolume, config.linksTo);
             if (!success) RecordUnpairedNode(innerFogWarpVolume, config.linksTo);
 
+            if (config.preventRecursionCrash)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var destination = GetOuterFogWarpVolumeFromAstroObject(AstroObjectLocator.GetAstroObject(config.linksTo).gameObject);
+                    if (destination != null) destination._senderWarps.Remove(innerFogWarpVolume);
+                });
+            }
+
             // Cleanup for dimension exits
             if (config.name != null)
             {
