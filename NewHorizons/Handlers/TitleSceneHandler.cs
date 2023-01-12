@@ -75,31 +75,72 @@ namespace NewHorizons.Handlers
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
             Logger.LogVerbose($"Displaying {body.Config.name} on the title screen");
-            GameObject titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
-            HeightMapModule heightMap = new HeightMapModule();
-            var minSize = 15;
-            var maxSize = 30;
-            float size = minSize;
+            var titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
+
+            var maxSize = -1f;
+
             if (body.Config.HeightMap != null)
             {
-                size = Mathf.Clamp(body.Config.HeightMap.maxHeight / 10, minSize, maxSize);
-                heightMap.textureMap = body.Config.HeightMap.textureMap;
-                heightMap.heightMap = body.Config.HeightMap.heightMap;
-                heightMap.maxHeight = size;
-                heightMap.minHeight = body.Config.HeightMap.minHeight * size / body.Config.HeightMap.maxHeight;
-                heightMap.stretch = body.Config.HeightMap.stretch;
+                HeightMapBuilder.Make(titleScreenGO, null, body.Config.HeightMap, body.Mod, 30);
+                maxSize = body.Config.HeightMap.maxHeight;
             }
             if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
                 // Hacky but whatever I just want a sphere
-                size = Mathf.Clamp(body.Config.Atmosphere.size / 10, minSize, maxSize);
-                heightMap.maxHeight = heightMap.minHeight = size + 1;
-                heightMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
+                var cloudTextureMap = new HeightMapModule();
+                cloudTextureMap.maxHeight = cloudTextureMap.minHeight = body.Config.Atmosphere.size;
+                cloudTextureMap.textureMap = body.Config.Atmosphere.clouds.texturePath;
+                HeightMapBuilder.Make(titleScreenGO, null, cloudTextureMap, body.Mod, 30);
+                maxSize = Mathf.Max(maxSize, cloudTextureMap.maxHeight);
+            }
+            else
+            {
+                if (body.Config.Water != null)
+                {
+                    var waterGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * Mathf.Max(body.Config.Water.size, body.Config.Water.size * body.Config.Water.curve?.FirstOrDefault()?.value ?? 0f);
+
+                    waterGO.transform.localScale = Vector3.one * size;
+
+                    var mr = waterGO.GetComponent<MeshRenderer>();
+                    mr.material.color = body.Config.Water.tint?.ToColor() ?? Color.blue;
+
+                    waterGO.transform.parent = titleScreenGO.transform;
+                    waterGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
+                if (body.Config.Lava != null)
+                {
+                    var lavaGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * Mathf.Max(body.Config.Lava.size, body.Config.Lava.size * body.Config.Lava.curve?.FirstOrDefault()?.value ?? 0f);
+
+                    lavaGO.transform.localScale = Vector3.one * size;
+
+                    var mr = lavaGO.GetComponent<MeshRenderer>();
+                    mr.material.color = body.Config.Lava.tint?.ToColor() ?? Color.red;
+
+                    lavaGO.transform.parent = titleScreenGO.transform;
+                    lavaGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
+                if (body.Config.Sand != null)
+                {
+                    var sandGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                    var size = 2f * Mathf.Max(body.Config.Sand.size, body.Config.Sand.size * body.Config.Sand.curve?.FirstOrDefault()?.value ?? 0f);
+
+                    sandGO.transform.localScale = Vector3.one * size;
+                    sandGO.GetComponent<MeshRenderer>().material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+
+                    sandGO.transform.parent = titleScreenGO.transform;
+                    sandGO.transform.localPosition = Vector3.zero;
+
+                    maxSize = Mathf.Max(maxSize, size);
+                }
             }
 
-            HeightMapBuilder.Make(titleScreenGO, null, heightMap, body.Mod, 30);
-
-            GameObject pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
+            var pivot = GameObject.Instantiate(SearchUtilities.Find("Scene/Background/PlanetPivot"), SearchUtilities.Find("Scene/Background").transform);
             pivot.GetComponent<RotateTransform>()._degreesPerSecond = 10f;
             foreach (Transform child in pivot.transform)
             {
@@ -111,17 +152,15 @@ namespace NewHorizons.Handlers
             {
                 foreach (var ring in body.Config.Rings)
                 {
-                    RingModule newRing = new RingModule();
-                    newRing.innerRadius = size * 1.2f;
-                    newRing.outerRadius = size * 2f;
-                    newRing.texture = ring.texture;
-                    RingBuilder.Make(titleScreenGO, null, newRing, body.Mod);
+                    RingBuilder.Make(titleScreenGO, null, ring, body.Mod);
+
+                    maxSize = Mathf.Max(maxSize, ring.outerRadius);
                 }
-                titleScreenGO.transform.localScale = Vector3.one * 0.8f;
             }
 
             titleScreenGO.transform.parent = pivot.transform;
             titleScreenGO.transform.localPosition = Vector3.zero;
+            titleScreenGO.transform.localScale = Vector3.one * 30f / maxSize;
 
             return titleScreenGO;
         }
