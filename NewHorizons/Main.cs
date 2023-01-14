@@ -4,7 +4,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
-using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
@@ -29,7 +28,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.Stars;
 
 namespace NewHorizons
 {
@@ -76,9 +74,9 @@ namespace NewHorizons
 
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
-        public StarSystemEvent OnChangeStarSystem;
-        public StarSystemEvent OnStarSystemLoaded;
-        public StarSystemEvent OnPlanetLoaded;
+        public StarSystemEvent OnChangeStarSystem = new();
+        public StarSystemEvent OnStarSystemLoaded = new();
+        public StarSystemEvent OnPlanetLoaded = new();
 
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
@@ -186,10 +184,6 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
-
-            OnChangeStarSystem = new StarSystemEvent();
-            OnStarSystemLoaded = new StarSystemEvent();
-            OnPlanetLoaded = new StarSystemEvent();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -825,18 +819,17 @@ namespace NewHorizons
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
+                if (SystemDict[_currentStarSystem].Config.respawnHere) return;
+
                 // If the override is a valid system then we go there
                 if (SystemDict.ContainsKey(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
                 }
                 else
                 {
                     _currentStarSystem = _defaultStarSystem;
                 }
-
-                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

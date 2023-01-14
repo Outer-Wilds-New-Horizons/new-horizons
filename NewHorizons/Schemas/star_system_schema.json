@@ -45,7 +45,11 @@
     },
     "startHere": {
       "type": "boolean",
-      "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
+      "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system."
+    },
+    "respawnHere": {
+      "type": "boolean",
+      "description": "Set to `true` if you want the player to stay in this star system if they die in it."
     },
     "travelAudio": {
       "type": "string",
