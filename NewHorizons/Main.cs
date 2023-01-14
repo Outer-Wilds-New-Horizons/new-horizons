@@ -819,18 +819,17 @@ namespace NewHorizons
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
+                if (SystemDict[_currentStarSystem].Config.respawnHere) return;
+
                 // If the override is a valid system then we go there
                 if (SystemDict.ContainsKey(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
                 }
                 else
                 {
                     _currentStarSystem = _defaultStarSystem;
                 }
-
-                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

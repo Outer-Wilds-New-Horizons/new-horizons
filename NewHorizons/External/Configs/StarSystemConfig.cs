@@ -56,10 +56,16 @@ namespace NewHorizons.External.Configs
         public SkyboxModule Skybox;
 
         /// <summary>
-        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star
+        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star.
         /// system.
         /// </summary>
         public bool startHere;
+
+        /// <summary>
+        /// Set to `true` if you want the player to stay in this star system if they die in it.
+        /// system.
+        /// </summary>
+        public bool respawnHere;
 
         [Obsolete("travelAudioClip is deprecated, please use travelAudio instead")]
         public string travelAudioClip;
@@ -238,7 +244,7 @@ namespace NewHorizons.External.Configs
 
             // False by default so if one is true go true
             mapRestricted = mapRestricted || otherConfig.mapRestricted;
-            mapRestricted = mapRestricted || otherConfig.mapRestricted;
+            respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
 
             Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
