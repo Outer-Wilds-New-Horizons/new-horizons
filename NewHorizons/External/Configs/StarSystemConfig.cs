@@ -56,14 +56,12 @@ namespace NewHorizons.External.Configs
         public SkyboxModule Skybox;
 
         /// <summary>
-        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star.
-        /// system.
+        /// Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system.
         /// </summary>
         public bool startHere;
 
         /// <summary>
         /// Set to `true` if you want the player to stay in this star system if they die in it.
-        /// system.
         /// </summary>
         public bool respawnHere;
 
