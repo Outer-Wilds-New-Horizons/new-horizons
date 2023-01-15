@@ -114,6 +114,8 @@ namespace NewHorizons.Builder.Body
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
+            fluidVolume._buoyancyDensity = module.buoyancy;
+            fluidVolume._density = module.density;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
