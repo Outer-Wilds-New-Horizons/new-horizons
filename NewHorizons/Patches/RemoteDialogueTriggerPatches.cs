@@ -1,4 +1,6 @@
 using HarmonyLib;
+using NewHorizons.Utility;
+using System;
 
 namespace NewHorizons.Patches
 {
@@ -14,10 +16,13 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(RemoteDialogueTrigger), nameof(RemoteDialogueTrigger.OnTriggerEnter))]
         public static void RemoteDialogueTrigger_OnTriggerEnter(RemoteDialogueTrigger __instance)
         {
-            if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue != null)
+            if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue?.gameObject != null)
             {
                 _wasLastDialogueInactive = __instance._activeRemoteDialogue.gameObject.activeInHierarchy;
-                __instance._activeRemoteDialogue.gameObject.SetActive(true);
+                if (!_wasLastDialogueInactive)
+                {
+                    __instance._activeRemoteDialogue.gameObject.SetActive(true);
+                }
             }
         }
 
