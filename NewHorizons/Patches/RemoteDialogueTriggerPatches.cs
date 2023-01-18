@@ -14,18 +14,25 @@ namespace NewHorizons.Patches
         [HarmonyPatch(typeof(HUDMarker), nameof(HUDMarker.Awake))]
         public static void OnTriggerEnter(RemoteDialogueTrigger __instance)
         {
-            _wasLastDialogueInactive = __instance._activeRemoteDialogue.gameObject.activeInHierarchy;
-            __instance._activeRemoteDialogue.gameObject.SetActive(true);
+            if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue != null)
+            {
+                _wasLastDialogueInactive = __instance._activeRemoteDialogue.gameObject.activeInHierarchy;
+                __instance._activeRemoteDialogue.gameObject.SetActive(true);
+            }
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(HUDMarker), nameof(HUDMarker.Awake))]
         public static void OnEndConversation(RemoteDialogueTrigger __instance)
         {
-            if (_wasLastDialogueInactive)
+            if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue != null)
             {
-                __instance._activeRemoteDialogue.gameObject.SetActive(false);
+                if (_wasLastDialogueInactive)
+                {
+                    __instance._activeRemoteDialogue.gameObject.SetActive(false);
+                }
             }
+
             _wasLastDialogueInactive = false;
         }
     }

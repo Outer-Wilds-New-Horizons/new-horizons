@@ -80,8 +80,10 @@ namespace NewHorizons.Builder.Props
                     priority = 1,
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
-                    prereqConditions = info.remoteTriggerPrereqConditions ?? new string[]{ },
-                    onTriggerEnterConditions = info.remoteTriggerOnEnterConditions ?? new string[]{ }
+                    // Base game never uses more than one condition anyone so we'll keep it simple
+                    prereqConditions = string.IsNullOrEmpty(info.remoteTriggerPrereqCondition) ? new string[]{ } : new string[] { info.remoteTriggerPrereqCondition },
+                    // Just set your enter conditions in XML instead of complicating it with this
+                    onTriggerEnterConditions = new string[]{ }
                 }
             };
             remoteDialogueTrigger._activatedDialogues = new bool[1];
