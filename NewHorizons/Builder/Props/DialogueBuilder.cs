@@ -80,8 +80,8 @@ namespace NewHorizons.Builder.Props
                     priority = 1,
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
-                    prereqConditions = new string[]{ },
-                    onTriggerEnterConditions = new string[]{ }
+                    prereqConditions = info.remoteTriggerPrereqConditions ?? new string[]{ },
+                    onTriggerEnterConditions = info.remoteTriggerOnEnterConditions ?? new string[]{ }
                 }
             };
             remoteDialogueTrigger._activatedDialogues = new bool[1];

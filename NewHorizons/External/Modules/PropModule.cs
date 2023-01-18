@@ -509,6 +509,16 @@ namespace NewHorizons.External.Modules
             public float remoteTriggerRadius;
 
             /// <summary>
+            /// If setting up a remote trigger volume, these conditions must be met for it to trigger
+            /// </summary>
+            public string[] remoteTriggerPrereqConditions;
+
+            /// <summary>
+            /// If setting up a remote trigger volume, but I have no idea what this does at all
+            /// </summary>
+            public string[] remoteTriggerOnEnterConditions;
+
+            /// <summary>
             /// Relative path to the xml file defining the dialogue.
             /// </summary>
             public string xmlFile;
