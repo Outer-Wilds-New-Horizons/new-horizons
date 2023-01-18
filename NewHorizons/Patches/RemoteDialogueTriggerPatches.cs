@@ -11,8 +11,8 @@ namespace NewHorizons.Patches
         private static bool _wasLastDialogueInactive = false;
 
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(HUDMarker), nameof(HUDMarker.Awake))]
-        public static void OnTriggerEnter(RemoteDialogueTrigger __instance)
+        [HarmonyPatch(typeof(RemoteDialogueTrigger), nameof(RemoteDialogueTrigger.OnTriggerEnter))]
+        public static void RemoteDialogueTrigger_OnTriggerEnter(RemoteDialogueTrigger __instance)
         {
             if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue != null)
             {
@@ -22,8 +22,8 @@ namespace NewHorizons.Patches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(HUDMarker), nameof(HUDMarker.Awake))]
-        public static void OnEndConversation(RemoteDialogueTrigger __instance)
+        [HarmonyPatch(typeof(RemoteDialogueTrigger), nameof(RemoteDialogueTrigger.OnEndConversation))]
+        public static void RemoteDialogueTrigger_OnEndConversation(RemoteDialogueTrigger __instance)
         {
             if (__instance._inRemoteDialogue && __instance._activeRemoteDialogue != null)
             {
