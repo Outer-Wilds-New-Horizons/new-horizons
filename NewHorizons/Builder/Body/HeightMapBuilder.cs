@@ -23,23 +23,23 @@ namespace NewHorizons.Builder.Body
             Texture2D heightMap, textureMap, emissionMap;
             try
             {
-                if (module.heightMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
+                if (!string.IsNullOrEmpty(module.heightMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
                     module.heightMap = null;
                 }
-                if (module.textureMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap)))
+                if (!string.IsNullOrEmpty(module.textureMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
                     module.textureMap = null;
                 }
-                if (module.emissionMap != null && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap)))
+                if (!string.IsNullOrEmpty(module.emissionMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap)))
                 {
                     Logger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
                     module.emissionMap = null;
                 }
 
-                if (module.heightMap == null)
+                if (string.IsNullOrEmpty(module.heightMap))
                 {
                     heightMap = Texture2D.whiteTexture;
                 }
@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.Body
                     heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
                 }
 
-                if (module.textureMap == null)
+                if (string.IsNullOrEmpty(module.textureMap))
                 {
                     textureMap = Texture2D.whiteTexture;
                 }
@@ -61,7 +61,7 @@ namespace NewHorizons.Builder.Body
                     textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
                 }
 
-                if (module.emissionMap == null)
+                if (string.IsNullOrEmpty(module.emissionMap))
                 {
                     emissionMap = Texture2D.blackTexture;
                 }
