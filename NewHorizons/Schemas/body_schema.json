@@ -1134,6 +1134,10 @@
           "description": "The radius of the remote trigger volume.",
           "format": "float"
         },
+        "remoteTriggerPrereqCondition": {
+          "type": "string",
+          "description": "If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition."
+        },
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
