@@ -1134,19 +1134,9 @@
           "description": "The radius of the remote trigger volume.",
           "format": "float"
         },
-        "remoteTriggerPrereqConditions": {
-          "type": "array",
-          "description": "If setting up a remote trigger volume, these conditions must be met for it to trigger",
-          "items": {
-            "type": "string"
-          }
-        },
-        "remoteTriggerOnEnterConditions": {
-          "type": "array",
-          "description": "If setting up a remote trigger volume, but I have no idea what this does at all",
-          "items": {
-            "type": "string"
-          }
+        "remoteTriggerPrereqCondition": {
+          "type": "string",
+          "description": "If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition."
         },
         "xmlFile": {
           "type": "string",
