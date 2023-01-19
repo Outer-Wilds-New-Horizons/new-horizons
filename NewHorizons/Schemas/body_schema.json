@@ -1134,6 +1134,10 @@
           "description": "The radius of the remote trigger volume.",
           "format": "float"
         },
+        "remoteTriggerPrereqCondition": {
+          "type": "string",
+          "description": "If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition."
+        },
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
@@ -2572,6 +2576,18 @@
           "type": "number",
           "description": "Size of the water sphere",
           "format": "float"
+        },
+        "density": {
+          "type": "number",
+          "description": "Density of the water sphere. The higher the density, the harder it is to go through this fluid.",
+          "format": "float",
+          "default": 1.2
+        },
+        "buoyancy": {
+          "type": "number",
+          "description": "Buoyancy density of the water sphere",
+          "format": "float",
+          "default": 1.0
         },
         "tint": {
           "description": "Tint of the water",
