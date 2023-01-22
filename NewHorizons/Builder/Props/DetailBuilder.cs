@@ -312,6 +312,12 @@ namespace NewHorizons.Builder.Props
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
             }
 
+            if (component is DarkMatterSubmergeController submergeController)
+            {
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                submergeController._fluidDetector?.SetDetectableFluid(water);
+            }
+
             // Fix anglerfish speed on orbiting planets
             if (component is AnglerfishController angler)
             {

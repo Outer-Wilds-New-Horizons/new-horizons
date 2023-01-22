@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Body
             if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
+        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             InitPrefabs();
 
@@ -148,6 +148,8 @@ namespace NewHorizons.Builder.Body
 
             waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);
+
+            return fluidVolume;
         }
     }
 }
