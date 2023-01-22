@@ -2715,6 +2715,20 @@
           "items": {
             "$ref": "#/definitions/PriorityVolumeInfo"
           }
+        },
+        "solarSystemVolume": {
+          "type": "array",
+          "description": "Entering this volume will load a new solar system.",
+          "items": {
+            "$ref": "#/definitions/ChangeStarSystemVolumeInfo"
+          }
+        },
+        "creditsVolume": {
+          "type": "array",
+          "description": "Enter this volume to be sent to the end credits scene",
+          "items": {
+            "$ref": "#/definitions/LoadCreditsVolumeInfo"
+          }
         }
       }
     },
@@ -3728,6 +3742,85 @@
           "default": 1
         }
       }
+    },
+    "ChangeStarSystemVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "targetStarSystem": {
+          "type": "string",
+          "description": "The star system that entering this volume will send you to.",
+          "default": "SolarSystem"
+        }
+      }
+    },
+    "LoadCreditsVolumeInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "$ref": "#/definitions/MVector3"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this volume."
+        },
+        "creditsType": {
+          "default": "fast",
+          "$ref": "#/definitions/CreditsType"
+        }
+      }
+    },
+    "CreditsType": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "Fast",
+        "Final",
+        "Kazoo"
+      ],
+      "enum": [
+        "fast",
+        "final",
+        "kazoo"
+      ]
     }
   },
   "$docs": {
