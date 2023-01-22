@@ -34,7 +34,7 @@ namespace NewHorizons.Builder.Body
             if (_lavaMaterial == null) _lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
+        public static void Make(GameObject planetGO, Sector sector, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
         {
             InitPrefabs();
 
@@ -165,7 +165,9 @@ namespace NewHorizons.Builder.Body
                     break;
             }
 
-            var sector = planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetRootSector();
+            var primaryBody = planetGO.GetComponent<AstroObject>().GetPrimaryBody();
+            if (primaryBody != null) sector = primaryBody.GetRootSector();
+
             proxyGO.GetComponent<SectorProxy>().SetSector(sector);
             geoGO.GetComponent<SectorCullGroup>().SetSector(sector);
             volumesGO.GetComponent<SectorCollisionGroup>().SetSector(sector);

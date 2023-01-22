@@ -638,7 +638,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Funnel != null)
             {
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+                FunnelBuilder.Make(go, sector, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
             }
 
             // Has to go last probably
