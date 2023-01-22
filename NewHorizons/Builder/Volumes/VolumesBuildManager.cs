@@ -192,6 +192,20 @@ namespace NewHorizons.Builder.Volumes
                     VolumeBuilder.Make<LightlessLightSourceVolume>(go, sector, lightSourceVolume);
                 }
             }
+            if (config.Volumes.solarSystemVolume != null)
+            {
+                foreach (var solarSystemVolume in config.Volumes.solarSystemVolume)
+                {
+                    ChangeStarSystemVolumeBuilder.Make(go, sector, solarSystemVolume);
+                }
+            }
+            if (config.Volumes.creditsVolume != null)
+            {
+                foreach (var creditsVolume in config.Volumes.creditsVolume)
+                {
+                    CreditsVolumeBuilder.Make(go, sector, creditsVolume);
+                }
+            }
         }
     }
 }

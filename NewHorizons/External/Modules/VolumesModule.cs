@@ -106,6 +106,16 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public PriorityVolumeInfo[] zeroGravityVolumes;
 
+        /// <summary>
+        /// Entering this volume will load a new solar system.
+        /// </summary>
+        public ChangeStarSystemVolumeInfo[] solarSystemVolume;
+
+        /// <summary>
+        /// Enter this volume to be sent to the end credits scene
+        /// </summary>
+        public LoadCreditsVolumeInfo[] creditsVolume;
+
         [JsonObject]
         public class VolumeInfo
         {
@@ -134,6 +144,33 @@ namespace NewHorizons.External.Modules
             /// An optional rename of this volume.
             /// </summary>
             public string rename;
+        }
+
+        [JsonObject]
+        public class ChangeStarSystemVolumeInfo : VolumeInfo
+        {
+            /// <summary>
+            /// The star system that entering this volume will send you to.
+            /// </summary>
+            [DefaultValue("SolarSystem")]
+            public string targetStarSystem;
+        }
+
+        [JsonObject]
+        public class LoadCreditsVolumeInfo : VolumeInfo
+        {
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum CreditsType
+            {
+                [EnumMember(Value = @"fast")] Fast = 0,
+
+                [EnumMember(Value = @"final")] Final = 1,
+
+                [EnumMember(Value = @"kazoo")] Kazoo = 2
+            }
+
+            [DefaultValue("fast")]
+            public CreditsType creditsType = CreditsType.Fast;
         }
 
         [JsonObject]
