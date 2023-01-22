@@ -71,7 +71,11 @@ namespace NewHorizons.Builder.Volumes
                     submerge._effectVolumes = new EffectVolume[] { visorFrostEffectVolume };
                     // THERE ARE NO RENDERERS??? RUH ROH!!!
 
-                    var detector = go.AddComponent<ConstantFluidDetector>();
+                    var detectorGO = new GameObject("ConstantFluidDetector");
+                    detectorGO.transform.parent = go.transform;
+                    detectorGO.transform.localPosition = Vector3.zero;
+                    detectorGO.layer = OWLayerMask.detectorMask;
+                    var detector = detectorGO.AddComponent<ConstantFluidDetector>();
                     detector.AddVolume(water);
 
                     submerge._fluidDetector = detector;
