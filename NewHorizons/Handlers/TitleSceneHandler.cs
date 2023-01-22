@@ -65,6 +65,7 @@ namespace NewHorizons.Handlers
             var lightGO = new GameObject("Light");
             lightGO.transform.parent = SearchUtilities.Find("Scene/Background").transform;
             lightGO.transform.localPosition = new Vector3(-47.9203f, 145.7596f, 43.1802f);
+            lightGO.transform.localRotation = Quaternion.Euler(13.1412f, 122.8785f, 169.4302f);
             var light = lightGO.AddComponent<Light>();
             light.type = LightType.Directional;
             light.color = Color.white;
@@ -103,7 +104,18 @@ namespace NewHorizons.Handlers
                     waterGO.transform.localScale = Vector3.one * size;
 
                     var mr = waterGO.GetComponent<MeshRenderer>();
-                    mr.material.color = body.Config.Water.tint?.ToColor() ?? Color.blue;
+                    var colour = body.Config.Water.tint?.ToColor() ?? Color.blue;
+                    mr.material.color = new Color(colour.r, colour.g, colour.b, 0.9f);
+
+                    // Make it transparent!
+                    mr.material.SetOverrideTag("RenderType", "Transparent");
+                    mr.material.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.One);
+                    mr.material.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+                    mr.material.SetInt("_ZWrite", 0);
+                    mr.material.DisableKeyword("_ALPHATEST_ON");
+                    mr.material.DisableKeyword("_ALPHABLEND_ON");
+                    mr.material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+                    mr.material.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
 
                     waterGO.transform.parent = titleScreenGO.transform;
                     waterGO.transform.localPosition = Vector3.zero;
@@ -119,6 +131,7 @@ namespace NewHorizons.Handlers
 
                     var mr = lavaGO.GetComponent<MeshRenderer>();
                     mr.material.color = body.Config.Lava.tint?.ToColor() ?? Color.red;
+                    mr.material.SetColor("_EmissionColor", mr.material.color * 2f);
 
                     lavaGO.transform.parent = titleScreenGO.transform;
                     lavaGO.transform.localPosition = Vector3.zero;
@@ -131,7 +144,9 @@ namespace NewHorizons.Handlers
                     var size = 2f * Mathf.Max(body.Config.Sand.size, body.Config.Sand.size * body.Config.Sand.curve?.FirstOrDefault()?.value ?? 0f);
 
                     sandGO.transform.localScale = Vector3.one * size;
-                    sandGO.GetComponent<MeshRenderer>().material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+                    var mr = sandGO.GetComponent<MeshRenderer>();
+                    mr.material.color = body.Config.Sand.tint?.ToColor() ?? Color.yellow;
+                    mr.material.SetFloat("_Glossiness", 0);
 
                     sandGO.transform.parent = titleScreenGO.transform;
                     sandGO.transform.localPosition = Vector3.zero;
