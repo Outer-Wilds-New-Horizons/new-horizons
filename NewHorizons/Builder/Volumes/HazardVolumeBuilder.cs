@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Volumes
                     var detectorGO = new GameObject("ConstantFluidDetector");
                     detectorGO.transform.parent = go.transform;
                     detectorGO.transform.localPosition = Vector3.zero;
-                    detectorGO.layer = OWLayerMask.detectorMask;
+                    detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
                     detector.AddVolume(water);
 
