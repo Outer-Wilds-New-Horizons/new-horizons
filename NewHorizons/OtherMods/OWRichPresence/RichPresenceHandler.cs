@@ -63,7 +63,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var localizedName = ShipLogStarChartMode.UniqueIDToName(name);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.SetCurrentRootPresence(message, "sun");
+            API.SetCurrentRootPresence(message, "newhorizons");
         }
 
         public static void OnChangeStarSystem(string destination)
