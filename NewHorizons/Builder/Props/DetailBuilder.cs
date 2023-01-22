@@ -315,7 +315,9 @@ namespace NewHorizons.Builder.Props
             if (component is DarkMatterSubmergeController submergeController)
             {
                 var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
-                submergeController._fluidDetector?.SetDetectableFluid(water);
+                // dont use SetDetectableFluid here because Awake hasn't been called yet
+                if (submergeController._fluidDetector)
+                    submergeController._fluidDetector._onlyDetectableFluid = water;
             }
 
             // Fix anglerfish speed on orbiting planets
