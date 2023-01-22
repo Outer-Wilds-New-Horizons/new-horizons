@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.Volumes
                     detectorGO.transform.localPosition = Vector3.zero;
                     detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
-                    detector.AddVolume(water);
+                    detector.SetDetectableFluid(water);
 
                     submerge._fluidDetector = detector;
                 }
