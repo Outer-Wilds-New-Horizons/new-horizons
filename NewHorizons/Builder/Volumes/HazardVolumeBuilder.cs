@@ -63,7 +63,7 @@ namespace NewHorizons.Builder.Volumes
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
 
-                var water = planetGO.GetComponentInChildren<RadialFluidVolume>();
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
                 if (water != null)
                 {
                     var submerge = go.AddComponent<DarkMatterSubmergeController>();
