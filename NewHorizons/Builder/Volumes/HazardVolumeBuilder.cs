@@ -62,6 +62,20 @@ namespace NewHorizons.Builder.Volumes
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
+
+                var water = planetGO.GetComponentInChildren<RadialFluidVolume>();
+                if (water != null)
+                {
+                    var submerge = go.AddComponent<DarkMatterSubmergeController>();
+                    submerge._activeWhenSubmerged = false;
+                    submerge._effectVolumes = new EffectVolume[] { visorFrostEffectVolume };
+                    // THERE ARE NO RENDERERS??? RUH ROH!!!
+
+                    var detector = go.AddComponent<ConstantFluidDetector>();
+                    detector.AddVolume(water);
+
+                    submerge._fluidDetector = detector;
+                }
             }
             else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.ELECTRICITY)
             {
