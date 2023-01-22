@@ -68,7 +68,7 @@ namespace NewHorizons.Builder.Volumes
                 {
                     var submerge = go.AddComponent<DarkMatterSubmergeController>();
                     submerge._activeWhenSubmerged = false;
-                    submerge._effectVolumes = new EffectVolume[] { visorFrostEffectVolume };
+                    submerge._effectVolumes = new EffectVolume[] { hazardVolume, visorFrostEffectVolume };
                     // THERE ARE NO RENDERERS??? RUH ROH!!!
 
                     var detectorGO = new GameObject("ConstantFluidDetector");
