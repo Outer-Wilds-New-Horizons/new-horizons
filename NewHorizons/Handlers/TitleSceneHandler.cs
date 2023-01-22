@@ -83,7 +83,7 @@ namespace NewHorizons.Handlers
             if (body.Config.HeightMap != null)
             {
                 HeightMapBuilder.Make(titleScreenGO, null, body.Config.HeightMap, body.Mod, 30);
-                maxSize = body.Config.HeightMap.maxHeight;
+                maxSize = Mathf.Max(maxSize, body.Config.HeightMap.maxHeight, body.Config.HeightMap.minHeight);
             }
             if (body.Config.Atmosphere?.clouds?.texturePath != null && body.Config.Atmosphere?.clouds?.cloudsPrefab != CloudPrefabType.Transparent)
             {
