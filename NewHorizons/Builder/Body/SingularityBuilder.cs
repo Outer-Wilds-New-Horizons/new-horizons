@@ -203,7 +203,7 @@ namespace NewHorizons.Builder.Body
                     if (hasDestructionVolume) destructionVolumeGO.AddComponent<BlackHoleDestructionVolume>();
                     else if (targetStarSystem != null)
                     {
-                        var wormholeVolume = destructionVolumeGO.AddComponent<ChangeStarSystemVolume>();
+                        var wormholeVolume = destructionVolumeGO.AddComponent<BlackHoleWarpVolume>();
                         wormholeVolume.TargetSolarSystem = targetStarSystem;
                     }
                 }

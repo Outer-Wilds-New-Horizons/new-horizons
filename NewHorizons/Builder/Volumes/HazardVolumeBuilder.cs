@@ -62,6 +62,24 @@ namespace NewHorizons.Builder.Volumes
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
                 visorFrostEffectVolume._frostRate = 0.5f;
                 visorFrostEffectVolume._maxFrost = 0.91f;
+
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                if (water != null)
+                {
+                    var submerge = go.AddComponent<DarkMatterSubmergeController>();
+                    submerge._activeWhenSubmerged = false;
+                    submerge._effectVolumes = new EffectVolume[] { hazardVolume, visorFrostEffectVolume };
+                    // THERE ARE NO RENDERERS??? RUH ROH!!!
+
+                    var detectorGO = new GameObject("ConstantFluidDetector");
+                    detectorGO.transform.parent = go.transform;
+                    detectorGO.transform.localPosition = Vector3.zero;
+                    detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
+                    var detector = detectorGO.AddComponent<ConstantFluidDetector>();
+                    detector.SetDetectableFluid(water);
+
+                    submerge._fluidDetector = detector;
+                }
             }
             else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.ELECTRICITY)
             {
