@@ -38,7 +38,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             }
         }
 
-        public static void SetUpPlanet(string name, GameObject go, Sector sector)
+        public static void SetUpPlanet(string name, GameObject go, Sector sector, bool isStar = false, bool hasAtmosphere = false)
         {
             if (!Enabled) return;
 
@@ -47,7 +47,11 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var localizedName = TranslationHandler.GetTranslation(name, TranslationHandler.TextType.UI);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant());
+            string fallbackKey = "defaultplanet";
+            if (isStar) fallbackKey = "defaultstar";
+            else if (hasAtmosphere) fallbackKey = "defaultplanetatmosphere";
+
+            API.CreateTrigger(go, sector, message, name.Replace(" ", "").Replace("'", "").Replace("-", "").ToLowerInvariant(), fallbackKey);
         }
 
         public static void OnStarSystemLoaded(string name)
@@ -59,7 +63,7 @@ namespace NewHorizons.OtherMods.OWRichPresence
             var localizedName = ShipLogStarChartMode.UniqueIDToName(name);
             var message = TranslationHandler.GetTranslation("RICH_PRESENCE_EXPLORING", TranslationHandler.TextType.UI).Replace("{0}", localizedName);
 
-            API.SetCurrentRootPresence(message, "sun");
+            API.SetCurrentRootPresence(message, "newhorizons");
         }
 
         public static void OnChangeStarSystem(string destination)

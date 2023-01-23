@@ -466,7 +466,7 @@ namespace NewHorizons.Handlers
                 });
             }
 
-            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector, body.Config.Star != null, body.Config.Atmosphere != null);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
