@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Body
 {
@@ -34,7 +35,7 @@ namespace NewHorizons.Builder.Body
             if (_lavaMaterial == null) _lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rigidbody, FunnelModule module)
         {
             InitPrefabs();
 
@@ -55,7 +56,7 @@ namespace NewHorizons.Builder.Body
             var detectorGO = new GameObject("Detector_Funnel");
             detectorGO.transform.parent = funnelGO.transform;
             var funnelDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            funnelDetector._inheritDetector = detector;
+            funnelDetector._inheritDetector = planetGO.GetComponentInChildren<ConstantForceDetector>();
             funnelDetector._detectableFields = new ForceVolume[0];
 
             detectorGO.AddComponent<ForceApplier>();
@@ -165,8 +166,9 @@ namespace NewHorizons.Builder.Body
                     break;
             }
 
+            // We take the sector of the binary focal point if it exists for this funnel (like with the twins)
             var primaryBody = planetGO.GetComponent<AstroObject>().GetPrimaryBody();
-            if (primaryBody != null) sector = primaryBody.GetRootSector();
+            if (primaryBody?.GetComponent<BinaryFocalPoint>() != null) sector = primaryBody.GetRootSector();
 
             proxyGO.GetComponent<SectorProxy>().SetSector(sector);
             geoGO.GetComponent<SectorCullGroup>().SetSector(sector);
