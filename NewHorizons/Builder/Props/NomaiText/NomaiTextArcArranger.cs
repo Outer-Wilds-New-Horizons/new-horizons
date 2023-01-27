@@ -7,28 +7,51 @@ namespace NewHorizons.Builder.Props
 {
     public class NomaiTextArcArranger : MonoBehaviour {
         public List<SpiralManipulator> spirals = new List<SpiralManipulator>();
+        public List<SpiralManipulator> reverseToposortedSpirals = null;
+        public SpiralManipulator root { get; private set; }
         private Dictionary<int, int> sprialOverlapResolutionPriority = new Dictionary<int, int>();
 
         private static int MAX_MOVE_DISTANCE = 2;
 
-        public float maxX = 3;
-        public float minX = -3;
-        public float maxY = 2f;
-        public float minY = -1f;
-
-        public static SpiralManipulator Place(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) {
+        public float maxX = 0.75f * 4;
+        public float minX = 0.75f * -4;
+        public float maxY = 0.75f * 5f;
+        public float minY = 0.75f * -1f;
+        
+        public void GenerateReverseToposort()
+        {
+          reverseToposortedSpirals = new List<SpiralManipulator>();
+          Queue<SpiralManipulator> frontierQueue = new Queue<SpiralManipulator>();
+          frontierQueue.Enqueue(root);
+        
+          while(frontierQueue.Count > 0)
+          {
+            var spiral = frontierQueue.Dequeue();
+            reverseToposortedSpirals.Add(spiral);
+        
+            foreach(var child in spiral.children) frontierQueue.Enqueue(child);
+          }
+        
+          reverseToposortedSpirals.Reverse();
+        }
+        public static SpiralManipulator Place(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) 
+        {
             var rootArc = NomaiTextArcBuilder.BuildSpiralGameObject(profile);
             rootArc.transform.parent = spiralMeshHolder.transform;
             rootArc.transform.localEulerAngles = new Vector3(0, 0, Random.Range(-60, 60));
 
             var manip = rootArc.AddComponent<SpiralManipulator>();
             if (Random.value < 0.5) manip.transform.localScale = new Vector3(-1, 1, 1); // randomly mirror
-            spiralMeshHolder.GetComponent<NomaiTextArcArranger>().spirals.Add(manip);
+            
+            // add to arranger
+            var arranger = spiralMeshHolder.GetComponent<NomaiTextArcArranger>();
+            if (arranger.root == null) arranger.root = manip;
+            arranger.spirals.Add(manip);
 
             return manip;
         }
 
-        private void OnDrawGizmosSelected() 
+        public void OnDrawGizmosSelected() 
         {
             var topLeft         = new Vector3(minX, maxY) + transform.position;
             var topRight        = new Vector3(maxX, maxY) + transform.position;
@@ -53,7 +76,7 @@ namespace NewHorizons.Builder.Props
 
             return mirrorIndex;
         }
-
+        
         public Vector2Int Overlap() 
         {
             var index = -1;
@@ -66,55 +89,97 @@ namespace NewHorizons.Builder.Props
                 foreach (var s2 in spirals) 
                 {
                     jndex++;
-                    if (s1 == s2) continue;
-                    if (Vector3.Distance(s1.center, s2.center) > Mathf.Max(s1.NomaiTextLine.GetWorldRadius(), s2.NomaiTextLine.GetWorldRadius())) continue; // no overlap possible - too far away
-
-                    var s1Points = s1.NomaiTextLine.GetPoints().Select(p => s1.transform.TransformPoint(p)).ToList();
-                    var s2Points = s2.NomaiTextLine.GetPoints().Select(p => s2.transform.TransformPoint(p)).ToList();
-                    var s1ThresholdForOverlap = Vector3.Distance(s1Points[0], s1Points[1]);
-                    var s2ThresholdForOverlap = Vector3.Distance(s2Points[0], s2Points[1]);
-                    var thresholdForOverlap = Mathf.Pow(Mathf.Max(s1ThresholdForOverlap, s2ThresholdForOverlap), 2); // square to save on computation (we'll work in distance squared from here on)
-
-                    if (s1.parent == s2) s1Points.RemoveAt(0); // don't consider the base points so that we can check if children overlap their parents 
-                    if (s2.parent == s1) s2Points.RemoveAt(0); // (note: the base point of a child is always exactly overlapping with one of the parent's points)
-
-                    foreach(var p1 in s1Points)
-                    {
-                        foreach(var p2 in s2Points)
-                        {
-                            if (Vector3.SqrMagnitude(p1-p2) <= thresholdForOverlap) return new Vector2Int(index, jndex); // s1 and s2 overlap
-                        }
-                    }
+                    if (Overlap(s1, s2)) return new Vector2Int(index, jndex);;
                 }
             }
 
             return new Vector2Int(-1, -1);
         }
 
+        public bool Overlap(SpiralManipulator s1, SpiralManipulator s2) 
+        {
+            if (s1 == s2) return false;
+            if (Vector3.Distance(s1.center, s2.center) > Mathf.Max(s1.NomaiTextLine.GetWorldRadius(), s2.NomaiTextLine.GetWorldRadius())) return false; // no overlap possible - too far away
+
+            var s1Points = s1.NomaiTextLine.GetPoints().Select(p => s1.transform.TransformPoint(p)).ToList();
+            var s2Points = s2.NomaiTextLine.GetPoints().Select(p => s2.transform.TransformPoint(p)).ToList();
+            var s1ThresholdForOverlap = Vector3.Distance(s1Points[0], s1Points[1]);
+            var s2ThresholdForOverlap = Vector3.Distance(s2Points[0], s2Points[1]);
+            var thresholdForOverlap = Mathf.Pow(Mathf.Max(s1ThresholdForOverlap, s2ThresholdForOverlap), 2); // square to save on computation (we'll work in distance squared from here on)
+
+            if (s1.parent == s2) s1Points.RemoveAt(0); // don't consider the base points so that we can check if children overlap their parents 
+            if (s2.parent == s1) s2Points.RemoveAt(0); // (note: the base point of a child is always exactly overlapping with one of the parent's points)
+
+            foreach(var p1 in s1Points)
+            {
+                foreach(var p2 in s2Points)
+                {
+                    if (Vector3.SqrMagnitude(p1-p2) <= thresholdForOverlap) return true; // s1 and s2 overlap
+                }
+            }
+
+            return false;
+        }
+
+        
+        public bool OutsideBounds(SpiralManipulator spiral) 
+        {
+            var points = spiral.NomaiTextLine.GetPoints()
+                .Select(p => spiral.transform.TransformPoint(p))
+                .Select(p => spiral.transform.parent.InverseTransformPoint(p))
+                .ToList();
+
+            foreach(var point in points) {
+                if (point.x < minX || point.x > maxX ||
+                    point.y < minY || point.y > maxY) 
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        
         public void Step() 
         {
-            // TODO: after setting child position on parent in Step(), check to see if this spiral exits the bounds - if so, move it away until it no longer does
-            // this ensures that a spiral can never be outside the bounds, it makes them rigid
+            if (reverseToposortedSpirals == null) GenerateReverseToposort();
 
             // TODO: for integration with NH - before generating spirals, seed the RNG with the hash of the XML filename for this convo
             // and add an option to specify the seed
 
+            Dictionary<SpiralManipulator, Vector2> childForces = new Dictionary<SpiralManipulator, Vector2>();
+
+            //Debug.Log(reverseToposortedSpirals.Count);
+            //Debug.Log( string.Join(", ", reverseToposortedSpirals.Select(hmslnk => hmslnk.gameObject.name) ) );
+
             var index = -1;
-            foreach (var s1 in spirals) 
+            foreach (var s1 in reverseToposortedSpirals) // treating the conversation like a tree datastructure, move "leaf" spirals first so that we can propogate their force up to the parents
             {
                 index++;
-                if (s1.parent == null) continue;
-
-                //
-                // Calculate the force s1 should experience
-                //
 
                 Vector2 force = Vector2.zero;
+
+                //
+                // Calculate the force s1 should experience from its children
+                //
+
+                if (childForces.ContainsKey(s1)) 
+                {
+                    force += 0.9f * childForces[s1];
+                }
+            
+                //
+                // Calculate the force s1 should experience from fellow spirals
+                //
+
                 foreach (var s2 in spirals) 
                 {
                     if (s1 == s2) continue;
                     if (s1.parent == s2) continue;
                     if (s1 == s2.parent) continue;
+
+                    //if (!Overlap(s1, s2)) continue;
                 
                     // push away from other spirals
                     var f = (s2.center - s1.center);
@@ -124,13 +189,19 @@ namespace NewHorizons.Builder.Props
                     force -= f2 / Mathf.Pow(f2.magnitude, 6);
                 }
             
-            
+                //
                 // push away from the edges
-                if (s1.center.y < minY+s1.transform.parent.position.y) force += new Vector2(0, Mathf.Pow(10f*minY - 10f*s1.center.y, 6));
-                if (s1.center.x < minX+s1.transform.parent.position.x) force += new Vector2(Mathf.Pow(10f*minX - 10f*s1.center.x, 6), 0);
-                if (s1.center.y > maxY+s1.transform.parent.position.y) force -= new Vector2(0, Mathf.Pow(10f*maxY - 10f*s1.center.y, 6));
-                if (s1.center.x > maxX+s1.transform.parent.position.x) force -= new Vector2(Mathf.Pow(10f*maxX - 10f*s1.center.x, 6), 0);
+                //
 
+                var MAX_EDGE_PUSH_FORCE = 1;
+                force += new Vector2(0, -1) * Mathf.Max(0, (s1.transform.localPosition.y + maxY)*(MAX_EDGE_PUSH_FORCE / maxY) - MAX_EDGE_PUSH_FORCE);
+                force += new Vector2(0,    1) * Mathf.Max(0, (s1.transform.localPosition.y + minY)*(MAX_EDGE_PUSH_FORCE / minY) - MAX_EDGE_PUSH_FORCE);
+                force += new Vector2(-1, 0) * Mathf.Max(0, (s1.transform.localPosition.x + maxX)*(MAX_EDGE_PUSH_FORCE / maxX) - MAX_EDGE_PUSH_FORCE);
+                force += new Vector2(1,    0) * Mathf.Max(0, (s1.transform.localPosition.x + minX)*(MAX_EDGE_PUSH_FORCE / minX) - MAX_EDGE_PUSH_FORCE);
+
+                // push up just to make everything a little more pretty (this is not neccessary to get an arrangement that simply has no overlap/spirals exiting the bounds)
+                force += new Vector2(0,    1) * 1;
+            
                 //
                 // renormalize the force magnitude (keeps force sizes reasonable, and improves stability in the case of small forces)
                 //
@@ -139,8 +210,24 @@ namespace NewHorizons.Builder.Props
                 var scale = 0.75f;
                 force = force.normalized * scale * (1 / (1 + Mathf.Exp(avg-force.magnitude)) - 1 / (1 + Mathf.Exp(avg))); // apply a sigmoid-ish smoothing operation, so only giant forces actually move the spirals
 
+
                 //
-                // apply the forces as we go to increase stability?
+                // if this is the root spiral, then rotate it instead of trying to move it (what the rest of the code does)
+                //
+
+                if (s1.parent == null) 
+                {
+                    // this is the root spiral, so rotate instead of moving
+                    var finalAngle = Mathf.Atan2(force.y, force.x); // root spiral is always at 0, 0
+                    var currentAngle = Mathf.Atan2(s1.center.y, s1.center.x); // root spiral is always at 0, 0
+                    s1.transform.localEulerAngles = new Vector3(0, 0, finalAngle-currentAngle);
+                    s1.UpdateChildren();
+
+                    continue;
+                }
+
+                //
+                // look for the point closest to where the forces want to push this spiral
                 //
 
                 var spiral = s1;
@@ -176,6 +263,42 @@ namespace NewHorizons.Builder.Props
                 //
 
                 SpiralManipulator.PlaceChildOnParentPoint(spiral, spiral.parent, bestPointIndex);
+            
+                //
+                // Ensure the spiral has not moved out of bounds, and if it has, move it back in bounds
+                //
+            
+                if (OutsideBounds(s1)) 
+                {
+                    var start = s1._parentPointIndex;
+                    var range = Mathf.Max(start-SpiralManipulator.MIN_PARENT_POINT, SpiralManipulator.MAX_PARENT_POINT-start);
+                    var success = false;
+                    for (var i = 1; i <= range; i++)
+                    {
+                        if (start-i >= SpiralManipulator.MIN_PARENT_POINT) 
+                        { 
+                            SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start-i);
+                            if (!OutsideBounds(s1)) { success = true; break; }
+                        }
+                    
+                        if (start+i <= SpiralManipulator.MAX_PARENT_POINT) 
+                        { 
+                            SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start+i);
+                            if (!OutsideBounds(s1)) { success = true; break; }
+                        }
+                    }
+
+                    if (!success) 
+                    {
+                        SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start);
+                        Debug.LogWarning("Unable to place spiral " + s1.gameObject.name + " within bounds.");
+                    }
+                }
+
+                if (!childForces.ContainsKey(s1.parent)) childForces[s1.parent] = Vector2.zero;
+                childForces[s1.parent] += force;
+
+                Debug.DrawRay(s1.transform.position, new Vector3(force.x, force.y, 0), Color.green);
             }
         }
     }

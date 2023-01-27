@@ -636,6 +636,8 @@ namespace NewHorizons.Builder.Props
                 i++;
             }
 
+            arranger.GenerateReverseToposort(); // Required before Step() is called
+
             for (var k = 0; k < i*2; k++) 
             {
                 var overlap = arranger.Overlap();
