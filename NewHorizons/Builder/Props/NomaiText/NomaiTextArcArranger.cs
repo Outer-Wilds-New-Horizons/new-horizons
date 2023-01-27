@@ -14,9 +14,9 @@ namespace NewHorizons.Builder.Props
 
         private static int MAX_MOVE_DISTANCE = 2;
 
-        public float maxX = 3;
-        public float minX = -3;
-        public float maxY = 2.75f;
+        public float maxX = 2.7f;//3;
+        public float minX = -2.7f;//-3;
+        public float maxY = 2.6f;//2.75f;
         public float minY = -1f;
 
         public void DrawBoundsWithDebugSpheres() 
@@ -46,6 +46,8 @@ namespace NewHorizons.Builder.Props
         }
         public void LimitRepeatedMirrors() 
         {
+            if(true) return; // temp disable
+
             foreach(var spiral in reverseToposortedSpirals) 
             {
                 if (spiral.Mirrored == spiral.parent?.Mirrored && spiral.Mirrored == spiral.parent?.parent?.Mirrored) 
