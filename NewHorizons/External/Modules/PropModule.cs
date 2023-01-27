@@ -602,7 +602,7 @@ namespace NewHorizons.External.Modules
             /// Additional information about each arc in the text
             /// </summary>
             public NomaiTextArcInfo[] arcInfo;
-
+            
             /// <summary>
             /// The normal vector for this object. Used for writing on walls and positioning computers.
             /// </summary>
@@ -667,6 +667,11 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"stranger")] Stranger = 2
             }
+            
+            /// <summary>
+            /// Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement.
+            /// </summary>
+            public bool keepAutoPlacement;
 
             /// <summary>
             /// Whether to flip the spiral from left-curling to right-curling or vice versa.
