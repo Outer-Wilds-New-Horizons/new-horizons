@@ -74,13 +74,10 @@ namespace NewHorizons.Builder.Props
                 .ToArray();
 
             owNomaiTextLine._points = _points;
-            //owNomaiTextLine._lengths = _points.Take(_points.Count()-1).Select((point, i) => Vector3.Distance(point, _points[i+1])).ToArray();
-            //owNomaiTextLine._totalLength = owNomaiTextLine._lengths.Aggregate(0f, (acc, length) => acc + length);
-            owNomaiTextLine._state = NomaiTextLine.VisualState.UNREAD;
+            owNomaiTextLine._state = NomaiTextLine.VisualState.HIDDEN;
             owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
-            //owNomaiTextLine._center = _points.Aggregate(Vector3.zero, (acc, point) => acc + point) / (float)_points.Count();
-            //owNomaiTextLine._radius = _points.Aggregate(0f,                     (acc, point) => Mathf.Max(Vector3.Distance(owNomaiTextLine._center, point), acc));
             owNomaiTextLine._active = true;
+            owNomaiTextLine._prebuilt = false;
 
             g.SetActive(true);
             return g;
