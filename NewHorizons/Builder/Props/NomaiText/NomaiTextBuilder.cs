@@ -169,9 +169,12 @@ namespace NewHorizons.Builder.Props
                                 // In global coordinates (normal was in local coordinates)
                                 var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
                                 var forward = planetGO.transform.TransformDirection(info.normal).normalized;
-
-                                nomaiWallTextObj.transform.up = up;
+                                
                                 nomaiWallTextObj.transform.forward = forward;
+
+                                var desiredUp = Vector3.ProjectOnPlane(up, forward);
+                                var zRotation = Vector3.SignedAngle(nomaiWallTextObj.transform.up, desiredUp, forward);
+                                nomaiWallTextObj.transform.RotateAround(nomaiWallTextObj.transform.position, forward, zRotation);
                             }
                             if (info.rotation != null)
                             {
