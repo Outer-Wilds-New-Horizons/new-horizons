@@ -654,47 +654,39 @@ namespace NewHorizons.Builder.Props
             // place spirals
             //
 
-            if (info.arcInfo?.Length > 0) 
+            // auto placement
+
+            arranger.GenerateReverseToposort(); // Required before Step() is called
+            arranger.LimitRepeatedMirrors();
+
+            for (var k = 0; k < arranger.spirals.Count*2; k++) 
             {
-                // manual placement
+                var overlappingSpiralIDs = arranger.Overlap();
+                if (overlappingSpiralIDs.x < 0) return;
 
-                if (info.arcInfo.Length != arranger.spirals.Count) 
-                {
-                    Logger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
-                }
+                arranger.AttemptOverlapResolution(overlappingSpiralIDs);
+                for(var a = 0; a < 10; a++) arranger.Step();
+            }
 
-                // TODO: test this
-                for (var j = 0; j < info.arcInfo.Length; j++) 
-                {
-                    var arcInfo = info.arcInfo[j];
-                    var arc = arranger.spirals[j];
+            Logger.LogWarning("Overlap resolution failed!");
 
-                    if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
-                    else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
+            // manual placement
 
-                    arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
-
-                    if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
-                    else                arc.transform.localScale = new Vector3( 1, 1, 1);
-                }
-            } 
-            else 
+            // TODO: test this
+            for (var j = 0; j < info.arcInfo.Length; j++) 
             {
-                // auto placement
+                var arcInfo = info.arcInfo[j];
+                var arc = arranger.spirals[j];
 
-                arranger.GenerateReverseToposort(); // Required before Step() is called
-                arranger.LimitRepeatedMirrors();
+                if (arcInfo.keepAutoPlacement) continue;
 
-                for (var k = 0; k < arranger.spirals.Count*2; k++) 
-                {
-                    var overlappingSpiralIDs = arranger.Overlap();
-                    if (overlappingSpiralIDs.x < 0) return;
+                if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
+                else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                    arranger.AttemptOverlapResolution(overlappingSpiralIDs);
-                    for(var a = 0; a < 10; a++) arranger.Step();
-                }
+                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
 
-                Logger.LogWarning("Overlap resolution failed!");
+                if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                else                arc.transform.localScale = new Vector3( 1, 1, 1);
             }
         }
 
