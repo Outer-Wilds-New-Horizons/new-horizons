@@ -179,7 +179,6 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        nomaiWallTextObj.transform.localEulerAngles += new Vector3(0, 0, 90+45);
                         nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
 
                         nomaiWallTextObj.SetActive(true);
