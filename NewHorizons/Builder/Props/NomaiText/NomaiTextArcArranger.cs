@@ -168,10 +168,7 @@ namespace NewHorizons.Builder.Props
         {
             if (reverseToposortedSpirals == null) GenerateReverseToposort();
 
-            // TODO: for integration with NH - before generating spirals, seed the RNG with the hash of the XML filename for this convo
-            // and add an option to specify the seed
-
-            // TODO: make all spirals unrevealed at first except the root spiral
+            // TODO: fix LocationB not making spiral orange
 
             Dictionary<SpiralManipulator, Vector2> childForces = new Dictionary<SpiralManipulator, Vector2>();
 

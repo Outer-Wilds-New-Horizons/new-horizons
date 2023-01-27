@@ -51,12 +51,17 @@ namespace NewHorizons.Builder.Props
             if (_isInit) return;
 
             _isInit = true;
-
-            if (_adultArcMaterial == null) 
+            
+            if (_adultArcMaterial == null)
             {
                 _adultArcMaterial = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (2)/Props_TH_ClutterSmall/Arc_Short/Arc") 
                     .GetComponent<MeshRenderer>()
                     .sharedMaterial;
+            }
+
+            if (_childArcMaterial == null)
+            {
+                // TODO: this
             }
 
             if (_ghostArcMaterial == null)
@@ -612,7 +617,7 @@ namespace NewHorizons.Builder.Props
         internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
         {
             var dict = nomaiWallText._dictNomaiTextData;
-            Random.InitState(info.seed);
+            Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);
 
             var arcsByID = new Dictionary<int, GameObject>();
 
@@ -623,6 +628,10 @@ namespace NewHorizons.Builder.Props
             }
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
+
+            //
+            // Generate spirals
+            //
 
             var i = 0;
             foreach (var textData in dict.Values)
@@ -640,19 +649,53 @@ namespace NewHorizons.Builder.Props
 
                 i++;
             }
+            
+            //
+            // place spirals
+            //
 
-            arranger.GenerateReverseToposort(); // Required before Step() is called
-            arranger.LimitRepeatedMirrors();
-
-            for (var k = 0; k < i*2; k++) 
+            if (info.arcInfo?.Length > 0) 
             {
-                var overlap = arranger.Overlap();
-                if (overlap.x < 0) return;
+                // manual placement
 
-                arranger.AttemptOverlapResolution(overlap);
-                for(var a = 0; a < 10; a++) arranger.Step();
+                if (info.arcInfo.Length != arranger.spirals.Count) 
+                {
+                    Logger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                }
+
+                // TODO: test this
+                for (var j = 0; j < info.arcInfo.Length; j++) 
+                {
+                    var arcInfo = info.arcInfo[j];
+                    var arc = arranger.spirals[j];
+
+                    if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
+                    else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
+
+                    arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
+
+                    if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                    else                arc.transform.localScale = new Vector3( 1, 1, 1);
+                }
+            } 
+            else 
+            {
+                // auto placement
+
+                arranger.GenerateReverseToposort(); // Required before Step() is called
+                arranger.LimitRepeatedMirrors();
+
+                for (var k = 0; k < arranger.spirals.Count*2; k++) 
+                {
+                    var overlappingSpiralIDs = arranger.Overlap();
+                    if (overlappingSpiralIDs.x < 0) return;
+
+                    arranger.AttemptOverlapResolution(overlappingSpiralIDs);
+                    for(var a = 0; a < 10; a++) arranger.Step();
+                }
+
+                Logger.LogWarning("Overlap resolution failed!");
             }
-            Logger.LogError("Overlap resolution failed!");
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
@@ -685,33 +728,6 @@ namespace NewHorizons.Builder.Props
 
             arc.transform.parent = conversationZone.transform;
             arc.GetComponent<NomaiTextLine>()._prebuilt = false;
-
-            //if (arcInfo != null)
-            //{
-            //    arcInfo.variation = variation;
-            //    if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
-            //    else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
-
-            //    arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
-
-            //    if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
-            //}
-            //// Try auto I guess
-            //else
-            //{
-            //    if (parent == null)
-            //    {
-            //        arc.transform.localPosition = Vector3.zero;
-            //    }
-            //    else
-            //    {
-            //        var points = parent.GetComponent<NomaiTextLine>().GetPoints();
-            //        var point = points[points.Count() / 2];
-
-            //        arc.transform.localPosition = point;
-            //        arc.transform.localRotation = Quaternion.Euler(0, 0, Random.Range(0, 360));
-            //    }
-            //}
 
             arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
             arc.GetComponent<MeshRenderer>().enabled = false;

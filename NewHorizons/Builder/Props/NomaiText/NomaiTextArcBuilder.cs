@@ -58,11 +58,6 @@ namespace NewHorizons.Builder.Props
                 meshCopy.RecalculateBounds();
             }
 
-            // TODO: caching? would this help with that?
-            //AssetDatabase.CreateAsset(mesh, "Assets/Spirals/"+(profile.profileName)+"spiral" + (NomaiTextArcBuilder.i) + ".asset");
-            //g.GetComponent<MeshFilter>().sharedMesh = AssetDatabase.LoadAssetAtPath("Assets/Spirals/"+(profile.profileName)+"spiral" + (NomaiTextArcBuilder.i) + ".asset", typeof(Mesh)) as Mesh;
-            //NomaiTextArcBuilder.i++;
-
             //
             // set up NomaiTextArc stuff
             //
