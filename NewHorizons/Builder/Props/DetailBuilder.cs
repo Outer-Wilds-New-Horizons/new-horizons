@@ -101,6 +101,7 @@ namespace NewHorizons.Builder.Props
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
+                    if (component == null) continue;
                     if (component.gameObject == prop && component is OWItem) isItem = true;
 
                     if (sector == null)

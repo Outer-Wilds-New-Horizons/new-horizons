@@ -1,3 +1,4 @@
+using NewHorizons.Utility;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,27 +14,47 @@ namespace NewHorizons.Builder.Props
 
         private static int MAX_MOVE_DISTANCE = 2;
 
-        public float maxX = 0.75f * 4;
-        public float minX = 0.75f * -4;
-        public float maxY = 0.75f * 5f;
-        public float minY = 0.75f * -1f;
+        public float maxX = 3;
+        public float minX = -3;
+        public float maxY = 2.75f;
+        public float minY = -1f;
+
+        public void DrawBoundsWithDebugSpheres() 
+        {
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, minY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, maxY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, maxY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, minY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.red).transform.localPosition = new Vector3(0, 0, 0);
+        }
         
         public void GenerateReverseToposort()
         {
-          reverseToposortedSpirals = new List<SpiralManipulator>();
-          Queue<SpiralManipulator> frontierQueue = new Queue<SpiralManipulator>();
-          frontierQueue.Enqueue(root);
+            reverseToposortedSpirals = new List<SpiralManipulator>();
+            Queue<SpiralManipulator> frontierQueue = new Queue<SpiralManipulator>();
+            frontierQueue.Enqueue(root);
         
-          while(frontierQueue.Count > 0)
-          {
-            var spiral = frontierQueue.Dequeue();
-            reverseToposortedSpirals.Add(spiral);
+            while(frontierQueue.Count > 0)
+            {
+                var spiral = frontierQueue.Dequeue();
+                reverseToposortedSpirals.Add(spiral);
         
-            foreach(var child in spiral.children) frontierQueue.Enqueue(child);
-          }
+                foreach(var child in spiral.children) frontierQueue.Enqueue(child);
+            }
         
-          reverseToposortedSpirals.Reverse();
+            reverseToposortedSpirals.Reverse();
         }
+        public void LimitRepeatedMirrors() 
+        {
+            foreach(var spiral in reverseToposortedSpirals) 
+            {
+                if (spiral.Mirrored == spiral.parent?.Mirrored && spiral.Mirrored == spiral.parent?.parent?.Mirrored) 
+                {
+                    spiral.parent.parent.Mirror(); // flipping the grandparent causes every 3rd spiral in a row to be flipped, meaning the maximum number of spirals in a row with the same mirror is 2
+                }
+            }
+        }
+
         public static SpiralManipulator Place(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) 
         {
             var rootArc = NomaiTextArcBuilder.BuildSpiralGameObject(profile);
@@ -314,7 +335,8 @@ namespace NewHorizons.Builder.Props
         public static int MIN_PARENT_POINT = 3;
         public static int MAX_PARENT_POINT = 26;
     
-    
+        public bool Mirrored { get { return this.transform.localScale.x < 0; } }
+
         private NomaiTextLine _NomaiTextLine;
         public NomaiTextLine NomaiTextLine 
         {

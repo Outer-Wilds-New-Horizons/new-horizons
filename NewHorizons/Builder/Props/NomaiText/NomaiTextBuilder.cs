@@ -179,6 +179,9 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
+                        nomaiWallTextObj.transform.localEulerAngles += new Vector3(0, 0, 90+45);
+                        nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
+
                         nomaiWallTextObj.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
                         
@@ -637,6 +640,7 @@ namespace NewHorizons.Builder.Props
             }
 
             arranger.GenerateReverseToposort(); // Required before Step() is called
+            arranger.LimitRepeatedMirrors();
 
             for (var k = 0; k < i*2; k++) 
             {
