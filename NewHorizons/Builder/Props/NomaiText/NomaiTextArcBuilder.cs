@@ -69,8 +69,8 @@ namespace NewHorizons.Builder.Props
                 .ToArray();
 
             owNomaiTextLine._points = _points;
-            owNomaiTextLine._state = NomaiTextLine.VisualState.HIDDEN;
-            owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
+            //owNomaiTextLine._state = NomaiTextLine.VisualState.HIDDEN;
+            //owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
             owNomaiTextLine._active = true;
             owNomaiTextLine._prebuilt = false;
 
@@ -98,6 +98,8 @@ namespace NewHorizons.Builder.Props
             public float innerWidth; // width at the tip
             public float outerWidth; // width at the base
             public Material material;
+
+            public bool syncRandomRanges;
         }
     
         public static SpiralProfile adultSpiralProfile = new SpiralProfile() {
@@ -115,20 +117,23 @@ namespace NewHorizons.Builder.Props
             uvScale = 4.9f,
         };
 
-        // TODO: make uvScale proportionate to the arc's length, and make skeleton scale proportionate to b, maybe using this equation? (e^{-b\pi2})
+        // TODO: make a property called something like "sync random ranges" that makes a, b, etc, all be sampled with the same random number, isntead of being independently sampled
+        // This will allow child spirals to be set up to be more authentic
         public static SpiralProfile childSpiralProfile = new SpiralProfile() {
             profileName="Child",
             canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.9f, 0.9f),
-            b = new Vector2(0.2f, 0.3f), //new Vector2(0.305f, 0.4f),
+            b = new Vector2(0.15f, 0.3f), //new Vector2(0.305f, 0.4f),
             startS = new Vector2(342.8796f, 342.8796f),
-            endS = new Vector2(7.8f, 16f), 
-            skeletonScale = 0.75f * new Vector2(0.01f, 0.01f),
+            endS = new Vector2(85f, 25f), 
+            skeletonScale = 0.4f * new Vector2(0.02f, 0.01f),
             numSkeletonPoints = 51,
 
             innerWidth = 0.001f/10f, 
             outerWidth = 2f*0.05f, 
             uvScale = 4.9f * 0.55f, 
+
+            syncRandomRanges = true,
         };
         
         // location of example stranger writing:
@@ -152,6 +157,8 @@ namespace NewHorizons.Builder.Props
             innerWidth = 1, 
             outerWidth = 1, 
             uvScale = 1f/1.8505f, 
+
+
         };
 
         //
@@ -319,11 +326,27 @@ namespace NewHorizons.Builder.Props
             }
 
             public virtual void Randomize() {
-                this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y); //0.5f;
-                this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
-                this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);   // idk why I flipped these, please don't hate me
-                this.endS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
-                this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
+                if (profile.syncRandomRanges) 
+                {
+                    var rand = UnityEngine.Random.Range(0f, 1f);
+
+                    this.a = Mathf.Lerp(profile.a.x, profile.a.y, rand);
+                    this.b = Mathf.Lerp(profile.b.x, profile.b.y, rand);
+                    this.startS = Mathf.Lerp(profile.endS.x, profile.endS.y, rand);   // idk why I flipped these, please don't hate me
+                    this.endS = Mathf.Lerp(profile.startS.x, profile.startS.y, rand);
+                    this.scale = Mathf.Lerp(profile.skeletonScale.x, profile.skeletonScale.y, rand);
+
+                    NewHorizons.Utility.Logger.Log($"rand {rand} a {a} b {b} startS {startS} endS {endS} scale {scale}");
+                } 
+                else 
+                {
+                    this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y);
+                    this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
+                    this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);   // idk why I flipped these, please don't hate me
+                    this.endS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
+                    this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
+                }
+
                 if (profile.canMirror) this.mirror = UnityEngine.Random.value<0.5f;
             }
 
