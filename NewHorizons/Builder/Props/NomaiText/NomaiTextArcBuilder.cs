@@ -115,19 +115,20 @@ namespace NewHorizons.Builder.Props
             uvScale = 4.9f,
         };
 
+        // TODO: make uvScale proportionate to the arc's length, and make skeleton scale proportionate to b, maybe using this equation? (e^{-b\pi2})
         public static SpiralProfile childSpiralProfile = new SpiralProfile() {
             profileName="Child",
             canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.9f, 0.9f),
-            b = new Vector2(0.305f, 0.4f),
+            b = new Vector2(0.2f, 0.3f), //new Vector2(0.305f, 0.4f),
             startS = new Vector2(342.8796f, 342.8796f),
-            endS = new Vector2(16f, 60f), 
-            skeletonScale = 0.75f * new Vector2(0.002f, 0.005f),
+            endS = new Vector2(7.8f, 16f), 
+            skeletonScale = 0.75f * new Vector2(0.01f, 0.01f),
             numSkeletonPoints = 51,
 
             innerWidth = 0.001f/10f, 
             outerWidth = 2f*0.05f, 
-            uvScale = 4.9f/3.5f, 
+            uvScale = 4.9f * 0.55f, 
         };
         
         // location of example stranger writing:
