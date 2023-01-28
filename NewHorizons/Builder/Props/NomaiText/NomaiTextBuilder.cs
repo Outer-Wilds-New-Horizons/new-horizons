@@ -657,7 +657,6 @@ namespace NewHorizons.Builder.Props
             // auto placement
 
             arranger.GenerateReverseToposort(); // Required before Step() is called
-            arranger.LimitRepeatedMirrors();
 
             for (var k = 0; k < arranger.spirals.Count*2; k++) 
             {

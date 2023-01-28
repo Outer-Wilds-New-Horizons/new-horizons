@@ -46,8 +46,6 @@ namespace NewHorizons.Builder.Props
         }
         public void LimitRepeatedMirrors() 
         {
-            if(true) return; // temp disable
-
             foreach(var spiral in reverseToposortedSpirals) 
             {
                 if (spiral.Mirrored == spiral.parent?.Mirrored && spiral.Mirrored == spiral.parent?.parent?.Mirrored) 
