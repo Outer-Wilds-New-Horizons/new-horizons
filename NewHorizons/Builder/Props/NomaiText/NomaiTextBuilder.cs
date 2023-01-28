@@ -61,7 +61,9 @@ namespace NewHorizons.Builder.Props
 
             if (_childArcMaterial == null)
             {
-                // TODO: this
+                _childArcMaterial = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_OldSettlement/Fragment OldSettlement 5/Core_OldSettlement 5/Interactables_Core_OldSettlement5/Arc_BH_OldSettlement_ChildrensRhyme/Arc 1") 
+                    .GetComponent<MeshRenderer>()
+                    .sharedMaterial;
             }
 
             if (_ghostArcMaterial == null)
