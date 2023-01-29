@@ -275,7 +275,7 @@ namespace NewHorizons.Builder.Props
                 // actually move the spiral
                 //
 
-                SpiralManipulator.PlaceChildOnParentPoint(spiral, spiral.parent, bestPointIndex);
+                spiral.PlaceOnParentPoint(bestPointIndex);
             
                 //
                 // Ensure the spiral has not moved out of bounds, and if it has, move it back in bounds
@@ -297,7 +297,7 @@ namespace NewHorizons.Builder.Props
                     {
                         // if we couldn't put it inside the bounds, put it back how we found it (this increases stability of the rest of the spirals)
                         if (s1.Mirrored != originalMirror) s1.Mirror();
-                        SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start);
+                        s1.PlaceOnParentPoint(start);
                         Debug.LogWarning("Unable to place spiral " + s1.gameObject.name + " within bounds.");
                     }
                 }
@@ -317,13 +317,13 @@ namespace NewHorizons.Builder.Props
             {
                 if (start-i >= SpiralManipulator.MIN_PARENT_POINT) 
                 { 
-                    SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start-i);
+                    s1.PlaceOnParentPoint(start-i);
                     if (!OutsideBounds(s1)) return true;
                 }
                     
                 if (start+i <= SpiralManipulator.MAX_PARENT_POINT) 
                 { 
-                    SpiralManipulator.PlaceChildOnParentPoint(s1, s1.parent, start+i);
+                    s1.PlaceOnParentPoint(start+i);
                     if (!OutsideBounds(s1)) return true;
                 }
             }
@@ -374,9 +374,9 @@ namespace NewHorizons.Builder.Props
             var index = Random.Range(MIN_PARENT_POINT, MAX_PARENT_POINT);
             prebuiltChild.transform.parent = this.transform.parent;
             var child = prebuiltChild.gameObject.GetAddComponent<SpiralManipulator>();
-            PlaceChildOnParentPoint(child, this, index);
-
             child.parent = this;
+            child.PlaceOnParentPoint(index);
+
             this.children.Add(child);
             return child;
         }
@@ -384,22 +384,22 @@ namespace NewHorizons.Builder.Props
         public void Mirror() 
         {             
             this.transform.localScale = new Vector3(-this.transform.localScale.x, 1, 1);
-            if (this.parent != null) SpiralManipulator.PlaceChildOnParentPoint(this, this.parent, this._parentPointIndex);
+            if (this.parent != null) this.PlaceOnParentPoint(this._parentPointIndex);
         }
     
         public void UpdateChildren() 
         {
             foreach(var child in this.children) 
             {
-                PlaceChildOnParentPoint(child, this, child._parentPointIndex);
+                child.PlaceOnParentPoint(child._parentPointIndex);
             }
         }
 
-        public static int PlaceChildOnParentPoint(SpiralManipulator child, SpiralManipulator parent, int parentPointIndex, bool updateChildren=true) 
+        public int PlaceOnParentPoint(int parentPointIndex, bool updateChildren=true) 
         {
             // track which points on the parent are being occupied
-            if (child._parentPointIndex != -1) parent.occupiedParentPoints.Remove(child._parentPointIndex);
-            child._parentPointIndex = parentPointIndex; // just in case this function was called without setting this value
+            if (this._parentPointIndex != -1) parent.occupiedParentPoints.Remove(this._parentPointIndex);
+            this._parentPointIndex = parentPointIndex; // just in case this function was called without setting this value
             parent.occupiedParentPoints.Add(parentPointIndex);
 
             // get the parent's points and make parentPointIndex valid
@@ -412,18 +412,18 @@ namespace NewHorizons.Builder.Props
             float rot = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
             if (parent.transform.localScale.x < 0) rot += 180; // account for mirroring again (without doing this, the normal points inward on mirrored spirals, instead of outward)
 
-            // get the location the child spiral should be at (and yet again account for mirroring)
+            // get the location this spiral should be at (and yet again account for mirroring)
             var point = _points[parentPointIndex];
             if (parent.transform.localScale.x < 0) point = new Vector3(-point.x, point.y, point.z);
 
-            // set the child's position and rotation according to calculations
-            child.transform.localPosition = Quaternion.Euler(0, 0, parent.transform.localEulerAngles.z) * point + parent.transform.localPosition;
-            child.transform.localEulerAngles = new Vector3(0, 0, rot + parent.transform.localEulerAngles.z);
+            // set the position and rotation according to calculations
+            this.transform.localPosition = Quaternion.Euler(0, 0, parent.transform.localEulerAngles.z) * point + parent.transform.localPosition;
+            this.transform.localEulerAngles = new Vector3(0, 0, rot + parent.transform.localEulerAngles.z);
 
             // recursive update on all children so they move along with the parent
-            if (updateChildren) 
+            if (updateChildren)
             { 
-                child.UpdateChildren();
+                this.UpdateChildren();
             }
 
             return parentPointIndex;
