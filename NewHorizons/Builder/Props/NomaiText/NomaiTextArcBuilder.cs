@@ -68,8 +68,6 @@ namespace NewHorizons.Builder.Props
                 .ToArray();
 
             owNomaiTextLine._points = _points;
-            //owNomaiTextLine._state = NomaiTextLine.VisualState.HIDDEN;
-            //owNomaiTextLine._textLineLocation = NomaiText.Location.UNSPECIFIED;
             owNomaiTextLine._active = true;
             owNomaiTextLine._prebuilt = false;
 
@@ -86,7 +84,6 @@ namespace NewHorizons.Builder.Props
         public struct SpiralProfile {
             // all of the Vector2 params here refer to a range of valid values
             public string profileName;
-            public bool canMirror;
             public Vector2 a;
             public Vector2 b;
             public Vector2 startS;
@@ -101,7 +98,6 @@ namespace NewHorizons.Builder.Props
     
         public static SpiralProfile adultSpiralProfile = new SpiralProfile() {
             profileName="Adult",
-            canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.5f, 0.5f),
             b = new Vector2(0.3f, 0.6f),
             startS = new Vector2(342.8796f, 342.8796f),
@@ -114,13 +110,10 @@ namespace NewHorizons.Builder.Props
             uvScale = 4.9f,
         };
 
-        // TODO: make a property called something like "sync random ranges" that makes a, b, etc, all be sampled with the same random number, isntead of being independently sampled
-        // This will allow child spirals to be set up to be more authentic
         public static SpiralProfile childSpiralProfile = new SpiralProfile() {
             profileName="Child",
-            canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.9f, 0.9f),
-            b = new Vector2(0.17f, 0.4f), //new Vector2(0.305f, 0.4f),
+            b = new Vector2(0.17f, 0.4f), 
             startS = new Vector2(342.8796f, 342.8796f),
             endS = new Vector2(35f, 25f), 
             skeletonScale = 0.8f * new Vector2(0.01f, 0.01f),
@@ -141,7 +134,6 @@ namespace NewHorizons.Builder.Props
         // I think this'll do it
         public static SpiralProfile strangerSpiralProfile = new SpiralProfile() {
             profileName="Stranger",
-            canMirror = false,
             a = new Vector2(0.9f, 0.9f), // this value doesn't really matter for this
             b = new Vector2(5f, 5f),
             startS = new Vector2(1.8505f, 1.8505f), 
@@ -169,8 +161,8 @@ namespace NewHorizons.Builder.Props
             public int numSkeletonPoints = 51; // seems to be Mobius' default
 
             public float innerWidth = 0.001f; // width at the tip
-            public float outerWidth = 0.05f; //0.107f; // width at the base
-            public float uvScale = 4.9f; //2.9f;
+            public float outerWidth = 0.05f; // width at the base
+            public float uvScale = 4.9f; 
             private float baseUVScale = 1f / 300f;
             public float uvOffset = 0;
 

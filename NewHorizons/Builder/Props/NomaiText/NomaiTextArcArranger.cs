@@ -14,9 +14,9 @@ namespace NewHorizons.Builder.Props
 
         private static int MAX_MOVE_DISTANCE = 2;
 
-        public float maxX = 2.7f;//3;
-        public float minX = -2.7f;//-3;
-        public float maxY = 2.6f;//2.75f;
+        public float maxX = 2.7f;
+        public float minX = -2.7f;
+        public float maxY = 2.6f;
         public float minY = -1f;
 
         public void DrawBoundsWithDebugSpheres() 
@@ -166,12 +166,7 @@ namespace NewHorizons.Builder.Props
         {
             if (reverseToposortedSpirals == null) GenerateReverseToposort();
 
-            // TODO: fix LocationB not making spiral orange
-
             Dictionary<SpiralManipulator, Vector2> childForces = new Dictionary<SpiralManipulator, Vector2>();
-
-            //Debug.Log(reverseToposortedSpirals.Count);
-            //Debug.Log( string.Join(", ", reverseToposortedSpirals.Select(hmslnk => hmslnk.gameObject.name) ) );
 
             var index = -1;
             foreach (var s1 in reverseToposortedSpirals) // treating the conversation like a tree datastructure, move "leaf" spirals first so that we can propogate their force up to the parents
@@ -198,8 +193,6 @@ namespace NewHorizons.Builder.Props
                     if (s1 == s2) continue;
                     if (s1.parent == s2) continue;
                     if (s1 == s2.parent) continue;
-
-                    //if (!Overlap(s1, s2)) continue;
                 
                     // push away from other spirals
                     var f = (s2.center - s1.center);
@@ -259,7 +252,7 @@ namespace NewHorizons.Builder.Props
                 var bestPointDistance = 99999999f;
                 for (var j = SpiralManipulator.MIN_PARENT_POINT; j < SpiralManipulator.MAX_PARENT_POINT; j++) 
                 {
-                    // skip this point if it's already occupied by ANOTHER spiral (if it's occupied by this spiral, DO count it)
+                    // skip this point if it's already occupied by another spiral (if it's occupied by this spiral, don't skip it)
                     if (j != spiral._parentPointIndex && spiral.parent.occupiedParentPoints.Contains(j)) continue;
 
                     var point = parentPoints[j];
