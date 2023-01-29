@@ -109,7 +109,7 @@ namespace NewHorizons.Builder.Props
                 var idealPoint = spiral.position + force;
                 var bestPointIndex = 0;
                 var bestPointDistance = 99999999f;
-                for (var j = SpiralManipulator.MIN_PARENT_POINT; j < SpiralManipulator.MAX_PARENT_POINT; j++) 
+                for (var j = SpiralManipulator.MIN_PARENT_POINT; j < SpiralManipulator.MAX_PARENT_POINT && j < parentPoints.Length; j++) 
                 {
                     // don't put this spiral on a point already occupied by a sibling
                     if (j != spiral._parentPointIndex && spiral.parent.pointsOccupiedByChildren.Contains(j)) continue;
