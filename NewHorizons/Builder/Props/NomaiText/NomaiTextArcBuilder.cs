@@ -205,11 +205,11 @@ namespace NewHorizons.Builder.Props
                         triangles.Add(i + 1);
                 }
 
-                var startT = tFromArcLen(startS);
-                var endT = tFromArcLen(endS);
+                var startT = tFromArcLen(endS);
+                var endT = tFromArcLen(startS);
 
                 var rangeT = endT - startT;
-                var rangeS = endS - startS;
+                var rangeS = startS - endS;
 
                 Vector2[] uvs = new Vector2[newVerts.Length];
                 Vector2[] uv2s = new Vector2[newVerts.Length];
@@ -222,8 +222,8 @@ namespace NewHorizons.Builder.Props
                     // will cluster points in areas of higher detail. this is the way Mobius does it, so it is the way we also will do it
                     float inputT = startT + rangeT * fraction;
                     float inputS = tToArcLen(inputT);
-                    float sFraction = (inputS - startS) / rangeS;
-                    float absoluteS = (inputS - startS);
+                    float sFraction = (inputS - endS) / rangeS;
+                    float absoluteS = (inputS - endS);
 
                     float u = absoluteS * uvScale * baseUVScale + uvOffset;
                     uvs[i * 2] = new Vector2(u, 0);
@@ -252,6 +252,14 @@ namespace NewHorizons.Builder.Props
 
         #region underlying math
 
+        // NOTE: startS is greater than endS because the math equation traces the spiral outward - it starts at the center
+        // and winds its way out. However, since we want to think of the least curly part as the start, that means we
+        // start at a higher S and end at a lower S
+        //
+        // note: t refers to theta, and s refers to arc length
+        //
+        // All this math is based off this Desmos graph I made. Play around with it if something doesn't make sense :)
+        // https://www.desmos.com/calculator/9gdfgyuzf6
         public class MathematicalSpiral {
             public float a;
             public float b; 
@@ -262,8 +270,8 @@ namespace NewHorizons.Builder.Props
             public float y;
             public float ang;
 
-            public float startS = 42.87957f; 
-            public float endS = 342.8796f;
+            public float endS = 42.87957f; 
+            public float startS = 342.8796f;
 
             SpiralProfile profile;
 
@@ -287,8 +295,8 @@ namespace NewHorizons.Builder.Props
             public virtual void Randomize() {
                 this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y);
                 this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
-                this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);   // idk why I flipped these, please don't hate me
-                this.endS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
+                this.endS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);
+                this.startS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
                 this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
             }
 
@@ -338,8 +346,8 @@ namespace NewHorizons.Builder.Props
         
             // generate a list of <inputT, inputS> evenly distributed over the whole spiral. `numPoints` number of <inputT, inputS> pairs are generated
             public IEnumerable<Vector2> WalkAlongSpiral(int numPoints) {
-                var endT = tFromArcLen(endS);
-                var startT = tFromArcLen(startS);
+                var endT = tFromArcLen(startS);
+                var startT = tFromArcLen(endS);
                 var rangeT = endT - startT;
 
                 for (int i = 0; i<numPoints; i++) {
@@ -356,19 +364,12 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            // all of this math is based off of this:
-            // https://www.desmos.com/calculator/9gdfgyuzf6
-            //
-            // note: t refers to theta, and s refers to arc length
-            //
-
             // get the (x, y) coordinates and the normal angle at the given location (measured in arcLen) of a spiral with the given parameters 
             // note: arcLen is inverted so that 0 refers to what we consider the start of the Nomai spiral
             public Vector3 getDrawnSpiralPointAndNormal(float arcLen) {
                 float offsetX = this.x;
                 float offsetY = this.y;
                 float offsetAngle = this.ang;
-                var startS = this.endS; // I know this is funky, but just go with it for now. 
 
                 var startT = tFromArcLen(startS); // this is the `t` value for the root of the spiral (the end of the non-curled side)
 
