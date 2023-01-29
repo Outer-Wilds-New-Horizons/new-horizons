@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace NewHorizons.Builder.Props
 {
@@ -368,16 +369,13 @@ namespace NewHorizons.Builder.Props
             get { return new Vector2(this.transform.position.x, this.transform.position.y); }
         }
         
-        public SpiralManipulator AddChild(NomaiTextArcBuilder.SpiralProfile profile) {
-            return AddChild(NomaiTextArcArranger.Place(profile, this.transform.parent.gameObject).gameObject);
-        }
-        
         #endregion properties
         
-        public SpiralManipulator AddChild(GameObject prebuiltChild) {
+        public SpiralManipulator AddChild(NomaiTextArcBuilder.SpiralProfile profile) {
+            var child = NomaiTextArcArranger.Place(profile, this.transform.parent.gameObject);
+
             var index = Random.Range(MIN_PARENT_POINT, MAX_PARENT_POINT);
-            prebuiltChild.transform.parent = this.transform.parent;
-            var child = prebuiltChild.gameObject.GetAddComponent<SpiralManipulator>();
+            child.transform.parent = this.transform.parent;
             child.parent = this;
             child.PlaceOnParentPoint(index);
 
