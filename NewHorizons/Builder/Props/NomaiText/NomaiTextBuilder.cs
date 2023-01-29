@@ -660,20 +660,18 @@ namespace NewHorizons.Builder.Props
 
             arranger.GenerateReverseToposort(); // Required before Step() is called
 
+            var overlapFound = true;
             for (var k = 0; k < arranger.spirals.Count*2; k++) 
             {
-                var overlappingSpiralIDs = arranger.Overlap();
-                if (overlappingSpiralIDs.x < 0) return;
-
-                arranger.AttemptOverlapResolution(overlappingSpiralIDs);
-                for(var a = 0; a < 10; a++) arranger.Step();
+                var overlapFound = arranger.AttemptOverlapResolution();
+                if (!overlapFound) break;
+                for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
             }
 
-            Logger.LogWarning("Overlap resolution failed!");
+            if (overlapFound) Logger.LogWarning("Overlap resolution failed!");
 
             // manual placement
 
-            // TODO: test this
             for (var j = 0; j < info.arcInfo.Length; j++) 
             {
                 var arcInfo = info.arcInfo[j];
@@ -715,7 +713,7 @@ namespace NewHorizons.Builder.Props
             }
             
             if (parent != null) arc = parent.GetComponent<SpiralManipulator>().AddChild(profile).gameObject;
-            else                arc = NomaiTextArcArranger.Place(profile, conversationZone).gameObject;
+            else                arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
 
             if (mat != null) arc.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
