@@ -5,22 +5,9 @@ using UnityEngine;
 
 namespace NewHorizons.Builder.Props
 {
-    public static class NomaiTextArcBuilder {
-        public static int i = 0;
-        public static bool removeBakedInRotationAndPosition = true;        
-
-        public static void PlaceAdult() 
-        { 
-            BuildSpiralGameObject(adultSpiralProfile, "Text Arc Prefab " + (i++));
-        }
-        public static void PlaceChild() 
-        {
-            BuildSpiralGameObject(childSpiralProfile, "Text Arc Prefab " + (i++));
-        }
-        public static void PlaceStranger() 
-        {
-            BuildSpiralGameObject(strangerSpiralProfile, "Text Arc Prefab " + (i++));
-        }
+    public static class NomaiTextArcBuilder {    
+        // TODO: stranger arcs
+        // TODO: swap endS with startS wherever it needs to be swapped
 
         public static GameObject BuildSpiralGameObject(SpiralProfile profile, string goName="New Nomai Spiral") 
         {
@@ -40,7 +27,7 @@ namespace NewHorizons.Builder.Props
             var owNomaiTextLine = g.AddComponent<NomaiTextLine>();
 
             //
-            // rotate mesh to face up
+            // rotate mesh to point up
             //
         
             var norm = m.skeleton[1] - m.skeleton[0];
@@ -49,23 +36,20 @@ namespace NewHorizons.Builder.Props
 
             // using m.sharedMesh causes old meshes to disappear for some reason, idk why
             var mesh = g.GetComponent<MeshFilter>().mesh;
-            if (removeBakedInRotationAndPosition)
-            {
-                var meshCopy = mesh;
-                var newVerts = meshCopy.vertices.Select(v => Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * v).ToArray();
-                meshCopy.vertices = newVerts;
-                meshCopy.RecalculateBounds();
-            }
+            var newVerts = mesh.vertices.Select(v => Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * v).ToArray();
+            mesh.vertices = newVerts;
+            mesh.RecalculateBounds();
+
+            // rotate the skeleton to point up, too
+            var _points = m.skeleton 
+                .Select((point) => 
+                    Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * (new Vector3(point.x, 0, point.y))
+                )
+                .ToArray();
 
             //
             // set up NomaiTextArc stuff
             //
-        
-            var _points = m.skeleton
-                .Select((compiled) => 
-                    Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * (new Vector3(compiled.x, 0, compiled.y)) // decompile them, rotate them by ang, and then rotate them to be vertical, like the base game spirals are
-                )
-                .ToArray();
 
             owNomaiTextLine._points = _points;
             owNomaiTextLine._active = true;
@@ -74,12 +58,8 @@ namespace NewHorizons.Builder.Props
             g.SetActive(true);
             return g;
         }
-
-        //
-        //
-        // Handle the connection between game objects and spiral meshes
-        //
-        //
+        
+        #region spiral shape definitions
 
         public struct SpiralProfile {
             // all of the Vector2 params here refer to a range of valid values
@@ -147,12 +127,11 @@ namespace NewHorizons.Builder.Props
 
 
         };
-
-        //
-        //
-        // Construct spiral meshes from the mathematical spirals generated below
-        //
-        //
+        
+        
+        #endregion spiral shape definitions
+        
+        #region mesh generation
 
         public class SpiralMesh: MathematicalSpiral {
             public List<Vector3> skeleton;
@@ -268,12 +247,10 @@ namespace NewHorizons.Builder.Props
                 mesh.RecalculateBounds();
             }
         }
+        
+        #endregion mesh generation
 
-        //
-        //
-        // Construct the mathematical spirals that Nomai arcs are built from
-        //
-        //
+        #region underlying math
 
         public class MathematicalSpiral {
             public float a;
@@ -492,5 +469,8 @@ namespace NewHorizons.Builder.Props
         private static float ln(float t) {
             return Mathf.Log(t);
         }
+
+        
+        #endregion underlying math
     }
 }
