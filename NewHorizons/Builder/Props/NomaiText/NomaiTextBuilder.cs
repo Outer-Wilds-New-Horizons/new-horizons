@@ -658,12 +658,10 @@ namespace NewHorizons.Builder.Props
 
             // auto placement
 
-            arranger.GenerateReverseToposort(); // Required before Step() is called
-
             var overlapFound = true;
             for (var k = 0; k < arranger.spirals.Count*2; k++) 
             {
-                var overlapFound = arranger.AttemptOverlapResolution();
+                overlapFound = arranger.AttemptOverlapResolution();
                 if (!overlapFound) break;
                 for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
             }

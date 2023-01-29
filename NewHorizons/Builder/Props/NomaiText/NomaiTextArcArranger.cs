@@ -9,43 +9,19 @@ using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
     public class NomaiTextArcArranger : MonoBehaviour {
+        private static int MAX_MOVE_DISTANCE = 2;
+
         public List<SpiralManipulator> spirals = new List<SpiralManipulator>();
         public List<SpiralManipulator> reverseToposortedSpirals = null;
-        public SpiralManipulator root { get; private set; }
+        private bool updateToposortOnNextStep = true;
         private Dictionary<int, int> sprialOverlapResolutionPriority = new Dictionary<int, int>();
 
-        private static int MAX_MOVE_DISTANCE = 2;
+        public SpiralManipulator root { get; private set; }
 
         public float maxX = 2.7f;
         public float minX = -2.7f;
         public float maxY = 2.6f;
         public float minY = -1f;
-
-        public void DrawBoundsWithDebugSpheres() 
-        {
-            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, minY, 0);
-            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, maxY, 0);
-            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, maxY, 0);
-            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, minY, 0);
-            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.red).transform.localPosition = new Vector3(0, 0, 0);
-        }
-        
-        public void GenerateReverseToposort()
-        {
-            reverseToposortedSpirals = new List<SpiralManipulator>();
-            Queue<SpiralManipulator> frontierQueue = new Queue<SpiralManipulator>();
-            frontierQueue.Enqueue(root);
-        
-            while(frontierQueue.Count > 0)
-            {
-                var spiral = frontierQueue.Dequeue();
-                reverseToposortedSpirals.Add(spiral);
-        
-                foreach(var child in spiral.children) frontierQueue.Enqueue(child);
-            }
-        
-            reverseToposortedSpirals.Reverse();
-        }
 
         public static SpiralManipulator CreateSpiral(NomaiTextArcBuilder.SpiralProfile profile, GameObject spiralMeshHolder) 
         {
@@ -57,96 +33,21 @@ namespace NewHorizons.Builder.Props
             if (Random.value < 0.5) manip.transform.localScale = new Vector3(-1, 1, 1); // randomly mirror
             
             // add to arranger
-            var arranger = spiralMeshHolder.GetComponent<NomaiTextArcArranger>();
+            var arranger = spiralMeshHolder.GetAddComponent<NomaiTextArcArranger>();
             if (arranger.root == null) arranger.root = manip;
             arranger.spirals.Add(manip);
+            arranger.updateToposortOnNextStep = true;
 
             return manip;
         }
         
-        // returns whether there was overlap or not
-        public bool AttemptOverlapResolution() 
-        {
-            var overlappingSpirals = FindOverlap();
-            if (overlappingSpirals.x < 0) return false;
-
-            if (!sprialOverlapResolutionPriority.ContainsKey(overlappingSpirals.x)) sprialOverlapResolutionPriority[overlappingSpirals.x] = 0;
-            if (!sprialOverlapResolutionPriority.ContainsKey(overlappingSpirals.y)) sprialOverlapResolutionPriority[overlappingSpirals.y] = 0;
-
-            int mirrorIndex = overlappingSpirals.x;
-            if (sprialOverlapResolutionPriority[overlappingSpirals.y] > sprialOverlapResolutionPriority[overlappingSpirals.x]) mirrorIndex = overlappingSpirals.y;
-
-            this.spirals[mirrorIndex].Mirror();
-            sprialOverlapResolutionPriority[mirrorIndex]--;
-
-            return true;
-        }
-        
-        public Vector2Int FindOverlap() 
-        {
-            var index = -1;
-            foreach (var s1 in spirals) 
-            {
-                index++;
-                if (s1.parent == null) continue;
-
-                var jndex = -1;
-                foreach (var s2 in spirals) 
-                {
-                    jndex++;
-                    if (SpiralsOverlap(s1, s2)) return new Vector2Int(index, jndex);;
-                }
-            }
-
-            return new Vector2Int(-1, -1);
-        }
-
-        public bool SpiralsOverlap(SpiralManipulator s1, SpiralManipulator s2) 
-        {
-            if (s1 == s2) return false;
-            if (Vector3.Distance(s1.center, s2.center) > Mathf.Max(s1.NomaiTextLine.GetWorldRadius(), s2.NomaiTextLine.GetWorldRadius())) return false; // no overlap possible - too far away
-
-            var s1Points = s1.NomaiTextLine.GetPoints().Select(p => s1.transform.TransformPoint(p)).ToList();
-            var s2Points = s2.NomaiTextLine.GetPoints().Select(p => s2.transform.TransformPoint(p)).ToList();
-            var s1ThresholdForOverlap = Vector3.Distance(s1Points[0], s1Points[1]);
-            var s2ThresholdForOverlap = Vector3.Distance(s2Points[0], s2Points[1]);
-            var thresholdForOverlap = Mathf.Pow(Mathf.Max(s1ThresholdForOverlap, s2ThresholdForOverlap), 2); // square to save on computation (we'll work in distance squared from here on)
-
-            if (s1.parent == s2) s1Points.RemoveAt(0); // don't consider the base points so that we can check if children overlap their parents 
-            if (s2.parent == s1) s2Points.RemoveAt(0); // (note: the base point of a child is always exactly overlapping with one of the parent's points)
-
-            foreach(var p1 in s1Points)
-            {
-                foreach(var p2 in s2Points)
-                {
-                    if (Vector3.SqrMagnitude(p1-p2) <= thresholdForOverlap) return true; // s1 and s2 overlap
-                }
-            }
-
-            return false;
-        }
-        
-        public bool OutsideBounds(SpiralManipulator spiral) 
-        {
-            var points = spiral.NomaiTextLine.GetPoints()
-                .Select(p => spiral.transform.TransformPoint(p))
-                .Select(p => spiral.transform.parent.InverseTransformPoint(p))
-                .ToList();
-
-            foreach(var point in points) {
-                if (point.x < minX || point.x > maxX ||
-                    point.y < minY || point.y > maxY) 
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-        
         public void FDGSimulationStep() 
         {
-            if (reverseToposortedSpirals == null) GenerateReverseToposort();
+            if (updateToposortOnNextStep) 
+            { 
+                updateToposortOnNextStep = false;
+                GenerateReverseToposort();
+            }
 
             Dictionary<SpiralManipulator, Vector2> childForces = new Dictionary<SpiralManipulator, Vector2>();
 
@@ -258,6 +159,109 @@ namespace NewHorizons.Builder.Props
             }
         }
 
+        public void GenerateReverseToposort()
+        {
+            reverseToposortedSpirals = new List<SpiralManipulator>();
+            Queue<SpiralManipulator> frontierQueue = new Queue<SpiralManipulator>();
+            frontierQueue.Enqueue(root);
+        
+            while(frontierQueue.Count > 0)
+            {
+                var spiral = frontierQueue.Dequeue();
+                reverseToposortedSpirals.Add(spiral);
+        
+                foreach(var child in spiral.children) frontierQueue.Enqueue(child);
+            }
+        
+            reverseToposortedSpirals.Reverse();
+        }
+
+        #region overlap handling
+
+        // returns whether there was overlap or not
+        public bool AttemptOverlapResolution() 
+        {
+            var overlappingSpirals = FindOverlap();
+            if (overlappingSpirals.x < 0) return false;
+
+            if (!sprialOverlapResolutionPriority.ContainsKey(overlappingSpirals.x)) sprialOverlapResolutionPriority[overlappingSpirals.x] = 0;
+            if (!sprialOverlapResolutionPriority.ContainsKey(overlappingSpirals.y)) sprialOverlapResolutionPriority[overlappingSpirals.y] = 0;
+
+            int mirrorIndex = overlappingSpirals.x;
+            if (sprialOverlapResolutionPriority[overlappingSpirals.y] > sprialOverlapResolutionPriority[overlappingSpirals.x]) mirrorIndex = overlappingSpirals.y;
+
+            this.spirals[mirrorIndex].Mirror();
+            sprialOverlapResolutionPriority[mirrorIndex]--;
+
+            return true;
+        }
+        
+        public Vector2Int FindOverlap() 
+        {
+            var index = -1;
+            foreach (var s1 in spirals) 
+            {
+                index++;
+                if (s1.parent == null) continue;
+
+                var jndex = -1;
+                foreach (var s2 in spirals) 
+                {
+                    jndex++;
+                    if (SpiralsOverlap(s1, s2)) return new Vector2Int(index, jndex);;
+                }
+            }
+
+            return new Vector2Int(-1, -1);
+        }
+
+        public bool SpiralsOverlap(SpiralManipulator s1, SpiralManipulator s2) 
+        {
+            if (s1 == s2) return false;
+            if (Vector3.Distance(s1.center, s2.center) > Mathf.Max(s1.NomaiTextLine.GetWorldRadius(), s2.NomaiTextLine.GetWorldRadius())) return false; // no overlap possible - too far away
+
+            var s1Points = s1.NomaiTextLine.GetPoints().Select(p => s1.transform.TransformPoint(p)).ToList();
+            var s2Points = s2.NomaiTextLine.GetPoints().Select(p => s2.transform.TransformPoint(p)).ToList();
+            var s1ThresholdForOverlap = Vector3.Distance(s1Points[0], s1Points[1]);
+            var s2ThresholdForOverlap = Vector3.Distance(s2Points[0], s2Points[1]);
+            var thresholdForOverlap = Mathf.Pow(Mathf.Max(s1ThresholdForOverlap, s2ThresholdForOverlap), 2); // square to save on computation (we'll work in distance squared from here on)
+
+            if (s1.parent == s2) s1Points.RemoveAt(0); // don't consider the base points so that we can check if children overlap their parents 
+            if (s2.parent == s1) s2Points.RemoveAt(0); // (note: the base point of a child is always exactly overlapping with one of the parent's points)
+
+            foreach(var p1 in s1Points)
+            {
+                foreach(var p2 in s2Points)
+                {
+                    if (Vector3.SqrMagnitude(p1-p2) <= thresholdForOverlap) return true; // s1 and s2 overlap
+                }
+            }
+
+            return false;
+        }
+        
+        #endregion overlap handling
+        
+        #region bounds handling
+
+        public bool OutsideBounds(SpiralManipulator spiral) 
+        {
+            var points = spiral.NomaiTextLine.GetPoints()
+                .Select(p => spiral.transform.TransformPoint(p))
+                .Select(p => spiral.transform.parent.InverseTransformPoint(p))
+                .ToList();
+
+            foreach(var point in points) {
+                if (point.x < minX || point.x > maxX ||
+                    point.y < minY || point.y > maxY) 
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private bool AttemptToPushSpiralInBounds(SpiralManipulator s1, int start) 
         {
             var range = Mathf.Max(start-SpiralManipulator.MIN_PARENT_POINT, SpiralManipulator.MAX_PARENT_POINT-start);
@@ -279,6 +283,17 @@ namespace NewHorizons.Builder.Props
 
             return false;
         }
+        
+        public void DrawBoundsWithDebugSpheres() 
+        {
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, minY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(minX, maxY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, maxY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.green).transform.localPosition = new Vector3(maxX, minY, 0);
+            AddDebugShape.AddSphere(this.gameObject, 0.1f, Color.red).transform.localPosition = new Vector3(0, 0, 0);
+        }
+        
+        #endregion bounds handling
     }
 
     public class SpiralManipulator : MonoBehaviour {
