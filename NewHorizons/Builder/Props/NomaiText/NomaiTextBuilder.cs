@@ -631,9 +631,7 @@ namespace NewHorizons.Builder.Props
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
-            //
-            // Generate spirals
-            //
+            // Generate spiral meshes/GOs
 
             var i = 0;
             foreach (var textData in dict.Values)
@@ -645,16 +643,12 @@ namespace NewHorizons.Builder.Props
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
                 GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
-                arc.name = $"Arc {i} - Child of {parentID}";
+                arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
 
                 i++;
             }
-            
-            //
-            // place spirals
-            //
 
             // auto placement
 
@@ -666,7 +660,7 @@ namespace NewHorizons.Builder.Props
                 for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
             }
 
-            if (overlapFound) Logger.LogWarning("Overlap resolution failed!");
+            if (overlapFound) Logger.LogVerbose("Overlap resolution failed!");
 
             // manual placement
 
@@ -683,7 +677,7 @@ namespace NewHorizons.Builder.Props
                 arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
 
                 if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
-                else                arc.transform.localScale = new Vector3( 1, 1, 1);
+                else arc.transform.localScale = new Vector3( 1, 1, 1);
             }
         }
 
@@ -691,8 +685,8 @@ namespace NewHorizons.Builder.Props
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
-            NomaiTextArcBuilder.SpiralProfile profile = new();
-            Material mat = null;
+            NomaiTextArcBuilder.SpiralProfile profile;
+            Material mat;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -711,7 +705,7 @@ namespace NewHorizons.Builder.Props
             }
             
             if (parent != null) arc = parent.GetComponent<SpiralManipulator>().AddChild(profile).gameObject;
-            else                arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
+            else arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
 
             if (mat != null) arc.GetComponent<MeshRenderer>().sharedMaterial = mat;
 
