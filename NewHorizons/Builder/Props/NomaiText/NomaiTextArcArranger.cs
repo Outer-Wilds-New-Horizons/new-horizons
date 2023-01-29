@@ -253,7 +253,7 @@ namespace NewHorizons.Builder.Props
                 for (var j = SpiralManipulator.MIN_PARENT_POINT; j < SpiralManipulator.MAX_PARENT_POINT; j++) 
                 {
                     // skip this point if it's already occupied by another spiral (if it's occupied by this spiral, don't skip it)
-                    if (j != spiral._parentPointIndex && spiral.parent.occupiedParentPoints.Contains(j)) continue;
+                    if (j != spiral._parentPointIndex && spiral.parent.pointsOccupiedByChildren.Contains(j)) continue;
 
                     var point = parentPoints[j];
                     point = spiral.parent.transform.TransformPoint(point);
@@ -337,12 +337,14 @@ namespace NewHorizons.Builder.Props
         public SpiralManipulator parent;
         public List<SpiralManipulator> children = new List<SpiralManipulator>();
 
-        public HashSet<int> occupiedParentPoints = new HashSet<int>();
+        public HashSet<int> pointsOccupiedByChildren = new HashSet<int>();
         public int _parentPointIndex = -1;
     
         public static int MIN_PARENT_POINT = 3;
         public static int MAX_PARENT_POINT = 26;
-    
+
+        #region properties
+
         public bool Mirrored { get { return this.transform.localScale.x < 0; } }
 
         private NomaiTextLine _NomaiTextLine;
@@ -369,6 +371,8 @@ namespace NewHorizons.Builder.Props
         public SpiralManipulator AddChild(NomaiTextArcBuilder.SpiralProfile profile) {
             return AddChild(NomaiTextArcArranger.Place(profile, this.transform.parent.gameObject).gameObject);
         }
+        
+        #endregion properties
         
         public SpiralManipulator AddChild(GameObject prebuiltChild) {
             var index = Random.Range(MIN_PARENT_POINT, MAX_PARENT_POINT);
@@ -397,34 +401,28 @@ namespace NewHorizons.Builder.Props
 
         public int PlaceOnParentPoint(int parentPointIndex, bool updateChildren=true) 
         {
-            // track which points on the parent are being occupied
-            if (this._parentPointIndex != -1) parent.occupiedParentPoints.Remove(this._parentPointIndex);
-            this._parentPointIndex = parentPointIndex; // just in case this function was called without setting this value
-            parent.occupiedParentPoints.Add(parentPointIndex);
-
-            // get the parent's points and make parentPointIndex valid
+            // validate
             var _points = parent.GetComponent<NomaiTextLine>().GetPoints();
             parentPointIndex = Mathf.Max(0, Mathf.Min(parentPointIndex, _points.Length-1));
+            
+            // track occupied points
+            if (this._parentPointIndex != -1) parent.pointsOccupiedByChildren.Remove(this._parentPointIndex);
+            this._parentPointIndex = parentPointIndex;
+            parent.pointsOccupiedByChildren.Add(parentPointIndex);
 
-            // calculate the normal at point by using the neighboring points to approximate the tangent (and account for mirroring, which means all points are actually at (-point.x, point.y) )
+            // calculate the normal
             var normal = _points[Mathf.Min(parentPointIndex+1, _points.Length-1)] - _points[Mathf.Max(parentPointIndex-1, 0)];
-            if (parent.transform.localScale.x < 0) normal = new Vector3(-normal.x, normal.y, normal.z);
+            if (parent.transform.localScale.x < 0) normal = new Vector3(normal.x, -normal.y, -normal.z);
             float rot = Mathf.Atan2(normal.y, normal.x) * Mathf.Rad2Deg;
-            if (parent.transform.localScale.x < 0) rot += 180; // account for mirroring again (without doing this, the normal points inward on mirrored spirals, instead of outward)
 
-            // get the location this spiral should be at (and yet again account for mirroring)
+            // get location of the point
             var point = _points[parentPointIndex];
             if (parent.transform.localScale.x < 0) point = new Vector3(-point.x, point.y, point.z);
 
-            // set the position and rotation according to calculations
+            // finalize
             this.transform.localPosition = Quaternion.Euler(0, 0, parent.transform.localEulerAngles.z) * point + parent.transform.localPosition;
             this.transform.localEulerAngles = new Vector3(0, 0, rot + parent.transform.localEulerAngles.z);
-
-            // recursive update on all children so they move along with the parent
-            if (updateChildren)
-            { 
-                this.UpdateChildren();
-            }
+            if (updateChildren) this.UpdateChildren();
 
             return parentPointIndex;
         }
