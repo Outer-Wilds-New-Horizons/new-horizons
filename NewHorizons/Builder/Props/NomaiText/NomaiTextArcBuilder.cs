@@ -123,17 +123,17 @@ namespace NewHorizons.Builder.Props
             profileName="Child",
             canMirror = false, // we don't want to mirror the actual mesh itself anymore, we'll just mirror the game object using localScale.x
             a = new Vector2(0.9f, 0.9f),
-            b = new Vector2(0.15f, 0.3f), //new Vector2(0.305f, 0.4f),
+            b = new Vector2(0.17f, 0.4f), //new Vector2(0.305f, 0.4f),
             startS = new Vector2(342.8796f, 342.8796f),
-            endS = new Vector2(85f, 25f), 
-            skeletonScale = 0.4f * new Vector2(0.02f, 0.01f),
+            endS = new Vector2(35f, 25f), 
+            skeletonScale = 0.8f * new Vector2(0.01f, 0.01f),
             numSkeletonPoints = 51,
 
             innerWidth = 0.001f/10f, 
             outerWidth = 2f*0.05f, 
             uvScale = 4.9f * 0.55f, 
 
-            syncRandomRanges = true,
+            syncRandomRanges = false,
         };
         
         // location of example stranger writing:
