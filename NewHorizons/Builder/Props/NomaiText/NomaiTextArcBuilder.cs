@@ -45,8 +45,7 @@ namespace NewHorizons.Builder.Props
         
             var norm = m.skeleton[1] - m.skeleton[0];
             float r = Mathf.Atan2(-norm.y, norm.x) * Mathf.Rad2Deg;
-            if (m.mirror) r += 180;
-            var ang = m.mirror ? 90-r : -90-r;
+            var ang = -90-r;
 
             // using m.sharedMesh causes old meshes to disappear for some reason, idk why
             var mesh = g.GetComponent<MeshFilter>().mesh;
@@ -285,18 +284,16 @@ namespace NewHorizons.Builder.Props
         //
 
         public class MathematicalSpiral {
-            public bool mirror;
             public float a;
-            public float b; // 0.3-0.6
+            public float b; 
             public float startSOnParent;
             public float scale;
-            public List<MathematicalSpiral> children;
 
             public float x;
             public float y;
             public float ang;
 
-            public float startS = 42.87957f; // go all the way down to 0, all the way up to 50
+            public float startS = 42.87957f; 
             public float endS = 342.8796f;
 
             SpiralProfile profile;
@@ -307,14 +304,11 @@ namespace NewHorizons.Builder.Props
                 this.Randomize();
             }
 
-            public MathematicalSpiral(float startSOnParent = 0, bool mirror = false, float len = 300, float a = 0.5f, float b = 0.43f, float scale = 0.01f) {
-                this.mirror = mirror;
+            public MathematicalSpiral(float startSOnParent = 0, float len = 300, float a = 0.5f, float b = 0.43f, float scale = 0.01f) {
                 this.a = a;
                 this.b = b;
                 this.startSOnParent = startSOnParent;
                 this.scale = scale;
-
-                this.children = new List<MathematicalSpiral>();
 
                 this.x = 0;
                 this.y = 0;
@@ -327,8 +321,6 @@ namespace NewHorizons.Builder.Props
                 this.startS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);   // idk why I flipped these, please don't hate me
                 this.endS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
                 this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
-
-                if (profile.canMirror) this.mirror = UnityEngine.Random.value<0.5f;
             }
 
             internal virtual void updateChild(MathematicalSpiral child) {
@@ -338,19 +330,7 @@ namespace NewHorizons.Builder.Props
                 var cang = pointAndNormal.z;
                 child.x = cx;
                 child.y = cy;
-                child.ang = cang + (child.mirror ? Mathf.PI : 0);
-            }
-
-            public virtual void addChild(MathematicalSpiral child) {
-                updateChild(child);
-                this.children.Add(child);
-            }
-
-            public virtual void updateChildren() {
-                this.children.ForEach(child => {
-                    updateChild(child);
-                    child.updateChildren();
-                });
+                child.ang = cang;
             }
 
             // note: each Vector3 in this list is of form <x, y, angle in radians of the normal at this point>
@@ -432,11 +412,6 @@ namespace NewHorizons.Builder.Props
                 var x = point.x;
                 var y = point.y;
                 var ang = normalAngle(t);
-
-                if (mirror) {
-                    x = x + 2 * (startX - x);
-                    ang = -ang + Mathf.PI;
-                }
 
                 // translate so that startPoint is at (0,0)
                 // (also scale the spiral)
