@@ -78,6 +78,7 @@ namespace NewHorizons.Builder.Volumes
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
                     detector._onlyDetectableFluid = water;
                     detector._buoyancy.boundingRadius = 1;
+                    detector._buoyancy.checkAgainstWaves = true;
                     detector._dontApplyForces = true;
 
                     submerge._fluidDetector = detector;
