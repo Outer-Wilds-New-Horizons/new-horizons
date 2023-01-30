@@ -136,6 +136,7 @@ namespace NewHorizons.Builder.Body
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 sizeController.SetScaleCurve(module.curve);
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
+                sizeController.fluidVolume = fluidVolume;
                 sizeController.size = module.size;
             }
             else
