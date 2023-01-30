@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.Volumes
                 if (water != null)
                 {
                     var submerge = go.AddComponent<DarkMatterSubmergeController>();
-                    submerge._activeWhenSubmerged = false;
+                    submerge._sector = sector;
                     submerge._effectVolumes = new EffectVolume[] { hazardVolume, visorFrostEffectVolume };
                     // THERE ARE NO RENDERERS??? RUH ROH!!!
 
