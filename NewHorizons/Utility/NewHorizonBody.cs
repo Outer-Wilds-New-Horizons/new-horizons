@@ -25,7 +25,14 @@ namespace NewHorizons.Utility
         #region Cache
         public void LoadCache()
         {
-            if (RelativePath != null) Cache = new Cache(RelativePath+".nhcache");
+            if (RelativePath == null) 
+            {
+                Logger.LogWarning("Cannot load cache! RelativePath is null!");
+                return;
+            }
+
+            var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
+            Cache = new Cache(pathWithoutExtension+".nhcache");
         }
 
         public void UnloadCache(bool writeBeforeUnload=false)
