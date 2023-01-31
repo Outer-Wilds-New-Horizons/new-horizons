@@ -1155,6 +1155,7 @@
           "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
         },
         "flashlightToggle": {
+          "description": "What type of flashlight toggle to do when dialogue is interacted with",
           "default": "none",
           "$ref": "#/definitions/FlashlightToggle"
         }
