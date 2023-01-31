@@ -7,7 +7,9 @@ namespace NewHorizons.Builder.Props
 {
     public static class NomaiTextArcBuilder {    
         // TODO: stranger arcs
-        // TODO: swap endS with startS wherever it needs to be swapped
+        // Note: building a wall text (making meshes and arranging) takes 0.1s for an example with 10 spirals
+        // TODO: caching - maybe make a "cachable" annotaion! if cache does not contain results of function, run function, write results to cache file. otherwise return results from cache file. 
+        // cache file should be shipped with release but doesn't need to be. if debug mode is enabled, always regen cache, if click regen configs, reload cache
 
         public static GameObject BuildSpiralGameObject(SpiralProfile profile, string goName="New Nomai Spiral") 
         {
