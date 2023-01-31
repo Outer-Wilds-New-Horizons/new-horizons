@@ -15,12 +15,12 @@ namespace NewHorizons.Patches
         public static bool AudioSignal_SignalNameToString(SignalName __0, ref string __result)
         {
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
-            if (customSignalName == null) return true;
-            else
+            if (!string.IsNullOrEmpty(customSignalName))
             {
-                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI).ToUpper();
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpper();
                 return false;
             }
+            return true;
         }
 
         [HarmonyPrefix]
@@ -104,9 +104,9 @@ namespace NewHorizons.Patches
         public static bool AudioSignal_FrequencyToString(SignalFrequency __0, ref string __result)
         {
             var customName = SignalBuilder.GetCustomFrequencyName(__0);
-            if (customName != null && customName != "")
+            if (!string.IsNullOrEmpty(customName))
             {
-                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }
@@ -119,7 +119,10 @@ namespace NewHorizons.Patches
         {
             if (!SignalBuilder.Initialized) return true;
 
-            if (!SignalBuilder.CloakedSignals.Contains(__instance._name) && !SignalBuilder.QMSignals.Contains(__instance._name)) return true;
+            var isCloaked = SignalBuilder.IsCloaked(__instance._name);
+            var isOnQuantumMoon = SignalBuilder.IsOnQuantumMoon(__instance._name);
+
+            if (!isCloaked && !isOnQuantumMoon) return true;
 
             __instance._canBePickedUpByScope = false;
             if (__instance._sunController != null && __instance._sunController.IsPointInsideSupernova(__instance.transform.position))
@@ -130,7 +133,7 @@ namespace NewHorizons.Patches
             }
 
             // This part is modified from the original to include all QM signals
-            if (Locator.GetQuantumMoon() != null && Locator.GetQuantumMoon().IsPlayerInside() && !SignalBuilder.QMSignals.Contains(__instance._name))
+            if (Locator.GetQuantumMoon() != null && Locator.GetQuantumMoon().IsPlayerInside() && !isOnQuantumMoon)
             {
                 __instance._signalStrength = 0f;
                 __instance._degreesFromScope = 180f;
@@ -167,7 +170,7 @@ namespace NewHorizons.Patches
             }
 
             // If it's a cloaked signal we don't want to hear it outside the cloak field
-            if (SignalBuilder.CloakedSignals.Contains(__instance._name))
+            if (isCloaked)
             {
                 if (!PlayerState.InCloakingField())
                 {

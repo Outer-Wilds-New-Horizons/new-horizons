@@ -2,6 +2,7 @@ using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,10 +22,8 @@ namespace NewHorizons.Components.ShipLog
         private Vector2 _panRootPos = Vector2.zero;
         private Vector2 _startPanPos;
 
-        private ScreenPromptList _upperRightPromptList;
         private ScreenPromptList _centerPromptList;
 
-        private ScreenPrompt _detectiveModePrompt;
         private ScreenPrompt _targetSystemPrompt;
         private ScreenPrompt _warpPrompt = new ScreenPrompt(InputLibrary.autopilot, "<CMD> Warp to system");
 
@@ -45,9 +44,7 @@ namespace NewHorizons.Components.ShipLog
             _oneShotSource = oneShotSource;
 
             _centerPromptList = centerPromptList;
-            _upperRightPromptList = upperRightPromptList;
 
-            _detectiveModePrompt = new ScreenPrompt(InputLibrary.swapShipLogMode, UITextLibrary.GetString(UITextType.LogRumorModePrompt), 0, ScreenPrompt.DisplayState.Normal, false);
             _targetSystemPrompt = new ScreenPrompt(InputLibrary.markEntryOnHUD, TranslationHandler.GetTranslation("LOCK_AUTOPILOT_WARP", TranslationHandler.TextType.UI), 0, ScreenPrompt.DisplayState.Normal, false);
 
             GlobalMessenger<ReferenceFrame>.AddListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
@@ -63,6 +60,7 @@ namespace NewHorizons.Components.ShipLog
                 // Conditions to allow warping into that system (either no planets (stock system) or has a ship spawn point)
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
+                else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
                 else if (config.Spawn?.shipSpawnPoint != null) flag = true;
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
@@ -73,10 +71,8 @@ namespace NewHorizons.Components.ShipLog
                 }
             }
 
-            //AddSystemCard("EyeOfTheUniverse");
-
-            /* Ship log manager isnt initiatiized yet
-            if(Locator.GetShipLogManager().IsFactRevealed("OPC_EYE_COORDINATES_X1"))
+            /* 
+            if(VesselCoordinatePromptHandler.KnowsEyeCoordinates())
             {
                 AddSystemCard("EyeOfTheUniverse");
             }
@@ -93,7 +89,7 @@ namespace NewHorizons.Components.ShipLog
         {
             GlobalMessenger<ReferenceFrame>.RemoveListener("TargetReferenceFrame", new Callback<ReferenceFrame>(OnTargetReferenceFrame));
 
-            Locator.GetPromptManager().RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
+            Locator.GetPromptManager()?.RemoveScreenPrompt(_warpPrompt, PromptPosition.UpperLeft);
         }
 
         public GameObject CreateCard(string uniqueID, Transform parent, Vector2 position)
@@ -130,9 +126,13 @@ namespace NewHorizons.Components.ShipLog
                 {
                     texture = ImageUtilities.GetTexture(Main.Instance, "Assets/hearthian system.png");
                 }
+                else if (uniqueID.Equals("EyeOfTheUniverse"))
+                {
+                    texture = ImageUtilities.GetTexture(Main.Instance, "Assets/eye symbol.png");
+                }
                 else
                 {
-                    var path = $"planets/{uniqueID}.png";
+                    var path = Path.Combine("planets", uniqueID + ".png");
                     Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
@@ -166,7 +166,7 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(true);
 
-            Locator.GetPromptManager().AddScreenPrompt(_detectiveModePrompt, _upperRightPromptList, TextAnchor.MiddleRight, -1, true);
+            _oneShotSource.PlayOneShot(AudioType.ShipLogEnterMapMode);
             Locator.GetPromptManager().AddScreenPrompt(_targetSystemPrompt, _centerPromptList, TextAnchor.MiddleCenter, -1, true);
         }
 
@@ -174,7 +174,6 @@ namespace NewHorizons.Components.ShipLog
         {
             gameObject.SetActive(false);
 
-            Locator.GetPromptManager().RemoveScreenPrompt(_detectiveModePrompt);
             Locator.GetPromptManager().RemoveScreenPrompt(_targetSystemPrompt);
         }
 

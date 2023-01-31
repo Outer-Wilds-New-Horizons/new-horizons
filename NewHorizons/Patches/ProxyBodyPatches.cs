@@ -11,6 +11,13 @@ namespace NewHorizons.Patches
     [HarmonyPatch]
     public static class ProxyBodyPatches
     {
+        [HarmonyPrefix]
+        [HarmonyPatch(typeof(ProxyBody), nameof(ProxyBody.IsObjectInSupernova))]
+        public static bool ProxyBody_IsObjectInSupernova(ProxyBody __instance)
+        {
+            return Locator.GetSunController() != null;
+        }
+
         [HarmonyReversePatch]
         [HarmonyPatch(typeof(ProxyPlanet), nameof(ProxyPlanet.Initialize))]
         [MethodImpl(MethodImplOptions.NoInlining)]

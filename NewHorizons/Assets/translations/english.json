@@ -21,7 +21,8 @@
     "DEBUG_PLACE": "Place Object",
     "DEBUG_PLACE_TEXT": "Place Nomai Text",
     "DEBUG_UNDO": "Undo",
-    "DEBUG_REDO": "Redo"
+    "DEBUG_REDO": "Redo",
+    "Vessel": "Vessel"
   },
   "AchievementTranslations": {
     "NH_EATEN_OUTSIDE_BRAMBLE": {
@@ -47,6 +48,18 @@
     "NH_VESSEL_WARP": {
       "Name": "Lore Accurate",
       "Description": "Warp to a star system using the Vessel."
+    },
+    "NH_RAFTING": {
+      "Name": "The Raft and the Furious",
+      "Description": "Go rafting."
+    },
+    "NH_SUCKED_INTO_LAVA_BY_TORNADO": {
+      "Name": "Dieclone",
+      "Description": "Get sucked into lava by a tornado."
+    },
+    "NH_TALK_TO_FIVE_CHARACTERS": {
+      "Name": "Society",
+      "Description": "Talk to 5 characters."
     }
   }
 }

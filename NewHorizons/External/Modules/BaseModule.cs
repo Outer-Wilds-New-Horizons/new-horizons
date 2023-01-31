@@ -82,9 +82,9 @@ namespace NewHorizons.External.Modules
         public float surfaceSize;
 
         /// <summary>
-        /// Radius of the zero gravity volume. This will make it so no gravity from any planet will affect you. Useful for satellites.
+        /// Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.
         /// </summary>
-        public float zeroGravityRadius;
+        public int gravityVolumePriority;
 
         #region Obsolete
 
@@ -114,6 +114,9 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("SphereOfInfluence is deprecated, please use soiOverride instead")]
         public float sphereOfInfluence;
+
+        [Obsolete("zeroGravityRadius is deprecated, please use Volumes->ZeroGravityVolumes instead")]
+        public float zeroGravityRadius;
 
         #endregion Obsolete
     }

@@ -4,6 +4,7 @@ using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Builder.Body
 {
@@ -13,8 +14,31 @@ namespace NewHorizons.Builder.Body
         private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
         private static readonly int HeightScale = Shader.PropertyToID("_HeightScale");
 
-        public static void Make(GameObject planetGO, ConstantForceDetector detector, OWRigidbody rigidbody, FunnelModule module)
+        private static GameObject _proxySandFunnel;
+        private static GameObject _geoSandFunnel;
+        private static GameObject _volumesSandFunnel;
+        private static Material[] _waterMaterials;
+        private static Material _lavaMaterial;
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_proxySandFunnel == null) _proxySandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Proxy").DontDestroyOnLoad();
+            if (_geoSandFunnel == null) _geoSandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Geo").DontDestroyOnLoad();
+            if (_volumesSandFunnel == null) _volumesSandFunnel = SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel").InstantiateInactive().Rename("Prefab_Funnel_Volumes").DontDestroyOnLoad();
+            if (_waterMaterials == null) _waterMaterials = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
+            if (_lavaMaterial == null) _lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().sharedMaterial).DontDestroyOnLoad();
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rigidbody, FunnelModule module)
+        {
+            InitPrefabs();
+
             var funnelType = module.type;
 
             var funnelGO = new GameObject($"{planetGO.name.Replace("_Body", "")}Funnel_Body");
@@ -32,7 +56,7 @@ namespace NewHorizons.Builder.Body
             var detectorGO = new GameObject("Detector_Funnel");
             detectorGO.transform.parent = funnelGO.transform;
             var funnelDetector = detectorGO.AddComponent<ConstantForceDetector>();
-            funnelDetector._inheritDetector = detector;
+            funnelDetector._inheritDetector = planetGO.GetComponentInChildren<ConstantForceDetector>();
             funnelDetector._detectableFields = new ForceVolume[0];
 
             detectorGO.AddComponent<ForceApplier>();
@@ -43,14 +67,17 @@ namespace NewHorizons.Builder.Body
             scaleRoot.transform.localPosition = Vector3.zero;
             scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
-            var proxyGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Proxy_SandFunnel"), scaleRoot.transform);
+            var proxyGO = GameObject.Instantiate(_proxySandFunnel, scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
+            proxyGO.SetActive(true);
 
-            var geoGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Geo_SandFunnel"), scaleRoot.transform);
+            var geoGO = GameObject.Instantiate(_geoSandFunnel, scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
+            geoGO.SetActive(true);
 
-            var volumesGO = GameObject.Instantiate(SearchUtilities.Find("SandFunnel_Body/ScaleRoot/Volumes_SandFunnel"), scaleRoot.transform);
+            var volumesGO = GameObject.Instantiate(_volumesSandFunnel, scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
+            volumesGO.SetActive(true);
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
             var fluidVolume = sfv.gameObject;
             switch (funnelType)
@@ -64,7 +91,7 @@ namespace NewHorizons.Builder.Body
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var waterMaterials = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Geometry_TH/Terrain_TH_Water_v3/Village_Upper_Water/Village_Upper_Water_Geo").GetComponent<MeshRenderer>().materials;
+                    var waterMaterials = _waterMaterials;
                     var materials = new Material[waterMaterials.Length];
                     for (int i = 0; i < waterMaterials.Length; i++)
                     {
@@ -112,7 +139,7 @@ namespace NewHorizons.Builder.Body
 
                     GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
-                    var lavaMaterial = new Material(SearchUtilities.Find("VolcanicMoon_Body/MoltenCore_VM/LavaSphere").GetComponent<MeshRenderer>().material);
+                    var lavaMaterial = new Material(_lavaMaterial);
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);
                     lavaMaterial.mainTextureScale = new Vector2(1f, 3f);
 
@@ -139,7 +166,10 @@ namespace NewHorizons.Builder.Body
                     break;
             }
 
-            var sector = planetGO.GetComponent<AstroObject>().GetPrimaryBody().GetRootSector();
+            // We take the sector of the binary focal point if it exists for this funnel (like with the twins)
+            var primaryBody = planetGO.GetComponent<AstroObject>().GetPrimaryBody();
+            if (primaryBody?.GetComponent<BinaryFocalPoint>() != null) sector = primaryBody.GetRootSector();
+
             proxyGO.GetComponent<SectorProxy>().SetSector(sector);
             geoGO.GetComponent<SectorCullGroup>().SetSector(sector);
             volumesGO.GetComponent<SectorCollisionGroup>().SetSector(sector);

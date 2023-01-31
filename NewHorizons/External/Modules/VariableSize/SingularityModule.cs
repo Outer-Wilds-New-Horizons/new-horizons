@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
@@ -19,11 +20,6 @@ namespace NewHorizons.External.Modules.VariableSize
         }
 
         /// <summary>
-        /// Only for White Holes. Should this white hole repel the player from it.
-        /// </summary>
-        [DefaultValue(true)] public bool makeZeroGVolume = true;
-
-        /// <summary>
         /// The uniqueID of the white hole or black hole that is paired to this one. If you don't set a value, entering will kill
         /// the player
         /// </summary>
@@ -40,10 +36,25 @@ namespace NewHorizons.External.Modules.VariableSize
         public MVector3 position;
 
         /// <summary>
+        /// Rotation of the singularity. Determines the direction you come out of a white hole
+        /// </summary>
+        public MVector3 rotation;
+
+        /// <summary>
         /// Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that
         /// has warped effects in it.
         /// </summary>
-        [Range(0f, double.MaxValue)] public float size;
+        [Obsolete("size is deprecated, please use horizonRadius and distortRadius instead")] [Range(0f, double.MaxValue)] public float size;
+
+        /// <summary>
+        /// Radius of the event horizon (solid part)
+        /// </summary>
+        [Range(0f, double.MaxValue)] public float horizonRadius;
+
+        /// <summary>
+        /// Radius of the distortion effects. Defaults to 2.5 * horizonRadius
+        /// </summary>
+        [Range(0f, double.MaxValue)] public float distortRadius;
 
         /// <summary>
         /// If you want a black hole to load a new star system scene, put its name here.
@@ -54,5 +65,30 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Type of singularity (white hole or black hole)
         /// </summary>
         public SingularityType type;
+
+        /// <summary>
+        /// Whether a black hole emits blue particles upon warping. It doesn't scale, so disabling this for small black holes is recommended
+        /// </summary>
+        public bool hasWarpEffects = true;
+
+        /// <summary>
+        /// Optional override for the render queue. If the singularity is rendering oddly, increasing this to 3000 can help
+        /// </summary>
+        [Range(2501f, 3500f)] public int renderQueueOverride = 2985;
+
+        /// <summary>
+        /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+        /// </summary>
+        public string parentPath;
+
+        /// <summary>
+        /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+        /// </summary>
+        public bool isRelativeToParent;
+
+        /// <summary>
+        /// An optional rename of this object
+        /// </summary>
+        public string rename;
     }
 }

@@ -1,15 +1,39 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class GeyserBuilder
     {
+        private static GameObject _geyserPrefab;
+
+        internal static void InitPrefab()
+        {
+            if (_geyserPrefab == null) _geyserPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive().Rename("Prefab_TH_Geyser").DontDestroyOnLoad();
+        }
+
         public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
         {
-            var geyserGO = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive();
+            InitPrefab();
+
+            var geyserGO = _geyserPrefab.InstantiateInactive();
+            geyserGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Geyser";
             geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
-            geyserGO.name = "Geyser";
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    geyserGO.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
 
             var pos = (Vector3)info.position;
 

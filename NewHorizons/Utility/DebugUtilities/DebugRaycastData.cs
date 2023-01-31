@@ -12,9 +12,10 @@ namespace NewHorizons.Utility.DebugUtilities
         public bool hit;
         public Vector3 pos;
         public Vector3 norm;
+        public Quaternion rot;
         public DebugRaycastPlane plane;
 
-        public string bodyName;
+        public string colliderPath;
         public string bodyPath;
         public GameObject hitBodyGameObject;
         public GameObject hitObject;

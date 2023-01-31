@@ -1,4 +1,5 @@
 using OWML.Common;
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -34,12 +35,11 @@ namespace NewHorizons.Utility
                 }
             }
 
-            try
+            if (EnumUtils.TryParse<AudioType>(audio, out AudioType type))
             {
-                var audioType = (AudioType)Enum.Parse(typeof(AudioType), audio);
-                source._audioLibraryClip = audioType;
+                source._audioLibraryClip = type;
             }
-            catch
+            else
             {
                 var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
                 if (audioClip == null) Logger.Log($"Couldn't find audio clip {audio}");
@@ -81,42 +81,42 @@ namespace NewHorizons.Utility
             _loadedAudioClips.Clear();
         }
 
-        private static async Task<AudioClip> GetAudioClip(string filePath)
+        private static async Task<AudioClip> GetAudioClip(string path)
         {
-            var extension = filePath.Split('.').Last();
+            var extension = Path.GetExtension(path);
 
             UnityEngine.AudioType audioType;
 
             switch (extension)
             {
-                case ("wav"):
+                case (".wav"):
                     audioType = UnityEngine.AudioType.WAV;
                     break;
-                case ("ogg"):
+                case (".ogg"):
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
-                case ("mp3"):
+                case (".mp3"):
                     audioType = UnityEngine.AudioType.MPEG;
                     break;
                 default:
-                    Logger.LogError($"Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
+                    Logger.LogError($"Couldn't load Audio at {path} : Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
                     return null;
             }
 
+            path = $"file:///{path.Replace("+", "%2B")}";
             if (audioType == UnityEngine.AudioType.MPEG)
             {
-                string fileProtocolPath = $"file://{filePath}";
-                DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(fileProtocolPath, UnityEngine.AudioType.MPEG);
+                DownloadHandlerAudioClip dh = new DownloadHandlerAudioClip(path, UnityEngine.AudioType.MPEG);
                 dh.compressed = true;
-                using (UnityWebRequest www = new UnityWebRequest(fileProtocolPath, "GET", dh, null))
+                using (UnityWebRequest www = new UnityWebRequest(path, "GET", dh, null))
                 {
                     var result = www.SendWebRequest();
 
-                    while (!result.isDone) { await Task.Delay(100); }
+                    while (!result.isDone) await Task.Yield();
 
-                    if (www.isNetworkError)
+                    if (www.isNetworkError || www.isHttpError)
                     {
-                        Debug.Log(www.error);
+                        Logger.LogError($"Couldn't load Audio at {path} : {www.error}");
                         return null;
                     }
                     else
@@ -127,15 +127,15 @@ namespace NewHorizons.Utility
             }
             else
             {
-                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(filePath, audioType))
+                using (UnityWebRequest www = UnityWebRequestMultimedia.GetAudioClip(path, audioType))
                 {
                     var result = www.SendWebRequest();
 
-                    while (!result.isDone) { await Task.Delay(100); }
+                    while (!result.isDone) await Task.Yield();
 
-                    if (www.isNetworkError)
+                    if (www.isNetworkError || www.isHttpError)
                     {
-                        Debug.Log(www.error);
+                        Logger.LogError($"Couldn't load Audio at {path} : {www.error}");
                         return null;
                     }
                     else

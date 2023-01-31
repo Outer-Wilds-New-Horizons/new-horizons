@@ -41,10 +41,13 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    // TODO copy what heightmap builder does eventually 
-                    heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
-                    // defer remove texture to next frame
-                    Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
+                    if (!string.IsNullOrEmpty(heightMap.heightMap))
+                    {
+                        // TODO copy what heightmap builder does eventually 
+                        heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
+                        // defer remove texture to next frame
+                        Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
+                    }
                 }
                 catch (Exception) { }
                 if (heightMapTexture == null)

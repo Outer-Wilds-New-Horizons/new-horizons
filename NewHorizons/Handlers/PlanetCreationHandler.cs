@@ -33,36 +33,39 @@ namespace NewHorizons.Handlers
 
             _existingBodyDict = new();
             _customBodyDict = new();
-            
-            // Set up stars
-            // Need to manage this when there are multiple stars
-            var sun = SearchUtilities.Find("Sun_Body");
-            var starController = sun.AddComponent<StarController>();
-            SupernovaEffectHandler.RegisterSun(sun.GetComponent<SunController>());
-            starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
-            starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
-            starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
-            starController.CSMTextureCacher = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
-            starController.ProxyShadowLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
-            starController.Intensity = 0.9859f;
-            starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
 
-            var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
-            foreach (var comp in starLightGO.GetComponents<Component>())
+            if (Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
             {
-                if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                // Set up stars
+                // Need to manage this when there are multiple stars
+                var sun = SearchUtilities.Find("Sun_Body");
+                SupernovaEffectHandler.RegisterSun(sun.GetComponent<SunController>());
+                var starController = sun.AddComponent<StarController>();
+                starController.Light = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<Light>();
+                starController.AmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").GetComponent<Light>();
+                starController.FaceActiveCamera = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<FaceActiveCamera>();
+                starController.CSMTextureCacher = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<CSMTextureCacher>();
+                starController.ProxyShadowLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").GetComponent<ProxyShadowLight>();
+                starController.Intensity = 0.9859f;
+                starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
+
+                var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+                foreach (var comp in starLightGO.GetComponents<Component>())
                 {
-                    GameObject.Destroy(comp);
+                    if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
+                    {
+                        GameObject.Destroy(comp);
+                    }
                 }
+                GameObject.Destroy(starLightGO.GetComponent<Light>());
+                starLightGO.name = "StarLightController";
+
+                starLightGO.AddComponent<SunLightEffectsController>();
+                SunLightEffectsController.AddStar(starController);
+                SunLightEffectsController.AddStarLight(starController.Light);
+
+                starLightGO.SetActive(true);
             }
-            GameObject.Destroy(starLightGO.GetComponent<Light>());
-            starLightGO.name = "StarLightController";
-
-            starLightGO.AddComponent<SunLightEffectsController>();
-            SunLightEffectsController.AddStar(starController);
-            SunLightEffectsController.AddStarLight(starController.Light);
-
-            starLightGO.SetActive(true);
 
             // Load all planets
             var toLoad = bodies.ToList();
@@ -128,7 +131,7 @@ namespace NewHorizons.Handlers
 
             // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
-            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveSolarSystem();
+            if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
         }
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
@@ -377,6 +380,19 @@ namespace NewHorizons.Handlers
             var go = new GameObject(body.Config.name.Replace(" ", "").Replace("'", "") + "_Body");
             go.SetActive(false);
 
+            if (Main.Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                // Disable any bodies when not at eye, vessel, or vortex.
+                EyeStateActivationController eyeStateActivation = SearchUtilities.Find("SolarSystemRoot").AddComponent<EyeStateActivationController>();
+                eyeStateActivation._object = go;
+                eyeStateActivation._activeStates = new EyeState[3]
+                {
+                    EyeState.AboardVessel,
+                    EyeState.WarpedToSurface,
+                    EyeState.IntoTheVortex
+                };
+            }
+
             var owRigidBody = RigidBodyBuilder.Make(go, body.Config);
             var ao = AstroObjectBuilder.Make(go, primaryBody, body.Config);
 
@@ -450,7 +466,7 @@ namespace NewHorizons.Handlers
                 });
             }
 
-            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector, body.Config.Star != null, body.Config.Atmosphere != null);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
@@ -498,12 +514,10 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Star != null)
             {
-                var (star, starController, starEvolutionController) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
+                var (star, starController, starEvolutionController, starLight) = StarBuilder.Make(go, sector, body.Config.Star, body.Mod, body.Config.isStellarRemnant);
 
                 if (starController != null) SunLightEffectsController.AddStar(starController);
-
-                var starLight = star.FindChild("SunLight");
-                if (starLight != null) SunLightEffectsController.AddStarLight(starLight.GetComponent<Light>());
+                if (starLight != null) SunLightEffectsController.AddStarLight(starLight);
 
                 // If it has an evolution controller that means it will die -> we make a remnant (unless its a remnant)
                 if (starEvolutionController != null && !body.Config.isStellarRemnant)
@@ -624,7 +638,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Funnel != null)
             {
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+                FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
             }
 
             // Has to go last probably
@@ -633,7 +647,7 @@ namespace NewHorizons.Handlers
                 CloakBuilder.Make(go, sector, rb, body.Config.Cloak, !body.Config.ReferenceFrame.hideInMap, body.Mod);
             }
 
-            if ((body.Config.ShockEffect == null && body.Config.Star == null && body.Config.name != "Sun" && body.Config.FocalPoint == null) || body.Config.ShockEffect?.hasSupernovaShockEffect == true)
+            if (body.Config.ShockEffect?.hasSupernovaShockEffect == true)
             {
                 SupernovaEffectBuilder.Make(go, sector, body.Config, body.Mod, procGen, ambientLight, fog, atmosphere, null, fog?._fogImpostor);
             }
@@ -779,8 +793,33 @@ namespace NewHorizons.Handlers
 
         public static void SetPositionFromVector(GameObject go, Vector3 position)
         {
-            go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = position;
+            var rb = go.GetAttachedOWRigidbody();
+            if (rb)
+            {
+                var allChildren = CenterOfTheUniverse.s_rigidbodies.Where(x => x.GetOrigParentBody() == rb).ToArray();
+
+                var localPositions = allChildren.Select(x => rb.transform.InverseTransformPoint(x.transform.position)).ToArray();
+
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+
+                for (var i = 0; i < allChildren.Length; i++)
+                {
+                    if (allChildren[i].TryGetComponent<NomaiInterfaceOrb>(out var orb))
+                    {
+                        orb.SetOrbPosition(go.transform.TransformPoint(localPositions[i]));
+                    }
+                    else
+                    {
+                        allChildren[i].transform.position = go.transform.TransformPoint(localPositions[i]);
+                    }
+                }
+            }
+            else
+            {
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+            }
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {

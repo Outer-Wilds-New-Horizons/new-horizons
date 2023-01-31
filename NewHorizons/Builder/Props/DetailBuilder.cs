@@ -1,4 +1,4 @@
-using NewHorizons.External.Configs;
+using NewHorizons.Builder.General;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -7,22 +7,41 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static Dictionary<PropModule.DetailInfo, GameObject> detailInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.DetailInfo, GameObject>();
+        private static readonly Dictionary<PropModule.DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
+        private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
+
+        static DetailBuilder()
+        {
+            SceneManager.sceneUnloaded += SceneManager_sceneUnloaded;
+        }
+
+        private static void SceneManager_sceneUnloaded(Scene scene)
+        {
+            foreach (var prefab in _fixedPrefabCache.Values)
+            {
+                GameObject.Destroy(prefab.prefab);
+            }
+            _fixedPrefabCache.Clear();
+            _detailInfoToCorrespondingSpawnedGameObject.Clear();
+        }
 
         public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
         {
-            if (!detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail)) return null;
-            return detailInfoToCorrespondingSpawnedGameObject[detail];
-        }
-
-        public static void RegisterDetailInfo(PropModule.DetailInfo detail, GameObject detailGO)
-        {
-            detailInfoToCorrespondingSpawnedGameObject[detail] = detailGO;
+            if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
+            {
+                return null;
+            }
+            else
+            {
+                return _detailInfoToCorrespondingSpawnedGameObject[detail];
+            }
         }
 
         /// <summary>
@@ -63,24 +82,51 @@ namespace NewHorizons.Builder.Props
         {
             if (prefab == null) return null;
 
-            GameObject prop = prefab.InstantiateInactive();
-            prop.name = prefab.name;
+            GameObject prop;
+            bool isItem;
+
+            // We save copies with all their components fixed, good if the user is placing the same detail more than once
+            if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
+            {
+                prop = storedPrefab.prefab.InstantiateInactive();
+                prop.name = prefab.name;
+                isItem = storedPrefab.isItem;
+            }
+            else
+            {
+                prop = prefab.InstantiateInactive();
+                prop.name = prefab.name;
+
+                StreamingHandler.SetUpStreaming(prop, sector);
+
+                // Could check this in the for loop but I'm not sure what order we need to know about this in
+                var isTorch = prop.GetComponent<VisionTorchItem>() != null;
+                isItem = false;
+
+                foreach (var component in prop.GetComponentsInChildren<Component>(true))
+                {
+                    if (component.gameObject == prop && component is OWItem) isItem = true;
+
+                    if (sector == null)
+                    {
+                        if (FixUnsectoredComponent(component)) continue;
+                    }
+                    else FixSectoredComponent(component, sector, isTorch);
+
+                    FixComponent(component, go);
+                }
+
+                if (detail.path != null)
+                {
+                    // We put these in DontDestroyOnLoad so that QSB will ignore them and so they don't clutter up the scene.
+                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
+                }
+            }
+
             prop.transform.parent = sector?.transform ?? go.transform;
 
-            StreamingHandler.SetUpStreaming(prop, sector);
-
-            var isTorch = prop.GetComponent<VisionTorchItem>() != null;
-
-            foreach (var component in prop.GetComponentsInChildren<Component>(true))
-            {
-                if (sector == null)
-                {
-                    if (FixUnsectoredComponent(component)) continue;
-                }
-                else FixSectoredComponent(component, sector, isTorch);
-
-                FixComponent(component, go);
-            }
+            // Items shouldn't use these else they get weird
+            if (isItem) detail.keepLoaded = true;
 
             prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
 
@@ -89,7 +135,7 @@ namespace NewHorizons.Builder.Props
             if (detail.alignToNormal)
             {
                 // Apply the rotation after aligning it with normal
-                var up = go.transform.InverseTransformPoint(prop.transform.position).normalized;
+                var up = (prop.transform.position - go.transform.position).normalized;
                 prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 prop.transform.rotation *= rot;
             }
@@ -99,10 +145,6 @@ namespace NewHorizons.Builder.Props
             }
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
-
-            prop.SetActive(true);
-
-            if (prop == null) return null;
 
             if (detail.removeChildren != null)
             {
@@ -157,7 +199,39 @@ namespace NewHorizons.Builder.Props
                 {
                     prop.transform.parent = newParent.transform;
                 }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
+                }
             }
+
+            if (detail.isRelativeToParent)
+            {
+                prop.transform.localPosition = detail.position == null ? Vector3.zero : detail.position;
+                if (detail.alignToNormal)
+                {
+                    // Apply the rotation after aligning it with normal
+                    var up = (prop.transform.position - go.transform.position).normalized;
+                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                    prop.transform.rotation *= rot;
+                }
+                else
+                {
+                    prop.transform.localRotation = rot;
+                }
+            }
+            
+            if (isItem)
+            {
+                // Else when you put them down you can't pick them back up
+                var col = prop.GetComponent<OWCollider>();
+                if (col != null) col._physicsRemoved = false;
+            }
+
+            if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
+            prop.SetActive(true);
+
+            _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
         }
@@ -238,6 +312,13 @@ namespace NewHorizons.Builder.Props
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
             }
 
+            if (component is DarkMatterSubmergeController submergeController)
+            {
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                if (submergeController._fluidDetector)
+                    submergeController._fluidDetector._onlyDetectableFluid = water;
+            }
+
             // Fix anglerfish speed on orbiting planets
             if (component is AnglerfishController angler)
             {
@@ -305,7 +386,7 @@ namespace NewHorizons.Builder.Props
         [RequireComponent(typeof(AnglerfishAnimController))]
         private class AnglerAnimFixer : MonoBehaviour
         {
-            private void Start()
+            public void Start()
             {
                 var angler = GetComponent<AnglerfishAnimController>();
                 

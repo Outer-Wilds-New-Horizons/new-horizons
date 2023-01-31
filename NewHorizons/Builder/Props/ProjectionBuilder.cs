@@ -16,7 +16,54 @@ namespace NewHorizons.Builder.Props
     {
         private static GameObject _slideReelPrefab;
         private static GameObject _autoPrefab;
+        private static GameObject _visionTorchDetectorPrefab;
+        private static GameObject _standingVisionTorchPrefab;
         private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
+
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
+        {
+            if (_isInit) return;
+
+            _isInit = true;
+
+            if (_slideReelPrefab == null)
+            {
+                _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_Reel")?.DontDestroyOnLoad();
+                if (_slideReelPrefab == null)
+                    Logger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _slideReelPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_autoPrefab == null)
+            {
+                _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_AutoProjector")?.DontDestroyOnLoad();
+                if (_autoPrefab == null)
+                    Logger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _autoPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_visionTorchDetectorPrefab == null)
+            {
+                _visionTorchDetectorPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchDetector")?.DontDestroyOnLoad();
+                if (_visionTorchDetectorPrefab == null)
+                    Logger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _visionTorchDetectorPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+
+            if (_standingVisionTorchPrefab == null)
+            {
+                _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
+                if (_standingVisionTorchPrefab == null)
+                    Logger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
+                else
+                    _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
+            }
+        }
 
         public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
@@ -40,21 +87,14 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (_slideReelPrefab == null)
-            {
-                _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive();
-                if (_slideReelPrefab == null)
-                {
-                    Logger.LogWarning($"Tried to make a slide reel but couldn't. Do you have the DLC installed?");
-                    return;
-                }
-                _slideReelPrefab.name = "Prefab_IP_Reel";
-            }
+            InitPrefabs();
+
+            if (_slideReelPrefab == null) return null;
 
             var slideReelObj = _slideReelPrefab.InstantiateInactive();
-            slideReelObj.name = $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
+            slideReelObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -78,12 +118,22 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 
-            slideReelObj.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            slideReelObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            if (info.isRelativeToParent)
+            {
+                slideReelObj.transform.localPosition = pos;
+                slideReelObj.transform.localRotation = rot;
+            }
+            else
+            {
+                slideReelObj.transform.position = planetGO.transform.TransformPoint(pos);
+                slideReelObj.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -130,29 +180,23 @@ namespace NewHorizons.Builder.Props
 
             slideCollectionContainer.slideCollection = slideCollection;
 
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            LinkShipLogFacts(info, slideCollectionContainer);
 
             StreamingHandler.SetUpStreaming(slideReelObj, sector);
 
             slideReelObj.SetActive(true);
+
+            return slideReelObj;
         }
 
-        public static void MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
-            if (_autoPrefab == null)
-            {
-                _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive();
-                if (_autoPrefab == null)
-                {
-                    Logger.LogWarning($"Tried to make a auto projector but couldn't. Do you have the DLC installed?");
-                    return;
-                }
-                _autoPrefab.name = "Prefab_IP_AutoProjector";
-            }
+            InitPrefabs();
+
+            if (_autoPrefab == null) return null;
 
             var projectorObj = _autoPrefab.InstantiateInactive();
-            projectorObj.name = $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
+            projectorObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
@@ -170,12 +214,22 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 
-            autoProjector.transform.position = planetGO.transform.TransformPoint((Vector3)(info.position ?? Vector3.zero));
-            autoProjector.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero)));
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
+            if (info.isRelativeToParent)
+            {
+                autoProjector.transform.localPosition = pos;
+                autoProjector.transform.localRotation = rot;
+            }
+            else
+            {
+                autoProjector.transform.position = planetGO.transform.TransformPoint(pos);
+                autoProjector.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -194,33 +248,27 @@ namespace NewHorizons.Builder.Props
             lens.materials[1].SetTexture(EmissionMap, slideCollection.slides[0]._image);
 
             projectorObj.SetActive(true);
+
+            return projectorObj;
         }
 
         // Makes a target for a vision torch to scan
         public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
+
+            if (_visionTorchDetectorPrefab == null) return null;
+
             // spawn a trigger for the vision torch
-            var path = "DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector";
-            var prefab = SearchUtilities.Find(path);
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent,
                 scale = 2
             };
-            var g = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    g.transform.SetParent(newParent, true);
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
+            var g = DetailBuilder.Make(planetGO, sector, _visionTorchDetectorPrefab, detailInfo);
 
             if (g == null)
             {
@@ -228,7 +276,7 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            g.name = "VisionStaffDetector";
+            g.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector";
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
@@ -245,36 +293,29 @@ namespace NewHorizons.Builder.Props
             target.slideCollection = g.AddComponent<MindSlideCollection>();
             target.slideCollection._slideCollectionContainer = slideCollectionContainer;
 
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            LinkShipLogFacts(info, slideCollectionContainer);
+
+            g.SetActive(true);
 
             return g;
         }
 
         public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
         {
+            InitPrefabs();
+
+            if (_standingVisionTorchPrefab == null) return null;
+
             // Spawn the torch itself
-            var path = "RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector";
-            var prefab = SearchUtilities.Find(path);
             var detailInfo = new PropModule.DetailInfo()
             {
                 position = info.position,
-                rotation = info.rotation
+                rotation = info.rotation,
+                parentPath = info.parentPath,
+                isRelativeToParent = info.isRelativeToParent,
+                rename = info.rename
             };
-            var standingTorch = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    standingTorch.transform.SetParent(newParent, true);
-                }
-                else
-                {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
+            var standingTorch = DetailBuilder.Make(planetGO, sector, _standingVisionTorchPrefab, detailInfo);
 
             if (standingTorch == null)
             {
@@ -320,15 +361,19 @@ namespace NewHorizons.Builder.Props
             // Set up the containers for the slides
             var slideCollectionContainer = standingTorch.AddComponent<SlideCollectionContainer>();
             slideCollectionContainer.slideCollection = slideCollection;
+
             var mindSlideCollection = standingTorch.AddComponent<MindSlideCollection>();
             mindSlideCollection._slideCollectionContainer = slideCollectionContainer;
 
             // Make sure that these slides play when the player wanders into the beam
+            slideCollectionContainer._initialized = true; // Hack to avoid initialization in the following call (it would throw NRE)
             mindSlideProjector.SetMindSlideCollection(mindSlideCollection);
+            slideCollectionContainer._initialized = false;
 
 
-            // Idk why but it wants reveals to be comma delimited not a list
-            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            LinkShipLogFacts(info, slideCollectionContainer);
+
+            standingTorch.SetActive(true);
 
             return standingTorch;
         }
@@ -404,6 +449,14 @@ namespace NewHorizons.Builder.Props
             }
 
             Slide.WriteModules(modules, ref slide._modulesList, ref slide._modulesData, ref slide.lengths);
+        }
+        
+        private static void LinkShipLogFacts(ProjectionInfo info, SlideCollectionContainer slideCollectionContainer)
+        {
+            // Idk why but it wants reveals to be comma delimited not a list
+            if (info.reveals != null) slideCollectionContainer._shipLogOnComplete = string.Join(",", info.reveals);
+            // Don't use null value, NRE in SlideCollectionContainer.Initialize
+            slideCollectionContainer._playWithShipLogFacts = info.playWithShipLogFacts ?? Array.Empty<string>();
         }
     }
 

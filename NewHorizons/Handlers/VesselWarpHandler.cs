@@ -6,12 +6,12 @@ using NewHorizons.Components;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
+using NewHorizons.Components.Orbital;
 
 namespace NewHorizons.Handlers
 {
     public static class VesselWarpHandler
     {
-        public static AssetBundle VesselBundle { get; private set; }
         public static GameObject VesselPrefab { get; private set; }
         public static GameObject VesselObject { get; private set; }
         public static VesselWarpController WarpController { get; private set; }
@@ -21,12 +21,17 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselBundle = Instance.ModHelper.Assets.LoadBundle("Assets/vessel.newhorizons");
-            VesselPrefab = VesselBundle.LoadAsset<GameObject>("Vessel_Body");
+            VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
         public static void LoadVessel()
         {
+            if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
+            {
+                _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
+                return;
+            }
+
             if (Instance.IsWarpingFromVessel)
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
@@ -79,23 +84,25 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = GameObject.Instantiate(VesselPrefab);
+            var vesselObject = VesselPrefab.InstantiateInactive();
             VesselObject = vesselObject;
             vesselObject.name = VesselPrefab.name;
             vesselObject.transform.parent = null;
 
-            VesselOrbLocker vesselOrbLocker = vesselObject.GetComponent<VesselOrbLocker>();
-            vesselOrbLocker.InitializeOrbs();
-            vesselOrbLocker.AddLocks();
+            var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
+            vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
+            vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
+            vesselAO._customName = "Vessel";
+            vesselAO._name = AstroObject.Name.CustomString;
+            vesselAO._type = AstroObject.Type.SpaceStation;
+            vesselAO.Register();
+            vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
 
             if (system.Config.Vessel?.vesselPosition != null)
                 vesselObject.transform.position = system.Config.Vessel.vesselPosition;
 
             if (system.Config.Vessel?.vesselRotation != null)
                 vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
-
-            vesselOrbLocker.RemoveLocks();
-            vesselOrbLocker.AddLockToWarpOrb();
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 
@@ -138,8 +145,6 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
-            vesselObject.SetActive(true);
-
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
             if (system.Config.Vessel?.warpExitPosition != null)
@@ -148,12 +153,14 @@ namespace NewHorizons.Handlers
             if (system.Config.Vessel?.warpExitRotation != null)
                 vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
 
-            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("VESSEL");
+            vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            vesselObject.SetActive(true);
+
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
 
             return eyeSpawnPoint;
         }
@@ -181,7 +188,7 @@ namespace NewHorizons.Handlers
                 vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             }
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
 
             return spawnPoint;
         }

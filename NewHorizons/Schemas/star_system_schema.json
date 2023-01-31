@@ -45,7 +45,11 @@
     },
     "startHere": {
       "type": "boolean",
-      "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star\nsystem."
+      "description": "Set to `true` if you want to spawn here after dying, not Timber Hearth. You can still warp back to the main star system."
+    },
+    "respawnHere": {
+      "type": "boolean",
+      "description": "Set to `true` if you want the player to stay in this star system if they die in it."
     },
     "travelAudio": {
       "type": "string",
@@ -263,21 +267,21 @@
       "properties": {
         "r": {
           "type": "integer",
-          "description": "The red component of this colour",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "g": {
           "type": "integer",
-          "description": "The green component of this colour",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0
         },
         "b": {
           "type": "integer",
-          "description": "The blue component of this colour",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
           "format": "int32",
           "maximum": 2147483647.0,
           "minimum": 0.0

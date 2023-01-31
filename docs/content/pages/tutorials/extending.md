@@ -52,9 +52,9 @@ Then, use the `QueryBody` method:
 var api = ModHelper.Interactions.TryGetModApi<INewHorizons>("xen.NewHorizons");
 api.GetBodyLoadedEvent().AddListener((name) => {
     ModHelper.Console.WriteLine($"Body: {name} Loaded!");
-    var potentialData = api.QueryBody(typeof(MyCoolExtensionData), "$.extras.myCoolExtensionData", name);
-    // Makes sure the module is valid and not null
-    if (potentialData is MyCoolExtensionData data) {
+    var data = api.QueryBody<MyCoolExtensionData>("$.extras.myCoolExtensionData", name);
+    // Makes sure the module is not null
+    if (data != null) {
         ModHelper.Console.WriteLine($"myCoolExtensionProperty for {name} is {data.myCoolExtensionProperty}!");
     }
 });
@@ -69,6 +69,6 @@ Extending systems is the exact same as extending planets, except you use the `Qu
 You can also use the `QueryBody` method to get values of the config outside your extension object
 
 ```csharp
-var primaryBody = api.QueryBody(typeof(string), "Wetrock", "$.Orbit.primaryBody");
-                ModHelper.Console.WriteLine($"Primary of {bodyName} is {primaryBody ?? "NULL"}!");
+var primaryBody = api.QueryBody<string>("Wetrock", "$.Orbit.primaryBody");
+ModHelper.Console.WriteLine($"Primary of {bodyName} is {primaryBody ?? "NULL"}!");
 ```

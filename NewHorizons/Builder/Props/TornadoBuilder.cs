@@ -23,22 +23,42 @@ namespace NewHorizons.Builder.Props
         private static readonly int MainTex = Shader.PropertyToID("_MainTex");
         private static readonly int FresnelColor = Shader.PropertyToID("_FresnelColor");
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        private static bool _isInit;
+
+        internal static void InitPrefabs()
         {
+            if (_mainTexture == null) _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
+            if (_detailTexture == null) _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
+
+            if (_isInit) return;
+
+            _isInit = true;
+
             if (_upPrefab == null)
             {
-                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive();
-                _upPrefab.name = "Tornado_Up_Prefab";
+                _upPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockUpTornado").InstantiateInactive().Rename("Tornado_Up_Prefab").DontDestroyOnLoad();
+                
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_UpTornado").InstantiateInactive().Rename("AudioRail_UpTornado");
+                audioRail.transform.parent = _upPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _upPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
             }
             if (_downPrefab == null)
             {
-                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive();
-                _downPrefab.name = "Tornado_Down_Prefab";
+                _downPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/MockDownTornado").InstantiateInactive().Rename("Tornado_Down_Prefab").DontDestroyOnLoad();
+
+                var audioRail = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Audio_Observatory/AudioRail_DownTornado").InstantiateInactive().Rename("AudioRail_DownTornado");
+                audioRail.transform.parent = _downPrefab.transform;
+                audioRail.transform.localPosition = Vector3.zero;
+                audioRail.transform.localEulerAngles = Vector3.zero;
+                audioRail.transform.localScale = Vector3.one;
+                _downPrefab.GetComponent<TornadoController>()._audioSource = audioRail.GetComponentInChildren<OWAudioSource>();
             }
             if (_hurricanePrefab == null)
             {
-                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive();
-                _hurricanePrefab.name = "Hurricane_Prefab";
+                _hurricanePrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/Hurricane").InstantiateInactive().Rename("Hurricane_Prefab").DontDestroyOnLoad();
                 // For some reason they put the hurricane at the origin and offset all its children (450)
                 // Increasing by 40 will keep the bottom above the ground
                 foreach (Transform child in _hurricanePrefab.transform)
@@ -50,19 +70,12 @@ namespace NewHorizons.Builder.Props
                     renderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 }
             }
-            if (_soundPrefab == null)
-            {
-                _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive();
-                _soundPrefab.name = "AudioRail_Prefab";
-            }
-            if (_mainTexture == null)
-            {
-                _mainTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_Cyclone_02_d.png");
-            }
-            if (_detailTexture == null)
-            {
-                _detailTexture = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Tornado_BH_CycloneDetail_d.png");
-            }
+            if (_soundPrefab == null) _soundPrefab = SearchUtilities.Find("GiantsDeep_Body/Sector_GD/Sector_GDInterior/Tornadoes_GDInterior/SouthernTornadoes/DownTornado_Pivot/DownTornado/AudioRail").InstantiateInactive().Rename("AudioRail_Prefab").DontDestroyOnLoad();
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, bool hasClouds)
+        {
+            InitPrefabs();
 
             Vector3 position;
             if (info.position != null)
@@ -86,10 +99,10 @@ namespace NewHorizons.Builder.Props
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
         {
             var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
-            tornadoGO.name = downwards ? "Tornado_Down" : "Tornado_Up";
-            tornadoGO.transform.parent = sector.transform;
+            tornadoGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : (downwards ? "Tornado_Down" : "Tornado_Up");
+            tornadoGO.transform.parent = sector?.transform ?? planetGO.transform;
             tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
-            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
+            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
 
             // Add the sound thing before changing the scale
             var soundGO = _soundPrefab.InstantiateInactive();
@@ -155,7 +168,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.wanderRate != 0)
             {
-                ApplyWanderer(tornadoGO, sector, info);
+                ApplyWanderer(tornadoGO, planetGO, info);
             }
 
             soundGO.SetActive(true);
@@ -166,9 +179,9 @@ namespace NewHorizons.Builder.Props
         {
             var hurricaneGO = _hurricanePrefab.InstantiateInactive();
             hurricaneGO.name = "Hurricane";
-            hurricaneGO.transform.parent = sector.transform;
+            hurricaneGO.transform.parent = sector?.transform ?? planetGO.transform;
             hurricaneGO.transform.position = planetGO.transform.TransformPoint(position);
-            hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, sector.transform.TransformDirection(position.normalized));
+            hurricaneGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
 
             var fluidVolume = hurricaneGO.GetComponentInChildren<HurricaneFluidVolume>();
             fluidVolume._fluidType = info.fluidType.ConvertToOW(FluidVolume.Type.CLOUD);
@@ -214,7 +227,7 @@ namespace NewHorizons.Builder.Props
 
             if (info.wanderRate != 0)
             {
-                ApplyWanderer(hurricaneGO, sector, info);
+                ApplyWanderer(hurricaneGO, planetGO, info);
             }
 
             hurricaneGO.SetActive(true);
@@ -250,13 +263,13 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static void ApplyWanderer(GameObject go, Sector sector, PropModule.TornadoInfo info)
+        private static void ApplyWanderer(GameObject go, GameObject planetGO, PropModule.TornadoInfo info)
         {
             var wanderer = go.AddComponent<NHTornadoWanderController>();
             wanderer.wanderRate = info.wanderRate;
             wanderer.wanderDegreesX = info.wanderDegreesX;
             wanderer.wanderDegreesZ = info.wanderDegreesZ;
-            wanderer.sector = sector;
+            wanderer.planetGO = planetGO;
         }
     }
 }
