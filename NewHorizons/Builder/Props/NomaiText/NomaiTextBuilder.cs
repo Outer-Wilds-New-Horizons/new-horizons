@@ -118,7 +118,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, NewHorizonsBody body, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -128,7 +128,7 @@ namespace NewHorizons.Builder.Props
             {
                 case PropModule.NomaiTextInfo.NomaiTextType.Wall:
                     {
-                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
+                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, body).gameObject;
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
@@ -209,7 +209,7 @@ namespace NewHorizons.Builder.Props
                             customScroll.name = _scrollPrefab.name;
                         }
 
-                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath);
+                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, body);
                         nomaiWallText.transform.parent = customScroll.transform;
                         nomaiWallText.transform.localPosition = Vector3.zero;
                         nomaiWallText.transform.localRotation = Quaternion.identity;
@@ -570,7 +570,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody body)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -592,7 +592,7 @@ namespace NewHorizons.Builder.Props
             // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
-            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info);
+            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info, body);
             AddTranslation(xmlPath);
             nomaiWallText._nomaiTextAsset = text;
 
@@ -607,16 +607,16 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody body)
         {
             var dict = MakeNomaiTextDict(xml);
 
             nomaiWallText._dictNomaiTextData = dict;
 
-            RefreshArcs(nomaiWallText, conversationZone, info);
+            RefreshArcs(nomaiWallText, conversationZone, info, body);
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info)
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody body)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);
@@ -632,6 +632,13 @@ namespace NewHorizons.Builder.Props
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
             // Generate spiral meshes/GOs
+
+            var cacheKey = ""; // info.tojson.stringhashcode + "-" + xmlContents.stringhashcode
+            if (body.Cache?[cacheKey] != null)
+            {
+                // TODO: use cache data
+                // return;
+            }
 
             var i = 0;
             foreach (var textData in dict.Values)
@@ -679,6 +686,8 @@ namespace NewHorizons.Builder.Props
                 if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
                 else arc.transform.localScale = new Vector3( 1, 1, 1);
             }
+
+            // TODO: body.Cache?[cacheKey] = cacheData;
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)

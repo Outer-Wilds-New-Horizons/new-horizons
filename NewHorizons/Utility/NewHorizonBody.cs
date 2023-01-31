@@ -30,7 +30,7 @@ namespace NewHorizons.Utility
 
         public void UnloadCache(bool writeBeforeUnload=false)
         {
-            if (writeBeforeUnload) Cache.WriteToFile();
+            if (writeBeforeUnload) Cache?.WriteToFile();
 
             Cache = null; // garbage collection will take care of it
         }

@@ -266,7 +266,7 @@ namespace NewHorizons.Utility.DebugMenu
                                         
                                         GUILayout.Label("Variation");
                                             GUILayout.BeginHorizontal();
-                                            var varietyCount = GetVarietyCountForType(spiralMeta.spiral.type);
+                                            var varietyCount = 1;
                                             //var newVariation = int.Parse(GUILayout.TextField(spiralMeta.spiral.variation+""));
                                             //newVariation = Mathf.Min(Mathf.Max(0, newVariation), varietyCount);
                                             //if (newVariation != spiralMeta.spiral.variation) changed = true;
@@ -467,20 +467,6 @@ namespace NewHorizons.Utility.DebugMenu
 
                     UpdateSpiralLocationByPointOnParent(spiralMeta);
                 });
-        }
-
-        private int GetVarietyCountForType(NomaiTextArcInfo.NomaiTextArcType type)
-        {
-            switch(type)
-            {
-                case NomaiTextArcInfo.NomaiTextArcType.Stranger: 
-                    return NomaiTextBuilder.GetGhostArcPrefabs().Count();
-                case NomaiTextArcInfo.NomaiTextArcType.Child: 
-                    return NomaiTextBuilder.GetChildArcPrefabs().Count();
-                default:
-                case NomaiTextArcInfo.NomaiTextArcType.Adult: 
-                    return NomaiTextBuilder.GetArcPrefabs().Count();
-            }
         }
 
         void UpdateConversationTransform(ConversationMetadata conversationMetadata, GameObject sectorParent)
