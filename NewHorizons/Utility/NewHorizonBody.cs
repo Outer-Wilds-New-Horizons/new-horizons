@@ -28,8 +28,10 @@ namespace NewHorizons.Utility
             if (RelativePath != null) Cache = new Cache(RelativePath+".nhcache");
         }
 
-        public void UnloadCache()
+        public void UnloadCache(bool writeBeforeUnload=false)
         {
+            if (writeBeforeUnload) Cache.WriteToFile();
+
             Cache = null; // garbage collection will take care of it
         }
         #endregion Cache

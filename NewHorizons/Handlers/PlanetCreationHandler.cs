@@ -273,7 +273,7 @@ namespace NewHorizons.Handlers
                 Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
             
-            body.UnloadCache();
+            body.UnloadCache(true);
             return true;
         }
 
