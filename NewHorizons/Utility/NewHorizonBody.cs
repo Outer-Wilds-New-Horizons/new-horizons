@@ -17,9 +17,22 @@ namespace NewHorizons.Utility
 
         public PlanetConfig Config;
         public IModBehaviour Mod;
+        public Cache Cache;
         public string RelativePath;
 
         public GameObject Object;
+
+        #region Cache
+        public void LoadCache()
+        {
+            if (RelativePath != null) Cache = new Cache(RelativePath+".nhcache");
+        }
+
+        public void UnloadCache()
+        {
+            Cache = null; // garbage collection will take care of it
+        }
+        #endregion Cache
 
         #region Migration
         private static readonly string[] _keepLoadedModsList = new string[]
@@ -45,6 +58,7 @@ namespace NewHorizons.Utility
                 }
             }
         }
+
         #endregion
     }
 }
