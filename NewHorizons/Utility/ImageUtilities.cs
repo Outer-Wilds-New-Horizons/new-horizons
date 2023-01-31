@@ -7,6 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 namespace NewHorizons.Utility
 {
@@ -109,7 +110,7 @@ namespace NewHorizons.Utility
                 }
             }
 
-            var newTexture = new Texture2D(texture.width, texture.height);
+            var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             newTexture.name = texture.name + "Inverted";
             newTexture.SetPixels(pixels);
             newTexture.Apply();
@@ -175,7 +176,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
-            var outline = new Texture2D(texture.width, texture.height, TextureFormat.ARGB32, false);
+            var outline = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             outline.name = texture.name + "Outline";
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
@@ -238,7 +239,7 @@ namespace NewHorizons.Utility
                 pixels[i].b *= tint.b;
             }
 
-            var newImage = new Texture2D(image.width, image.height);
+            var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "Tinted";
             newImage.SetPixels(pixels);
             newImage.Apply();
@@ -260,7 +261,7 @@ namespace NewHorizons.Utility
                 pixels[i].b = Mathf.Lerp(darkTint.b, lightTint.b, pixels[i].b);
             }
 
-            var newImage = new Texture2D(image.width, image.height);
+            var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
             newImage.name = image.name + "LerpedGrayscale";
             newImage.SetPixels(pixels);
             newImage.Apply();
@@ -294,7 +295,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
-            var tex = (new Texture2D(width, height, TextureFormat.ARGB32, false));
+            var tex = (new Texture2D(width, height, src.format, src.mipmapCount != 1));
             tex.name = src.name + "CanvasScaled";
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
@@ -426,9 +427,15 @@ namespace NewHorizons.Utility
                 }
                 else
                 {
-                    var texture = DownloadHandlerTexture.GetContent(uwr);
+                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
+                    {
+                        wrapMode = TextureWrapMode.Clamp
+                    };
 
-                    lock(_loadedTextures)
+                    var handler = (DownloadHandlerTexture)uwr.downloadHandler;
+                    texture.LoadImage(handler.data);
+
+                    lock (_loadedTextures)
                     {
                         if (_loadedTextures.ContainsKey(url))
                         {

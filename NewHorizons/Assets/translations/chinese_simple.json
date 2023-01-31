@@ -1,6 +1,65 @@
 {
-  "$schema": "https://raw.githubusercontent.com/xen-42/outer-wilds-new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "$schema": "https://raw.githubusercontent.com/outer-wilds-new-horizons/new-horizons/main/NewHorizons/Schemas/translation_schema.json",
+  "DialogueDictionary": {
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_1": "你的宇宙飞船现在已经装备了跃迁驱动！",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_2": "你可以使用宇宙飞船日志中的\"恒星际模式\"来将你的自动驾驶目标锁定到另一个星系。",
+    "NEW_HORIZONS_WARP_DRIVE_DIALOGUE_3": "之后只需要系好安全带并启动自动驾驶即可进行跃迁！"
+  },
   "UIDictionary": {
+    "INTERSTELLAR_MODE": "恒星际模式",
+    "FREQ_STATUE": "挪麦雕像",
+    "FREQ_WARP_CORE": "反引力推进",
+    "FREQ_UNKNOWN": "???",
+    "ENGAGE_WARP_PROMPT": "将要跃迁到{0}",
+    "WARP_LOCKED": "自动驾驶目标：\n{0}",
+    "LOCK_AUTOPILOT_WARP": "锁定自动驾驶目标到该星系",
+    "RICH_PRESENCE_EXPLORING": "探索 {0}.",
+    "RICH_PRESENCE_WARPING": "正在跃迁到 {0}.",
+    "OUTDATED_VERSION_WARNING": "警告\n\nNew Horizon模组只能工作在{0}或更高版本。你的当前版本是{1}。\n\n请更新你的游戏或卸载New Horizon模组",
+    "JSON_FAILED_TO_LOAD": "无效文件: {0}",
+    "DEBUG_RAYCAST": "投射",
+    "DEBUG_PLACE": "放置对象",
+    "DEBUG_PLACE_TEXT": "放置挪麦文字",
+    "DEBUG_UNDO": "撤销",
+    "DEBUG_REDO": "重做",
     "Vessel": "飞船"
+  },
+  "AchievementTranslations": {
+    "NH_EATEN_OUTSIDE_BRAMBLE": {
+      "Name": "收容失效",
+      "Description": "在黑棘星外被吃掉。"
+    },
+    "NH_MULTIPLE_SYSTEM": {
+      "Name": "星际旅者",
+      "Description": "在一个循环中造访5个不同的星系。"
+    },
+    "NH_NEW_FREQ": {
+      "Name": "异常频率",
+      "Description": "发现一个新的频率。"
+    },
+    "NH_PROBE_LOST": {
+      "Name": "连接丢失",
+      "Description": "失去你的小侦察兵。"
+    },
+    "NH_WARP_DRIVE": {
+      "Name": "自学成才",
+      "Description": "使用宇宙飞船上的跃迁装置。"
+    },
+    "NH_VESSEL_WARP": {
+      "Name": "有借无还",
+      "Description": "在飞船进行跃迁以到达别的星系。"
+    },
+    "NH_RAFTING": {
+      "Name": "木筏与激情",
+      "Description": "进行一次漂流"
+    },
+    "NH_SUCKED_INTO_LAVA_BY_TORNADO": {
+      "Name": "死亡旋风",
+      "Description": "被龙卷风吸入岩浆之中。"
+    },
+    "NH_TALK_TO_FIVE_CHARACTERS": {
+      "Name": "社交活动",
+      "Description": "与五名角色对话。"
+    }
   }
 }

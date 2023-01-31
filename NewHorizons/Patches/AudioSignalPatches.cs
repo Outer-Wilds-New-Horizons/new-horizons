@@ -15,12 +15,12 @@ namespace NewHorizons.Patches
         public static bool AudioSignal_SignalNameToString(SignalName __0, ref string __result)
         {
             var customSignalName = SignalBuilder.GetCustomSignalName(__0);
-            if (customSignalName == null) return true;
-            else
+            if (!string.IsNullOrEmpty(customSignalName))
             {
-                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI).ToUpper();
+                __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpper();
                 return false;
             }
+            return true;
         }
 
         [HarmonyPrefix]
@@ -104,9 +104,9 @@ namespace NewHorizons.Patches
         public static bool AudioSignal_FrequencyToString(SignalFrequency __0, ref string __result)
         {
             var customName = SignalBuilder.GetCustomFrequencyName(__0);
-            if (customName != null && customName != "")
+            if (!string.IsNullOrEmpty(customName))
             {
-                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI).ToUpper();
+                if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpper();
                 else __result = UITextLibrary.GetString(UITextType.SignalFreqUnidentified);
                 return false;
             }

@@ -136,6 +136,8 @@ namespace NewHorizons.Handlers
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            body.LoadCache();
+
             // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
             try
@@ -202,6 +204,7 @@ namespace NewHorizons.Handlers
                         catch (Exception ex)
                         {
                             Logger.LogError($"Couldn't make quantum state for [{body.Config.name}]:\n{ex}");
+                            body.UnloadCache();
                             return false;
                         }
                     }
@@ -217,6 +220,7 @@ namespace NewHorizons.Handlers
                 catch (Exception e)
                 {
                     Logger.LogError($"Couldn't update body {body.Config?.name}:\n{e}");
+                    body.UnloadCache();
                     return false;
                 }
             }
@@ -237,8 +241,12 @@ namespace NewHorizons.Handlers
                     {
                         Logger.Log($"Creating [{body.Config.name}]");
                         var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        if (planetObject == null) return false;
-                        planetObject.SetActive(true);
+                        planetObject?.SetActive(true);
+                        if (planetObject == null) 
+                        { 
+                            body.UnloadCache(); 
+                            return false; 
+                        }
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 
@@ -250,6 +258,7 @@ namespace NewHorizons.Handlers
                     catch (Exception e)
                     {
                         Logger.LogError($"Couldn't generate body {body.Config?.name}:\n{e}");
+                        body.UnloadCache();
                         return false;
                     }
                 }
@@ -264,6 +273,7 @@ namespace NewHorizons.Handlers
                 Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
             
+            body.UnloadCache(true);
             return true;
         }
 
@@ -466,7 +476,7 @@ namespace NewHorizons.Handlers
                 });
             }
 
-            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector, body.Config.Star != null, body.Config.Atmosphere != null);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
@@ -638,7 +648,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Funnel != null)
             {
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+                FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
             }
 
             // Has to go last probably
@@ -793,8 +803,33 @@ namespace NewHorizons.Handlers
 
         public static void SetPositionFromVector(GameObject go, Vector3 position)
         {
-            go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = position;
+            var rb = go.GetAttachedOWRigidbody();
+            if (rb)
+            {
+                var allChildren = CenterOfTheUniverse.s_rigidbodies.Where(x => x.GetOrigParentBody() == rb).ToArray();
+
+                var localPositions = allChildren.Select(x => rb.transform.InverseTransformPoint(x.transform.position)).ToArray();
+
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+
+                for (var i = 0; i < allChildren.Length; i++)
+                {
+                    if (allChildren[i].TryGetComponent<NomaiInterfaceOrb>(out var orb))
+                    {
+                        orb.SetOrbPosition(go.transform.TransformPoint(localPositions[i]));
+                    }
+                    else
+                    {
+                        allChildren[i].transform.position = go.transform.TransformPoint(localPositions[i]);
+                    }
+                }
+            }
+            else
+            {
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+            }
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {
