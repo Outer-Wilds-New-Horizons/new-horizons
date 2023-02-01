@@ -643,7 +643,10 @@ namespace NewHorizons.Builder.Props
 
             ArcCacheData[] cachedData = null;
             if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
-                cachedData = (ArcCacheData[])nhBody.Cache[cacheKey];
+            { 
+                var json = JsonConvert.SerializeObject(nhBody.Cache[cacheKey]);
+                cachedData = JsonConvert.DeserializeObject<ArcCacheData[]>(json);
+            }
 
             Logger.LogWarning("CACHE DEBUG: cache key *" + cacheKey+"*");
             Logger.LogWarning("CACHE DEBUG: cache is null? " + (nhBody.Cache == null));
