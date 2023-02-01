@@ -641,11 +641,14 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
+            ArcCacheData[] cachedData = null;
             if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
-            {
-                // TODO: use cache data
-                // return;
-            }
+                cachedData = (ArcCacheData[])nhBody.Cache[cacheKey];
+
+            Logger.LogWarning("CACHE DEBUG: cache key *" + cacheKey+"*");
+            Logger.LogWarning("CACHE DEBUG: cache is null? " + (nhBody.Cache == null));
+            Logger.LogWarning("CACHE DEBUG: cache contains key? " + (nhBody.Cache?.ContainsKey(cacheKey) ?? false));
+            Logger.LogWarning("CACHE DEBUG: cache keys: " + String.Join(",", nhBody.Cache?.Keys));
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
@@ -660,7 +663,19 @@ namespace NewHorizons.Builder.Props
 
                 var parent = parentID == -1 ? null : arcsByID[parentID];
 
-                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID);
+                GameObject arcReadFromCache = null;
+                if (cachedData != null) 
+                {
+                    Logger.LogWarning("CACHE DEBUG: cache was not null, loading meshes and positions");
+
+                    var skeletonPoints = cachedData[i].skeletonPoints.Select(mv => (Vector3)mv).ToArray();
+                    arcReadFromCache = NomaiTextArcBuilder.BuildSpiralGameObject(skeletonPoints, cachedData[i].mesh);
+                    arcReadFromCache.transform.parent = arranger.transform;
+                    arcReadFromCache.transform.localPosition = cachedData[i].position;
+                    arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
+                }
+
+                GameObject arc = MakeArc(arcInfo, conversationZone, parent, textEntryID, arcReadFromCache);
                 arc.name = $"Arc {textEntryID} - Child of {parentID}";
 
                 arcsByID.Add(textEntryID, arc);
@@ -668,52 +683,59 @@ namespace NewHorizons.Builder.Props
                 i++;
             }
 
-            // auto placement
+            // no need to arrange if the cache exists
+            if (cachedData == null)
+            { 
+                Logger.LogWarning("CACHE DEBUG: cache was null, proceding with arrangment");
 
-            var overlapFound = true;
-            for (var k = 0; k < arranger.spirals.Count*2; k++) 
-            {
-                overlapFound = arranger.AttemptOverlapResolution();
-                if (!overlapFound) break;
-                for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
-            }
+                // auto placement
 
-            if (overlapFound) Logger.LogVerbose("Overlap resolution failed!");
+                var overlapFound = true;
+                for (var k = 0; k < arranger.spirals.Count*2; k++) 
+                {
+                    overlapFound = arranger.AttemptOverlapResolution();
+                    if (!overlapFound) break;
+                    for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
+                }
 
-            // manual placement
+                if (overlapFound) Logger.LogVerbose("Overlap resolution failed!");
 
-            for (var j = 0; j < info.arcInfo.Length; j++) 
-            {
-                var arcInfo = info.arcInfo[j];
-                var arc = arranger.spirals[j];
+                // manual placement
 
-                if (arcInfo.keepAutoPlacement) continue;
+                for (var j = 0; j < info.arcInfo.Length; j++) 
+                {
+                    var arcInfo = info.arcInfo[j];
+                    var arc = arranger.spirals[j];
 
-                if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
-                else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
+                    if (arcInfo.keepAutoPlacement) continue;
 
-                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
+                    if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
+                    else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
-                else arc.transform.localScale = new Vector3( 1, 1, 1);
-            }
+                    arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
 
-            // cache data
-            if (nhBody.Cache != null) 
-            {
-                var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
-                { 
-                    mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh, // TODO: create a serializable version of Mesh and pass this: spiralManipulator.GetComponent<MeshFilter>().mesh
-                    skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
-                    position = spiralManipulator.transform.localPosition,
-                    zRotation = spiralManipulator.transform.localEulerAngles.z
-                }).ToArray();
+                    if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                    else arc.transform.localScale = new Vector3( 1, 1, 1);
+                }
 
-                nhBody.Cache[cacheKey] = cacheData;
+                // make an entry in the cache for all these spirals
+
+                if (nhBody.Cache != null) 
+                {
+                    var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
+                    { 
+                        mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh, // TODO: create a serializable version of Mesh and pass this: spiralManipulator.GetComponent<MeshFilter>().mesh
+                        skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
+                        position = spiralManipulator.transform.localPosition,
+                        zRotation = spiralManipulator.transform.localEulerAngles.z
+                    }).ToArray();
+
+                    nhBody.Cache[cacheKey] = cacheData;
+                }
             }
         }
 
-        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)
+        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
@@ -736,8 +758,15 @@ namespace NewHorizons.Builder.Props
                     break;
             }
             
-            if (parent != null) arc = parent.GetComponent<SpiralManipulator>().AddChild(profile).gameObject;
-            else arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
+            if (prebuiltArc != null) 
+            {
+                arc = prebuiltArc;
+            }
+            else 
+            {
+                if (parent != null) arc = parent.GetComponent<SpiralManipulator>().AddChild(profile).gameObject;
+                else arc = NomaiTextArcArranger.CreateSpiral(profile, conversationZone).gameObject;
+            }
 
             if (mat != null) arc.GetComponent<MeshRenderer>().sharedMaterial = mat;
 

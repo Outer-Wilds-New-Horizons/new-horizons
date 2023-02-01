@@ -13,20 +13,9 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject BuildSpiralGameObject(SpiralProfile profile, string goName="New Nomai Spiral") 
         {
-            var g = new GameObject(goName);
-            g.SetActive(false);
-            g.transform.localPosition = Vector3.zero;
-            g.transform.localEulerAngles = Vector3.zero;
-
             var m = new SpiralMesh(profile);
             m.Randomize();
             m.updateMesh();
-
-            g.AddComponent<MeshFilter>().sharedMesh = m.mesh;
-            g.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Sprites/Default"));
-            g.GetComponent<MeshRenderer>().sharedMaterial.color = Color.magenta;
-
-            var owNomaiTextLine = g.AddComponent<NomaiTextLine>();
 
             //
             // rotate mesh to point up
@@ -37,7 +26,7 @@ namespace NewHorizons.Builder.Props
             var ang = -90-r;
 
             // using m.sharedMesh causes old meshes to disappear for some reason, idk why
-            var mesh = g.GetComponent<MeshFilter>().mesh;
+            var mesh = m.mesh;
             var newVerts = mesh.vertices.Select(v => Quaternion.Euler(-90, 0, 0) * Quaternion.Euler(0, ang, 0) * v).ToArray();
             mesh.vertices = newVerts;
             mesh.RecalculateBounds();
@@ -49,9 +38,22 @@ namespace NewHorizons.Builder.Props
                 )
                 .ToArray();
 
-            //
-            // set up NomaiTextArc stuff
-            //
+
+            return BuildSpiralGameObject(_points, mesh, goName);
+        }
+
+        public static GameObject BuildSpiralGameObject(Vector3[] _points, Mesh mesh, string goName="New Nomai Spiral") 
+        {
+            var g = new GameObject(goName);
+            g.SetActive(false);
+            g.transform.localPosition = Vector3.zero;
+            g.transform.localEulerAngles = Vector3.zero;
+
+            g.AddComponent<MeshFilter>().sharedMesh = mesh;
+            g.AddComponent<MeshRenderer>().sharedMaterial = new Material(Shader.Find("Sprites/Default"));
+            g.GetComponent<MeshRenderer>().sharedMaterial.color = Color.magenta;
+
+            var owNomaiTextLine = g.AddComponent<NomaiTextLine>();
 
             owNomaiTextLine._points = _points;
             owNomaiTextLine._active = true;
