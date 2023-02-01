@@ -638,7 +638,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Props != null)
             {
-                PropBuildManager.Make(go, sector, rb, body.Config, body.Mod);
+                PropBuildManager.Make(go, sector, rb, body);
             }
 
             if (body.Config.Volumes != null)

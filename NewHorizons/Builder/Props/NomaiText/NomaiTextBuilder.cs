@@ -11,6 +11,8 @@ using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 using OWML.Utils;
+using Newtonsoft.Json;
+using System;
 
 namespace NewHorizons.Builder.Props
 {
@@ -118,17 +120,17 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, NewHorizonsBody body, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
-            var xmlPath = File.ReadAllText(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
+            var xmlPath = File.ReadAllText(Path.Combine(nhBody.Mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
 
             switch (info.type)
             {
                 case PropModule.NomaiTextInfo.NomaiTextType.Wall:
                     {
-                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, body).gameObject;
+                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
@@ -209,7 +211,7 @@ namespace NewHorizons.Builder.Props
                             customScroll.name = _scrollPrefab.name;
                         }
 
-                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, body);
+                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
                         nomaiWallText.transform.localPosition = Vector3.zero;
                         nomaiWallText.transform.localRotation = Quaternion.identity;
@@ -570,7 +572,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody body)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -592,7 +594,7 @@ namespace NewHorizons.Builder.Props
             // Text assets need a name to be used with VoiceMod
             text.name = Path.GetFileNameWithoutExtension(info.xmlFile);
 
-            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info, body);
+            BuildArcs(xmlPath, nomaiWallText, nomaiWallTextObj, info, nhBody);
             AddTranslation(xmlPath);
             nomaiWallText._nomaiTextAsset = text;
 
@@ -607,16 +609,26 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody body)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
         {
             var dict = MakeNomaiTextDict(xml);
 
             nomaiWallText._dictNomaiTextData = dict;
 
-            RefreshArcs(nomaiWallText, conversationZone, info, body);
+            var cacheKey = xml.GetHashCode() + " " + JsonConvert.SerializeObject(info).GetHashCode();
+            RefreshArcs(nomaiWallText, conversationZone, info, nhBody, cacheKey);
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody body)
+        [Serializable]
+        private struct ArcCacheData 
+        {
+            public MMesh mesh;
+            public MVector3[] skeletonPoints;
+            public MVector3 position;
+            public float zRotation;
+        }
+
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody, string cacheKey)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);
@@ -629,16 +641,15 @@ namespace NewHorizons.Builder.Props
                 return;
             }
 
-            var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
-
-            // Generate spiral meshes/GOs
-
-            var cacheKey = ""; // info.tojson.stringhashcode + "-" + xmlContents.stringhashcode
-            if (body.Cache?[cacheKey] != null)
+            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
             {
                 // TODO: use cache data
                 // return;
             }
+
+            var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
+
+            // Generate spiral meshes/GOs
 
             var i = 0;
             foreach (var textData in dict.Values)
@@ -687,7 +698,19 @@ namespace NewHorizons.Builder.Props
                 else arc.transform.localScale = new Vector3( 1, 1, 1);
             }
 
-            // TODO: body.Cache?[cacheKey] = cacheData;
+            // cache data
+            if (nhBody.Cache != null) 
+            {
+                var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
+                { 
+                    mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh, // TODO: create a serializable version of Mesh and pass this: spiralManipulator.GetComponent<MeshFilter>().mesh
+                    skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
+                    position = spiralManipulator.transform.localPosition,
+                    zRotation = spiralManipulator.transform.localEulerAngles.z
+                }).ToArray();
+
+                nhBody.Cache[cacheKey] = cacheData;
+            }
         }
 
         internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID)

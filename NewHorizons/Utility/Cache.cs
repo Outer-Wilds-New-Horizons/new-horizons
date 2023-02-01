@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 namespace NewHorizons.Utility
 {
-    public class Cache : Dictionary<string, ISerializable>
+    public class Cache : Dictionary<string, object>
     {
         [NonSerialized] string filepath;
 
@@ -24,7 +24,7 @@ namespace NewHorizons.Utility
 
         public void WriteToFile() 
         { 
-            NewHorizons.Main.Instance.ModHelper.Storage.Save<Dictionary<string, ISerializable>>(this, filepath);  
+            NewHorizons.Main.Instance.ModHelper.Storage.Save<Dictionary<string, object>>(this, filepath);  
         }
     }
 }

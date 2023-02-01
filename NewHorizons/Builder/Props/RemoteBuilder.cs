@@ -116,10 +116,11 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
+            var mod = nhBody.Mod;
             var id = RemoteHandler.GetPlatformID(info.id);
 
             Texture2D decal = Texture2D.whiteTexture;
@@ -142,7 +143,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    RemoteBuilder.MakeWhiteboard(go, sector, id, decal, info.whiteboard, mod);
+                    RemoteBuilder.MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
                 }
                 catch (Exception ex)
                 {
@@ -166,7 +167,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.WhiteboardInfo info, IModBehaviour mod)
+        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.WhiteboardInfo info, NewHorizonsBody nhBody)
         {
             var detailInfo = new PropModule.DetailInfo()
             {
@@ -204,7 +205,7 @@ namespace NewHorizons.Builder.Props
                     seed = textInfo.seed,
                     type = PropModule.NomaiTextInfo.NomaiTextType.Wall,
                     xmlFile = textInfo.xmlFile
-                }, mod).GetComponent<NomaiWallText>();
+                }, nhBody).GetComponent<NomaiWallText>();
                 wallText._showTextOnStart = false;
                 component._nomaiTexts[i] = wallText;
             }
