@@ -34,7 +34,7 @@ namespace NewHorizons.Utility
             }
 
             var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
-            Cache = new Cache(pathWithoutExtension+".nhcache");
+            Cache = new Cache(Mod, pathWithoutExtension+".nhcache");
         }
 
         public void UnloadCache(bool writeBeforeUnload=false)

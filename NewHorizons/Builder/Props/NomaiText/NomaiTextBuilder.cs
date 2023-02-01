@@ -643,15 +643,12 @@ namespace NewHorizons.Builder.Props
 
             ArcCacheData[] cachedData = null;
             if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
-            { 
-                var json = JsonConvert.SerializeObject(nhBody.Cache[cacheKey]);
-                cachedData = JsonConvert.DeserializeObject<ArcCacheData[]>(json);
-            }
+                cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             Logger.LogWarning("CACHE DEBUG: cache key *" + cacheKey+"*");
             Logger.LogWarning("CACHE DEBUG: cache is null? " + (nhBody.Cache == null));
             Logger.LogWarning("CACHE DEBUG: cache contains key? " + (nhBody.Cache?.ContainsKey(cacheKey) ?? false));
-            Logger.LogWarning("CACHE DEBUG: cache keys: " + String.Join(",", nhBody.Cache?.Keys));
+            //Logger.LogWarning("CACHE DEBUG: cache keys: " + String.Join(",", nhBody.Cache?.Keys));
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
@@ -733,7 +730,7 @@ namespace NewHorizons.Builder.Props
                         zRotation = spiralManipulator.transform.localEulerAngles.z
                     }).ToArray();
 
-                    nhBody.Cache[cacheKey] = cacheData;
+                    nhBody.Cache.Set(cacheKey, cacheData);
                 }
             }
         }

@@ -1,34 +1,60 @@
+using Newtonsoft.Json;
+using OWML.Common;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 
 namespace NewHorizons.Utility
 {
-    public class Cache : Dictionary<string, Object>
+    public class Cache
     {
-        [NonSerialized] string filepath;
+        string filepath;
+        IModBehaviour mod;
+        Dictionary<string, string> data = new Dictionary<string, string>();
 
-        public Cache(string cacheFilePath) 
+        public Cache(IModBehaviour mod, string cacheFilePath) 
         {
+            this.mod = mod;
+
             filepath = cacheFilePath;
-            var existingEntries = NewHorizons.Main.Instance.ModHelper.Storage.Load<Dictionary<string, Object>>(filepath);
+            
+			var json = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + cacheFilePath);
+            data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            // the above is exactly the same thing that the below does, but the below for some reason always returns null. no clue why
+            // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
+
+            if (data == null)
+            {
+                Logger.LogWarning("Failed to load cache! Cache path: " + cacheFilePath);
+                data = new Dictionary<string, string>();
+            }
 
             Logger.LogWarning("CACHE DEBUG: Cache path: " + cacheFilePath);
-            Logger.LogWarning("CACHE DEBUG: Loaded cache == null? " + (existingEntries == null));
-            Logger.LogWarning("CACHE DEBUG: Loaded cache keys: " + String.Join(",", existingEntries?.Keys));
-
-            if (existingEntries == null) return;
-
-            foreach(var entry in existingEntries)
-            {
-                this[entry.Key] = entry.Value;
-            }
+            Logger.LogWarning("CACHE DEBUG: Loaded cache == null? " + (data == null));
+            Logger.LogWarning("CACHE DEBUG: Loaded cache keys: " + String.Join(",", data?.Keys ?? new Dictionary<string, string>().Keys));
         }
 
         public void WriteToFile() 
         { 
-            NewHorizons.Main.Instance.ModHelper.Storage.Save<Dictionary<string, Object>>(this, filepath);  
+            mod.ModHelper.Storage.Save<Dictionary<string, string>>(data, filepath);
+        }
+
+        public bool ContainsKey(string key) 
+        {
+            return data.ContainsKey(key);
+        }
+
+        public T Get<T>(string key)
+        {
+            var json = data[key];
+            return JsonConvert.DeserializeObject<T>(json);
+        }
+
+        public void Set<T>(string key, T value)
+        {
+            data[key] = JsonConvert.SerializeObject(value);
         }
     }
 }
