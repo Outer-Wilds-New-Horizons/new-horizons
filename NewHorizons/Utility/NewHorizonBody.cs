@@ -1,5 +1,6 @@
 using NewHorizons.External.Configs;
 using OWML.Common;
+using System;
 using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Utility
@@ -33,8 +34,16 @@ namespace NewHorizons.Utility
                 return;
             }
 
-            var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
-            Cache = new Cache(Mod, pathWithoutExtension+".nhcache");
+            try 
+            {
+                var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
+                Cache = new Cache(Mod, pathWithoutExtension+".nhcache");
+            } 
+            catch (Exception e) 
+            { 
+                Logger.LogError("Cache failed to load: " + e.Message);
+                Cache = null;
+            }
         }
 
         public void UnloadCache(bool writeBeforeUnload=false)

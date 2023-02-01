@@ -17,23 +17,20 @@ namespace NewHorizons.Utility
         public Cache(IModBehaviour mod, string cacheFilePath) 
         {
             this.mod = mod;
-
-            filepath = cacheFilePath;
+            this.filepath = cacheFilePath;
+            var fullPath = mod.ModHelper.Manifest.ModFolderPath + cacheFilePath;
             
-			var json = File.ReadAllText(mod.ModHelper.Manifest.ModFolderPath + cacheFilePath);
-            data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-            // the above is exactly the same thing that the below does, but the below for some reason always returns null. no clue why
-            // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
-
-            if (data == null)
+            if (!File.Exists(fullPath))
             {
-                Logger.LogWarning("Failed to load cache! Cache path: " + cacheFilePath);
+                Logger.LogWarning("Cache file not found! Cache path: " + cacheFilePath);
                 data = new Dictionary<string, string>();
+                return;
             }
 
-            Logger.LogWarning("CACHE DEBUG: Cache path: " + cacheFilePath);
-            Logger.LogWarning("CACHE DEBUG: Loaded cache == null? " + (data == null));
-            Logger.LogWarning("CACHE DEBUG: Loaded cache keys: " + String.Join(",", data?.Keys ?? new Dictionary<string, string>().Keys));
+			var json = File.ReadAllText(fullPath);
+            data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            // the code above does exactly the same thing that the code below does, but the below for some reason always returns null. no clue why
+            // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
         }
 
         public void WriteToFile() 

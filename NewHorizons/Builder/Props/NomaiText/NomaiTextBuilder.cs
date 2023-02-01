@@ -626,6 +626,7 @@ namespace NewHorizons.Builder.Props
             public MVector3[] skeletonPoints;
             public MVector3 position;
             public float zRotation;
+            public bool mirrored;
         }
 
         internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody, string cacheKey)
@@ -671,6 +672,7 @@ namespace NewHorizons.Builder.Props
                     var skeletonPoints = cachedData[i].skeletonPoints.Select(mv => (Vector3)mv).ToArray();
                     arcReadFromCache = NomaiTextArcBuilder.BuildSpiralGameObject(skeletonPoints, cachedData[i].mesh);
                     arcReadFromCache.transform.parent = arranger.transform;
+                    arcReadFromCache.transform.localScale = new Vector3(cachedData[i].mirrored? -1 : 1, 1, 1);
                     arcReadFromCache.transform.localPosition = cachedData[i].position;
                     arcReadFromCache.transform.localEulerAngles = new Vector3(0, 0, cachedData[i].zRotation);
                 }
@@ -727,7 +729,8 @@ namespace NewHorizons.Builder.Props
                         mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh, // TODO: create a serializable version of Mesh and pass this: spiralManipulator.GetComponent<MeshFilter>().mesh
                         skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
                         position = spiralManipulator.transform.localPosition,
-                        zRotation = spiralManipulator.transform.localEulerAngles.z
+                        zRotation = spiralManipulator.transform.localEulerAngles.z,
+                        mirrored = spiralManipulator.transform.localScale.x < 0
                     }).ToArray();
 
                     nhBody.Cache.Set(cacheKey, cacheData);
