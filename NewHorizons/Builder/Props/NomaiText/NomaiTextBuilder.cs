@@ -737,6 +737,8 @@ namespace NewHorizons.Builder.Props
             var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
+            Mesh overrideMesh = null;
+            MColor overrideColor = null;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -746,6 +748,8 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
+                    //overrideMesh = RectangleMeshFromCorners(Mesh verts logged below);
+                    //overrideColor = some kinda green
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
@@ -772,9 +776,18 @@ namespace NewHorizons.Builder.Props
             arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
             arc.GetComponent<MeshRenderer>().enabled = false;
 
+            if (overrideMesh != null)
+                arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
+
+            if (overrideColor != null)
+                arc.GetComponent<NomaiTextLine>()._targetColor = overrideColor.ToColor();
+
+            // TODO: once I have the right size for the stranger arcs and have the results of the "Mesh verts" log,
+            // remove whole below if statement (move most of it to a new RectangleMeshFromCorners function located
+            // somewhere in the utils folder probably
+            // and then, uncomment the stuff in the stranger case of the switch statement
             if (type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger && _ghostArcMaterial != null) 
             {
-                // curse you jank!!
                 var meshFilter = arc.GetComponent<MeshFilter>();
                 Vector3 rectangularRadius = meshFilter.sharedMesh.bounds.extents;
                 MVector3[] verts = new MVector3[] {
@@ -783,6 +796,9 @@ namespace NewHorizons.Builder.Props
                     new Vector3(-rectangularRadius.x, 2*rectangularRadius.y, 0),
                     new Vector3( rectangularRadius.x, 2*rectangularRadius.y, 0),
                 };
+
+                Logger.LogWarning("Mesh verts: " + String.Join(" v ", verts.Select(mv => mv.ToString())));
+
                 int[] triangles = new int[] {
                     0, 1, 2,
                     1, 3, 2,
