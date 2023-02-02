@@ -1153,8 +1153,27 @@
         "parentPath": {
           "type": "string",
           "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
+        },
+        "flashlightToggle": {
+          "description": "What type of flashlight toggle to do when dialogue is interacted with",
+          "default": "none",
+          "$ref": "#/definitions/FlashlightToggle"
         }
       }
+    },
+    "FlashlightToggle": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "TurnOff",
+        "TurnOffThenOn",
+        "None"
+      ],
+      "enum": [
+        "turnOff",
+        "turnOffThenOn",
+        "none"
+      ]
     },
     "EntryLocationInfo": {
       "type": "object",

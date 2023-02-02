@@ -532,6 +532,19 @@ namespace NewHorizons.External.Modules
             /// Optionally set the parent object that the dialogue and remote trigger will be attached to
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// What type of flashlight toggle to do when dialogue is interacted with
+            /// </summary>
+            [DefaultValue("none")] public FlashlightToggle flashlightToggle = FlashlightToggle.None;
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum FlashlightToggle
+            {
+                [EnumMember(Value = @"none")] None = -1,
+                [EnumMember(Value = @"turnOff")] TurnOff = 0,
+                [EnumMember(Value = @"turnOffThenOn")] TurnOffThenOn = 1,
+            }
         }
 
         [JsonObject]
