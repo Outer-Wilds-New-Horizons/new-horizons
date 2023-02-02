@@ -646,11 +646,6 @@ namespace NewHorizons.Builder.Props
             if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
                 cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
-            Logger.LogWarning("CACHE DEBUG: cache key *" + cacheKey+"*");
-            Logger.LogWarning("CACHE DEBUG: cache is null? " + (nhBody.Cache == null));
-            Logger.LogWarning("CACHE DEBUG: cache contains key? " + (nhBody.Cache?.ContainsKey(cacheKey) ?? false));
-            //Logger.LogWarning("CACHE DEBUG: cache keys: " + String.Join(",", nhBody.Cache?.Keys));
-
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
             // Generate spiral meshes/GOs
@@ -667,8 +662,6 @@ namespace NewHorizons.Builder.Props
                 GameObject arcReadFromCache = null;
                 if (cachedData != null) 
                 {
-                    Logger.LogWarning("CACHE DEBUG: cache was not null, loading meshes and positions");
-
                     var skeletonPoints = cachedData[i].skeletonPoints.Select(mv => (Vector3)mv).ToArray();
                     arcReadFromCache = NomaiTextArcBuilder.BuildSpiralGameObject(skeletonPoints, cachedData[i].mesh);
                     arcReadFromCache.transform.parent = arranger.transform;
@@ -688,7 +681,7 @@ namespace NewHorizons.Builder.Props
             // no need to arrange if the cache exists
             if (cachedData == null)
             { 
-                Logger.LogWarning("CACHE DEBUG: cache was null, proceding with arrangment");
+                Logger.LogVerbose("Cache and/or cache entry was null, proceding with wall text arc arrangment.");
 
                 // auto placement
 
@@ -778,6 +771,34 @@ namespace NewHorizons.Builder.Props
 
             arc.GetComponent<NomaiTextLine>().SetEntryID(textEntryID);
             arc.GetComponent<MeshRenderer>().enabled = false;
+
+            if (type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger && _ghostArcMaterial != null) 
+            {
+                // curse you jank!!
+                var meshFilter = arc.GetComponent<MeshFilter>();
+                Vector3 rectangularRadius = meshFilter.sharedMesh.bounds.extents;
+                MVector3[] verts = new MVector3[] {
+                    new Vector3(-rectangularRadius.x, 0, 0),
+                    new Vector3( rectangularRadius.x, 0, 0),
+                    new Vector3(-rectangularRadius.x, 2*rectangularRadius.y, 0),
+                    new Vector3( rectangularRadius.x, 2*rectangularRadius.y, 0),
+                };
+                int[] triangles = new int[] {
+                    0, 1, 2,
+                    1, 3, 2,
+                };
+                MVector3[] normals = new MVector3[verts.Length];
+                for (int i = 0; i<verts.Length; i++) normals[i] = new Vector3(0, 0, 1);
+                MVector2[] uv = new MVector2[] {
+                    new Vector2(0, 0), new Vector2(0, 1),
+                    new Vector2(1, 0), new Vector2(1, 1),
+                };
+                MVector2[] uv2 = new MVector2[] {
+                    new Vector2(0, 0), new Vector2(0, 1),
+                    new Vector2(1, 0), new Vector2(1, 1),
+                };
+                arc.GetComponent<MeshFilter>().sharedMesh = new MMesh(verts, triangles, normals, uv, uv2);
+            }
 
             arc.SetActive(true);
 

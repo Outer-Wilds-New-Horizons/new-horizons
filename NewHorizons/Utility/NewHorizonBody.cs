@@ -13,8 +13,6 @@ namespace NewHorizons.Utility
             Mod = mod;
             RelativePath = relativePath;
 
-            Logger.LogWarning("CACHE DEBUG: NHBODY CONSTRUCTOR: " + config.name + " - *" + relativePath+"*");
-
             Migrate();
         }
 

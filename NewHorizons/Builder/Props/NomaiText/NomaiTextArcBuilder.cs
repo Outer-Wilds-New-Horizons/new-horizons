@@ -125,8 +125,8 @@ namespace NewHorizons.Builder.Props
             skeletonScale = new Vector2(1, 1),
             numSkeletonPoints = 17,
 
-            innerWidth = 1, 
-            outerWidth = 1, 
+            innerWidth = 0.75f, 
+            outerWidth = 0.75f, 
             uvScale = 1f/1.8505f, 
 
 
