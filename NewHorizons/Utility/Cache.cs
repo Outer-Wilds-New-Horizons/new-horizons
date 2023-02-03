@@ -13,6 +13,7 @@ namespace NewHorizons.Utility
         string filepath;
         IModBehaviour mod;
         Dictionary<string, string> data = new Dictionary<string, string>();
+        HashSet<string> accessedKeys = new HashSet<string>();
 
         public Cache(IModBehaviour mod, string cacheFilePath) 
         {
@@ -45,13 +46,25 @@ namespace NewHorizons.Utility
 
         public T Get<T>(string key)
         {
+            accessedKeys.Add(key);
             var json = data[key];
             return JsonConvert.DeserializeObject<T>(json);
         }
 
         public void Set<T>(string key, T value)
         {
+            accessedKeys.Add(key);
             data[key] = JsonConvert.SerializeObject(value);
+        }
+
+        public void ClearUnaccessed() 
+        {
+            var keys = data.Keys.ToList();
+            foreach(var key in keys) 
+            {
+                if (accessedKeys.Contains(key)) continue;
+                data.Remove(key);
+            }
         }
     }
 }
