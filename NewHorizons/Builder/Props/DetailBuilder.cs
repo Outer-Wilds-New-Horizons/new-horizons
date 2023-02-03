@@ -416,7 +416,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        // BUG: detector collider is not included in groups
+        // BUG: detector collider is not included in groups. oh well
         private class AddPhysics : MonoBehaviour
         {
             public Sector Sector;
@@ -433,7 +433,7 @@ namespace NewHorizons.Builder.Props
                 var parentBody = GetComponentInParent<OWRigidbody>();
 
                 // hack: make all mesh colliders convex
-                // triggers are already convex but whatever
+                // triggers are already convex
                 // prints errors for non readable meshes but whatever
                 foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
                     meshCollider.convex = true;
