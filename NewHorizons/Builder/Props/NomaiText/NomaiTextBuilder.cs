@@ -191,7 +191,7 @@ namespace NewHorizons.Builder.Props
                             }
                         }
 
-                        nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
+                        // nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
 
                         nomaiWallTextObj.SetActive(true);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = nomaiWallTextObj;
@@ -697,7 +697,7 @@ namespace NewHorizons.Builder.Props
 
                 // manual placement
 
-                for (var j = 0; j < info.arcInfo.Length; j++) 
+                for (var j = 0; j < info.arcInfo?.Length; j++) 
                 {
                     var arcInfo = info.arcInfo[j];
                     var arc = arranger.spirals[j];
