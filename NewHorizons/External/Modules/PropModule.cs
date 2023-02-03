@@ -238,13 +238,14 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// The mass of the physics object.
+            /// For reference, the player has a mass of 0.001 and the probe has a mass of 0.0001
             /// </summary>
             [DefaultValue(1f)] public float physicsMass = 1f;
 
             /// <summary>
             /// The radius that the added sphere collider will use for physics collision.
             /// </summary>
-            [DefaultValue(0.5f)] public float physicsRadius = 0.5f;
+            [DefaultValue(1f)] public float physicsRadius = 1f;
         }
 
         [JsonObject]
