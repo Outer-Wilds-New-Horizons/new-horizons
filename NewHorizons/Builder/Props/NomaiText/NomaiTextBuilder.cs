@@ -749,7 +749,7 @@ namespace NewHorizons.Builder.Props
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ new Vector3(-0.9f, 0.0f, 0.0f), new Vector3(0.9f, 0.0f, 0.0f), new Vector3(-0.9f, 2.0f, 0.0f), new Vector3(0.9f, 2.0f, 0.0f) });
-                    overrideColor = new Color(0.2f, 1.1f, 0.8f, 1f);
+                    overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
