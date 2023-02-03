@@ -1093,7 +1093,7 @@
         },
         "hasPhysics": {
           "type": "boolean",
-          "description": "Should this object dynamically move around?"
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
         },
         "physicsMass": {
           "type": "number",
