@@ -1094,6 +1094,14 @@
         "hasPhysics": {
           "type": "boolean",
           "description": "Should this object dynamically move around"
+        },
+        "physicsRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "Optionally create a SphereCollider of the given radius that physics will use for collision",
+          "format": "float"
         }
       }
     },
