@@ -223,7 +223,12 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
-            if (detail.hasPhysics) prop.AddComponent<AddPhysics>();
+            if (detail.hasPhysics || true)
+            {
+                var addPhysics = prop.AddComponent<AddPhysics>();
+                addPhysics.Sector = sector;
+                addPhysics.Radius = detail.physicsRadius;
+            }
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
@@ -399,32 +404,44 @@ namespace NewHorizons.Builder.Props
         // TODO: mass
         private class AddPhysics : MonoBehaviour
         {
+            public Sector Sector;
+            public float? Radius;
+
             private IEnumerator Start()
             {
+                if (!Sector)
+                    Logger.LogError($"Prop {name} has physics but no sector! This will fall through things when surrounding area is unloaded");
+
                 yield return new WaitForSeconds(.1f);
 
                 var parentBody = GetComponentInParent<OWRigidbody>();
 
+                // just disable all non triggers
                 foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
-                    // hack. doesnt work for all meshes but seems to for most
                     if (!meshCollider.isTrigger)
-                        meshCollider.convex = true;
+                        meshCollider.enabled = false;
 
-                var owRigidbody = gameObject.AddComponent<OWRigidbody>();
-                owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+                var bodyGo = new GameObject($"{name}_Body");
+                bodyGo.SetActive(false);
+                bodyGo.transform.position = gameObject.transform.position;
+                bodyGo.transform.rotation = gameObject.transform.rotation;
+
+                var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
+                owRigidbody._simulateInSector = Sector;
 
                 var detector = new GameObject("Detector");
-                detector.transform.SetParent(transform, false);
+                detector.transform.SetParent(bodyGo.transform, false);
                 detector.layer = LayerMask.NameToLayer("AdvancedDetector");
                 detector.tag = "DynamicPropDetector";
-                detector.AddComponent<SphereCollider>();
+                var sphereCollider = detector.AddComponent<SphereCollider>();
+                if (Radius.HasValue)
+                    sphereCollider.radius = Radius.Value;
                 detector.AddComponent<DynamicForceDetector>();
                 detector.AddComponent<DynamicFluidDetector>();
 
-                var impactSensor = gameObject.AddComponent<ImpactSensor>();
+                var impactSensor = bodyGo.AddComponent<ImpactSensor>();
                 var impactAudio = new GameObject("ImpactAudio");
-                impactAudio.transform.SetParent(transform, false);
-                impactAudio.SetActive(false);
+                impactAudio.transform.SetParent(bodyGo.transform, false);
                 var audioSource = impactAudio.AddComponent<AudioSource>();
                 audioSource.maxDistance = 30;
                 audioSource.dopplerLevel = 0;
@@ -433,12 +450,16 @@ namespace NewHorizons.Builder.Props
                 audioSource.spatialBlend = 1;
                 var owAudioSource = impactAudio.AddComponent<OWAudioSource>();
                 owAudioSource._audioSource = audioSource;
-                owAudioSource.SetTrack(OWAudioMixer.TrackName.Environment);
+                owAudioSource._track = OWAudioMixer.TrackName.Environment;
                 var objectImpactAudio = impactAudio.AddComponent<ObjectImpactAudio>();
                 objectImpactAudio._minPitch = 0.4f;
                 objectImpactAudio._maxPitch = 0.6f;
                 objectImpactAudio._impactSensor = impactSensor;
-                impactAudio.SetActive(true);
+
+                bodyGo.SetActive(true);
+
+                owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+                transform.SetParent(bodyGo.transform, false);
 
                 Destroy(this);
             }

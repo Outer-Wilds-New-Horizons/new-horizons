@@ -234,6 +234,11 @@ namespace NewHorizons.External.Modules
             /// Should this object dynamically move around
             /// </summary>
             public bool hasPhysics;
+
+            /// <summary>
+            /// Optionally create a SphereCollider of the given radius that physics will use for collision
+            /// </summary>
+            public float? physicsRadius;
         }
 
         [JsonObject]
