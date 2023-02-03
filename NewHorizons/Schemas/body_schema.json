@@ -1097,13 +1097,13 @@
         },
         "physicsMass": {
           "type": "number",
-          "description": "The mass of the physics object.\nFor reference, the player has a mass of 0.001 and the probe has a mass of 0.0001",
+          "description": "The mass of the physics object.\nFor reference, the player has a mass of 0.001 and the probe has a mass of 0.0001.",
           "format": "float",
           "default": 1.0
         },
         "physicsRadius": {
           "type": "number",
-          "description": "The radius that the added sphere collider will use for physics collision.",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
           "format": "float",
           "default": 1.0
         }
