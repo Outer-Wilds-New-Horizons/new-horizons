@@ -108,21 +108,13 @@ namespace NewHorizons.Builder.Props
             uvScale = 4.9f * 0.55f, 
         };
         
-        // location of example stranger writing:
-        // RingWorld_Body/Sector_RingInterior/Sector_Zone1/Interactables_Zone1/Props_IP_ZoneSign_1/Arc_TestAlienWriting/Arc 1
-        // 17 points
-        // length of 1.8505
-        // width of 1
-        // _revealDuration of 0.5633
-        // _targetColor of 1 1 1 0
-        // I think this'll do it
         public static SpiralProfile strangerSpiralProfile = new SpiralProfile() {
             profileName="Stranger",
             a = new Vector2(0.9f, 0.9f), // this value doesn't really matter for this
             b = new Vector2(5f, 5f),
             startS = new Vector2(1.8505f, 1.8505f), 
             endS = new Vector2(0, 0), 
-            skeletonScale = new Vector2(1, 1),
+            skeletonScale = new Vector2(0.6f, 0.6f),
             numSkeletonPoints = 17,
 
             innerWidth = 0.75f, 

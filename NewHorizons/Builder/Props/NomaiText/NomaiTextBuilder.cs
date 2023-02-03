@@ -738,7 +738,7 @@ namespace NewHorizons.Builder.Props
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
-            MColor overrideColor = null;
+            Color? overrideColor = null;
             switch (type)
             {
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
@@ -748,8 +748,8 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
-                    //overrideMesh = RectangleMeshFromCorners(Mesh verts logged below);
-                    //overrideColor = some kinda green
+                    overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ new Vector3(-0.9f, 0.0f, 0.0f), new Vector3(0.9f, 0.0f, 0.0f), new Vector3(-0.9f, 2.0f, 0.0f), new Vector3(0.9f, 2.0f, 0.0f) });
+                    overrideColor = new Color(0.2f, 1.1f, 0.8f, 1f);
                     break;
                 case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
@@ -780,41 +780,7 @@ namespace NewHorizons.Builder.Props
                 arc.GetComponent<MeshFilter>().sharedMesh = overrideMesh;
 
             if (overrideColor != null)
-                arc.GetComponent<NomaiTextLine>()._targetColor = overrideColor.ToColor();
-
-            // TODO: once I have the right size for the stranger arcs and have the results of the "Mesh verts" log,
-            // remove whole below if statement (move most of it to a new RectangleMeshFromCorners function located
-            // somewhere in the utils folder probably
-            // and then, uncomment the stuff in the stranger case of the switch statement
-            if (type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger && _ghostArcMaterial != null) 
-            {
-                var meshFilter = arc.GetComponent<MeshFilter>();
-                Vector3 rectangularRadius = meshFilter.sharedMesh.bounds.extents;
-                MVector3[] verts = new MVector3[] {
-                    new Vector3(-rectangularRadius.x, 0, 0),
-                    new Vector3( rectangularRadius.x, 0, 0),
-                    new Vector3(-rectangularRadius.x, 2*rectangularRadius.y, 0),
-                    new Vector3( rectangularRadius.x, 2*rectangularRadius.y, 0),
-                };
-
-                Logger.LogWarning("Mesh verts: " + String.Join(" v ", verts.Select(mv => mv.ToString())));
-
-                int[] triangles = new int[] {
-                    0, 1, 2,
-                    1, 3, 2,
-                };
-                MVector3[] normals = new MVector3[verts.Length];
-                for (int i = 0; i<verts.Length; i++) normals[i] = new Vector3(0, 0, 1);
-                MVector2[] uv = new MVector2[] {
-                    new Vector2(0, 0), new Vector2(0, 1),
-                    new Vector2(1, 0), new Vector2(1, 1),
-                };
-                MVector2[] uv2 = new MVector2[] {
-                    new Vector2(0, 0), new Vector2(0, 1),
-                    new Vector2(1, 0), new Vector2(1, 1),
-                };
-                arc.GetComponent<MeshFilter>().sharedMesh = new MMesh(verts, triangles, normals, uv, uv2);
-            }
+                arc.GetComponent<NomaiTextLine>()._targetColor = (Color)overrideColor;
 
             arc.SetActive(true);
 
