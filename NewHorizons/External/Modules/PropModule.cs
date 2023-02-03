@@ -231,14 +231,19 @@ namespace NewHorizons.External.Modules
             public bool keepLoaded;
 
             /// <summary>
-            /// Should this object dynamically move around
+            /// Should this object dynamically move around?
             /// </summary>
             public bool hasPhysics;
 
             /// <summary>
-            /// Optionally create a SphereCollider of the given radius that physics will use for collision
+            /// The mass of the physics object.
             /// </summary>
-            public float? physicsRadius;
+            [DefaultValue(1f)] public float physicsMass = 1f;
+
+            /// <summary>
+            /// The radius that the added sphere collider will use for physics collision.
+            /// </summary>
+            [DefaultValue(0.5f)] public float physicsRadius = 0.5f;
         }
 
         [JsonObject]

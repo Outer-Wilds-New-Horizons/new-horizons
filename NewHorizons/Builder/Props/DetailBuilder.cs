@@ -236,6 +236,7 @@ namespace NewHorizons.Builder.Props
             {
                 var addPhysics = prop.AddComponent<AddPhysics>();
                 addPhysics.Sector = sector;
+                addPhysics.Mass = detail.physicsMass;
                 addPhysics.Radius = detail.physicsRadius;
             }
 
@@ -415,103 +416,64 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        // TODO: simulate in sector
         // BUG: detector collider is not included in groups
-        // TODO: mass
         private class AddPhysics : MonoBehaviour
         {
             public Sector Sector;
-            public float? Radius;
+            public float Mass;
+            public float Radius;
 
             private IEnumerator Start()
             {
                 if (!Sector)
-                    Logger.LogError($"Prop {name} has physics but no sector! This will fall through things when surrounding area is unloaded");
+                    Logger.LogError($"Prop {name} has physics but no sector! Will fall through things when surrounding area is unloaded");
 
-                yield return new WaitForSeconds(.1f);
+                yield return new WaitForSeconds(3f);
 
                 var parentBody = GetComponentInParent<OWRigidbody>();
 
                 // just disable all non triggers
-                foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
-                    if (!meshCollider.isTrigger)
-                        meshCollider.enabled = false;
+                foreach (var collider in GetComponentsInChildren<Collider>(true))
+                    if (!collider.isTrigger)
+                        collider.enabled = false;
 
                 var bodyGo = new GameObject($"{name}_Body");
                 bodyGo.SetActive(false);
-                bodyGo.transform.position = gameObject.transform.position;
-                bodyGo.transform.rotation = gameObject.transform.rotation;
+                bodyGo.transform.position = transform.position;
+                bodyGo.transform.rotation = transform.rotation;
 
                 var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
                 owRigidbody._simulateInSector = Sector;
 
-                var detector = new GameObject("Detector");
-                detector.transform.SetParent(bodyGo.transform, false);
-                detector.layer = LayerMask.NameToLayer("AdvancedDetector");
-                detector.tag = "DynamicPropDetector";
-                var sphereCollider = detector.AddComponent<SphereCollider>();
-                if (Radius.HasValue)
-                    sphereCollider.radius = Radius.Value;
-                detector.AddComponent<DynamicForceDetector>();
-                detector.AddComponent<DynamicFluidDetector>();
+                bodyGo.layer = LayerMask.NameToLayer("PhysicalDetector");
+                bodyGo.tag = "DynamicPropDetector";
+                bodyGo.AddComponent<SphereCollider>().radius = Radius;
+                bodyGo.AddComponent<DynamicForceDetector>();
+                bodyGo.AddComponent<DynamicFluidDetector>();
 
                 var impactSensor = bodyGo.AddComponent<ImpactSensor>();
-                var impactAudio = new GameObject("ImpactAudio");
-                impactAudio.transform.SetParent(bodyGo.transform, false);
-                var audioSource = impactAudio.AddComponent<AudioSource>();
+                var audioSource = bodyGo.AddComponent<AudioSource>();
                 audioSource.maxDistance = 30;
                 audioSource.dopplerLevel = 0;
                 audioSource.rolloffMode = AudioRolloffMode.Custom;
                 audioSource.playOnAwake = false;
                 audioSource.spatialBlend = 1;
-                var owAudioSource = impactAudio.AddComponent<OWAudioSource>();
+                var owAudioSource = bodyGo.AddComponent<OWAudioSource>();
                 owAudioSource._audioSource = audioSource;
                 owAudioSource._track = OWAudioMixer.TrackName.Environment;
-                var objectImpactAudio = impactAudio.AddComponent<ObjectImpactAudio>();
+                var objectImpactAudio = bodyGo.AddComponent<ObjectImpactAudio>();
                 objectImpactAudio._minPitch = 0.4f;
                 objectImpactAudio._maxPitch = 0.6f;
                 objectImpactAudio._impactSensor = impactSensor;
 
                 bodyGo.SetActive(true);
 
+                transform.parent = bodyGo.transform;
+                owRigidbody.SetMass(Mass);
                 owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
-                transform.SetParent(bodyGo.transform, false);
 
                 Destroy(this);
             }
         }
-
-        /*
-        private static void AddPhysics(GameObject prop, Sector sector)
-        {
-            var primaryBody = prop.GetComponentInParent<OWRigidbody>();
-
-            var rb = prop.AddComponent<Rigidbody>();
-            var owrb = prop.AddComponent<OWRigidbody>();
-            var kine = prop.AddComponent<KinematicRigidbody>();
-            rb.isKinematic = true;
-            var offsetApplier = prop.AddComponent<CenterOfTheUniverseOffsetApplier>();
-            offsetApplier.Init(owrb);
-            owrb._simulateInSector = sector;
-            owrb._kinematicSimulation = true;
-            owrb._kinematicRigidbody = kine;
-            owrb._offsetApplier = offsetApplier;
-
-            prop.AddComponent<InitialMotion>().SetPrimaryBody(primaryBody);
-            prop.AddComponent<MatchInitialMotion>().SetBodyToMatch(primaryBody);
-
-            var detector = new GameObject("Detector");
-            detector.transform.parent = prop.transform;
-            detector.transform.localPosition = Vector3.zero;
-            detector.tag = "DynamicPropDetector";
-
-            var shape = detector.AddComponent<SphereShape>();
-            shape.SetCollisionMode(Shape.CollisionMode.Detector);
-            shape.SetLayer(Shape.Layer.Default);
-            shape.layerMask = 5;
-            detector.AddComponent<DynamicForceDetector>();
-            detector.AddComponent<ForceApplier>();
-        }
-        */
     }
 }
