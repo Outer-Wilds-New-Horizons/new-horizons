@@ -232,7 +232,7 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
-            if (detail.hasPhysics || true)
+            if (detail.hasPhysics)
             {
                 var addPhysics = prop.AddComponent<AddPhysics>();
                 addPhysics.Sector = sector;
@@ -428,14 +428,15 @@ namespace NewHorizons.Builder.Props
                 if (!Sector)
                     Logger.LogError($"Prop {name} has physics but no sector! Will fall through things when surrounding area is unloaded");
 
-                yield return new WaitForSeconds(3f);
+                yield return new WaitForSeconds(.1f);
 
                 var parentBody = GetComponentInParent<OWRigidbody>();
 
-                // just disable all non triggers
-                foreach (var collider in GetComponentsInChildren<Collider>(true))
-                    if (!collider.isTrigger)
-                        collider.enabled = false;
+                // hack: make all mesh colliders convex
+                // triggers are already convex but whatever
+                // prints errors for non readable meshes but whatever
+                foreach (var meshCollider in GetComponentsInChildren<MeshCollider>(true))
+                    meshCollider.convex = true;
 
                 var bodyGo = new GameObject($"{name}_Body");
                 bodyGo.SetActive(false);

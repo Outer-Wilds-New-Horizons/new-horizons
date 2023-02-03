@@ -232,6 +232,7 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// Should this object dynamically move around?
+            /// This tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others.
             /// </summary>
             public bool hasPhysics;
 
