@@ -1,6 +1,8 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class VolcanoBuilder
@@ -44,10 +46,30 @@ namespace NewHorizons.Builder.Props
             InitPrefab();
 
             var launcherGO = _meteorLauncherPrefab.InstantiateInactive();
-            launcherGO.transform.parent = sector.transform;
+            launcherGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "MeteorLauncher";
+            launcherGO.transform.parent = sector?.transform ?? planetGO.transform;
             launcherGO.transform.position = planetGO.transform.TransformPoint(info.position == null ? Vector3.zero : (Vector3)info.position);
-            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), ((Vector3)info.position).normalized).normalized;
-            launcherGO.name = "MeteorLauncher";
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    launcherGO.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            if (info.isRelativeToParent)
+                launcherGO.transform.localPosition = pos;
+            else
+                launcherGO.transform.position = planetGO.transform.TransformPoint(pos);
+
+            launcherGO.transform.rotation = Quaternion.FromToRotation(launcherGO.transform.TransformDirection(Vector3.up), pos.normalized).normalized;
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
             meteorLauncher._audioSector = sector;

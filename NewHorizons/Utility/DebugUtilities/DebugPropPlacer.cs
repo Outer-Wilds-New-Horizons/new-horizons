@@ -108,6 +108,9 @@ namespace NewHorizons.Utility.DebugUtilities
             DebugRaycastData data = _rc.Raycast();
             PlaceObject(data);
 
+            //TODO: use DropItem logic to make props not clip through the ground when placed
+            //public virtual void DropItem(Vector3 position, Vector3 normal, Transform parent, Sector sector, IItemDropTarget customDropTarget)
+
             if (!hasAddedCurrentObjectToRecentsList)
             {
                 hasAddedCurrentObjectToRecentsList = true;

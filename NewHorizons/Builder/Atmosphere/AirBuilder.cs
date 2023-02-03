@@ -9,7 +9,7 @@ namespace NewHorizons.Builder.Atmosphere
             var airGO = new GameObject("Air");
             airGO.SetActive(false);
             airGO.layer = 17;
-            airGO.transform.parent = sector?.transform ? sector.transform : planetGO.transform;
+            airGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             var sc = airGO.AddComponent<SphereCollider>();
             sc.isTrigger = true;

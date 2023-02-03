@@ -192,10 +192,10 @@ namespace NewHorizons.Builder.Props
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
 
-            brambleNode.transform.parent = sector.transform;
+            brambleNode.transform.parent = sector?.transform ?? go.transform;
             brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
             brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
-            brambleNode.name = "Bramble Node to " + config.linksTo;
+            brambleNode.name = config.name ?? "Bramble Node to " + config.linksTo;
 
             // This node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));
@@ -250,12 +250,13 @@ namespace NewHorizons.Builder.Props
                 brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
                 fogLight._maxVisibleDistance = float.PositiveInfinity; // Prefab does have working foglight aside from this
                 fogLight._minVisibleDistance *= config.scale / 15f;
+                fogLight._occlusionRange = 175f;
             }
             else
             {
                 brambleNode.FindChild("Effects/PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
                 brambleNode.FindChild("Effects/FogOverrideVolume").GetComponent<FogOverrideVolume>().blendDistance *= config.scale;
-                fogLight._minVisibleDistance *= config.scale;
+                //fogLight._minVisibleDistance *= config.scale;
 
                 // Seed fog works differently, so it doesn't need to be fixed
                 // (it's also located on a different child path, so the below FindChild calls wouldn't work)
@@ -333,6 +334,24 @@ namespace NewHorizons.Builder.Props
 
                     SetNodeColors(brambleNode, fogTint, farFogTint, fogLightTint, lightTint, lightShaftTint, glowTint, fogOverrideTint);
                 }
+
+                // Redo the foglight data after everything is colored
+                if (fogLight._linkedFogLights != null)
+                {
+                    Delay.FireOnNextUpdate(() =>
+                    {
+                        FogLightManager fogLightManager = Locator.GetFogLightManager();
+                        fogLight._linkedLightData.Clear();
+                        for (int i = 0; i < fogLight._linkedFogLights.Count; i++)
+                        {
+                            FogLight.LightData lightData = new FogLight.LightData();
+                            lightData.color = fogLight._linkedFogLights[i].GetTint();
+                            lightData.maxAlpha = fogLight._linkedFogLights[i]._maxAlpha;
+                            fogLight._linkedLightData.Add(lightData);
+                            fogLightManager.RegisterLightData(lightData);
+                        }
+                    });
+                }
             });
 
             // Set up warps
@@ -345,6 +364,15 @@ namespace NewHorizons.Builder.Props
 
             var success = PairEntrance(innerFogWarpVolume, config.linksTo);
             if (!success) RecordUnpairedNode(innerFogWarpVolume, config.linksTo);
+
+            if (config.preventRecursionCrash)
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var destination = GetOuterFogWarpVolumeFromAstroObject(AstroObjectLocator.GetAstroObject(config.linksTo).gameObject);
+                    if (destination != null) destination._senderWarps.Remove(innerFogWarpVolume);
+                });
+            }
 
             // Cleanup for dimension exits
             if (config.name != null)
@@ -365,6 +393,8 @@ namespace NewHorizons.Builder.Props
                     signalGO.transform.parent = brambleNode.transform;
                 }
             }
+
+            StreamingHandler.SetUpStreaming(brambleNode, sector);
 
             // Done!
             brambleNode.SetActive(true);

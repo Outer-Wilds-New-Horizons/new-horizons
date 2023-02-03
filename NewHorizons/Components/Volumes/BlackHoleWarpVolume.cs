@@ -1,6 +1,6 @@
-﻿namespace NewHorizons.Components.Volumes
+namespace NewHorizons.Components.Volumes
 {
-    public class ChangeStarSystemVolume : BlackHoleDestructionVolume
+    public class BlackHoleWarpVolume : BlackHoleDestructionVolume
     {
         public string TargetSolarSystem { get; set; }
 

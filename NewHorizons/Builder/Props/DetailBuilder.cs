@@ -25,6 +25,10 @@ namespace NewHorizons.Builder.Props
 
         private static void SceneManager_sceneUnloaded(Scene scene)
         {
+            foreach (var prefab in _fixedPrefabCache.Values)
+            {
+                GameObject.Destroy(prefab.prefab);
+            }
             _fixedPrefabCache.Clear();
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
         }
@@ -115,7 +119,8 @@ namespace NewHorizons.Builder.Props
 
                 if (detail.path != null)
                 {
-                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive(), isItem));
+                    // We put these in DontDestroyOnLoad so that QSB will ignore them and so they don't clutter up the scene.
+                    _fixedPrefabCache.Add((sector, detail.path), (prop.InstantiateInactive().DontDestroyOnLoad(), isItem));
                 }
             }
 
@@ -194,6 +199,10 @@ namespace NewHorizons.Builder.Props
                 if (newParent != null)
                 {
                     prop.transform.parent = newParent.transform;
+                }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
                 }
             }
 
@@ -309,6 +318,13 @@ namespace NewHorizons.Builder.Props
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
+            }
+
+            if (component is DarkMatterSubmergeController submergeController)
+            {
+                var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
+                if (submergeController._fluidDetector)
+                    submergeController._fluidDetector._onlyDetectableFluid = water;
             }
 
             // Fix anglerfish speed on orbiting planets

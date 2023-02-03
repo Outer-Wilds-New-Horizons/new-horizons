@@ -12,7 +12,6 @@ namespace NewHorizons.Handlers
 {
     public static class VesselWarpHandler
     {
-        public static AssetBundle VesselBundle { get; private set; }
         public static GameObject VesselPrefab { get; private set; }
         public static GameObject VesselObject { get; private set; }
         public static VesselWarpController WarpController { get; private set; }
@@ -22,8 +21,7 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselBundle = Instance.ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
-            VesselPrefab = VesselBundle.LoadAsset<GameObject>("Vessel_Body");
+            VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
         public static void LoadVessel()
@@ -162,7 +160,7 @@ namespace NewHorizons.Handlers
 
             vesselObject.SetActive(true);
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController));
 
             return eyeSpawnPoint;
         }
@@ -190,7 +188,7 @@ namespace NewHorizons.Handlers
                 vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
             }
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
+            Delay.FireOnNextUpdate(() => SetupWarpController(vesselWarpController, true));
 
             return spawnPoint;
         }

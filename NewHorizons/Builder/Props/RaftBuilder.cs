@@ -1,4 +1,5 @@
 using NewHorizons.Components;
+using NewHorizons.Components.Achievement;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
@@ -52,10 +53,34 @@ namespace NewHorizons.Builder.Props
             if (_prefab == null || sector == null) return null;
 
             GameObject raftObject = _prefab.InstantiateInactive();
-            raftObject.name = "Raft_Body";
+            raftObject.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Raft_Body";
             raftObject.transform.parent = sector?.transform ?? planetGO.transform;
-            raftObject.transform.position = planetGO.transform.TransformPoint(info?.position ?? Vector3.zero);
-            raftObject.transform.rotation = planetGO.transform.TransformRotation(Quaternion.identity);
+
+            if (!string.IsNullOrEmpty(info.parentPath))
+            {
+                var newParent = planetGO.transform.Find(info.parentPath);
+                if (newParent != null)
+                {
+                    raftObject.transform.parent = newParent;
+                }
+                else
+                {
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                }
+            }
+
+            var pos = (Vector3)(info.position ?? Vector3.zero);
+            var rot = Quaternion.identity;
+            if (info.isRelativeToParent)
+            {
+                raftObject.transform.localPosition = pos;
+                raftObject.transform.localRotation = rot;
+            }
+            else
+            {
+                raftObject.transform.position = planetGO.transform.TransformPoint(pos);
+                raftObject.transform.rotation = planetGO.transform.TransformRotation(rot);
+            }
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 
@@ -77,6 +102,16 @@ namespace NewHorizons.Builder.Props
                 lightSensor._sector = sector;
                 sector.OnSectorOccupantsUpdated += lightSensor.OnSectorOccupantsUpdated;
             }
+
+            var achievementObject = new GameObject("AchievementVolume");
+            achievementObject.transform.SetParent(raftObject.transform, false);
+
+            var shape = achievementObject.AddComponent<SphereShape>();
+            shape.radius = 3;
+            shape.SetCollisionMode(Shape.CollisionMode.Volume);
+
+            achievementObject.AddComponent<OWTriggerVolume>()._shape = shape;
+            achievementObject.AddComponent<OtherMods.AchievementsPlus.NH.RaftingAchievement>();
 
             raftObject.SetActive(true);
 

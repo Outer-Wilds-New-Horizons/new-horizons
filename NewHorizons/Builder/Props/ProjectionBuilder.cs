@@ -94,7 +94,7 @@ namespace NewHorizons.Builder.Props
             if (_slideReelPrefab == null) return null;
 
             var slideReelObj = _slideReelPrefab.InstantiateInactive();
-            slideReelObj.name = $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
+            slideReelObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -118,7 +118,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 
@@ -196,7 +196,7 @@ namespace NewHorizons.Builder.Props
             if (_autoPrefab == null) return null;
 
             var projectorObj = _autoPrefab.InstantiateInactive();
-            projectorObj.name = $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
+            projectorObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
@@ -214,7 +214,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                 }
             }
 
@@ -276,7 +276,7 @@ namespace NewHorizons.Builder.Props
                 return null;
             }
 
-            g.name = "VisionStaffDetector";
+            g.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector";
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;
@@ -312,7 +312,8 @@ namespace NewHorizons.Builder.Props
                 position = info.position,
                 rotation = info.rotation,
                 parentPath = info.parentPath,
-                isRelativeToParent = info.isRelativeToParent
+                isRelativeToParent = info.isRelativeToParent,
+                rename = info.rename
             };
             var standingTorch = DetailBuilder.Make(planetGO, sector, _standingVisionTorchPrefab, detailInfo);
 

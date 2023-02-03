@@ -39,7 +39,7 @@ namespace NewHorizons.Builder.Body
             if (_oceanAmbientLight == null) _oceanAmbientLight = SearchUtilities.Find("Ocean_GD").GetComponent<OceanLODController>()._ambientLight.gameObject.InstantiateInactive().Rename("OceanAmbientLight").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
+        public static RadialFluidVolume Make(GameObject planetGO, Sector sector, OWRigidbody rb, WaterModule module)
         {
             InitPrefabs();
 
@@ -114,6 +114,8 @@ namespace NewHorizons.Builder.Body
             fluidVolume._attachedBody = rb;
             fluidVolume._triggerVolume = buoyancyTriggerVolume;
             fluidVolume._radius = waterSize;
+            fluidVolume._buoyancyDensity = module.buoyancy;
+            fluidVolume._density = module.density;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
@@ -134,6 +136,7 @@ namespace NewHorizons.Builder.Body
                 var sizeController = waterGO.AddComponent<WaterSizeController>();
                 sizeController.SetScaleCurve(module.curve);
                 sizeController.oceanFogMaterial = fogGO.GetComponent<MeshRenderer>().material;
+                sizeController.fluidVolume = fluidVolume;
                 sizeController.size = module.size;
             }
             else
@@ -146,6 +149,8 @@ namespace NewHorizons.Builder.Body
 
             waterGO.transform.position = planetGO.transform.position;
             waterGO.SetActive(true);
+
+            return fluidVolume;
         }
     }
 }

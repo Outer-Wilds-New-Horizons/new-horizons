@@ -4,7 +4,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
-using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
@@ -29,7 +28,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.Stars;
 
 namespace NewHorizons
 {
@@ -37,6 +35,7 @@ namespace NewHorizons
     public class Main : ModBehaviour
     {
         public static AssetBundle NHAssetBundle { get; private set; }
+        public static AssetBundle NHPrivateAssetBundle { get; private set; }
         public static Main Instance { get; private set; }
 
         // Settings
@@ -57,6 +56,7 @@ namespace NewHorizons
 
         public string DefaultStarSystem => SystemDict.ContainsKey(_defaultSystemOverride) ? _defaultSystemOverride : _defaultStarSystem;
         public string CurrentStarSystem => _currentStarSystem;
+        public bool TimeLoopEnabled => SystemDict[CurrentStarSystem]?.Config?.enableTimeLoop ?? true;
         public bool IsWarpingFromShip { get; private set; } = false;
         public bool IsWarpingFromVessel { get; private set; } = false;
         public bool IsWarpingBackToEye { get; internal set; } = false;
@@ -74,9 +74,9 @@ namespace NewHorizons
 
         // API events
         public class StarSystemEvent : UnityEvent<string> { }
-        public StarSystemEvent OnChangeStarSystem;
-        public StarSystemEvent OnStarSystemLoaded;
-        public StarSystemEvent OnPlanetLoaded;
+        public StarSystemEvent OnChangeStarSystem = new();
+        public StarSystemEvent OnStarSystemLoaded = new();
+        public StarSystemEvent OnPlanetLoaded = new();
 
         public static bool HasDLC { get => EntitlementsManager.IsDlcOwned() == EntitlementsManager.AsyncOwnershipStatus.Owned; }
 
@@ -185,10 +185,6 @@ namespace NewHorizons
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
 
-            OnChangeStarSystem = new StarSystemEvent();
-            OnStarSystemLoaded = new StarSystemEvent();
-            OnPlanetLoaded = new StarSystemEvent();
-
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
 
@@ -196,6 +192,7 @@ namespace NewHorizons
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
+            NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
@@ -211,8 +208,8 @@ namespace NewHorizons
                 Logger.LogWarning("Couldn't find planets folder");
             }
 
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
-            Instance.ModHelper.Events.Unity.FireOnNextUpdate(() => _firstLoad = false);
+            Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
+            Delay.FireOnNextUpdate(() => _firstLoad = false);
             Instance.ModHelper.Menus.PauseMenu.OnInit += DebugReload.InitializePauseMenu;
 
             MenuHandler.Init();
@@ -398,7 +395,7 @@ namespace NewHorizons
 
                     var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
                     var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
-                    Instance.ModHelper.Events.Unity.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
+                    Delay.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                     IsWarpingFromShip = false;
                     IsWarpingFromVessel = false;
@@ -462,7 +459,7 @@ namespace NewHorizons
                 else if (isEyeOfTheUniverse)
                 {
                     // There is no wake up in eye scene
-                    Instance.ModHelper.Events.Unity.FireOnNextUpdate(() =>
+                    Delay.FireOnNextUpdate(() =>
                     {
                         IsSystemReady = true;
                         OnSystemReady(false, false);
@@ -822,18 +819,17 @@ namespace NewHorizons
             // We reset the solar system on death
             if (!IsChangingStarSystem)
             {
+                if (SystemDict[_currentStarSystem].Config.respawnHere) return;
+
                 // If the override is a valid system then we go there
                 if (SystemDict.ContainsKey(_defaultSystemOverride))
                 {
                     _currentStarSystem = _defaultSystemOverride;
-                    IsWarpingFromShip = true; // always do this else sometimes the spawn gets messed up
                 }
                 else
                 {
                     _currentStarSystem = _defaultStarSystem;
                 }
-
-                IsWarpingFromShip = false;
             }
         }
         #endregion Change star system

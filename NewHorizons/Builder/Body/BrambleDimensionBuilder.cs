@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+using static NewHorizons.Main;
 
 namespace NewHorizons.Builder.Body
 {
@@ -50,10 +51,14 @@ namespace NewHorizons.Builder.Body
         private static GameObject _atmosphere;
         private static GameObject _volumes;
         private static GameObject _effects;
-        private static GameObject _geometry;
+        private static GameObject _hubGeometry;
+        private static GameObject _clusterGeometry;
+        private static GameObject _smallNestGeometry;
+        private static GameObject _exitOnlyGeometry;
         private static GameObject _exitWarps;
         private static GameObject _repelVolume;
         private static Material _material;
+        private static GameObject _wallCollision;
 
         private static bool _isInit;
 
@@ -66,10 +71,14 @@ namespace NewHorizons.Builder.Body
             if (_atmosphere == null) _atmosphere = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Atmosphere_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Atmosphere").DontDestroyOnLoad();
             if (_volumes == null) _volumes = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Volumes_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Volumes").DontDestroyOnLoad();
             if (_effects == null) _effects = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Effects_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Effects").DontDestroyOnLoad();
-            if (_geometry == null) _geometry = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_Geometry").DontDestroyOnLoad();
+            if (_hubGeometry == null) _hubGeometry = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Geometry_HubDimension").InstantiateInactive().Rename("Prefab_Bramble_HubGeometry").DontDestroyOnLoad();
+            if (_clusterGeometry == null) _clusterGeometry = SearchUtilities.Find("DB_ClusterDimension_Body/Sector_ClusterDimension/Geometry_ClusterDimension").InstantiateInactive().Rename("Prefab_Bramble_ClusterGeometry").DontDestroyOnLoad();
+            if (_smallNestGeometry == null) _smallNestGeometry = SearchUtilities.Find("DB_SmallNest_Body/Sector_SmallNestDimension/Geometry_SmallNestDimension").InstantiateInactive().Rename("Prefab_Bramble_SmallNestGeometry").DontDestroyOnLoad();
+            if (_exitOnlyGeometry == null) _exitOnlyGeometry = SearchUtilities.Find("DB_ExitOnlyDimension_Body/Sector_ExitOnlyDimension/Geometry_ExitOnlyDimension").InstantiateInactive().Rename("Prefab_Bramble_ExitOnlyGeometry").DontDestroyOnLoad();
             if (_exitWarps == null) _exitWarps = SearchUtilities.Find("DB_HubDimension_Body/Sector_HubDimension/Interactables_HubDimension/OuterWarp_Hub").InstantiateInactive().Rename("Prefab_Bramble_OuterWarp").DontDestroyOnLoad();
             if (_repelVolume == null) _repelVolume = SearchUtilities.Find("DB_HubDimension_Body/BrambleRepelVolume").InstantiateInactive().Rename("Prefab_Bramble_RepelVolume").DontDestroyOnLoad();
             if (_material == null) _material = new Material(GameObject.Find("DB_PioneerDimension_Body/Sector_PioneerDimension").GetComponent<EffectRuleset>()._material).DontDestroyOnLoad();
+            if (_wallCollision == null) _wallCollision = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("BrambleCollision");
         }
 
         public static GameObject Make(NewHorizonsBody body, GameObject go, NHAstroObject ao, Sector sector, OWRigidbody owRigidBody)
@@ -85,8 +94,17 @@ namespace NewHorizons.Builder.Body
             var volumes = _volumes.InstantiateInactive();
             var effects = _effects.InstantiateInactive();
 
+            GameObject geometryPrefab;
+            switch (config.vinePrefab)
+            {
+                case VinePrefabType.Cluster: geometryPrefab = _clusterGeometry; break;
+                case VinePrefabType.SmallNest: geometryPrefab = _smallNestGeometry; break;
+                case VinePrefabType.ExitOnly: geometryPrefab = _exitOnlyGeometry; break;
+                default: geometryPrefab = _hubGeometry; break;
+            }
+
             var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, _geometry, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
@@ -115,18 +133,27 @@ namespace NewHorizons.Builder.Body
             repelVolume.transform.parent = sector.transform;
             repelVolume.transform.localPosition = Vector3.zero;
 
-            // TODO: Remove default vines (once we create an asset bundle version of the outer sphere that has collisions
-            /*
-            var geoBatchedGroup = geometry.FindChild("BatchedGroup");
-            var collider = geoBatchedGroup.FindChild("BatchedMeshColliders_0");
-            collider.transform.parent = geometry.transform;
-            GameObject.Destroy(geoBatchedGroup);
+            if (config.vinePrefab == VinePrefabType.None)
+            {
+                // Replace batched collision with our own if removing vines
+                GameObject.Destroy(geometry.FindChild("BatchedGroup"));
+                var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
+                var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
+                dimensionWalls.transform.parent = geometry.transform;
+                GameObject.Destroy(geoOtherComponentsGroup);
 
-            var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
-            var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
-            dimensionWalls.transform.parent = geometry.transform;
-            GameObject.Destroy(geoOtherComponentsGroup);
-            */
+                var newCollider = _wallCollision.InstantiateInactive();
+                newCollider.transform.parent = dimensionWalls.transform;
+                newCollider.transform.localPosition = Vector3.zero;
+                newCollider.transform.localRotation = Quaternion.identity;
+                newCollider.transform.localScale = Vector3.one;
+                newCollider.SetActive(true);
+            }
+            else if (config.vinePrefab != VinePrefabType.Hub)
+            {
+                // Other stuff depends on Hub having this rotation
+                geometry.transform.rotation = Quaternion.Euler(new Vector3(43.5599f, 358.1138f, 24.2412f));
+            }
 
             // fix some cull groups
             volumes.GetComponent<SectorCollisionGroup>()._sector = sector;
@@ -184,6 +211,7 @@ namespace NewHorizons.Builder.Body
             // Set the scale
             var scale = config.radius / BASE_DIMENSION_RADIUS;
             geometry.transform.localScale = Vector3.one * scale;
+            if (config.vinePrefab is not VinePrefabType.None and not VinePrefabType.Hub) geometry.transform.localScale *= 1.5f; // other dimensions are 500 instead of 750
             sector.gameObject.GetComponent<SphereShape>().radius *= scale;
             outerFogWarpVolume._warpRadius *= scale;
             outerFogWarpVolume._exitRadius *= scale;
@@ -217,12 +245,30 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
-            // Cull stuff
             // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
+                // Cull stuff
                 var cullController = go.AddComponent<BrambleSectorController>();
                 cullController.SetSector(sector);
+
+                // Prevent recursion from causing hard crash
+                foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
+                {
+                    var currentWarp = senderWarp;
+                    var n = 0;
+                    while (currentWarp.GetContainerWarpVolume() != null)
+                    {
+                        if (currentWarp.GetContainerWarpVolume() == outerFogWarpVolume && currentWarp != senderWarp) // game already fixes here to here recursion
+                        {
+                            outerFogWarpVolume._senderWarps.Remove(senderWarp); 
+                            break;
+                        }
+                        currentWarp = (InnerFogWarpVolume)currentWarp.GetContainerWarpVolume().GetLinkedFogWarpVolume();
+                        n++;
+                        if (n > 100) break; // just in case it gets caught in something else's recursion or there's no outside exit
+                    }
+                }
             });
 
             // finalize

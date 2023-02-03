@@ -23,6 +23,7 @@ namespace NewHorizons.Builder.Props
         private static GameObject _computerPrefab;
         private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
+        private static GameObject _cairnVariantPrefab;
         private static GameObject _recorderPrefab;
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
@@ -112,6 +113,12 @@ namespace NewHorizons.Builder.Props
                 _cairnPrefab.transform.rotation = Quaternion.identity;
             }
 
+            if (_cairnVariantPrefab == null)
+            {
+                _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
+                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
+            }
+
             if (_recorderPrefab == null)
             {
                 _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder").DontDestroyOnLoad();
@@ -159,7 +166,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -255,7 +262,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -264,7 +271,14 @@ namespace NewHorizons.Builder.Props
                         else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
 
                         var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
-                        customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        if (info.rotation != null)
+                        {
+                            customScroll.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
+                        }
+                        else
+                        {
+                            customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
+                        }
 
                         customScroll.SetActive(true);
 
@@ -310,7 +324,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -390,8 +404,9 @@ namespace NewHorizons.Builder.Props
                         return computerObject;
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
+                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
                     {
-                        var cairnObject = _cairnPrefab.InstantiateInactive();
+                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
@@ -413,7 +428,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -522,7 +537,7 @@ namespace NewHorizons.Builder.Props
                             }
                             else
                             {
-                                Logger.LogWarning($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
+                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
                             }
                         }
 
@@ -597,6 +612,12 @@ namespace NewHorizons.Builder.Props
             nomaiWallText._nomaiTextAsset = text;
 
             nomaiWallText.SetTextAsset(text);
+
+            // #433 fuzzy stranger text
+            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            {
+                StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
+            }
 
             return nomaiWallText;
         }

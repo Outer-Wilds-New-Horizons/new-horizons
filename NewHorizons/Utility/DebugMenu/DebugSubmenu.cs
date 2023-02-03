@@ -11,6 +11,7 @@ namespace NewHorizons.Utility.DebugMenu
     {
         internal abstract void OnAwake(DebugMenu menu);
         internal abstract void OnGUI(DebugMenu menu);
+        internal abstract void PrintNewConfigSection(DebugMenu menu);
         internal abstract void PreSave(DebugMenu menu);
         internal abstract void OnInit(DebugMenu menu);
         internal abstract void LoadConfigFile(DebugMenu menu, PlanetConfig config);
@@ -20,7 +21,6 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal abstract void GainActive();
         internal abstract void LoseActive();
-
 
     }
 }

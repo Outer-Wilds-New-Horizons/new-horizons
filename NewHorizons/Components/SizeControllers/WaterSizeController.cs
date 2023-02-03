@@ -4,6 +4,7 @@ namespace NewHorizons.Components.SizeControllers
     public class WaterSizeController : SizeController
     {
         public Material oceanFogMaterial;
+        public RadialFluidVolume fluidVolume;
 
         private void Start()
         {
@@ -17,6 +18,7 @@ namespace NewHorizons.Components.SizeControllers
             {
                 oceanFogMaterial.SetFloat("_Radius", CurrentScale);
             }
+            fluidVolume._radius = CurrentScale;
         }
     }
 }

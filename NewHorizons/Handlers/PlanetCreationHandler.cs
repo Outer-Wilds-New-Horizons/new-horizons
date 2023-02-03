@@ -466,7 +466,7 @@ namespace NewHorizons.Handlers
                 });
             }
 
-            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector);
+            RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector, body.Config.Star != null, body.Config.Atmosphere != null);
 
             Logger.LogVerbose($"Finished creating [{body.Config.name}]");
 
@@ -638,7 +638,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Funnel != null)
             {
-                FunnelBuilder.Make(go, go.GetComponentInChildren<ConstantForceDetector>(), rb, body.Config.Funnel);
+                FunnelBuilder.Make(go, sector, rb, body.Config.Funnel);
             }
 
             // Has to go last probably
@@ -793,8 +793,33 @@ namespace NewHorizons.Handlers
 
         public static void SetPositionFromVector(GameObject go, Vector3 position)
         {
-            go.transform.parent = Locator.GetRootTransform();
-            go.transform.position = position;
+            var rb = go.GetAttachedOWRigidbody();
+            if (rb)
+            {
+                var allChildren = CenterOfTheUniverse.s_rigidbodies.Where(x => x.GetOrigParentBody() == rb).ToArray();
+
+                var localPositions = allChildren.Select(x => rb.transform.InverseTransformPoint(x.transform.position)).ToArray();
+
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+
+                for (var i = 0; i < allChildren.Length; i++)
+                {
+                    if (allChildren[i].TryGetComponent<NomaiInterfaceOrb>(out var orb))
+                    {
+                        orb.SetOrbPosition(go.transform.TransformPoint(localPositions[i]));
+                    }
+                    else
+                    {
+                        allChildren[i].transform.position = go.transform.TransformPoint(localPositions[i]);
+                    }
+                }
+            }
+            else
+            {
+                go.transform.parent = Locator.GetRootTransform();
+                go.transform.position = position;
+            }
 
             if (go.transform.position.magnitude > Main.FurthestOrbit)
             {
