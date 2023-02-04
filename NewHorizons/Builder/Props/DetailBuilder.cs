@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -230,6 +231,14 @@ namespace NewHorizons.Builder.Props
 
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
+
+            if (detail.hasPhysics)
+            {
+                var addPhysics = prop.AddComponent<AddPhysics>();
+                addPhysics.Sector = sector;
+                addPhysics.Mass = detail.physicsMass;
+                addPhysics.Radius = detail.physicsRadius;
+            }
 
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 

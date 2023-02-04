@@ -229,6 +229,24 @@ namespace NewHorizons.External.Modules
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
             /// </summary>
             public bool keepLoaded;
+
+            /// <summary>
+            /// Should this object dynamically move around?
+            /// This tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others.
+            /// </summary>
+            public bool hasPhysics;
+
+            /// <summary>
+            /// The mass of the physics object.
+            /// Most pushable props use the default value, which matches the player mass.
+            /// </summary>
+            [DefaultValue(0.001f)] public float physicsMass = 0.001f;
+
+            /// <summary>
+            /// The radius that the added sphere collider will use for physics collision.
+            /// If there's already good colliders on the detail, you can make this 0.
+            /// </summary>
+            [DefaultValue(1f)] public float physicsRadius = 1f;
         }
 
         [JsonObject]

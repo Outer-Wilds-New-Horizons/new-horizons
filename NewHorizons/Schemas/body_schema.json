@@ -1090,6 +1090,22 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
