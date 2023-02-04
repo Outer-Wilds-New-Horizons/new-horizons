@@ -45,6 +45,21 @@ public class AddPhysics : MonoBehaviour
         bodyGo.AddComponent<DynamicForceDetector>();
         bodyGo.AddComponent<DynamicFluidDetector>();
 
+        var impactSensor = bodyGo.AddComponent<ImpactSensor>();
+        var audioSource = bodyGo.AddComponent<AudioSource>();
+        audioSource.maxDistance = 30;
+        audioSource.dopplerLevel = 0;
+        audioSource.rolloffMode = AudioRolloffMode.Custom;
+        audioSource.playOnAwake = false;
+        audioSource.spatialBlend = 1;
+        var owAudioSource = bodyGo.AddComponent<OWAudioSource>();
+        owAudioSource._audioSource = audioSource;
+        owAudioSource._track = OWAudioMixer.TrackName.Environment;
+        var objectImpactAudio = bodyGo.AddComponent<ObjectImpactAudio>();
+        objectImpactAudio._minPitch = 0.4f;
+        objectImpactAudio._maxPitch = 0.6f;
+        objectImpactAudio._impactSensor = impactSensor;
+
         bodyGo.SetActive(true);
 
         transform.parent = bodyGo.transform;
