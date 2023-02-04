@@ -1097,9 +1097,9 @@
         },
         "physicsMass": {
           "type": "number",
-          "description": "The mass of the physics object.\nFor reference, the player has a mass of 0.001 and the probe has a mass of 0.0001.",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
           "format": "float",
-          "default": 1.0
+          "default": 0.001
         },
         "physicsRadius": {
           "type": "number",
