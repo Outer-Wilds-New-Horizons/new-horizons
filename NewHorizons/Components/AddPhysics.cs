@@ -12,8 +12,8 @@ public class AddPhysics : MonoBehaviour
     [Tooltip("The sector that the rigidbody will be simulated in, or none for it to always be on.")]
     public Sector Sector;
     [Tooltip("The mass of the physics object.\n" +
-        "For reference, the player has a mass of 0.001 and the probe has a mass of 0.0001.")]
-    public float Mass = 1f;
+        "Most pushable props use the default value, which matches the player mass.")]
+    public float Mass = 0.001f;
     [Tooltip("The radius that the added sphere collider will use for physics collision.\n" +
         "If there's already good colliders on the detail, you can make this 0.")]
     public float Radius = 1f;

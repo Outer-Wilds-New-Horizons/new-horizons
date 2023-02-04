@@ -238,9 +238,9 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// The mass of the physics object.
-            /// For reference, the player has a mass of 0.001 and the probe has a mass of 0.0001.
+            /// Most pushable props use the default value, which matches the player mass.
             /// </summary>
-            [DefaultValue(1f)] public float physicsMass = 1f;
+            [DefaultValue(0.001f)] public float physicsMass = 0.001f;
 
             /// <summary>
             /// The radius that the added sphere collider will use for physics collision.
