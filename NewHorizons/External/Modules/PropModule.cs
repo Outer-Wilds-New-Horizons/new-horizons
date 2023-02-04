@@ -34,9 +34,15 @@ namespace NewHorizons.External.Modules
         public GeyserInfo[] geysers;
 
         /// <summary>
+        /// Add translatable text to this planet. (LEGACY - for use with pre-autospirals configs)
+        /// </summary>
+        [Obsolete("nomaiText is deprecated as of the release of auto spirals, instead please use translatorText with new configs.")]
+        public NomaiTextInfo[] nomaiText;
+
+        /// <summary>
         /// Add translatable text to this planet
         /// </summary>
-        public NomaiTextInfo[] nomaiText;
+        public NomaiTextInfo[] translatorText;
 
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.

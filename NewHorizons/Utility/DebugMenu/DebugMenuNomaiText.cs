@@ -100,7 +100,7 @@ namespace NewHorizons.Utility.DebugMenu
                 ConversationMetadata conversationMetadata = new ConversationMetadata()
                 {
                     conversation = conversation,
-                    conversationGo = NomaiTextBuilder.GetSpawnedGameObjectByNomaiTextInfo(conversation),
+                    conversationGo = TranslatorTextBuilder.GetSpawnedGameObjectByNomaiTextInfo(conversation),
                     planetConfig = config,
                     spirals = new List<SpiralMetadata>(),
                     collapsed = true
@@ -120,7 +120,7 @@ namespace NewHorizons.Utility.DebugMenu
                     SpiralMetadata metadata = new SpiralMetadata()
                     {
                         spiral = arcInfo,
-                        spiralGo = NomaiTextBuilder.GetSpawnedGameObjectByNomaiTextArcInfo(arcInfo),
+                        spiralGo = TranslatorTextBuilder.GetSpawnedGameObjectByNomaiTextArcInfo(arcInfo),
                         conversation = conversation,
                         planetConfig = config,
                         planetName = config.name,
@@ -365,7 +365,7 @@ namespace NewHorizons.Utility.DebugMenu
                                     for (indexInParent = 0; indexInParent < wallTextComponent._textLines.Length; indexInParent++) if (oldTextLineComponent == wallTextComponent._textLines[indexInParent]) break;
                                     var textEntryId = oldTextLineComponent._entryID;
                                     GameObject.Destroy(spiralMeta.spiralGo);
-                                    spiralMeta.spiralGo = NomaiTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId);
+                                    spiralMeta.spiralGo = TranslatorTextBuilder.MakeArc(spiralMeta.spiral, conversationZone, null, textEntryId);
                                     wallTextComponent._textLines[indexInParent] = spiralMeta.spiralGo.GetComponent<NomaiTextLine>();
 
                                     spiralMeta.spiralGo.name = "Brandnewspiral";

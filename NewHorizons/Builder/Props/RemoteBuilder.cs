@@ -194,7 +194,7 @@ namespace NewHorizons.Builder.Props
             {
                 var textInfo = info.nomaiText[i];
                 component._remoteIDs[i] = RemoteHandler.GetPlatformID(textInfo.id);
-                var wallText = NomaiTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
+                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
                 {
                     arcInfo = textInfo.arcInfo,
                     location = textInfo.location,

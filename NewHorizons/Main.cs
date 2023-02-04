@@ -275,6 +275,7 @@ namespace NewHorizons
                     GeyserBuilder.InitPrefab();
                     LavaBuilder.InitPrefabs();
                     NomaiTextBuilder.InitPrefabs();
+                    TranslatorTextBuilder.InitPrefabs();
                     RemoteBuilder.InitPrefabs();
                     SandBuilder.InitPrefabs();
                     SingularityBuilder.InitPrefabs();
