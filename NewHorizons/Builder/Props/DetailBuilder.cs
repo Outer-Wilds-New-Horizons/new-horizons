@@ -425,9 +425,6 @@ namespace NewHorizons.Builder.Props
 
             private IEnumerator Start()
             {
-                if (!Sector)
-                    Logger.LogError($"Prop {name} has physics but no sector! Will fall through things when surrounding area is unloaded");
-
                 yield return new WaitForSeconds(.1f);
 
                 var parentBody = GetComponentInParent<OWRigidbody>();
