@@ -416,7 +416,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        // BUG: detector collider is not included in groups. oh well
+        // detector collider is not included in groups. oh well
         private class AddPhysics : MonoBehaviour
         {
             public Sector Sector;
