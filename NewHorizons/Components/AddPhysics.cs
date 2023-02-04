@@ -6,6 +6,7 @@ namespace NewHorizons.Components;
 /// <summary>
 /// properly add physics to a detail
 /// </summary>
+[DisallowMultipleComponent]
 public class AddPhysics : MonoBehaviour
 {
     public Sector Sector;
