@@ -56,7 +56,6 @@ public class AddPhysics : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.matrix = transform.localToWorldMatrix;
-        Gizmos.DrawWireSphere(Vector3.zero, Radius);
+        Gizmos.DrawWireSphere(transform.position, Radius);
     }
 }
