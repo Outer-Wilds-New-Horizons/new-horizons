@@ -9,8 +9,8 @@ namespace NewHorizons.Components
     public class AddPhysics : MonoBehaviour
     {
         public Sector Sector;
-        public float Mass;
-        public float Radius;
+        public float Mass = 1f;
+        public float Radius = 1f;
 
         private IEnumerator Start()
         {
