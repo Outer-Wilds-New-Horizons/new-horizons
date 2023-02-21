@@ -947,7 +947,7 @@
             "$ref": "#/definitions/GeyserInfo"
           }
         },
-        "nomaiText": {
+        "translatorText": {
           "type": "array",
           "description": "Add translatable text to this planet",
           "items": {
