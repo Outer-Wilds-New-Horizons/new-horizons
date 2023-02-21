@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -10,8 +11,11 @@ namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
     {
-        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, PlanetConfig config, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, OWRigidbody planetBody, NewHorizonsBody nhBody)
         {
+            PlanetConfig config = nhBody.Config;
+            IModBehaviour mod = nhBody.Mod;
+
             if (config.Props.scatter != null)
             {
                 try
@@ -128,7 +132,22 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        NomaiTextBuilder.Make(go, sector, nomaiTextInfo, mod);
+                        NomaiTextBuilder.Make(go, sector, nomaiTextInfo, nhBody.Mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                    }
+
+                }
+            }
+            if (config.Props.translatorText != null)
+            {
+                foreach (var nomaiTextInfo in config.Props.translatorText)
+                {
+                    try
+                    {
+                        TranslatorTextBuilder.Make(go, sector, nomaiTextInfo, nhBody);
                     }
                     catch (Exception ex)
                     {
@@ -205,7 +224,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        RemoteBuilder.Make(go, sector, remoteInfo, mod);
+                        RemoteBuilder.Make(go, sector, remoteInfo, nhBody);
                     }
                     catch (Exception ex)
                     {

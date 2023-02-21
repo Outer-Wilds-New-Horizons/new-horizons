@@ -947,7 +947,7 @@
             "$ref": "#/definitions/GeyserInfo"
           }
         },
-        "nomaiText": {
+        "translatorText": {
           "type": "array",
           "description": "Add translatable text to this planet",
           "items": {
@@ -1345,6 +1345,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "keepAutoPlacement": {
+          "type": "boolean",
+          "description": "Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement."
+        },
         "mirror": {
           "type": "boolean",
           "description": "Whether to flip the spiral from left-curling to right-curling or vice versa."

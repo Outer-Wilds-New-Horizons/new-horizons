@@ -34,9 +34,15 @@ namespace NewHorizons.External.Modules
         public GeyserInfo[] geysers;
 
         /// <summary>
+        /// Add translatable text to this planet. (LEGACY - for use with pre-autospirals configs)
+        /// </summary>
+        [Obsolete("nomaiText is deprecated as of the release of auto spirals, instead please use translatorText with new configs.")]
+        public NomaiTextInfo[] nomaiText;
+
+        /// <summary>
         /// Add translatable text to this planet
         /// </summary>
-        public NomaiTextInfo[] nomaiText;
+        public NomaiTextInfo[] translatorText;
 
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
@@ -638,7 +644,7 @@ namespace NewHorizons.External.Modules
             /// Additional information about each arc in the text
             /// </summary>
             public NomaiTextArcInfo[] arcInfo;
-
+            
             /// <summary>
             /// The normal vector for this object. Used for writing on walls and positioning computers.
             /// </summary>
@@ -703,6 +709,11 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"stranger")] Stranger = 2
             }
+            
+            /// <summary>
+            /// Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement.
+            /// </summary>
+            public bool keepAutoPlacement;
 
             /// <summary>
             /// Whether to flip the spiral from left-curling to right-curling or vice versa.
