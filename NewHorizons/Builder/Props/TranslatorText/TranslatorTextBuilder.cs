@@ -719,7 +719,7 @@ namespace NewHorizons.Builder.Props
                 {
                     var cacheData = arranger.spirals.Select(spiralManipulator => new ArcCacheData() 
                     { 
-                        mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh, // TODO: create a serializable version of Mesh and pass this: spiralManipulator.GetComponent<MeshFilter>().mesh
+                        mesh = spiralManipulator.GetComponent<MeshFilter>().sharedMesh,
                         skeletonPoints = spiralManipulator.NomaiTextLine._points.Select(v => (MVector3)v).ToArray(),
                         position = spiralManipulator.transform.localPosition,
                         zRotation = spiralManipulator.transform.localEulerAngles.z,
