@@ -35,7 +35,8 @@ namespace NewHorizons.Utility
         }
 
         public void WriteToFile() 
-        { 
+        {
+            if (data.Count <= 0) return; // don't write empty caches
             mod.ModHelper.Storage.Save<Dictionary<string, string>>(data, filepath);
         }
 
