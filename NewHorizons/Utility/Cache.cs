@@ -14,6 +14,7 @@ namespace NewHorizons.Utility
         IModBehaviour mod;
         Dictionary<string, string> data = new Dictionary<string, string>();
         HashSet<string> accessedKeys = new HashSet<string>();
+        bool dirty;
 
         public Cache(IModBehaviour mod, string cacheFilePath) 
         {
@@ -25,6 +26,7 @@ namespace NewHorizons.Utility
             {
                 Logger.LogWarning("Cache file not found! Cache path: " + cacheFilePath);
                 data = new Dictionary<string, string>();
+                dirty = true;
                 return;
             }
 
@@ -32,11 +34,14 @@ namespace NewHorizons.Utility
             data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             // the code above does exactly the same thing that the code below does, but the below for some reason always returns null. no clue why
             // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
+
+            dirty = false;
         }
 
         public void WriteToFile() 
         {
             if (data.Count <= 0) return; // don't write empty caches
+            if (!dirty) return; // don't write unmodified caches
             mod.ModHelper.Storage.Save<Dictionary<string, string>>(data, filepath);
         }
 
@@ -54,6 +59,7 @@ namespace NewHorizons.Utility
 
         public void Set<T>(string key, T value)
         {
+            dirty = true;
             accessedKeys.Add(key);
             data[key] = JsonConvert.SerializeObject(value);
         }
