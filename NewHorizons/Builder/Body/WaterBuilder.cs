@@ -47,9 +47,12 @@ namespace NewHorizons.Builder.Body
 
             GameObject waterGO = new GameObject("Water");
             waterGO.SetActive(false);
-            waterGO.layer = 15;
             waterGO.transform.parent = sector?.transform ?? planetGO.transform;
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
+
+            // Don't ignore sun when not under clouds
+            waterGO.layer = 0;
+            Delay.FireOnNextUpdate(() => { if (planetGO.FindChild("Sector/SunOverride") != null) waterGO.layer = 15; });
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
