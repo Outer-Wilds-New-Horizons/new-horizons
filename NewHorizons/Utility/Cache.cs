@@ -23,7 +23,6 @@ namespace NewHorizons.Utility
             
             if (!File.Exists(fullPath))
             {
-                Logger.LogWarning("Cache file not found! Cache path: " + cacheFilePath);
                 data = new Dictionary<string, string>();
                 return;
             }
@@ -35,7 +34,8 @@ namespace NewHorizons.Utility
         }
 
         public void WriteToFile() 
-        { 
+        {
+            if (data.Count <= 0) return; // don't write empty caches
             mod.ModHelper.Storage.Save<Dictionary<string, string>>(data, filepath);
         }
 
