@@ -23,7 +23,6 @@ namespace NewHorizons.Utility
             
             if (!File.Exists(fullPath))
             {
-                Logger.LogWarning("Cache file not found! Cache path: " + cacheFilePath);
                 data = new Dictionary<string, string>();
                 return;
             }
