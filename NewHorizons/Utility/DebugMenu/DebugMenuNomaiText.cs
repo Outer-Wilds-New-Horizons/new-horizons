@@ -93,9 +93,9 @@ namespace NewHorizons.Utility.DebugMenu
         
         internal override void LoadConfigFile(DebugMenu menu, PlanetConfig config)
         {
-            if (config?.Props?.nomaiText == null) return;
+            if (config?.Props?.translatorText == null) return;
 
-            foreach(NomaiTextInfo conversation in config.Props.nomaiText)
+            foreach(NomaiTextInfo conversation in config.Props.translatorText)
             {
                 ConversationMetadata conversationMetadata = new ConversationMetadata()
                 {

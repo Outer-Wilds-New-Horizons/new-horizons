@@ -126,6 +126,7 @@ namespace NewHorizons.Builder.Props
                     }
                 }
             }
+#pragma warning disable 612, 618
             if (config.Props.nomaiText != null)
             {
                 foreach (var nomaiTextInfo in config.Props.nomaiText)
@@ -141,6 +142,7 @@ namespace NewHorizons.Builder.Props
 
                 }
             }
+#pragma warning restore 612, 618
             if (config.Props.translatorText != null)
             {
                 foreach (var nomaiTextInfo in config.Props.translatorText)
