@@ -245,7 +245,7 @@ namespace NewHorizons.Builder.Props
             // Set the seed/node specific scales and other stuff
             if (config.isSeed)
             {
-                innerFogWarpVolume._exitRadius /= 1.8f;
+                //innerFogWarpVolume._exitRadius /= 1.8f;
                 brambleNode.FindChild("PointLight_DB_FogLight").GetComponent<Light>().range *= config.scale;
                 brambleNode.FindChild("Prefab_SeedPunctureVolume (2)").GetComponent<CompoundShape>().enabled = true;
                 fogLight._maxVisibleDistance = float.PositiveInfinity; // Prefab does have working foglight aside from this

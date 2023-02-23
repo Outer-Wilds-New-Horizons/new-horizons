@@ -4,23 +4,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace NewHorizons.Patches
 {
     [HarmonyPatch]
     public static class BramblePatches
     {
-        //
-        // this file is not great. the real solution to the issues these patches address should be solved by replacing bramble nodes' InnerFogWarpVolume
-        // components with a custom NHInnerFogWarpVolume component, and implement the below functions as overrides in the NHInnerFogWarpVolume class
-        // that would fix the issue of seeds having inappropriate screen fog
-        //
 
         [HarmonyPrefix]
         [HarmonyPatch(typeof(SphericalFogWarpVolume), nameof(SphericalFogWarpVolume.IsProbeOnly))]
         public static bool SphericalFogWarpVolume_IsProbeOnly(SphericalFogWarpVolume __instance, ref bool __result)
         {
-            __result = false;
+            __result = Mathf.Approximately(__instance._exitRadius / __instance._warpRadius, 2f); // Check the ratio between these to determine if seed, instead of just < 10
             return false;
         }
 
