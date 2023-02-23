@@ -28,7 +28,6 @@ namespace NewHorizons.Utility
         {
             if (RelativePath == null) 
             {
-                Logger.LogWarning("Cannot load cache! RelativePath is null!");
                 return;
             }
 
