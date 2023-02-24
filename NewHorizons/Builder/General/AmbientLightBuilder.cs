@@ -5,7 +5,7 @@ namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
     {
-        public static Light Make(GameObject planetGO, Sector sector, AmbientLightModule config)
+        public static Light Make(GameObject planetGO, Sector sector, AmbientLightModule config, float surfaceSize)
         {
             var ambientLight = Main.Instance.CurrentStarSystem == "EyeOfTheUniverse" ? SearchUtilities.Find("EyeOfTheUniverse_Body/Sector_EyeOfTheUniverse/SixthPlanet_Root/QuantumMoonProxy_Pivot/QuantumMoonProxy_Root/MoonState_Root/AmbientLight_QM") : SearchUtilities.Find("QuantumMoon_Body/AmbientLight_QM");
             if (ambientLight == null) return null;
