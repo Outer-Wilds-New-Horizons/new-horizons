@@ -291,7 +291,11 @@ namespace NewHorizons.External.Configs
                     radius = Base.cloakRadius
                 };
 
-            if (Base.hasAmbientLight) Base.ambientLight = 0.5f;
+            if (Base.hasAmbientLight || Base.ambientLight != 0)
+            {
+                if (AmbientLights == null) AmbientLights = new AmbientLightModule[0];
+                AmbientLights = AmbientLights.Append(new AmbientLightModule { intensity = Base.ambientLight != 0 ? Base.ambientLight : 0.5f }).ToArray();
+            }
 
             if (Atmosphere != null)
             {

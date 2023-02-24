@@ -497,7 +497,7 @@ namespace NewHorizons.Handlers
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
-            Light ambientLight = null;
+            Light[] ambientLight = null;
             if (body.Config.Base.ambientLight != 0)
             {
                 ambientLight = AmbientLightBuilder.Make(go, sector, sphereOfInfluence, body.Config.Base.ambientLight);

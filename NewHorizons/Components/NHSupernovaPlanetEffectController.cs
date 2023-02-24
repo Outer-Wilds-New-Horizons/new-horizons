@@ -10,8 +10,8 @@ namespace NewHorizons.Components
 {
     public class NHSupernovaPlanetEffectController : MonoBehaviour
     {
-        public Light _ambientLight;
-        public float _ambientLightOrigIntensity;
+        public Light[] _ambientLight;
+        public float[] _ambientLightOrigIntensity;
         public LODGroup _atmosphere;
         public Renderer _atmosphereRenderer;
         public float _atmosphereOrigSunIntensity = 1;
@@ -131,7 +131,13 @@ namespace NewHorizons.Components
                 {
                     float collapseProgress = StarEvolutionController.GetCollapseProgress();
 
-                    if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity * (1f - collapseProgress);
+                    if (_ambientLight != null)
+                    {
+                        for (int i = 0; i < _ambientLight.Length; i++)
+                        {
+                            _ambientLight[i].intensity = _ambientLightOrigIntensity[i] * (1f - collapseProgress);
+                        }
+                    }
 
                     if (_atmosphere != null)
                     {
@@ -181,7 +187,13 @@ namespace NewHorizons.Components
                 {
                     float collapseProgress = SunController.GetCollapseProgress();
 
-                    if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity * (1f - collapseProgress);
+                    if (_ambientLight != null)
+                    {
+                        for (int i = 0; i < _ambientLight.Length; i++)
+                        {
+                            _ambientLight[i].intensity = _ambientLightOrigIntensity[i] * (1f - collapseProgress);
+                        }
+                    }
 
                     if (_atmosphere != null)
                     {
@@ -212,7 +224,13 @@ namespace NewHorizons.Components
             {
                 if (_shockLayer != null) _shockLayer.enabled = false;
 
-                if (_ambientLight != null) _ambientLight.intensity = _ambientLightOrigIntensity;
+                if (_ambientLight != null)
+                {
+                    for (int i = 0; i < _ambientLight.Length; i++)
+                    {
+                        _ambientLight[i].intensity = _ambientLightOrigIntensity[i];
+                    }
+                }
 
                 if (_fog != null) _fog.fogTint = _fogOrigTint;
 
