@@ -20,11 +20,6 @@ namespace NewHorizons.External.Modules
     public class BaseModule
     {
         /// <summary>
-        /// The intensity of light the dark side of the body should have. Timber Hearth has `1.4` for reference
-        /// </summary>
-        public float ambientLight;
-
-        /// <summary>
         /// Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever
         /// have this set to true.
         /// </summary>
@@ -103,8 +98,11 @@ namespace NewHorizons.External.Modules
         [Obsolete("WaterTint is deprecated, please use WaterModule instead")]
         public MColor waterTint;
 
-        [Obsolete("HasAmbientLight is deprecated, please use AmbientLight instead")]
+        [Obsolete("HasAmbientLight is deprecated, please use AmbientLightModule instead")]
         public bool hasAmbientLight;
+
+        [Obsolete("AmbientLight is deprecated, please use AmbientLightModule instead")]
+        public float ambientLight;
 
         [Obsolete("HasReferenceFrame is deprecated, please use ReferenceModule instead")]
         [DefaultValue(true)] public bool hasReferenceFrame = true;

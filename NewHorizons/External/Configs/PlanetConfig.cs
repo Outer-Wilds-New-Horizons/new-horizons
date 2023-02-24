@@ -28,6 +28,11 @@ namespace NewHorizons.External.Configs
         [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
 
         /// <summary>
+        /// Add ambient lights to this body
+        /// </summary>
+        public AmbientLightModule[] AmbientLights;
+
+        /// <summary>
         /// Generate asteroids around this body
         /// </summary>
         public AsteroidBeltModule AsteroidBelt;
