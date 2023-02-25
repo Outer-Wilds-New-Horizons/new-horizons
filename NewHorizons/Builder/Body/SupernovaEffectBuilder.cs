@@ -58,9 +58,12 @@ namespace NewHorizons.Builder.Body
                 var supernovaController = new GameObject("SupernovaController");
                 supernovaController.transform.SetParent(sector?.transform ?? planetGO.transform, false);
                 var supernovaEffectController = supernovaController.AddComponent<NHSupernovaPlanetEffectController>();
-                currentController._ambientLight = ambientLight;
-                currentController._ambientLightOrigIntensity = new float[ambientLight.Length];
-                for (int i = 0; i < ambientLight.Length; i++) currentController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
+                if (ambientLight != null)
+                {
+                    currentController._ambientLight = ambientLight;
+                    currentController._ambientLightOrigIntensity = new float[ambientLight.Length];
+                    for (int i = 0; i < ambientLight.Length; i++) currentController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
+                }
                 if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) supernovaEffectController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
                 supernovaEffectController._atmosphere = atmosphere;
                 supernovaEffectController._atmosphereRenderer = atmosphereRenderer;
