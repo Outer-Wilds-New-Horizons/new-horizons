@@ -12,12 +12,12 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// The range of the light. Defaults to surfaceSize * 2.
         /// </summary>
-        [Range(0, double.MaxValue)] public float outerRadius;
+        [Range(0, double.MaxValue)] public float? outerRadius;
 
         /// <summary>
-        /// The lower radius where the light is brightest, fading in from outerRadius. Defaults to half of outerRadius.
+        /// The lower radius where the light is brightest, fading in from outerRadius. Defaults to surfaceSize.
         /// </summary>
-        [Range(0, double.MaxValue)] public float innerRadius;
+        [Range(0, double.MaxValue)] public float? innerRadius;
 
         /// <summary>
         /// The brightness of the light. For reference, Timber Hearth is `1.4`, and Giant's Deep is `0.8`.

@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.General
             if (ambientLight == null) return null;
 
             GameObject lightGO = GameObject.Instantiate(ambientLight, sector?.transform ?? planetGO.transform);
-            lightGO.transform.position = planetGO.transform.position;
+            lightGO.transform.position = config.position ?? planetGO.transform.position;
             lightGO.name = "AmbientLight";
 
             var light = lightGO.GetComponent<Light>();
@@ -21,36 +21,42 @@ namespace NewHorizons.Builder.General
              * A is the intensity and its like square rooted and squared and idgi
              */
 
-            light.color = new Color(0.5f, 0.0f, 0.8f, 0.0225f);
-            light.range = scale;
-            light.intensity = intensity;
+            light.intensity = config.intensity;
+            light.range = config.outerRadius ?? surfaceSize * 2;
+            var innerRadius = config.innerRadius ?? surfaceSize;
+            innerRadius = Mathf.Clamp01(innerRadius / light.range);
+            var shell = config.isShell ? 1f : 0f;
+            light.color = new Color(innerRadius, shell, 0.8f, 0.0225f);
 
-            var tint = Color.blue; // test
-            var cubemap = (Cubemap)light.cookie;
-            var cubemapFace = CubemapFace.Unknown;
-            for (int i = 0; i < 6; i++)
+            if (config.tint != null)
             {
-                switch (i)
+                var tint = config.tint.ToColor();
+                var cubemap = (Cubemap)light.cookie;
+                var cubemapFace = CubemapFace.Unknown;
+                for (int i = 0; i < 6; i++)
                 {
-                    case 0: cubemapFace = CubemapFace.PositiveX; break;
-                    case 1: cubemapFace = CubemapFace.NegativeX; break;
-                    case 2: cubemapFace = CubemapFace.PositiveY; break;
-                    case 3: cubemapFace = CubemapFace.NegativeY; break;
-                    case 4: cubemapFace = CubemapFace.PositiveZ; break;
-                    case 5: cubemapFace = CubemapFace.NegativeZ; break;
-                    default: break;
+                    switch (i)
+                    {
+                        case 0: cubemapFace = CubemapFace.PositiveX; break;
+                        case 1: cubemapFace = CubemapFace.NegativeX; break;
+                        case 2: cubemapFace = CubemapFace.PositiveY; break;
+                        case 3: cubemapFace = CubemapFace.NegativeY; break;
+                        case 4: cubemapFace = CubemapFace.PositiveZ; break;
+                        case 5: cubemapFace = CubemapFace.NegativeZ; break;
+                        default: break;
+                    }
+                    var sourceColors = cubemap.GetPixels(cubemapFace, 0);
+                    var newColors = new Color[sourceColors.Length];
+                    for (int j = 0; j < sourceColors.Length; j++)
+                    {
+                        var grey = sourceColors[j].grayscale;
+                        newColors[j] = tint * new Color(grey, grey, grey);
+                    }
+                    cubemap.SetPixels(newColors, cubemapFace);
                 }
-                var sourceColors = cubemap.GetPixels(cubemapFace, 0);
-                var newColors = new Color[sourceColors.Length];
-                for (int j = 0; j < sourceColors.Length; j++)
-                {
-                    var grey = sourceColors[j].grayscale;
-                    newColors[j] = tint * new Color(grey, grey, grey);
-                }
-                cubemap.SetPixels(newColors, cubemapFace);
+                cubemap.Apply();
+                light.cookie = cubemap;
             }
-            cubemap.Apply();
-            light.cookie = cubemap;
 
             return light;
         }
