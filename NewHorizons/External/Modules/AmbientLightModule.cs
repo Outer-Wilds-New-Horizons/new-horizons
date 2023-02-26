@@ -30,7 +30,7 @@ namespace NewHorizons.External.Modules
         public MColor tint;
 
         /// <summary>
-        /// If true, the light will start fading away below innerRadius, instead of staying constant. This means that innerRadius will be the midpoint between the outerRadius and an inner cutoff.
+        /// If true, the light will work as a shell between inner and outer radius.
         /// </summary>
         [DefaultValue(false)] public bool isShell = false;
 
