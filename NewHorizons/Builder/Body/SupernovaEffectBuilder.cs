@@ -60,9 +60,9 @@ namespace NewHorizons.Builder.Body
                 var supernovaEffectController = supernovaController.AddComponent<NHSupernovaPlanetEffectController>();
                 if (ambientLight != null)
                 {
-                    currentController._ambientLight = ambientLight;
-                    currentController._ambientLightOrigIntensity = new float[ambientLight.Length];
-                    for (int i = 0; i < ambientLight.Length; i++) currentController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
+                    supernovaEffectController._ambientLight = ambientLight;
+                    supernovaEffectController._ambientLightOrigIntensity = new float[ambientLight.Length];
+                    for (int i = 0; i < ambientLight.Length; i++) supernovaEffectController._ambientLightOrigIntensity[i] = ambientLight[i].intensity;
                 }
                 if (config.Atmosphere != null && config.Atmosphere.atmosphereSunIntensity != 0) supernovaEffectController._atmosphereOrigSunIntensity = config.Atmosphere.atmosphereSunIntensity;
                 supernovaEffectController._atmosphere = atmosphere;
