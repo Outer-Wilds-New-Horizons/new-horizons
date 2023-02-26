@@ -11,7 +11,7 @@ namespace NewHorizons.Builder.General
             if (ambientLight == null) return null;
 
             GameObject lightGO = GameObject.Instantiate(ambientLight, sector?.transform ?? planetGO.transform);
-            lightGO.transform.position = config.position ?? planetGO.transform.position;
+            lightGO.transform.position = config.position == null ? planetGO.transform.position : planetGO.transform.TransformPoint(config.position);
             lightGO.name = "AmbientLight";
 
             var light = lightGO.GetComponent<Light>();
