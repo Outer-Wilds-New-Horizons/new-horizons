@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.General
             if (config.tint != null)
             {
                 var tint = config.tint.ToColor();
-                var cubemap = (Cubemap)light.cookie;
+                var cubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
                 var cubemapFace = CubemapFace.Unknown;
                 for (int i = 0; i < 6; i++)
                 {
