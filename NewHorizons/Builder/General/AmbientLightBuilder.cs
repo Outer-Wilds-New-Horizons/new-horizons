@@ -26,7 +26,7 @@ namespace NewHorizons.Builder.General
             var innerRadius = config.innerRadius ?? surfaceSize;
             innerRadius = Mathf.Clamp01(innerRadius / light.range);
             var shell = config.isShell ? 1f : 0f;
-            light.color = new Color(innerRadius, shell, 0.8f, 0.0225f);
+            light.color = new Color(innerRadius, shell, 1f, 0.0225f);
 
             if (config.tint != null)
             {
@@ -49,7 +49,7 @@ namespace NewHorizons.Builder.General
                     var newColors = new Color[sourceColors.Length];
                     for (int j = 0; j < sourceColors.Length; j++)
                     {
-                        var grey = sourceColors[j].grayscale;
+                        var grey = sourceColors[j].grayscale * 2;
                         newColors[j] = tint * new Color(grey, grey, grey);
                     }
                     cubemap.SetPixels(newColors, cubemapFace);
