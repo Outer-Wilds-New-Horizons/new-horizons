@@ -184,7 +184,7 @@
         },
         "isShell": {
           "type": "boolean",
-          "description": "If true, the light will start fading away below innerRadius, instead of staying constant. This means that innerRadius will be the midpoint between the outerRadius and an inner cutoff.",
+          "description": "If true, the light will work as a shell between inner and outer radius.",
           "default": false
         },
         "position": {
