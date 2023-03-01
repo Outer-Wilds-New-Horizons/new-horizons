@@ -609,7 +609,7 @@ namespace NewHorizons.External.Modules
             public class ThrustRulesetInfo : VolumeInfo
             {
                 /// <summary>
-                /// Limit how fast you can fly with your jetpack while in this ruleset volume.
+                /// Limit how fast you can fly with your ship while in this ruleset volume.
                 /// </summary>
                 [DefaultValue(float.PositiveInfinity)] public float thrustLimit = float.PositiveInfinity;
 
