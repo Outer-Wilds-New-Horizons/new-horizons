@@ -3606,7 +3606,7 @@
         },
         "thrustLimit": {
           "type": "number",
-          "description": "Limit how fast you can fly with your jetpack while in this ruleset volume.",
+          "description": "Limit how fast you can fly with your ship while in this ruleset volume.",
           "format": "float",
           "default": "Infinity"
         },
