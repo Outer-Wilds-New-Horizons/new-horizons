@@ -336,7 +336,7 @@ namespace NewHorizons.Builder.Props
             // fix campfires
             if (component is InteractVolume interactVolume)
             {
-                interactVolume._playerCam = GameObject.Find("Player_Body/PlayerCamera").GetComponent<OWCamera>();
+                interactVolume._playerCam = Locator.GetPlayerCamera();
             }
             if (component is PlayerAttachPoint playerAttachPoint)
             {
@@ -344,7 +344,7 @@ namespace NewHorizons.Builder.Props
                 playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
                 playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
                 playerAttachPoint._playerTransform = playerBody.transform;
-                playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
+                playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController();
             }
 
             if (component is NomaiInterfaceOrb orb)
@@ -357,7 +357,7 @@ namespace NewHorizons.Builder.Props
             {
                 torchItem.enabled = true;
                 torchItem.mindProjectorTrigger.enabled = true;
-                torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
             }
 
             if (component is Animator animator) animator.enabled = true;
