@@ -41,7 +41,7 @@ namespace NewHorizons.Builder.General
                 for (int i = 0; i < 6; i++)
                 {
                     var cubemapFace = (CubemapFace)i;
-                    var sourceColors = cubemap.GetPixels(cubemapFace);
+                    var sourceColors = baseCubemap.GetPixels(cubemapFace);
                     var newColors = new Color[sourceColors.Length];
                     for (int j = 0; j < sourceColors.Length; j++)
                     {
