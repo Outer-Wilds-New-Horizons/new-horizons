@@ -370,9 +370,10 @@ namespace NewHorizons.Builder.Props
 
             if (component is Animator animator) animator.enabled = true;
             if (component is Collider collider) collider.enabled = true;
-            if (component is Renderer renderer) renderer.enabled = true;
+            // Bug 533 - Don't show the electricity effect renderers
+            if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
             if (component is Shape shape) shape.enabled = true;
-            
+
             // fixes sector cull group deactivating renderers on map view enter and fast foward
             // TODO: does this actually work? what? how?
             if (component is SectorCullGroup sectorCullGroup)
