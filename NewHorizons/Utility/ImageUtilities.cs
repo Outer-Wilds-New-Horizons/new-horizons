@@ -13,8 +13,8 @@ namespace NewHorizons.Utility
 {
     public static class ImageUtilities
     {
-        private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
-        private static List<Texture2D> _generatedTextures = new List<Texture2D>();
+        private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
+        internal static readonly List<Texture> _generatedTextures = new();
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {

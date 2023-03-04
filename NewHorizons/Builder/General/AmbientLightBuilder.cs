@@ -1,6 +1,8 @@
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules;
+using System;
+
 namespace NewHorizons.Builder.General
 {
     public static class AmbientLightBuilder
@@ -33,34 +35,24 @@ namespace NewHorizons.Builder.General
             {
                 var tint = config.tint.ToColor();
                 var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
-                
                 var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
                 cubemap.name = baseCubemap.name + "Tinted";
                 cubemap.wrapMode = baseCubemap.wrapMode;
-                
-                var cubemapFace = CubemapFace.Unknown;
                 for (int i = 0; i < 6; i++)
                 {
-                    switch (i)
-                    {
-                        case 0: cubemapFace = CubemapFace.PositiveX; break;
-                        case 1: cubemapFace = CubemapFace.NegativeX; break;
-                        case 2: cubemapFace = CubemapFace.PositiveY; break;
-                        case 3: cubemapFace = CubemapFace.NegativeY; break;
-                        case 4: cubemapFace = CubemapFace.PositiveZ; break;
-                        case 5: cubemapFace = CubemapFace.NegativeZ; break;
-                        default: break;
-                    }
-                    var sourceColors = cubemap.GetPixels(cubemapFace, 0);
+                    var cubemapFace = (CubemapFace)i;
+                    var sourceColors = cubemap.GetPixels(cubemapFace);
                     var newColors = new Color[sourceColors.Length];
                     for (int j = 0; j < sourceColors.Length; j++)
                     {
-                        var grey = sourceColors[j].grayscale * 2;
-                        newColors[j] = tint * new Color(grey, grey, grey);
+                        var grey = sourceColors[j].grayscale * 2; // looks nicer with multiplier
+                        newColors[j] = new Color(grey, grey, grey) * tint;
                     }
                     cubemap.SetPixels(newColors, cubemapFace);
                 }
                 cubemap.Apply();
+                ImageUtilities._generatedTextures.Add(cubemap);
+                
                 light.cookie = cubemap;
             }
 
