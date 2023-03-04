@@ -269,9 +269,7 @@ namespace NewHorizons.Builder.Props
 
                         customScroll.SetActive(true);
 
-                        // Enable the collider and renderer
-                        Delay.RunWhen(
-                            () => Main.IsSystemReady,
+                        Delay.FireOnNextUpdate(
                             () =>
                             {
                                 Logger.LogVerbose("Fixing scroll!");
@@ -281,8 +279,12 @@ namespace NewHorizons.Builder.Props
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Collider").gameObject.SetActive(true);
                                 nomaiWallText.gameObject.GetComponent<Collider>().enabled = false;
                                 customScroll.GetComponent<CapsuleCollider>().enabled = true;
+                                scrollItem._nomaiWallText.HideImmediate();
+                                scrollItem._nomaiWallText._collider.SetActivation(true);
+                                scrollItem.SetColliderActivation(true);
                             }
                         );
+
                         conversationInfoToCorrespondingSpawnedGameObject[info] = customScroll;
                         
                         return customScroll;
