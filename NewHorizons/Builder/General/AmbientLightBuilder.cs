@@ -32,7 +32,12 @@ namespace NewHorizons.Builder.General
             if (config.tint != null)
             {
                 var tint = config.tint.ToColor();
-                var cubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                
+                var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
+                cubemap.name = baseCubemap.name + "Tinted";
+                cubemap.wrapMode = baseCubemap.wrapMode;
+                
                 var cubemapFace = CubemapFace.Unknown;
                 for (int i = 0; i < 6; i++)
                 {
