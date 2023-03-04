@@ -274,7 +274,11 @@ namespace NewHorizons
                     GeometryBuilder.InitPrefab();
                     GeyserBuilder.InitPrefab();
                     LavaBuilder.InitPrefabs();
+                    
+                    // Backwards compat
+#pragma warning disable 612, 618
                     NomaiTextBuilder.InitPrefabs();
+#pragma warning restore 612, 618
                     TranslatorTextBuilder.InitPrefabs();
                     RemoteBuilder.InitPrefabs();
                     SandBuilder.InitPrefabs();
