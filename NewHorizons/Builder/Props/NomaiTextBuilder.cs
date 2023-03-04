@@ -2,18 +2,22 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
+using OWML.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
-using OWML.Utils;
 
 namespace NewHorizons.Builder.Props
 {
+    /// <summary>
+    /// Legacy - this class is used with the deprecated "nomaiText" module (deprecated on release of autospirals)
+    /// </summary>
+    [Obsolete]
     public static class NomaiTextBuilder
     {
         private static List<GameObject> _arcPrefabs;

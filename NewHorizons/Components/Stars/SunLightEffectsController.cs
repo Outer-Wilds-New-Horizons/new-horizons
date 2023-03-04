@@ -89,10 +89,12 @@ namespace NewHorizons.Components.Stars
             {
                 origin = Locator.GetActiveCamera().transform.position;
 
-                // Keep all star lights on in map
                 foreach (var light in _lights)
                 {
+                    // Keep all star lights on in map
                     light.enabled = true;
+                    // Fixes everything transparent breaking due to directional
+                    if (light.type == LightType.Directional) light.type = LightType.Point;
                 }
             }
             else
@@ -110,6 +112,8 @@ namespace NewHorizons.Components.Stars
                     {
                         light.enabled = false;
                     }
+                    // Revert map fix
+                    if (light.type == LightType.Point) light.type = LightType.Directional;
                 }
             }
 

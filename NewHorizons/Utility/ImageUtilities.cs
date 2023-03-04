@@ -7,14 +7,19 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 namespace NewHorizons.Utility
 {
     public static class ImageUtilities
     {
-        private static Dictionary<string, Texture2D> _loadedTextures = new Dictionary<string, Texture2D>();
-        private static List<Texture2D> _generatedTextures = new List<Texture2D>();
+        private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
+        private static readonly List<Texture> _generatedTextures = new();
+
+        /// <summary>
+        /// Track textures generated outside of this file so they can be cleaned up on scene unload
+        /// </summary>
+        /// <param name="texture"></param>
+        public static void TrackGeneratedTexture(Texture texture) => _generatedTextures.Add(texture);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {

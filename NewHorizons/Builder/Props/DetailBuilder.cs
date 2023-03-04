@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -231,6 +232,14 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
+            if (detail.hasPhysics)
+            {
+                var addPhysics = prop.AddComponent<AddPhysics>();
+                addPhysics.Sector = sector;
+                addPhysics.Mass = detail.physicsMass;
+                addPhysics.Radius = detail.physicsRadius;
+            }
+
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
@@ -315,7 +324,6 @@ namespace NewHorizons.Builder.Props
             if (component is DarkMatterSubmergeController submergeController)
             {
                 var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
-                // dont use SetDetectableFluid here because Awake hasn't been called yet
                 if (submergeController._fluidDetector)
                     submergeController._fluidDetector._onlyDetectableFluid = water;
             }
@@ -336,7 +344,7 @@ namespace NewHorizons.Builder.Props
             // fix campfires
             if (component is InteractVolume interactVolume)
             {
-                interactVolume._playerCam = GameObject.Find("Player_Body/PlayerCamera").GetComponent<OWCamera>();
+                Delay.FireOnNextUpdate(() => interactVolume._playerCam = Locator.GetPlayerCamera());
             }
             if (component is PlayerAttachPoint playerAttachPoint)
             {
@@ -344,7 +352,7 @@ namespace NewHorizons.Builder.Props
                 playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
                 playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
                 playerAttachPoint._playerTransform = playerBody.transform;
-                playerAttachPoint._fpsCamController = GameObject.Find("Player_Body/PlayerCamera").GetComponent<PlayerCameraController>();
+                Delay.FireOnNextUpdate(() => playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController());
             }
 
             if (component is NomaiInterfaceOrb orb)
@@ -357,14 +365,15 @@ namespace NewHorizons.Builder.Props
             {
                 torchItem.enabled = true;
                 torchItem.mindProjectorTrigger.enabled = true;
-                torchItem.mindSlideProjector._mindProjectorImageEffect = SearchUtilities.Find("Player_Body/PlayerCamera").GetComponent<MindProjectorImageEffect>();
+                Delay.FireOnNextUpdate(() => torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>());
             }
 
             if (component is Animator animator) animator.enabled = true;
             if (component is Collider collider) collider.enabled = true;
-            if (component is Renderer renderer) renderer.enabled = true;
+            // Bug 533 - Don't show the electricity effect renderers
+            if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
             if (component is Shape shape) shape.enabled = true;
-            
+
             // fixes sector cull group deactivating renderers on map view enter and fast foward
             // TODO: does this actually work? what? how?
             if (component is SectorCullGroup sectorCullGroup)

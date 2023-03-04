@@ -34,9 +34,15 @@ namespace NewHorizons.External.Modules
         public GeyserInfo[] geysers;
 
         /// <summary>
+        /// Add translatable text to this planet. (LEGACY - for use with pre-autospirals configs)
+        /// </summary>
+        [Obsolete("nomaiText is deprecated as of the release of auto spirals, instead please use translatorText with new configs.")]
+        public NomaiTextInfo[] nomaiText;
+
+        /// <summary>
         /// Add translatable text to this planet
         /// </summary>
-        public NomaiTextInfo[] nomaiText;
+        public NomaiTextInfo[] translatorText;
 
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
@@ -229,6 +235,24 @@ namespace NewHorizons.External.Modules
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
             /// </summary>
             public bool keepLoaded;
+
+            /// <summary>
+            /// Should this object dynamically move around?
+            /// This tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others.
+            /// </summary>
+            public bool hasPhysics;
+
+            /// <summary>
+            /// The mass of the physics object.
+            /// Most pushable props use the default value, which matches the player mass.
+            /// </summary>
+            [DefaultValue(0.001f)] public float physicsMass = 0.001f;
+
+            /// <summary>
+            /// The radius that the added sphere collider will use for physics collision.
+            /// If there's already good colliders on the detail, you can make this 0.
+            /// </summary>
+            [DefaultValue(1f)] public float physicsRadius = 1f;
         }
 
         [JsonObject]
@@ -532,6 +556,19 @@ namespace NewHorizons.External.Modules
             /// Optionally set the parent object that the dialogue and remote trigger will be attached to
             /// </summary>
             public string parentPath;
+
+            /// <summary>
+            /// What type of flashlight toggle to do when dialogue is interacted with
+            /// </summary>
+            [DefaultValue("none")] public FlashlightToggle flashlightToggle = FlashlightToggle.None;
+
+            [JsonConverter(typeof(StringEnumConverter))]
+            public enum FlashlightToggle
+            {
+                [EnumMember(Value = @"none")] None = -1,
+                [EnumMember(Value = @"turnOff")] TurnOff = 0,
+                [EnumMember(Value = @"turnOffThenOn")] TurnOffThenOn = 1,
+            }
         }
 
         [JsonObject]
@@ -607,7 +644,7 @@ namespace NewHorizons.External.Modules
             /// Additional information about each arc in the text
             /// </summary>
             public NomaiTextArcInfo[] arcInfo;
-
+            
             /// <summary>
             /// The normal vector for this object. Used for writing on walls and positioning computers.
             /// </summary>
@@ -672,6 +709,11 @@ namespace NewHorizons.External.Modules
 
                 [EnumMember(Value = @"stranger")] Stranger = 2
             }
+            
+            /// <summary>
+            /// Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement.
+            /// </summary>
+            public bool keepAutoPlacement;
 
             /// <summary>
             /// Whether to flip the spiral from left-curling to right-curling or vice versa.

@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.Volumes
                 if (water != null)
                 {
                     var submerge = go.AddComponent<DarkMatterSubmergeController>();
-                    submerge._activeWhenSubmerged = false;
+                    submerge._sector = sector;
                     submerge._effectVolumes = new EffectVolume[] { hazardVolume, visorFrostEffectVolume };
                     // THERE ARE NO RENDERERS??? RUH ROH!!!
 
@@ -76,7 +76,10 @@ namespace NewHorizons.Builder.Volumes
                     detectorGO.transform.localPosition = Vector3.zero;
                     detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
-                    detector.SetDetectableFluid(water);
+                    detector._onlyDetectableFluid = water;
+                    detector._buoyancy.boundingRadius = 1;
+                    detector._buoyancy.checkAgainstWaves = true;
+                    detector._dontApplyForces = true;
 
                     submerge._fluidDetector = detector;
                 }
