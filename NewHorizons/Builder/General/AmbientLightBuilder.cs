@@ -51,7 +51,7 @@ namespace NewHorizons.Builder.General
                     cubemap.SetPixels(newColors, cubemapFace);
                 }
                 cubemap.Apply();
-                ImageUtilities._generatedTextures.Add(cubemap);
+                ImageUtilities.TrackGeneratedTexture(cubemap);
                 
                 light.cookie = cubemap;
             }
