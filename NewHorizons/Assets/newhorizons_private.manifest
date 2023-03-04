@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 192875128
+CRC: 3537427957
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: bd3accfa8245e7e8c1fe0bf8cfa04eb1
+    Hash: c4d8f41970054074bb375ac5cbe82855
   TypeTreeHash:
     serializedVersion: 2
     Hash: de71b9c55befb829b1640ea21774b932
@@ -171,7 +171,7 @@ ClassTypes:
   Script: {instanceID: 0}
 SerializeReferenceClassIdentifiers: []
 Assets:
-- Assets/AmbientLight_QM.png
 - Assets/BrambleCollision.prefab
 - Assets/Vessel_Body.prefab
+- Assets/AmbientLight_QM.png
 Dependencies: []
