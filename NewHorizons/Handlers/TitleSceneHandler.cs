@@ -99,7 +99,7 @@ namespace NewHorizons.Handlers
                 if (body.Config.Water != null)
                 {
                     var waterGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * Mathf.Max(body.Config.Water.size, body.Config.Water.size * body.Config.Water.curve?.FirstOrDefault()?.value ?? 0f);
+                    var size = 2f * body.Config.Water.size * (body.Config.Water.curve?.FirstOrDefault()?.value ?? 1f);
 
                     waterGO.transform.localScale = Vector3.one * size;
 
@@ -125,7 +125,7 @@ namespace NewHorizons.Handlers
                 if (body.Config.Lava != null)
                 {
                     var lavaGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * Mathf.Max(body.Config.Lava.size, body.Config.Lava.size * body.Config.Lava.curve?.FirstOrDefault()?.value ?? 0f);
+                    var size = 2f * body.Config.Lava.size * (body.Config.Lava.curve?.FirstOrDefault()?.value ?? 1f);
 
                     lavaGO.transform.localScale = Vector3.one * size;
 
@@ -141,7 +141,7 @@ namespace NewHorizons.Handlers
                 if (body.Config.Sand != null)
                 {
                     var sandGO = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-                    var size = 2f * Mathf.Max(body.Config.Sand.size, body.Config.Sand.size * body.Config.Sand.curve?.FirstOrDefault()?.value ?? 0f);
+                    var size = 2f * body.Config.Sand.size * (body.Config.Sand.curve?.FirstOrDefault()?.value ?? 1f);
 
                     sandGO.transform.localScale = Vector3.one * size;
                     var mr = sandGO.GetComponent<MeshRenderer>();
