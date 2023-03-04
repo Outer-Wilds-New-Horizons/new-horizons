@@ -136,6 +136,8 @@ namespace NewHorizons.Handlers
 
         public static bool LoadBody(NewHorizonsBody body, bool defaultPrimaryToSun = false)
         {
+            body.LoadCache();
+
             // I don't remember doing this why is it exceptions what am I doing
             GameObject existingPlanet = null;
             try
@@ -202,6 +204,7 @@ namespace NewHorizons.Handlers
                         catch (Exception ex)
                         {
                             Logger.LogError($"Couldn't make quantum state for [{body.Config.name}]:\n{ex}");
+                            body.UnloadCache();
                             return false;
                         }
                     }
@@ -217,6 +220,7 @@ namespace NewHorizons.Handlers
                 catch (Exception e)
                 {
                     Logger.LogError($"Couldn't update body {body.Config?.name}:\n{e}");
+                    body.UnloadCache();
                     return false;
                 }
             }
@@ -237,8 +241,12 @@ namespace NewHorizons.Handlers
                     {
                         Logger.Log($"Creating [{body.Config.name}]");
                         var planetObject = GenerateBody(body, defaultPrimaryToSun);
-                        if (planetObject == null) return false;
-                        planetObject.SetActive(true);
+                        planetObject?.SetActive(true);
+                        if (planetObject == null) 
+                        { 
+                            body.UnloadCache(); 
+                            return false; 
+                        }
 
                         var ao = planetObject.GetComponent<NHAstroObject>();
 
@@ -250,6 +258,7 @@ namespace NewHorizons.Handlers
                     catch (Exception e)
                     {
                         Logger.LogError($"Couldn't generate body {body.Config?.name}:\n{e}");
+                        body.UnloadCache();
                         return false;
                     }
                 }
@@ -264,6 +273,7 @@ namespace NewHorizons.Handlers
                 Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
             
+            body.UnloadCache(true);
             return true;
         }
 
@@ -487,10 +497,11 @@ namespace NewHorizons.Handlers
         {
             var sphereOfInfluence = GetSphereOfInfluence(body);
 
-            Light ambientLight = null;
-            if (body.Config.Base.ambientLight != 0)
+            Light[] ambientLight = null;
+            if (body.Config.AmbientLights != null)
             {
-                ambientLight = AmbientLightBuilder.Make(go, sector, sphereOfInfluence, body.Config.Base.ambientLight);
+                ambientLight = new Light[0];
+                foreach (var light in body.Config.AmbientLights) ambientLight.Append(AmbientLightBuilder.Make(go, sector, light, body.Config.Base.surfaceSize)).ToArray();
             }
 
             if (body.Config.Base.groundSize != 0)
@@ -628,7 +639,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.Props != null)
             {
-                PropBuildManager.Make(go, sector, rb, body.Config, body.Mod);
+                PropBuildManager.Make(go, sector, rb, body);
             }
 
             if (body.Config.Volumes != null)

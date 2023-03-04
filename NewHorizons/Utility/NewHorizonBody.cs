@@ -1,5 +1,6 @@
 using NewHorizons.External.Configs;
 using OWML.Common;
+using System;
 using System.Linq;
 using UnityEngine;
 namespace NewHorizons.Utility
@@ -17,9 +18,42 @@ namespace NewHorizons.Utility
 
         public PlanetConfig Config;
         public IModBehaviour Mod;
+        public Cache Cache;
         public string RelativePath;
 
         public GameObject Object;
+
+        #region Cache
+        public void LoadCache()
+        {
+            if (RelativePath == null) 
+            {
+                return;
+            }
+
+            try 
+            {
+                var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
+                Cache = new Cache(Mod, pathWithoutExtension+".nhcache");
+            } 
+            catch (Exception e) 
+            { 
+                Logger.LogError("Cache failed to load: " + e.Message);
+                Cache = null;
+            }
+        }
+
+        public void UnloadCache(bool writeBeforeUnload=false)
+        {
+            if (writeBeforeUnload) 
+            {
+                Cache?.ClearUnaccessed();
+                Cache?.WriteToFile();
+            }
+
+            Cache = null; // garbage collection will take care of it
+        }
+        #endregion Cache
 
         #region Migration
         private static readonly string[] _keepLoadedModsList = new string[]
@@ -45,6 +79,7 @@ namespace NewHorizons.Utility
                 }
             }
         }
+
         #endregion
     }
 }

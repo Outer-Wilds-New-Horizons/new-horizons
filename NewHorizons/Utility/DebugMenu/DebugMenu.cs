@@ -51,7 +51,6 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 new DebugMenuPropPlacer(),
                 new DebugMenuShipLogs(),
-                new DebugMenuNomaiText()
             };
 
             submenus.ForEach((submenu) => submenu.OnAwake(this));

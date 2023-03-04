@@ -18,6 +18,13 @@
       "description": "Unique star system containing your planet. If you set this to be a custom solar system remember to add a Spawn module to one of the bodies, or else you can't get to the system.",
       "default": "SolarSystem"
     },
+    "AmbientLights": {
+      "type": "array",
+      "description": "Add ambient lights to this body",
+      "items": {
+        "$ref": "#/definitions/AmbientLightModule"
+      }
+    },
     "AsteroidBelt": {
       "description": "Generate asteroids around this body",
       "$ref": "#/definitions/AsteroidBeltModule"
@@ -142,6 +149,103 @@
     }
   },
   "definitions": {
+    "AmbientLightModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "outerRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The range of the light. Defaults to surfaceSize * 2.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "innerRadius": {
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The lower radius where the light is brightest, fading in from outerRadius. Defaults to surfaceSize.",
+          "format": "float",
+          "minimum": 0.0
+        },
+        "intensity": {
+          "type": "number",
+          "description": "The brightness of the light. For reference, Timber Hearth is `1.4`, and Giant's Deep is `0.8`.",
+          "format": "float",
+          "default": 1.0,
+          "minimum": 0.0
+        },
+        "tint": {
+          "description": "The tint of the light",
+          "$ref": "#/definitions/MColor"
+        },
+        "isShell": {
+          "type": "boolean",
+          "description": "If true, the light will work as a shell between inner and outer radius.",
+          "default": false
+        },
+        "position": {
+          "description": "The position of the light",
+          "$ref": "#/definitions/MVector3"
+        }
+      }
+    },
+    "MColor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "r": {
+          "type": "integer",
+          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "g": {
+          "type": "integer",
+          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "b": {
+          "type": "integer",
+          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
+          "format": "int32",
+          "maximum": 2147483647.0,
+          "minimum": 0.0
+        },
+        "a": {
+          "type": "integer",
+          "description": "The alpha (opacity) component of this colour",
+          "format": "int32",
+          "default": 255,
+          "maximum": 255.0,
+          "minimum": 0.0
+        }
+      }
+    },
+    "MVector3": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        },
+        "z": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "AsteroidBeltModule": {
       "type": "object",
       "additionalProperties": false,
@@ -211,41 +315,6 @@
         "scale": {
           "type": "number",
           "format": "float",
-          "minimum": 0.0
-        }
-      }
-    },
-    "MColor": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "r": {
-          "type": "integer",
-          "description": "The red component of this colour from 0-255, higher values will make the colour glow if applicable.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 0.0
-        },
-        "g": {
-          "type": "integer",
-          "description": "The green component of this colour from 0-255, higher values will make the colour glow if applicable.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 0.0
-        },
-        "b": {
-          "type": "integer",
-          "description": "The blue component of this colour from 0-255, higher values will make the colour glow if applicable.",
-          "format": "int32",
-          "maximum": 2147483647.0,
-          "minimum": 0.0
-        },
-        "a": {
-          "type": "integer",
-          "description": "The alpha (opacity) component of this colour",
-          "format": "int32",
-          "default": 255,
-          "maximum": 255.0,
           "minimum": 0.0
         }
       }
@@ -442,11 +511,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "ambientLight": {
-          "type": "number",
-          "description": "The intensity of light the dark side of the body should have. Timber Hearth has `1.4` for reference",
-          "format": "float"
-        },
         "centerOfSolarSystem": {
           "type": "boolean",
           "description": "Set this to true if you are replacing the sun with a different body. Only one object in a star system should ever\nhave this set to true."
@@ -501,24 +565,6 @@
           "type": "integer",
           "description": "Optional. You can force this planet's gravity to be felt over other gravity/zero-gravity sources by increasing this number.",
           "format": "int32"
-        }
-      }
-    },
-    "MVector3": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "x": {
-          "type": "number",
-          "format": "float"
-        },
-        "y": {
-          "type": "number",
-          "format": "float"
-        },
-        "z": {
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -947,7 +993,7 @@
             "$ref": "#/definitions/GeyserInfo"
           }
         },
-        "nomaiText": {
+        "translatorText": {
           "type": "array",
           "description": "Add translatable text to this planet",
           "items": {
@@ -1090,6 +1136,22 @@
         "keepLoaded": {
           "type": "boolean",
           "description": "Should this detail stay loaded even if you're outside the sector (good for very large props)"
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Should this object dynamically move around?\nThis tries to make all mesh colliders convex, as well as adding a sphere collider in case the detail has no others."
+        },
+        "physicsMass": {
+          "type": "number",
+          "description": "The mass of the physics object.\nMost pushable props use the default value, which matches the player mass.",
+          "format": "float",
+          "default": 0.001
+        },
+        "physicsRadius": {
+          "type": "number",
+          "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
@@ -1153,8 +1215,27 @@
         "parentPath": {
           "type": "string",
           "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
+        },
+        "flashlightToggle": {
+          "description": "What type of flashlight toggle to do when dialogue is interacted with",
+          "default": "none",
+          "$ref": "#/definitions/FlashlightToggle"
         }
       }
+    },
+    "FlashlightToggle": {
+      "type": "string",
+      "description": "",
+      "x-enumNames": [
+        "TurnOff",
+        "TurnOffThenOn",
+        "None"
+      ],
+      "enum": [
+        "turnOff",
+        "turnOffThenOn",
+        "none"
+      ]
     },
     "EntryLocationInfo": {
       "type": "object",
@@ -1310,6 +1391,10 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "keepAutoPlacement": {
+          "type": "boolean",
+          "description": "Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement."
+        },
         "mirror": {
           "type": "boolean",
           "description": "Whether to flip the spiral from left-curling to right-curling or vice versa."
@@ -3521,7 +3606,7 @@
         },
         "thrustLimit": {
           "type": "number",
-          "description": "Limit how fast you can fly with your jetpack while in this ruleset volume.",
+          "description": "Limit how fast you can fly with your ship while in this ruleset volume.",
           "format": "float",
           "default": "Infinity"
         },

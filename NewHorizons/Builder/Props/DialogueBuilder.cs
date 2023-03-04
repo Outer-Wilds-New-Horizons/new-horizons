@@ -133,6 +133,23 @@ namespace NewHorizons.Builder.Props
             dialogueTree.SetTextXml(text);
             AddTranslation(xml);
 
+            switch (info.flashlightToggle)
+            {
+                case PropModule.DialogueInfo.FlashlightToggle.TurnOff:
+                    dialogueTree._turnOffFlashlight = true;
+                    dialogueTree._turnOnFlashlight = false;
+                    break;
+                case PropModule.DialogueInfo.FlashlightToggle.TurnOffThenOn:
+                    dialogueTree._turnOffFlashlight = true;
+                    dialogueTree._turnOnFlashlight = true;
+                    break;
+                case PropModule.DialogueInfo.FlashlightToggle.None:
+                default:
+                    dialogueTree._turnOffFlashlight = false;
+                    dialogueTree._turnOnFlashlight = false;
+                    break;
+            }
+
             conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
             
             if (!string.IsNullOrEmpty(info.parentPath))

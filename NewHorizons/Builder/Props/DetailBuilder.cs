@@ -1,4 +1,5 @@
 using NewHorizons.Builder.General;
+using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -231,6 +232,14 @@ namespace NewHorizons.Builder.Props
             if (!detail.keepLoaded) GroupsBuilder.Make(prop, sector);
             prop.SetActive(true);
 
+            if (detail.hasPhysics)
+            {
+                var addPhysics = prop.AddComponent<AddPhysics>();
+                addPhysics.Sector = sector;
+                addPhysics.Mass = detail.physicsMass;
+                addPhysics.Radius = detail.physicsRadius;
+            }
+
             _detailInfoToCorrespondingSpawnedGameObject[detail] = prop;
 
             return prop;
@@ -315,7 +324,6 @@ namespace NewHorizons.Builder.Props
             if (component is DarkMatterSubmergeController submergeController)
             {
                 var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
-                // dont use SetDetectableFluid here because Awake hasn't been called yet
                 if (submergeController._fluidDetector)
                     submergeController._fluidDetector._onlyDetectableFluid = water;
             }

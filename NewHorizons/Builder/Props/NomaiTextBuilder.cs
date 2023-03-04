@@ -14,6 +14,9 @@ using OWML.Utils;
 
 namespace NewHorizons.Builder.Props
 {
+    /// <summary>
+    /// Legacy - this class is used with the deprecated "nomaiText" module (deprecated on release of autospirals)
+    /// </summary>
     public static class NomaiTextBuilder
     {
         private static List<GameObject> _arcPrefabs;
