@@ -253,39 +253,41 @@ namespace NewHorizons.Builder.Props
         /// <param name="isTorch"></param>
         private static void FixSectoredComponent(Component component, Sector sector, bool isTorch = false)
         {
-            if (component is Sector s)
-            {
-                s.SetParentSector(sector);
-            }
-
-            if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
-            }
-
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
             if (component is ISectorGroup sectorGroup)
             {
                 sectorGroup.SetSector(sector);
             }
 
-            if (component is SectoredMonoBehaviour behaviour)
+            // Not doing else if here because idk if any of the classes below implement ISectorGroup
+
+            if (component is Sector s)
+            {
+                s.SetParentSector(sector);
+            }
+
+            else if (component is SectorCullGroup sectorCullGroup)
+            {
+                sectorCullGroup._controllingProxy = null;
+            }
+
+            else if(component is SectoredMonoBehaviour behaviour)
             {
                 behaviour.SetSector(sector);
             }
 
-            if (component is OWItemSocket socket)
+            else if(component is OWItemSocket socket)
             {
                 socket._sector = sector;
             }
 
             // Fix slide reel - Softlocks if this object is a vision torch
-            if (!isTorch && component is SlideCollectionContainer container)
+            else if(!isTorch && component is SlideCollectionContainer container)
             {
                 sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
             }
 
-            if (component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
             {
                 remoteCameraPlatform._visualSector = sector;
             }
