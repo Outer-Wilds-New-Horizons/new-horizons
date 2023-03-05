@@ -314,22 +314,19 @@ namespace NewHorizons.Builder.Props
                 Component.DestroyImmediate(component);
                 return;
             }
-
-            if (component is DarkMatterVolume)
+            else if (component is DarkMatterVolume)
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
             }
-
-            if (component is DarkMatterSubmergeController submergeController)
+            else if (component is DarkMatterSubmergeController submergeController)
             {
                 var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
                 if (submergeController._fluidDetector)
                     submergeController._fluidDetector._onlyDetectableFluid = water;
             }
-
             // Fix anglerfish speed on orbiting planets
-            if (component is AnglerfishController angler)
+            else if (component is AnglerfishController angler)
             {
                 try
                 {
@@ -342,50 +339,48 @@ namespace NewHorizons.Builder.Props
             }
 
             // fix campfires
-            if (component is InteractVolume interactVolume)
+            else if (component is InteractVolume)
             {
-                Delay.FireOnNextUpdate(() => interactVolume._playerCam = Locator.GetPlayerCamera());
+                component.gameObject.AddComponent<InteractVolumeFixer>();
             }
-            if (component is PlayerAttachPoint playerAttachPoint)
+            else if (component is PlayerAttachPoint)
             {
-                var playerBody = GameObject.Find("Player_Body");
-                playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
-                playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
-                playerAttachPoint._playerTransform = playerBody.transform;
-                Delay.FireOnNextUpdate(() => playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController());
+                component.gameObject.AddComponent<PlayerAttachPointFixer>();
             }
 
-            if (component is NomaiInterfaceOrb orb)
+            else if (component is NomaiInterfaceOrb orb)
             {
                 orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
                 orb._parentBody = planetGO.GetComponent<OWRigidbody>();
             }
 
-            if (component is VisionTorchItem torchItem)
+            else if (component is VisionTorchItem torchItem)
             {
                 torchItem.enabled = true;
                 torchItem.mindProjectorTrigger.enabled = true;
-                Delay.FireOnNextUpdate(() => torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>());
+                torchItem.gameObject.AddComponent<VisionTorchItemFixer>();
             }
 
-            if (component is Animator animator) animator.enabled = true;
-            if (component is Collider collider) collider.enabled = true;
+            else if (component is Animator animator) animator.enabled = true;
+            else if(component is Collider collider) collider.enabled = true;
             // Bug 533 - Don't show the electricity effect renderers
-            if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
-            if (component is Shape shape) shape.enabled = true;
+            else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
+            else if(component is Shape shape) shape.enabled = true;
 
             // fixes sector cull group deactivating renderers on map view enter and fast foward
             // TODO: does this actually work? what? how?
-            if (component is SectorCullGroup sectorCullGroup)
+            else if(component is SectorCullGroup sectorCullGroup)
             {
                 sectorCullGroup._inMapView = false;
                 sectorCullGroup._isFastForwarding = false;
                 sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
             }
-            
+
             // If it's not a moving anglerfish make sure the anim controller is regular
-            if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            else if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
+            }
         }
 
         /// <summary>
@@ -413,6 +408,54 @@ namespace NewHorizons.Builder.Props
                 angler.enabled = true;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(InteractVolume))]
+        private class InteractVolumeFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var interactVolume = GetComponent<InteractVolume>();
+                interactVolume._playerCam = Locator.GetPlayerCamera();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(PlayerAttachPoint))]
+        private class PlayerAttachPointFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var playerAttachPoint = GetComponent<PlayerAttachPoint>();
+                playerAttachPoint._playerController = Locator.GetPlayerController();
+                playerAttachPoint._playerOWRigidbody = Locator.GetPlayerBody();
+                playerAttachPoint._playerTransform = Locator.GetPlayerTransform();
+                playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(VisionTorchItem))]
+        private class VisionTorchItemFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var torchItem = GetComponent<VisionTorchItem>();
+                torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
+
                 Destroy(this);
             }
         }
