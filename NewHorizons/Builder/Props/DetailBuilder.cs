@@ -136,7 +136,7 @@ namespace NewHorizons.Builder.Props
                 {
                     if (t.GetComponents<Component>().Any(c => c == null))
                     {
-                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}");
+                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
                     }
                 }
             }
