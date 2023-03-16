@@ -53,11 +53,14 @@ namespace NewHorizons.Builder.General
 
                     if (module.shipSpawnRotation != null)
                     {
-                        ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
+                        spawnGO.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
+                        ship.transform.rotation = spawnGO.transform.rotation;
                     }
                     else
                     {
-                        ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
+                        spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
+                        ship.transform.rotation = spawnGO.transform.rotation;
+
                         // Move it up a bit more when aligning to surface
                         ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
                     }
