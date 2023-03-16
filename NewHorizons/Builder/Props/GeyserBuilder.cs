@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            var pos = (Vector3)info.position;
+            var pos = info.isRelativeToParent ? geyserGO.transform.parent.TransformPoint((Vector3)info.position) : (Vector3)info.position;
 
             // Offset height, default -97.5 pushes it underground so the spout is at the surface
             var length = pos.magnitude + info.offset;

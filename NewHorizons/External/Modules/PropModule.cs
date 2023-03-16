@@ -99,6 +99,39 @@ namespace NewHorizons.External.Modules
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public VolumesModule.AudioVolumeInfo[] audioVolumes;
 
         [JsonObject]
+        public abstract class PositionedPropInfo
+        {
+            /// <summary>
+            /// Position of the prop
+            /// </summary>
+            public MVector3 position;
+
+            /// <summary>
+            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
+            /// </summary>
+            public string parentPath;
+
+            /// <summary>
+            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
+            /// </summary>
+            public bool isRelativeToParent;
+
+            /// <summary>
+            /// An optional rename of this object
+            /// </summary>
+            public string rename;
+        }
+
+        [JsonObject]
+        public abstract class PositionedAndRotatedPropInfo : PositionedPropInfo
+        {
+            /// <summary>
+            /// Rotate this prop once it is placed
+            /// </summary>
+            public MVector3 rotation;
+        }
+
+        [JsonObject]
         public class ScatterInfo
         {
             /// <summary>
@@ -163,12 +196,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class DetailInfo
+        public class DetailInfo : PositionedAndRotatedPropInfo
         {
-            /// <summary>
-            /// An optional rename of the detail
-            /// </summary>
-            public string rename;
 
             /// <summary>
             /// Do we override rotation and try to automatically align this object to stand upright on the body's surface?
@@ -186,11 +215,6 @@ namespace NewHorizons.External.Modules
             public string path;
 
             /// <summary>
-            /// Position of this prop relative to the body's center
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// A list of children to remove from this detail
             /// </summary>
             public string[] removeChildren;
@@ -200,11 +224,6 @@ namespace NewHorizons.External.Modules
             /// them.
             /// </summary>
             public bool removeComponents;
-
-            /// <summary>
-            /// Rotate this prop
-            /// </summary>
-            public MVector3 rotation;
 
             /// <summary>
             /// Scale the prop
@@ -220,16 +239,6 @@ namespace NewHorizons.External.Modules
             /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
             /// </summary>
             public string quantumGroupID;
-
-            /// <summary>
-            /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
 
             /// <summary>
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
@@ -256,42 +265,17 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class RaftInfo
+        public class RaftInfo : PositionedPropInfo
         {
-            /// <summary>
-            /// Position of the raft
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// Acceleration of the raft. Default acceleration is 5.
             /// </summary>
             [DefaultValue(5f)] public float acceleration = 5f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class GeyserInfo
+        public class GeyserInfo : PositionedPropInfo
         {
-            /// <summary>
-            /// Position of the geyser
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
             /// </summary>
@@ -326,20 +310,10 @@ namespace NewHorizons.External.Modules
             /// Loudness of the geyser
             /// </summary>
             [DefaultValue(0.7f)] public float volume = 0.7f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class TornadoInfo
+        public class TornadoInfo : PositionedPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
@@ -362,11 +336,6 @@ namespace NewHorizons.External.Modules
             /// The height of this tornado.
             /// </summary>
             [DefaultValue(30f)] public float height = 30f;
-
-            /// <summary>
-            /// Position of the tornado
-            /// </summary>
-            public MVector3 position;
 
             /// <summary>
             /// The colour of the tornado.
@@ -403,25 +372,10 @@ namespace NewHorizons.External.Modules
             /// Fluid type for sounds/effects when colliding with this tornado.
             /// </summary>
             [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class VolcanoInfo
+        public class VolcanoInfo : PositionedPropInfo
         {
             /// <summary>
             /// The colour of the meteor's lava.
@@ -453,11 +407,6 @@ namespace NewHorizons.External.Modules
             public float minLaunchSpeed = 50f;
 
             /// <summary>
-            /// Position of this volcano.
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// Scale of the meteors.
             /// </summary>
             public float scale = 1;
@@ -466,25 +415,10 @@ namespace NewHorizons.External.Modules
             /// The colour of the meteor's stone.
             /// </summary>
             public MColor stoneTint;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class DialogueInfo
+        public class DialogueInfo : PositionedPropInfo
         {
             /// <summary>
             /// Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue
@@ -505,11 +439,6 @@ namespace NewHorizons.External.Modules
             /// If none of those components are present it will add a FacePlayerWhenTalking component.
             /// </summary>
             public string pathToAnimController;
-
-            /// <summary>
-            /// When you enter into dialogue, you will look here.
-            /// </summary>
-            public MVector3 position;
 
             /// <summary>
             /// Radius of the spherical collision volume where you get the "talk to" prompt when looking at. If you use a
@@ -543,21 +472,6 @@ namespace NewHorizons.External.Modules
             public string xmlFile;
 
             /// <summary>
-            /// Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
-            /// </summary>
-            public string rename;
-
-            /// <summary>
-            /// Optionally set the parent object that the dialogue and remote trigger will be attached to
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
             /// What type of flashlight toggle to do when dialogue is interacted with
             /// </summary>
             [DefaultValue("none")] public FlashlightToggle flashlightToggle = FlashlightToggle.None;
@@ -572,7 +486,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class EntryLocationInfo
+        public class EntryLocationInfo : PositionedPropInfo
         {
             /// <summary>
             /// Whether this location is cloaked
@@ -583,30 +497,10 @@ namespace NewHorizons.External.Modules
             /// ID of the entry this location relates to
             /// </summary>
             public string id;
-
-            /// <summary>
-            /// The position of this entry location
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class NomaiTextInfo
+        public class NomaiTextInfo : PositionedPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum NomaiTextType
@@ -651,11 +545,6 @@ namespace NewHorizons.External.Modules
             public MVector3 normal;
 
             /// <summary>
-            /// Position of the root of this text
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient
             /// themselves to the surface of the planet automatically.
             /// </summary>
@@ -680,21 +569,6 @@ namespace NewHorizons.External.Modules
             /// The relative path to the xml file for this object.
             /// </summary>
             public string xmlFile;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
@@ -742,7 +616,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class ProjectionInfo
+        public class ProjectionInfo : PositionedAndRotatedPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum SlideShowType
@@ -758,11 +632,6 @@ namespace NewHorizons.External.Modules
             }
 
             /// <summary>
-            /// The position of this slideshow.
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// The ship log facts revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
@@ -776,11 +645,6 @@ namespace NewHorizons.External.Modules
             public string[] playWithShipLogFacts;
 
             /// <summary>
-            /// The rotation of this slideshow.
-            /// </summary>
-            public MVector3 rotation;
-
-            /// <summary>
             /// The list of slides for this object.
             /// </summary>
             public SlideInfo[] slides;
@@ -789,21 +653,6 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             [DefaultValue("slideReel")] public SlideShowType type = SlideShowType.SlideReel;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
@@ -934,18 +783,12 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class QuantumSocketInfo
+        public class QuantumSocketInfo : PositionedAndRotatedPropInfo
         {
             /// <summary>
-            /// The location of this socket
+            /// Whether the socket will be placed relative to the group it belongs to
             /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The rotation the quantum object will take if it's occupying this socket
-            /// </summary>
-            public MVector3 rotation;
-
+            [DefaultValue(true)] public bool isRelativeToGroup = true;
             /// <summary>
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
@@ -981,37 +824,12 @@ namespace NewHorizons.External.Modules
             public StoneInfo[] stones;
 
             [JsonObject]
-            public class WhiteboardInfo
+            public class WhiteboardInfo : PositionedAndRotatedPropInfo
             {
                 /// <summary>
                 /// The text for each stone
                 /// </summary>
                 public SharedNomaiTextInfo[] nomaiText;
-
-                /// <summary>
-                /// The location of this platform.
-                /// </summary>
-                public MVector3 position;
-
-                /// <summary>
-                /// The rotation of this platform.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
 
                 /// <summary>
                 /// Disable the wall, leaving only the pedestal and text.
@@ -1054,33 +872,8 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class PlatformInfo
+            public class PlatformInfo : PositionedAndRotatedPropInfo
             {
-                /// <summary>
-                /// The location of this platform.
-                /// </summary>
-                public MVector3 position;
-
-                /// <summary>
-                /// The rotation of this platform.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
-
                 /// <summary>
                 /// A ship log fact to reveal when the platform is connected to.
                 /// </summary>
@@ -1098,32 +891,9 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class StoneInfo
+            public class StoneInfo : PositionedAndRotatedPropInfo
             {
-                /// <summary>
-                /// The location of this stone.
-                /// </summary>
-                public MVector3 position;
 
-                /// <summary>
-                /// The rotation of this stone.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
             }
         }
     }

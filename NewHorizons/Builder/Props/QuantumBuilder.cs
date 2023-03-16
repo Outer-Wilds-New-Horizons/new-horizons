@@ -50,11 +50,33 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = new GameObject("Socket " + i);
+                var socket = new GameObject(!string.IsNullOrEmpty(socketInfo.rename) ? socketInfo.rename : ("Socket " + i));
                 socket.SetActive(false);
-                socket.transform.parent = groupRoot.transform;
+
+                socket.transform.parent = socketInfo.isRelativeToGroup ? groupRoot.transform : sector?.transform ?? go.transform;
+
+                if (socketInfo.parentPath != null)
+                {
+                    var newParent = go.transform.Find(socketInfo.parentPath);
+                    if (newParent != null)
+                    {
+                        socket.transform.parent = newParent.transform;
+                    }
+                    else
+                    {
+                        Logger.LogError($"Cannot find parent object at path: {go.name}/{socketInfo.parentPath}");
+                    }
+                }
+
                 socket.transform.localPosition = socketInfo.position;
                 socket.transform.localEulerAngles = socketInfo.rotation;
+
+                if (!socketInfo.isRelativeToParent && !socketInfo.isRelativeToGroup)
+                {
+                    socket.transform.position = go.transform.TransformPoint(socketInfo.position);
+                    Quaternion rot = socketInfo.rotation == null ? Quaternion.identity : Quaternion.Euler(socketInfo.rotation);
+                    socket.transform.rotation = go.transform.TransformRotation(rot);
+                }
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0];
