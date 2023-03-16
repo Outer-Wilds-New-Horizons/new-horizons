@@ -786,7 +786,7 @@ namespace NewHorizons.External.Modules
         public class QuantumSocketInfo : PositionedAndRotatedPropInfo
         {
             /// <summary>
-            /// Whether the socket will be placed relative to the group it belongs to
+            /// Whether the socket will be placed relative to the group it belongs to. Overrides `isRelativeToParent`
             /// </summary>
             [DefaultValue(true)] public bool isRelativeToGroup = true;
             /// <summary>

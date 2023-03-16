@@ -18,22 +18,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            var geyserGO = _geyserPrefab.InstantiateInactive();
-            geyserGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Geyser";
-            geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    geyserGO.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
+            var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, sector, info, true);
 
             var pos = info.isRelativeToParent ? geyserGO.transform.parent.TransformPoint((Vector3)info.position) : (Vector3)info.position;
 
@@ -44,9 +29,6 @@ namespace NewHorizons.Builder.Props
             geyserGO.transform.position = planetGO.transform.TransformPoint(pos.normalized * length);
 
             geyserGO.transform.localScale = Vector3.one;
-
-            var up = planetGO.transform.TransformPoint(pos) - planetGO.transform.position;
-            geyserGO.transform.rotation = Quaternion.FromToRotation(geyserGO.transform.up, up) * geyserGO.transform.rotation;
 
             var bubbles = geyserGO.FindChild("GeyserParticles/GeyserBubbles");
             var shaft = geyserGO.FindChild("GeyserParticles/GeyserShaft");
