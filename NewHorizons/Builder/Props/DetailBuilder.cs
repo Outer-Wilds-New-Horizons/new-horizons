@@ -85,6 +85,7 @@ namespace NewHorizons.Builder.Props
 
             GameObject prop;
             bool isItem;
+            bool invalidComponentFound = false;
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
@@ -106,6 +107,13 @@ namespace NewHorizons.Builder.Props
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
+                    // Components can come through as null here (yes, really),
+                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                    if (component == null)
+                    {
+                        invalidComponentFound = true;
+                        continue;
+                    }
                     if (component.gameObject == prop && component is OWItem) isItem = true;
 
                     if (sector == null)
@@ -125,6 +133,17 @@ namespace NewHorizons.Builder.Props
             }
 
             prop.transform.parent = sector?.transform ?? go.transform;
+
+            if (invalidComponentFound)
+            {
+                foreach (Transform t in prop.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.GetComponents<Component>().Any(c => c == null))
+                    {
+                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}");
+                    }
+                }
+            }
 
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
