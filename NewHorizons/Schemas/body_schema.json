@@ -1076,9 +1076,25 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
-          "description": "An optional rename of the detail"
+          "description": "An optional rename of this object"
         },
         "alignToNormal": {
           "type": "boolean",
@@ -1092,10 +1108,6 @@
           "type": "string",
           "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
         },
-        "position": {
-          "description": "Position of this prop relative to the body's center",
-          "$ref": "#/definitions/MVector3"
-        },
         "removeChildren": {
           "type": "array",
           "description": "A list of children to remove from this detail",
@@ -1106,10 +1118,6 @@
         "removeComponents": {
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "rotation": {
-          "description": "Rotate this prop",
-          "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
@@ -1124,14 +1132,6 @@
         "quantumGroupID": {
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "keepLoaded": {
           "type": "boolean",
@@ -1159,6 +1159,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "blockAfterPersistentCondition": {
           "type": "string",
           "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
@@ -1171,10 +1187,6 @@
         "pathToAnimController": {
           "type": "string",
           "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
-        },
-        "position": {
-          "description": "When you enter into dialogue, you will look here.",
-          "$ref": "#/definitions/MVector3"
         },
         "radius": {
           "type": "number",
@@ -1204,18 +1216,6 @@
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
         },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
-        },
         "flashlightToggle": {
           "description": "What type of flashlight toggle to do when dialogue is interacted with",
           "default": "none",
@@ -1241,16 +1241,8 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "cloaked": {
-          "type": "boolean",
-          "description": "Whether this location is cloaked"
-        },
-        "id": {
-          "type": "string",
-          "description": "ID of the entry this location relates to"
-        },
         "position": {
-          "description": "The position of this entry location",
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -1264,6 +1256,14 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "cloaked": {
+          "type": "boolean",
+          "description": "Whether this location is cloaked"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID of the entry this location relates to"
         }
       }
     },
@@ -1272,8 +1272,20 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "Position of the geyser",
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "offset": {
           "type": "number",
@@ -1320,14 +1332,6 @@
           "description": "Loudness of the geyser",
           "format": "float",
           "default": 0.7
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1335,6 +1339,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "arcInfo": {
           "type": "array",
           "description": "Additional information about each arc in the text",
@@ -1344,10 +1364,6 @@
         },
         "normal": {
           "description": "The normal vector for this object. Used for writing on walls and positioning computers.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "position": {
-          "description": "Position of the root of this text",
           "$ref": "#/definitions/MVector3"
         },
         "rotation": {
@@ -1372,18 +1388,6 @@
         "xmlFile": {
           "type": "string",
           "description": "The relative path to the xml file for this object."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1496,14 +1500,8 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "Position of the raft",
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
-        },
-        "acceleration": {
-          "type": "number",
-          "description": "Acceleration of the raft. Default acceleration is 5.",
-          "format": "float",
-          "default": 5.0
         },
         "parentPath": {
           "type": "string",
@@ -1516,6 +1514,12 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
@@ -1590,9 +1594,25 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The position of this slideshow.",
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
           "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "reveals": {
           "type": "array",
@@ -1608,10 +1628,6 @@
             "type": "string"
           }
         },
-        "rotation": {
-          "description": "The rotation of this slideshow.",
-          "$ref": "#/definitions/MVector3"
-        },
         "slides": {
           "type": "array",
           "description": "The list of slides for this object.",
@@ -1623,18 +1639,6 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1767,13 +1771,30 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this socket",
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation the quantum object will take if it's occupying this socket",
+        "position": {
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "isRelativeToGroup": {
+          "type": "boolean",
+          "description": "Whether the socket will be placed relative to the group it belongs to",
+          "default": true
         },
         "probability": {
           "type": "number",
@@ -1787,6 +1808,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "elevation": {
           "type": "number",
           "description": "Alternative to setting the position. Will choose a random place at this elevation.",
@@ -1797,10 +1834,6 @@
           "description": "The height of this tornado.",
           "format": "float",
           "default": 30.0
-        },
-        "position": {
-          "description": "Position of the tornado",
-          "$ref": "#/definitions/MVector3"
         },
         "tint": {
           "description": "The colour of the tornado.",
@@ -1837,18 +1870,6 @@
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
           "$ref": "#/definitions/FluidType"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1870,6 +1891,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "lavaTint": {
           "description": "The colour of the meteor's lava.",
           "$ref": "#/definitions/MColor"
@@ -1898,10 +1935,6 @@
           "format": "float",
           "default": 50.0
         },
-        "position": {
-          "description": "Position of this volcano.",
-          "$ref": "#/definitions/MVector3"
-        },
         "scale": {
           "type": "number",
           "description": "Scale of the meteors.",
@@ -1910,18 +1943,6 @@
         "stoneTint": {
           "description": "The colour of the meteor's stone.",
           "$ref": "#/definitions/MColor"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -2105,19 +2126,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "nomaiText": {
-          "type": "array",
-          "description": "The text for each stone",
-          "items": {
-            "$ref": "#/definitions/SharedNomaiTextInfo"
-          }
-        },
-        "position": {
-          "description": "The location of this platform.",
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this platform.",
+        "position": {
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -2131,6 +2145,13 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "nomaiText": {
+          "type": "array",
+          "description": "The text for each stone",
+          "items": {
+            "$ref": "#/definitions/SharedNomaiTextInfo"
+          }
         },
         "disableWall": {
           "type": "boolean",
@@ -2177,12 +2198,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this platform.",
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this platform.",
+        "position": {
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -2216,12 +2237,12 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this stone.",
+        "rotation": {
+          "description": "Rotate this prop once it is placed",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this stone.",
+        "position": {
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
