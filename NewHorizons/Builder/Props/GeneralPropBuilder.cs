@@ -51,8 +51,9 @@ namespace NewHorizons.Builder.Props
             }
             if (alignToBody)
             {
-                var planetPos = planetGO.transform.InverseTransformPoint(go.transform.position);
-                go.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(planetPos.normalized)).normalized;
+                var up = (go.transform.position - planetGO.transform.position).normalized;
+                go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
+                go.transform.rotation *= rot;
             }
             return go;
         }

@@ -144,16 +144,6 @@ namespace NewHorizons.Builder.Props
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
 
-
-            if (detail.alignToNormal)
-            {
-                Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
-                // Apply the rotation after aligning it with normal
-                var up = (prop.transform.position - go.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                prop.transform.rotation *= rot;
-            }
-
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
             if (detail.removeChildren != null)
