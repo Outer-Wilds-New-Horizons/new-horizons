@@ -2034,6 +2034,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "audio": {
           "type": "string",
           "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
@@ -2068,10 +2084,6 @@
           "description": "`false` if the player can hear the signal without equipping the signal-scope.",
           "default": true
         },
-        "position": {
-          "description": "Position of the signal's source",
-          "$ref": "#/definitions/MVector3"
-        },
         "reveals": {
           "type": "string",
           "description": "A ship log fact to reveal when the signal is identified.",
@@ -2082,14 +2094,6 @@
           "description": "Radius of the sphere giving off the signal.",
           "format": "float",
           "default": 1.0
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -2854,15 +2858,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -2870,11 +2874,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "audio": {
           "type": "string",
@@ -2989,15 +2993,15 @@
           "type": "boolean",
           "description": "Whether this volume only affects the player and ship."
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3005,11 +3009,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
@@ -3072,15 +3076,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3088,11 +3092,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "density": {
           "type": "number",
@@ -3145,15 +3149,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3161,11 +3165,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "type": {
           "description": "The type of hazard for this volume.",
@@ -3235,14 +3239,8 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -3250,11 +3248,17 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
@@ -3262,15 +3266,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3278,11 +3282,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "target": {
           "description": "What the notification will show for.",
@@ -3333,15 +3337,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3349,11 +3353,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "treeVolume": {
           "type": "boolean",
@@ -3390,15 +3394,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3406,11 +3410,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "maxAngle": {
           "type": "number",
@@ -3513,15 +3517,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3529,11 +3533,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "minImpactSpeed": {
           "type": "number",
@@ -3553,15 +3557,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3569,11 +3573,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "overrideProbeSpeed": {
           "type": "boolean",
@@ -3603,15 +3607,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3619,11 +3623,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "thrustLimit": {
           "type": "number",
@@ -3647,15 +3651,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3663,11 +3667,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "speedLimit": {
           "type": "number",
@@ -3719,15 +3723,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3735,11 +3739,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "frostRate": {
           "type": "number",
@@ -3773,15 +3777,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3789,11 +3793,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "dropletRate": {
           "type": "number",
@@ -3813,15 +3817,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3829,11 +3833,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "layer": {
           "type": "integer",
@@ -3853,15 +3857,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3869,11 +3873,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "targetStarSystem": {
           "type": "string",
@@ -3886,15 +3890,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3902,11 +3906,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "creditsType": {
           "default": "fast",
