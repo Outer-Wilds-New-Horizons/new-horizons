@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.ShipLog
         private static readonly List<ShipLogEntryLocation> _locationsToInitialize = new List<ShipLogEntryLocation>();
         public static void Make(GameObject go, Sector sector, PropModule.EntryLocationInfo info, IModBehaviour mod)
         {
-            GameObject entryLocationGameObject = GeneralPropBuilder.MakeNew("Entry Location (" + info.id + ")", go, sector, info, false);
+            GameObject entryLocationGameObject = GeneralPropBuilder.MakeNew("Entry Location (" + info.id + ")", go, sector, info);
 
             ShipLogEntryLocation newLocation = entryLocationGameObject.AddComponent<ShipLogEntryLocation>();
             newLocation._entryID = info.id;

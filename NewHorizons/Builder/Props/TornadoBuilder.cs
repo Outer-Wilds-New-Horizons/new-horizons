@@ -100,7 +100,9 @@ namespace NewHorizons.Builder.Props
         {
             var prefab = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
             var tornadoGO = GeneralPropBuilder.MakeFromPrefab(prefab, downwards ? "Tornado_Down" : "Tornado_Up", planetGO, sector, info, true);
-            if (info.position == null && !info.isRelativeToParent)
+            
+            // Override general prop position with randomized default position
+            if (info.position == null)
             {
                 tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
             }

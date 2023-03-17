@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, false);
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo);
 
                 if (socketInfo.isRelativeToGroup)
                 {

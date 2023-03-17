@@ -117,33 +117,13 @@ namespace NewHorizons.External.Modules
         public LoadCreditsVolumeInfo[] creditsVolume;
 
         [JsonObject]
-        public class VolumeInfo
+        public class VolumeInfo : PropModule.PositionedPropInfo
         {
-            /// <summary>
-            /// The location of this volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// The radius of this volume.
             /// </summary>
             [DefaultValue(1f)]
             public float radius = 1f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this volume.
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]

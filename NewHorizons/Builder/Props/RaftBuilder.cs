@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.Props
 
             if (_prefab == null || sector == null) return null;
 
-            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(_prefab, "Raft_Body", planetGO, sector, info, false);
+            GameObject raftObject = GeneralPropBuilder.MakeFromPrefab(_prefab, "Raft_Body", planetGO, sector, info);
 
             StreamingHandler.SetUpStreaming(raftObject, sector);
 

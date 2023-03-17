@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody)
+        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null)
         {
             if (!string.IsNullOrEmpty(info.rename))
             {
@@ -52,24 +52,25 @@ namespace NewHorizons.Builder.Props
             if (alignToBody)
             {
                 var up = (go.transform.position - planetGO.transform.position).normalized;
+                if (normal != null) up = planetGO.transform.TransformDirection(normal);
                 go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 go.transform.rotation *= rot;
             }
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody)
+        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null)
         {
             GameObject go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null)
         {
             GameObject go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal);
         }
     }
 }
