@@ -93,7 +93,7 @@ namespace NewHorizons.Builder.Props
 
             if (_slideReelPrefab == null) return null;
 
-            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(_slideReelPrefab, $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}", sector?.transform ?? planetGO.transform, info);
+            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(_slideReelPrefab, $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -166,7 +166,7 @@ namespace NewHorizons.Builder.Props
 
             if (_autoPrefab == null) return null;
 
-            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", sector?.transform ?? planetGO.transform, info);
+            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;

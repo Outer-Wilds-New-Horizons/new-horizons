@@ -90,12 +90,12 @@ namespace NewHorizons.Builder.Props
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, sector?.transform ?? go.transform, detail, detail.alignToNormal);
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail, alignToBody: detail.alignToNormal);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, sector?.transform ?? go.transform, detail, detail.alignToNormal);
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail, alignToBody: detail.alignToNormal);
 
                 StreamingHandler.SetUpStreaming(prop, sector);
 

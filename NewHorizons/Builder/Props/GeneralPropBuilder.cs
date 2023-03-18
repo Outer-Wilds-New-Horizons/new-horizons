@@ -12,9 +12,11 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             if (info == null) return go;
+
+            go.transform.parent = defaultParent ?? sector?.transform ?? planetGO?.transform;
 
             if (info is GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
             {
@@ -22,7 +24,9 @@ namespace NewHorizons.Builder.Props
                 var targetPlanet = AstroObjectLocator.GetAstroObject(solarSystemInfo.parentBody);
                 if (targetPlanet != null)
                 {
-                    parent = targetPlanet._rootSector?.transform ?? targetPlanet.transform;
+                    planetGO = targetPlanet.gameObject;
+                    sector = targetPlanet.GetRootSector() ?? targetPlanet.GetComponentInChildren<Sector>();
+                    go.transform.parent = sector?.transform ?? planetGO?.transform ?? go.transform.parent;
                 } else
                 {
                     Logger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
@@ -34,20 +38,19 @@ namespace NewHorizons.Builder.Props
                 go.name = info.rename;
             }
 
-            go.transform.parent = parent;
-
             var parentPath = info.parentPath ?? defaultParentPath;
 
-            if (parent && !string.IsNullOrEmpty(parentPath))
+            if (planetGO && !string.IsNullOrEmpty(parentPath))
             {
-                var newParent = parent.root.transform.Find(parentPath);
+                var newParent = planetGO.transform.Find(parentPath);
                 if (newParent != null)
                 {
-                    go.transform.parent = newParent.transform;
+                    go.transform.parent = newParent;
+                    sector = newParent.GetComponentInParent<Sector>();
                 }
                 else
                 {
-                    Logger.LogError($"Cannot find parent object at path: {parent.name}/{parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
                 }
             }
 
@@ -61,10 +64,10 @@ namespace NewHorizons.Builder.Props
             {
                 go.transform.localPosition = pos;
                 go.transform.localRotation = rot;
-            } else if (parent)
+            } else if (planetGO)
             {
-                go.transform.position = parent.root.transform.TransformPoint(pos);
-                go.transform.rotation = parent.root.transform.TransformRotation(rot);
+                go.transform.position = planetGO.transform.TransformPoint(pos);
+                go.transform.rotation = planetGO.transform.TransformRotation(rot);
             } else
             {
                 go.transform.position = pos;
@@ -72,25 +75,35 @@ namespace NewHorizons.Builder.Props
             }
             if (alignToBody)
             {
-                var up = (go.transform.position - parent.root.position).normalized;
-                if (normal != null) up = parent.TransformDirection(normal);
+                var up = (go.transform.position - planetGO.transform.position).normalized;
+                if (normal != null)
+                {
+                    if (info.isRelativeToParent)
+                    {
+                        up = go.transform.parent.TransformDirection(normal);
+                    }
+                    else
+                    {
+                        up = planetGO.transform.TransformDirection(normal);
+                    }
+                }
                 go.transform.rotation = Quaternion.FromToRotation(go.transform.up, up) * rot;
             }
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, parent, info, alignToBody, normal, defaultPosition, defaultParentPath);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, defaultParent);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, parent, info, alignToBody, normal, defaultPosition, defaultParentPath);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, defaultParent);
         }
     }
 }

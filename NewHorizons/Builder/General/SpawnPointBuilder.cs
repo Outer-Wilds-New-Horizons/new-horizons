@@ -17,7 +17,7 @@ namespace NewHorizons.Builder.General
             if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
             {
                 bool alignToBody = module.playerSpawn.rotation == null;
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO.transform, module.playerSpawn, alignToBody);
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn, alignToBody: alignToBody);
                 spawnGO.layer = 8;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.General
             if (module.shipSpawn != null)
             {
                 bool alignToBody = module.shipSpawn.rotation == null;
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO.transform, module.shipSpawn, alignToBody);
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn, alignToBody: alignToBody);
                 spawnGO.layer = 8;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();

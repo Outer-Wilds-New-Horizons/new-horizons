@@ -85,7 +85,7 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, system.Config.Vessel?.vesselSpawn);
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
@@ -146,7 +146,7 @@ namespace NewHorizons.Handlers
 
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
-            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, attachWarpExitToVessel ? warpExitParent : null, system.Config.Vessel?.warpExit);
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, null, null, system.Config.Vessel?.warpExit, defaultParent: attachWarpExitToVessel ? warpExitParent : null);
             if (attachWarpExitToVessel)
             {
                 warpExit.transform.parent = warpExitParent;

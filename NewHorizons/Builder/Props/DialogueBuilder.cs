@@ -40,7 +40,7 @@ namespace NewHorizons.Builder.Props
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", sector?.transform ?? planetGO.transform, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
+            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", planetGO, sector, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
@@ -71,7 +71,7 @@ namespace NewHorizons.Builder.Props
 
         private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
-            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", sector?.transform ?? planetGO.transform, info, defaultParentPath: info.pathToAnimController);
+            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
 
             conversationZone.layer = LayerMask.NameToLayer("Interactible");
 

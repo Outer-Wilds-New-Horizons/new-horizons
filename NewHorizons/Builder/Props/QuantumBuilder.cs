@@ -50,7 +50,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = GeneralPropBuilder.MakeNew("Socket " + i, groupRoot.transform, socketInfo);
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, defaultParent: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0];

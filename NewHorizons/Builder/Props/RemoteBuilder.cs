@@ -251,7 +251,7 @@ namespace NewHorizons.Builder.Props
 
         public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.StoneInfo info, IModBehaviour mod)
         {
-            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), sector?.transform ?? go.transform, info);
+            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;
 
