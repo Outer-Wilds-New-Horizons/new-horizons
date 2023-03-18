@@ -12,11 +12,14 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+        public static GameObject MakeFromExisting(GameObject go,
+            GameObject planetGO, Sector sector, GeneralPointPropInfo info,
+            bool alignToBody = false, MVector3 normal = null,
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
         {
             if (info == null) return go;
 
-            go.transform.parent = defaultParent ?? sector?.transform ?? planetGO?.transform;
+            go.transform.parent = parentOverride ?? sector?.transform ?? planetGO?.transform;
 
             if (info is GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
             {
@@ -27,7 +30,8 @@ namespace NewHorizons.Builder.Props
                     planetGO = targetPlanet.gameObject;
                     sector = targetPlanet.GetRootSector() ?? targetPlanet.GetComponentInChildren<Sector>();
                     go.transform.parent = sector?.transform ?? planetGO?.transform ?? go.transform.parent;
-                } else
+                }
+                else
                 {
                     Logger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
                 }
@@ -64,11 +68,13 @@ namespace NewHorizons.Builder.Props
             {
                 go.transform.localPosition = pos;
                 go.transform.localRotation = rot;
-            } else if (planetGO)
+            }
+            else if (planetGO)
             {
                 go.transform.position = planetGO.transform.TransformPoint(pos);
                 go.transform.rotation = planetGO.transform.TransformRotation(rot);
-            } else
+            }
+            else
             {
                 go.transform.position = pos;
                 go.transform.rotation = rot;
@@ -92,18 +98,24 @@ namespace NewHorizons.Builder.Props
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+        public static GameObject MakeNew(string defaultName,
+            GameObject planetGO, Sector sector, GeneralPointPropInfo info, 
+            bool alignToBody = false, MVector3 normal = null,
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, defaultParent);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, parentOverride);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null, Transform defaultParent = null)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName,
+            GameObject planetGO, Sector sector, GeneralPointPropInfo info,
+            bool alignToBody = false, MVector3 normal = null, 
+            MVector3 defaultPosition = null, string defaultParentPath = null, Transform parentOverride = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, defaultParent);
+            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath, parentOverride);
         }
     }
 }
