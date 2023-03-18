@@ -143,6 +143,11 @@
           "type": "string",
           "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
         },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.",
+          "default": true
+        },
         "vesselSpawn": {
           "description": "The location that the vessel will warp to.",
           "$ref": "#/definitions/VesselInfo"
@@ -216,11 +221,6 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
-        },
-        "hasPhysics": {
-          "type": "boolean",
-          "description": "Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.",
-          "default": true
         }
       }
     },
