@@ -67,8 +67,11 @@ public class AddPhysics : MonoBehaviour
         owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
 
         // #536 - Physics objects in bramble dimensions not disabled on load
-        // Should have it double check if it is meant to be suspended or not
-        owRigidbody.OnSectorOccupantsUpdated();
+        // sectors wait 3 frames and then call OnSectorOccupantsUpdated
+        // however we wait .1 real seconds which is longer
+        // so we have to manually call this
+        if (owRigidbody._simulateInSector != null)
+            owRigidbody.OnSectorOccupantsUpdated();
 
         Destroy(this);
     }
