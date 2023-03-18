@@ -89,7 +89,7 @@ namespace NewHorizons.Handlers
             VesselObject = vesselObject;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
-            if (system.Config.Vessel?.vesselSpawn.hasPhysics ?? true)
+            if (system.Config.Vessel?.hasPhysics ?? true)
             {
                 vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
                 vesselObject.transform.parent = null;

@@ -192,6 +192,11 @@ namespace NewHorizons.External.Configs
             public string promptFact;
 
             /// <summary>
+            /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
+            /// </summary>
+            [DefaultValue(true)] public bool hasPhysics = true;
+
+            /// <summary>
             /// The location that the vessel will warp to.
             /// </summary>
             public VesselInfo vesselSpawn;
@@ -209,10 +214,6 @@ namespace NewHorizons.External.Configs
             [JsonObject]
             public class VesselInfo : GeneralSolarSystemPropInfo
             {
-                /// <summary>
-                /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
-                /// </summary>
-                [DefaultValue(true)] public bool hasPhysics = true;
             }
 
             [JsonObject]
