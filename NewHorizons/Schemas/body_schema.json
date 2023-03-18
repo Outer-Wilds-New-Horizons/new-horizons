@@ -3890,6 +3890,15 @@
         "creditsType": {
           "default": "fast",
           "$ref": "#/definitions/CreditsType"
+        },
+        "gameOverText": {
+          "type": "string",
+          "description": "Text displayed in orange on game over. For localization, put translations under UI."
+        },
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume.",
+          "default": "default",
+          "$ref": "#/definitions/DeathType"
         }
       }
     },
