@@ -10,6 +10,7 @@ using NewHorizons.Components.Stars;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

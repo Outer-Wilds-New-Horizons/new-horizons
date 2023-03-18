@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.OWUtilities
 {
     public static class AstroObjectLocator
     {
@@ -10,7 +10,7 @@ namespace NewHorizons.Utility
         public static void Init()
         {
             _customAstroObjectDictionary = new Dictionary<string, AstroObject>();
-            foreach (AstroObject ao in GameObject.FindObjectsOfType<AstroObject>())
+            foreach (AstroObject ao in Object.FindObjectsOfType<AstroObject>())
             {
                 // Ignore the sun station debris, we handle it as a child of the sun station
                 if (ao.gameObject.name == "SS_Debris_Body") continue;

@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.Geometry
 {
     public static class CoordinateUtilities
     {

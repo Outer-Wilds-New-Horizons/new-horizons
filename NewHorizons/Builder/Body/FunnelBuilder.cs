@@ -6,6 +6,7 @@ using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {

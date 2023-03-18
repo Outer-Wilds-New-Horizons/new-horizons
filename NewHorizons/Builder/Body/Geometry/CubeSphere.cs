@@ -1,4 +1,4 @@
-using NewHorizons.Utility;
+using NewHorizons.Utility.Geometry;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body.Geometry
