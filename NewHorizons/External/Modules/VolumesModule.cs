@@ -117,7 +117,7 @@ namespace NewHorizons.External.Modules
         public LoadCreditsVolumeInfo[] creditsVolume;
 
         [JsonObject]
-        public class VolumeInfo : PropModule.PositionedPropInfo
+        public class VolumeInfo : PropModule.GeneralPointPropInfo
         {
             /// <summary>
             /// The radius of this volume.

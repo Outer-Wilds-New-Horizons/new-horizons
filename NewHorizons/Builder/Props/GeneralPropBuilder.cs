@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             if (!string.IsNullOrEmpty(info.rename))
             {
@@ -38,7 +38,7 @@ namespace NewHorizons.Builder.Props
 
             var pos = (Vector3)(info.position ?? defaultPosition ?? Vector3.zero);
             var rot = Quaternion.identity;
-            if (info is PropModule.PositionedAndRotatedPropInfo rotInfo)
+            if (info is PropModule.GeneralPropInfo rotInfo)
             {
                 rot = rotInfo.rotation != null ? Quaternion.Euler(rotInfo.rotation) : Quaternion.identity;
             }
@@ -61,14 +61,14 @@ namespace NewHorizons.Builder.Props
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
             return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, PropModule.PositionedPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;

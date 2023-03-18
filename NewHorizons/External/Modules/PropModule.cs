@@ -99,10 +99,10 @@ namespace NewHorizons.External.Modules
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public VolumesModule.AudioVolumeInfo[] audioVolumes;
 
         [JsonObject]
-        public abstract class PositionedPropInfo
+        public abstract class GeneralPointPropInfo
         {
             /// <summary>
-            /// Position of the prop
+            /// Position of the object
             /// </summary>
             public MVector3 position;
 
@@ -123,10 +123,10 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public abstract class PositionedAndRotatedPropInfo : PositionedPropInfo
+        public abstract class GeneralPropInfo : GeneralPointPropInfo
         {
             /// <summary>
-            /// Rotation of the prop
+            /// Rotation of the object
             /// </summary>
             public MVector3 rotation;
         }
@@ -196,7 +196,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class DetailInfo : PositionedAndRotatedPropInfo
+        public class DetailInfo : GeneralPropInfo
         {
 
             /// <summary>
@@ -265,7 +265,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class RaftInfo : PositionedPropInfo
+        public class RaftInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Acceleration of the raft. Default acceleration is 5.
@@ -274,7 +274,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class GeyserInfo : PositionedPropInfo
+        public class GeyserInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
@@ -313,7 +313,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class TornadoInfo : PositionedPropInfo
+        public class TornadoInfo : GeneralPointPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
@@ -375,7 +375,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class VolcanoInfo : PositionedPropInfo
+        public class VolcanoInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// The colour of the meteor's lava.
@@ -418,7 +418,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class DialogueInfo : PositionedPropInfo
+        public class DialogueInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue
@@ -486,7 +486,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class EntryLocationInfo : PositionedPropInfo
+        public class EntryLocationInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Whether this location is cloaked
@@ -500,7 +500,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class NomaiTextInfo : PositionedPropInfo
+        public class NomaiTextInfo : GeneralPointPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum NomaiTextType
@@ -616,7 +616,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class ProjectionInfo : PositionedAndRotatedPropInfo
+        public class ProjectionInfo : GeneralPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum SlideShowType
@@ -783,7 +783,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class QuantumSocketInfo : PositionedAndRotatedPropInfo
+        public class QuantumSocketInfo : GeneralPropInfo
         {
             /// <summary>
             /// Whether the socket will be placed relative to the group it belongs to. Overrides `isRelativeToParent`
@@ -824,7 +824,7 @@ namespace NewHorizons.External.Modules
             public StoneInfo[] stones;
 
             [JsonObject]
-            public class WhiteboardInfo : PositionedAndRotatedPropInfo
+            public class WhiteboardInfo : GeneralPropInfo
             {
                 /// <summary>
                 /// The text for each stone
@@ -872,7 +872,7 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class PlatformInfo : PositionedAndRotatedPropInfo
+            public class PlatformInfo : GeneralPropInfo
             {
                 /// <summary>
                 /// A ship log fact to reveal when the platform is connected to.
@@ -891,7 +891,7 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class StoneInfo : PositionedAndRotatedPropInfo
+            public class StoneInfo : GeneralPropInfo
             {
 
             }
