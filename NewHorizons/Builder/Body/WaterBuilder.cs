@@ -4,6 +4,7 @@ using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
 using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -53,7 +54,7 @@ namespace NewHorizons.Builder.Body
 
             // Don't ignore sun when not under clouds
             waterGO.layer = 0;
-            Delay.FireOnNextUpdate(() => { if (planetGO.FindChild("Sector/SunOverride") != null) waterGO.layer = 15; });
+            Delay.FireOnNextUpdate(() => { if (planetGO.FindChild("Sector/SunOverride") != null) waterGO.layer = LayerUtilities.IgnoreSun; });
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
             TSR.tessellationMeshGroup = ScriptableObject.CreateInstance<MeshGroup>();
@@ -100,7 +101,7 @@ namespace NewHorizons.Builder.Body
             var buoyancyObject = new GameObject("WaterVolume");
             buoyancyObject.transform.parent = waterGO.transform;
             buoyancyObject.transform.localScale = Vector3.one;
-            buoyancyObject.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            buoyancyObject.layer = LayerUtilities.BasicEffectVolume;
 
             var sphereCollider = buoyancyObject.AddComponent<SphereCollider>();
             sphereCollider.radius = 1;

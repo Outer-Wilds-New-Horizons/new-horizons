@@ -9,6 +9,7 @@ using OWML.Common;
 using UnityEngine.InputSystem.XR;
 using System.Linq;
 using NewHorizons.Components.Stars;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -122,7 +123,7 @@ namespace NewHorizons.Builder.Body
             heatVolume.transform.SetParent(starGO.transform, false);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
-            heatVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            heatVolume.layer = LayerUtilities.BasicEffectVolume;
             heatVolume.AddComponent<SphereShape>().radius = 1.1f;
             heatVolume.AddComponent<OWTriggerVolume>();
             heatVolume.AddComponent<HeatHazardVolume>()._damagePerSecond = 20f;
@@ -132,7 +133,7 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.SetParent(starGO.transform, false);
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
-            deathVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            deathVolume.layer = LayerUtilities.BasicEffectVolume;
             var sphereCollider = deathVolume.AddComponent<SphereCollider>();
             sphereCollider.radius = 1f;
             sphereCollider.isTrigger = true;
@@ -148,7 +149,7 @@ namespace NewHorizons.Builder.Body
             planetDestructionVolume.transform.SetParent(starGO.transform, false);
             planetDestructionVolume.transform.localPosition = Vector3.zero;
             planetDestructionVolume.transform.localScale = Vector3.one;
-            planetDestructionVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            planetDestructionVolume.layer = LayerUtilities.BasicEffectVolume;
             var planetSphereCollider = planetDestructionVolume.AddComponent<SphereCollider>();
             planetSphereCollider.radius = 0.8f;
             planetSphereCollider.isTrigger = true;
@@ -445,7 +446,7 @@ namespace NewHorizons.Builder.Body
                 supernovaWallAudio.transform.SetParent(supernovaGO.transform, false);
                 supernovaWallAudio.transform.localPosition = Vector3.zero;
                 supernovaWallAudio.transform.localScale = Vector3.one;
-                supernovaWallAudio.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                supernovaWallAudio.layer = LayerUtilities.BasicEffectVolume;
                 var audioSource = supernovaWallAudio.AddComponent<AudioSource>();
                 audioSource.loop = true;
                 audioSource.maxDistance = 2000;

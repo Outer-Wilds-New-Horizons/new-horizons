@@ -1,4 +1,5 @@
 using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.Utility.OWUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace NewHorizons.Components.Achievement
 
         private void Reset()
         {
-            gameObject.layer = LayerMask.NameToLayer("Interactible");
+            gameObject.layer = LayerUtilities.Interactible;
         }
 
         private void Awake()

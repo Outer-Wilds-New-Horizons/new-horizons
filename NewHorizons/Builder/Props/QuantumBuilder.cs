@@ -2,7 +2,7 @@ using HarmonyLib;
 using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility.UnityUtilities;
+using NewHorizons.Utility.Geometry;
 using OWML.Common;
 using System;
 using System.Collections.Generic;

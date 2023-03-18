@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
@@ -130,7 +131,7 @@ namespace NewHorizons.Builder.Props
             var pos = (Vector3)(info.position ?? Vector3.zero);
             if (info.isRelativeToParent) signalGO.transform.localPosition = pos;
             else signalGO.transform.position = planetGO.transform.TransformPoint(pos);
-            signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
+            signalGO.layer = LayerUtilities.AdvancedEffectVolume;
 
             var source = signalGO.AddComponent<AudioSource>();
             var owAudioSource = signalGO.AddComponent<OWAudioSource>();

@@ -11,6 +11,7 @@ using System.Drawing;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
 using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -191,7 +192,7 @@ namespace NewHorizons.Builder.Body
                 if (hasDestructionVolume || targetStarSystem != null)
                 {
                     var destructionVolumeGO = new GameObject("DestructionVolume");
-                    destructionVolumeGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                    destructionVolumeGO.layer = LayerUtilities.BasicEffectVolume;
                     destructionVolumeGO.transform.parent = singularity.transform;
                     destructionVolumeGO.transform.localScale = Vector3.one;
                     destructionVolumeGO.transform.localPosition = Vector3.zero;

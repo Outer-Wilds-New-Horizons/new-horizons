@@ -1,7 +1,5 @@
-using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-using NewHorizons.Utility.UnityUtilities;
+using NewHorizons.Utility.Geometry;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -32,7 +30,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 Locator.GetPromptManager().AddScreenPrompt(_raycastPrompt, PromptPosition.UpperRight, false);
             }
         }
-        
+
         private void OnDestroy()
         {
             if (_raycastPrompt != null)
@@ -79,14 +77,14 @@ namespace NewHorizons.Utility.DebugUtilities
             var posText = Vector3ToString(data.pos);
             var normText = Vector3ToString(data.norm);
             var rotText = Vector3ToString(data.rot.eulerAngles);
-        
-            if(_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
-            if(_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
-            if(_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
-            if(_planeUpRightSphere   != null) GameObject.Destroy(_planeUpRightSphere  );
-            if(_planeUpLeftSphere    != null) GameObject.Destroy(_planeUpLeftSphere   );
-            if(_planeDownLeftSphere  != null) GameObject.Destroy(_planeDownLeftSphere );
-            if(_planeDownRightSphere != null) GameObject.Destroy(_planeDownRightSphere);
+
+            if (_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
+            if (_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
+            if (_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
+            if (_planeUpRightSphere != null) GameObject.Destroy(_planeUpRightSphere);
+            if (_planeUpLeftSphere != null) GameObject.Destroy(_planeUpLeftSphere);
+            if (_planeDownLeftSphere != null) GameObject.Destroy(_planeDownLeftSphere);
+            if (_planeDownRightSphere != null) GameObject.Destroy(_planeDownRightSphere);
 
             _surfaceSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.1f, Color.green);
             _normalSphere1 = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.01f, Color.red);
@@ -95,22 +93,22 @@ namespace NewHorizons.Utility.DebugUtilities
             _surfaceSphere.transform.localPosition = data.pos;
             _normalSphere1.transform.localPosition = data.pos + data.norm * 0.5f;
             _normalSphere2.transform.localPosition = data.pos + data.norm;
-        
+
             // plane corners
             var planeSize = 0.5f;
             var planePointSize = 0.05f;
-            _planeUpRightSphere   = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.green);
-            _planeUpLeftSphere    = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan) ;
-            _planeDownLeftSphere  = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.blue) ;
-            _planeDownRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan) ;
-        
-            _planeUpRightSphere  .transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*1*planeSize;
-            _planeUpLeftSphere   .transform.localPosition = data.plane.origin + data.plane.u*-1*planeSize + data.plane.v*1*planeSize;
-            _planeDownLeftSphere .transform.localPosition = data.plane.origin + data.plane.u*-1*planeSize + data.plane.v*-1*planeSize;
-            _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u*1*planeSize + data.plane.v*-1*planeSize;
+            _planeUpRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.green);
+            _planeUpLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
+            _planeDownLeftSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.blue);
+            _planeDownRightSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, planePointSize, Color.cyan);
+
+            _planeUpRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * 1 * planeSize;
+            _planeUpLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * 1 * planeSize;
+            _planeDownLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * -1 * planeSize;
+            _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * -1 * planeSize;
 
             Logger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
-                       (data.bodyPath != null? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
+                       (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
         internal DebugRaycastData Raycast()
         {
@@ -132,12 +130,12 @@ namespace NewHorizons.Utility.DebugUtilities
                     var toOrigin = Vector3.ProjectOnPlane((origin - hitInfo.point).normalized, hitInfo.normal);
                     var worldSpaceRot = Quaternion.LookRotation(toOrigin, hitInfo.normal);
                     data.rot = hitInfo.rigidbody.transform.InverseTransformRotation(worldSpaceRot);
-                    
+
                     data.colliderPath = hitInfo.collider.transform.GetPath();
                     data.bodyPath = hitInfo.rigidbody.transform.GetPath();
                     data.hitBodyGameObject = hitInfo.rigidbody.gameObject;
                     data.hitObject = hitInfo.collider.gameObject;
-                    
+
                     data.plane = ConstructPlane(data);
                 }
             }
@@ -155,7 +153,7 @@ namespace NewHorizons.Utility.DebugUtilities
             var U = data.pos - Vector3.zero; // U is the local "up" direction. the direction directly away from the center of the planet at this point. // pos is always relative to the body, so the body is considered to be at 0,0,0.
             var R = data.pos; // R is our origin point for the plane
             var N = data.norm.normalized; // N is the normal for this plane
-        
+
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 0, 1);
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 1, 0); // if 0,0,1 was actually the same vector U already was (lol), try (0,1,0) instead
 
@@ -163,11 +161,11 @@ namespace NewHorizons.Utility.DebugUtilities
 
             // stackoverflow.com/a/9605695
             // I don't know exactly how this works, but I'm projecting a point that is located above the plane's origin, relative to the planet, onto the plane. this gets us our v vector
-            var q = (2*U)-R;
+            var q = (2 * U) - R;
             var dist = Vector3.Dot(N, q);
-            var v_raw = 2*U - dist*N;
-            var v = (R-v_raw).normalized;  
-            
+            var v_raw = 2 * U - dist * N;
+            var v = (R - v_raw).normalized;
+
             var u = Vector3.Cross(N, v);
 
             DebugRaycastPlane p = new DebugRaycastPlane()

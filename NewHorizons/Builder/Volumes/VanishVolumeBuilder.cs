@@ -1,5 +1,6 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -35,7 +36,7 @@ namespace NewHorizons.Builder.Volumes
             var pos = (Vector3)(info.position ?? Vector3.zero);
             if (info.isRelativeToParent) go.transform.localPosition = pos;
             else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            go.layer = LayerUtilities.BasicEffectVolume;
 
             var collider = go.AddComponent<SphereCollider>();
             collider.isTrigger = true;

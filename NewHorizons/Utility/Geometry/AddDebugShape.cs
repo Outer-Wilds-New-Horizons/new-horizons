@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace NewHorizons.Utility.UnityUtilities
+namespace NewHorizons.Utility.Geometry
 {
     public static class AddDebugShape
     {
