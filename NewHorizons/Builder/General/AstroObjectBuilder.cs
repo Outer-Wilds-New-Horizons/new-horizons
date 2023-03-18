@@ -1,6 +1,6 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General

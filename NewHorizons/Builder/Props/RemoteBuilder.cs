@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Linq;
@@ -86,7 +87,7 @@ namespace NewHorizons.Builder.Props
             if (_shareStonePrefab == null)
             {
                 GameObject stone = new GameObject("ShareStoneFallback");
-                stone.layer = LayerMask.NameToLayer("Interactible");
+                stone.layer = LayerUtilities.Interactible;
                 stone.SetActive(false);
                 SphereCollider sc = stone.AddComponent<SphereCollider>();
                 sc.center = Vector3.zero;

@@ -1,5 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
@@ -23,7 +24,7 @@ namespace NewHorizons.Builder.General
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
             gravityGO.transform.localPosition = Vector3.zero;
-            gravityGO.layer = 17;
+            gravityGO.layer = LayerUtilities.BasicEffectVolume;
             gravityGO.SetActive(false);
 
             var SC = gravityGO.AddComponent<SphereCollider>();

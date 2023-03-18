@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace NewHorizons.Builder.Volumes
         public static NHNotificationVolume Make(GameObject planetGO, Sector sector, VolumesModule.NotificationVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("NotificationVolume", planetGO, sector, info);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            go.layer = LayerUtilities.BasicEffectVolume;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;

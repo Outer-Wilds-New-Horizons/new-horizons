@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -18,7 +19,7 @@ namespace NewHorizons.Builder.Volumes
         public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, sector, info);
-            go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
+            go.layer = LayerUtilities.AdvancedEffectVolume;
 
             var audioSource = go.AddComponent<AudioSource>();
 

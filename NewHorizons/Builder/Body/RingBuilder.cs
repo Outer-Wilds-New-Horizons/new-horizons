@@ -8,6 +8,7 @@ using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components.Volumes;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -30,7 +31,7 @@ namespace NewHorizons.Builder.Body
             ringVolume.transform.localPosition = Vector3.zero;
             ringVolume.transform.localScale = Vector3.one;
             ringVolume.transform.localRotation = Quaternion.identity;
-            ringVolume.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            ringVolume.layer = LayerUtilities.BasicEffectVolume;
 
             var ringShape = ringVolume.AddComponent<RingShape>();
             ringShape.innerRadius = ring.innerRadius;

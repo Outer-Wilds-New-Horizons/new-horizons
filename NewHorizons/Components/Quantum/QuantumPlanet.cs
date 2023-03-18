@@ -3,7 +3,7 @@ using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

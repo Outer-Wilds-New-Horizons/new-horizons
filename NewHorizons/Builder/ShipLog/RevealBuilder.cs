@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components.Achievement;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -92,7 +93,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeObservable(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
-            go.layer = LayerMask.NameToLayer("Interactible");
+            go.layer = LayerUtilities.Interactible;
 
             var sphere = go.AddComponent<SphereCollider>();
             sphere.radius = info.radius;

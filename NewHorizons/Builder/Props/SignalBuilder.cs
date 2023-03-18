@@ -1,5 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
@@ -110,7 +112,7 @@ namespace NewHorizons.Builder.Props
         public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
             var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", planetGO, sector, info);
-            signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
+            signalGO.layer = LayerUtilities.AdvancedEffectVolume;
 
             var source = signalGO.AddComponent<AudioSource>();
             var owAudioSource = signalGO.AddComponent<OWAudioSource>();

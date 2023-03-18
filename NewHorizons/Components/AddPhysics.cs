@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using NewHorizons.Utility.OWUtilities;
+using System.Collections;
 using UnityEngine;
 
 namespace NewHorizons.Components;
@@ -38,7 +39,7 @@ public class AddPhysics : MonoBehaviour
         var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
         owRigidbody._simulateInSector = Sector;
 
-        bodyGo.layer = LayerMask.NameToLayer("PhysicalDetector");
+        bodyGo.layer = LayerUtilities.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
         // this collider is not included in groups. oh well
         bodyGo.AddComponent<SphereCollider>().radius = Radius;
@@ -65,6 +66,13 @@ public class AddPhysics : MonoBehaviour
         transform.parent = bodyGo.transform;
         owRigidbody.SetMass(Mass);
         owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+
+        // #536 - Physics objects in bramble dimensions not disabled on load
+        // sectors wait 3 frames and then call OnSectorOccupantsUpdated
+        // however we wait .1 real seconds which is longer
+        // so we have to manually call this
+        if (owRigidbody._simulateInSector != null)
+            owRigidbody.OnSectorOccupantsUpdated();
 
         Destroy(this);
     }

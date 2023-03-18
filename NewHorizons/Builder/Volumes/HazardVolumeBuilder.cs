@@ -1,5 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -15,7 +16,7 @@ namespace NewHorizons.Builder.Volumes
         public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, VolumesModule.HazardVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, sector, info);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            go.layer = LayerUtilities.BasicEffectVolume;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;
@@ -50,7 +51,7 @@ namespace NewHorizons.Builder.Volumes
                     var detectorGO = new GameObject("ConstantFluidDetector");
                     detectorGO.transform.parent = go.transform;
                     detectorGO.transform.localPosition = Vector3.zero;
-                    detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
+                    detectorGO.layer = LayerUtilities.BasicDetector;
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
                     detector._onlyDetectableFluid = water;
                     detector._buoyancy.boundingRadius = 1;

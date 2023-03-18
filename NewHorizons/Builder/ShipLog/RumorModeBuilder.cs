@@ -2,6 +2,7 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
