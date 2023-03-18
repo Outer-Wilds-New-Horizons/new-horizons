@@ -1,9 +1,5 @@
 using NewHorizons.Builder.Body;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using NewHorizons.Utility;
 using UnityEngine;
 
 namespace NewHorizons.Components.SizeControllers
@@ -18,7 +14,7 @@ namespace NewHorizons.Components.SizeControllers
         public WhiteHoleFluidVolume fluidVolume;
         public WhiteHoleVolume volume;
 
-        protected new void FixedUpdate()
+        public override void FixedUpdate()
         {
             base.FixedUpdate();
 
@@ -54,6 +50,64 @@ namespace NewHorizons.Components.SizeControllers
                 volume._debrisDistMax = CurrentScale * 6.5f;
                 volume._debrisDistMin = CurrentScale * 2f;
                 volume._radius = CurrentScale * innerScale;
+            }
+        }
+
+        protected override void Vanish()
+        {
+            if (audioSource != null)
+            {
+                audioSource.gameObject.SetActive(false);
+                audioSource.Stop();
+            }
+
+            if (oneShotAudioSource != null)
+            {
+                oneShotAudioSource.gameObject.SetActive(false);
+            }
+
+            if (sphereCollider != null)
+            {
+                sphereCollider.gameObject.SetActive(false);
+            }
+
+            if (fluidVolume != null)
+            {
+                fluidVolume.gameObject.SetActive(false);
+            }
+
+            if (volume != null)
+            {
+                volume.gameObject.SetActive(false);
+            }
+        }
+
+        protected override void Appear()
+        {
+            if (audioSource != null)
+            {
+                audioSource.gameObject.SetActive(true);
+                Delay.FireOnNextUpdate(audioSource.Play);
+            }
+
+            if (oneShotAudioSource != null)
+            {
+                oneShotAudioSource.gameObject.SetActive(true);
+            }
+
+            if (sphereCollider != null)
+            {
+                sphereCollider.gameObject.SetActive(true);
+            }
+
+            if (fluidVolume != null)
+            {
+                fluidVolume.gameObject.SetActive(true);
+            }
+
+            if (volume != null)
+            {
+                volume.gameObject.SetActive(true);
             }
         }
     }
