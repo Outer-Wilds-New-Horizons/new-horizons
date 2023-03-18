@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -42,7 +43,7 @@ namespace NewHorizons.Builder.Volumes
             var pos = (Vector3)(info.position ?? Vector3.zero);
             if (info.isRelativeToParent) go.transform.localPosition = pos;
             else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            go.layer = LayerUtilities.BasicEffectVolume;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;

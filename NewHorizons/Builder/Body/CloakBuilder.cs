@@ -1,6 +1,7 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using OWML.Common;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;

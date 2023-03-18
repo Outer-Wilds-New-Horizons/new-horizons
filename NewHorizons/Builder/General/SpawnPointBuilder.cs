@@ -1,5 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using System;
 using System.Reflection;
 using UnityEngine;
@@ -16,7 +18,7 @@ namespace NewHorizons.Builder.General
             {
                 GameObject spawnGO = new GameObject("PlayerSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
-                spawnGO.layer = 8;
+                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                 spawnGO.transform.localPosition = module.playerSpawnPoint;
 
@@ -38,7 +40,7 @@ namespace NewHorizons.Builder.General
             {
                 GameObject spawnGO = new GameObject("ShipSpawnPoint");
                 spawnGO.transform.parent = planetGO.transform;
-                spawnGO.layer = 8;
+                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                 spawnGO.transform.localPosition = module.shipSpawnPoint;
 
@@ -69,7 +71,7 @@ namespace NewHorizons.Builder.General
                         Logger.LogVerbose("Overriding player spawn to be inside ship");
                         GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
                         playerSpawnGO.transform.parent = ship.transform;
-                        playerSpawnGO.layer = 8;
+                        playerSpawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                         playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 

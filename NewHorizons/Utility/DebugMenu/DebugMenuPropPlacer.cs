@@ -2,6 +2,8 @@ using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.DebugUtilities;
+using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWUtilities;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

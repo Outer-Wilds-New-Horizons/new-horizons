@@ -1,5 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {
@@ -12,7 +13,7 @@ namespace NewHorizons.Builder.General
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
-            rfGO.layer = 19;
+            rfGO.layer = LayerUtilities.ReferenceFrameVolume;
             rfGO.SetActive(false);
 
             var SC = rfGO.AddComponent<SphereCollider>();

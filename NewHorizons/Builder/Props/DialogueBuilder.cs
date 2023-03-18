@@ -7,6 +7,7 @@ using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Props
 {
@@ -103,7 +104,7 @@ namespace NewHorizons.Builder.Props
             var conversationZone = new GameObject("ConversationZone");
             conversationZone.SetActive(false);
 
-            conversationZone.layer = LayerMask.NameToLayer("Interactible");
+            conversationZone.layer = LayerUtilities.Interactible;
 
             var sphere = conversationZone.AddComponent<SphereCollider>();
             sphere.radius = info.radius;
@@ -259,7 +260,7 @@ namespace NewHorizons.Builder.Props
                 var playerTrackingZone = new GameObject("PlayerTrackingZone");
                 playerTrackingZone.SetActive(false);
 
-                playerTrackingZone.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                playerTrackingZone.layer = LayerUtilities.BasicEffectVolume;
                 playerTrackingZone.SetActive(false);
 
                 var sphereCollider = playerTrackingZone.AddComponent<SphereCollider>();

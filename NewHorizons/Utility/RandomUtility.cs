@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
+
 namespace NewHorizons.Utility
 {
     public static class RandomUtility

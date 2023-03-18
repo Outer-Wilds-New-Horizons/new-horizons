@@ -7,6 +7,7 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using System.Collections.Generic;
 using Tessellation;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -118,7 +119,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsFluidGO = new GameObject("CloudsFluid");
             cloudsFluidGO.SetActive(false);
-            cloudsFluidGO.layer = 17;
+            cloudsFluidGO.layer = LayerUtilities.BasicEffectVolume;
             cloudsFluidGO.transform.parent = cloudsMainGO.transform;
 
             SphereCollider fluidSC = cloudsFluidGO.AddComponent<SphereCollider>();
@@ -251,7 +252,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.unlit)
             {
-                cloudsTopGO.layer = LayerMask.NameToLayer("IgnoreSun");
+                cloudsTopGO.layer = LayerUtilities.IgnoreSun;
             }
 
             if (atmo.clouds.rotationSpeed != 0f)
@@ -303,7 +304,7 @@ namespace NewHorizons.Builder.Atmosphere
             {
                 GameObject tcrqcGO = new GameObject("TransparentCloudRenderQueueController");
                 tcrqcGO.transform.SetParent(cloudsTransparentGO.transform, false);
-                tcrqcGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                tcrqcGO.layer = LayerUtilities.BasicEffectVolume;
 
                 var shape = tcrqcGO.AddComponent<SphereShape>();
                 shape.radius = 1;

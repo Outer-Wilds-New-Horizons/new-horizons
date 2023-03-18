@@ -1,18 +1,18 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using OWML.Common;
+using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWMLUtilities;
+using Newtonsoft.Json;
+using OWML.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-using Enum = System.Enum;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
-using OWML.Utils;
-using Newtonsoft.Json;
-using System;
 
 namespace NewHorizons.Builder.Props
 {

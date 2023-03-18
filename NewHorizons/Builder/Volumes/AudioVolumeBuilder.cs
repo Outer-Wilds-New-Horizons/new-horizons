@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -42,7 +43,7 @@ namespace NewHorizons.Builder.Volumes
             var pos = (Vector3)(info.position ?? Vector3.zero);
             if (info.isRelativeToParent) go.transform.localPosition = pos;
             else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
+            go.layer = LayerUtilities.AdvancedEffectVolume;
 
             var audioSource = go.AddComponent<AudioSource>();
 

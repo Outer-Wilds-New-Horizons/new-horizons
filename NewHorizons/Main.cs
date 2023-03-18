@@ -16,6 +16,8 @@ using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;

@@ -9,6 +9,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components.ShipLog;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.ShipLog
 {
