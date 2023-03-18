@@ -143,7 +143,7 @@
           "type": "string",
           "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
         },
-        "vessel": {
+        "vesselSpawn": {
           "description": "The location that the vessel will warp to.",
           "$ref": "#/definitions/VesselInfo"
         },
