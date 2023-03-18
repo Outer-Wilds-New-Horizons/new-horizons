@@ -1,3 +1,4 @@
+using Epic.OnlineServices.Presence;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
@@ -464,6 +465,42 @@ namespace NewHorizons.External.Configs
             if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
             {
                 ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
+            }
+
+            // Spawn points reorganized to use GenericPropInfo
+            if (Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
+            {
+                Spawn.playerSpawn = new SpawnModule.PlayerSpawnPoint()
+                {
+                    position = Spawn.playerSpawnPoint,
+                    rotation = Spawn.playerSpawnRotation,
+                    startWithSuit = Spawn.startWithSuit,
+                };
+            }
+            if (Spawn.shipSpawn == null && Spawn.shipSpawnPoint != null)
+            {
+                Spawn.shipSpawn = new SpawnModule.ShipSpawnPoint()
+                {
+                    position = Spawn.shipSpawnPoint,
+                    rotation = Spawn.shipSpawnRotation,
+                };
+            }
+
+            // Remote dialogue trigger reorganized to use GenericPropInfo
+            if (Props.dialogue != null)
+            {
+                foreach (var dialogue in Props.dialogue)
+                {
+                    if (dialogue.remoteTrigger == null && (dialogue.remoteTriggerPosition != null || dialogue.remoteTriggerRadius != 0))
+                    {
+                        dialogue.remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo
+                        {
+                            position = dialogue.remoteTriggerPosition,
+                            radius = dialogue.remoteTriggerRadius,
+                            prereqCondition = dialogue.remoteTriggerPrereqCondition,
+                        };
+                    }
+                }
             }
         }
     }

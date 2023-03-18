@@ -24,21 +24,8 @@ namespace NewHorizons.Builder.Props
             RemoteDialogueTrigger remoteTrigger = null;
             if (info.remoteTrigger != null)
             {
-                remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, info.remoteTrigger, dialogue);
+                remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, dialogue);
             }
-            // Backwards compatibility
-#pragma warning disable 612, 618
-            if (remoteTrigger == null && (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0))
-            {
-                var remoteInfo = new PropModule.DialogueInfo.RemoteTriggerInfo
-                {
-                    position = info.remoteTriggerPosition,
-                    radius = info.remoteTriggerRadius,
-                    prereqCondition = info.remoteTriggerPrereqCondition,
-                };
-                remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, remoteInfo, dialogue);
-            }
-#pragma warning restore 612, 618
 
             // Make the character look at the player
             // Useful for dialogue replacement
@@ -51,9 +38,9 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, PropModule.DialogueInfo.RemoteTriggerInfo remoteTriggerInfo, CharacterDialogueTree dialogue)
+        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", sector?.transform ?? planetGO.transform, remoteTriggerInfo, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
+            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", sector?.transform ?? planetGO.transform, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
@@ -67,7 +54,7 @@ namespace NewHorizons.Builder.Props
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
                     // Base game never uses more than one condition anyone so we'll keep it simple
-                    prereqConditions = string.IsNullOrEmpty(remoteTriggerInfo.prereqCondition) ? new string[]{ } : new string[] { remoteTriggerInfo.prereqCondition },
+                    prereqConditions = string.IsNullOrEmpty(info.remoteTrigger.prereqCondition) ? new string[]{ } : new string[] { info.remoteTrigger.prereqCondition },
                     // Just set your enter conditions in XML instead of complicating it with this
                     onTriggerEnterConditions = new string[]{ }
                 }
@@ -75,7 +62,7 @@ namespace NewHorizons.Builder.Props
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
 
-            sphereCollider.radius = remoteTriggerInfo.radius == 0 ? info.radius : remoteTriggerInfo.radius;
+            sphereCollider.radius = info.remoteTrigger.radius == 0 ? info.radius : info.remoteTrigger.radius;
 
             conversationTrigger.SetActive(true);
 
