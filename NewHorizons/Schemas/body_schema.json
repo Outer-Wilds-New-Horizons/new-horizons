@@ -1065,7 +1065,7 @@
           "type": "array",
           "description": "Add black/white-holes to this planet",
           "items": {
-            "$ref": "#/definitions/SingularityModule"
+            "$ref": "#/definitions/SingularityInfo"
           }
         },
         "signals": {
@@ -1825,11 +1825,6 @@
           "type": "string",
           "description": "An optional rename of this object"
         },
-        "isRelativeToGroup": {
-          "type": "boolean",
-          "description": "Whether the socket will be placed relative to the group it belongs to. Overrides `isRelativeToParent`",
-          "default": true
-        },
         "probability": {
           "type": "number",
           "description": "The probability any props that are part of this group will occupy this socket",
@@ -1980,7 +1975,7 @@
         }
       }
     },
-    "SingularityModule": {
+    "SingularityInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

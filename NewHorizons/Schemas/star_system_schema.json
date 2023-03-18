@@ -216,6 +216,11 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "hasPhysics": {
+          "type": "boolean",
+          "description": "Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.",
+          "default": true
         }
       }
     },
