@@ -9,7 +9,7 @@ namespace NewHorizons.Components.Volumes
 
         public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
-            if (hitObj.CompareTag("PlayerDetector"))
+            if (hitObj.CompareTag("PlayerDetector") && enabled)
             {
                 switch(creditsType)
                 {
