@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
+using NewHorizons.External.Props;
 
 namespace NewHorizons.Builder.Body
 {
@@ -103,7 +104,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var detailInfo = new PropModule.DetailInfo();
+            var detailInfo = new DetailInfo();
             var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
 
             var exitWarps = _exitWarps.InstantiateInactive();

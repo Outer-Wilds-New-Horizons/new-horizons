@@ -6,10 +6,10 @@ using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace NewHorizons.External.Modules.VariableSize
+namespace NewHorizons.External.Props
 {
     [JsonObject]
-    public class SingularityModule : PropModule.GeneralPropInfo
+    public class SingularityInfo : GeneralPropInfo
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public enum SingularityType
@@ -39,7 +39,7 @@ namespace NewHorizons.External.Modules.VariableSize
         /// Radius of the singularity. Note that this isn't the same as the event horizon, but includes the entire volume that
         /// has warped effects in it.
         /// </summary>
-        [Obsolete("size is deprecated, please use horizonRadius and distortRadius instead")] [Range(0f, double.MaxValue)] public float size;
+        [Obsolete("size is deprecated, please use horizonRadius and distortRadius instead")][Range(0f, double.MaxValue)] public float size;
 
         /// <summary>
         /// Radius of the event horizon (solid part)

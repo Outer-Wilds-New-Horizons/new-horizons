@@ -13,6 +13,7 @@ using Random = UnityEngine.Random;
 using OWML.Utils;
 using Newtonsoft.Json;
 using System;
+using NewHorizons.External.Props;
 
 namespace NewHorizons.Builder.Props
 {
@@ -30,16 +31,16 @@ namespace NewHorizons.Builder.Props
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
 
-        private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
-        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
+        private static Dictionary<NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<NomaiTextArcInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(NomaiTextArcInfo arc)
         {
             if (!arcInfoToCorrespondingSpawnedGameObject.ContainsKey(arc)) return null;
             return arcInfoToCorrespondingSpawnedGameObject[arc];
         }
 
-        private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        private static Dictionary<NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<NomaiTextInfo, GameObject>();
         
-        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
+        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(NomaiTextInfo convo)
         {
             Logger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
@@ -120,7 +121,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, NomaiTextInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
@@ -128,7 +129,7 @@ namespace NewHorizons.Builder.Props
 
             switch (info.type)
             {
-                case PropModule.NomaiTextInfo.NomaiTextType.Wall:
+                case NomaiTextInfo.NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
                         
@@ -159,7 +160,7 @@ namespace NewHorizons.Builder.Props
                         
                         return nomaiWallTextObj;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
+                case NomaiTextInfo.NomaiTextType.Scroll:
                     {
                         var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, sector?.transform ?? planetGO.transform, info);
 
@@ -211,7 +212,7 @@ namespace NewHorizons.Builder.Props
                         
                         return customScroll;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Computer:
+                case NomaiTextInfo.NomaiTextType.Computer:
                     {
                         var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, sector?.transform ?? planetGO.transform, info, true, info.normal);
 
@@ -232,9 +233,9 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
+                case NomaiTextInfo.NomaiTextType.PreCrashComputer:
                     {
-                        var detailInfo = new PropModule.DetailInfo()
+                        var detailInfo = new DetailInfo()
                         {
                             position = info.position,
                             parentPath = info.parentPath,
@@ -282,10 +283,10 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
-                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
+                case NomaiTextInfo.NomaiTextType.Cairn:
+                case NomaiTextInfo.NomaiTextType.CairnVariant:
                     {
-                        var cairnPrefab = info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
+                        var cairnPrefab = info.type == NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
                         var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, sector?.transform ?? planetGO.transform, info, info.rotation == null);
 
                         // Idk do we have to set it active before finding things?
@@ -317,11 +318,11 @@ namespace NewHorizons.Builder.Props
 
                         return cairnObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
-                case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
+                case NomaiTextInfo.NomaiTextType.PreCrashRecorder:
+                case NomaiTextInfo.NomaiTextType.Recorder:
                     {
-                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var detailInfo = new PropModule.DetailInfo {
+                        var prefab = (info.type == NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var detailInfo = new DetailInfo {
                             parentPath = info.parentPath,
                             rotation = info.rotation,
                             position = info.position,
@@ -347,7 +348,7 @@ namespace NewHorizons.Builder.Props
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
+                case NomaiTextInfo.NomaiTextType.Trailmarker:
                     {
                         var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, sector?.transform ?? planetGO.transform, info, info.rotation == null);
 
@@ -378,7 +379,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = GeneralPropBuilder.MakeNew("NomaiWallText", sector?.transform ?? go.transform, info);
 
@@ -406,7 +407,7 @@ namespace NewHorizons.Builder.Props
             nomaiWallText.SetTextAsset(text);
 
             // #433 fuzzy stranger text
-            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == NomaiTextArcInfo.NomaiTextArcType.Stranger))
             {
                 StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
             }
@@ -414,7 +415,7 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, NomaiTextInfo info, NewHorizonsBody nhBody)
         {
             var dict = MakeNomaiTextDict(xml);
 
@@ -434,7 +435,7 @@ namespace NewHorizons.Builder.Props
             public bool mirrored;
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody, string cacheKey)
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, NomaiTextInfo info, NewHorizonsBody nhBody, string cacheKey)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);
@@ -536,27 +537,27 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
+        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
-            var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+            var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
             Color? overrideColor = null;
             switch (type)
             {
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
+                case NomaiTextArcInfo.NomaiTextArcType.Child:
                     profile = NomaiTextArcBuilder.childSpiralProfile;
                     mat = _childArcMaterial;
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ new Vector3(-0.9f, 0.0f, 0.0f), new Vector3(0.9f, 0.0f, 0.0f), new Vector3(-0.9f, 2.0f, 0.0f), new Vector3(0.9f, 2.0f, 0.0f) });
                     overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
+                case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
                     mat = _adultArcMaterial;

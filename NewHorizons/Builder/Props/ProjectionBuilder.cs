@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -65,20 +66,20 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             switch (info.type)
             {
-                case PropModule.ProjectionInfo.SlideShowType.AutoProjector:
+                case ProjectionInfo.SlideShowType.AutoProjector:
                     MakeAutoProjector(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.SlideReel:
+                case ProjectionInfo.SlideShowType.SlideReel:
                     MakeSlideReel(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.VisionTorchTarget:
+                case ProjectionInfo.SlideShowType.VisionTorchTarget:
                     MakeMindSlidesTarget(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.StandingVisionTorch:
+                case ProjectionInfo.SlideShowType.StandingVisionTorch:
                     MakeStandingVisionTorch(go, sector, info, mod);
                     break;
                 default:
@@ -87,7 +88,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -160,7 +161,7 @@ namespace NewHorizons.Builder.Props
             return slideReelObj;
         }
 
-        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -195,14 +196,14 @@ namespace NewHorizons.Builder.Props
         }
 
         // Makes a target for a vision torch to scan
-        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
             if (_visionTorchDetectorPrefab == null) return null;
 
             // spawn a trigger for the vision torch
-            var detailInfo = new PropModule.DetailInfo()
+            var detailInfo = new DetailInfo()
             {
                 position = info.position,
                 rotation = info.rotation,
@@ -241,14 +242,14 @@ namespace NewHorizons.Builder.Props
             return g;
         }
 
-        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
             if (_standingVisionTorchPrefab == null) return null;
 
             // Spawn the torch itself
-            var detailInfo = new PropModule.DetailInfo()
+            var detailInfo = new DetailInfo()
             {
                 position = info.position,
                 rotation = info.rotation,
@@ -344,7 +345,7 @@ namespace NewHorizons.Builder.Props
             return imageLoader;
         }
 
-        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
+        private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
             if (!String.IsNullOrEmpty(slideInfo.beatAudio))

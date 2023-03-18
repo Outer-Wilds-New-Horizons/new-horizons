@@ -5,7 +5,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class ThrustRulesetBuilder
     {
-        public static ThrustRuleset Make(GameObject planetGO, Sector sector, VolumesModule.RulesetModule.ThrustRulesetInfo info)
+        public static ThrustRuleset Make(GameObject planetGO, Sector sector, RulesetModule.ThrustRulesetInfo info)
         {
             var volume = VolumeBuilder.Make<ThrustRuleset>(planetGO, sector, info);
 

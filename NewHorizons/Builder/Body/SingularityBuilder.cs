@@ -1,7 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using System;
-using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.Drawing;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;
+using NewHorizons.External.Props;
 
 namespace NewHorizons.Builder.Body
 {
@@ -70,7 +70,7 @@ namespace NewHorizons.Builder.Body
             if (_whiteHoleVolume == null) _whiteHoleVolume = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVolume").InstantiateInactive().Rename("WhiteHoleVolume").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config, SingularityModule singularity)
+        public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config, SingularityInfo singularity)
         {
             InitPrefabs();
 
@@ -81,7 +81,7 @@ namespace NewHorizons.Builder.Body
             var distortRadius = singularity.distortRadius != 0f ? singularity.distortRadius : horizonRadius * 2.5f;
             var pairedSingularity = singularity.pairedSingularity;
 
-            bool polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
+            bool polarity = singularity.type == SingularityInfo.SingularityType.BlackHole;
 
             bool isWormHole = singularity?.targetStarSystem != null;
             bool hasHazardVolume = !isWormHole && (pairedSingularity == null);
@@ -140,7 +140,7 @@ namespace NewHorizons.Builder.Body
 
             // polarity true = black, false = white
 
-            var info = new SingularityModule
+            var info = new SingularityInfo
             {
                 position = position,
                 rotation = rotation,

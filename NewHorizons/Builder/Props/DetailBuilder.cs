@@ -1,6 +1,7 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -15,7 +16,7 @@ namespace NewHorizons.Builder.Props
 {
     public static class DetailBuilder
     {
-        private static readonly Dictionary<PropModule.DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
+        private static readonly Dictionary<DetailInfo, GameObject> _detailInfoToCorrespondingSpawnedGameObject = new();
         private static readonly Dictionary<(Sector, string), (GameObject prefab, bool isItem)> _fixedPrefabCache = new();
 
         static DetailBuilder()
@@ -33,7 +34,7 @@ namespace NewHorizons.Builder.Props
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
         }
 
-        public static GameObject GetSpawnedGameObjectByDetailInfo(PropModule.DetailInfo detail)
+        public static GameObject GetSpawnedGameObjectByDetailInfo(DetailInfo detail)
         {
             if (!_detailInfoToCorrespondingSpawnedGameObject.ContainsKey(detail))
             {
@@ -48,7 +49,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using an asset bundle or a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, PropModule.DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, IModBehaviour mod, DetailInfo detail)
         {
             if (detail.assetBundle != null)
             {
@@ -64,7 +65,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using a path in the scene hierarchy of the item to copy.
         /// </summary>
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.DetailInfo info)
+        public static GameObject Make(GameObject planetGO, Sector sector, DetailInfo info)
         {
             var prefab = SearchUtilities.Find(info.path);
             if (prefab == null)
@@ -79,7 +80,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Create a detail using a prefab.
         /// </summary>
-        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, PropModule.DetailInfo detail)
+        public static GameObject Make(GameObject go, Sector sector, GameObject prefab, DetailInfo detail)
         {
             if (prefab == null) return null;
 

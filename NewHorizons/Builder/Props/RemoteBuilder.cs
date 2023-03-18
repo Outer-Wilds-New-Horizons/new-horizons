@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -116,7 +117,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, NewHorizonsBody nhBody)
+        public static void Make(GameObject go, Sector sector, RemoteInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
@@ -167,9 +168,9 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.WhiteboardInfo info, NewHorizonsBody nhBody)
+        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteInfo.WhiteboardInfo info, NewHorizonsBody nhBody)
         {
-            var detailInfo = new PropModule.DetailInfo()
+            var detailInfo = new DetailInfo()
             {
                 position = info.position,
                 rotation = info.rotation,
@@ -194,7 +195,7 @@ namespace NewHorizons.Builder.Props
             {
                 var textInfo = info.nomaiText[i];
                 component._remoteIDs[i] = RemoteHandler.GetPlatformID(textInfo.id);
-                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
+                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new NomaiTextInfo
                 {
                     arcInfo = textInfo.arcInfo,
                     location = textInfo.location,
@@ -203,7 +204,7 @@ namespace NewHorizons.Builder.Props
                     rename = textInfo.rename,
                     rotation = Vector3.zero,
                     seed = textInfo.seed,
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Wall,
+                    type = NomaiTextInfo.NomaiTextType.Wall,
                     xmlFile = textInfo.xmlFile
                 }, nhBody).GetComponent<NomaiWallText>();
                 wallText._showTextOnStart = false;
@@ -215,9 +216,9 @@ namespace NewHorizons.Builder.Props
             whiteboard.SetActive(true);
         }
 
-        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.PlatformInfo info, IModBehaviour mod)
+        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteInfo.PlatformInfo info, IModBehaviour mod)
         {
-            var detailInfo = new PropModule.DetailInfo()
+            var detailInfo = new DetailInfo()
             {
                 position = info.position,
                 rotation = info.rotation,
@@ -249,7 +250,7 @@ namespace NewHorizons.Builder.Props
             platform.SetActive(true);
         }
 
-        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.StoneInfo info, IModBehaviour mod)
+        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteInfo.StoneInfo info, IModBehaviour mod)
         {
             var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), sector?.transform ?? go.transform, info);
 

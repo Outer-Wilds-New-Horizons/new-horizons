@@ -4,11 +4,11 @@ using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using UnityEngine.UI;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components.ShipLog;
+using NewHorizons.External.Props;
 
 namespace NewHorizons.Builder.ShipLog
 {
@@ -552,9 +552,9 @@ namespace NewHorizons.Builder.ShipLog
 
                 switch (body.Config?.Props?.singularities?.FirstOrDefault()?.type)
                 {
-                    case SingularityModule.SingularityType.BlackHole:
+                    case SingularityInfo.SingularityType.BlackHole:
                         return Color.black;
-                    case SingularityModule.SingularityType.WhiteHole:
+                    case SingularityInfo.SingularityType.WhiteHole:
                         return Color.white;
                 }
             }

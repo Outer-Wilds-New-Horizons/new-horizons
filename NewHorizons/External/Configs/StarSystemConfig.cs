@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
@@ -206,7 +207,7 @@ namespace NewHorizons.External.Configs
             [Obsolete("warpExitRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 warpExitRotation;
 
             [JsonObject]
-            public class VesselInfo : PropModule.GeneralSolarSystemPropInfo
+            public class VesselInfo : GeneralSolarSystemPropInfo
             {
                 /// <summary>
                 /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
@@ -215,7 +216,7 @@ namespace NewHorizons.External.Configs
             }
 
             [JsonObject]
-            public class WarpExitInfo : PropModule.GeneralSolarSystemPropInfo
+            public class WarpExitInfo : GeneralSolarSystemPropInfo
             {
                 /// <summary>
                 /// If set, keeps the warp exit attached to the vessel. Overrides `parentPath`.

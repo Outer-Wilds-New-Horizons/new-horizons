@@ -1,11 +1,12 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Volumes;
 using UnityEngine;
 
 namespace NewHorizons.Components.Volumes
 {
     internal class LoadCreditsVolume : BaseVolume
     {
-        public VolumesModule.LoadCreditsVolumeInfo.CreditsType creditsType = VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast;
+        public LoadCreditsVolumeInfo.CreditsType creditsType = LoadCreditsVolumeInfo.CreditsType.Fast;
 
         public override void OnTriggerVolumeEntry(GameObject hitObj)
         {
@@ -13,13 +14,13 @@ namespace NewHorizons.Components.Volumes
             {
                 switch(creditsType)
                 {
-                    case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast:
+                    case LoadCreditsVolumeInfo.CreditsType.Fast:
                         LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                         break;
-                    case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Final:
+                    case LoadCreditsVolumeInfo.CreditsType.Final:
                         LoadManager.LoadScene(OWScene.Credits_Final, LoadManager.FadeType.ToBlack);
                         break;
-                    case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Kazoo:
+                    case LoadCreditsVolumeInfo.CreditsType.Kazoo:
                         TimelineObliterationController.s_hasRealityEnded = true;
                         LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                         break;

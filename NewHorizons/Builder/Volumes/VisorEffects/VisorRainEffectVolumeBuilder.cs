@@ -5,7 +5,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class VisorRainEffectVolumeBuilder
     {
-        public static VisorRainEffectVolume Make(GameObject planetGO, Sector sector, VolumesModule.VisorEffectModule.RainEffectVolumeInfo info)
+        public static VisorRainEffectVolume Make(GameObject planetGO, Sector sector, VisorEffectModule.RainEffectVolumeInfo info)
         {
             var volume = PriorityVolumeBuilder.Make<VisorRainEffectVolume>(planetGO, sector, info);
 

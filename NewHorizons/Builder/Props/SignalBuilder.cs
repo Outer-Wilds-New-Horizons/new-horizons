@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using OWML.Common;
 using OWML.Utils;
@@ -107,7 +108,7 @@ namespace NewHorizons.Builder.Props
             return name;
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, SignalInfo info, IModBehaviour mod)
         {
             var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", sector?.transform ?? planetGO.transform, info);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
