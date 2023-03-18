@@ -88,10 +88,12 @@ namespace NewHorizons.Handlers
             var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
 
-            vesselObject.transform.parent = null;
-
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
-            vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
+            if (system.Config.Vessel?.vesselSpawn.hasPhysics ?? true)
+            {
+                vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
+                vesselObject.transform.parent = null;
+            }
             vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
             vesselAO._customName = "Vessel";
             vesselAO._name = AstroObject.Name.CustomString;

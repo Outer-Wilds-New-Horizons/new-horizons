@@ -208,7 +208,10 @@ namespace NewHorizons.External.Configs
             [JsonObject]
             public class VesselInfo : PropModule.GeneralSolarSystemPropInfo
             {
-
+                /// <summary>
+                /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
+                /// </summary>
+                [DefaultValue(true)] public bool hasPhysics = true;
             }
 
             [JsonObject]
