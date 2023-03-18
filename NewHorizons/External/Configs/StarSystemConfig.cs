@@ -85,16 +85,16 @@ namespace NewHorizons.External.Configs
         [Obsolete("coords is deprecated, please use Vessel.coords instead")]
         public NomaiCoordinates coords;
 
-        [Obsolete("vesselPosition is deprecated, please use Vessel.vesselPosition instead")]
+        [Obsolete("vesselPosition is deprecated, please use Vessel.vesselSpawn.position instead")]
         public MVector3 vesselPosition;
 
-        [Obsolete("vesselRotation is deprecated, please use Vessel.vesselRotation instead")]
+        [Obsolete("vesselRotation is deprecated, please use Vessel.vesselSpawn.rotation instead")]
         public MVector3 vesselRotation;
 
-        [Obsolete("warpExitPosition is deprecated, please use Vessel.warpExitPosition instead")]
+        [Obsolete("warpExitPosition is deprecated, please use Vessel.warpExit.position instead")]
         public MVector3 warpExitPosition;
 
-        [Obsolete("warpExitRotation is deprecated, please use Vessel.warpExitRotation instead")]
+        [Obsolete("warpExitRotation is deprecated, please use Vessel.warpExit.rotation instead")]
         public MVector3 warpExitRotation;
 
         /// <summary>
@@ -193,17 +193,17 @@ namespace NewHorizons.External.Configs
             /// <summary>
             /// The location that the vessel will warp to.
             /// </summary>
-            public VesselInfo vessel;
+            public VesselInfo vesselSpawn;
 
             /// <summary>
             /// The location that you will be teleported to when you exit the vessel through the black hole.
             /// </summary>
             public WarpExitInfo warpExit;
 
-            [Obsolete("vesselPosition is deprecated, use vessel.position instead")] public MVector3 vesselPosition;
-            [Obsolete("vesselRotation is deprecated, use vessel.rotation instead")] public MVector3 vesselRotation;
-            [Obsolete("warpExitPosition is deprecated, use warpExit.position instead")] public MVector3 warpExitPosition;
-            [Obsolete("warpExitRotation is deprecated, use warpExit.rotation instead")] public MVector3 warpExitRotation;
+            [Obsolete("vesselPosition is deprecated, use vesselSpawn.position instead")] public MVector3 vesselPosition;
+            [Obsolete("vesselRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 vesselRotation;
+            [Obsolete("warpExitPosition is deprecated, use vesselSpawn.position instead")] public MVector3 warpExitPosition;
+            [Obsolete("warpExitRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 warpExitRotation;
 
             [JsonObject]
             public class VesselInfo : PropModule.GeneralSolarSystemPropInfo
@@ -291,12 +291,12 @@ namespace NewHorizons.External.Configs
             {
                 if (Vessel.vesselPosition != null || Vessel.vesselRotation != null)
                 {
-                    if (Vessel.vessel == null)
+                    if (Vessel.vesselSpawn == null)
                     {
-                        Vessel.vessel = new VesselModule.VesselInfo();
+                        Vessel.vesselSpawn = new VesselModule.VesselInfo();
                     }
-                    Vessel.vessel.position ??= Vessel.vesselPosition;
-                    Vessel.vessel.rotation ??= Vessel.vesselRotation;
+                    Vessel.vesselSpawn.position ??= Vessel.vesselPosition;
+                    Vessel.vesselSpawn.rotation ??= Vessel.vesselRotation;
                 }
                 if (Vessel.warpExitPosition != null || Vessel.warpExitRotation != null)
                 {

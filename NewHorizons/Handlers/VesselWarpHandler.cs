@@ -85,7 +85,7 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, system.Config.Vessel?.vessel);
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
 
             vesselObject.transform.parent = null;
@@ -142,7 +142,13 @@ namespace NewHorizons.Handlers
 
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
-            GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, vesselWarpController._targetWarpPlatform.transform.parent, system.Config.Vessel?.warpExit);
+            var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
+            var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, attachWarpExitToVessel ? warpExitParent : null, system.Config.Vessel?.warpExit);
+            if (attachWarpExitToVessel)
+            {
+                warpExit.transform.parent = warpExitParent;
+            }
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 

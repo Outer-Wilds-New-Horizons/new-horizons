@@ -62,8 +62,8 @@ namespace NewHorizons.Builder.Props
                 go.transform.localRotation = rot;
             } else if (parent)
             {
-                go.transform.position = parent.TransformPoint(pos);
-                go.transform.rotation = parent.TransformRotation(rot);
+                go.transform.position = parent.root.TransformPoint(pos);
+                go.transform.rotation = parent.root.TransformRotation(rot);
             } else
             {
                 go.transform.position = pos;
