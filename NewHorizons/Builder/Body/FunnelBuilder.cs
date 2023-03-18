@@ -1,5 +1,4 @@
 using System.Runtime.Serialization;
-using NewHorizons.Components;
 using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -7,6 +6,7 @@ using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Utility.OWMLUtilities;
 using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
 {

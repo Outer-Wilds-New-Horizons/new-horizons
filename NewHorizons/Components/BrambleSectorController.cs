@@ -77,6 +77,8 @@ namespace NewHorizons.Components
             {
                 light.enabled = true;
             }
+
+            _renderersShown = true;
         }
 
         private void DisableRenderers()
@@ -100,6 +102,8 @@ namespace NewHorizons.Components
             {
                 light.enabled = false;
             }
+
+            _renderersShown = false;
         }
     }
 }
