@@ -180,7 +180,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// The type of death the player will have if they enter this volume.
             /// </summary>
-            [DefaultValue("default")] public DeathType deathType = DeathType.Default;
+            [DefaultValue("default")] public DestructionVolumeInfo.DeathType deathType = DestructionVolumeInfo.DeathType.Default;
         }
 
         [JsonObject]
