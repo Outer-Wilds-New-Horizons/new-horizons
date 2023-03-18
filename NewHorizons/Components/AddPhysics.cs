@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 namespace NewHorizons.Components;
@@ -65,6 +65,13 @@ public class AddPhysics : MonoBehaviour
         transform.parent = bodyGo.transform;
         owRigidbody.SetMass(Mass);
         owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+
+        // #536 - Physics objects in bramble dimensions not disabled on load
+        // sectors wait 3 frames and then call OnSectorOccupantsUpdated
+        // however we wait .1 real seconds which is longer
+        // so we have to manually call this
+        if (owRigidbody._simulateInSector != null)
+            owRigidbody.OnSectorOccupantsUpdated();
 
         Destroy(this);
     }
