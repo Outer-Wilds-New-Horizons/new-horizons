@@ -15,9 +15,8 @@ namespace NewHorizons.Patches.SignalPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(Signalscope.SwitchFrequencyFilter))]
-        public static bool Signalscope_SwitchFrequencyFilter(Signalscope __instance, int __0)
+        public static bool Signalscope_SwitchFrequencyFilter(Signalscope __instance, int increment)
         {
-            var increment = __0;
             var count = SignalBuilder.NumberOfFrequencies;
             __instance._frequencyFilterIndex += increment;
             __instance._frequencyFilterIndex = __instance._frequencyFilterIndex >= count ? 0 : __instance._frequencyFilterIndex;

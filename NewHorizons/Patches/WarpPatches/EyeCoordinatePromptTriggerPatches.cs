@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace NewHorizons.Patches.WarpPatches
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(EyeCoordinatePromptTrigger))]
     public static class EyeCoordinatePromptTriggerPatches
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(EyeCoordinatePromptTrigger), nameof(EyeCoordinatePromptTrigger.Update))]
+        [HarmonyPatch(nameof(EyeCoordinatePromptTrigger.Update))]
         public static bool EyeCoordinatePromptTrigger_Update(EyeCoordinatePromptTrigger __instance)
         {
             var showPrompts = __instance._warpController.HasPower();
@@ -22,10 +22,10 @@ namespace NewHorizons.Patches.WarpPatches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(EyeCoordinatePromptTrigger), nameof(EyeCoordinatePromptTrigger.OnExit))]
-        public static void EyeCoordinatePromptTrigger_OnExit(GameObject __0)
+        [HarmonyPatch(nameof(EyeCoordinatePromptTrigger.OnExit))]
+        public static void EyeCoordinatePromptTrigger_OnExit(GameObject hitObj)
         {
-            if (__0.CompareTag("PlayerDetector"))
+            if (hitObj.CompareTag("PlayerDetector"))
             {
                 VesselCoordinatePromptHandler.SetPromptVisibility(false);
             }

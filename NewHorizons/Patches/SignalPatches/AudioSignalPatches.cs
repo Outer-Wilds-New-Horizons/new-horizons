@@ -12,9 +12,9 @@ namespace NewHorizons.Patches.SignalPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.SignalNameToString))]
-        public static bool AudioSignal_SignalNameToString(SignalName __0, ref string __result)
+        public static bool AudioSignal_SignalNameToString(SignalName name, ref string __result)
         {
-            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
+            var customSignalName = SignalBuilder.GetCustomSignalName(name);
             if (!string.IsNullOrEmpty(customSignalName))
             {
                 __result = TranslationHandler.GetTranslation(customSignalName, TranslationHandler.TextType.UI, false).ToUpper();
@@ -25,9 +25,9 @@ namespace NewHorizons.Patches.SignalPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.FrequencyToIndex))]
-        public static bool AudioSignal_FrequencyToIndex(SignalFrequency __0, ref int __result)
+        public static bool AudioSignal_FrequencyToIndex(SignalFrequency frequency, out int __result)
         {
-            __result = __0 switch
+            __result = frequency switch
             {
                 SignalFrequency.Default => 0,
                 SignalFrequency.Traveler => 1,
@@ -37,16 +37,16 @@ namespace NewHorizons.Patches.SignalPatches
                 SignalFrequency.HideAndSeek => 5,
                 SignalFrequency.Radio => 6,
                 SignalFrequency.Statue => 7,
-                _ => (int)(Mathf.Log((float)__0) / Mathf.Log(2f)),// Frequencies are in powers of 2
+                _ => (int)(Mathf.Log((float)frequency) / Mathf.Log(2f)),// Frequencies are in powers of 2
             };
             return false;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.IndexToFrequency))]
-        public static bool AudioSignal_IndexToFrequency(int __0, ref SignalFrequency __result)
+        public static bool AudioSignal_IndexToFrequency(int index, out SignalFrequency __result)
         {
-            __result = __0 switch
+            __result = index switch
             {
                 0 => SignalFrequency.Default,
                 1 => SignalFrequency.Traveler,
@@ -56,16 +56,16 @@ namespace NewHorizons.Patches.SignalPatches
                 5 => SignalFrequency.HideAndSeek,
                 6 => SignalFrequency.Radio,
                 7 => SignalFrequency.Statue,
-                _ => (SignalFrequency)Math.Pow(2, __0),
+                _ => (SignalFrequency)Math.Pow(2, index),
             };
             return false;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(AudioSignal.FrequencyToString))]
-        public static bool AudioSignal_FrequencyToString(SignalFrequency __0, ref string __result)
+        public static bool AudioSignal_FrequencyToString(SignalFrequency frequency, ref string __result)
         {
-            var customName = SignalBuilder.GetCustomFrequencyName(__0);
+            var customName = SignalBuilder.GetCustomFrequencyName(frequency);
             if (!string.IsNullOrEmpty(customName))
             {
                 if (NewHorizonsData.KnowsFrequency(customName)) __result = TranslationHandler.GetTranslation(customName, TranslationHandler.TextType.UI, false).ToUpper();

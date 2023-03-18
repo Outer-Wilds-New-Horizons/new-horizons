@@ -8,14 +8,14 @@ using System.Threading.Tasks;
 
 namespace NewHorizons.Patches.VolumePatches
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(DestructionVolume))]
     public static class DestructionVolumePatches
     {
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(DestructionVolume), nameof(DestructionVolume.Vanish))]
-        public static bool DestructionVolume_Vanish(OWRigidbody __0)
+        [HarmonyPatch(nameof(DestructionVolume.Vanish))]
+        public static bool DestructionVolume_Vanish(OWRigidbody bodyToVanish)
         {
-            var quantumPlanet = __0.gameObject.GetComponent<QuantumPlanet>();
+            var quantumPlanet = bodyToVanish.gameObject.GetComponent<QuantumPlanet>();
 
             if (quantumPlanet == null) return true;
 

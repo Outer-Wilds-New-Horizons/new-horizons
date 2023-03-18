@@ -1,7 +1,7 @@
 using HarmonyLib;
 using NewHorizons.Handlers;
 
-namespace NewHorizons.Patches.CreditsScene
+namespace NewHorizons.Patches.CreditsScenePatches
 {
     [HarmonyPatch(typeof(Credits))]
     public static class CreditsPatches

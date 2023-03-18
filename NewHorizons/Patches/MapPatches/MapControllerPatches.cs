@@ -20,7 +20,7 @@ namespace NewHorizons.Patches.MapPatches
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(MapController.OnTargetReferenceFrame))]
-        public static void MapController_OnTargetReferenceFrame(MapController __instance, ReferenceFrame __0)
+        public static void MapController_OnTargetReferenceFrame(MapController __instance, ReferenceFrame referenceFrame)
         {
             // Locked onto map satellite just means it will move vertically up from the plane of the solar system
             __instance._isLockedOntoMapSatellite = true;

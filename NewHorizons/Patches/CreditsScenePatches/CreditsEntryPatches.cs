@@ -1,18 +1,14 @@
 using HarmonyLib;
-using NewHorizons.Utility;
-using System;
 
-namespace NewHorizons.Patches.CreditsScene
+namespace NewHorizons.Patches.CreditsScenePatches
 {
     [HarmonyPatch(typeof(CreditsEntry))]
     public static class CreditsEntryPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(CreditsEntry.SetContents))]
-        public static bool CreditsEntry_SetContents(CreditsEntry __instance, string[] __0)
+        public static bool CreditsEntry_SetContents(CreditsEntry __instance, string[] columnTexts)
         {
-            var columnTexts = __0;
-
             for (int i = 0; i < __instance._columns.Length; i++)
             {
                 // Base method throws out of bounds exception sometimes (_columns length doesn't match columnTexts length)

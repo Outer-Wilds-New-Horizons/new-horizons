@@ -9,15 +9,15 @@ namespace NewHorizons.Patches.ShipLogPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(UIStyleManager.GetCuriosityColor))]
-        public static bool UIStyleManager_GetCuriosityColor(UIStyleManager __instance, CuriosityName __0, bool __1, ref Color __result)
+        public static bool UIStyleManager_GetCuriosityColor(UIStyleManager __instance, CuriosityName curiosityName, bool highlight, ref Color __result)
         {
-            if ((int)__0 < 7)
+            if ((int)curiosityName < 7)
             {
                 return true;
             }
             else
             {
-                __result = RumorModeBuilder.GetCuriosityColor(__0, __1, __instance._neutralColor, __instance._neutralHighlight);
+                __result = RumorModeBuilder.GetCuriosityColor(curiosityName, highlight, __instance._neutralColor, __instance._neutralHighlight);
                 return false;
             }
         }

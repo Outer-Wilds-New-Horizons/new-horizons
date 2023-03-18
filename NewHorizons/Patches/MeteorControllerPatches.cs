@@ -10,6 +10,7 @@ namespace NewHorizons.Patches
         public static void MeteorController_Suspend(MeteorController __instance)
         {
             // Meteors launch inactive because of prefab. So let's fix that.
+            // how tf does this work
             __instance.gameObject.SetActive(true);
         }
     }

@@ -16,9 +16,9 @@ namespace NewHorizons.Patches.CameraPatches
 
             // These layers were left on because it doesnt come up in base game (Dreamworld is inactive, player is far away)
             __instance._camera.mainCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("DreamSimulation"));
-            __instance._camera.mainCamera.cullingMask &= ~(1 <<LayerMask.NameToLayer("UI"));
-            __instance._camera.mainCamera.cullingMask &= ~(1 <<LayerMask.NameToLayer("HeadsUpDisplay"));
-            __instance._camera.mainCamera.cullingMask &= ~(1 <<LayerMask.NameToLayer("HelmetUVPass"));
+            __instance._camera.mainCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("UI"));
+            __instance._camera.mainCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("HeadsUpDisplay"));
+            __instance._camera.mainCamera.cullingMask &= ~(1 << LayerMask.NameToLayer("HelmetUVPass"));
         }
     }
 }

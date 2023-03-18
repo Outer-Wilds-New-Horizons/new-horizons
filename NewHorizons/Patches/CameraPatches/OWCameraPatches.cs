@@ -7,7 +7,7 @@ namespace NewHorizons.Patches.CameraPatches
     {
         [HarmonyPostfix]
         [HarmonyPatch(nameof(OWCamera.Awake))]
-        public static void OnOWCameraAwake(OWCamera __instance)
+        public static void OWCamera_Awake(OWCamera __instance)
         {
             if (Main.SystemDict.TryGetValue(Main.Instance.CurrentStarSystem, out var system) && system?.Config?.farClipPlaneOverride != 0f)
             {

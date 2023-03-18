@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace NewHorizons.Patches.DetectorPatches
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(AlignToSurfaceFluidDetector))]
     public static class AlignToSurfaceFluidDetectorPatches
     {
         [HarmonyReversePatch]
@@ -14,7 +14,7 @@ namespace NewHorizons.Patches.DetectorPatches
         }
 
         [HarmonyPrefix]
-        [HarmonyPatch(typeof(AlignToSurfaceFluidDetector), nameof(AlignToSurfaceFluidDetector.ManagedFixedUpdate))]
+        [HarmonyPatch(nameof(AlignToSurfaceFluidDetector.ManagedFixedUpdate))]
         public static bool AlignToSurfaceFluidDetector_ManagedFixedUpdate(AlignToSurfaceFluidDetector __instance)
         {
             if (__instance._alignmentFluid is not RadialFluidVolume) return true;

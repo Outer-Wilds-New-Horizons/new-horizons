@@ -15,11 +15,10 @@ namespace NewHorizons.Patches.PlayerPatches
     {
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.KnowsFrequency))]
-        public static bool OnPlayerDataKnowsFrequency(SignalFrequency __0, ref bool __result)
+        public static bool PlayerData_KnowsFrequency(SignalFrequency frequency, ref bool __result)
         {
-            var freqString = SignalBuilder.GetCustomFrequencyName(__0);
-
-            if (freqString != null && freqString != "")
+            var freqString = SignalBuilder.GetCustomFrequencyName(frequency);
+            if (!string.IsNullOrEmpty(freqString))
             {
                 __result = NewHorizonsData.KnowsFrequency(freqString);
                 return false;
@@ -29,10 +28,10 @@ namespace NewHorizons.Patches.PlayerPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.LearnFrequency))]
-        public static bool OnPlayerDataLearnFrequency(SignalFrequency __0)
+        public static bool PlayerData_LearnFrequency(SignalFrequency frequency)
         {
-            var freqString = SignalBuilder.GetCustomFrequencyName(__0);
-            if (freqString != null && freqString != "")
+            var freqString = SignalBuilder.GetCustomFrequencyName(frequency);
+            if (!string.IsNullOrEmpty(freqString))
             {
                 NewHorizonsData.LearnFrequency(freqString);
                 NewFrequencyAchievement.Earn();
@@ -43,10 +42,10 @@ namespace NewHorizons.Patches.PlayerPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.KnowsSignal))]
-        public static bool OnPlayerDataKnowsSignal(SignalName __0, ref bool __result)
+        public static bool PlayerData_KnowsSignal(SignalName signalName, ref bool __result)
         {
-            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
-            if (customSignalName != null)
+            var customSignalName = SignalBuilder.GetCustomSignalName(signalName);
+            if (!string.IsNullOrEmpty(customSignalName))
             {
                 __result = NewHorizonsData.KnowsSignal(customSignalName);
                 return false;
@@ -56,10 +55,10 @@ namespace NewHorizons.Patches.PlayerPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.LearnSignal))]
-        public static bool OnPlayerDataLearnSignal(SignalName __0)
+        public static bool PlayerData_LearnSignal(SignalName signalName)
         {
-            var customSignalName = SignalBuilder.GetCustomSignalName(__0);
-            if (customSignalName != null)
+            var customSignalName = SignalBuilder.GetCustomSignalName(signalName);
+            if (!string.IsNullOrEmpty(customSignalName))
             {
                 if (!NewHorizonsData.KnowsSignal(customSignalName))
                 {
@@ -75,7 +74,7 @@ namespace NewHorizons.Patches.PlayerPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.KnowsMultipleFrequencies))]
-        public static bool OnPlayerDataKnowsMultipleFrequencies(ref bool __result)
+        public static bool PlayerData_KnowsMultipleFrequencies(ref bool __result)
         {
             if (NewHorizonsData.KnowsMultipleFrequencies())
             {
@@ -87,22 +86,19 @@ namespace NewHorizons.Patches.PlayerPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.AddNewlyRevealedFactID))]
-        public static bool OnPlayerDataAddNewlyRevealedFactID(string __0)
+        public static bool PlayerData_AddNewlyRevealedFactID(string id)
         {
-            if (ShipLogHandler.IsModdedFact(__0))
+            if (ShipLogHandler.IsModdedFact(id))
             {
-                NewHorizonsData.AddNewlyRevealedFactID(__0);
+                NewHorizonsData.AddNewlyRevealedFactID(id);
                 return false;
             }
-            else
-            {
-                return true;
-            }
+            return true;
         }
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.GetNewlyRevealedFactIDs))]
-        public static bool OnPlayerDataGetNewlyRevealedFactIDs(ref List<string> __result)
+        public static bool PlayerData_GetNewlyRevealedFactIDs_Prefix(ref List<string> __result)
         {
             var newHorizonsNewlyRevealedFactIDs = NewHorizonsData.GetNewlyRevealedFactIDs();
             if (newHorizonsNewlyRevealedFactIDs != null)
@@ -110,35 +106,30 @@ namespace NewHorizons.Patches.PlayerPatches
                 __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(newHorizonsNewlyRevealedFactIDs).ToList();
                 return false;
             }
-            else
-            {
-                Logger.LogError("Newly Revealed Fact IDs is null!");
-                return true;
-            }
-        }
-
-        [HarmonyPrefix]
-        [HarmonyPatch(nameof(PlayerData.ClearNewlyRevealedFactIDs))]
-        public static bool OnPlayerDataClearNewlyRevealedFactIDs()
-        {
-            PlayerData._currentGameSave.newlyRevealedFactIDs.Clear();
-            NewHorizonsData.ClearNewlyRevealedFactIDs();
-            return false;
-        }
-
-        [HarmonyPostfix]
-        [HarmonyPatch(nameof(PlayerData.ResetGame))]
-        public static void OnPlayerDataResetGame()
-        {
-            NewHorizonsData.Reset();
+            Logger.LogError("Newly Revealed Fact IDs is null!");
+            return true;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(PlayerData.GetNewlyRevealedFactIDs))]
-        public static void PlayerData_GetNewlyRevealedFactIDs(ref List<string> __result)
+        public static void PlayerData_GetNewlyRevealedFactIDs_Postfix(ref List<string> __result)
         {
-            ShipLogManager manager = Locator.GetShipLogManager();
-            __result = __result.Where(e => manager.GetFact(e) != null).ToList();
+            var manager = Locator.GetShipLogManager();
+            __result = __result.Where(id => manager.GetFact(id) != null).ToList();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PlayerData.ClearNewlyRevealedFactIDs))]
+        public static void PlayerData_ClearNewlyRevealedFactIDs()
+        {
+            NewHorizonsData.ClearNewlyRevealedFactIDs();
+        }
+
+        [HarmonyPostfix]
+        [HarmonyPatch(nameof(PlayerData.ResetGame))]
+        public static void PlayerData_ResetGame()
+        {
+            NewHorizonsData.Reset();
         }
     }
 }
