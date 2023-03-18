@@ -18,10 +18,11 @@ namespace NewHorizons.Builder.Props
 
             if (info is PropModule.GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
             {
+                // This can fail if the prop is built before the target planet. Only use it for SolarSystem module props
                 var targetPlanet = AstroObjectLocator.GetAstroObject(solarSystemInfo.parentBody);
                 if (targetPlanet != null)
                 {
-                    parent = targetPlanet.transform;
+                    parent = targetPlanet._rootSector?.transform ?? targetPlanet.transform;
                 } else
                 {
                     Logger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
@@ -37,16 +38,16 @@ namespace NewHorizons.Builder.Props
 
             var parentPath = info.parentPath ?? defaultParentPath;
 
-            if (!string.IsNullOrEmpty(parentPath))
+            if (parent && !string.IsNullOrEmpty(parentPath))
             {
-                var newParent = go.transform.Find(parentPath);
+                var newParent = parent.root.transform.Find(parentPath);
                 if (newParent != null)
                 {
                     go.transform.parent = newParent.transform;
                 }
                 else
                 {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{parentPath}");
+                    Logger.LogError($"Cannot find parent object at path: {parent.name}/{parentPath}");
                 }
             }
 
@@ -62,8 +63,8 @@ namespace NewHorizons.Builder.Props
                 go.transform.localRotation = rot;
             } else if (parent)
             {
-                go.transform.position = parent.root.TransformPoint(pos);
-                go.transform.rotation = parent.root.TransformRotation(rot);
+                go.transform.position = parent.root.transform.TransformPoint(pos);
+                go.transform.rotation = parent.root.transform.TransformRotation(rot);
             } else
             {
                 go.transform.position = pos;
@@ -71,10 +72,9 @@ namespace NewHorizons.Builder.Props
             }
             if (alignToBody)
             {
-                var up = (go.transform.position - parent.position).normalized;
+                var up = (go.transform.position - parent.root.position).normalized;
                 if (normal != null) up = parent.TransformDirection(normal);
-                go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                go.transform.rotation *= rot;
+                go.transform.rotation = Quaternion.FromToRotation(go.transform.up, up) * rot;
             }
             return go;
         }
