@@ -139,25 +139,17 @@
           "description": "Coordinates that the vessel can use to warp to your solar system.",
           "$ref": "#/definitions/NomaiCoordinates"
         },
-        "vesselPosition": {
-          "description": "The position in the solar system the vessel will warp to.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "vesselRotation": {
-          "description": "Euler angles by which the vessel will be oriented.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "warpExitPosition": {
-          "description": "The relative position to the vessel that you will be teleported to when you exit the vessel through the black hole.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "warpExitRotation": {
-          "description": "Euler angles by which the warp exit will be oriented.",
-          "$ref": "#/definitions/MVector3"
-        },
         "promptFact": {
           "type": "string",
           "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
+        },
+        "vessel": {
+          "description": "The location that the vessel will warp to.",
+          "$ref": "#/definitions/VesselInfo"
+        },
+        "warpExit": {
+          "description": "The location that you will be teleported to when you exit the vessel through the black hole.",
+          "$ref": "#/definitions/WarpExitInfo"
         }
       }
     },
@@ -197,6 +189,36 @@
         }
       }
     },
+    "VesselInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parentBody": {
+          "type": "string",
+          "description": "The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set."
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
     "MVector3": {
       "type": "object",
       "additionalProperties": false,
@@ -212,6 +234,40 @@
         "z": {
           "type": "number",
           "format": "float"
+        }
+      }
+    },
+    "WarpExitInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parentBody": {
+          "type": "string",
+          "description": "The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set."
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "attachToVessel": {
+          "type": "boolean",
+          "description": "If set, keeps the warp exit attached to the vessel. Overrides `parentPath`."
         }
       }
     },
