@@ -44,7 +44,7 @@ namespace NewHorizons.Builder.Props
 
             var parentPath = info.parentPath ?? defaultParentPath;
 
-            if (planetGO && !string.IsNullOrEmpty(parentPath))
+            if (planetGO != null && !string.IsNullOrEmpty(parentPath))
             {
                 var newParent = planetGO.transform.Find(parentPath);
                 if (newParent != null)
@@ -69,7 +69,7 @@ namespace NewHorizons.Builder.Props
                 go.transform.localPosition = pos;
                 go.transform.localRotation = rot;
             }
-            else if (planetGO)
+            else if (planetGO != null)
             {
                 go.transform.position = planetGO.transform.TransformPoint(pos);
                 go.transform.rotation = planetGO.transform.TransformRotation(rot);
