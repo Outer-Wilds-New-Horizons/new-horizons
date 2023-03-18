@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace NewHorizons.Patches.CameraPatches
 {
-    [HarmonyPatch]
+    [HarmonyPatch(typeof(NomaiRemoteCamera))]
     public static class NomaiRemoteCameraPatches
     {
         [HarmonyPostfix]
-        [HarmonyPatch(typeof(NomaiRemoteCamera), nameof(NomaiRemoteCamera.Awake))]
+        [HarmonyPatch(nameof(NomaiRemoteCamera.Awake))]
         public static void NomaiRemoteCamera_Awake(NomaiRemoteCamera __instance)
         {
             // Ensures that if the player is visible from the remote camera they look normal
