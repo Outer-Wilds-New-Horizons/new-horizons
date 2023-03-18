@@ -467,7 +467,7 @@ namespace NewHorizons.External.Configs
                 ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
             }
 
-            // Spawn points reorganized to use GenericPropInfo
+            // Spawn points reorganized to use GeneralPointPropInfo
             if (Spawn != null && Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
             {
                 Spawn.playerSpawn = new SpawnModule.PlayerSpawnPoint()
@@ -486,7 +486,7 @@ namespace NewHorizons.External.Configs
                 };
             }
 
-            // Remote dialogue trigger reorganized to use GenericPropInfo
+            // Remote dialogue trigger reorganized to use GeneralPointPropInfo
             if (Props != null && Props.dialogue != null)
             {
                 foreach (var dialogue in Props.dialogue)
