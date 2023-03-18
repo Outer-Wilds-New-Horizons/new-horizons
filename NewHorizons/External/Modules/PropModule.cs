@@ -126,7 +126,7 @@ namespace NewHorizons.External.Modules
         public abstract class PositionedAndRotatedPropInfo : PositionedPropInfo
         {
             /// <summary>
-            /// Rotate this prop once it is placed
+            /// Rotation of the prop
             /// </summary>
             public MVector3 rotation;
         }

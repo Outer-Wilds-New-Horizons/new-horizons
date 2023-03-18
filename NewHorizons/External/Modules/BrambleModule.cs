@@ -78,18 +78,8 @@ namespace NewHorizons.External.Modules
 
         
         [JsonObject]
-        public class BrambleNodeInfo
+        public class BrambleNodeInfo : PropModule.PositionedAndRotatedPropInfo
         {
-            /// <summary>
-            /// The physical position of the node
-            /// </summary>
-            public MVector3 position;
-            
-            /// <summary>
-            /// The physical rotation of the node
-            /// </summary>
-            public MVector3 rotation;
-
             /// <summary>
             /// The physical scale of the node, as a multiplier of the original size. 
             /// Nodes are 150m across, seeds are 10m across.
