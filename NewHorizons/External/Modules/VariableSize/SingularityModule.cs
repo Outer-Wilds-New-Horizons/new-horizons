@@ -9,7 +9,7 @@ using Newtonsoft.Json.Converters;
 namespace NewHorizons.External.Modules.VariableSize
 {
     [JsonObject]
-    public class SingularityModule : PropModule.GeneralPropInfo
+    public class SingularityModule : GeneralPropInfo
     {
         [JsonConverter(typeof(StringEnumConverter))]
         public enum SingularityType

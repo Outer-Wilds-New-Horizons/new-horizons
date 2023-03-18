@@ -15,7 +15,7 @@ namespace NewHorizons.External.Modules
         public SignalInfo[] signals;
 
         [JsonObject]
-        public class SignalInfo : PropModule.GeneralPointPropInfo
+        public class SignalInfo : GeneralPointPropInfo
         {
             [Obsolete("audioClip is deprecated, please use audio instead")]
             public string audioClip;

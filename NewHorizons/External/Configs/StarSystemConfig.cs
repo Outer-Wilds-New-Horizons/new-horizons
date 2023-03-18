@@ -211,12 +211,12 @@ namespace NewHorizons.External.Configs
             [Obsolete("warpExitRotation is deprecated, use vesselSpawn.rotation instead")] public MVector3 warpExitRotation;
 
             [JsonObject]
-            public class VesselInfo : PropModule.GeneralSolarSystemPropInfo
+            public class VesselInfo : GeneralSolarSystemPropInfo
             {
             }
 
             [JsonObject]
-            public class WarpExitInfo : PropModule.GeneralSolarSystemPropInfo
+            public class WarpExitInfo : GeneralSolarSystemPropInfo
             {
                 /// <summary>
                 /// If set, keeps the warp exit attached to the vessel. Overrides `parentPath`.

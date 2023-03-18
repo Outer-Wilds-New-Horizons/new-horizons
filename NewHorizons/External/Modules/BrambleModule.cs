@@ -78,7 +78,7 @@ namespace NewHorizons.External.Modules
 
         
         [JsonObject]
-        public class BrambleNodeInfo : PropModule.GeneralPropInfo
+        public class BrambleNodeInfo : GeneralPropInfo
         {
             /// <summary>
             /// The physical scale of the node, as a multiplier of the original size. 
