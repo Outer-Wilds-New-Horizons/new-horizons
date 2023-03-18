@@ -658,13 +658,25 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The physical position of the node",
+        "rotation": {
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The physical rotation of the node",
+        "position": {
+          "description": "Position of the prop",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "scale": {
           "type": "number",
@@ -1077,7 +1089,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
@@ -1595,7 +1607,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
@@ -1772,7 +1784,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
@@ -1950,6 +1962,26 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotation of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "position": {
+          "description": "Position of the prop",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "curve": {
           "type": "array",
           "description": "Scale this object over time",
@@ -1964,14 +1996,6 @@
         "uniqueID": {
           "type": "string",
           "description": "The uniqueID of this white hole or black hole. If not set it will default to the name of the planet"
-        },
-        "position": {
-          "description": "Position of the singularity",
-          "$ref": "#/definitions/MVector3"
-        },
-        "rotation": {
-          "description": "Rotation of the singularity. Determines the direction you come out of a white hole",
-          "$ref": "#/definitions/MVector3"
         },
         "horizonRadius": {
           "type": "number",
@@ -2003,18 +2027,6 @@
           "format": "int32",
           "maximum": 3500.0,
           "minimum": 2501.0
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -2131,7 +2143,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
@@ -2203,7 +2215,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
@@ -2242,7 +2254,7 @@
       "additionalProperties": false,
       "properties": {
         "rotation": {
-          "description": "Rotate this prop once it is placed",
+          "description": "Rotation of the prop",
           "$ref": "#/definitions/MVector3"
         },
         "position": {
