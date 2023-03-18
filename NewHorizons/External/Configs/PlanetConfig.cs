@@ -468,7 +468,7 @@ namespace NewHorizons.External.Configs
             }
 
             // Spawn points reorganized to use GenericPropInfo
-            if (Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
+            if (Spawn != null && Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
             {
                 Spawn.playerSpawn = new SpawnModule.PlayerSpawnPoint()
                 {
@@ -477,7 +477,7 @@ namespace NewHorizons.External.Configs
                     startWithSuit = Spawn.startWithSuit,
                 };
             }
-            if (Spawn.shipSpawn == null && Spawn.shipSpawnPoint != null)
+            if (Spawn != null && Spawn.shipSpawn == null && Spawn.shipSpawnPoint != null)
             {
                 Spawn.shipSpawn = new SpawnModule.ShipSpawnPoint()
                 {
@@ -487,7 +487,7 @@ namespace NewHorizons.External.Configs
             }
 
             // Remote dialogue trigger reorganized to use GenericPropInfo
-            if (Props.dialogue != null)
+            if (Props != null && Props.dialogue != null)
             {
                 foreach (var dialogue in Props.dialogue)
                 {
