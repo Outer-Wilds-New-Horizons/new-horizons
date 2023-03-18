@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 
 namespace NewHorizons.Components;
@@ -65,6 +65,10 @@ public class AddPhysics : MonoBehaviour
         transform.parent = bodyGo.transform;
         owRigidbody.SetMass(Mass);
         owRigidbody.SetVelocity(parentBody.GetPointVelocity(transform.position));
+
+        // #536 - Physics objects in bramble dimensions not disabled on load
+        // Should have it double check if it is meant to be suspended or not
+        owRigidbody.OnSectorOccupantsUpdated();
 
         Destroy(this);
     }
