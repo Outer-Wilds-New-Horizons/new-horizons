@@ -12,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.External.Props;
 
 namespace NewHorizons
 {
@@ -159,7 +158,7 @@ namespace NewHorizons
             float scale, bool alignWithNormal)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new DetailInfo() {
+            var detailInfo = new PropModule.DetailInfo() {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
@@ -172,7 +171,7 @@ namespace NewHorizons
             float sourceRadius = 1f, float detectionRadius = 20f, float identificationRadius = 10f, bool insideCloak = false,
             bool onlyAudibleToScope = true, string reveals = "")
         {
-            var info = new SignalInfo()
+            var info = new SignalModule.SignalInfo()
             {
                 audio = audio,
                 detectionRadius = detectionRadius,
@@ -193,7 +192,7 @@ namespace NewHorizons
             float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
             float remoteTriggerRadius = 0f)
         {
-            var info = new DialogueInfo()
+            var info = new PropModule.DialogueInfo()
             {
                 blockAfterPersistentCondition = blockAfterPersistentCondition,
                 lookAtRadius = lookAtRadius,
@@ -202,7 +201,7 @@ namespace NewHorizons
                 radius = radius,
                 range = range,
                 xmlFile = xmlFile,
-                remoteTrigger = new DialogueInfo.RemoteTriggerInfo()
+                remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo()
                 {
                     position = null,
                     radius = remoteTriggerRadius,

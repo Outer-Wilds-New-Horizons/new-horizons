@@ -2,7 +2,7 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
-using NewHorizons.External.Props;
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using System;
@@ -187,7 +187,7 @@ namespace NewHorizons.Builder.Body
                 {
                     foreach (var singularity in body.Config.Props.singularities)
                     {
-                        var polarity = singularity.type == SingularityInfo.SingularityType.BlackHole;
+                        var polarity = singularity.type == SingularityModule.SingularityType.BlackHole;
                         SingularityBuilder.MakeSingularityProxy(proxy, singularity.position, polarity, singularity.horizonRadius, singularity.distortRadius, singularity.curve, singularity.renderQueueOverride);
                         if (realSize < singularity.distortRadius) realSize = singularity.distortRadius;
                     }

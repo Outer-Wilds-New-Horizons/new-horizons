@@ -7,14 +7,13 @@ using UnityEngine;
 using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.Components;
-using NewHorizons.External.Props;
 
 namespace NewHorizons.Builder.Props
 {
     public static class DialogueBuilder
     {
         // Returns the character dialogue tree and remote dialogue trigger, if applicable.
-        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, IModBehaviour mod)
+        public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, PropModule.DialogueInfo info, IModBehaviour mod)
         {
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
@@ -39,7 +38,7 @@ namespace NewHorizons.Builder.Props
             return (dialogue, remoteTrigger);
         }
 
-        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, DialogueInfo info, CharacterDialogueTree dialogue)
+        private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
             var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", sector?.transform ?? planetGO.transform, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
@@ -70,7 +69,7 @@ namespace NewHorizons.Builder.Props
             return remoteDialogueTrigger;
         }
 
-        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, DialogueInfo info, IModHelper mod)
+        private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
             var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", sector?.transform ?? planetGO.transform, info, defaultParentPath: info.pathToAnimController);
 
@@ -106,15 +105,15 @@ namespace NewHorizons.Builder.Props
 
             switch (info.flashlightToggle)
             {
-                case DialogueInfo.FlashlightToggle.TurnOff:
+                case PropModule.DialogueInfo.FlashlightToggle.TurnOff:
                     dialogueTree._turnOffFlashlight = true;
                     dialogueTree._turnOnFlashlight = false;
                     break;
-                case DialogueInfo.FlashlightToggle.TurnOffThenOn:
+                case PropModule.DialogueInfo.FlashlightToggle.TurnOffThenOn:
                     dialogueTree._turnOffFlashlight = true;
                     dialogueTree._turnOnFlashlight = true;
                     break;
-                case DialogueInfo.FlashlightToggle.None:
+                case PropModule.DialogueInfo.FlashlightToggle.None:
                 default:
                     dialogueTree._turnOffFlashlight = false;
                     dialogueTree._turnOnFlashlight = false;
@@ -126,7 +125,7 @@ namespace NewHorizons.Builder.Props
             return dialogueTree;
         }
 
-        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, DialogueInfo info)
+        private static void MakePlayerTrackingZone(GameObject go, CharacterDialogueTree dialogue, PropModule.DialogueInfo info)
         {
             var character = go.transform.Find(info.pathToAnimController);
 

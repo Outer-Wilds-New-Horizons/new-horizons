@@ -1,6 +1,5 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;
@@ -18,7 +17,7 @@ namespace NewHorizons.Builder.Props
             MakeScatter(go, config.Props.scatter, config.Base.surfaceSize, sector, mod, config);
         }
 
-        private static void MakeScatter(GameObject go, ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
+        private static void MakeScatter(GameObject go, PropModule.ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
 
@@ -70,7 +69,7 @@ namespace NewHorizons.Builder.Props
                 else prefab = SearchUtilities.Find(propInfo.path);
 
                 // Run all the make detail stuff on it early and just copy it over and over instead
-                var detailInfo = new DetailInfo()
+                var detailInfo = new PropModule.DetailInfo()
                 {
                     scale = propInfo.scale,
                     stretch = propInfo.stretch,

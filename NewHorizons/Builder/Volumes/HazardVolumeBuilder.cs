@@ -1,6 +1,5 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Volumes;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -13,7 +12,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class HazardVolumeBuilder
     {
-        public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, HazardVolumeInfo info, IModBehaviour mod)
+        public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, VolumesModule.HazardVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("HazardVolume", sector?.transform ?? planetGO.transform, info);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
@@ -25,15 +24,15 @@ namespace NewHorizons.Builder.Volumes
             owTriggerVolume._shape = shape;
 
             HazardVolume hazardVolume = null;
-            if (info.type == HazardVolumeInfo.HazardType.RIVERHEAT)
+            if (info.type == VolumesModule.HazardVolumeInfo.HazardType.RIVERHEAT)
             {
                 hazardVolume = go.AddComponent<RiverHeatHazardVolume>();
             }
-            else if (info.type == HazardVolumeInfo.HazardType.HEAT)
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.HEAT)
             {
                 hazardVolume = go.AddComponent<HeatHazardVolume>();
             }
-            else if (info.type == HazardVolumeInfo.HazardType.DARKMATTER)
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.DARKMATTER)
             {
                 hazardVolume = go.AddComponent<DarkMatterVolume>();
                 var visorFrostEffectVolume = go.AddComponent<VisorFrostEffectVolume>();
@@ -61,7 +60,7 @@ namespace NewHorizons.Builder.Volumes
                     submerge._fluidDetector = detector;
                 }
             }
-            else if (info.type == HazardVolumeInfo.HazardType.ELECTRICITY)
+            else if (info.type == VolumesModule.HazardVolumeInfo.HazardType.ELECTRICITY)
             {
                 var electricityVolume = go.AddComponent<ElectricityVolume>();
                 electricityVolume._shockAudioPool = new OWAudioSource[0];

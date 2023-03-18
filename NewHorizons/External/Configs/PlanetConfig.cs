@@ -1,8 +1,6 @@
 using Epic.OnlineServices.Presence;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.External.Props;
-using NewHorizons.External.Volumes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -66,7 +64,7 @@ namespace NewHorizons.External.Configs
         public string[] childrenToDestroy;
 
         [Obsolete("Singularity is deprecated, please use Props->singularities")]
-        public SingularityInfo Singularity;
+        public SingularityModule Singularity;
 
         [Obsolete("Signal is deprecated, please use Props->signals")]
         public SignalModule Signal;
@@ -215,21 +213,21 @@ namespace NewHorizons.External.Configs
             //      if detail.quantumGroupID != null, there exists a quantum group with that id
             if (Props?.quantumGroups != null && Props?.details != null)
             {
-                Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
+                Dictionary<string, PropModule.QuantumGroupInfo> existingGroups = new Dictionary<string, PropModule.QuantumGroupInfo>();
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (existingGroups.ContainsKey(quantumGroup.id)) { Logger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { Logger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
 
                     existingGroups[quantumGroup.id] = quantumGroup;
-                    if (quantumGroup.type == QuantumGroupType.Sockets)
+                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets)
                     {
-                        if (quantumGroup.sockets?.Length == 0) { Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                        if (quantumGroup.sockets?.Length == 0) { Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
                         else
                         {
                             foreach (var socket in quantumGroup.sockets)
                             {
                                 if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
-                                if (socket.position == null) { Logger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                                if (socket.position == null) { Logger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = PropModule.QuantumGroupType.FailedValidation; }
                             }
                         }
                     }
@@ -245,10 +243,10 @@ namespace NewHorizons.External.Configs
 
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
+                    if (quantumGroup.type == PropModule.QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
                     {
                         Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
-                        quantumGroup.type = QuantumGroupType.FailedValidation;
+                        quantumGroup.type = PropModule.QuantumGroupType.FailedValidation;
                     }
                 }
             }
@@ -276,9 +274,9 @@ namespace NewHorizons.External.Configs
                 };
 
             if (Base.blackHoleSize != 0)
-                Singularity = new SingularityInfo
+                Singularity = new SingularityModule
                 {
-                    type = SingularityInfo.SingularityType.BlackHole,
+                    type = SingularityModule.SingularityType.BlackHole,
                     size = Base.blackHoleSize
                 };
 
@@ -331,19 +329,19 @@ namespace NewHorizons.External.Configs
             if (Props?.tornados != null)
                 foreach (var tornado in Props.tornados)
                     if (tornado.downwards)
-                        tornado.type = TornadoInfo.TornadoType.Downwards;
+                        tornado.type = PropModule.TornadoInfo.TornadoType.Downwards;
 
             if (Props?.audioVolumes != null)
             {
                 if (Volumes == null) Volumes = new VolumesModule();
-                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new AudioVolumeInfo[0];
+                if (Volumes.audioVolumes == null) Volumes.audioVolumes = new VolumesModule.AudioVolumeInfo[0];
                 Volumes.audioVolumes = Volumes.audioVolumes.Concat(Props.audioVolumes).ToArray();
             }
 
             if (Props?.reveal != null)
             {
                 if (Volumes == null) Volumes = new VolumesModule();
-                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new RevealVolumeInfo[0];
+                if (Volumes.revealVolumes == null) Volumes.revealVolumes = new VolumesModule.RevealVolumeInfo[0];
                 Volumes.revealVolumes = Volumes.revealVolumes.Concat(Props.reveal).ToArray();
             }
 
@@ -377,7 +375,7 @@ namespace NewHorizons.External.Configs
             if (Singularity != null)
             {
                 if (Props == null) Props = new PropModule();
-                if (Props.singularities == null) Props.singularities = new SingularityInfo[0];
+                if (Props.singularities == null) Props.singularities = new SingularityModule[0];
                 Props.singularities = Props.singularities.Append(Singularity).ToArray();
             }
 
@@ -391,10 +389,10 @@ namespace NewHorizons.External.Configs
                         singularity.horizonRadius = singularity.size * 0.4f;
                         switch (singularity.type)
                         {
-                            case SingularityInfo.SingularityType.BlackHole:
+                            case SingularityModule.SingularityType.BlackHole:
                                 singularity.distortRadius = singularity.size * 0.95f;
                                 break;
-                            case SingularityInfo.SingularityType.WhiteHole:
+                            case SingularityModule.SingularityType.WhiteHole:
                                 singularity.distortRadius = singularity.size * 2.8f;
                                 break;
                         }
@@ -406,7 +404,7 @@ namespace NewHorizons.External.Configs
             if (Signal?.signals != null)
             {
                 if (Props == null) Props = new PropModule();
-                if (Props.signals == null) Props.signals = new SignalInfo[0];
+                if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
 
@@ -452,9 +450,9 @@ namespace NewHorizons.External.Configs
             if (Base.zeroGravityRadius != 0f)
             {
                 Volumes ??= new VolumesModule();
-                Volumes.zeroGravityVolumes ??= new PriorityVolumeInfo[0];
+                Volumes.zeroGravityVolumes ??= new VolumesModule.PriorityVolumeInfo[0];
 
-                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new PriorityVolumeInfo()
+                Volumes.zeroGravityVolumes = Volumes.zeroGravityVolumes.Append(new VolumesModule.PriorityVolumeInfo()
                 {
                     priority = 1,
                     rename = "ZeroGVolume",
@@ -495,7 +493,7 @@ namespace NewHorizons.External.Configs
                 {
                     if (dialogue.remoteTrigger == null && (dialogue.remoteTriggerPosition != null || dialogue.remoteTriggerRadius != 0))
                     {
-                        dialogue.remoteTrigger = new DialogueInfo.RemoteTriggerInfo
+                        dialogue.remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo
                         {
                             position = dialogue.remoteTriggerPosition,
                             radius = dialogue.remoteTriggerRadius,

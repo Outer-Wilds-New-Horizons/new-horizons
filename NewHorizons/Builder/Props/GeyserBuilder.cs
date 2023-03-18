@@ -1,5 +1,4 @@
 using NewHorizons.External.Modules;
-using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -15,7 +14,7 @@ namespace NewHorizons.Builder.Props
             if (_geyserPrefab == null) _geyserPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Interactables_TH/Geysers/Geyser_Village").InstantiateInactive().Rename("Prefab_TH_Geyser").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, GeyserInfo info)
+        public static void Make(GameObject planetGO, Sector sector, PropModule.GeyserInfo info)
         {
             InitPrefab();
 

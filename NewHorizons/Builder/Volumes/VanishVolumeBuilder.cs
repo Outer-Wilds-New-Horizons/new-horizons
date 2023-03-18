@@ -1,7 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Volumes;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
@@ -9,7 +8,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class VanishVolumeBuilder
     {
-        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VanishVolumeInfo info) where TVolume : VanishVolume
+        public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VanishVolumeInfo info) where TVolume : VanishVolume
         {
             var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, sector?.transform ?? planetGO.transform, info);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");

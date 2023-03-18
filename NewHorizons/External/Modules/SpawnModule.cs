@@ -1,4 +1,3 @@
-using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using System;
@@ -25,7 +24,7 @@ namespace NewHorizons.External.Modules
         [Obsolete("startWithSuit is deprecated. Use playerSpawn.startWithSuit instead")] public bool startWithSuit;
 
         [JsonObject]
-        public class PlayerSpawnPoint : GeneralPropInfo {
+        public class PlayerSpawnPoint : PropModule.GeneralPropInfo {
             /// <summary>
             /// If you spawn on a planet with no oxygen, you probably want to set this to true ;;)
             /// </summary>
@@ -33,7 +32,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class ShipSpawnPoint : GeneralPropInfo {
+        public class ShipSpawnPoint : PropModule.GeneralPropInfo {
         
         }
     }

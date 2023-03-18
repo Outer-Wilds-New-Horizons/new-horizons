@@ -1,12 +1,11 @@
 using NewHorizons.External.Modules;
-using NewHorizons.External.Volumes;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class ZeroGVolumeBuilder
     {
-        public static ZeroGVolume Make(GameObject planetGO, Sector sector, PriorityVolumeInfo info)
+        public static ZeroGVolume Make(GameObject planetGO, Sector sector, VolumesModule.PriorityVolumeInfo info)
         {
             var volume = PriorityVolumeBuilder.Make<ZeroGVolume>(planetGO, sector, info);
 

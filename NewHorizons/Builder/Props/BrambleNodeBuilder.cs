@@ -1,7 +1,6 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Components;
 using NewHorizons.External.Configs;
-using NewHorizons.External.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;

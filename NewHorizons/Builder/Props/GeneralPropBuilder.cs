@@ -1,5 +1,4 @@
 using NewHorizons.External.Modules;
-using NewHorizons.External.Props;
 using NewHorizons.Utility;
 using System;
 using System.Collections.Generic;
@@ -13,11 +12,11 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromExisting(GameObject go, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             if (info == null) return go;
 
-            if (info is GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
+            if (info is PropModule.GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
             {
                 var targetPlanet = AstroObjectLocator.GetAstroObject(solarSystemInfo.parentBody);
                 if (targetPlanet != null)
@@ -53,7 +52,7 @@ namespace NewHorizons.Builder.Props
 
             var pos = (Vector3)(info.position ?? defaultPosition ?? Vector3.zero);
             var rot = Quaternion.identity;
-            if (info is GeneralPropInfo rotInfo)
+            if (info is PropModule.GeneralPropInfo rotInfo)
             {
                 rot = rotInfo.rotation != null ? Quaternion.Euler(rotInfo.rotation) : Quaternion.identity;
             }
@@ -80,14 +79,14 @@ namespace NewHorizons.Builder.Props
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeNew(string defaultName, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
             return MakeFromExisting(go, parent, info, alignToBody, normal, defaultPosition, defaultParentPath);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, Transform parent, GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;

@@ -1,5 +1,4 @@
 using NewHorizons.External.Modules;
-using NewHorizons.External.Volumes;
 using OWML.Utils;
 using UnityEngine;
 
@@ -7,7 +6,7 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class DestructionVolumeBuilder
     {
-        public static DestructionVolume Make(GameObject planetGO, Sector sector, DestructionVolumeInfo info)
+        public static DestructionVolume Make(GameObject planetGO, Sector sector, VolumesModule.DestructionVolumeInfo info)
         {
             var volume = VanishVolumeBuilder.Make<DestructionVolume>(planetGO, sector, info);
 
