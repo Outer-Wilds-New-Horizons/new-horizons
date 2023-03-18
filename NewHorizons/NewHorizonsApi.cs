@@ -199,10 +199,13 @@ namespace NewHorizons
                 pathToAnimController = pathToAnimController,
                 position = Vector3.zero,
                 radius = radius,
-                remoteTriggerPosition = null,
                 range = range,
-                remoteTriggerRadius = remoteTriggerRadius,
-                xmlFile = xmlFile
+                xmlFile = xmlFile,
+                remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo()
+                {
+                    position = null,
+                    radius = remoteTriggerRadius,
+                },
             };
 
             return DialogueBuilder.Make(root, null, info, mod);

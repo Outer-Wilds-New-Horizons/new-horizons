@@ -132,6 +132,15 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
+        public abstract class GeneralSolarSystemPropInfo : GeneralPropInfo
+        {
+            /// <summary>
+            /// The name of the planet that will be used with `parentPath`. Must be set if `parentPath` is set.
+            /// </summary>
+            public string parentBody;
+        }
+
+        [JsonObject]
         public class ScatterInfo
         {
             /// <summary>
@@ -442,14 +451,9 @@ namespace NewHorizons.External.Modules
 
             /// <summary>
             /// Radius of the spherical collision volume where you get the "talk to" prompt when looking at. If you use a
-            /// remoteTriggerPosition, you can set this to 0 to make the dialogue only trigger remotely.
+            /// remoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.
             /// </summary>
             public float radius = 1f;
-
-            /// <summary>
-            /// Allows you to trigger dialogue from a distance when you walk into an area.
-            /// </summary>
-            public MVector3 remoteTriggerPosition;
 
             /// <summary>
             /// Distance from radius the prompt appears
@@ -457,14 +461,13 @@ namespace NewHorizons.External.Modules
             [DefaultValue(2f)] public float range = 2f;
 
             /// <summary>
-            /// The radius of the remote trigger volume.
+            /// Allows you to trigger dialogue from a distance when you walk into an area.
             /// </summary>
-            public float remoteTriggerRadius;
+            public RemoteTriggerInfo remoteTrigger;
 
-            /// <summary>
-            /// If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition.
-            /// </summary>
-            public string remoteTriggerPrereqCondition;
+            [Obsolete("remoteTriggerPosition is deprecated. Use remoteTrigger.position instead")] public MVector3 remoteTriggerPosition;
+            [Obsolete("remoteTriggerRadius is deprecated. Use remoteTrigger.radius instead")] public float remoteTriggerRadius;
+            [Obsolete("remoteTriggerPrereqCondition is deprecated. Use remoteTrigger.prereqCondition instead")] public string remoteTriggerPrereqCondition;
 
             /// <summary>
             /// Relative path to the xml file defining the dialogue.
@@ -482,6 +485,19 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"none")] None = -1,
                 [EnumMember(Value = @"turnOff")] TurnOff = 0,
                 [EnumMember(Value = @"turnOffThenOn")] TurnOffThenOn = 1,
+            }
+
+            [JsonObject]
+            public class RemoteTriggerInfo : GeneralPointPropInfo
+            {
+                /// <summary>
+                /// The radius of the remote trigger volume.
+                /// </summary>
+                public float radius;
+                /// <summary>
+                /// This condition must be met for the remote trigger volume to trigger.
+                /// </summary>
+                public string prereqCondition;
             }
         }
 

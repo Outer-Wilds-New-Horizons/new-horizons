@@ -14,7 +14,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, VolumesModule.HazardVolumeInfo info, IModBehaviour mod)
         {
-            var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew("HazardVolume", sector?.transform ?? planetGO.transform, info);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var shape = go.AddComponent<SphereShape>();

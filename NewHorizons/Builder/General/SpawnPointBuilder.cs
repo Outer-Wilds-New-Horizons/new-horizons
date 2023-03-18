@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using System;
@@ -12,35 +13,47 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
-            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawnPoint != null)
-            {
-                GameObject spawnGO = new GameObject("PlayerSpawnPoint");
-                spawnGO.transform.parent = planetGO.transform;
-                spawnGO.layer = 8;
 
-                spawnGO.transform.localPosition = module.playerSpawnPoint;
+            var playerSpawnInfo = module.playerSpawn;
+            var shipSpawnInfo = module.shipSpawn;
+
+            // Backwards compatibility
+#pragma warning disable 612, 618
+            if (playerSpawnInfo == null && module.playerSpawnPoint != null)
+            {
+                playerSpawnInfo = new SpawnModule.PlayerSpawnPoint()
+                {
+                    position = module.playerSpawnPoint,
+                    rotation = module.playerSpawnRotation,
+                    startWithSuit = module.startWithSuit,
+                };
+            }
+            if (shipSpawnInfo == null && module.shipSpawnPoint != null)
+            {
+                shipSpawnInfo = new SpawnModule.ShipSpawnPoint()
+                {
+                    position = module.shipSpawnPoint,
+                    rotation = module.shipSpawnRotation,
+                };
+            }
+#pragma warning restore 612, 618
+
+            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && playerSpawnInfo != null)
+            {
+                bool alignToBody = playerSpawnInfo.rotation == null;
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO.transform, playerSpawnInfo, alignToBody);
+                spawnGO.layer = 8;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                if (module.playerSpawnRotation != null)
-                {
-                    spawnGO.transform.rotation = Quaternion.Euler(module.playerSpawnRotation);
-                }
-                else
-                {
-                    spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - planetGO.transform.position).normalized);
-                }
-
-                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
+                spawnGO.transform.position += spawnGO.transform.up * 4f;
             }
-            if (module.shipSpawnPoint != null)
+            if (shipSpawnInfo != null)
             {
-                GameObject spawnGO = new GameObject("ShipSpawnPoint");
-                spawnGO.transform.parent = planetGO.transform;
+                bool alignToBody = shipSpawnInfo.rotation == null;
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO.transform, shipSpawnInfo, alignToBody);
                 spawnGO.layer = 8;
-
-                spawnGO.transform.localPosition = module.shipSpawnPoint;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
@@ -49,20 +62,13 @@ namespace NewHorizons.Builder.General
                 var ship = SearchUtilities.Find("Ship_Body");
                 if (ship != null)
                 {
-                    ship.transform.position = spawnPoint.transform.position;
+                    ship.transform.position = spawnGO.transform.position;
+                    ship.transform.rotation = spawnGO.transform.rotation;
 
-                    if (module.shipSpawnRotation != null)
+                    // Move it up a bit more when aligning to surface
+                    if (alignToBody)
                     {
-                        spawnGO.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
-                        ship.transform.rotation = spawnGO.transform.rotation;
-                    }
-                    else
-                    {
-                        spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
-                        ship.transform.rotation = spawnGO.transform.rotation;
-
-                        // Move it up a bit more when aligning to surface
-                        ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
+                        ship.transform.position += ship.transform.up * 4f;
                     }
 
                     ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
@@ -83,7 +89,7 @@ namespace NewHorizons.Builder.General
                 }
             }
 
-            if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && module.startWithSuit)) && !suitUpQueued)
+            if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (playerSpawnInfo?.startWithSuit ?? false))) && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());

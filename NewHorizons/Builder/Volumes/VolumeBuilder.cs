@@ -10,7 +10,7 @@ namespace NewHorizons.Builder.Volumes
     {
         public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VolumeInfo info) where TVolume : MonoBehaviour //Could be BaseVolume but I need to create vanilla volumes too.
         {
-            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
+            var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, sector?.transform ?? planetGO.transform, info);
             go.layer = LayerMask.NameToLayer("BasicEffectVolume");
 
             var shape = go.AddComponent<SphereShape>();

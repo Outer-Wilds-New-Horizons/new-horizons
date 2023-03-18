@@ -109,7 +109,7 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
-            var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", planetGO, sector, info);
+            var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", sector?.transform ?? planetGO.transform, info);
             signalGO.layer = LayerMask.NameToLayer("AdvancedEffectVolume");
 
             var source = signalGO.AddComponent<AudioSource>();

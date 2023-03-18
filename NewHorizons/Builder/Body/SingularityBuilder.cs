@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Body
                 rename = rename,
             };
 
-            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, sector, info);
+            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", sector?.transform ?? planetGO.transform, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 

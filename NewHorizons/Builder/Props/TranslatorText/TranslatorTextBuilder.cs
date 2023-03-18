@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
                     {
-                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
+                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, sector?.transform ?? planetGO.transform, info);
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
@@ -213,7 +213,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Computer:
                     {
-                        var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, planetGO, sector, info, true, info.normal);
+                        var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, sector?.transform ?? planetGO.transform, info, true, info.normal);
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
@@ -286,7 +286,7 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
                     {
                         var cairnPrefab = info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
-                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, planetGO, sector, info, info.rotation == null);
+                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, sector?.transform ?? planetGO.transform, info, info.rotation == null);
 
                         // Idk do we have to set it active before finding things?
                         cairnObject.SetActive(true);
@@ -349,7 +349,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
                     {
-                        var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, planetGO, sector, info, info.rotation == null);
+                        var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, sector?.transform ?? planetGO.transform, info, info.rotation == null);
 
                         // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
                         trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
@@ -380,7 +380,7 @@ namespace NewHorizons.Builder.Props
 
         private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
-            GameObject nomaiWallTextObj = GeneralPropBuilder.MakeNew("NomaiWallText", go, sector, info);
+            GameObject nomaiWallTextObj = GeneralPropBuilder.MakeNew("NomaiWallText", sector?.transform ?? go.transform, info);
 
             var box = nomaiWallTextObj.AddComponent<BoxCollider>();
             box.center = new Vector3(-0.0643f, 1.1254f, 0f);

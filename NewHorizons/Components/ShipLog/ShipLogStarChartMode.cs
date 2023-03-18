@@ -61,7 +61,7 @@ namespace NewHorizons.Components.ShipLog
                 var flag = false;
                 if (starSystem.Equals("SolarSystem")) flag = true;
                 else if (starSystem.Equals("EyeOfTheUniverse")) flag = false;
-                else if (config.Spawn?.shipSpawnPoint != null) flag = true;
+                else if (config.Spawn?.shipSpawn != null) flag = true;
 
                 if (!StarChartHandler.HasUnlockedSystem(starSystem)) continue;
 

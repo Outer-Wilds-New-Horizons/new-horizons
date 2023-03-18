@@ -7,6 +7,7 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Builder.Props;
 
 namespace NewHorizons.Handlers
 {
@@ -84,9 +85,9 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = VesselPrefab.InstantiateInactive();
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, system.Config.Vessel?.vessel);
             VesselObject = vesselObject;
-            vesselObject.name = VesselPrefab.name;
+
             vesselObject.transform.parent = null;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
@@ -97,12 +98,6 @@ namespace NewHorizons.Handlers
             vesselAO._type = AstroObject.Type.SpaceStation;
             vesselAO.Register();
             vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
-
-            if (system.Config.Vessel?.vesselPosition != null)
-                vesselObject.transform.position = system.Config.Vessel.vesselPosition;
-
-            if (system.Config.Vessel?.vesselRotation != null)
-                vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 
@@ -147,11 +142,7 @@ namespace NewHorizons.Handlers
 
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
-            if (system.Config.Vessel?.warpExitPosition != null)
-                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.Vessel.warpExitPosition;
-
-            if (system.Config.Vessel?.warpExitRotation != null)
-                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
+            GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, vesselWarpController._targetWarpPlatform.transform.parent, system.Config.Vessel?.warpExit);
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 

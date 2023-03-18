@@ -12,14 +12,28 @@ namespace NewHorizons.Builder.Props
 {
     public static class GeneralPropBuilder
     {
-        public static GameObject MakeFromExisting(GameObject go, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromExisting(GameObject go, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
+            if (info == null) return go;
+
+            if (info is PropModule.GeneralSolarSystemPropInfo solarSystemInfo && !string.IsNullOrEmpty(solarSystemInfo.parentBody))
+            {
+                var targetPlanet = AstroObjectLocator.GetAstroObject(solarSystemInfo.parentBody);
+                if (targetPlanet != null)
+                {
+                    parent = targetPlanet.transform;
+                } else
+                {
+                    Logger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
+                }
+            }
+
             if (!string.IsNullOrEmpty(info.rename))
             {
                 go.name = info.rename;
             }
 
-            go.transform.parent = sector?.transform ?? planetGO.transform;
+            go.transform.parent = parent;
 
             var parentPath = info.parentPath ?? defaultParentPath;
 
@@ -46,33 +60,37 @@ namespace NewHorizons.Builder.Props
             {
                 go.transform.localPosition = pos;
                 go.transform.localRotation = rot;
+            } else if (parent)
+            {
+                go.transform.position = parent.TransformPoint(pos);
+                go.transform.rotation = parent.TransformRotation(rot);
             } else
             {
-                go.transform.position = planetGO.transform.TransformPoint(pos);
-                go.transform.rotation = planetGO.transform.TransformRotation(rot);
+                go.transform.position = pos;
+                go.transform.rotation = rot;
             }
             if (alignToBody)
             {
-                var up = (go.transform.position - planetGO.transform.position).normalized;
-                if (normal != null) up = planetGO.transform.TransformDirection(normal);
+                var up = (go.transform.position - parent.position).normalized;
+                if (normal != null) up = parent.TransformDirection(normal);
                 go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
                 go.transform.rotation *= rot;
             }
             return go;
         }
 
-        public static GameObject MakeNew(string defaultName, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeNew(string defaultName, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = new GameObject(defaultName);
             go.SetActive(false);
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath);
+            return MakeFromExisting(go, parent, info, alignToBody, normal, defaultPosition, defaultParentPath);
         }
 
-        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, GameObject planetGO, Sector sector, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
+        public static GameObject MakeFromPrefab(GameObject prefab, string defaultName, Transform parent, PropModule.GeneralPointPropInfo info, bool alignToBody = false, MVector3 normal = null, MVector3 defaultPosition = null, string defaultParentPath = null)
         {
             var go = prefab.InstantiateInactive();
             go.name = defaultName;
-            return MakeFromExisting(go, planetGO, sector, info, alignToBody, normal, defaultPosition, defaultParentPath);
+            return MakeFromExisting(go, parent, info, alignToBody, normal, defaultPosition, defaultParentPath);
         }
     }
 }

@@ -182,7 +182,7 @@ namespace NewHorizons.Builder.Props
             var prefab = config.isSeed ? _brambleSeedPrefab : _brambleNodePrefab;
 
             // Spawn the bramble node
-            var brambleNode = GeneralPropBuilder.MakeFromPrefab(prefab, config.name ?? "Bramble Node to " + config.linksTo, go, sector, config);
+            var brambleNode = GeneralPropBuilder.MakeFromPrefab(prefab, config.name ?? "Bramble Node to " + config.linksTo, sector?.transform ?? go.transform, config);
             foreach (var collider in brambleNode.GetComponentsInChildren<Collider>(true))
             {
                 collider.enabled = true; 
