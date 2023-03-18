@@ -2,6 +2,7 @@ using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using System.Collections;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.Volumes
 {
@@ -25,7 +26,8 @@ namespace NewHorizons.Components.Volumes
         {
             if (hitObj.CompareTag("PlayerDetector") && enabled)
             {
-                StartCoroutine(GameOver());
+                // Have to run it off the mod behaviour since the game over controller disables everything
+                Main.Instance.StartCoroutine(GameOver());
             }
         }
 
@@ -35,6 +37,9 @@ namespace NewHorizons.Components.Volumes
             ReticleController.Hide();
             Locator.GetPromptManager().SetPromptsVisible(false);
             Locator.GetPauseCommandListener().AddPauseCommandLock();
+
+            // The PlayerCameraEffectController is what actually kills us, so convince it we're already dead
+            Locator.GetDeathManager()._isDead = true;
 
             _playerCameraEffectController.OnPlayerDeath(deathType);
             
@@ -49,13 +54,9 @@ namespace NewHorizons.Components.Volumes
                 _gameOverController._loading = true;
 
                 yield return new WaitUntil(ReadytoLoadCreditsScene);
+            }
 
-                LoadCreditsScene();
-            }
-            else
-            {
-                LoadCreditsScene();
-            }
+            LoadCreditsScene();
         }
 
         private bool ReadytoLoadCreditsScene() => _gameOverController._fadedOutText && _gameOverController._textAnimator.IsComplete();
@@ -64,6 +65,8 @@ namespace NewHorizons.Components.Volumes
 
         private void LoadCreditsScene()
         {
+            Logger.LogVerbose($"Load credits {creditsType}");
+
             switch (creditsType)
             {
                 case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast:
