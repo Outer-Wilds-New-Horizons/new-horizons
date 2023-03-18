@@ -1,5 +1,6 @@
-﻿using UnityEngine;
-namespace NewHorizons.Utility
+using UnityEngine;
+
+namespace NewHorizons.Utility.Geometry
 {
     public class MakeMeshDoubleFaced : MonoBehaviour
     {

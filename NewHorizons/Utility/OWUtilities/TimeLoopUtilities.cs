@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.OWUtilities
 {
     public static class TimeLoopUtilities
     {

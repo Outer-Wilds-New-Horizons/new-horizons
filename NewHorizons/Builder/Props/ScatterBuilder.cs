@@ -1,6 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;

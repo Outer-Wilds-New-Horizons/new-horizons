@@ -1,9 +1,8 @@
+using OWML.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using OWML.Utils;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.OWMLUtilities
 {
     public static class EnumUtilities
     {

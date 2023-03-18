@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.External.Modules.VariableSize
 {
     [JsonObject]
     public class TimeValuePair

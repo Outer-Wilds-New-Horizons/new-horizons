@@ -9,6 +9,7 @@ using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

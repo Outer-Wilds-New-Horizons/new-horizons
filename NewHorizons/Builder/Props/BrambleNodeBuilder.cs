@@ -3,6 +3,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;

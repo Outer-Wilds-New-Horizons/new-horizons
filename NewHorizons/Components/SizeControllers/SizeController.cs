@@ -1,4 +1,4 @@
-using NewHorizons.Utility;
+using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 namespace NewHorizons.Components.SizeControllers
 {

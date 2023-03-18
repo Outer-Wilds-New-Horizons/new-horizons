@@ -3,6 +3,7 @@ using NewHorizons.Utility;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
 using Tessellation;
+using NewHorizons.Utility.OWMLUtilities;
 
 namespace NewHorizons.Builder.Body
 {

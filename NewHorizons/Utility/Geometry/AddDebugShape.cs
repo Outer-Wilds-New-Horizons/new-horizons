@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.UnityUtilities
 {
     public static class AddDebugShape
     {
@@ -20,7 +20,7 @@ namespace NewHorizons.Utility
             catch
             {
                 // Something went wrong so make sure the sphere is deleted
-                GameObject.Destroy(sphere);
+                Object.Destroy(sphere);
             }
 
             return sphere.gameObject;

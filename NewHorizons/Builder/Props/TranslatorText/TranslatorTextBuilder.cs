@@ -13,6 +13,8 @@ using Random = UnityEngine.Random;
 using OWML.Utils;
 using Newtonsoft.Json;
 using System;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.UnityUtilities;
 
 namespace NewHorizons.Builder.Props
 {

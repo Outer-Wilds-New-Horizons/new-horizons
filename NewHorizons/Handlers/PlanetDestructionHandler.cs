@@ -1,5 +1,6 @@
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;

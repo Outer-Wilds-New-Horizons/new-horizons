@@ -5,6 +5,7 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Utility.OWMLUtilities;
 
 namespace NewHorizons.Builder.Body
 {
