@@ -1415,7 +1415,7 @@
           "$ref": "#/definitions/NomaiTextType"
         },
         "location": {
-          "description": "The location of this object. ",
+          "description": "The location of this object. Arcs will be blue if their locations match the wall, else orange.",
           "default": "unspecified",
           "$ref": "#/definitions/NomaiTextLocation"
         },
@@ -2213,7 +2213,7 @@
           "format": "int32"
         },
         "location": {
-          "description": "The location of this object. ",
+          "description": "The location of this object. Arcs will be blue if their locations match the wall, else orange.",
           "default": "unspecified",
           "$ref": "#/definitions/NomaiTextLocation"
         },
