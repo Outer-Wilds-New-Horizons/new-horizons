@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
                     {
-                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
+                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info, alignToBody: info.rotation == null);
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
