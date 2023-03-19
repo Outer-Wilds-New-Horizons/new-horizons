@@ -143,6 +143,14 @@
           "type": "string",
           "description": "A ship log fact which will make a prompt appear showing the coordinates when you're in the Vessel."
         },
+        "alwaysPresent": {
+          "type": "boolean",
+          "description": "Whether the vessel should spawn in this system even if it wasn't used to warp to it."
+        },
+        "spawnOnVessel": {
+          "type": "boolean",
+          "description": "Whether to always spawn the player on the vessel, even if it wasn't used to warp to the system."
+        },
         "hasPhysics": {
           "type": "boolean",
           "description": "Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.",
