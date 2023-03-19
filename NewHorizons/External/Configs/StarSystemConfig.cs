@@ -191,6 +191,16 @@ namespace NewHorizons.External.Configs
             public string promptFact;
 
             /// <summary>
+            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it.
+            /// </summary>
+            public bool alwaysPresent;
+
+            /// <summary>
+            /// Whether to always spawn the player on the vessel, even if it wasn't used to warp to the system.
+            /// </summary>
+            public bool spawnOnVessel;
+
+            /// <summary>
             /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
             /// </summary>
             [DefaultValue(true)] public bool hasPhysics = true;

@@ -400,8 +400,11 @@ namespace NewHorizons
                     }
                     if (HasWarpDrive == true) EnableWarpDrive();
 
+                    var vesselIsPresent = SystemDict[CurrentStarSystem].Config?.Vessel?.alwaysPresent ?? false;
+                    var shouldSpawnOnVessel = vesselIsPresent && (SystemDict[CurrentStarSystem].Config?.Vessel?.spawnOnVessel ?? false);
+
                     var shouldWarpInFromShip = IsWarpingFromShip && _shipWarpController != null;
-                    var shouldWarpInFromVessel = IsWarpingFromVessel && VesselWarpHandler.VesselSpawnPoint != null;
+                    var shouldWarpInFromVessel = (IsWarpingFromVessel || shouldSpawnOnVessel) && VesselWarpHandler.VesselSpawnPoint != null;
                     Delay.RunWhen(() => IsSystemReady, () => OnSystemReady(shouldWarpInFromShip, shouldWarpInFromVessel));
 
                     IsWarpingFromShip = false;

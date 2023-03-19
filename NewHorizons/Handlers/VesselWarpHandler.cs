@@ -29,13 +29,16 @@ namespace NewHorizons.Handlers
 
         public static void LoadVessel()
         {
+            var system = SystemDict[Instance.CurrentStarSystem];
             if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
                 _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
                 return;
             }
 
-            if (Instance.IsWarpingFromVessel)
+            var vesselIsPresent = system.Config?.Vessel?.alwaysPresent ?? false;
+
+            if (Instance.IsWarpingFromVessel || vesselIsPresent)
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
@@ -91,11 +94,7 @@ namespace NewHorizons.Handlers
             VesselObject = vesselObject;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
-            if (system.Config.Vessel?.hasPhysics ?? true)
-            {
-                vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
-                vesselObject.transform.parent = null;
-            }
+            vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
             vesselAO._rootSector = vesselObject.GetComponentInChildren<Sector>(true);
             vesselAO._customName = "Vessel";
             vesselAO._name = AstroObject.Name.CustomString;
@@ -158,6 +157,20 @@ namespace NewHorizons.Handlers
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
+
+            if (system.Config.Vessel?.hasPhysics ?? true)
+            {
+                vesselObject.transform.parent = null;
+            }
+            else
+            {
+                vesselAO._owRigidbody = null;
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<KinematicRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<CenterOfTheUniverseOffsetApplier>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<OWRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<Rigidbody>());
+            }
+            vesselWarpController._targetWarpPlatform._owRigidbody = warpExit.GetAttachedOWRigidbody();
 
             vesselObject.SetActive(true);
 
