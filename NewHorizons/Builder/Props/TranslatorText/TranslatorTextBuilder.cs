@@ -131,8 +131,10 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
-                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
+                        // TODO: hawkbar says normal doesnt work, but it seems to be fine in examples. further testing required probably (im lazy)
+                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info, normal: info.normal);
                         
+                        /*
                         if (info.normal != null)
                         {
                             // In global coordinates (normal was in local coordinates)
@@ -152,6 +154,7 @@ namespace NewHorizons.Builder.Props
                                 nomaiWallTextObj.transform.RotateAround(nomaiWallTextObj.transform.position, forward, zRotation);
                             }
                         }
+                        */
 
                         // nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
 
