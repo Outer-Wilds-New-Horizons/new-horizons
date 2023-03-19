@@ -131,6 +131,7 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextInfo.NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
+                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
                         
                         if (info.normal != null)
                         {
@@ -380,7 +381,8 @@ namespace NewHorizons.Builder.Props
 
         private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
-            GameObject nomaiWallTextObj = GeneralPropBuilder.MakeNew("NomaiWallText", go, sector, info);
+            GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
+            nomaiWallTextObj.SetActive(false);
 
             var box = nomaiWallTextObj.AddComponent<BoxCollider>();
             box.center = new Vector3(-0.0643f, 1.1254f, 0f);
