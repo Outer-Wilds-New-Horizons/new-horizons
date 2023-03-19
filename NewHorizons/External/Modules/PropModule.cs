@@ -535,7 +535,7 @@ namespace NewHorizons.External.Modules
             [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
-            /// The location of this object. 
+            /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
             /// </summary>
             [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
@@ -825,7 +825,7 @@ namespace NewHorizons.External.Modules
                     public int seed; // For randomizing arcs
 
                     /// <summary>
-                    /// The location of this object. 
+                    /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
                     /// </summary>
                     [DefaultValue("unspecified")] public NomaiTextInfo.NomaiTextLocation location = NomaiTextInfo.NomaiTextLocation.UNSPECIFIED;
 
