@@ -510,7 +510,7 @@ namespace NewHorizons.External.Configs
             }
             if (Spawn?.shipSpawn != null && Spawn.shipSpawn.rotation == null && !Spawn.shipSpawn.alignRadial.HasValue)
             {
-                Spawn.playerSpawn.alignRadial = true;
+                Spawn.shipSpawn.alignRadial = true;
             }
             if (Props?.details != null)
             {
