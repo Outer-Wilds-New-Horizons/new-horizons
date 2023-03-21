@@ -440,8 +440,8 @@ namespace NewHorizons.Builder.Props
             }
 
             ArcCacheData[] cachedData = null;
-            //if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
-            //    cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
+            if (nhBody.Cache?.ContainsKey(cacheKey) ?? false)
+                cachedData = nhBody.Cache.Get<ArcCacheData[]>(cacheKey);
 
             var arranger = nomaiWallText.gameObject.AddComponent<NomaiTextArcArranger>();
 
