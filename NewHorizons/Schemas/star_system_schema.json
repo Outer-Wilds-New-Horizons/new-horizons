@@ -214,6 +214,13 @@
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
         "position": {
           "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
@@ -261,6 +268,13 @@
         "rotation": {
           "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
         },
         "position": {
           "description": "Position of the object",
