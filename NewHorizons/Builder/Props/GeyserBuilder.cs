@@ -20,21 +20,10 @@ namespace NewHorizons.Builder.Props
             InitPrefab();
 
             var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, sector, info);
-            
-            var pos = planetGO.transform.InverseTransformPoint(geyserGO.transform.position);
 
-            // Offset height, default -97.5 pushes it underground so the spout is at the surface
-            var length = pos.magnitude + info.offset;
-
-            // About 130 high, bubbles start at 10, shaft starts at 67, spout starts at 97.5
-            geyserGO.transform.position = planetGO.transform.TransformPoint(pos.normalized * length);
+            geyserGO.transform.position += geyserGO.transform.up * info.offset;
 
             geyserGO.transform.localScale = Vector3.one;
-
-            // Geyser alignment is technically incorrect due to inheriting the prefab's rotation but we need backwards compat so explicitly applying it here
-            geyserGO.transform.rotation = _geyserPrefab.transform.rotation;
-            var up = planetGO.transform.TransformPoint(pos) - planetGO.transform.position;
-            geyserGO.transform.rotation = Quaternion.FromToRotation(geyserGO.transform.up, up) * _geyserPrefab.transform.rotation;
 
             var bubbles = geyserGO.FindChild("GeyserParticles/GeyserBubbles");
             var shaft = geyserGO.FindChild("GeyserParticles/GeyserShaft");

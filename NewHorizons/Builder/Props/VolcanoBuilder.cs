@@ -46,7 +46,7 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            var launcherGO = GeneralPropBuilder.MakeFromPrefab(_meteorLauncherPrefab, "MeteorLauncher", planetGO, sector, info, alignToBody: true);
+            var launcherGO = GeneralPropBuilder.MakeFromPrefab(_meteorLauncherPrefab, "MeteorLauncher", planetGO, sector, info);
 
             var meteorLauncher = launcherGO.GetComponent<MeteorLauncher>();
             meteorLauncher._audioSector = sector;

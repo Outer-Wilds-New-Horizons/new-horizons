@@ -35,6 +35,12 @@ namespace NewHorizons.External.Modules
         /// Rotation of the object
         /// </summary>
         public MVector3 rotation;
+
+        /// <summary>
+        /// Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.
+        /// Defaults to true for geysers, tornados, and volcanoes, and false for everything else.
+        /// </summary>
+        public bool? alignRadial;
     }
 
     [JsonObject]

@@ -42,7 +42,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Add translatable text to this planet
         /// </summary>
-        public NomaiTextInfo[] translatorText;
+        public TranslatorTextInfo[] translatorText;
 
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
@@ -165,12 +165,6 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class DetailInfo : GeneralPropInfo
         {
-
-            /// <summary>
-            /// Do we override rotation and try to automatically align this object to stand upright on the body's surface?
-            /// </summary>
-            public bool alignToNormal;
-
             /// <summary>
             /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
             /// </summary>
@@ -229,10 +223,12 @@ namespace NewHorizons.External.Modules
             /// If there's already good colliders on the detail, you can make this 0.
             /// </summary>
             [DefaultValue(1f)] public float physicsRadius = 1f;
+
+            [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
         }
 
         [JsonObject]
-        public class RaftInfo : GeneralPointPropInfo
+        public class RaftInfo : GeneralPropInfo
         {
             /// <summary>
             /// Acceleration of the raft. Default acceleration is 5.
@@ -241,7 +237,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class GeyserInfo : GeneralPointPropInfo
+        public class GeyserInfo : GeneralPropInfo
         {
             /// <summary>
             /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
@@ -280,7 +276,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class TornadoInfo : GeneralPointPropInfo
+        public class TornadoInfo : GeneralPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
@@ -342,7 +338,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class VolcanoInfo : GeneralPointPropInfo
+        public class VolcanoInfo : GeneralPropInfo
         {
             /// <summary>
             /// The colour of the meteor's lava.
@@ -474,39 +470,74 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
+        public class TranslatorTextInfo : GeneralPropInfo
+        {
+            /// <summary>
+            /// Additional information about each arc in the text
+            /// </summary>
+            public NomaiTextArcInfo[] arcInfo;
+
+            /// <summary>
+            /// The random seed used to pick what the text arcs will look like.
+            /// </summary>
+            public int seed;
+
+            /// <summary>
+            /// Only for wall text. Aligns wall text to face towards the given direction, with 'up' oriented relative to its current rotation or alignment.
+            /// </summary>
+            public MVector3 normal;
+
+            /// <summary>
+            /// The type of object this is.
+            /// </summary>
+            [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
+
+            /// <summary>
+            /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
+            /// </summary>
+            [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
+
+            /// <summary>
+            /// The relative path to the xml file for this object.
+            /// </summary>
+            public string xmlFile;
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum NomaiTextType
+        {
+            [EnumMember(Value = @"wall")] Wall = 0,
+
+            [EnumMember(Value = @"scroll")] Scroll = 1,
+
+            [EnumMember(Value = @"computer")] Computer = 2,
+
+            [EnumMember(Value = @"cairn")] Cairn = 3,
+
+            [EnumMember(Value = @"recorder")] Recorder = 4,
+
+            [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
+
+            [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+
+            [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+
+            [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum NomaiTextLocation
+        {
+            [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
+
+            [EnumMember(Value = @"a")] A = 1,
+
+            [EnumMember(Value = @"b")] B = 2
+        }
+
+        [JsonObject]
         public class NomaiTextInfo : GeneralPointPropInfo
         {
-            [JsonConverter(typeof(StringEnumConverter))]
-            public enum NomaiTextType
-            {
-                [EnumMember(Value = @"wall")] Wall = 0,
-
-                [EnumMember(Value = @"scroll")] Scroll = 1,
-
-                [EnumMember(Value = @"computer")] Computer = 2,
-
-                [EnumMember(Value = @"cairn")] Cairn = 3,
-
-                [EnumMember(Value = @"recorder")] Recorder = 4,
-
-                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
-
-                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
-
-                [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
-
-                [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
-            }
-
-            [JsonConverter(typeof(StringEnumConverter))]
-            public enum NomaiTextLocation
-            {
-                [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
-
-                [EnumMember(Value = @"a")] A = 1,
-
-                [EnumMember(Value = @"b")] B = 2
-            }
 
             /// <summary>
             /// Additional information about each arc in the text
@@ -827,7 +858,7 @@ namespace NewHorizons.External.Modules
                     /// <summary>
                     /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
                     /// </summary>
-                    [DefaultValue("unspecified")] public NomaiTextInfo.NomaiTextLocation location = NomaiTextInfo.NomaiTextLocation.UNSPECIFIED;
+                    [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
                     /// <summary>
                     /// The relative path to the xml file for this object.

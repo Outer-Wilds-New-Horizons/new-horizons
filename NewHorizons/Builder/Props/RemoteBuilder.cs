@@ -195,7 +195,7 @@ namespace NewHorizons.Builder.Props
             {
                 var textInfo = info.nomaiText[i];
                 component._remoteIDs[i] = RemoteHandler.GetPlatformID(textInfo.id);
-                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
+                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.TranslatorTextInfo
                 {
                     arcInfo = textInfo.arcInfo,
                     location = textInfo.location,
@@ -204,7 +204,7 @@ namespace NewHorizons.Builder.Props
                     rename = textInfo.rename,
                     rotation = Vector3.zero,
                     seed = textInfo.seed,
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Wall,
+                    type = PropModule.NomaiTextType.Wall,
                     xmlFile = textInfo.xmlFile
                 }, nhBody).GetComponent<NomaiWallText>();
                 wallText._showTextOnStart = false;

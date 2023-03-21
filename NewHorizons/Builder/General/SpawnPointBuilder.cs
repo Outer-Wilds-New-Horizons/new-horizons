@@ -1,3 +1,4 @@
+using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
@@ -18,8 +19,7 @@ namespace NewHorizons.Builder.General
 
             if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
             {
-                bool alignToBody = module.playerSpawn.rotation == null;
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn, alignToBody: alignToBody);
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
                 spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
@@ -29,8 +29,7 @@ namespace NewHorizons.Builder.General
             }
             if (module.shipSpawn != null)
             {
-                bool alignToBody = module.shipSpawn.rotation == null;
-                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn, alignToBody: alignToBody);
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
                 spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
@@ -44,7 +43,7 @@ namespace NewHorizons.Builder.General
                     ship.transform.rotation = spawnGO.transform.rotation;
 
                     // Move it up a bit more when aligning to surface
-                    if (alignToBody)
+                    if (module.shipSpawn.alignRadial.GetValueOrDefault())
                     {
                         ship.transform.position += ship.transform.up * 4f;
                     }

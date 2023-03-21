@@ -487,7 +487,7 @@ namespace NewHorizons.External.Configs
             }
 
             // Remote dialogue trigger reorganized to use GeneralPointPropInfo
-            if (Props != null && Props.dialogue != null)
+            if (Props?.dialogue != null)
             {
                 foreach (var dialogue in Props.dialogue)
                 {
@@ -499,6 +499,66 @@ namespace NewHorizons.External.Configs
                             radius = dialogue.remoteTriggerRadius,
                             prereqCondition = dialogue.remoteTriggerPrereqCondition,
                         };
+                    }
+                }
+            }
+
+            // alignRadial added to all props with rotation; default behavior varies
+            if (Spawn?.playerSpawn != null && Spawn.playerSpawn.rotation == null && !Spawn.playerSpawn.alignRadial.HasValue)
+            {
+                Spawn.playerSpawn.alignRadial = true;
+            }
+            if (Spawn?.shipSpawn != null && Spawn.shipSpawn.rotation == null && !Spawn.shipSpawn.alignRadial.HasValue)
+            {
+                Spawn.playerSpawn.alignRadial = true;
+            }
+            if (Props?.details != null)
+            {
+                foreach (var detail in Props.details)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.proxyDetails != null)
+            {
+                foreach (var detail in Props.proxyDetails)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.geysers != null)
+            {
+                foreach (var geyser in Props.geysers)
+                {
+                    if (!geyser.alignRadial.HasValue && geyser.rotation == null)
+                    {
+                        geyser.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.tornados != null)
+            {
+                foreach (var tornado in Props.tornados)
+                {
+                    if (!tornado.alignRadial.HasValue && tornado.rotation == null)
+                    {
+                        tornado.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.volcanoes != null)
+            {
+                foreach (var volcano in Props.volcanoes)
+                {
+                    if (!volcano.alignRadial.HasValue && volcano.rotation == null)
+                    {
+                        volcano.alignRadial = true;
                     }
                 }
             }
