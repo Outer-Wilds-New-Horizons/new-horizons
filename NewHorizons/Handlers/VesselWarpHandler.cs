@@ -27,6 +27,21 @@ namespace NewHorizons.Handlers
             VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
+        public static bool IsVesselPresent()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var isDefaultSolarSystem = Instance.CurrentStarSystem == "SolarSystem";
+            var vesselIsPresent = vesselConfig?.alwaysPresent ?? isDefaultSolarSystem;
+            return Instance.IsWarpingFromVessel || vesselIsPresent;
+        }
+
+        public static bool ShouldSpawnAtVessel()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
+            return Instance.IsWarpingFromVessel || (IsVesselPresent() && shouldSpawnOnVessel);
+        }
+
         public static void LoadVessel()
         {
             var system = SystemDict[Instance.CurrentStarSystem];
@@ -36,9 +51,7 @@ namespace NewHorizons.Handlers
                 return;
             }
 
-            var vesselIsPresent = system.Config?.Vessel?.alwaysPresent ?? false;
-
-            if (Instance.IsWarpingFromVessel || vesselIsPresent)
+            if (IsVesselPresent())
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
