@@ -42,7 +42,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Add translatable text to this planet
         /// </summary>
-        public NomaiTextInfo[] translatorText;
+        public TranslatorTextInfo[] translatorText;
 
         /// <summary>
         /// Details which will be shown from 50km away. Meant to be lower resolution.
@@ -163,18 +163,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class DetailInfo
+        public class DetailInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// An optional rename of the detail
-            /// </summary>
-            public string rename;
-
-            /// <summary>
-            /// Do we override rotation and try to automatically align this object to stand upright on the body's surface?
-            /// </summary>
-            public bool alignToNormal;
-
             /// <summary>
             /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
             /// </summary>
@@ -186,11 +176,6 @@ namespace NewHorizons.External.Modules
             public string path;
 
             /// <summary>
-            /// Position of this prop relative to the body's center
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// A list of children to remove from this detail
             /// </summary>
             public string[] removeChildren;
@@ -200,11 +185,6 @@ namespace NewHorizons.External.Modules
             /// them.
             /// </summary>
             public bool removeComponents;
-
-            /// <summary>
-            /// Rotate this prop
-            /// </summary>
-            public MVector3 rotation;
 
             /// <summary>
             /// Scale the prop
@@ -220,16 +200,6 @@ namespace NewHorizons.External.Modules
             /// If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is
             /// </summary>
             public string quantumGroupID;
-
-            /// <summary>
-            /// The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
 
             /// <summary>
             /// Should this detail stay loaded even if you're outside the sector (good for very large props)
@@ -253,45 +223,22 @@ namespace NewHorizons.External.Modules
             /// If there's already good colliders on the detail, you can make this 0.
             /// </summary>
             [DefaultValue(1f)] public float physicsRadius = 1f;
+
+            [Obsolete("alignToNormal is deprecated. Use alignRadial instead")] public bool alignToNormal;
         }
 
         [JsonObject]
-        public class RaftInfo
+        public class RaftInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// Position of the raft
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// Acceleration of the raft. Default acceleration is 5.
             /// </summary>
             [DefaultValue(5f)] public float acceleration = 5f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class GeyserInfo
+        public class GeyserInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// Position of the geyser
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// Vertical offset of the geyser. From 0, the bubbles start at a height of 10, the shaft at 67, and the spout at 97.5.
             /// </summary>
@@ -326,20 +273,10 @@ namespace NewHorizons.External.Modules
             /// Loudness of the geyser
             /// </summary>
             [DefaultValue(0.7f)] public float volume = 0.7f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class TornadoInfo
+        public class TornadoInfo : GeneralPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum TornadoType
@@ -362,11 +299,6 @@ namespace NewHorizons.External.Modules
             /// The height of this tornado.
             /// </summary>
             [DefaultValue(30f)] public float height = 30f;
-
-            /// <summary>
-            /// Position of the tornado
-            /// </summary>
-            public MVector3 position;
 
             /// <summary>
             /// The colour of the tornado.
@@ -403,25 +335,10 @@ namespace NewHorizons.External.Modules
             /// Fluid type for sounds/effects when colliding with this tornado.
             /// </summary>
             [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class VolcanoInfo
+        public class VolcanoInfo : GeneralPropInfo
         {
             /// <summary>
             /// The colour of the meteor's lava.
@@ -453,11 +370,6 @@ namespace NewHorizons.External.Modules
             public float minLaunchSpeed = 50f;
 
             /// <summary>
-            /// Position of this volcano.
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// Scale of the meteors.
             /// </summary>
             public float scale = 1;
@@ -466,25 +378,10 @@ namespace NewHorizons.External.Modules
             /// The colour of the meteor's stone.
             /// </summary>
             public MColor stoneTint;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class DialogueInfo
+        public class DialogueInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue
@@ -507,20 +404,10 @@ namespace NewHorizons.External.Modules
             public string pathToAnimController;
 
             /// <summary>
-            /// When you enter into dialogue, you will look here.
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// Radius of the spherical collision volume where you get the "talk to" prompt when looking at. If you use a
-            /// remoteTriggerPosition, you can set this to 0 to make the dialogue only trigger remotely.
+            /// remoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.
             /// </summary>
             public float radius = 1f;
-
-            /// <summary>
-            /// Allows you to trigger dialogue from a distance when you walk into an area.
-            /// </summary>
-            public MVector3 remoteTriggerPosition;
 
             /// <summary>
             /// Distance from radius the prompt appears
@@ -528,34 +415,18 @@ namespace NewHorizons.External.Modules
             [DefaultValue(2f)] public float range = 2f;
 
             /// <summary>
-            /// The radius of the remote trigger volume.
+            /// Allows you to trigger dialogue from a distance when you walk into an area.
             /// </summary>
-            public float remoteTriggerRadius;
+            public RemoteTriggerInfo remoteTrigger;
 
-            /// <summary>
-            /// If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition.
-            /// </summary>
-            public string remoteTriggerPrereqCondition;
+            [Obsolete("remoteTriggerPosition is deprecated. Use remoteTrigger.position instead")] public MVector3 remoteTriggerPosition;
+            [Obsolete("remoteTriggerRadius is deprecated. Use remoteTrigger.radius instead")] public float remoteTriggerRadius;
+            [Obsolete("remoteTriggerPrereqCondition is deprecated. Use remoteTrigger.prereqCondition instead")] public string remoteTriggerPrereqCondition;
 
             /// <summary>
             /// Relative path to the xml file defining the dialogue.
             /// </summary>
             public string xmlFile;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix.
-            /// </summary>
-            public string rename;
-
-            /// <summary>
-            /// Optionally set the parent object that the dialogue and remote trigger will be attached to
-            /// </summary>
-            public string parentPath;
 
             /// <summary>
             /// What type of flashlight toggle to do when dialogue is interacted with
@@ -569,10 +440,23 @@ namespace NewHorizons.External.Modules
                 [EnumMember(Value = @"turnOff")] TurnOff = 0,
                 [EnumMember(Value = @"turnOffThenOn")] TurnOffThenOn = 1,
             }
+
+            [JsonObject]
+            public class RemoteTriggerInfo : GeneralPointPropInfo
+            {
+                /// <summary>
+                /// The radius of the remote trigger volume.
+                /// </summary>
+                public float radius;
+                /// <summary>
+                /// This condition must be met for the remote trigger volume to trigger.
+                /// </summary>
+                public string prereqCondition;
+            }
         }
 
         [JsonObject]
-        public class EntryLocationInfo
+        public class EntryLocationInfo : GeneralPointPropInfo
         {
             /// <summary>
             /// Whether this location is cloaked
@@ -583,62 +467,77 @@ namespace NewHorizons.External.Modules
             /// ID of the entry this location relates to
             /// </summary>
             public string id;
-
-            /// <summary>
-            /// The position of this entry location
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
-        public class NomaiTextInfo
+        public class TranslatorTextInfo : GeneralPropInfo
         {
-            [JsonConverter(typeof(StringEnumConverter))]
-            public enum NomaiTextType
-            {
-                [EnumMember(Value = @"wall")] Wall = 0,
+            /// <summary>
+            /// Additional information about each arc in the text
+            /// </summary>
+            public NomaiTextArcInfo[] arcInfo;
 
-                [EnumMember(Value = @"scroll")] Scroll = 1,
+            /// <summary>
+            /// The random seed used to pick what the text arcs will look like.
+            /// </summary>
+            public int seed;
 
-                [EnumMember(Value = @"computer")] Computer = 2,
+            /// <summary>
+            /// Only for wall text. Aligns wall text to face towards the given direction, with 'up' oriented relative to its current rotation or alignment.
+            /// </summary>
+            public MVector3 normal;
 
-                [EnumMember(Value = @"cairn")] Cairn = 3,
+            /// <summary>
+            /// The type of object this is.
+            /// </summary>
+            [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
 
-                [EnumMember(Value = @"recorder")] Recorder = 4,
+            /// <summary>
+            /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
+            /// </summary>
+            [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
-                [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
+            /// <summary>
+            /// The relative path to the xml file for this object.
+            /// </summary>
+            public string xmlFile;
+        }
 
-                [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum NomaiTextType
+        {
+            [EnumMember(Value = @"wall")] Wall = 0,
 
-                [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+            [EnumMember(Value = @"scroll")] Scroll = 1,
 
-                [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
-            }
+            [EnumMember(Value = @"computer")] Computer = 2,
 
-            [JsonConverter(typeof(StringEnumConverter))]
-            public enum NomaiTextLocation
-            {
-                [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
+            [EnumMember(Value = @"cairn")] Cairn = 3,
 
-                [EnumMember(Value = @"a")] A = 1,
+            [EnumMember(Value = @"recorder")] Recorder = 4,
 
-                [EnumMember(Value = @"b")] B = 2
-            }
+            [EnumMember(Value = @"preCrashRecorder")] PreCrashRecorder = 5,
+
+            [EnumMember(Value = @"preCrashComputer")] PreCrashComputer = 6,
+
+            [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
+
+            [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum NomaiTextLocation
+        {
+            [EnumMember(Value = @"unspecified")] UNSPECIFIED = 0,
+
+            [EnumMember(Value = @"a")] A = 1,
+
+            [EnumMember(Value = @"b")] B = 2
+        }
+
+        [JsonObject]
+        public class NomaiTextInfo : GeneralPointPropInfo
+        {
 
             /// <summary>
             /// Additional information about each arc in the text
@@ -649,11 +548,6 @@ namespace NewHorizons.External.Modules
             /// The normal vector for this object. Used for writing on walls and positioning computers.
             /// </summary>
             public MVector3 normal;
-
-            /// <summary>
-            /// Position of the root of this text
-            /// </summary>
-            public MVector3 position;
 
             /// <summary>
             /// The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient
@@ -672,7 +566,7 @@ namespace NewHorizons.External.Modules
             [DefaultValue("wall")] public NomaiTextType type = NomaiTextType.Wall;
 
             /// <summary>
-            /// The location of this object. 
+            /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
             /// </summary>
             [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
@@ -680,21 +574,6 @@ namespace NewHorizons.External.Modules
             /// The relative path to the xml file for this object.
             /// </summary>
             public string xmlFile;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
@@ -742,7 +621,7 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class ProjectionInfo
+        public class ProjectionInfo : GeneralPropInfo
         {
             [JsonConverter(typeof(StringEnumConverter))]
             public enum SlideShowType
@@ -758,11 +637,6 @@ namespace NewHorizons.External.Modules
             }
 
             /// <summary>
-            /// The position of this slideshow.
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// The ship log facts revealed after finishing this slide reel.
             /// </summary>
             public string[] reveals;
@@ -776,11 +650,6 @@ namespace NewHorizons.External.Modules
             public string[] playWithShipLogFacts;
 
             /// <summary>
-            /// The rotation of this slideshow.
-            /// </summary>
-            public MVector3 rotation;
-
-            /// <summary>
             /// The list of slides for this object.
             /// </summary>
             public SlideInfo[] slides;
@@ -789,21 +658,6 @@ namespace NewHorizons.External.Modules
             /// The type of object this is.
             /// </summary>
             [DefaultValue("slideReel")] public SlideShowType type = SlideShowType.SlideReel;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this object
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
@@ -934,18 +788,8 @@ namespace NewHorizons.External.Modules
         }
 
         [JsonObject]
-        public class QuantumSocketInfo
+        public class QuantumSocketInfo : GeneralPropInfo
         {
-            /// <summary>
-            /// The location of this socket
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
-            /// The rotation the quantum object will take if it's occupying this socket
-            /// </summary>
-            public MVector3 rotation;
-
             /// <summary>
             /// The probability any props that are part of this group will occupy this socket
             /// </summary>
@@ -981,37 +825,12 @@ namespace NewHorizons.External.Modules
             public StoneInfo[] stones;
 
             [JsonObject]
-            public class WhiteboardInfo
+            public class WhiteboardInfo : GeneralPropInfo
             {
                 /// <summary>
                 /// The text for each stone
                 /// </summary>
                 public SharedNomaiTextInfo[] nomaiText;
-
-                /// <summary>
-                /// The location of this platform.
-                /// </summary>
-                public MVector3 position;
-
-                /// <summary>
-                /// The rotation of this platform.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
 
                 /// <summary>
                 /// Disable the wall, leaving only the pedestal and text.
@@ -1037,9 +856,9 @@ namespace NewHorizons.External.Modules
                     public int seed; // For randomizing arcs
 
                     /// <summary>
-                    /// The location of this object. 
+                    /// The location of this object. Arcs will be blue if their locations match the wall, else orange.
                     /// </summary>
-                    [DefaultValue("unspecified")] public NomaiTextInfo.NomaiTextLocation location = NomaiTextInfo.NomaiTextLocation.UNSPECIFIED;
+                    [DefaultValue("unspecified")] public NomaiTextLocation location = NomaiTextLocation.UNSPECIFIED;
 
                     /// <summary>
                     /// The relative path to the xml file for this object.
@@ -1054,33 +873,8 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class PlatformInfo
+            public class PlatformInfo : GeneralPropInfo
             {
-                /// <summary>
-                /// The location of this platform.
-                /// </summary>
-                public MVector3 position;
-
-                /// <summary>
-                /// The rotation of this platform.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
-
                 /// <summary>
                 /// A ship log fact to reveal when the platform is connected to.
                 /// </summary>
@@ -1098,32 +892,9 @@ namespace NewHorizons.External.Modules
             }
 
             [JsonObject]
-            public class StoneInfo
+            public class StoneInfo : GeneralPropInfo
             {
-                /// <summary>
-                /// The location of this stone.
-                /// </summary>
-                public MVector3 position;
 
-                /// <summary>
-                /// The rotation of this stone.
-                /// </summary>
-                public MVector3 rotation;
-
-                /// <summary>
-                /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-                /// </summary>
-                public string parentPath;
-
-                /// <summary>
-                /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-                /// </summary>
-                public bool isRelativeToParent;
-
-                /// <summary>
-                /// An optional rename of this object
-                /// </summary>
-                public string rename;
             }
         }
     }

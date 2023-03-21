@@ -155,14 +155,14 @@ namespace NewHorizons
         }
 
         public GameObject SpawnObject(GameObject planet, Sector sector, string propToCopyPath, Vector3 position, Vector3 eulerAngles,
-            float scale, bool alignWithNormal)
+            float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
             var detailInfo = new PropModule.DetailInfo() {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
-                alignToNormal = alignWithNormal
+                alignRadial = alignRadial
             };
             return DetailBuilder.Make(planet, sector, prefab, detailInfo);
         }
@@ -199,10 +199,13 @@ namespace NewHorizons
                 pathToAnimController = pathToAnimController,
                 position = Vector3.zero,
                 radius = radius,
-                remoteTriggerPosition = null,
                 range = range,
-                remoteTriggerRadius = remoteTriggerRadius,
-                xmlFile = xmlFile
+                xmlFile = xmlFile,
+                remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo()
+                {
+                    position = null,
+                    radius = remoteTriggerRadius,
+                },
             };
 
             return DialogueBuilder.Make(root, null, info, mod);

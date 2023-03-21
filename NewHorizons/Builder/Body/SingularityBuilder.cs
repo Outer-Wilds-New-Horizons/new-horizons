@@ -10,6 +10,7 @@ using NewHorizons.Components.SizeControllers;
 using System.Drawing;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWMLUtilities;
 using NewHorizons.Utility.OWUtilities;
 
@@ -141,26 +142,16 @@ namespace NewHorizons.Builder.Body
 
             // polarity true = black, false = white
 
-            var singularity = new GameObject(!string.IsNullOrEmpty(rename) ? rename : (polarity ? "BlackHole" : "WhiteHole"));
-            singularity.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(parentPath))
+            var info = new SingularityModule
             {
-                var newParent = planetGO.transform.Find(parentPath);
-                if (newParent != null)
-                {
-                    singularity.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
-                }
-            }
+                position = position,
+                rotation = rotation,
+                isRelativeToParent = isRelativeToParent,
+                parentPath = parentPath,
+                rename = rename,
+            };
 
-            if (isRelativeToParent)
-                singularity.transform.localPosition = position;
-            else
-                singularity.transform.position = planetGO.transform.TransformPoint(position);
+            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, sector, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
@@ -274,12 +265,6 @@ namespace NewHorizons.Builder.Body
                 whiteHoleVolume.enabled = true;
                 whiteHoleFluidVolume.enabled = true;
             }
-
-            var rot = Quaternion.Euler(rotation);
-            if (isRelativeToParent)
-                singularity.transform.localRotation = rot;
-            else
-                singularity.transform.rotation = planetGO.transform.TransformRotation(rot);
 
             singularity.SetActive(true);
             return singularity;

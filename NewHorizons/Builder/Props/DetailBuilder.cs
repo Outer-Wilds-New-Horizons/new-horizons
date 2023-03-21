@@ -85,18 +85,17 @@ namespace NewHorizons.Builder.Props
 
             GameObject prop;
             bool isItem;
+            bool invalidComponentFound = false;
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
             {
-                prop = storedPrefab.prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail);
 
                 StreamingHandler.SetUpStreaming(prop, sector);
 
@@ -106,6 +105,13 @@ namespace NewHorizons.Builder.Props
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
+                    // Components can come through as null here (yes, really),
+                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                    if (component == null)
+                    {
+                        invalidComponentFound = true;
+                        continue;
+                    }
                     if (component.gameObject == prop && component is OWItem) isItem = true;
 
                     if (sector == null)
@@ -124,26 +130,19 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            prop.transform.parent = sector?.transform ?? go.transform;
+            if (invalidComponentFound)
+            {
+                foreach (Transform t in prop.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.GetComponents<Component>().Any(c => c == null))
+                    {
+                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
+                    }
+                }
+            }
 
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
-
-            prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
-
-            Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
-
-            if (detail.alignToNormal)
-            {
-                // Apply the rotation after aligning it with normal
-                var up = (prop.transform.position - go.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                prop.transform.rotation *= rot;
-            }
-            else
-            {
-                prop.transform.rotation = go.transform.TransformRotation(rot);
-            }
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
@@ -186,40 +185,6 @@ namespace NewHorizons.Builder.Props
                 }
                 GameObject.Destroy(prop);
                 prop = newDetailGO;
-            }
-
-            if (detail.rename != null)
-            {
-                prop.name = detail.rename;
-            }
-
-            if (!string.IsNullOrEmpty(detail.parentPath))
-            {
-                var newParent = go.transform.Find(detail.parentPath);
-                if (newParent != null)
-                {
-                    prop.transform.parent = newParent.transform;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
-                }
-            }
-
-            if (detail.isRelativeToParent)
-            {
-                prop.transform.localPosition = detail.position == null ? Vector3.zero : detail.position;
-                if (detail.alignToNormal)
-                {
-                    // Apply the rotation after aligning it with normal
-                    var up = (prop.transform.position - go.transform.position).normalized;
-                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                    prop.transform.rotation *= rot;
-                }
-                else
-                {
-                    prop.transform.localRotation = rot;
-                }
             }
             
             if (isItem)

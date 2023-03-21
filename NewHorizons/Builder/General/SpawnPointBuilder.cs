@@ -1,3 +1,5 @@
+using Epic.OnlineServices.Presence;
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
@@ -14,35 +16,21 @@ namespace NewHorizons.Builder.General
         public static SpawnPoint Make(GameObject planetGO, SpawnModule module, OWRigidbody owRigidBody)
         {
             SpawnPoint playerSpawn = null;
-            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawnPoint != null)
-            {
-                GameObject spawnGO = new GameObject("PlayerSpawnPoint");
-                spawnGO.transform.parent = planetGO.transform;
-                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
-                spawnGO.transform.localPosition = module.playerSpawnPoint;
+            if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
+            {
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
+                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
 
-                if (module.playerSpawnRotation != null)
-                {
-                    spawnGO.transform.rotation = Quaternion.Euler(module.playerSpawnRotation);
-                }
-                else
-                {
-                    spawnGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, (playerSpawn.transform.position - planetGO.transform.position).normalized);
-                }
-
-                spawnGO.transform.position = spawnGO.transform.position + spawnGO.transform.TransformDirection(Vector3.up) * 4f;
+                spawnGO.transform.position += spawnGO.transform.up * 4f;
             }
-            if (module.shipSpawnPoint != null)
+            if (module.shipSpawn != null)
             {
-                GameObject spawnGO = new GameObject("ShipSpawnPoint");
-                spawnGO.transform.parent = planetGO.transform;
+                GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
                 spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
-
-                spawnGO.transform.localPosition = module.shipSpawnPoint;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
@@ -51,17 +39,13 @@ namespace NewHorizons.Builder.General
                 var ship = SearchUtilities.Find("Ship_Body");
                 if (ship != null)
                 {
-                    ship.transform.position = spawnPoint.transform.position;
+                    ship.transform.position = spawnGO.transform.position;
+                    ship.transform.rotation = spawnGO.transform.rotation;
 
-                    if (module.shipSpawnRotation != null)
+                    // Move it up a bit more when aligning to surface
+                    if (module.shipSpawn.alignRadial.GetValueOrDefault())
                     {
-                        ship.transform.rotation = Quaternion.Euler(module.shipSpawnRotation);
-                    }
-                    else
-                    {
-                        ship.transform.rotation = Quaternion.FromToRotation(Vector3.up, (spawnPoint.transform.position - planetGO.transform.position).normalized);
-                        // Move it up a bit more when aligning to surface
-                        ship.transform.position = ship.transform.position + ship.transform.TransformDirection(Vector3.up) * 4f;
+                        ship.transform.position += ship.transform.up * 4f;
                     }
 
                     ship.GetRequiredComponent<MatchInitialMotion>().SetBodyToMatch(owRigidBody);
@@ -82,7 +66,7 @@ namespace NewHorizons.Builder.General
                 }
             }
 
-            if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && module.startWithSuit)) && !suitUpQueued)
+            if ((Main.Instance.IsWarpingFromVessel || (!Main.Instance.IsWarpingFromShip && (module.playerSpawn?.startWithSuit ?? false))) && !suitUpQueued)
             {
                 suitUpQueued = true;
                 Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());

@@ -23,35 +23,9 @@ namespace NewHorizons.Builder.Props
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
             
             RemoteDialogueTrigger remoteTrigger = null;
-            if (info.remoteTriggerPosition != null || info.remoteTriggerRadius != 0)
+            if (info.remoteTrigger != null)
             {
                 remoteTrigger = MakeRemoteDialogueTrigger(go, sector, info, dialogue);
-            }
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                dialogue.name = info.rename;
-                if (remoteTrigger != null)
-                {
-                    remoteTrigger.name = $"{info.rename}_{remoteTrigger.name}";
-                }
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var parent = go.transform.Find(info.parentPath);
-                if (parent != null)
-                {
-                    dialogue.transform.parent = parent;
-                    if (remoteTrigger != null)
-                    {
-                        remoteTrigger.transform.parent = parent;
-                    }
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
             }
 
             // Make the character look at the player
@@ -67,8 +41,7 @@ namespace NewHorizons.Builder.Props
 
         private static RemoteDialogueTrigger MakeRemoteDialogueTrigger(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, CharacterDialogueTree dialogue)
         {
-            var conversationTrigger = new GameObject("ConversationTrigger");
-            conversationTrigger.SetActive(false);
+            var conversationTrigger = GeneralPropBuilder.MakeNew("ConversationTrigger", planetGO, sector, info.remoteTrigger, defaultPosition: info.position, defaultParentPath: info.pathToAnimController);
 
             var remoteDialogueTrigger = conversationTrigger.AddComponent<RemoteDialogueTrigger>();
             var sphereCollider = conversationTrigger.AddComponent<SphereCollider>();
@@ -82,7 +55,7 @@ namespace NewHorizons.Builder.Props
                     dialogue = dialogue,
                     prereqConditionType = RemoteDialogueTrigger.MultiConditionType.AND,
                     // Base game never uses more than one condition anyone so we'll keep it simple
-                    prereqConditions = string.IsNullOrEmpty(info.remoteTriggerPrereqCondition) ? new string[]{ } : new string[] { info.remoteTriggerPrereqCondition },
+                    prereqConditions = string.IsNullOrEmpty(info.remoteTrigger.prereqCondition) ? new string[]{ } : new string[] { info.remoteTrigger.prereqCondition },
                     // Just set your enter conditions in XML instead of complicating it with this
                     onTriggerEnterConditions = new string[]{ }
                 }
@@ -90,10 +63,8 @@ namespace NewHorizons.Builder.Props
             remoteDialogueTrigger._activatedDialogues = new bool[1];
             remoteDialogueTrigger._deactivateTriggerPostConversation = true;
 
-            sphereCollider.radius = info.remoteTriggerRadius == 0 ? info.radius : info.remoteTriggerRadius;
+            sphereCollider.radius = info.remoteTrigger.radius == 0 ? info.radius : info.remoteTrigger.radius;
 
-            conversationTrigger.transform.parent = sector?.transform ?? planetGO.transform;
-            conversationTrigger.transform.position = planetGO.transform.TransformPoint(info.remoteTriggerPosition ?? info.position);
             conversationTrigger.SetActive(true);
 
             return remoteDialogueTrigger;
@@ -101,8 +72,7 @@ namespace NewHorizons.Builder.Props
 
         private static CharacterDialogueTree MakeConversationZone(GameObject planetGO, Sector sector, PropModule.DialogueInfo info, IModHelper mod)
         {
-            var conversationZone = new GameObject("ConversationZone");
-            conversationZone.SetActive(false);
+            var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
 
             conversationZone.layer = LayerUtilities.Interactible;
 
@@ -150,21 +120,6 @@ namespace NewHorizons.Builder.Props
                     dialogueTree._turnOnFlashlight = false;
                     break;
             }
-
-            conversationZone.transform.parent = sector?.transform ?? planetGO.transform;
-            
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                conversationZone.transform.parent = planetGO.transform.Find(info.parentPath);
-            }
-            else if (!string.IsNullOrEmpty(info.pathToAnimController))
-            {
-                conversationZone.transform.parent = planetGO.transform.Find(info.pathToAnimController);
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) conversationZone.transform.localPosition = pos;
-            else conversationZone.transform.position = planetGO.transform.TransformPoint(pos);
 
             conversationZone.SetActive(true);
 
