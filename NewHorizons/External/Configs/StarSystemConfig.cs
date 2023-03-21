@@ -271,6 +271,11 @@ namespace NewHorizons.External.Configs
             startHere = startHere || otherConfig.startHere;
 
             Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
+            if (Vessel != null)
+            {
+                Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
+                Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
+            }
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
