@@ -499,15 +499,15 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     var arcInfo = info.arcInfo[j];
                     var arc = arranger.spirals[j];
 
-                    if (arcInfo.keepAutoPlacement) continue;
+                    if (arcInfo.position != null) arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                    if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
-                    else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
+                    if (arcInfo.zRotation != null) arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.Value);
 
-                    arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
-
-                    if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
-                    else arc.transform.localScale = new Vector3( 1, 1, 1);
+                    if (arcInfo.mirror != null)
+                    {
+                        if (arcInfo.mirror.Value) arc.transform.localScale = new Vector3(-1, 1, 1);
+                        else arc.transform.localScale = new Vector3(1, 1, 1);
+                    }
                 }
 
                 // make an entry in the cache for all these spirals

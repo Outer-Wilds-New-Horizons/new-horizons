@@ -590,17 +590,12 @@ namespace NewHorizons.External.Modules
             }
             
             /// <summary>
-            /// Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement.
+            /// Whether to flip the spiral from left-curling to right-curling or vice versa. If not specified, will use auto spiral generated value.
             /// </summary>
-            public bool keepAutoPlacement;
+            public bool? mirror;
 
             /// <summary>
-            /// Whether to flip the spiral from left-curling to right-curling or vice versa.
-            /// </summary>
-            public bool mirror;
-
-            /// <summary>
-            /// The local position of this object on the wall.
+            /// The local position of this object on the wall. If not specified, will use auto spiral generated value.
             /// </summary>
             public MVector2 position;
 
@@ -612,12 +607,13 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.
             /// </summary>
+            [Obsolete("only used in old nomai text")]
             [DefaultValue(-1)] public int variation = -1;
 
             /// <summary>
-            /// The z euler angle for this arc.
+            /// The z euler angle for this arc. If not specified, will use auto spiral generated value.
             /// </summary>
-            [Range(0f, 360f)] public float zRotation;
+            [Range(0f, 360f)] public float? zRotation;
         }
 
         [JsonObject]
