@@ -191,7 +191,7 @@ namespace NewHorizons.External.Configs
             public string promptFact;
 
             /// <summary>
-            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it.
+            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it. This will automatically power on the vessel.
             /// </summary>
             public bool alwaysPresent;
 
@@ -201,9 +201,14 @@ namespace NewHorizons.External.Configs
             public bool spawnOnVessel;
 
             /// <summary>
-            /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
+            /// Whether the vessel should have physics enabled. Defaults to false if parentBody is set, and true otherwise.
             /// </summary>
-            [DefaultValue(true)] public bool hasPhysics = true;
+            public bool? hasPhysics;
+
+            /// <summary>
+            /// Whether the vessel should have a zero-gravity volume around it. Defaults to false if parentBody is set, and true otherwise.
+            /// </summary>
+            public bool? hasZeroGravityVolume;
 
             /// <summary>
             /// The location that the vessel will warp to.
@@ -270,12 +275,14 @@ namespace NewHorizons.External.Configs
             respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
 
-            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
-            if (Vessel != null)
+            if (Vessel != null && otherConfig.Vessel != null)
             {
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
+                Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
+                Vessel.hasZeroGravityVolume = Vessel.hasZeroGravityVolume ?? otherConfig.Vessel.hasZeroGravityVolume;
             }
+            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
