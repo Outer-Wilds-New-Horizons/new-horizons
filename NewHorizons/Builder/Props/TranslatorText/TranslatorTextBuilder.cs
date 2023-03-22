@@ -75,48 +75,44 @@ namespace NewHorizons.Builder.Props
                     .sharedMaterial;
             }
 
-            if (_scrollPrefab == null) _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
+            if (_scrollPrefab == null)
+            {
+                _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
+            }
 
             if (_computerPrefab == null)
             {
                 _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
-                _computerPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_preCrashComputerPrefab == null)
             {
                 _preCrashComputerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/EscapePod_Socket/Interactibles_EscapePod/Prefab_NOM_Vessel_Computer").InstantiateInactive().Rename("Prefab_NOM_Vessel_Computer").DontDestroyOnLoad();
-                _preCrashComputerPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_cairnPrefab == null)
             {
                 _cairnPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_Crossroads/Interactables_Crossroads/Trailmarkers/Prefab_NOM_BH_Cairn_Arc (1)").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_cairnVariantPrefab == null)
             {
                 _cairnVariantPrefab = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Prefab_NOM_TH_Cairn_Arc").InstantiateInactive().Rename("Prefab_NOM_Cairn").DontDestroyOnLoad();
-                _cairnVariantPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_recorderPrefab == null)
             {
                 _recorderPrefab = SearchUtilities.Find("Comet_Body/Prefab_NOM_Shuttle/Sector_NomaiShuttleInterior/Interactibles_NomaiShuttleInterior/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder").DontDestroyOnLoad();
-                _recorderPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_preCrashRecorderPrefab == null)
             {
                 _preCrashRecorderPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_EscapePodCrashSite/Sector_CrashFragment/Interactables_CrashFragment/Prefab_NOM_Recorder").InstantiateInactive().Rename("Prefab_NOM_Recorder_Vessel").DontDestroyOnLoad();
-                _preCrashRecorderPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_trailmarkerPrefab == null)
             {
                 _trailmarkerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Sign").InstantiateInactive().Rename("Prefab_NOM_Trailmarker").DontDestroyOnLoad();
-                _trailmarkerPrefab.transform.rotation = Quaternion.identity;
             }
         }
 
@@ -124,13 +120,19 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefabs();
 
-            var xmlPath = File.ReadAllText(Path.Combine(nhBody.Mod.ModHelper.Manifest.ModFolderPath, info.xmlFile));
+            var xmlContent = !string.IsNullOrEmpty(info.xmlFile) ? File.ReadAllText(Path.Combine(nhBody.Mod.ModHelper.Manifest.ModFolderPath, info.xmlFile)) : null;
+
+            if (xmlContent == null && info.type != PropModule.NomaiTextType.Whiteboard)
+            {
+                Logger.LogError($"Failed to create translator text because {nameof(info.xmlFile)} was not set to a valid text .xml file path");
+                return null;
+            }
 
             switch (info.type)
             {
                 case PropModule.NomaiTextType.Wall:
                     {
-                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
+                        var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlContent, nhBody).gameObject;
                         nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
 
                         if (info.normal != null)
@@ -156,7 +158,7 @@ namespace NewHorizons.Builder.Props
                     {
                         var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
 
-                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, nhBody);
+                        var nomaiWallText = MakeWallText(planetGO, sector, info, xmlContent, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
                         nomaiWallText.transform.localPosition = Vector3.zero;
                         nomaiWallText.transform.localRotation = Quaternion.identity;
@@ -212,10 +214,10 @@ namespace NewHorizons.Builder.Props
                         computer.SetSector(sector);
 
                         computer._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
-                        computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
-                        computer._nomaiTextAsset = new TextAsset(xmlPath);
+                        computer._dictNomaiTextData = MakeNomaiTextDict(xmlContent);
+                        computer._nomaiTextAsset = new TextAsset(xmlContent);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
-                        AddTranslation(xmlPath);
+                        AddTranslation(xmlContent);
 
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(computerObject, sector);
@@ -243,10 +245,10 @@ namespace NewHorizons.Builder.Props
                         computer.SetSector(sector);
 
                         computer._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
-                        computer._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
-                        computer._nomaiTextAsset = new TextAsset(xmlPath);
+                        computer._dictNomaiTextData = MakeNomaiTextDict(xmlContent);
+                        computer._nomaiTextAsset = new TextAsset(xmlContent);
                         computer._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
-                        AddTranslation(xmlPath);
+                        AddTranslation(xmlContent);
 
                         // Make fifth ring work
                         var fifthRingObject = computerObject.FindChild("Props_NOM_Vessel_Computer 1/Props_NOM_Vessel_Computer_Effects (4)");
@@ -297,10 +299,10 @@ namespace NewHorizons.Builder.Props
                         nomaiWallText.SetSector(sector);
 
                         nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
-                        nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
-                        nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
+                        nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlContent);
+                        nomaiWallText._nomaiTextAsset = new TextAsset(xmlContent);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
-                        AddTranslation(xmlPath);
+                        AddTranslation(xmlContent);
 
                         // Make sure the computer model is loaded
                         StreamingHandler.SetUpStreaming(cairnObject, sector);
@@ -327,10 +329,10 @@ namespace NewHorizons.Builder.Props
                         nomaiText.SetSector(sector);
 
                         nomaiText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
-                        nomaiText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
-                        nomaiText._nomaiTextAsset = new TextAsset(xmlPath);
+                        nomaiText._dictNomaiTextData = MakeNomaiTextDict(xmlContent);
+                        nomaiText._nomaiTextAsset = new TextAsset(xmlContent);
                         nomaiText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
-                        AddTranslation(xmlPath);
+                        AddTranslation(xmlContent);
 
                         recorderObject.SetActive(true);
 
@@ -352,16 +354,54 @@ namespace NewHorizons.Builder.Props
                         nomaiWallText.SetSector(sector);
 
                         nomaiWallText._location = EnumUtils.Parse<NomaiText.Location>(info.location.ToString());
-                        nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlPath);
-                        nomaiWallText._nomaiTextAsset = new TextAsset(xmlPath);
+                        nomaiWallText._dictNomaiTextData = MakeNomaiTextDict(xmlContent);
+                        nomaiWallText._nomaiTextAsset = new TextAsset(xmlContent);
                         nomaiWallText._nomaiTextAsset.name = Path.GetFileNameWithoutExtension(info.xmlFile);
-                        AddTranslation(xmlPath);
+                        AddTranslation(xmlContent);
 
                         // Make sure the model is loaded
                         StreamingHandler.SetUpStreaming(trailmarkerObject, sector);
                         conversationInfoToCorrespondingSpawnedGameObject[info] = trailmarkerObject;
 
                         return trailmarkerObject;
+                    }
+                case PropModule.NomaiTextType.Whiteboard:
+                    {
+                        var whiteboardInfo = new PropModule.DetailInfo()
+                        {
+                            alignRadial = info.alignRadial,
+                            isRelativeToParent = info.isRelativeToParent,
+                            parentPath = info.parentPath,
+                            path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
+                            position = info.position,
+                            rename = info.rename ?? "Props_NOM_Whiteboard",
+                            rotation = info.rotation,
+                        };
+                        var whiteboardObject = DetailBuilder.Make(planetGO, sector, whiteboardInfo);
+
+                        // Spawn a scroll and insert it into the whiteboard, but only if text is provided
+                        if (!string.IsNullOrEmpty(info.xmlFile))
+                        {
+                            var scrollSocket = whiteboardObject.GetComponentInChildren<ScrollSocket>();
+
+                            var scrollInfo = new PropModule.TranslatorTextInfo()
+                            {
+                                type = PropModule.NomaiTextType.Scroll,
+                                arcInfo = info.arcInfo,
+                                seed = info.seed,
+                                xmlFile = info.xmlFile,
+                            };
+
+                            var scrollObject = Make(planetGO, sector, scrollInfo, nhBody);
+                            var scrollItem = scrollObject.GetComponent<ScrollItem>();
+
+                            Delay.FireOnNextUpdate(() =>
+                            {
+                                scrollSocket.PlaceIntoSocket(scrollItem);
+                            });
+                        }
+
+                        return whiteboardObject;
                     }
                 default:
                     Logger.LogError($"Unsupported NomaiText type {info.type}");
