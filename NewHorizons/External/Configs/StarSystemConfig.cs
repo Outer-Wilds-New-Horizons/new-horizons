@@ -270,12 +270,12 @@ namespace NewHorizons.External.Configs
             respawnHere = respawnHere || otherConfig.respawnHere;
             startHere = startHere || otherConfig.startHere;
 
-            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
-            if (Vessel != null)
+            if (Vessel != null && otherConfig.Vessel != null)
             {
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
             }
+            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);
