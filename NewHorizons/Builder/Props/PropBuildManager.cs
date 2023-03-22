@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;

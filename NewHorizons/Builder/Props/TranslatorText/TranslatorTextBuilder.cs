@@ -14,7 +14,7 @@ using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Props.TranslatorText
 {
     public static class TranslatorTextBuilder
     {

@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

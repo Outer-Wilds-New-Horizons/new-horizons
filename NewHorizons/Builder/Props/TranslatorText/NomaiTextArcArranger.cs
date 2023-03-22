@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Props.TranslatorText
 {
     public class NomaiTextArcArranger : MonoBehaviour
     {

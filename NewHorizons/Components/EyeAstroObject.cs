@@ -1,6 +1,4 @@
-using NewHorizons.Utility;
-
-namespace NewHorizons.Components.Orbital
+namespace NewHorizons.Components
 {
     public class EyeAstroObject : AstroObject
     {
