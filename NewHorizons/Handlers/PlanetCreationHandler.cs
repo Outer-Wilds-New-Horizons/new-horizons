@@ -131,6 +131,8 @@ namespace NewHorizons.Handlers
 
             Logger.Log("Done loading bodies");
 
+            SingularityBuilder.PairAllSingularities();
+
             // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
             if (Main.SystemDict[Main.Instance.CurrentStarSystem].Config.destroyStockPlanets) PlanetDestructionHandler.RemoveStockPlanets();
