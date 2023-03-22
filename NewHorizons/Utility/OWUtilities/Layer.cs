@@ -6,7 +6,7 @@ namespace NewHorizons.Utility.OWUtilities
     {
         public static int Default = LayerMask.NameToLayer(nameof(Default));
         public static int TransparentFX = LayerMask.NameToLayer(nameof(TransparentFX));
-        public static int IgnoreRaycast = LayerMask.NameToLayer(nameof(IgnoreRaycast));
+        public static int IgnoreRaycast = LayerMask.NameToLayer("Ignore Raycast");
         public static int Water = LayerMask.NameToLayer(nameof(Water));
         public static int UI = LayerMask.NameToLayer(nameof(UI));
         public static int PlayerSafetyCollider = LayerMask.NameToLayer(nameof(PlayerSafetyCollider));
