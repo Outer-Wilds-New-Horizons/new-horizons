@@ -177,7 +177,10 @@ namespace NewHorizons.Handlers
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
 
-            if (system.Config.Vessel?.hasPhysics ?? true)
+            var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
+            var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
+
+            if (hasPhysics)
             {
                 vesselObject.transform.parent = null;
             }
@@ -196,7 +199,8 @@ namespace NewHorizons.Handlers
             }
             vesselWarpController._targetWarpPlatform._owRigidbody = warpExit.GetAttachedOWRigidbody();
 
-            if (system.Config.Vessel?.hasZeroGravityVolume ?? false)
+            var hasZeroGravityVolume = system.Config.Vessel?.hasZeroGravityVolume ?? !hasParentBody;
+            if (!hasZeroGravityVolume)
             {
                 var zeroGVolume = vesselObject.transform.Find("Sector_VesselBridge/Volumes_VesselBridge/ZeroGVolume");
                 if (zeroGVolume != null)

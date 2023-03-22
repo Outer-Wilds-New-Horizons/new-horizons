@@ -366,7 +366,6 @@ namespace NewHorizons
 
                 // If the vessel is forcing the player to spawn there, allow it to override
                 IsWarpingFromVessel = VesselWarpHandler.ShouldSpawnAtVessel();
-                Logger.LogWarning("Spawning from vessel: " + IsWarpingFromVessel);
 
                 // Some builders have to be reset each loop
                 SignalBuilder.Init();

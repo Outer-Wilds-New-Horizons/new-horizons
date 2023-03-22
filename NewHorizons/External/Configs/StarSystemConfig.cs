@@ -201,14 +201,14 @@ namespace NewHorizons.External.Configs
             public bool spawnOnVessel;
 
             /// <summary>
-            /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
+            /// Whether the vessel should have physics enabled. Defaults to false if parentBody is set, and true otherwise.
             /// </summary>
-            [DefaultValue(true)] public bool hasPhysics = true;
+            public bool? hasPhysics;
 
             /// <summary>
-            /// Whether the vessel should have a zero-gravity volume around it that ignores any other sources of gravity, like the vessel works in Dark Bramble.
+            /// Whether the vessel should have a zero-gravity volume around it. Defaults to false if parentBody is set, and true otherwise.
             /// </summary>
-            public bool hasZeroGravityVolume;
+            public bool? hasZeroGravityVolume;
 
             /// <summary>
             /// The location that the vessel will warp to.
