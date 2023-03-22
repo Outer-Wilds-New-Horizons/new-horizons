@@ -19,7 +19,7 @@ namespace NewHorizons.Builder.Volumes
         public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, sector, info);
-            go.layer = LayerUtilities.AdvancedEffectVolume;
+            go.layer = Layer.AdvancedEffectVolume;
 
             var audioSource = go.AddComponent<AudioSource>();
 

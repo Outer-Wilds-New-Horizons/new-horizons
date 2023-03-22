@@ -3,6 +3,7 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;

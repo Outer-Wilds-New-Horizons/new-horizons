@@ -1,7 +1,7 @@
 using NewHorizons.External.Modules;
 using UnityEngine;
 
-namespace NewHorizons.Builder.Volumes
+namespace NewHorizons.Builder.Volumes.VisorEffects
 {
     public static class VisorRainEffectVolumeBuilder
     {

@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Body
             ringVolume.transform.localPosition = Vector3.zero;
             ringVolume.transform.localScale = Vector3.one;
             ringVolume.transform.localRotation = Quaternion.identity;
-            ringVolume.layer = LayerUtilities.BasicEffectVolume;
+            ringVolume.layer = Layer.BasicEffectVolume;
 
             var ringShape = ringVolume.AddComponent<RingShape>();
             ringShape.innerRadius = ring.innerRadius;

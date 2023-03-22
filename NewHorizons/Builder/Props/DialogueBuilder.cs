@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Props
         {
             var conversationZone = GeneralPropBuilder.MakeNew("ConversationZone", planetGO, sector, info, defaultParentPath: info.pathToAnimController);
 
-            conversationZone.layer = LayerUtilities.Interactible;
+            conversationZone.layer = Layer.Interactible;
 
             var sphere = conversationZone.AddComponent<SphereCollider>();
             sphere.radius = info.radius;
@@ -215,7 +215,7 @@ namespace NewHorizons.Builder.Props
                 var playerTrackingZone = new GameObject("PlayerTrackingZone");
                 playerTrackingZone.SetActive(false);
 
-                playerTrackingZone.layer = LayerUtilities.BasicEffectVolume;
+                playerTrackingZone.layer = Layer.BasicEffectVolume;
                 playerTrackingZone.SetActive(false);
 
                 var sphereCollider = playerTrackingZone.AddComponent<SphereCollider>();

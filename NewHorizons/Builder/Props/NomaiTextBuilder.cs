@@ -704,9 +704,9 @@ namespace NewHorizons.Builder.Props
                 if (arcInfo.position == null) arc.transform.localPosition = Vector3.zero;
                 else arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
 
-                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation);
+                arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.GetValueOrDefault());
 
-                if (arcInfo.mirror) arc.transform.localScale = new Vector3(-1, 1, 1);
+                if (arcInfo.mirror.GetValueOrDefault()) arc.transform.localScale = new Vector3(-1, 1, 1);
             }
             // Try auto I guess
             else

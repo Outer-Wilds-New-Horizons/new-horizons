@@ -82,7 +82,7 @@ namespace NewHorizons.Builder.General
             detectorGO.SetActive(false);
             detectorGO.transform.parent = planetGO.transform;
             detectorGO.transform.localPosition = Vector3.zero;
-            detectorGO.layer = LayerUtilities.BasicDetector;
+            detectorGO.layer = Layer.BasicDetector;
 
             ConstantForceDetector forceDetector = detectorGO.AddComponent<ConstantForceDetector>();
             forceDetector._inheritElement0 = true;
@@ -91,7 +91,7 @@ namespace NewHorizons.Builder.General
             // For falling into sun
             if (!config.Base.invulnerableToSun && config.Star == null && config.FocalPoint == null)
             {
-                detectorGO.layer = LayerUtilities.AdvancedDetector;
+                detectorGO.layer = Layer.AdvancedDetector;
 
                 var fluidDetector = detectorGO.AddComponent<DynamicFluidDetector>();
                 var sphereCollider = detectorGO.AddComponent<SphereCollider>();

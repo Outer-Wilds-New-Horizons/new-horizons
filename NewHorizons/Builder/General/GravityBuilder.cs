@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.General
             var gravityGO = new GameObject("GravityWell");
             gravityGO.transform.parent = planetGO.transform;
             gravityGO.transform.localPosition = Vector3.zero;
-            gravityGO.layer = LayerUtilities.BasicEffectVolume;
+            gravityGO.layer = Layer.BasicEffectVolume;
             gravityGO.SetActive(false);
 
             var SC = gravityGO.AddComponent<SphereCollider>();

@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -87,7 +88,7 @@ namespace NewHorizons.Builder.Props
             if (_shareStonePrefab == null)
             {
                 GameObject stone = new GameObject("ShareStoneFallback");
-                stone.layer = LayerUtilities.Interactible;
+                stone.layer = Layer.Interactible;
                 stone.SetActive(false);
                 SphereCollider sc = stone.AddComponent<SphereCollider>();
                 sc.center = Vector3.zero;
