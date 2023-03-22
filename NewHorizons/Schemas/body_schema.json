@@ -1529,7 +1529,8 @@
         "PreCrashRecorder",
         "PreCrashComputer",
         "Trailmarker",
-        "CairnVariant"
+        "CairnVariant",
+        "Whiteboard"
       ],
       "enum": [
         "wall",
@@ -1540,7 +1541,8 @@
         "preCrashRecorder",
         "preCrashComputer",
         "trailmarker",
-        "cairnVariant"
+        "cairnVariant",
+        "whiteboard"
       ]
     },
     "NomaiTextLocation": {
