@@ -45,7 +45,7 @@ namespace NewHorizons.Handlers
         {
             var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
             var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
-            return Instance.IsWarpingFromVessel || shouldSpawnOnVessel;
+            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
         }
 
         public static void LoadVessel()
@@ -174,9 +174,6 @@ namespace NewHorizons.Handlers
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
-            EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
-            system.SpawnPoint = eyeSpawnPoint;
-
             var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
             var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
 
@@ -207,6 +204,12 @@ namespace NewHorizons.Handlers
                 {
                     GameObject.Destroy(zeroGVolume.gameObject);
                 }
+            }
+
+            EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
+            if (ShouldSpawnAtVessel())
+            {
+                system.SpawnPoint = eyeSpawnPoint;
             }
 
             vesselObject.SetActive(true);
