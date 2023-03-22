@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace NewHorizons.Utility.OWUtilities
 {
-    public static class LayerUtilities
+    public static class Layer
     {
         public static int Default = LayerMask.NameToLayer(nameof(Default));
         public static int TransparentFX = LayerMask.NameToLayer(nameof(TransparentFX));

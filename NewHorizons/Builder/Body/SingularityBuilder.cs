@@ -183,7 +183,7 @@ namespace NewHorizons.Builder.Body
                 if (hasDestructionVolume || targetStarSystem != null)
                 {
                     var destructionVolumeGO = new GameObject("DestructionVolume");
-                    destructionVolumeGO.layer = LayerUtilities.BasicEffectVolume;
+                    destructionVolumeGO.layer = Layer.BasicEffectVolume;
                     destructionVolumeGO.transform.parent = singularity.transform;
                     destructionVolumeGO.transform.localScale = Vector3.one;
                     destructionVolumeGO.transform.localPosition = Vector3.zero;

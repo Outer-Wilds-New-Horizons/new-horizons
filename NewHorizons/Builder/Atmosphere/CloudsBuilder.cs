@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             GameObject cloudsFluidGO = new GameObject("CloudsFluid");
             cloudsFluidGO.SetActive(false);
-            cloudsFluidGO.layer = LayerUtilities.BasicEffectVolume;
+            cloudsFluidGO.layer = Layer.BasicEffectVolume;
             cloudsFluidGO.transform.parent = cloudsMainGO.transform;
 
             SphereCollider fluidSC = cloudsFluidGO.AddComponent<SphereCollider>();
@@ -252,7 +252,7 @@ namespace NewHorizons.Builder.Atmosphere
 
             if (atmo.clouds.unlit)
             {
-                cloudsTopGO.layer = LayerUtilities.IgnoreSun;
+                cloudsTopGO.layer = Layer.IgnoreSun;
             }
 
             if (atmo.clouds.rotationSpeed != 0f)
@@ -304,7 +304,7 @@ namespace NewHorizons.Builder.Atmosphere
             {
                 GameObject tcrqcGO = new GameObject("TransparentCloudRenderQueueController");
                 tcrqcGO.transform.SetParent(cloudsTransparentGO.transform, false);
-                tcrqcGO.layer = LayerUtilities.BasicEffectVolume;
+                tcrqcGO.layer = Layer.BasicEffectVolume;
 
                 var shape = tcrqcGO.AddComponent<SphereShape>();
                 shape.radius = 1;
