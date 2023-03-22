@@ -146,8 +146,7 @@ namespace NewHorizons
                             x = new int[5]{ 0,3,2,1,5 },
                             y = new int[5]{ 4,5,3,2,1 },
                             z = new int[5]{ 4,1,2,5,0 }
-                        },
-                        alwaysPresent = true,
+                        }
                     }
                 }
             };

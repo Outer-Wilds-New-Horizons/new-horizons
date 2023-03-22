@@ -191,7 +191,7 @@ namespace NewHorizons.External.Configs
             public string promptFact;
 
             /// <summary>
-            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it.
+            /// Whether the vessel should spawn in this system even if it wasn't used to warp to it. This will automatically power on the vessel.
             /// </summary>
             public bool alwaysPresent;
 
@@ -204,6 +204,11 @@ namespace NewHorizons.External.Configs
             /// Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.
             /// </summary>
             [DefaultValue(true)] public bool hasPhysics = true;
+
+            /// <summary>
+            /// Whether the vessel should have a zero-gravity volume around it that ignores any other sources of gravity, like the vessel works in Dark Bramble.
+            /// </summary>
+            public bool hasZeroGravityVolume;
 
             /// <summary>
             /// The location that the vessel will warp to.
