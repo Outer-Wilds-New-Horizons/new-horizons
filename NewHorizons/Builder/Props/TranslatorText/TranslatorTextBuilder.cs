@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Props
         private static Material _adultArcMaterial;
         private static Material _childArcMaterial;
         private static GameObject _scrollPrefab;
-        private static GameObject _computerPrefab;
+        public static GameObject ComputerPrefab { get; private set; }
         private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _cairnVariantPrefab;
@@ -77,10 +77,10 @@ namespace NewHorizons.Builder.Props
 
             if (_scrollPrefab == null) _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
 
-            if (_computerPrefab == null)
+            if (ComputerPrefab == null)
             {
-                _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
-                _computerPrefab.transform.rotation = Quaternion.identity;
+                ComputerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
+                ComputerPrefab.transform.rotation = Quaternion.identity;
             }
 
             if (_preCrashComputerPrefab == null)
@@ -206,7 +206,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextType.Computer:
                     {
-                        var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, planetGO, sector, info);
+                        var computerObject = GeneralPropBuilder.MakeFromPrefab(ComputerPrefab, ComputerPrefab.name, planetGO, sector, info);
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);

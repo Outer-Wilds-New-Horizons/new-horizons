@@ -297,6 +297,8 @@ namespace NewHorizons
                     ProjectionBuilder.InitPrefabs();
                     CloakBuilder.InitPrefab();
                     RaftBuilder.InitPrefab();
+
+                    WarpPadBuilder.InitPrefabs();
                 }
                 catch (Exception e)
                 {

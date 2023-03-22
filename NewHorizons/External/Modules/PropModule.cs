@@ -1,12 +1,12 @@
-
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;
-using NewHorizons.External.Modules.VariableSize;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules
 {
@@ -93,6 +93,16 @@ namespace NewHorizons.External.Modules
         /// Add projection pools/platforms, whiteboards, and stones to this planet
         /// </summary>
         public RemoteInfo[] remotes;
+
+        /// <summary>
+        /// Add warp pad receivers to this planet. These are the warp pads you are sent to from Ash Twin.
+        /// </summary>
+        public NomaiWarpReceiverInfo[] warpReceivers;
+
+        /// <summary>
+        /// Add warp pad transmitters to this planet. These are the warp pads seen on the Ash Twin.
+        /// </summary>
+        public NomaiWarpTransmitterInfo[] warpTransmitters;
 
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public VolumesModule.RevealVolumeInfo[] reveal;
 

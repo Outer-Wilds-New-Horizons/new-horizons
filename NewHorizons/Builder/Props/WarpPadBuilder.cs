@@ -1,0 +1,126 @@
+using Epic.OnlineServices.Presence;
+using NewHorizons.External.Modules.WarpPad;
+using NewHorizons.Handlers;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using OWML.Utils;
+using UnityEngine;
+
+namespace NewHorizons.Builder.Props
+{
+    public static class WarpPadBuilder
+    {
+        private static GameObject _detailedReceiverPrefab;
+        private static GameObject _receiverPrefab;
+        private static GameObject _transmitterPrefab;
+
+        public static void InitPrefabs()
+        {
+            if (_detailedReceiverPrefab == null)
+            {
+                var thReceiverLamp = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiCrater/Geometry_NomaiCrater/OtherComponentsGroup/Structure_NOM_WarpReceiver_TimberHearth_Lamp");
+                var thReceiver = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiCrater/Interactables_NomaiCrater/Prefab_NOM_WarpReceiver");
+
+                _detailedReceiverPrefab = new GameObject("NomaiWarpReceiver");
+
+                var detailedReceiver = thReceiver.InstantiateInactive();
+                detailedReceiver.transform.parent = _detailedReceiverPrefab.transform;
+                detailedReceiver.transform.localPosition = Vector3.zero;
+                detailedReceiver.transform.localRotation = Quaternion.identity;
+
+                var lamp = thReceiverLamp.InstantiateInactive();
+                lamp.transform.parent = _detailedReceiverPrefab.transform;
+                lamp.transform.localPosition = thReceiver.transform.InverseTransformPoint(thReceiverLamp.transform.position);
+                lamp.transform.localRotation = thReceiver.transform.InverseTransformRotation(thReceiverLamp.transform.rotation);
+
+                _detailedReceiverPrefab.SetActive(false);
+                lamp.SetActive(true);
+                detailedReceiver.SetActive(true);
+
+                _detailedReceiverPrefab.DontDestroyOnLoad();
+
+                GameObject.Destroy(_detailedReceiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+            }
+
+            if (_receiverPrefab == null)
+            {
+                _receiverPrefab = SearchUtilities.Find("SunStation_Body/Sector_SunStation/Sector_WarpModule/Interactables_WarpModule/Prefab_NOM_WarpReceiver")
+                    .InstantiateInactive()
+                    .DontDestroyOnLoad();
+                GameObject.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+            }
+
+            if (_transmitterPrefab == null)
+            {
+                _transmitterPrefab = SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_SS/Interactables_Tower_SS/Tower_SS_VisibleFrom_TowerTwin/Prefab_NOM_WarpTransmitter")
+                    .InstantiateInactive()
+                    .DontDestroyOnLoad();
+                GameObject.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+            }
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, NomaiWarpReceiverInfo info)
+        {
+            var receiverObject = GeneralPropBuilder.MakeFromPrefab(info.detailed ? _detailedReceiverPrefab : _receiverPrefab, "NomaiWarpReceiver", planetGO, sector, info);
+
+            StreamingHandler.SetUpStreaming(receiverObject, sector);
+
+            var receiver = receiverObject.GetComponentInChildren<NomaiWarpReceiver>();
+
+            receiver._frequency = GetFrequency(info.frequency);
+
+            receiver._alignmentTarget = planetGO?.transform;
+
+            Locator.RegisterWarpReceiver(receiver);
+
+            receiverObject.SetActive(true);
+
+            if (info.computer != null)
+            {
+                CreateComputer(planetGO, sector, info.computer, receiver);
+            }
+        }
+
+        public static void Make(GameObject planetGO, Sector sector, NomaiWarpTransmitterInfo info)
+        {
+            var transmitterObject = GeneralPropBuilder.MakeFromPrefab(_transmitterPrefab, "NomaiWarpTransmitter", planetGO, sector, info);
+
+            StreamingHandler.SetUpStreaming(transmitterObject, sector);
+
+            var transmitter = transmitterObject.GetComponentInChildren<NomaiWarpTransmitter>();
+            transmitter._frequency = GetFrequency(info.frequency);
+
+            transmitter._alignmentWindow = info.alignmentWindow;
+
+            transmitter.GetComponent<BoxShape>().enabled = true;
+
+            transmitterObject.SetActive(true);
+        }
+
+        private static void CreateComputer(GameObject planetGO, Sector sector, NomaiWarpComputerLoggerInfo computerInfo, NomaiWarpReceiver receiver)
+        {
+            var computerObject = GeneralPropBuilder.MakeFromPrefab(TranslatorTextBuilder.ComputerPrefab, TranslatorTextBuilder.ComputerPrefab.name, planetGO, sector, computerInfo);
+
+            var computer = computerObject.GetComponentInChildren<NomaiComputer>();
+            computer.SetSector(sector);
+
+            Delay.FireOnNextUpdate(computer.ClearAllEntries);
+
+            var computerLogger = computerObject.AddComponent<NomaiWarpComputerLogger>();
+            computerLogger._warpReceiver = receiver;
+
+            StreamingHandler.SetUpStreaming(computerObject, sector);
+
+            computerObject.SetActive(true);
+        }
+
+        private static NomaiWarpPlatform.Frequency GetFrequency(string frequency)
+        {
+            if (!EnumUtils.TryParse<NomaiWarpPlatform.Frequency>(frequency, out var frequencyEnum))
+            {
+                frequencyEnum = EnumUtilities.Create<NomaiWarpPlatform.Frequency>(frequency);
+            }
+            return frequencyEnum;
+        }
+    }
+}
