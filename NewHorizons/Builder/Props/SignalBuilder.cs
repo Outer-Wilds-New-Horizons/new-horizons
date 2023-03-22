@@ -111,26 +111,7 @@ namespace NewHorizons.Builder.Props
 
         public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
         {
-            var signalGO = new GameObject($"Signal_{info.name}");
-            signalGO.SetActive(false);
-            signalGO.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    signalGO.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) signalGO.transform.localPosition = pos;
-            else signalGO.transform.position = planetGO.transform.TransformPoint(pos);
+            var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", planetGO, sector, info);
             signalGO.layer = LayerUtilities.AdvancedEffectVolume;
 
             var source = signalGO.AddComponent<AudioSource>();

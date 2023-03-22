@@ -37,9 +37,9 @@ namespace NewHorizons.Builder.Props
             return arcInfoToCorrespondingSpawnedGameObject[arc];
         }
 
-        private static Dictionary<PropModule.NomaiTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextInfo, GameObject>();
+        private static Dictionary<PropModule.TranslatorTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.TranslatorTextInfo, GameObject>();
         
-        public static GameObject GetSpawnedGameObjectByNomaiTextInfo(PropModule.NomaiTextInfo convo)
+        public static GameObject GetSpawnedGameObjectByTranslatorTextInfo(PropModule.TranslatorTextInfo convo)
         {
             Logger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
@@ -120,7 +120,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
@@ -128,67 +128,21 @@ namespace NewHorizons.Builder.Props
 
             switch (info.type)
             {
-                case PropModule.NomaiTextInfo.NomaiTextType.Wall:
+                case PropModule.NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath, nhBody).gameObject;
+                        nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
 
-                        if (!string.IsNullOrEmpty(info.rename))
+                        if (info.normal != null)
                         {
-                            nomaiWallTextObj.name = info.rename;
-                        }
+                            var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
+                            var forward = planetGO.transform.TransformDirection(info.normal).normalized;
 
-                        nomaiWallTextObj.transform.parent = sector?.transform ?? planetGO.transform;
+                            nomaiWallTextObj.transform.forward = forward;
 
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                nomaiWallTextObj.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
-                        var pos = (Vector3)(info.position ?? Vector3.zero);
-                        if (info.isRelativeToParent)
-                        {
-                            nomaiWallTextObj.transform.localPosition = pos;
-                            if (info.normal != null)
-                            {
-                                // In global coordinates (normal was in local coordinates)
-                                var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
-                                var forward = planetGO.transform.TransformDirection(info.normal).normalized;
-
-                                nomaiWallTextObj.transform.up = up;
-                                nomaiWallTextObj.transform.forward = forward;
-                            }
-                            if (info.rotation != null)
-                            {
-                                nomaiWallTextObj.transform.localRotation = Quaternion.Euler(info.rotation);
-                            }
-                        }
-                        else
-                        {
-                            nomaiWallTextObj.transform.position = planetGO.transform.TransformPoint(pos);
-                            if (info.normal != null)
-                            {
-                                // In global coordinates (normal was in local coordinates)
-                                var up = (nomaiWallTextObj.transform.position - planetGO.transform.position).normalized;
-                                var forward = planetGO.transform.TransformDirection(info.normal).normalized;
-                                
-                                nomaiWallTextObj.transform.forward = forward;
-
-                                var desiredUp = Vector3.ProjectOnPlane(up, forward);
-                                var zRotation = Vector3.SignedAngle(nomaiWallTextObj.transform.up, desiredUp, forward);
-                                nomaiWallTextObj.transform.RotateAround(nomaiWallTextObj.transform.position, forward, zRotation);
-                            }
-                            if (info.rotation != null)
-                            {
-                                nomaiWallTextObj.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
-                            }
+                            var desiredUp = Vector3.ProjectOnPlane(up, forward);
+                            var zRotation = Vector3.SignedAngle(nomaiWallTextObj.transform.up, desiredUp, forward);
+                            nomaiWallTextObj.transform.RotateAround(nomaiWallTextObj.transform.position, forward, zRotation);
                         }
 
                         // nomaiWallTextObj.GetComponent<NomaiTextArcArranger>().DrawBoundsWithDebugSpheres();
@@ -198,18 +152,9 @@ namespace NewHorizons.Builder.Props
                         
                         return nomaiWallTextObj;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
+                case PropModule.NomaiTextType.Scroll:
                     {
-                        var customScroll = _scrollPrefab.InstantiateInactive();
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            customScroll.name = info.rename;
-                        }
-                        else
-                        {
-                            customScroll.name = _scrollPrefab.name;
-                        }
+                        var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
 
                         var nomaiWallText = MakeWallText(planetGO, sector, info, xmlPath, nhBody);
                         nomaiWallText.transform.parent = customScroll.transform;
@@ -237,36 +182,6 @@ namespace NewHorizons.Builder.Props
                         // Else when you put them down you can't pick them back up
                         customScroll.GetComponent<OWCollider>()._physicsRemoved = false;
 
-                        // Place scroll
-                        customScroll.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                customScroll.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
-                        var pos = (Vector3)(info.position ?? Vector3.zero);
-                        if (info.isRelativeToParent) customScroll.transform.localPosition = pos;
-                        else customScroll.transform.position = planetGO.transform.TransformPoint(pos);
-
-                        var up = planetGO.transform.InverseTransformPoint(customScroll.transform.position).normalized;
-                        if (info.rotation != null)
-                        {
-                            customScroll.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(info.rotation));
-                        }
-                        else
-                        {
-                            customScroll.transform.rotation = Quaternion.FromToRotation(customScroll.transform.up, up) * customScroll.transform.rotation;
-                        }
-
                         customScroll.SetActive(true);
 
                         Delay.FireOnNextUpdate(
@@ -289,41 +204,9 @@ namespace NewHorizons.Builder.Props
                         
                         return customScroll;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Computer:
+                case PropModule.NomaiTextType.Computer:
                     {
-                        var computerObject = _computerPrefab.InstantiateInactive();
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            computerObject.name = info.rename;
-                        }
-                        else
-                        {
-                            computerObject.name = _computerPrefab.name;
-                        }
-
-                        computerObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                computerObject.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
-                        var pos = (Vector3)(info.position ?? Vector3.zero);
-                        if (info.isRelativeToParent) computerObject.transform.localPosition = pos;
-                        else computerObject.transform.position = planetGO.transform.TransformPoint(pos);
-
-                        var up = computerObject.transform.position - planetGO.transform.position;
-                        if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
-                        computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
+                        var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, planetGO, sector, info);
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
@@ -342,21 +225,19 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
+                case PropModule.NomaiTextType.PreCrashComputer:
                     {
                         var detailInfo = new PropModule.DetailInfo()
                         {
                             position = info.position,
+                            rotation = info.rotation,
                             parentPath = info.parentPath,
                             isRelativeToParent = info.isRelativeToParent,
+                            alignRadial = info.alignRadial,
                             rename = info.rename
                         };
                         var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
                         computerObject.SetActive(false);
-
-                        var up = computerObject.transform.position - planetGO.transform.position;
-                        if (info.normal != null) up = planetGO.transform.TransformDirection(info.normal);
-                        computerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * computerObject.transform.rotation;
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
                         computer.SetSector(sector);
@@ -392,51 +273,11 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
-                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
+                case PropModule.NomaiTextType.Cairn:
+                case PropModule.NomaiTextType.CairnVariant:
                     {
-                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            cairnObject.name = info.rename;
-                        }
-                        else
-                        {
-                            cairnObject.name = _cairnPrefab.name;
-                        }
-
-                        cairnObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                cairnObject.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
-                        var pos = (Vector3)(info.position ?? Vector3.zero);
-                        if (info.isRelativeToParent) cairnObject.transform.localPosition = pos;
-                        else cairnObject.transform.position = planetGO.transform.TransformPoint(pos);
-
-                        if (info.rotation != null)
-                        {
-                            var rot = Quaternion.Euler(info.rotation);
-                            if (info.isRelativeToParent) cairnObject.transform.localRotation = rot;
-                            else cairnObject.transform.rotation = planetGO.transform.TransformRotation(rot);
-                        }
-                        else
-                        {
-                            // By default align it to normal
-                            var up = (cairnObject.transform.position - planetGO.transform.position).normalized;
-                            cairnObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * cairnObject.transform.rotation;
-                        }
+                        var cairnPrefab = info.type == PropModule.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
+                        var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, planetGO, sector, info);
 
                         // Idk do we have to set it active before finding things?
                         cairnObject.SetActive(true);
@@ -467,25 +308,20 @@ namespace NewHorizons.Builder.Props
 
                         return cairnObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
-                case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
+                case PropModule.NomaiTextType.PreCrashRecorder:
+                case PropModule.NomaiTextType.Recorder:
                     {
-                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var prefab = (info.type == PropModule.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
                         var detailInfo = new PropModule.DetailInfo {
                             parentPath = info.parentPath,
                             rotation = info.rotation,
                             position = info.position,
                             isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename
+                            rename = info.rename,
+                            alignRadial = info.alignRadial,
                         };
                         var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
                         recorderObject.SetActive(false);
-
-                        if (info.rotation == null)
-                        {
-                            var up = recorderObject.transform.position - planetGO.transform.position;
-                            recorderObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * recorderObject.transform.rotation;
-                        }
 
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
                         nomaiText.SetSector(sector);
@@ -502,53 +338,12 @@ namespace NewHorizons.Builder.Props
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
+                case PropModule.NomaiTextType.Trailmarker:
                     {
-                        var trailmarkerObject = _trailmarkerPrefab.InstantiateInactive();
-
-                        if (!string.IsNullOrEmpty(info.rename))
-                        {
-                            trailmarkerObject.name = info.rename;
-                        }
-                        else
-                        {
-                            trailmarkerObject.name = _trailmarkerPrefab.name;
-                        }
-
-                        trailmarkerObject.transform.parent = sector?.transform ?? planetGO.transform;
-
-                        if (!string.IsNullOrEmpty(info.parentPath))
-                        {
-                            var newParent = planetGO.transform.Find(info.parentPath);
-                            if (newParent != null)
-                            {
-                                trailmarkerObject.transform.parent = newParent;
-                            }
-                            else
-                            {
-                                Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                            }
-                        }
-
-                        var pos = (Vector3)(info.position ?? Vector3.zero);
-                        if (info.isRelativeToParent) trailmarkerObject.transform.localPosition = pos;
-                        else trailmarkerObject.transform.position = planetGO.transform.TransformPoint(pos);
+                        var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, planetGO, sector, info);
 
                         // shrink because that is what mobius does on all trailmarkers or else they are the size of the player
                         trailmarkerObject.transform.localScale = Vector3.one * 0.75f;
-
-                        if (info.rotation != null)
-                        {
-                            var rot = Quaternion.Euler(info.rotation);
-                            if (info.isRelativeToParent) trailmarkerObject.transform.localRotation = rot;
-                            else trailmarkerObject.transform.rotation = planetGO.transform.TransformRotation(rot);
-                        }
-                        else
-                        {
-                            // By default align it to normal
-                            var up = (trailmarkerObject.transform.position - planetGO.transform.position).normalized;
-                            trailmarkerObject.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * trailmarkerObject.transform.rotation;
-                        }
 
                         // Idk do we have to set it active before finding things?
                         trailmarkerObject.SetActive(true);
@@ -574,7 +369,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.NomaiTextInfo info, string xmlPath, NewHorizonsBody nhBody)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.TranslatorTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -611,7 +406,7 @@ namespace NewHorizons.Builder.Props
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody)
         {
             var dict = MakeNomaiTextDict(xml);
 
@@ -631,7 +426,7 @@ namespace NewHorizons.Builder.Props
             public bool mirrored;
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.NomaiTextInfo info, NewHorizonsBody nhBody, string cacheKey)
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody, string cacheKey)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);

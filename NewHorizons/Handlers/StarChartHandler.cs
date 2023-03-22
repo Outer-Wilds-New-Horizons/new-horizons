@@ -66,7 +66,7 @@ namespace NewHorizons.Handlers
         {
             foreach (var system in _systems)
             {
-                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawnPoint != null && HasUnlockedSystem(system.UniqueID))
+                if (system.Config.canEnterViaWarpDrive && system.Spawn?.shipSpawn != null && HasUnlockedSystem(system.UniqueID))
                 {
                     return true;
                 }

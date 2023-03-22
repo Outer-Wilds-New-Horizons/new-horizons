@@ -151,7 +151,7 @@ namespace NewHorizons.Builder.Props
 
             switch (info.type)
             {
-                case PropModule.NomaiTextInfo.NomaiTextType.Wall:
+                case PropModule.NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlPath).gameObject;
 
@@ -216,7 +216,7 @@ namespace NewHorizons.Builder.Props
                         
                         return nomaiWallTextObj;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Scroll:
+                case PropModule.NomaiTextType.Scroll:
                     {
                         var customScroll = _scrollPrefab.InstantiateInactive();
 
@@ -305,7 +305,7 @@ namespace NewHorizons.Builder.Props
                         
                         return customScroll;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Computer:
+                case PropModule.NomaiTextType.Computer:
                     {
                         var computerObject = _computerPrefab.InstantiateInactive();
 
@@ -358,7 +358,7 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashComputer:
+                case PropModule.NomaiTextType.PreCrashComputer:
                     {
                         var detailInfo = new PropModule.DetailInfo()
                         {
@@ -408,10 +408,10 @@ namespace NewHorizons.Builder.Props
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Cairn:
-                case PropModule.NomaiTextInfo.NomaiTextType.CairnVariant:
+                case PropModule.NomaiTextType.Cairn:
+                case PropModule.NomaiTextType.CairnVariant:
                     {
-                        var cairnObject = (info.type == PropModule.NomaiTextInfo.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
+                        var cairnObject = (info.type == PropModule.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab).InstantiateInactive();
 
                         if (!string.IsNullOrEmpty(info.rename))
                         {
@@ -483,10 +483,10 @@ namespace NewHorizons.Builder.Props
 
                         return cairnObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder:
-                case PropModule.NomaiTextInfo.NomaiTextType.Recorder:
+                case PropModule.NomaiTextType.PreCrashRecorder:
+                case PropModule.NomaiTextType.Recorder:
                     {
-                        var prefab = (info.type == PropModule.NomaiTextInfo.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var prefab = (info.type == PropModule.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
                         var detailInfo = new PropModule.DetailInfo {
                             parentPath = info.parentPath,
                             rotation = info.rotation,
@@ -518,7 +518,7 @@ namespace NewHorizons.Builder.Props
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
                     }
-                case PropModule.NomaiTextInfo.NomaiTextType.Trailmarker:
+                case PropModule.NomaiTextType.Trailmarker:
                     {
                         var trailmarkerObject = _trailmarkerPrefab.InstantiateInactive();
 

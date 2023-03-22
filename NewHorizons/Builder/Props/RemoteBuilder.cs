@@ -195,7 +195,7 @@ namespace NewHorizons.Builder.Props
             {
                 var textInfo = info.nomaiText[i];
                 component._remoteIDs[i] = RemoteHandler.GetPlatformID(textInfo.id);
-                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.NomaiTextInfo
+                var wallText = TranslatorTextBuilder.Make(whiteboard, sector, new PropModule.TranslatorTextInfo
                 {
                     arcInfo = textInfo.arcInfo,
                     location = textInfo.location,
@@ -204,7 +204,7 @@ namespace NewHorizons.Builder.Props
                     rename = textInfo.rename,
                     rotation = Vector3.zero,
                     seed = textInfo.seed,
-                    type = PropModule.NomaiTextInfo.NomaiTextType.Wall,
+                    type = PropModule.NomaiTextType.Wall,
                     xmlFile = textInfo.xmlFile
                 }, nhBody).GetComponent<NomaiWallText>();
                 wallText._showTextOnStart = false;
@@ -252,37 +252,7 @@ namespace NewHorizons.Builder.Props
 
         public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.StoneInfo info, IModBehaviour mod)
         {
-            var shareStone = _shareStonePrefab.InstantiateInactive();
-
-            shareStone.name = !string.IsNullOrEmpty(info.rename) ? info.rename : ("ShareStone_" + id.ToString());
-
-            shareStone.transform.parent = sector?.transform ?? go.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = go.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    shareStone.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
-            if (info.isRelativeToParent)
-            {
-                shareStone.transform.localPosition = pos;
-                shareStone.transform.localRotation = rot;
-            }
-            else
-            {
-                shareStone.transform.position = go.transform.TransformPoint(pos);
-                shareStone.transform.rotation = go.transform.TransformRotation(rot);
-            }
+            var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
 
             shareStone.GetComponent<SharedStone>()._connectedPlatform = id;
 

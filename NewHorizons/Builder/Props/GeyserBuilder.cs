@@ -19,35 +19,11 @@ namespace NewHorizons.Builder.Props
         {
             InitPrefab();
 
-            var geyserGO = _geyserPrefab.InstantiateInactive();
-            geyserGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "Geyser";
-            geyserGO.transform.parent = sector?.transform ?? planetGO.transform;
+            var geyserGO = GeneralPropBuilder.MakeFromPrefab(_geyserPrefab, "Geyser", planetGO, sector, info);
 
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    geyserGO.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)info.position;
-
-            // Offset height, default -97.5 pushes it underground so the spout is at the surface
-            var length = pos.magnitude + info.offset;
-
-            // About 130 high, bubbles start at 10, shaft starts at 67, spout starts at 97.5
-            geyserGO.transform.position = planetGO.transform.TransformPoint(pos.normalized * length);
+            geyserGO.transform.position += geyserGO.transform.up * info.offset;
 
             geyserGO.transform.localScale = Vector3.one;
-
-            var up = planetGO.transform.TransformPoint(pos) - planetGO.transform.position;
-            geyserGO.transform.rotation = Quaternion.FromToRotation(geyserGO.transform.up, up) * geyserGO.transform.rotation;
 
             var bubbles = geyserGO.FindChild("GeyserParticles/GeyserBubbles");
             var shaft = geyserGO.FindChild("GeyserParticles/GeyserShaft");

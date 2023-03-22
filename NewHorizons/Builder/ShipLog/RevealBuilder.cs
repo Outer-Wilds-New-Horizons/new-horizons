@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.Components.Achievement;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.OWUtilities;
@@ -10,7 +11,7 @@ namespace NewHorizons.Builder.ShipLog
     {
         public static void Make(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
-            var newRevealGO = MakeGameObject(go, sector, info, mod);
+            var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", go, sector, info);
             switch (info.revealOn)
             {
                 case VolumesModule.RevealVolumeInfo.RevealVolumeType.Enter:
@@ -35,37 +36,6 @@ namespace NewHorizons.Builder.ShipLog
             newShape.radius = info.radius;
             newShape.SetCollisionMode(collisionMode);
             return newShape;
-        }
-
-        private static GameObject MakeGameObject(GameObject planetGO, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
-        {
-            GameObject revealTriggerVolume = new GameObject("Reveal Volume (" + info.revealOn + ")");
-            revealTriggerVolume.SetActive(false);
-            revealTriggerVolume.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                revealTriggerVolume.name = info.rename;
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    revealTriggerVolume.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) revealTriggerVolume.transform.localPosition = pos;
-            else revealTriggerVolume.transform.position = planetGO.transform.TransformPoint(pos);
-
-            return revealTriggerVolume;
         }
 
         private static void MakeTrigger(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)

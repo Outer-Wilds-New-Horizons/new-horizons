@@ -93,8 +93,7 @@ namespace NewHorizons.Builder.Props
 
             if (_slideReelPrefab == null) return null;
 
-            var slideReelObj = _slideReelPrefab.InstantiateInactive();
-            slideReelObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}";
+            var slideReelObj = GeneralPropBuilder.MakeFromPrefab(_slideReelPrefab, $"Prefab_IP_Reel_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
 
             var slideReel = slideReelObj.GetComponent<SlideReelItem>();
             slideReel.SetSector(sector);
@@ -105,34 +104,6 @@ namespace NewHorizons.Builder.Props
             foreach (var renderer in slideReelObj.GetComponentsInChildren<Renderer>())
             {
                 renderer.enabled = true;
-            }
-
-            slideReelObj.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    slideReelObj.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
-            if (info.isRelativeToParent)
-            {
-                slideReelObj.transform.localPosition = pos;
-                slideReelObj.transform.localRotation = rot;
-            }
-            else
-            {
-                slideReelObj.transform.position = planetGO.transform.TransformPoint(pos);
-                slideReelObj.transform.rotation = planetGO.transform.TransformRotation(rot);
             }
 
             // Now we replace the slides
@@ -195,41 +166,12 @@ namespace NewHorizons.Builder.Props
 
             if (_autoPrefab == null) return null;
 
-            var projectorObj = _autoPrefab.InstantiateInactive();
-            projectorObj.name = !string.IsNullOrEmpty(info.rename) ? info.rename : $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}";
+            var projectorObj = GeneralPropBuilder.MakeFromPrefab(_autoPrefab, $"Prefab_IP_AutoProjector_{mod.ModHelper.Manifest.Name}", planetGO, sector, info);
 
             var autoProjector = projectorObj.GetComponent<AutoSlideProjector>();
             autoProjector._sector = sector;
 
             var slideCollectionContainer = autoProjector.GetRequiredComponent<SlideCollectionContainer>();
-
-            autoProjector.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    autoProjector.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            var rot = Quaternion.Euler((Vector3)(info.rotation ?? Vector3.zero));
-            if (info.isRelativeToParent)
-            {
-                autoProjector.transform.localPosition = pos;
-                autoProjector.transform.localRotation = rot;
-            }
-            else
-            {
-                autoProjector.transform.position = planetGO.transform.TransformPoint(pos);
-                autoProjector.transform.rotation = planetGO.transform.TransformRotation(rot);
-            }
 
             // Now we replace the slides
             int slidesCount = info.slides.Length;
@@ -266,6 +208,7 @@ namespace NewHorizons.Builder.Props
                 rotation = info.rotation,
                 parentPath = info.parentPath,
                 isRelativeToParent = info.isRelativeToParent,
+                rename = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector",
                 scale = 2
             };
             var g = DetailBuilder.Make(planetGO, sector, _visionTorchDetectorPrefab, detailInfo);
@@ -275,8 +218,6 @@ namespace NewHorizons.Builder.Props
                 Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
             }
-
-            g.name = !string.IsNullOrEmpty(info.rename) ? info.rename : "VisionStaffDetector";
 
             // The number of slides is unlimited, 15 is only for texturing the actual slide reel item. This is not a slide reel item
             var slides = info.slides;

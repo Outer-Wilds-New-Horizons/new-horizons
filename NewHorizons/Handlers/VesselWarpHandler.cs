@@ -7,6 +7,7 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWMLUtilities;
 using NewHorizons.Utility.OWUtilities;
 
@@ -26,15 +27,31 @@ namespace NewHorizons.Handlers
             VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
+        public static bool IsVesselPresent()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var isDefaultSolarSystem = Instance.CurrentStarSystem == "SolarSystem";
+            var vesselIsPresent = vesselConfig?.alwaysPresent ?? isDefaultSolarSystem;
+            return Instance.IsWarpingFromVessel || vesselIsPresent;
+        }
+
+        public static bool ShouldSpawnAtVessel()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
+            return Instance.IsWarpingFromVessel || (IsVesselPresent() && shouldSpawnOnVessel);
+        }
+
         public static void LoadVessel()
         {
+            var system = SystemDict[Instance.CurrentStarSystem];
             if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
                 _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
                 return;
             }
 
-            if (Instance.IsWarpingFromVessel)
+            if (IsVesselPresent())
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
@@ -86,10 +103,8 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = VesselPrefab.InstantiateInactive();
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
-            vesselObject.name = VesselPrefab.name;
-            vesselObject.transform.parent = null;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
             vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
@@ -99,12 +114,6 @@ namespace NewHorizons.Handlers
             vesselAO._type = AstroObject.Type.SpaceStation;
             vesselAO.Register();
             vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
-
-            if (system.Config.Vessel?.vesselPosition != null)
-                vesselObject.transform.position = system.Config.Vessel.vesselPosition;
-
-            if (system.Config.Vessel?.vesselRotation != null)
-                vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 
@@ -149,16 +158,32 @@ namespace NewHorizons.Handlers
 
             vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
-            if (system.Config.Vessel?.warpExitPosition != null)
-                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.Vessel.warpExitPosition;
-
-            if (system.Config.Vessel?.warpExitRotation != null)
-                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
+            var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
+            var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, null, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
+            if (attachWarpExitToVessel)
+            {
+                warpExit.transform.parent = warpExitParent;
+            }
 
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
             system.SpawnPoint = eyeSpawnPoint;
+
+            if (system.Config.Vessel?.hasPhysics ?? true)
+            {
+                vesselObject.transform.parent = null;
+            }
+            else
+            {
+                vesselAO._owRigidbody = null;
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<KinematicRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<CenterOfTheUniverseOffsetApplier>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<OWRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<Rigidbody>());
+            }
+            vesselWarpController._targetWarpPlatform._owRigidbody = warpExit.GetAttachedOWRigidbody();
 
             vesselObject.SetActive(true);
 
