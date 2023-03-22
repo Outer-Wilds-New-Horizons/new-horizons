@@ -279,6 +279,8 @@ namespace NewHorizons.External.Configs
             {
                 Vessel.spawnOnVessel = Vessel.spawnOnVessel || otherConfig.Vessel.spawnOnVessel;
                 Vessel.alwaysPresent = Vessel.alwaysPresent || otherConfig.Vessel.alwaysPresent;
+                Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
+                Vessel.hasZeroGravityVolume = Vessel.hasZeroGravityVolume ?? otherConfig.Vessel.hasZeroGravityVolume;
             }
             Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
 
