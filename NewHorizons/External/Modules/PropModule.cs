@@ -523,6 +523,8 @@ namespace NewHorizons.External.Modules
             [EnumMember(Value = @"trailmarker")] Trailmarker = 7,
 
             [EnumMember(Value = @"cairnVariant")] CairnVariant = 8,
+
+            [EnumMember(Value = @"whiteboard")] Whiteboard = 9,
         }
 
         [JsonConverter(typeof(StringEnumConverter))]
