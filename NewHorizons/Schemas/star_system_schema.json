@@ -152,13 +152,18 @@
           "description": "Whether to always spawn the player on the vessel, even if it wasn't used to warp to the system."
         },
         "hasPhysics": {
-          "type": "boolean",
-          "description": "Whether the vessel should have physics enabled. This must be set to false for the vessel to stay attached to a parent body.",
-          "default": true
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether the vessel should have physics enabled. Defaults to false if parentBody is set, and true otherwise."
         },
         "hasZeroGravityVolume": {
-          "type": "boolean",
-          "description": "Whether the vessel should have a zero-gravity volume around it that ignores any other sources of gravity, like the vessel works in Dark Bramble."
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether the vessel should have a zero-gravity volume around it. Defaults to false if parentBody is set, and true otherwise."
         },
         "vesselSpawn": {
           "description": "The location that the vessel will warp to.",
