@@ -13,9 +13,20 @@ namespace NewHorizons.Builder.Props
         private static GameObject _detailedReceiverPrefab;
         private static GameObject _receiverPrefab;
         private static GameObject _transmitterPrefab;
+        private static GameObject _platformContainerPrefab;
 
         public static void InitPrefabs()
         {
+            if (_platformContainerPrefab == null)
+            {
+                // Put this around the platforms without details 
+                // Trifid is a Nomai ruins genius
+                _platformContainerPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_SouthHemisphere/Sector_SouthPole/Sector_Observatory/Interactables_Observatory/Prefab_NOM_RemoteViewer/Structure_NOM_RemoteViewer")
+                    .InstantiateInactive()
+                    .DontDestroyOnLoad();
+                _platformContainerPrefab.transform.localScale = new Vector3(0.85f, 3f, 0.85f);
+            }
+
             if (_detailedReceiverPrefab == null)
             {
                 var thReceiverLamp = SearchUtilities.Find("TimberHearth_Body/Sector_TH/Sector_NomaiCrater/Geometry_NomaiCrater/OtherComponentsGroup/Structure_NOM_WarpReceiver_TimberHearth_Lamp");
@@ -48,6 +59,12 @@ namespace NewHorizons.Builder.Props
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
                 GameObject.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+
+                var structure = _platformContainerPrefab.Instantiate();
+                structure.transform.parent = _receiverPrefab.transform;
+                structure.transform.localPosition = new Vector3(0, 0.8945f, 0);
+                structure.transform.localRotation = Quaternion.identity;
+                structure.SetActive(true);
             }
 
             if (_transmitterPrefab == null)
@@ -56,6 +73,12 @@ namespace NewHorizons.Builder.Props
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
                 GameObject.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+
+                var structure = _platformContainerPrefab.Instantiate();
+                structure.transform.parent = _transmitterPrefab.transform;
+                structure.transform.localPosition = new Vector3(0, 0.8945f, 0);
+                structure.transform.localRotation = Quaternion.identity;
+                structure.SetActive(true);
             }
         }
 
