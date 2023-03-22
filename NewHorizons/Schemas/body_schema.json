@@ -1457,16 +1457,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "keepAutoPlacement": {
-          "type": "boolean",
-          "description": "Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement."
-        },
         "mirror": {
-          "type": "boolean",
-          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa."
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If not specified, will use auto spiral generated value."
         },
         "position": {
-          "description": "The local position of this object on the wall.",
+          "description": "The local position of this object on the wall. If not specified, will use auto spiral generated value.",
           "$ref": "#/definitions/MVector2"
         },
         "type": {
@@ -1474,15 +1473,12 @@
           "default": "adult",
           "$ref": "#/definitions/NomaiTextArcType"
         },
-        "variation": {
-          "type": "integer",
-          "description": "Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.",
-          "format": "int32",
-          "default": -1
-        },
         "zRotation": {
-          "type": "number",
-          "description": "The z euler angle for this arc.",
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The z euler angle for this arc. If not specified, will use auto spiral generated value.",
           "format": "float",
           "maximum": 360.0,
           "minimum": 0.0
