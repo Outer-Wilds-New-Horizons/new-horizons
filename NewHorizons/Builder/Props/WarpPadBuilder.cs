@@ -1,4 +1,5 @@
 using Epic.OnlineServices.Presence;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
