@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -276,12 +277,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         cairnObject.SetActive(true);
 
                         // Make it do the thing when it finishes being knocked over
-                        foreach (var rock in cairnObject.GetComponent<NomaiCairn>()._rocks)
+                        // idk why, but sometimes stuff is null here, so just wait a frame to let it initialize
+                        Delay.FireOnNextUpdate(() =>
                         {
-                            rock._returning = false;
-                            rock._owCollider.SetActivation(true);
-                            rock.enabled = false;
-                        }
+                            foreach (var rock in cairnObject.GetComponent<NomaiCairn>()._rocks)
+                            {
+                                rock._returning = false;
+                                rock._owCollider.SetActivation(true);
+                                rock.enabled = false;
+                            }
+                        });
 
                         // So we can actually knock it over
                         cairnObject.GetComponent<CapsuleCollider>().enabled = true;
