@@ -29,6 +29,10 @@ namespace NewHorizons.External.Modules
             /// If you spawn on a planet with no oxygen, you probably want to set this to true ;;)
             /// </summary>
             public bool startWithSuit;
+            /// <summary>
+            /// Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist.
+            /// </summary>
+            public bool isDefault;
         }
 
         [JsonObject]

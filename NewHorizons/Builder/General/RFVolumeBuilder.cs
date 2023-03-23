@@ -13,7 +13,7 @@ namespace NewHorizons.Builder.General
             var rfGO = new GameObject("RFVolume");
             rfGO.transform.parent = planetGO.transform;
             rfGO.transform.localPosition = Vector3.zero;
-            rfGO.layer = LayerUtilities.ReferenceFrameVolume;
+            rfGO.layer = Layer.ReferenceFrameVolume;
             rfGO.SetActive(false);
 
             var SC = rfGO.AddComponent<SphereCollider>();

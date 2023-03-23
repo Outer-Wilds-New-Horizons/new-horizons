@@ -12,7 +12,7 @@ namespace NewHorizons.Builder.Volumes
         public static TVolume Make<TVolume>(GameObject planetGO, Sector sector, VolumesModule.VanishVolumeInfo info) where TVolume : VanishVolume
         {
             var go = GeneralPropBuilder.MakeNew(typeof(TVolume).Name, planetGO, sector, info);
-            go.layer = LayerUtilities.BasicEffectVolume;
+            go.layer = Layer.BasicEffectVolume;
 
             var collider = go.AddComponent<SphereCollider>();
             collider.isTrigger = true;

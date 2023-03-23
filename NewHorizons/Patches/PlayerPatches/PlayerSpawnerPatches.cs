@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Patches.PlayerPatches
@@ -15,12 +16,15 @@ namespace NewHorizons.Patches.PlayerPatches
                 Logger.LogWarning("Abort player spawn. Vessel will handle it.");
                 return false;
             }
-            else
+            else if (Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint != null)
             {
-                Logger.LogVerbose("Player spawning");
+                Logger.LogVerbose($"Player spawning at {Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint.transform.GetPath()}");
                 __instance.SetInitialSpawnPoint(Main.SystemDict[Main.Instance.CurrentStarSystem].SpawnPoint);
-                return true;
+            } else if (Main.Instance.CurrentStarSystem != "SolarSystem" && Main.Instance.CurrentStarSystem != "EyeOfTheUniverse")
+            {
+                Logger.LogWarning("No player spawn point set.");
             }
+            return true;
         }
     }
 }

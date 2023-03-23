@@ -1,9 +1,8 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Props.TranslatorText
 {
     public static class NomaiTextArcBuilder {    
         // TODO: stranger arcs

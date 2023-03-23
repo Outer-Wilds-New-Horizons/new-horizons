@@ -454,7 +454,11 @@ namespace NewHorizons.Handlers
             if (body.Config.Spawn != null)
             {
                 Logger.LogVerbose("Making spawn point");
-                Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+                var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                {
+                    Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
+                }
             }
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)

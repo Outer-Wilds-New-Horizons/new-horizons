@@ -20,7 +20,7 @@ namespace NewHorizons.Builder.General
             if (!Main.Instance.IsWarpingFromVessel && !Main.Instance.IsWarpingFromShip && module.playerSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("PlayerSpawnPoint", planetGO, null, module.playerSpawn);
-                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
+                spawnGO.layer = Layer.PlayerSafetyCollider;
 
                 playerSpawn = spawnGO.AddComponent<SpawnPoint>();
                 playerSpawn._triggerVolumes = new OWTriggerVolume[0];
@@ -30,7 +30,7 @@ namespace NewHorizons.Builder.General
             if (module.shipSpawn != null)
             {
                 GameObject spawnGO = GeneralPropBuilder.MakeNew("ShipSpawnPoint", planetGO, null, module.shipSpawn);
-                spawnGO.layer = LayerUtilities.PlayerSafetyCollider;
+                spawnGO.layer = Layer.PlayerSafetyCollider;
 
                 var spawnPoint = spawnGO.AddComponent<SpawnPoint>();
                 spawnPoint._isShipSpawn = true;
@@ -55,7 +55,7 @@ namespace NewHorizons.Builder.General
                         Logger.LogVerbose("Overriding player spawn to be inside ship");
                         GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
                         playerSpawnGO.transform.parent = ship.transform;
-                        playerSpawnGO.layer = LayerUtilities.PlayerSafetyCollider;
+                        playerSpawnGO.layer = Layer.PlayerSafetyCollider;
 
                         playerSpawnGO.transform.localPosition = new Vector3(0, 0, 0);
 

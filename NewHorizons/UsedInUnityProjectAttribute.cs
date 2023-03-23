@@ -1,5 +1,7 @@
 using System;
 
+namespace NewHorizons;
+
 /// <summary>
 /// denotes that the given type is used in the unity project
 /// and therefore caution should be used when moving/renaming/deleting

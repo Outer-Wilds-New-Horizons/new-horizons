@@ -21,7 +21,7 @@ namespace NewHorizons.Components.Achievement
 
         private void Reset()
         {
-            gameObject.layer = LayerUtilities.Interactible;
+            gameObject.layer = Layer.Interactible;
         }
 
         private void Awake()

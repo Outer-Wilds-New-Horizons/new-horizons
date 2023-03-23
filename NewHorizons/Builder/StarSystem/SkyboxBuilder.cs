@@ -33,7 +33,7 @@ namespace NewHorizons.Builder.StarSystem
 
             var skySphere = new GameObject("Sky Sphere");
             skySphere.transform.SetParent(skybox.transform, false);
-            skySphere.layer = LayerUtilities.Skybox;
+            skySphere.layer = Layer.Skybox;
             skySphere.transform.localScale = Vector3.one * 5f;
 
             BuildSkySphereFace(skySphere, "Right", Quaternion.Euler(0f, 90f, 0f), mesh, rightTex);
@@ -56,7 +56,7 @@ namespace NewHorizons.Builder.StarSystem
 
             var go = new GameObject(name)
             {
-                layer = LayerUtilities.Skybox
+                layer = Layer.Skybox
             };
 
             var mf = go.AddComponent<MeshFilter>();

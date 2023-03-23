@@ -39,7 +39,7 @@ public class AddPhysics : MonoBehaviour
         var owRigidbody = bodyGo.AddComponent<OWRigidbody>();
         owRigidbody._simulateInSector = Sector;
 
-        bodyGo.layer = LayerUtilities.PhysicalDetector;
+        bodyGo.layer = Layer.PhysicalDetector;
         bodyGo.tag = "DynamicPropDetector";
         // this collider is not included in groups. oh well
         bodyGo.AddComponent<SphereCollider>().radius = Radius;

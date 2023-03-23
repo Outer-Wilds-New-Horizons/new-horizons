@@ -123,7 +123,7 @@ namespace NewHorizons.Builder.Body
             heatVolume.transform.SetParent(starGO.transform, false);
             heatVolume.transform.localPosition = Vector3.zero;
             heatVolume.transform.localScale = Vector3.one;
-            heatVolume.layer = LayerUtilities.BasicEffectVolume;
+            heatVolume.layer = Layer.BasicEffectVolume;
             heatVolume.AddComponent<SphereShape>().radius = 1.1f;
             heatVolume.AddComponent<OWTriggerVolume>();
             heatVolume.AddComponent<HeatHazardVolume>()._damagePerSecond = 20f;
@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.Body
             deathVolume.transform.SetParent(starGO.transform, false);
             deathVolume.transform.localPosition = Vector3.zero;
             deathVolume.transform.localScale = Vector3.one;
-            deathVolume.layer = LayerUtilities.BasicEffectVolume;
+            deathVolume.layer = Layer.BasicEffectVolume;
             var sphereCollider = deathVolume.AddComponent<SphereCollider>();
             sphereCollider.radius = 1f;
             sphereCollider.isTrigger = true;
@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Body
             planetDestructionVolume.transform.SetParent(starGO.transform, false);
             planetDestructionVolume.transform.localPosition = Vector3.zero;
             planetDestructionVolume.transform.localScale = Vector3.one;
-            planetDestructionVolume.layer = LayerUtilities.BasicEffectVolume;
+            planetDestructionVolume.layer = Layer.BasicEffectVolume;
             var planetSphereCollider = planetDestructionVolume.AddComponent<SphereCollider>();
             planetSphereCollider.radius = 0.8f;
             planetSphereCollider.isTrigger = true;
@@ -446,7 +446,7 @@ namespace NewHorizons.Builder.Body
                 supernovaWallAudio.transform.SetParent(supernovaGO.transform, false);
                 supernovaWallAudio.transform.localPosition = Vector3.zero;
                 supernovaWallAudio.transform.localScale = Vector3.one;
-                supernovaWallAudio.layer = LayerUtilities.BasicEffectVolume;
+                supernovaWallAudio.layer = Layer.BasicEffectVolume;
                 var audioSource = supernovaWallAudio.AddComponent<AudioSource>();
                 audioSource.loop = true;
                 audioSource.maxDistance = 2000;

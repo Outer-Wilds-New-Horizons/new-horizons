@@ -93,7 +93,7 @@ namespace NewHorizons.Builder.ShipLog
 
         private static void MakeObservable(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
         {
-            go.layer = LayerUtilities.Interactible;
+            go.layer = Layer.Interactible;
 
             var sphere = go.AddComponent<SphereCollider>();
             sphere.radius = info.radius;
