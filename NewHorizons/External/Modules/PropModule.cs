@@ -1,12 +1,13 @@
-
+using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
+using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using System;
-using NewHorizons.External.Modules.VariableSize;
 
 namespace NewHorizons.External.Modules
 {
@@ -94,6 +95,16 @@ namespace NewHorizons.External.Modules
         /// </summary>
         public RemoteInfo[] remotes;
 
+        /// <summary>
+        /// Add warp pad receivers to this planet. These are the warp pads you are sent to from Ash Twin.
+        /// </summary>
+        public NomaiWarpReceiverInfo[] warpReceivers;
+
+        /// <summary>
+        /// Add warp pad transmitters to this planet. These are the warp pads seen on the Ash Twin.
+        /// </summary>
+        public NomaiWarpTransmitterInfo[] warpTransmitters;
+
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public VolumesModule.RevealVolumeInfo[] reveal;
 
         [Obsolete("audioVolumes is deprecated. Use Volumes->audioVolumes instead.")] public VolumesModule.AudioVolumeInfo[] audioVolumes;
@@ -165,6 +176,13 @@ namespace NewHorizons.External.Modules
         [JsonObject]
         public class DetailInfo : GeneralPropInfo
         {
+            public DetailInfo() { }
+
+            public DetailInfo(GeneralPointPropInfo info)
+            {
+                JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
+            }
+
             /// <summary>
             /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
             /// </summary>

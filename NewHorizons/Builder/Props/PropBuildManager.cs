@@ -7,6 +7,7 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {
@@ -233,6 +234,34 @@ namespace NewHorizons.Builder.Props
                     catch (Exception ex)
                     {
                         Logger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.warpReceivers != null)
+            {
+                foreach (var warpReceiver in config.Props.warpReceivers)
+                {
+                    try
+                    {
+                        WarpPadBuilder.Make(go, sector, warpReceiver);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make warp receiver [{warpReceiver.frequency}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.warpTransmitters != null)
+            {
+                foreach (var warpTransmitter in config.Props.warpTransmitters)
+                {
+                    try
+                    {
+                        WarpPadBuilder.Make(go, sector, warpTransmitter);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError($"Couldn't make warp transmitter [{warpTransmitter.frequency}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

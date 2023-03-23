@@ -1088,6 +1088,20 @@
           "items": {
             "$ref": "#/definitions/RemoteInfo"
           }
+        },
+        "warpReceivers": {
+          "type": "array",
+          "description": "Add warp pad receivers to this planet. These are the warp pads you are sent to from Ash Twin.",
+          "items": {
+            "$ref": "#/definitions/NomaiWarpReceiverInfo"
+          }
+        },
+        "warpTransmitters": {
+          "type": "array",
+          "description": "Add warp pad transmitters to this planet. These are the warp pads seen on the Ash Twin.",
+          "items": {
+            "$ref": "#/definitions/NomaiWarpTransmitterInfo"
+          }
         }
       }
     },
@@ -2390,6 +2404,133 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        }
+      }
+    },
+    "NomaiWarpReceiverInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "alignmentTargetBody": {
+          "type": "string",
+          "description": "The body the transmitter must be aligned with to warp to this receiver.\nDefaults to the body the receiver is on."
+        },
+        "computer": {
+          "description": "Will create a modern Nomai computer linked to this receiver.",
+          "$ref": "#/definitions/NomaiWarpComputerLoggerInfo"
+        },
+        "detailed": {
+          "type": "boolean",
+          "description": "Set to true if you want to include Nomai ruin details around the warp pad."
+        }
+      }
+    },
+    "NomaiWarpComputerLoggerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "NomaiWarpTransmitterInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "alignmentWindow": {
+          "type": "number",
+          "description": "In degrees. Gives a margin of error for alignments.",
+          "format": "float",
+          "default": 5.0
+        },
+        "upsideDown": {
+          "type": "boolean",
+          "description": "Is this transmitter upsidedown? Means alignment will be checked facing the other way."
         }
       }
     },

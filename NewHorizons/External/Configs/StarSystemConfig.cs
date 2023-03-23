@@ -282,7 +282,10 @@ namespace NewHorizons.External.Configs
                 Vessel.hasPhysics = Vessel.hasPhysics ?? otherConfig.Vessel.hasPhysics;
                 Vessel.hasZeroGravityVolume = Vessel.hasZeroGravityVolume ?? otherConfig.Vessel.hasZeroGravityVolume;
             }
-            Vessel = Vessel == null ? otherConfig.Vessel : Vessel;
+            else
+            {
+                Vessel ??= otherConfig.Vessel;
+            }
 
             entryPositions = Concatenate(entryPositions, otherConfig.entryPositions);
             curiosities = Concatenate(curiosities, otherConfig.curiosities);

@@ -360,14 +360,7 @@ namespace NewHorizons.Builder.Props
                     }
                 case PropModule.NomaiTextType.PreCrashComputer:
                     {
-                        var detailInfo = new PropModule.DetailInfo()
-                        {
-                            position = info.position,
-                            parentPath = info.parentPath,
-                            isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename
-                        };
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new PropModule.DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var up = computerObject.transform.position - planetGO.transform.position;
@@ -487,14 +480,7 @@ namespace NewHorizons.Builder.Props
                 case PropModule.NomaiTextType.Recorder:
                     {
                         var prefab = (info.type == PropModule.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var detailInfo = new PropModule.DetailInfo {
-                            parentPath = info.parentPath,
-                            rotation = info.rotation,
-                            position = info.position,
-                            isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename
-                        };
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new PropModule.DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         if (info.rotation == null)

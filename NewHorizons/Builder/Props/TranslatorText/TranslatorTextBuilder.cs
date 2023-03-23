@@ -22,7 +22,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
         private static Material _adultArcMaterial;
         private static Material _childArcMaterial;
         private static GameObject _scrollPrefab;
-        private static GameObject _computerPrefab;
+        public static GameObject ComputerPrefab { get; private set; }
         private static GameObject _preCrashComputerPrefab;
         private static GameObject _cairnPrefab;
         private static GameObject _cairnVariantPrefab;
@@ -80,9 +80,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 _scrollPrefab = SearchUtilities.Find("BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/Prefab_NOM_Scroll").InstantiateInactive().Rename("Prefab_NOM_Scroll").DontDestroyOnLoad();
             }
 
-            if (_computerPrefab == null)
+            if (ComputerPrefab == null)
             {
-                _computerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
+                ComputerPrefab = SearchUtilities.Find("VolcanicMoon_Body/Sector_VM/Interactables_VM/Prefab_NOM_Computer").InstantiateInactive().Rename("Prefab_NOM_Computer").DontDestroyOnLoad();
             }
 
             if (_preCrashComputerPrefab == null)
@@ -208,7 +208,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case PropModule.NomaiTextType.Computer:
                     {
-                        var computerObject = GeneralPropBuilder.MakeFromPrefab(_computerPrefab, _computerPrefab.name, planetGO, sector, info);
+                        var computerObject = GeneralPropBuilder.MakeFromPrefab(ComputerPrefab, ComputerPrefab.name, planetGO, sector, info);
 
                         var computer = computerObject.GetComponent<NomaiComputer>();
                         computer.SetSector(sector);
@@ -229,16 +229,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case PropModule.NomaiTextType.PreCrashComputer:
                     {
-                        var detailInfo = new PropModule.DetailInfo()
-                        {
-                            position = info.position,
-                            rotation = info.rotation,
-                            parentPath = info.parentPath,
-                            isRelativeToParent = info.isRelativeToParent,
-                            alignRadial = info.alignRadial,
-                            rename = info.rename
-                        };
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, detailInfo);
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new PropModule.DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
@@ -314,15 +305,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 case PropModule.NomaiTextType.Recorder:
                     {
                         var prefab = (info.type == PropModule.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var detailInfo = new PropModule.DetailInfo {
-                            parentPath = info.parentPath,
-                            rotation = info.rotation,
-                            position = info.position,
-                            isRelativeToParent = info.isRelativeToParent,
-                            rename = info.rename,
-                            alignRadial = info.alignRadial,
-                        };
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, detailInfo);
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new PropModule.DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
