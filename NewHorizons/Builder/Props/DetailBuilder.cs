@@ -105,7 +105,7 @@ namespace NewHorizons.Builder.Props
                 isItem = false;
 
                 // IgnoreSun is just a shadow casting optimization for BH so we can get rid of it 
-                if (go.layer == Layer.IgnoreSun) go.layer = Layer.Default;
+                if (prop.layer == Layer.IgnoreSun) prop.layer = Layer.Default;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
