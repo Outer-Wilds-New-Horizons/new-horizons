@@ -104,9 +104,6 @@ namespace NewHorizons.Builder.Props
                 var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
 
-                // IgnoreSun is just a shadow casting optimization for BH so we can get rid of it 
-                if (prop.layer == Layer.IgnoreSun) prop.layer = Layer.Default;
-
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
                     // Components can come through as null here (yes, really),
