@@ -355,7 +355,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                             alignRadial = info.alignRadial,
                             isRelativeToParent = info.isRelativeToParent,
                             parentPath = info.parentPath,
-                            path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
+                            path = "TimberHearth_Body/Sector_TH/Sector_NomaiMines/Interactables_NomaiMines/Props_NOM_Whiteboard/Props_NOM_Whiteboard (1)",
                             position = info.position,
                             rename = info.rename ?? "Props_NOM_Whiteboard",
                             rotation = info.rotation,
