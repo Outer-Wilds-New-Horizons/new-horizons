@@ -350,15 +350,10 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case PropModule.NomaiTextType.Whiteboard:
                     {
-                        var whiteboardInfo = new PropModule.DetailInfo()
+                        var whiteboardInfo = new PropModule.DetailInfo(info)
                         {
-                            alignRadial = info.alignRadial,
-                            isRelativeToParent = info.isRelativeToParent,
-                            parentPath = info.parentPath,
                             path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
-                            position = info.position,
                             rename = info.rename ?? "Props_NOM_Whiteboard",
-                            rotation = info.rotation,
                         };
                         var whiteboardObject = DetailBuilder.Make(planetGO, sector, whiteboardInfo);
 
