@@ -522,14 +522,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     var arcInfo = info.arcInfo[j];
                     var arc = arranger.spirals[j];
 
-                    if (arcInfo.position != null) arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
-
-                    if (arcInfo.zRotation != null) arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.Value);
-
-                    if (arcInfo.mirror != null)
+                    if (arcInfo.position != null || arcInfo.zRotation != null || arcInfo.mirror != null)
                     {
-                        if (arcInfo.mirror.Value) arc.transform.localScale = new Vector3(-1, 1, 1);
-                        else arc.transform.localScale = new Vector3(1, 1, 1);
+                        var pos = (Vector2)(arcInfo.position ?? Vector2.zero);
+                        arc.transform.localPosition = new Vector3(pos.x, pos.y, 0);
+                        arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.GetValueOrDefault());
+                        arc.transform.localScale = arcInfo.mirror.GetValueOrDefault() ? new Vector3(-1, 1, 1) : new Vector3(1, 1, 1);
                     }
                 }
 
