@@ -229,7 +229,7 @@ namespace NewHorizons.Builder.Props
             {
                 sectorGroup.SetSector(sector);
             }
-            
+
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
 
             if (component is Sector s)
