@@ -104,8 +104,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new PropModule.DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();

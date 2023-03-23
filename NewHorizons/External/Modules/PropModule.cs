@@ -185,6 +185,14 @@ namespace NewHorizons.External.Modules
                 }
             }
 
+            public DetailInfo(GeneralPointPropInfo info)
+            {
+                foreach (var prop in info.GetType().GetProperties())
+                {
+                    GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(info, null), null);
+                }
+            }
+
             /// <summary>
             /// Relative filepath to an asset-bundle to load the prefab defined in `path` from
             /// </summary>
