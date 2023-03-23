@@ -96,8 +96,6 @@ namespace NewHorizons.Builder.Props
 
             receiver._alignmentTarget = planetGO?.transform;
 
-            Locator.RegisterWarpReceiver(receiver);
-
             receiverObject.SetActive(true);
 
             if (info.computer != null)
