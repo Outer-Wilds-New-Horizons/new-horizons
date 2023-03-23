@@ -119,7 +119,7 @@ namespace NewHorizons.Builder.Props
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch);
+                    else FixSectoredComponent(component, sector, isTorch, detail.keepLoaded);
 
                     FixComponent(component, go);
                 }
@@ -214,10 +214,7 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        /// <param name="component"></param>
-        /// <param name="sector"></param>
-        /// <param name="isTorch"></param>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch = false)
+        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
         {
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
             if (component is ISectorGroup sectorGroup)
@@ -225,6 +222,14 @@ namespace NewHorizons.Builder.Props
                 sectorGroup.SetSector(sector);
             }
 
+            // keepLoaded should remove existing groups
+            // renderers/colliders get enabled later so we dont have to do that here
+            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
+            {
+                Component.DestroyImmediate(component);
+                return;
+            }
+            
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
 
             if (component is Sector s)
@@ -235,6 +240,12 @@ namespace NewHorizons.Builder.Props
             else if (component is SectorCullGroup sectorCullGroup)
             {
                 sectorCullGroup._controllingProxy = null;
+                
+                // fixes sector cull group deactivating renderers on map view enter and fast foward
+                // TODO: does this actually work? what? how?
+                sectorCullGroup._inMapView = false;
+                sectorCullGroup._isFastForwarding = false;
+                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
             }
 
             else if(component is SectoredMonoBehaviour behaviour)
@@ -265,7 +276,7 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         private static bool FixUnsectoredComponent(Component component)
         {
-            if (component is FogLight or SectoredMonoBehaviour)
+            if (component is FogLight or SectoredMonoBehaviour or ISectorGroup)
             {
                 GameObject.DestroyImmediate(component);
                 return true;
@@ -339,15 +350,6 @@ namespace NewHorizons.Builder.Props
             // Bug 533 - Don't show the electricity effect renderers
             else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
             else if(component is Shape shape) shape.enabled = true;
-
-            // fixes sector cull group deactivating renderers on map view enter and fast foward
-            // TODO: does this actually work? what? how?
-            else if(component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
 
             // If it's not a moving anglerfish make sure the anim controller is regular
             else if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
