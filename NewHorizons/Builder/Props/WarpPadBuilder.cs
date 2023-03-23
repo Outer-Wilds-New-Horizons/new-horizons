@@ -1,7 +1,6 @@
-using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.WarpPad;
-using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
 using OWML.Utils;
@@ -85,9 +84,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, NomaiWarpReceiverInfo info)
         {
-            var receiverObject = GeneralPropBuilder.MakeFromPrefab(info.detailed ? _detailedReceiverPrefab : _receiverPrefab, "NomaiWarpReceiver", planetGO, sector, info);
-
-            StreamingHandler.SetUpStreaming(receiverObject, sector);
+            var receiverObject = DetailBuilder.Make(planetGO, sector, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, new PropModule.DetailInfo(info));
 
             var receiver = receiverObject.GetComponentInChildren<NomaiWarpReceiver>();
 
@@ -107,9 +104,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, NomaiWarpTransmitterInfo info)
         {
-            var transmitterObject = GeneralPropBuilder.MakeFromPrefab(_transmitterPrefab, "NomaiWarpTransmitter", planetGO, sector, info);
-
-            StreamingHandler.SetUpStreaming(transmitterObject, sector);
+            var transmitterObject = DetailBuilder.Make(planetGO, sector, _transmitterPrefab, new PropModule.DetailInfo(info));
 
             var transmitter = transmitterObject.GetComponentInChildren<NomaiWarpTransmitter>();
             transmitter._frequency = GetFrequency(info.frequency);
@@ -123,7 +118,7 @@ namespace NewHorizons.Builder.Props
 
         private static void CreateComputer(GameObject planetGO, Sector sector, NomaiWarpComputerLoggerInfo computerInfo, NomaiWarpReceiver receiver)
         {
-            var computerObject = GeneralPropBuilder.MakeFromPrefab(TranslatorTextBuilder.ComputerPrefab, TranslatorTextBuilder.ComputerPrefab.name, planetGO, sector, computerInfo);
+            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new PropModule.DetailInfo(computerInfo));
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
             computer.SetSector(sector);
@@ -132,8 +127,6 @@ namespace NewHorizons.Builder.Props
 
             var computerLogger = computerObject.AddComponent<NomaiWarpComputerLogger>();
             computerLogger._warpReceiver = receiver;
-
-            StreamingHandler.SetUpStreaming(computerObject, sector);
 
             computerObject.SetActive(true);
         }
