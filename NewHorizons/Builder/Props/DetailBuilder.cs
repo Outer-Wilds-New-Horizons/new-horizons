@@ -3,6 +3,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -102,6 +103,9 @@ namespace NewHorizons.Builder.Props
                 // Could check this in the for loop but I'm not sure what order we need to know about this in
                 var isTorch = prop.GetComponent<VisionTorchItem>() != null;
                 isItem = false;
+
+                // IgnoreSun is just a shadow casting optimization for BH so we can get rid of it 
+                if (go.layer == Layer.IgnoreSun) go.layer = Layer.Default;
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
