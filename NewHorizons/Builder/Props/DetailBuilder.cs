@@ -216,18 +216,18 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
         {
-            // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
-            if (component is ISectorGroup sectorGroup)
-            {
-                sectorGroup.SetSector(sector);
-            }
-
             // keepLoaded should remove existing groups
             // renderers/colliders get enabled later so we dont have to do that here
             if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
             {
                 Component.DestroyImmediate(component);
                 return;
+            }
+
+            // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
+            if (component is ISectorGroup sectorGroup)
+            {
+                sectorGroup.SetSector(sector);
             }
             
             // Not doing else if here because idk if any of the classes below implement ISectorGroup
