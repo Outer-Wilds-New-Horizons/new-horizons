@@ -279,8 +279,13 @@ namespace NewHorizons.Builder.Props
         private static void FixComponent(Component component, GameObject planetGO)
         {
             // Fix other components
+            // IgnoreSun is just a shadow casting optimization for BH so we can get rid of it 
+            if (component is Transform && component.gameObject.layer == Layer.IgnoreSun)
+            {
+                component.gameObject.layer = Layer.Default;
+            }
             // I forget why this is here
-            if (component is GhostIK or GhostEffects)
+            else if (component is GhostIK or GhostEffects)
             {
                 Component.DestroyImmediate(component);
                 return;
