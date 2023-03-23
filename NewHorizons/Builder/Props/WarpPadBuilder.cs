@@ -5,6 +5,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
 using OWML.Utils;
 using UnityEngine;
+using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -84,7 +85,10 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, NomaiWarpReceiverInfo info)
         {
-            var receiverObject = DetailBuilder.Make(planetGO, sector, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, new PropModule.DetailInfo(info));
+            var detailInfo = new PropModule.DetailInfo(info);
+            var receiverObject = DetailBuilder.Make(planetGO, sector, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, detailInfo);
+
+            Logger.Log($"Position is {detailInfo.position} was {info.position}");
 
             var receiver = receiverObject.GetComponentInChildren<NomaiWarpReceiver>();
 

@@ -3,6 +3,7 @@ using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -177,20 +178,9 @@ namespace NewHorizons.External.Modules
         {
             public DetailInfo() { }
 
-            public DetailInfo(GeneralPropInfo info)
-            {
-                foreach (var prop in info.GetType().GetProperties())
-                {
-                    GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(info, null), null);
-                }
-            }
-
             public DetailInfo(GeneralPointPropInfo info)
             {
-                foreach (var prop in info.GetType().GetProperties())
-                {
-                    GetType().GetProperty(prop.Name).SetValue(this, prop.GetValue(info, null), null);
-                }
+                JsonConvert.PopulateObject(JsonConvert.SerializeObject(info), this);
             }
 
             /// <summary>
