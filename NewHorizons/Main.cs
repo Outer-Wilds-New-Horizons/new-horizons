@@ -376,6 +376,7 @@ namespace NewHorizons
                 AudioTypeHandler.Init();
                 InterferenceHandler.Init();
                 RemoteHandler.Init();
+                SingularityBuilder.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 
