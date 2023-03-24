@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.Props
                 go.transform.position = pos;
                 go.transform.rotation = rot;
             }
-            if (alignRadial)
+            if (alignRadial && planetGO != null)
             {
                 var up = (go.transform.position - planetGO.transform.position).normalized;
                 go.transform.rotation = Quaternion.FromToRotation(Vector3.up, up) * rot;

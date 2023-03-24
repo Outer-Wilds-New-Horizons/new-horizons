@@ -63,23 +63,6 @@ namespace NewHorizons.Handlers
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
         }
 
-        public static void OnReceiveWarpedBody(OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform)
-        {
-            bool isPlayer = warpedBody.CompareTag("Player");
-            if (isPlayer)
-            {
-                Transform player_body = Locator.GetPlayerTransform();
-                OWRigidbody s_rb = Locator.GetShipBody();
-                OWRigidbody p_rb = Locator.GetPlayerBody();
-                Vector3 newPos = player_body.position;
-                Vector3 offset = player_body.up * 10;
-                newPos += offset;
-                s_rb.SetPosition(newPos);
-                s_rb.SetRotation(player_body.transform.rotation);
-                s_rb.SetVelocity(p_rb.GetVelocity());
-            }
-        }
-
         public static void TeleportToVessel()
         {
             var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
@@ -162,16 +145,6 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
-            vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
-
-            var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
-            var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
-            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, null, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
-            if (attachWarpExitToVessel)
-            {
-                warpExit.transform.parent = warpExitParent;
-            }
-
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
             var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
@@ -193,6 +166,17 @@ namespace NewHorizons.Handlers
                 {
                     GameObject.Destroy(rfVolume.gameObject);
                 }
+            }
+
+            var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
+            var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
+
+            var planetGO = hasPhysics ? vesselObject.transform.parent.gameObject : null;
+
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
+            if (attachWarpExitToVessel)
+            {
+                warpExit.transform.parent = warpExitParent;
             }
             vesselWarpController._targetWarpPlatform._owRigidbody = warpExit.GetAttachedOWRigidbody();
 
@@ -231,9 +215,6 @@ namespace NewHorizons.Handlers
 
             VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
             WarpController = vesselWarpController;
-
-            if (vesselWarpController._targetWarpPlatform != null)
-                vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
             if (vesselWarpController._whiteHole == null)
             {
