@@ -53,7 +53,7 @@ namespace NewHorizons.Builder.Body
             waterGO.transform.localScale = new Vector3(waterSize, waterSize, waterSize);
 
             // Don't ignore sun when not under clouds
-            waterGO.layer = 0;
+            waterGO.layer = Layer.Default;
             Delay.FireOnNextUpdate(() => { if (planetGO.FindChild("Sector/SunOverride") != null) waterGO.layer = Layer.IgnoreSun; });
 
             TessellatedSphereRenderer TSR = waterGO.AddComponent<TessellatedSphereRenderer>();
