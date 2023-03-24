@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
@@ -276,12 +277,16 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         cairnObject.SetActive(true);
 
                         // Make it do the thing when it finishes being knocked over
-                        foreach (var rock in cairnObject.GetComponent<NomaiCairn>()._rocks)
+                        // idk why, but sometimes stuff is null here, so just wait a frame to let it initialize
+                        Delay.FireOnNextUpdate(() =>
                         {
-                            rock._returning = false;
-                            rock._owCollider.SetActivation(true);
-                            rock.enabled = false;
-                        }
+                            foreach (var rock in cairnObject.GetComponent<NomaiCairn>()._rocks)
+                            {
+                                rock._returning = false;
+                                rock._owCollider.SetActivation(true);
+                                rock.enabled = false;
+                            }
+                        });
 
                         // So we can actually knock it over
                         cairnObject.GetComponent<CapsuleCollider>().enabled = true;
@@ -350,15 +355,10 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     }
                 case PropModule.NomaiTextType.Whiteboard:
                     {
-                        var whiteboardInfo = new PropModule.DetailInfo()
+                        var whiteboardInfo = new PropModule.DetailInfo(info)
                         {
-                            alignRadial = info.alignRadial,
-                            isRelativeToParent = info.isRelativeToParent,
-                            parentPath = info.parentPath,
                             path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
-                            position = info.position,
                             rename = info.rename ?? "Props_NOM_Whiteboard",
-                            rotation = info.rotation,
                         };
                         var whiteboardObject = DetailBuilder.Make(planetGO, sector, whiteboardInfo);
 
@@ -522,14 +522,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     var arcInfo = info.arcInfo[j];
                     var arc = arranger.spirals[j];
 
-                    if (arcInfo.position != null) arc.transform.localPosition = new Vector3(arcInfo.position.x, arcInfo.position.y, 0);
-
-                    if (arcInfo.zRotation != null) arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.Value);
-
-                    if (arcInfo.mirror != null)
+                    if (arcInfo.position != null || arcInfo.zRotation != null || arcInfo.mirror != null)
                     {
-                        if (arcInfo.mirror.Value) arc.transform.localScale = new Vector3(-1, 1, 1);
-                        else arc.transform.localScale = new Vector3(1, 1, 1);
+                        var pos = (Vector2)(arcInfo.position ?? Vector2.zero);
+                        arc.transform.localPosition = new Vector3(pos.x, pos.y, 0);
+                        arc.transform.localRotation = Quaternion.Euler(0, 0, arcInfo.zRotation.GetValueOrDefault());
+                        arc.transform.localScale = arcInfo.mirror.GetValueOrDefault() ? new Vector3(-1, 1, 1) : new Vector3(1, 1, 1);
                     }
                 }
 

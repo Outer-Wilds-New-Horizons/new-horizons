@@ -1471,45 +1471,31 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "mirror": {
-          "type": [
-            "boolean",
-            "null"
-          ],
-          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If not specified, will use auto spiral generated value."
-        },
-        "position": {
-          "description": "The local position of this object on the wall. If not specified, will use auto spiral generated value.",
-          "$ref": "#/definitions/MVector2"
-        },
         "type": {
           "description": "The type of text to display.",
           "default": "adult",
           "$ref": "#/definitions/NomaiTextArcType"
+        },
+        "position": {
+          "description": "The local position of this object on the wall. If specified, auto spiral will not touch this arc.",
+          "$ref": "#/definitions/MVector2"
         },
         "zRotation": {
           "type": [
             "null",
             "number"
           ],
-          "description": "The z euler angle for this arc. If not specified, will use auto spiral generated value.",
+          "description": "The z euler angle for this arc. If specified, auto spiral will not touch this arc.",
           "format": "float",
           "maximum": 360.0,
           "minimum": 0.0
-        }
-      }
-    },
-    "MVector2": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "x": {
-          "type": "number",
-          "format": "float"
         },
-        "y": {
-          "type": "number",
-          "format": "float"
+        "mirror": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If specified, auto spiral will not touch this arc."
         }
       }
     },
@@ -1526,6 +1512,20 @@
         "child",
         "stranger"
       ]
+    },
+    "MVector2": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        }
+      }
     },
     "NomaiTextType": {
       "type": "string",
@@ -2528,9 +2528,9 @@
           "format": "float",
           "default": 5.0
         },
-        "upsideDown": {
+        "flipAlignment": {
           "type": "boolean",
-          "description": "Is this transmitter upsidedown? Means alignment will be checked facing the other way."
+          "description": "This makes the alignment happen if the destination planet is BELOW you rather than above."
         }
       }
     },

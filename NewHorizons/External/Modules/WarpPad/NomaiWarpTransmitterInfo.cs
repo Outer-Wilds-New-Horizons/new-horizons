@@ -12,8 +12,8 @@ namespace NewHorizons.External.Modules.WarpPad
         [DefaultValue(5f)] public float alignmentWindow = 5f;
 
         /// <summary>
-        /// Is this transmitter upsidedown? Means alignment will be checked facing the other way.
+        /// This makes the alignment happen if the destination planet is BELOW you rather than above.
         /// </summary>
-        public bool upsideDown = false;
+        public bool flipAlignment;
     }
 }
