@@ -2527,10 +2527,6 @@
           "description": "In degrees. Gives a margin of error for alignments.",
           "format": "float",
           "default": 5.0
-        },
-        "upsideDown": {
-          "type": "boolean",
-          "description": "Is this transmitter upsidedown? Means alignment will be checked facing the other way."
         }
       }
     },
