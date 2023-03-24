@@ -113,6 +113,8 @@ namespace NewHorizons.Builder.Props
 
             transmitter._alignmentWindow = info.alignmentWindow;
 
+            transmitter._upsideDown = info.flipAlignment;
+
             transmitter.GetComponent<BoxShape>().enabled = true;
 
             transmitterObject.SetActive(true);
