@@ -15,7 +15,7 @@ namespace NewHorizons.External.Modules
         public SignalInfo[] signals;
 
         [JsonObject]
-        public class SignalInfo
+        public class SignalInfo : GeneralPointPropInfo
         {
             [Obsolete("audioClip is deprecated, please use audio instead")]
             public string audioClip;
@@ -62,11 +62,6 @@ namespace NewHorizons.External.Modules
             [DefaultValue(true)] public bool onlyAudibleToScope = true;
 
             /// <summary>
-            /// Position of the signal's source
-            /// </summary>
-            public MVector3 position;
-
-            /// <summary>
             /// A ship log fact to reveal when the signal is identified.
             /// </summary>
             [DefaultValue("")] public string reveals = "";
@@ -75,16 +70,6 @@ namespace NewHorizons.External.Modules
             /// Radius of the sphere giving off the signal.
             /// </summary>
             [DefaultValue(1f)] public float sourceRadius = 1f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this signal. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional and rotational coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
         }
     }
 }

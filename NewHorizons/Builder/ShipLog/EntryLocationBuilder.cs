@@ -1,3 +1,4 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using OWML.Common;
 using System.Collections.Generic;
@@ -11,28 +12,7 @@ namespace NewHorizons.Builder.ShipLog
         private static readonly List<ShipLogEntryLocation> _locationsToInitialize = new List<ShipLogEntryLocation>();
         public static void Make(GameObject go, Sector sector, PropModule.EntryLocationInfo info, IModBehaviour mod)
         {
-            GameObject entryLocationGameObject = new GameObject(!string.IsNullOrEmpty(info.rename) ? info.rename : ("Entry Location (" + info.id + ")"));
-            entryLocationGameObject.SetActive(false);
-            entryLocationGameObject.transform.parent = sector?.transform ?? go.transform;
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = go.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    entryLocationGameObject.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent)
-                entryLocationGameObject.transform.localPosition = pos;
-            else
-                entryLocationGameObject.transform.position = go.transform.TransformPoint(pos);
+            GameObject entryLocationGameObject = GeneralPropBuilder.MakeNew("Entry Location (" + info.id + ")", go, sector, info);
 
             ShipLogEntryLocation newLocation = entryLocationGameObject.AddComponent<ShipLogEntryLocation>();
             newLocation._entryID = info.id;

@@ -2,7 +2,7 @@ using HarmonyLib;
 using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
+using NewHorizons.Utility.Geometry;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -50,11 +50,7 @@ namespace NewHorizons.Builder.Props
             {
                 var socketInfo = quantumGroup.sockets[i];
 
-                var socket = new GameObject("Socket " + i);
-                socket.SetActive(false);
-                socket.transform.parent = groupRoot.transform;
-                socket.transform.localPosition = socketInfo.position;
-                socket.transform.localEulerAngles = socketInfo.rotation;
+                var socket = GeneralPropBuilder.MakeNew("Socket " + i, go, sector, socketInfo, parentOverride: groupRoot.transform);
 
                 sockets[i] = socket.AddComponent<QuantumSocket>();
                 sockets[i]._lightSources = new Light[0];

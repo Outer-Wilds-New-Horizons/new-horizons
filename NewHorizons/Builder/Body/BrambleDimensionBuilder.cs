@@ -10,6 +10,7 @@ using System.Linq;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
+using NewHorizons.Utility.OWMLUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -103,8 +104,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var detailInfo = new PropModule.DetailInfo();
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, detailInfo);
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new PropModule.DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();
@@ -245,13 +245,13 @@ namespace NewHorizons.Builder.Body
             cloak._sectors = new Sector[] { sector };
             cloak.GetComponent<Renderer>().enabled = true;
 
+            // Cull stuff
+            var cullController = go.AddComponent<BrambleSectorController>();
+            cullController.SetSector(sector);
+
             // Do next update so other nodes can be built first
             Delay.FireOnNextUpdate(() =>
             {
-                // Cull stuff
-                var cullController = go.AddComponent<BrambleSectorController>();
-                cullController.SetSector(sector);
-
                 // Prevent recursion from causing hard crash
                 foreach (var senderWarp in outerFogWarpVolume._senderWarps.ToList())
                 {

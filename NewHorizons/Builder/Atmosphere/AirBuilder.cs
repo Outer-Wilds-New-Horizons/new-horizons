@@ -1,4 +1,5 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -8,7 +9,7 @@ namespace NewHorizons.Builder.Atmosphere
         {
             var airGO = new GameObject("Air");
             airGO.SetActive(false);
-            airGO.layer = 17;
+            airGO.layer = Layer.BasicEffectVolume;
             airGO.transform.parent = sector?.transform ?? planetGO.transform;
 
             var sc = airGO.AddComponent<SphereCollider>();

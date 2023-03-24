@@ -1,6 +1,8 @@
 using NewHorizons.Builder.StarSystem;
 using NewHorizons.Components;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;

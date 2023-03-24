@@ -9,6 +9,8 @@ using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -128,6 +130,8 @@ namespace NewHorizons.Handlers
             }
 
             Logger.Log("Done loading bodies");
+
+            SingularityBuilder.PairAllSingularities();
 
             // Events.FireOnNextUpdate(PlanetDestroyer.RemoveAllProxies);
 
@@ -452,7 +456,11 @@ namespace NewHorizons.Handlers
             if (body.Config.Spawn != null)
             {
                 Logger.LogVerbose("Making spawn point");
-                Main.SystemDict[body.Config.starSystem].SpawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+                var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
+                if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
+                {
+                    Main.SystemDict[body.Config.starSystem].SpawnPoint = spawnPoint;
+                }
             }
 
             if (body.Config.Orbit.showOrbitLine && !body.Config.Orbit.isStatic)

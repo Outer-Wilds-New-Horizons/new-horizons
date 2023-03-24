@@ -1,5 +1,6 @@
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
+using OWML.Utils;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
@@ -11,6 +12,8 @@ namespace NewHorizons.Builder.Volumes
             var volume = VolumeBuilder.Make<LoadCreditsVolume>(planetGO, sector, info);
 
             volume.creditsType = info.creditsType;
+            volume.gameOverText = info.gameOverText;
+            volume.deathType = EnumUtils.Parse(info.deathType.ToString(), DeathType.Default);
 
             return volume;
         }

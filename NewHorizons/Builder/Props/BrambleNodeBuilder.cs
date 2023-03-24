@@ -3,6 +3,8 @@ using NewHorizons.Components;
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
@@ -182,7 +184,7 @@ namespace NewHorizons.Builder.Props
             var prefab = config.isSeed ? _brambleSeedPrefab : _brambleNodePrefab;
 
             // Spawn the bramble node
-            var brambleNode = prefab.InstantiateInactive();
+            var brambleNode = GeneralPropBuilder.MakeFromPrefab(prefab, config.name ?? "Bramble Node to " + config.linksTo, go, sector, config);
             foreach (var collider in brambleNode.GetComponentsInChildren<Collider>(true))
             {
                 collider.enabled = true; 
@@ -191,11 +193,6 @@ namespace NewHorizons.Builder.Props
             var innerFogWarpVolume = brambleNode.GetComponent<InnerFogWarpVolume>();
             var outerFogWarpVolume = GetOuterFogWarpVolumeFromAstroObject(go);
             var fogLight = brambleNode.GetComponent<FogLight>();
-
-            brambleNode.transform.parent = sector?.transform ?? go.transform;
-            brambleNode.transform.position = go.transform.TransformPoint(config.position ?? Vector3.zero);
-            brambleNode.transform.rotation = go.transform.TransformRotation(Quaternion.Euler(config.rotation ?? Vector3.zero));
-            brambleNode.name = config.name ?? "Bramble Node to " + config.linksTo;
 
             // This node comes with Feldspar's signal, we don't want that though
             GameObject.Destroy(brambleNode.FindChild("Signal_Harmonica"));

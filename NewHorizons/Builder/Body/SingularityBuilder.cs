@@ -10,6 +10,9 @@ using NewHorizons.Components.SizeControllers;
 using System.Drawing;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
+using NewHorizons.Builder.Props;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -29,6 +32,7 @@ namespace NewHorizons.Builder.Body
         public static readonly int Color1 = Shader.PropertyToID("_Color");
 
         private static Dictionary<string, GameObject> _singularitiesByID;
+        private static List<(string, string)> _pairsToLink;
 
         private static Mesh _blackHoleMesh;
         private static GameObject _blackHoleAmbience;
@@ -42,14 +46,8 @@ namespace NewHorizons.Builder.Body
         private static GameObject _whiteHoleRulesetVolume;
         private static GameObject _whiteHoleVolume;
 
-        private static bool _isInit;
-
         internal static void InitPrefabs()
         {
-            if (_isInit) return;
-
-            _isInit = true;
-
             if (_blackHoleProxyPrefab == null) _blackHoleProxyPrefab = SearchUtilities.Find(_blackHoleProxyPath).InstantiateInactive().Rename("BlackHoleSingularity").DontDestroyOnLoad();
             if (_whiteHoleProxyPrefab == null) _whiteHoleProxyPrefab = SearchUtilities.Find(_whiteHoleProxyPath).InstantiateInactive().Rename("WhiteHoleSingularity").DontDestroyOnLoad();
 
@@ -69,13 +67,14 @@ namespace NewHorizons.Builder.Body
             if (_whiteHoleVolume == null) _whiteHoleVolume = SearchUtilities.Find("WhiteHole_Body/WhiteHoleVolume").InstantiateInactive().Rename("WhiteHoleVolume").DontDestroyOnLoad();
         }
 
+        public static void Init()
+        {
+            _singularitiesByID = new Dictionary<string, GameObject>();
+            _pairsToLink = new List<(string, string)>();
+        }
+
         public static void Make(GameObject go, Sector sector, OWRigidbody OWRB, PlanetConfig config, SingularityModule singularity)
         {
-            InitPrefabs();
-
-            // If we've reloaded the first one will now be null so we have to refresh the list
-            if (_singularitiesByID?.Values?.FirstOrDefault() == null) _singularitiesByID = new Dictionary<string, GameObject>();
-
             var horizonRadius = singularity.horizonRadius;
             var distortRadius = singularity.distortRadius != 0f ? singularity.distortRadius : horizonRadius * 2.5f;
             var pairedSingularity = singularity.pairedSingularity;
@@ -92,73 +91,69 @@ namespace NewHorizons.Builder.Body
                 hasHazardVolume, singularity.targetStarSystem, singularity.curve, singularity.hasWarpEffects, singularity.renderQueueOverride, singularity.rename, singularity.parentPath, singularity.isRelativeToParent);
 
             var uniqueID = string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID;
+            
             _singularitiesByID.Add(uniqueID, newSingularity);
-
-            // Try to pair them
-            if (!string.IsNullOrEmpty(pairedSingularity) && newSingularity != null)
+            if (!string.IsNullOrEmpty(pairedSingularity))
             {
-                if (_singularitiesByID.TryGetValue(pairedSingularity, out var pairedSingularityGO))
+                if (polarity)
                 {
-                    switch (polarity)
-                    {
-                        case true:
-                            PairSingularities(uniqueID, pairedSingularity, newSingularity, pairedSingularityGO);
-                            break;
-                        case false:
-                            PairSingularities(pairedSingularity, uniqueID, pairedSingularityGO, newSingularity);
-                            break;
-                    }
+                    _pairsToLink.Add((uniqueID, pairedSingularity));
+                }
+                else
+                {
+                    _pairsToLink.Add((pairedSingularity, uniqueID));
                 }
             }
+
         }
 
-        public static void PairSingularities(string blackHoleID, string whiteHoleID, GameObject blackHole, GameObject whiteHole)
+        public static void PairAllSingularities()
         {
-            InitPrefabs();
-
-            if (blackHole == null || whiteHole == null) return;
-
-            Logger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
-
-            var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
-            var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
-
-            if (whiteHoleVolume == null || blackHoleVolume == null)
+            foreach (var pair in _pairsToLink)
             {
-                Logger.LogWarning($"[{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities");
-                return;
+                var (blackHoleID, whiteHoleID) = pair;
+                if (!_singularitiesByID.TryGetValue(blackHoleID, out GameObject blackHole))
+                {
+                    Logger.LogWarning($"Black hole [{blackHoleID}] is missing.");
+                    break;
+                }
+                if (!_singularitiesByID.TryGetValue(whiteHoleID, out GameObject whiteHole))
+                {
+                    Logger.LogWarning($"White hole [{whiteHoleID}] is missing.");
+                    break;
+                }
+                var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
+                var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
+                if (whiteHoleVolume == null || blackHoleVolume == null)
+                {
+                    Logger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
+                    break;
+                }
+                if (blackHoleVolume._whiteHole != null && blackHoleVolume._whiteHole != whiteHoleVolume)
+                {
+                    Logger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
+                    break;
+                }
+                Logger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
+                blackHoleVolume._whiteHole = whiteHoleVolume;
             }
-
-            blackHoleVolume._whiteHole = whiteHoleVolume;
         }
 
         public static GameObject MakeSingularity(GameObject planetGO, Sector sector, Vector3 position, Vector3 rotation, bool polarity, float horizon, float distort,
             bool hasDestructionVolume, string targetStarSystem = null, TimeValuePair[] curve = null, bool warpEffects = true, int renderQueue = 2985, string rename = null, string parentPath = null, bool isRelativeToParent = false)
         {
-            InitPrefabs();
-
             // polarity true = black, false = white
 
-            var singularity = new GameObject(!string.IsNullOrEmpty(rename) ? rename : (polarity ? "BlackHole" : "WhiteHole"));
-            singularity.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(parentPath))
+            var info = new SingularityModule
             {
-                var newParent = planetGO.transform.Find(parentPath);
-                if (newParent != null)
-                {
-                    singularity.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
-                }
-            }
+                position = position,
+                rotation = rotation,
+                isRelativeToParent = isRelativeToParent,
+                parentPath = parentPath,
+                rename = rename,
+            };
 
-            if (isRelativeToParent)
-                singularity.transform.localPosition = position;
-            else
-                singularity.transform.position = planetGO.transform.TransformPoint(position);
+            var singularity = GeneralPropBuilder.MakeNew(polarity ? "BlackHole" : "WhiteHole", planetGO, sector, info);
 
             var singularityRenderer = MakeSingularityGraphics(singularity, polarity, horizon, distort, renderQueue);
 
@@ -190,7 +185,7 @@ namespace NewHorizons.Builder.Body
                 if (hasDestructionVolume || targetStarSystem != null)
                 {
                     var destructionVolumeGO = new GameObject("DestructionVolume");
-                    destructionVolumeGO.layer = LayerMask.NameToLayer("BasicEffectVolume");
+                    destructionVolumeGO.layer = Layer.BasicEffectVolume;
                     destructionVolumeGO.transform.parent = singularity.transform;
                     destructionVolumeGO.transform.localScale = Vector3.one;
                     destructionVolumeGO.transform.localPosition = Vector3.zero;
@@ -273,20 +268,12 @@ namespace NewHorizons.Builder.Body
                 whiteHoleFluidVolume.enabled = true;
             }
 
-            var rot = Quaternion.Euler(rotation);
-            if (isRelativeToParent)
-                singularity.transform.localRotation = rot;
-            else
-                singularity.transform.rotation = planetGO.transform.TransformRotation(rot);
-
             singularity.SetActive(true);
             return singularity;
         }
         
         public static MeshRenderer MakeSingularityGraphics(GameObject singularity, bool polarity, float horizon, float distort, int queue = 2985)
         {
-            InitPrefabs();
-
             var singularityRenderer = new GameObject(polarity ? "BlackHoleRenderer" : "WhiteHoleRenderer");
             singularityRenderer.transform.parent = singularity.transform;
             singularityRenderer.transform.localPosition = Vector3.zero;
@@ -309,8 +296,6 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject MakeSingularityProxy(GameObject rootObject, MVector3 position, bool polarity, float horizon, float distort, TimeValuePair[] curve = null, int queue = 2985)
         {
-            InitPrefabs();
-
             var singularityRenderer = MakeSingularityGraphics(rootObject, polarity, horizon, distort, queue);
             if (position != null) singularityRenderer.transform.localPosition = position;
 

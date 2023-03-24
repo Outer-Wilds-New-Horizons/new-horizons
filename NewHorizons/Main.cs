@@ -3,6 +3,7 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Components;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
@@ -16,6 +17,8 @@ using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
 using NewHorizons.Utility.DebugMenu;
 using NewHorizons.Utility.DebugUtilities;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -294,6 +297,8 @@ namespace NewHorizons
                     ProjectionBuilder.InitPrefabs();
                     CloakBuilder.InitPrefab();
                     RaftBuilder.InitPrefab();
+
+                    WarpPadBuilder.InitPrefabs();
                 }
                 catch (Exception e)
                 {
@@ -362,6 +367,9 @@ namespace NewHorizons
 
                 NewHorizonsData.Load();
 
+                // If the vessel is forcing the player to spawn there, allow it to override
+                IsWarpingFromVessel = VesselWarpHandler.ShouldSpawnAtVessel();
+
                 // Some builders have to be reset each loop
                 SignalBuilder.Init();
                 BrambleDimensionBuilder.Init();
@@ -370,6 +378,7 @@ namespace NewHorizons
                 AudioTypeHandler.Init();
                 InterferenceHandler.Init();
                 RemoteHandler.Init();
+                SingularityBuilder.Init();
                 AtmosphereBuilder.Init();
                 BrambleNodeBuilder.Init(BodyDict[CurrentStarSystem].Select(x => x.Config).Where(x => x.Bramble?.dimension != null).ToArray());
 

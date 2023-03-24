@@ -117,33 +117,13 @@ namespace NewHorizons.External.Modules
         public LoadCreditsVolumeInfo[] creditsVolume;
 
         [JsonObject]
-        public class VolumeInfo
+        public class VolumeInfo : GeneralPointPropInfo
         {
-            /// <summary>
-            /// The location of this volume. Optional (will default to 0,0,0).
-            /// </summary>
-            public MVector3 position;
-
             /// <summary>
             /// The radius of this volume.
             /// </summary>
             [DefaultValue(1f)]
             public float radius = 1f;
-
-            /// <summary>
-            /// The relative path from the planet to the parent of this object. Optional (will default to the root sector).
-            /// </summary>
-            public string parentPath;
-
-            /// <summary>
-            /// Whether the positional coordinates are relative to parent instead of the root planet object.
-            /// </summary>
-            public bool isRelativeToParent;
-
-            /// <summary>
-            /// An optional rename of this volume.
-            /// </summary>
-            public string rename;
         }
 
         [JsonObject]
@@ -171,6 +151,16 @@ namespace NewHorizons.External.Modules
 
             [DefaultValue("fast")]
             public CreditsType creditsType = CreditsType.Fast;
+
+            /// <summary>
+            /// Text displayed in orange on game over. For localization, put translations under UI.
+            /// </summary>
+            public string gameOverText;
+
+            /// <summary>
+            /// The type of death the player will have if they enter this volume.
+            /// </summary>
+            [DefaultValue("default")] public DestructionVolumeInfo.DeathType deathType = DestructionVolumeInfo.DeathType.Default;
         }
 
         [JsonObject]

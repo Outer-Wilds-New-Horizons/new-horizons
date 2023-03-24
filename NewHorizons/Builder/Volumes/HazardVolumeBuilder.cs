@@ -1,4 +1,6 @@
+using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -13,33 +15,8 @@ namespace NewHorizons.Builder.Volumes
     {
         public static HazardVolume Make(GameObject planetGO, Sector sector, OWRigidbody owrb, VolumesModule.HazardVolumeInfo info, IModBehaviour mod)
         {
-            var go = new GameObject("HazardVolume");
-            go.SetActive(false);
-
-            go.transform.parent = sector?.transform ?? planetGO.transform;
-
-            if (!string.IsNullOrEmpty(info.rename))
-            {
-                go.name = info.rename;
-            }
-
-            if (!string.IsNullOrEmpty(info.parentPath))
-            {
-                var newParent = planetGO.transform.Find(info.parentPath);
-                if (newParent != null)
-                {
-                    go.transform.parent = newParent;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{info.parentPath}");
-                }
-            }
-
-            var pos = (Vector3)(info.position ?? Vector3.zero);
-            if (info.isRelativeToParent) go.transform.localPosition = pos;
-            else go.transform.position = planetGO.transform.TransformPoint(pos);
-            go.layer = LayerMask.NameToLayer("BasicEffectVolume");
+            var go = GeneralPropBuilder.MakeNew("HazardVolume", planetGO, sector, info);
+            go.layer = Layer.BasicEffectVolume;
 
             var shape = go.AddComponent<SphereShape>();
             shape.radius = info.radius;
@@ -74,7 +51,7 @@ namespace NewHorizons.Builder.Volumes
                     var detectorGO = new GameObject("ConstantFluidDetector");
                     detectorGO.transform.parent = go.transform;
                     detectorGO.transform.localPosition = Vector3.zero;
-                    detectorGO.layer = LayerMask.NameToLayer("BasicDetector");
+                    detectorGO.layer = Layer.BasicDetector;
                     var detector = detectorGO.AddComponent<ConstantFluidDetector>();
                     detector._onlyDetectableFluid = water;
                     detector._buoyancy.boundingRadius = 1;

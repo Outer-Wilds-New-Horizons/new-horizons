@@ -1,14 +1,15 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
-using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.StarSystem
 {
     public static class SkyboxBuilder
     {
-        private static readonly int _skyboxLayer = LayerMask.NameToLayer("Skybox");
         private static readonly Shader _unlitShader = Shader.Find("Unlit/Texture");
 
         public static void Make(StarSystemConfig.SkyboxModule module, IModBehaviour mod)
@@ -32,7 +33,7 @@ namespace NewHorizons.Builder.StarSystem
 
             var skySphere = new GameObject("Sky Sphere");
             skySphere.transform.SetParent(skybox.transform, false);
-            skySphere.layer = _skyboxLayer;
+            skySphere.layer = Layer.Skybox;
             skySphere.transform.localScale = Vector3.one * 5f;
 
             BuildSkySphereFace(skySphere, "Right", Quaternion.Euler(0f, 90f, 0f), mesh, rightTex);
@@ -55,7 +56,7 @@ namespace NewHorizons.Builder.StarSystem
 
             var go = new GameObject(name)
             {
-                layer = _skyboxLayer
+                layer = Layer.Skybox
             };
 
             var mf = go.AddComponent<MeshFilter>();

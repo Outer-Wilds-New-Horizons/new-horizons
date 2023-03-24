@@ -7,6 +7,9 @@ using NewHorizons.Utility;
 using Logger = NewHorizons.Utility.Logger;
 using static NewHorizons.Main;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Builder.Props;
+using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Handlers
 {
@@ -24,35 +27,40 @@ namespace NewHorizons.Handlers
             VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
+        public static bool IsVesselPresentAndActive()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var vesselIsPresent = vesselConfig?.alwaysPresent ?? false;
+            return Instance.IsWarpingFromVessel || vesselIsPresent;
+        }
+
+        public static bool IsVesselPresent()
+        {
+            var isDefaultSolarSystem = Instance.CurrentStarSystem == "SolarSystem";
+            var isEyeOfTheUniverse = Instance.CurrentStarSystem == "EyeOfTheUniverse";
+            return IsVesselPresentAndActive() || isDefaultSolarSystem || isEyeOfTheUniverse;
+        }
+
+        public static bool ShouldSpawnAtVessel()
+        {
+            var vesselConfig = SystemDict[Instance.CurrentStarSystem].Config?.Vessel;
+            var shouldSpawnOnVessel = IsVesselPresent() && (vesselConfig?.spawnOnVessel ?? false);
+            return !Instance.IsWarpingFromShip && (Instance.IsWarpingFromVessel || shouldSpawnOnVessel);
+        }
+
         public static void LoadVessel()
         {
+            var system = SystemDict[Instance.CurrentStarSystem];
             if (Instance.CurrentStarSystem == "EyeOfTheUniverse")
             {
                 _vesselSpawnPoint = SearchUtilities.Find("Vessel_Body/SPAWN_Vessel").GetComponent<EyeSpawnPoint>();
                 return;
             }
 
-            if (Instance.IsWarpingFromVessel)
+            if (IsVesselPresentAndActive())
                 _vesselSpawnPoint = Instance.CurrentStarSystem == "SolarSystem" ? UpdateVessel() : CreateVessel();
             else
                 _vesselSpawnPoint = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension").GetComponentInChildren<SpawnPoint>();
-        }
-
-        public static void OnReceiveWarpedBody(OWRigidbody warpedBody, NomaiWarpPlatform startPlatform, NomaiWarpPlatform targetPlatform)
-        {
-            bool isPlayer = warpedBody.CompareTag("Player");
-            if (isPlayer)
-            {
-                Transform player_body = Locator.GetPlayerTransform();
-                OWRigidbody s_rb = Locator.GetShipBody();
-                OWRigidbody p_rb = Locator.GetPlayerBody();
-                Vector3 newPos = player_body.position;
-                Vector3 offset = player_body.up * 10;
-                newPos += offset;
-                s_rb.SetPosition(newPos);
-                s_rb.SetRotation(player_body.transform.rotation);
-                s_rb.SetVelocity(p_rb.GetVelocity());
-            }
         }
 
         public static void TeleportToVessel()
@@ -84,10 +92,8 @@ namespace NewHorizons.Handlers
             if (VesselPrefab == null) return null;
 
             Logger.LogVerbose("Creating Vessel");
-            var vesselObject = VesselPrefab.InstantiateInactive();
+            var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
-            vesselObject.name = VesselPrefab.name;
-            vesselObject.transform.parent = null;
 
             var vesselAO = vesselObject.AddComponent<EyeAstroObject>();
             vesselAO._owRigidbody = vesselObject.GetComponent<OWRigidbody>();
@@ -97,12 +103,6 @@ namespace NewHorizons.Handlers
             vesselAO._type = AstroObject.Type.SpaceStation;
             vesselAO.Register();
             vesselObject.GetComponentInChildren<ReferenceFrameVolume>(true)._referenceFrame._attachedAstroObject = vesselAO;
-
-            if (system.Config.Vessel?.vesselPosition != null)
-                vesselObject.transform.position = system.Config.Vessel.vesselPosition;
-
-            if (system.Config.Vessel?.vesselRotation != null)
-                vesselObject.transform.eulerAngles = system.Config.Vessel.vesselRotation;
 
             VesselSingularityRoot singularityRoot = vesselObject.GetComponentInChildren<VesselSingularityRoot>(true);
 
@@ -145,18 +145,56 @@ namespace NewHorizons.Handlers
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
-            vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
-
-            if (system.Config.Vessel?.warpExitPosition != null)
-                vesselWarpController._targetWarpPlatform.transform.localPosition = system.Config.Vessel.warpExitPosition;
-
-            if (system.Config.Vessel?.warpExitRotation != null)
-                vesselWarpController._targetWarpPlatform.transform.localEulerAngles = system.Config.Vessel.warpExitRotation;
-
             vesselObject.GetComponent<MapMarker>()._labelID = (UITextType)TranslationHandler.AddUI("Vessel");
 
+            var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
+            var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
+
+            if (hasPhysics)
+            {
+                vesselObject.transform.parent = null;
+            }
+            else
+            {
+                vesselAO._owRigidbody = null;
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<KinematicRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<CenterOfTheUniverseOffsetApplier>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<OWRigidbody>());
+                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<Rigidbody>());
+                var rfVolume = vesselObject.transform.Find("RFVolume");
+                if (rfVolume != null)
+                {
+                    GameObject.Destroy(rfVolume.gameObject);
+                }
+            }
+
+            var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
+            var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
+
+            var planetGO = hasPhysics ? vesselObject.transform.parent.gameObject : null;
+
+            var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
+            if (attachWarpExitToVessel)
+            {
+                warpExit.transform.parent = warpExitParent;
+            }
+            vesselWarpController._targetWarpPlatform._owRigidbody = warpExit.GetAttachedOWRigidbody();
+
+            var hasZeroGravityVolume = system.Config.Vessel?.hasZeroGravityVolume ?? !hasParentBody;
+            if (!hasZeroGravityVolume)
+            {
+                var zeroGVolume = vesselObject.transform.Find("Sector_VesselBridge/Volumes_VesselBridge/ZeroGVolume");
+                if (zeroGVolume != null)
+                {
+                    GameObject.Destroy(zeroGVolume.gameObject);
+                }
+            }
+
             EyeSpawnPoint eyeSpawnPoint = vesselObject.GetComponentInChildren<EyeSpawnPoint>(true);
-            system.SpawnPoint = eyeSpawnPoint;
+            if (ShouldSpawnAtVessel())
+            {
+                system.SpawnPoint = eyeSpawnPoint;
+            }
 
             vesselObject.SetActive(true);
 
@@ -177,9 +215,6 @@ namespace NewHorizons.Handlers
 
             VesselWarpController vesselWarpController = vectorSector.GetComponentInChildren<VesselWarpController>(true);
             WarpController = vesselWarpController;
-
-            if (vesselWarpController._targetWarpPlatform != null)
-                vesselWarpController._targetWarpPlatform.OnReceiveWarpedBody += OnReceiveWarpedBody;
 
             if (vesselWarpController._whiteHole == null)
             {
@@ -247,6 +282,10 @@ namespace NewHorizons.Handlers
                 vesselWarpController._cageAnimator.OnTranslationComplete -= new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
                 vesselWarpController._cageAnimator.OnTranslationComplete += new TransformAnimator.AnimationEvent(vesselWarpController.OnCageAnimationComplete);
             }
+
+            // Normally the power-on sound is 2D/global, we set it to 3D/local so it isn't audible if the player isn't nearby
+            vesselWarpController._audioSource.spatialBlend = 1f;
+            vesselWarpController._audioSource.rolloffMode = AudioRolloffMode.Linear;
         }
     }
 }

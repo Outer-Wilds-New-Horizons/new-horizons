@@ -658,13 +658,32 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The physical position of the node",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The physical rotation of the node",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "scale": {
           "type": "number",
@@ -997,7 +1016,7 @@
           "type": "array",
           "description": "Add translatable text to this planet",
           "items": {
-            "$ref": "#/definitions/NomaiTextInfo"
+            "$ref": "#/definitions/TranslatorTextInfo"
           }
         },
         "proxyDetails": {
@@ -1069,6 +1088,20 @@
           "items": {
             "$ref": "#/definitions/RemoteInfo"
           }
+        },
+        "warpReceivers": {
+          "type": "array",
+          "description": "Add warp pad receivers to this planet. These are the warp pads you are sent to from Ash Twin.",
+          "items": {
+            "$ref": "#/definitions/NomaiWarpReceiverInfo"
+          }
+        },
+        "warpTransmitters": {
+          "type": "array",
+          "description": "Add warp pad transmitters to this planet. These are the warp pads seen on the Ash Twin.",
+          "items": {
+            "$ref": "#/definitions/NomaiWarpTransmitterInfo"
+          }
         }
       }
     },
@@ -1076,13 +1109,32 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
         "rename": {
           "type": "string",
-          "description": "An optional rename of the detail"
-        },
-        "alignToNormal": {
-          "type": "boolean",
-          "description": "Do we override rotation and try to automatically align this object to stand upright on the body's surface?"
+          "description": "An optional rename of this object"
         },
         "assetBundle": {
           "type": "string",
@@ -1091,10 +1143,6 @@
         "path": {
           "type": "string",
           "description": "Either the path in the scene hierarchy of the item to copy or the path to the object in the supplied asset bundle"
-        },
-        "position": {
-          "description": "Position of this prop relative to the body's center",
-          "$ref": "#/definitions/MVector3"
         },
         "removeChildren": {
           "type": "array",
@@ -1106,10 +1154,6 @@
         "removeComponents": {
           "type": "boolean",
           "description": "Do we reset all the components on this object? Useful for certain props that have dialogue components attached to\nthem."
-        },
-        "rotation": {
-          "description": "Rotate this prop",
-          "$ref": "#/definitions/MVector3"
         },
         "scale": {
           "type": "number",
@@ -1124,14 +1168,6 @@
         "quantumGroupID": {
           "type": "string",
           "description": "If this value is not null, this prop will be quantum. Assign this field to the id of the quantum group it should be a part of. The group it is assigned to determines what kind of quantum object it is"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The path (not including the root planet object) of the parent of this game object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "keepLoaded": {
           "type": "boolean",
@@ -1159,6 +1195,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "blockAfterPersistentCondition": {
           "type": "string",
           "description": "Prevents the dialogue from being created after a specific persistent condition is set. Useful for remote dialogue\ntriggers that you want to have happen only once."
@@ -1172,18 +1224,10 @@
           "type": "string",
           "description": "If this dialogue is meant for a character, this is the relative path from the planet to that character's\nCharacterAnimController, TravelerController, TravelerEyeController (eye of the universe), FacePlayerWhenTalking, or SolanumAnimController.\n\nIf none of those components are present it will add a FacePlayerWhenTalking component."
         },
-        "position": {
-          "description": "When you enter into dialogue, you will look here.",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
-          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTriggerPosition, you can set this to 0 to make the dialogue only trigger remotely.",
+          "description": "Radius of the spherical collision volume where you get the \"talk to\" prompt when looking at. If you use a\nremoteTrigger, you can set this to 0 to make the dialogue only trigger remotely.",
           "format": "float"
-        },
-        "remoteTriggerPosition": {
-          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
-          "$ref": "#/definitions/MVector3"
         },
         "range": {
           "type": "number",
@@ -1191,35 +1235,49 @@
           "format": "float",
           "default": 2.0
         },
-        "remoteTriggerRadius": {
-          "type": "number",
-          "description": "The radius of the remote trigger volume.",
-          "format": "float"
-        },
-        "remoteTriggerPrereqCondition": {
-          "type": "string",
-          "description": "If setting up a remote trigger volume, this conditions must be met for it to trigger. Note: This is a dialogue condition, not a persistent condition."
+        "remoteTrigger": {
+          "description": "Allows you to trigger dialogue from a distance when you walk into an area.",
+          "$ref": "#/definitions/RemoteTriggerInfo"
         },
         "xmlFile": {
           "type": "string",
           "description": "Relative path to the xml file defining the dialogue."
         },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to the animation controller instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "Optionally rename the dialogue object. The remote trigger volume will be renamed to have this as a prefix."
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "Optionally set the parent object that the dialogue and remote trigger will be attached to"
-        },
         "flashlightToggle": {
           "description": "What type of flashlight toggle to do when dialogue is interacted with",
           "default": "none",
           "$ref": "#/definitions/FlashlightToggle"
+        }
+      }
+    },
+    "RemoteTriggerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of the remote trigger volume.",
+          "format": "float"
+        },
+        "prereqCondition": {
+          "type": "string",
+          "description": "This condition must be met for the remote trigger volume to trigger."
         }
       }
     },
@@ -1241,16 +1299,8 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "cloaked": {
-          "type": "boolean",
-          "description": "Whether this location is cloaked"
-        },
-        "id": {
-          "type": "string",
-          "description": "ID of the entry this location relates to"
-        },
         "position": {
-          "description": "The position of this entry location",
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -1264,6 +1314,14 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "cloaked": {
+          "type": "boolean",
+          "description": "Whether this location is cloaked"
+        },
+        "id": {
+          "type": "string",
+          "description": "ID of the entry this location relates to"
         }
       }
     },
@@ -1271,9 +1329,32 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "Position of the geyser",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "offset": {
           "type": "number",
@@ -1320,58 +1401,27 @@
           "description": "Loudness of the geyser",
           "format": "float",
           "default": 0.7
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
-    "NomaiTextInfo": {
+    "TranslatorTextInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "arcInfo": {
-          "type": "array",
-          "description": "Additional information about each arc in the text",
-          "items": {
-            "$ref": "#/definitions/NomaiTextArcInfo"
-          }
-        },
-        "normal": {
-          "description": "The normal vector for this object. Used for writing on walls and positioning computers.",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
         },
         "position": {
-          "description": "Position of the root of this text",
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
-        },
-        "rotation": {
-          "description": "The euler angle rotation of this object. Not required if setting the normal. Computers and cairns will orient\nthemselves to the surface of the planet automatically.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "seed": {
-          "type": "integer",
-          "description": "The random seed used to pick what the text arcs will look like.",
-          "format": "int32"
-        },
-        "type": {
-          "description": "The type of object this is.",
-          "default": "wall",
-          "$ref": "#/definitions/NomaiTextType"
-        },
-        "location": {
-          "description": "The location of this object. ",
-          "default": "unspecified",
-          "$ref": "#/definitions/NomaiTextLocation"
-        },
-        "xmlFile": {
-          "type": "string",
-          "description": "The relative path to the xml file for this object."
         },
         "parentPath": {
           "type": "string",
@@ -1384,6 +1434,36 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "arcInfo": {
+          "type": "array",
+          "description": "Additional information about each arc in the text",
+          "items": {
+            "$ref": "#/definitions/NomaiTextArcInfo"
+          }
+        },
+        "seed": {
+          "type": "integer",
+          "description": "The random seed used to pick what the text arcs will look like.",
+          "format": "int32"
+        },
+        "normal": {
+          "description": "Only for wall text. Aligns wall text to face towards the given direction, with 'up' oriented relative to its current rotation or alignment.",
+          "$ref": "#/definitions/MVector3"
+        },
+        "type": {
+          "description": "The type of object this is.",
+          "default": "wall",
+          "$ref": "#/definitions/NomaiTextType"
+        },
+        "location": {
+          "description": "The location of this object. Arcs will be blue if their locations match the wall, else orange.",
+          "default": "unspecified",
+          "$ref": "#/definitions/NomaiTextLocation"
+        },
+        "xmlFile": {
+          "type": "string",
+          "description": "The relative path to the xml file for this object."
         }
       }
     },
@@ -1391,49 +1471,31 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "keepAutoPlacement": {
-          "type": "boolean",
-          "description": "Whether to skip modifying this spiral's placement, and instead keep the automatically determined placement."
-        },
-        "mirror": {
-          "type": "boolean",
-          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa."
-        },
-        "position": {
-          "description": "The local position of this object on the wall.",
-          "$ref": "#/definitions/MVector2"
-        },
         "type": {
           "description": "The type of text to display.",
           "default": "adult",
           "$ref": "#/definitions/NomaiTextArcType"
         },
-        "variation": {
-          "type": "integer",
-          "description": "Which variation of the chosen type to place. If not specified, a random variation will be selected based on the seed provided in the parent module.",
-          "format": "int32",
-          "default": -1
+        "position": {
+          "description": "The local position of this object on the wall. If specified, auto spiral will not touch this arc.",
+          "$ref": "#/definitions/MVector2"
         },
         "zRotation": {
-          "type": "number",
-          "description": "The z euler angle for this arc.",
+          "type": [
+            "null",
+            "number"
+          ],
+          "description": "The z euler angle for this arc. If specified, auto spiral will not touch this arc.",
           "format": "float",
           "maximum": 360.0,
           "minimum": 0.0
-        }
-      }
-    },
-    "MVector2": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "x": {
-          "type": "number",
-          "format": "float"
         },
-        "y": {
-          "type": "number",
-          "format": "float"
+        "mirror": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Whether to flip the spiral from left-curling to right-curling or vice versa. If specified, auto spiral will not touch this arc."
         }
       }
     },
@@ -1451,6 +1513,20 @@
         "stranger"
       ]
     },
+    "MVector2": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "x": {
+          "type": "number",
+          "format": "float"
+        },
+        "y": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "NomaiTextType": {
       "type": "string",
       "description": "",
@@ -1463,7 +1539,8 @@
         "PreCrashRecorder",
         "PreCrashComputer",
         "Trailmarker",
-        "CairnVariant"
+        "CairnVariant",
+        "Whiteboard"
       ],
       "enum": [
         "wall",
@@ -1474,7 +1551,8 @@
         "preCrashRecorder",
         "preCrashComputer",
         "trailmarker",
-        "cairnVariant"
+        "cairnVariant",
+        "whiteboard"
       ]
     },
     "NomaiTextLocation": {
@@ -1495,15 +1573,20 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "Position of the raft",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "acceleration": {
-          "type": "number",
-          "description": "Acceleration of the raft. Default acceleration is 5.",
-          "format": "float",
-          "default": 5.0
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -1516,6 +1599,12 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "acceleration": {
+          "type": "number",
+          "description": "Acceleration of the raft. Default acceleration is 5.",
+          "format": "float",
+          "default": 5.0
         }
       }
     },
@@ -1590,9 +1679,32 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The position of this slideshow.",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "reveals": {
           "type": "array",
@@ -1608,10 +1720,6 @@
             "type": "string"
           }
         },
-        "rotation": {
-          "description": "The rotation of this slideshow.",
-          "$ref": "#/definitions/MVector3"
-        },
         "slides": {
           "type": "array",
           "description": "The list of slides for this object.",
@@ -1623,18 +1731,6 @@
           "description": "The type of object this is.",
           "default": "slideReel",
           "$ref": "#/definitions/SlideShowType"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this slideshow. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1767,13 +1863,32 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this socket",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation the quantum object will take if it's occupying this socket",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "probability": {
           "type": "number",
@@ -1787,6 +1902,33 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "elevation": {
           "type": "number",
           "description": "Alternative to setting the position. Will choose a random place at this elevation.",
@@ -1797,10 +1939,6 @@
           "description": "The height of this tornado.",
           "format": "float",
           "default": 30.0
-        },
-        "position": {
-          "description": "Position of the tornado",
-          "$ref": "#/definitions/MVector3"
         },
         "tint": {
           "description": "The colour of the tornado.",
@@ -1837,18 +1975,6 @@
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
           "$ref": "#/definitions/FluidType"
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -1870,6 +1996,33 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "lavaTint": {
           "description": "The colour of the meteor's lava.",
           "$ref": "#/definitions/MColor"
@@ -1898,10 +2051,6 @@
           "format": "float",
           "default": 50.0
         },
-        "position": {
-          "description": "Position of this volcano.",
-          "$ref": "#/definitions/MVector3"
-        },
         "scale": {
           "type": "number",
           "description": "Scale of the meteors.",
@@ -1910,6 +2059,27 @@
         "stoneTint": {
           "description": "The colour of the meteor's stone.",
           "$ref": "#/definitions/MColor"
+        }
+      }
+    },
+    "SingularityModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -1922,13 +2092,7 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
-        }
-      }
-    },
-    "SingularityModule": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
+        },
         "curve": {
           "type": "array",
           "description": "Scale this object over time",
@@ -1943,14 +2107,6 @@
         "uniqueID": {
           "type": "string",
           "description": "The uniqueID of this white hole or black hole. If not set it will default to the name of the planet"
-        },
-        "position": {
-          "description": "Position of the singularity",
-          "$ref": "#/definitions/MVector3"
-        },
-        "rotation": {
-          "description": "Rotation of the singularity. Determines the direction you come out of a white hole",
-          "$ref": "#/definitions/MVector3"
         },
         "horizonRadius": {
           "type": "number",
@@ -1982,18 +2138,6 @@
           "format": "int32",
           "maximum": 3500.0,
           "minimum": 2501.0
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
-        },
-        "rename": {
-          "type": "string",
-          "description": "An optional rename of this object"
         }
       }
     },
@@ -2013,6 +2157,22 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
         "audio": {
           "type": "string",
           "description": "The audio to use. Can be a path to a .wav/.ogg/.mp3 file, or taken from the AudioClip list."
@@ -2047,10 +2207,6 @@
           "description": "`false` if the player can hear the signal without equipping the signal-scope.",
           "default": true
         },
-        "position": {
-          "description": "Position of the signal's source",
-          "$ref": "#/definitions/MVector3"
-        },
         "reveals": {
           "type": "string",
           "description": "A ship log fact to reveal when the signal is identified.",
@@ -2061,14 +2217,6 @@
           "description": "Radius of the sphere giving off the signal.",
           "format": "float",
           "default": 1.0
-        },
-        "parentPath": {
-          "type": "string",
-          "description": "The relative path from the planet to the parent of this signal. Optional (will default to the root sector)."
-        },
-        "isRelativeToParent": {
-          "type": "boolean",
-          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         }
       }
     },
@@ -2105,19 +2253,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "nomaiText": {
-          "type": "array",
-          "description": "The text for each stone",
-          "items": {
-            "$ref": "#/definitions/SharedNomaiTextInfo"
-          }
-        },
-        "position": {
-          "description": "The location of this platform.",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this platform.",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -2131,6 +2279,13 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        },
+        "nomaiText": {
+          "type": "array",
+          "description": "The text for each stone",
+          "items": {
+            "$ref": "#/definitions/SharedNomaiTextInfo"
+          }
         },
         "disableWall": {
           "type": "boolean",
@@ -2159,7 +2314,7 @@
           "format": "int32"
         },
         "location": {
-          "description": "The location of this object. ",
+          "description": "The location of this object. Arcs will be blue if their locations match the wall, else orange.",
           "default": "unspecified",
           "$ref": "#/definitions/NomaiTextLocation"
         },
@@ -2177,12 +2332,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this platform.",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this platform.",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -2216,12 +2378,19 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this stone.",
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "rotation": {
-          "description": "The rotation of this stone.",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
@@ -2235,6 +2404,133 @@
         "rename": {
           "type": "string",
           "description": "An optional rename of this object"
+        }
+      }
+    },
+    "NomaiWarpReceiverInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "alignmentTargetBody": {
+          "type": "string",
+          "description": "The body the transmitter must be aligned with to warp to this receiver.\nDefaults to the body the receiver is on."
+        },
+        "computer": {
+          "description": "Will create a modern Nomai computer linked to this receiver.",
+          "$ref": "#/definitions/NomaiWarpComputerLoggerInfo"
+        },
+        "detailed": {
+          "type": "boolean",
+          "description": "Set to true if you want to include Nomai ruin details around the warp pad."
+        }
+      }
+    },
+    "NomaiWarpComputerLoggerInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        }
+      }
+    },
+    "NomaiWarpTransmitterInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "frequency": {
+          "type": "string"
+        },
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
+        },
+        "alignmentWindow": {
+          "type": "number",
+          "description": "In degrees. Gives a margin of error for alignments.",
+          "format": "float",
+          "default": 5.0
+        },
+        "flipAlignment": {
+          "type": "boolean",
+          "description": "This makes the alignment happen if the destination planet is BELOW you rather than above."
         }
       }
     },
@@ -2490,25 +2786,87 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "playerSpawnPoint": {
-          "description": "If you want the player to spawn on the new body, set a value for this. Press `P` in game with Debug mode on to have\nthe game log the position you're looking at to find a good value for this.",
-          "$ref": "#/definitions/MVector3"
+        "playerSpawn": {
+          "description": "If you want the player to spawn on the new body, set a value for this.",
+          "$ref": "#/definitions/PlayerSpawnPoint"
         },
-        "playerSpawnRotation": {
-          "description": "Euler angles by which the player will be oriented.",
-          "$ref": "#/definitions/MVector3"
-        },
-        "shipSpawnPoint": {
+        "shipSpawn": {
           "description": "Required for the system to be accessible by warp drive.",
+          "$ref": "#/definitions/ShipSpawnPoint"
+        }
+      }
+    },
+    "PlayerSpawnPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
           "$ref": "#/definitions/MVector3"
         },
-        "shipSpawnRotation": {
-          "description": "Euler angles by which the ship will be oriented.",
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         },
         "startWithSuit": {
           "type": "boolean",
           "description": "If you spawn on a planet with no oxygen, you probably want to set this to true ;;)"
+        },
+        "isDefault": {
+          "type": "boolean",
+          "description": "Whether this planet's spawn point is the one the player will initially spawn at, if multiple spawn points exist."
+        }
+      }
+    },
+    "ShipSpawnPoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rotation": {
+          "description": "Rotation of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "alignRadial": {
+          "type": [
+            "boolean",
+            "null"
+          ],
+          "description": "Do we try to automatically align this object to stand upright relative to the body's center? Stacks with rotation.\nDefaults to true for geysers, tornados, and volcanoes, and false for everything else."
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
+        },
+        "parentPath": {
+          "type": "string",
+          "description": "The relative path from the planet to the parent of this object. Optional (will default to the root sector)."
+        },
+        "isRelativeToParent": {
+          "type": "boolean",
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
+        },
+        "rename": {
+          "type": "string",
+          "description": "An optional rename of this object"
         }
       }
     },
@@ -2833,15 +3191,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -2849,11 +3207,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "audio": {
           "type": "string",
@@ -2968,15 +3326,15 @@
           "type": "boolean",
           "description": "Whether this volume only affects the player and ship."
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -2984,11 +3342,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
@@ -3051,15 +3409,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3067,11 +3425,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "density": {
           "type": "number",
@@ -3124,15 +3482,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3140,11 +3498,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "type": {
           "description": "The type of hazard for this volume.",
@@ -3214,14 +3572,8 @@
       "additionalProperties": false,
       "properties": {
         "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
+          "description": "Position of the object",
           "$ref": "#/definitions/MVector3"
-        },
-        "radius": {
-          "type": "number",
-          "description": "The radius of this volume.",
-          "format": "float",
-          "default": 1.0
         },
         "parentPath": {
           "type": "string",
@@ -3229,11 +3581,17 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
+        },
+        "radius": {
+          "type": "number",
+          "description": "The radius of this volume.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
@@ -3241,15 +3599,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3257,11 +3615,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "target": {
           "description": "What the notification will show for.",
@@ -3312,15 +3670,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3328,11 +3686,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "treeVolume": {
           "type": "boolean",
@@ -3369,15 +3727,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3385,11 +3743,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "maxAngle": {
           "type": "number",
@@ -3492,15 +3850,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3508,11 +3866,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "minImpactSpeed": {
           "type": "number",
@@ -3532,15 +3890,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3548,11 +3906,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "overrideProbeSpeed": {
           "type": "boolean",
@@ -3582,15 +3940,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3598,11 +3956,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "thrustLimit": {
           "type": "number",
@@ -3626,15 +3984,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3642,11 +4000,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "speedLimit": {
           "type": "number",
@@ -3698,15 +4056,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3714,11 +4072,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "frostRate": {
           "type": "number",
@@ -3752,15 +4110,15 @@
           "format": "int32",
           "default": 1
         },
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3768,11 +4126,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "dropletRate": {
           "type": "number",
@@ -3792,15 +4150,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3808,11 +4166,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "layer": {
           "type": "integer",
@@ -3832,15 +4190,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3848,11 +4206,11 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "targetStarSystem": {
           "type": "string",
@@ -3865,15 +4223,15 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "position": {
-          "description": "The location of this volume. Optional (will default to 0,0,0).",
-          "$ref": "#/definitions/MVector3"
-        },
         "radius": {
           "type": "number",
           "description": "The radius of this volume.",
           "format": "float",
           "default": 1.0
+        },
+        "position": {
+          "description": "Position of the object",
+          "$ref": "#/definitions/MVector3"
         },
         "parentPath": {
           "type": "string",
@@ -3881,15 +4239,24 @@
         },
         "isRelativeToParent": {
           "type": "boolean",
-          "description": "Whether the positional coordinates are relative to parent instead of the root planet object."
+          "description": "Whether the positional and rotational coordinates are relative to parent instead of the root planet object."
         },
         "rename": {
           "type": "string",
-          "description": "An optional rename of this volume."
+          "description": "An optional rename of this object"
         },
         "creditsType": {
           "default": "fast",
           "$ref": "#/definitions/CreditsType"
+        },
+        "gameOverText": {
+          "type": "string",
+          "description": "Text displayed in orange on game over. For localization, put translations under UI."
+        },
+        "deathType": {
+          "description": "The type of death the player will have if they enter this volume.",
+          "default": "default",
+          "$ref": "#/definitions/DeathType"
         }
       }
     },

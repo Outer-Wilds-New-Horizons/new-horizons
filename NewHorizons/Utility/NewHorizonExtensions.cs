@@ -188,6 +188,11 @@ namespace NewHorizons.Utility
             return copy;
         }
 
+        public static GameObject Instantiate(this GameObject original)
+        {
+            return UnityEngine.Object.Instantiate(original);
+        }
+
         public static T DontDestroyOnLoad<T>(this T target) where T : UnityEngine.Object
         {
             UnityEngine.Object.DontDestroyOnLoad(target);

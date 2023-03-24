@@ -3,6 +3,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
@@ -85,18 +86,17 @@ namespace NewHorizons.Builder.Props
 
             GameObject prop;
             bool isItem;
+            bool invalidComponentFound = false;
 
             // We save copies with all their components fixed, good if the user is placing the same detail more than once
             if (detail?.path != null && _fixedPrefabCache.TryGetValue((sector, detail.path), out var storedPrefab))
             {
-                prop = storedPrefab.prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(storedPrefab.prefab, prefab.name, go, sector, detail);
                 isItem = storedPrefab.isItem;
             }
             else
             {
-                prop = prefab.InstantiateInactive();
-                prop.name = prefab.name;
+                prop = GeneralPropBuilder.MakeFromPrefab(prefab, prefab.name, go, sector, detail);
 
                 StreamingHandler.SetUpStreaming(prop, sector);
 
@@ -106,13 +106,20 @@ namespace NewHorizons.Builder.Props
 
                 foreach (var component in prop.GetComponentsInChildren<Component>(true))
                 {
+                    // Components can come through as null here (yes, really),
+                    // Usually if a script was added to a prefab in an asset bundle but isn't present in the loaded mod DLLs
+                    if (component == null)
+                    {
+                        invalidComponentFound = true;
+                        continue;
+                    }
                     if (component.gameObject == prop && component is OWItem) isItem = true;
 
                     if (sector == null)
                     {
                         if (FixUnsectoredComponent(component)) continue;
                     }
-                    else FixSectoredComponent(component, sector, isTorch);
+                    else FixSectoredComponent(component, sector, isTorch, detail.keepLoaded);
 
                     FixComponent(component, go);
                 }
@@ -124,26 +131,19 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
-            prop.transform.parent = sector?.transform ?? go.transform;
+            if (invalidComponentFound)
+            {
+                foreach (Transform t in prop.GetComponentsInChildren<Transform>(true))
+                {
+                    if (t.GetComponents<Component>().Any(c => c == null))
+                    {
+                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
+                    }
+                }
+            }
 
             // Items shouldn't use these else they get weird
             if (isItem) detail.keepLoaded = true;
-
-            prop.transform.position = detail.position == null ? go.transform.position : go.transform.TransformPoint(detail.position);
-
-            Quaternion rot = detail.rotation == null ? Quaternion.identity : Quaternion.Euler(detail.rotation);
-
-            if (detail.alignToNormal)
-            {
-                // Apply the rotation after aligning it with normal
-                var up = (prop.transform.position - go.transform.position).normalized;
-                prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                prop.transform.rotation *= rot;
-            }
-            else
-            {
-                prop.transform.rotation = go.transform.TransformRotation(rot);
-            }
 
             prop.transform.localScale = detail.stretch ?? (detail.scale != 0 ? Vector3.one * detail.scale : prefab.transform.localScale);
 
@@ -187,40 +187,6 @@ namespace NewHorizons.Builder.Props
                 GameObject.Destroy(prop);
                 prop = newDetailGO;
             }
-
-            if (detail.rename != null)
-            {
-                prop.name = detail.rename;
-            }
-
-            if (!string.IsNullOrEmpty(detail.parentPath))
-            {
-                var newParent = go.transform.Find(detail.parentPath);
-                if (newParent != null)
-                {
-                    prop.transform.parent = newParent.transform;
-                }
-                else
-                {
-                    Logger.LogError($"Cannot find parent object at path: {go.name}/{detail.parentPath}");
-                }
-            }
-
-            if (detail.isRelativeToParent)
-            {
-                prop.transform.localPosition = detail.position == null ? Vector3.zero : detail.position;
-                if (detail.alignToNormal)
-                {
-                    // Apply the rotation after aligning it with normal
-                    var up = (prop.transform.position - go.transform.position).normalized;
-                    prop.transform.rotation = Quaternion.FromToRotation(Vector3.up, up);
-                    prop.transform.rotation *= rot;
-                }
-                else
-                {
-                    prop.transform.localRotation = rot;
-                }
-            }
             
             if (isItem)
             {
@@ -248,19 +214,14 @@ namespace NewHorizons.Builder.Props
         /// <summary>
         /// Fix components that have sectors. Has a specific fix if there is a VisionTorchItem on the object.
         /// </summary>
-        /// <param name="component"></param>
-        /// <param name="sector"></param>
-        /// <param name="isTorch"></param>
-        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch = false)
+        private static void FixSectoredComponent(Component component, Sector sector, bool isTorch, bool keepLoaded)
         {
-            if (component is Sector s)
+            // keepLoaded should remove existing groups
+            // renderers/colliders get enabled later so we dont have to do that here
+            if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
             {
-                s.SetParentSector(sector);
-            }
-
-            if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._controllingProxy = null;
+                Component.DestroyImmediate(component);
+                return;
             }
 
             // fix Sector stuff, eg SectorCullGroup (without this, props that have a SectorCullGroup component will become invisible inappropriately)
@@ -269,23 +230,41 @@ namespace NewHorizons.Builder.Props
                 sectorGroup.SetSector(sector);
             }
 
-            if (component is SectoredMonoBehaviour behaviour)
+            // Not doing else if here because idk if any of the classes below implement ISectorGroup
+
+            if (component is Sector s)
+            {
+                s.SetParentSector(sector);
+            }
+
+            else if (component is SectorCullGroup sectorCullGroup)
+            {
+                sectorCullGroup._controllingProxy = null;
+                
+                // fixes sector cull group deactivating renderers on map view enter and fast foward
+                // TODO: does this actually work? what? how?
+                sectorCullGroup._inMapView = false;
+                sectorCullGroup._isFastForwarding = false;
+                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
+            }
+
+            else if(component is SectoredMonoBehaviour behaviour)
             {
                 behaviour.SetSector(sector);
             }
 
-            if (component is OWItemSocket socket)
+            else if(component is OWItemSocket socket)
             {
                 socket._sector = sector;
             }
 
             // Fix slide reel - Softlocks if this object is a vision torch
-            if (!isTorch && component is SlideCollectionContainer container)
+            else if(!isTorch && component is SlideCollectionContainer container)
             {
                 sector.OnOccupantEnterSector.AddListener(_ => container.LoadStreamingTextures());
             }
 
-            if (component is NomaiRemoteCameraPlatform remoteCameraPlatform)
+            else if(component is NomaiRemoteCameraPlatform remoteCameraPlatform)
             {
                 remoteCameraPlatform._visualSector = sector;
             }
@@ -297,7 +276,7 @@ namespace NewHorizons.Builder.Props
         /// </summary>
         private static bool FixUnsectoredComponent(Component component)
         {
-            if (component is FogLight or SectoredMonoBehaviour)
+            if (component is FogLight or SectoredMonoBehaviour or ISectorGroup)
             {
                 GameObject.DestroyImmediate(component);
                 return true;
@@ -308,28 +287,30 @@ namespace NewHorizons.Builder.Props
         private static void FixComponent(Component component, GameObject planetGO)
         {
             // Fix other components
+            // IgnoreSun is just a shadow casting optimization for caves and stuff so we can get rid of it 
+            if (component is Transform && component.gameObject.layer == Layer.IgnoreSun)
+            {
+                component.gameObject.layer = Layer.Default;
+            }
             // I forget why this is here
-            if (component is GhostIK or GhostEffects)
+            else if (component is GhostIK or GhostEffects)
             {
                 Component.DestroyImmediate(component);
                 return;
             }
-
-            if (component is DarkMatterVolume)
+            else if (component is DarkMatterVolume)
             {
                 var probeVisuals = component.gameObject.transform.Find("ProbeVisuals");
                 if (probeVisuals != null) probeVisuals.gameObject.SetActive(true);
             }
-
-            if (component is DarkMatterSubmergeController submergeController)
+            else if (component is DarkMatterSubmergeController submergeController)
             {
                 var water = planetGO.GetComponentsInChildren<RadialFluidVolume>().FirstOrDefault(x => x._fluidType == FluidVolume.Type.WATER);
                 if (submergeController._fluidDetector)
                     submergeController._fluidDetector._onlyDetectableFluid = water;
             }
-
             // Fix anglerfish speed on orbiting planets
-            if (component is AnglerfishController angler)
+            else if (component is AnglerfishController angler)
             {
                 try
                 {
@@ -342,50 +323,39 @@ namespace NewHorizons.Builder.Props
             }
 
             // fix campfires
-            if (component is InteractVolume interactVolume)
+            else if (component is InteractVolume)
             {
-                Delay.FireOnNextUpdate(() => interactVolume._playerCam = Locator.GetPlayerCamera());
+                component.gameObject.AddComponent<InteractVolumeFixer>();
             }
-            if (component is PlayerAttachPoint playerAttachPoint)
+            else if (component is PlayerAttachPoint)
             {
-                var playerBody = GameObject.Find("Player_Body");
-                playerAttachPoint._playerController = playerBody.GetComponent<PlayerCharacterController>();
-                playerAttachPoint._playerOWRigidbody = playerBody.GetComponent<OWRigidbody>();
-                playerAttachPoint._playerTransform = playerBody.transform;
-                Delay.FireOnNextUpdate(() => playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController());
+                component.gameObject.AddComponent<PlayerAttachPointFixer>();
             }
 
-            if (component is NomaiInterfaceOrb orb)
+            else if (component is NomaiInterfaceOrb orb)
             {
                 orb._parentAstroObject = planetGO.GetComponent<AstroObject>();
                 orb._parentBody = planetGO.GetComponent<OWRigidbody>();
             }
 
-            if (component is VisionTorchItem torchItem)
+            else if (component is VisionTorchItem torchItem)
             {
                 torchItem.enabled = true;
                 torchItem.mindProjectorTrigger.enabled = true;
-                Delay.FireOnNextUpdate(() => torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>());
+                torchItem.gameObject.AddComponent<VisionTorchItemFixer>();
             }
 
-            if (component is Animator animator) animator.enabled = true;
-            if (component is Collider collider) collider.enabled = true;
+            else if (component is Animator animator) animator.enabled = true;
+            else if(component is Collider collider) collider.enabled = true;
             // Bug 533 - Don't show the electricity effect renderers
-            if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
-            if (component is Shape shape) shape.enabled = true;
+            else if (component is Renderer renderer && component.gameObject.GetComponent<ElectricityEffect>() == null) renderer.enabled = true;
+            else if(component is Shape shape) shape.enabled = true;
 
-            // fixes sector cull group deactivating renderers on map view enter and fast foward
-            // TODO: does this actually work? what? how?
-            if (component is SectorCullGroup sectorCullGroup)
-            {
-                sectorCullGroup._inMapView = false;
-                sectorCullGroup._isFastForwarding = false;
-                sectorCullGroup.SetVisible(sectorCullGroup.ShouldBeVisible(), true, false);
-            }
-            
             // If it's not a moving anglerfish make sure the anim controller is regular
-            if (component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            else if(component is AnglerfishAnimController && component.GetComponentInParent<AnglerfishController>() == null)
+            {
                 component.gameObject.AddComponent<AnglerAnimFixer>();
+            }
         }
 
         /// <summary>
@@ -413,6 +383,54 @@ namespace NewHorizons.Builder.Props
                 angler.enabled = true;
                 angler.OnChangeAnglerState(AnglerfishController.AnglerState.Lurking);
                 
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(InteractVolume))]
+        private class InteractVolumeFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var interactVolume = GetComponent<InteractVolume>();
+                interactVolume._playerCam = Locator.GetPlayerCamera();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(PlayerAttachPoint))]
+        private class PlayerAttachPointFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var playerAttachPoint = GetComponent<PlayerAttachPoint>();
+                playerAttachPoint._playerController = Locator.GetPlayerController();
+                playerAttachPoint._playerOWRigidbody = Locator.GetPlayerBody();
+                playerAttachPoint._playerTransform = Locator.GetPlayerTransform();
+                playerAttachPoint._fpsCamController = Locator.GetPlayerCameraController();
+
+                Destroy(this);
+            }
+        }
+
+        /// <summary>
+        /// Has to happen after 1 frame to work with VR
+        /// </summary>
+        [RequireComponent(typeof(VisionTorchItem))]
+        private class VisionTorchItemFixer : MonoBehaviour
+        {
+            public void Start()
+            {
+                var torchItem = GetComponent<VisionTorchItem>();
+                torchItem.mindSlideProjector._mindProjectorImageEffect = Locator.GetPlayerCamera().GetComponent<MindProjectorImageEffect>();
+
                 Destroy(this);
             }
         }

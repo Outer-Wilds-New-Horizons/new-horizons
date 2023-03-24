@@ -4,6 +4,7 @@ using NewHorizons.Components.Stars;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using System;
 using System.Linq;
 using UnityEngine;

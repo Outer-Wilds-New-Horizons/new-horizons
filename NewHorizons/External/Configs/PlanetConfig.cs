@@ -1,3 +1,4 @@
+using Epic.OnlineServices.Presence;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
@@ -464,6 +465,102 @@ namespace NewHorizons.External.Configs
             if (ShockEffect == null && Star == null && name != "Sun" && name != "EyeOfTheUniverse" && FocalPoint == null)
             {
                 ShockEffect = new ShockEffectModule() { hasSupernovaShockEffect = true };
+            }
+
+            // Spawn points reorganized to use GeneralPointPropInfo
+            if (Spawn != null && Spawn.playerSpawn == null && Spawn.playerSpawnPoint != null)
+            {
+                Spawn.playerSpawn = new SpawnModule.PlayerSpawnPoint()
+                {
+                    position = Spawn.playerSpawnPoint,
+                    rotation = Spawn.playerSpawnRotation,
+                    startWithSuit = Spawn.startWithSuit,
+                };
+            }
+            if (Spawn != null && Spawn.shipSpawn == null && Spawn.shipSpawnPoint != null)
+            {
+                Spawn.shipSpawn = new SpawnModule.ShipSpawnPoint()
+                {
+                    position = Spawn.shipSpawnPoint,
+                    rotation = Spawn.shipSpawnRotation,
+                };
+            }
+
+            // Remote dialogue trigger reorganized to use GeneralPointPropInfo
+            if (Props?.dialogue != null)
+            {
+                foreach (var dialogue in Props.dialogue)
+                {
+                    if (dialogue.remoteTrigger == null && (dialogue.remoteTriggerPosition != null || dialogue.remoteTriggerRadius != 0))
+                    {
+                        dialogue.remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo
+                        {
+                            position = dialogue.remoteTriggerPosition,
+                            radius = dialogue.remoteTriggerRadius,
+                            prereqCondition = dialogue.remoteTriggerPrereqCondition,
+                        };
+                    }
+                }
+            }
+
+            // alignRadial added to all props with rotation; default behavior varies
+            if (Spawn?.playerSpawn != null && Spawn.playerSpawn.rotation == null && !Spawn.playerSpawn.alignRadial.HasValue)
+            {
+                Spawn.playerSpawn.alignRadial = true;
+            }
+            if (Spawn?.shipSpawn != null && Spawn.shipSpawn.rotation == null && !Spawn.shipSpawn.alignRadial.HasValue)
+            {
+                Spawn.shipSpawn.alignRadial = true;
+            }
+            if (Props?.details != null)
+            {
+                foreach (var detail in Props.details)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.proxyDetails != null)
+            {
+                foreach (var detail in Props.proxyDetails)
+                {
+                    if (!detail.alignRadial.HasValue)
+                    {
+                        detail.alignRadial = detail.alignToNormal;
+                    }
+                }
+            }
+            if (Props?.geysers != null)
+            {
+                foreach (var geyser in Props.geysers)
+                {
+                    if (!geyser.alignRadial.HasValue && geyser.rotation == null)
+                    {
+                        geyser.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.tornados != null)
+            {
+                foreach (var tornado in Props.tornados)
+                {
+                    if (!tornado.alignRadial.HasValue && tornado.rotation == null)
+                    {
+                        tornado.alignRadial = true;
+                    }
+                }
+            }
+            if (Props?.volcanoes != null)
+            {
+                foreach (var volcano in Props.volcanoes)
+                {
+                    if (!volcano.alignRadial.HasValue && volcano.rotation == null)
+                    {
+                        volcano.alignRadial = true;
+                    }
+                }
             }
         }
     }

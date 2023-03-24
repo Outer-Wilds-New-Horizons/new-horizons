@@ -1,10 +1,8 @@
 using Newtonsoft.Json;
 using OWML.Common;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace NewHorizons.Utility
 {

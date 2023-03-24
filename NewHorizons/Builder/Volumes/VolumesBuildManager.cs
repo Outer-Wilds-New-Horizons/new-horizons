@@ -1,6 +1,8 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Builder.Volumes;
+using NewHorizons.Builder.Volumes.Rulesets;
+using NewHorizons.Builder.Volumes.VisorEffects;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
 using OWML.Common;

@@ -2,6 +2,7 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using System;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
@@ -98,11 +99,8 @@ namespace NewHorizons.Builder.Props
 
         private static void MakeTornado(GameObject planetGO, Sector sector, PropModule.TornadoInfo info, Vector3 position, bool downwards)
         {
-            var tornadoGO = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
-            tornadoGO.name = !string.IsNullOrEmpty(info.rename) ? info.rename : (downwards ? "Tornado_Down" : "Tornado_Up");
-            tornadoGO.transform.parent = sector?.transform ?? planetGO.transform;
-            tornadoGO.transform.position = planetGO.transform.TransformPoint(position);
-            tornadoGO.transform.rotation = Quaternion.FromToRotation(Vector3.up, planetGO.transform.TransformDirection(position.normalized));
+            var prefab = downwards ? _downPrefab.InstantiateInactive() : _upPrefab.InstantiateInactive();
+            var tornadoGO = GeneralPropBuilder.MakeFromPrefab(prefab, downwards ? "Tornado_Down" : "Tornado_Up", planetGO, sector, info, defaultPosition: position);
 
             // Add the sound thing before changing the scale
             var soundGO = _soundPrefab.InstantiateInactive();
