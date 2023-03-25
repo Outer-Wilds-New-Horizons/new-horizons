@@ -2,7 +2,6 @@ using NewHorizons.Handlers;
 using OWML.Common;
 using OWML.Common.Menus;
 using System;
-using UnityEngine;
 
 namespace NewHorizons.Utility.DebugUtilities
 {

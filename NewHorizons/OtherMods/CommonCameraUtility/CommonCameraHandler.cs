@@ -1,4 +1,3 @@
-using NewHorizons.OtherMods.MenuFramework;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.OtherMods.CommonCameraUtility

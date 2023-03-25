@@ -1,5 +1,4 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Geometry;

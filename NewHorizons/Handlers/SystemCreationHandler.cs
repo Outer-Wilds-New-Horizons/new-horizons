@@ -4,7 +4,6 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
 using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 using Object = UnityEngine.Object;
 namespace NewHorizons.Handlers
 {

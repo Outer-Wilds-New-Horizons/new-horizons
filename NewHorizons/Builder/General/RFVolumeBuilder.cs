@@ -1,4 +1,3 @@
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.OWUtilities;
 using UnityEngine;

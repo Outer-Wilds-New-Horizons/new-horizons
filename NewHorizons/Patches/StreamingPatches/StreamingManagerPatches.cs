@@ -1,6 +1,5 @@
 using HarmonyLib;
 using NewHorizons.Handlers;
-using OWML.Logging;
 
 namespace NewHorizons.Patches.StreamingPatches
 {

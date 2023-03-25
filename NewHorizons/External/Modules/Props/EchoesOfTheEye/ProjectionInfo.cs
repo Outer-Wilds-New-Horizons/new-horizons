@@ -2,7 +2,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using static NewHorizons.External.Modules.PropModule;
 
 namespace NewHorizons.External.Modules.Props.EchoesOfTheEye
 {

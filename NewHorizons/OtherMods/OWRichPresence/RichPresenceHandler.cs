@@ -1,11 +1,7 @@
 using NewHorizons.Components.ShipLog;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
 using System;
-using System.IO;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.OtherMods.OWRichPresence

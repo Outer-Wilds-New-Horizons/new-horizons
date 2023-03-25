@@ -1,5 +1,4 @@
 using NewHorizons.Builder.General;
-using NewHorizons.Builder.Orbital;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;

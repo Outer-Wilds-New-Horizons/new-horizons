@@ -1,13 +1,10 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
-using System;
 using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
 using System.Collections.Generic;
-using System.Linq;
 using NewHorizons.Components.SizeControllers;
-using System.Drawing;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;

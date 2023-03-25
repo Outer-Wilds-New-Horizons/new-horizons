@@ -1,7 +1,5 @@
 using NewHorizons.Builder.Body.Geometry;
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
 using System;

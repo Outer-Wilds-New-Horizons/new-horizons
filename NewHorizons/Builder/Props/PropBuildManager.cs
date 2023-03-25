@@ -7,7 +7,6 @@ using OWML.Common;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Props
 {

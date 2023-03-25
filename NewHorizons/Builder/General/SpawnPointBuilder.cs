@@ -1,4 +1,3 @@
-using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;

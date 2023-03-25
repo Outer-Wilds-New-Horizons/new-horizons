@@ -1,6 +1,5 @@
 using Newtonsoft.Json;
 using System.ComponentModel;
-using static NewHorizons.External.Modules.PropModule;
 
 namespace NewHorizons.External.Modules.Props.Quantum
 {

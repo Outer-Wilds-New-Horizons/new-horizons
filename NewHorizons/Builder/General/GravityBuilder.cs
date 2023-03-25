@@ -2,7 +2,6 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.General
 {
     public static class GravityBuilder

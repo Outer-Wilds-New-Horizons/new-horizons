@@ -1,6 +1,5 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OWUtilities;

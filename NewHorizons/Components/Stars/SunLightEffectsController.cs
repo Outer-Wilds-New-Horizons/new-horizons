@@ -1,5 +1,4 @@
 using NewHorizons.Builder.Atmosphere;
-using NewHorizons.Utility;
 using System.Collections.Generic;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;

@@ -1,7 +1,3 @@
-using NewHorizons.Components;
-using NewHorizons.Components.Achievement;
-using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

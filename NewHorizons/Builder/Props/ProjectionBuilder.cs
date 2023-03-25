@@ -1,4 +1,3 @@
-using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
@@ -9,7 +8,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
-using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props

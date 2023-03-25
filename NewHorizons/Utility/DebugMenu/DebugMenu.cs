@@ -1,6 +1,4 @@
-using NewHorizons.External;
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
 using Newtonsoft.Json;
 using OWML.Common;
@@ -9,10 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace NewHorizons.Utility.DebugMenu
 {

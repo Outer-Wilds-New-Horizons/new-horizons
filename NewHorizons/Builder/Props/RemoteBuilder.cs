@@ -1,5 +1,4 @@
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Remote;
 using NewHorizons.External.Modules.TranslatorText;
@@ -8,9 +7,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
-using System.Linq;
 using UnityEngine;
-using static NewHorizons.External.Modules.PropModule;
 using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props

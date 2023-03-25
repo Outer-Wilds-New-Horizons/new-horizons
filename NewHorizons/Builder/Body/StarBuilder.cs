@@ -1,12 +1,8 @@
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Utility;
-using OWML.Utils;
 using UnityEngine;
 using NewHorizons.External.Modules.VariableSize;
-using Logger = NewHorizons.Utility.Logger;
-using OWML.ModHelper;
 using OWML.Common;
-using UnityEngine.InputSystem.XR;
 using System.Linq;
 using NewHorizons.Components.Stars;
 using NewHorizons.Utility.OWUtilities;
