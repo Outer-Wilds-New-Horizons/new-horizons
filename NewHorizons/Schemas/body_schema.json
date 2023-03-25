@@ -3443,7 +3443,7 @@
         },
         "type": {
           "description": "The type of fluid for this volume.",
-          "$ref": "#/definitions/FluidType2"
+          "$ref": "#/definitions/FluidType"
         },
         "alignmentFluid": {
           "type": "boolean",
@@ -3459,28 +3459,6 @@
           "description": "Disable this fluid volume immediately?"
         }
       }
-    },
-    "FluidType2": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "NONE",
-        "AIR",
-        "WATER",
-        "CLOUD",
-        "SAND",
-        "PLASMA",
-        "FOG"
-      ],
-      "enum": [
-        "none",
-        "air",
-        "water",
-        "cloud",
-        "sand",
-        "plasma",
-        "fog"
-      ]
     },
     "HazardVolumeInfo": {
       "type": "object",
