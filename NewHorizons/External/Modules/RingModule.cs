@@ -1,5 +1,5 @@
-using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.External.Modules.VariableSize;
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
