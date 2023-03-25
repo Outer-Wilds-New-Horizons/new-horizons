@@ -1188,6 +1188,10 @@
           "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
           "format": "float",
           "default": 1.0
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         }
       }
     },
@@ -2234,7 +2238,7 @@
         },
         "whiteboard": {
           "description": "Whiteboard that the stones can put text onto",
-          "$ref": "#/definitions/WhiteboardInfo"
+          "$ref": "#/definitions/RemoteWhiteboardInfo"
         },
         "platform": {
           "description": "Camera platform that the stones can project to and from",
@@ -2249,7 +2253,7 @@
         }
       }
     },
-    "WhiteboardInfo": {
+    "RemoteWhiteboardInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
