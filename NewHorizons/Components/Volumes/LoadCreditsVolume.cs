@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.SerializableEnums;
+using NewHorizons.External.SerializableEnums;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
 using System.Collections;

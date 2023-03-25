@@ -1,7 +1,7 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Components;
 using NewHorizons.Components.Stars;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using UnityEngine;
 

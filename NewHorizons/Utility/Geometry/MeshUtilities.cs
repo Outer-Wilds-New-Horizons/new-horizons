@@ -1,5 +1,5 @@
 using System.Linq;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using UnityEngine;
 
 namespace NewHorizons.Utility.Geometry

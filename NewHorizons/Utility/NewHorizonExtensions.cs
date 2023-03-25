@@ -1,6 +1,6 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules.SerializableData;
-using NewHorizons.External.Modules.SerializableEnums;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.SerializableEnums;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Utils;

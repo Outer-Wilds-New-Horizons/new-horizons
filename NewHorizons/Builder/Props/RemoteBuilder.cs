@@ -2,7 +2,7 @@ using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Remote;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

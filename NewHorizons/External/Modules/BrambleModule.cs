@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;

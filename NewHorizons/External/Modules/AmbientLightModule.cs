@@ -1,6 +1,6 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules

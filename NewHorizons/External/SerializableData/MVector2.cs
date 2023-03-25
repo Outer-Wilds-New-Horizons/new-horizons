@@ -1,11 +1,11 @@
-﻿#region
+#region
 
 using Newtonsoft.Json;
 using UnityEngine;
 
 #endregion
 
-namespace NewHorizons.External.Modules.SerializableData
+namespace NewHorizons.External.SerializableData
 {
     [JsonObject]
     public class MVector2

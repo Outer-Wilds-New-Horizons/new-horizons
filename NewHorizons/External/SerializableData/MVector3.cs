@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using UnityEngine;
-namespace NewHorizons.External.Modules.SerializableData
+
+namespace NewHorizons.External.SerializableData
 {
     [JsonObject]
     public class MVector3

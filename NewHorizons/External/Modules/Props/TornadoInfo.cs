@@ -1,5 +1,5 @@
-using NewHorizons.External.Modules.SerializableData;
-using NewHorizons.External.Modules.SerializableEnums;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System;

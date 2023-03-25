@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.SerializableEnums;
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;

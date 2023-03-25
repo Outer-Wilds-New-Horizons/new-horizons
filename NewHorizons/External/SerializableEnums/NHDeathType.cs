@@ -2,7 +2,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace NewHorizons.External.Modules.SerializableEnums
+namespace NewHorizons.External.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
     public enum NHDeathType

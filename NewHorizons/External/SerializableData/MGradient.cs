@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
+using Newtonsoft.Json;
 
-namespace NewHorizons.External.Modules.SerializableData
+namespace NewHorizons.External.SerializableData
 {
     [JsonObject]
     public class MGradient

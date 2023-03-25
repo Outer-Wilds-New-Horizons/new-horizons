@@ -1,7 +1,7 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Stars;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

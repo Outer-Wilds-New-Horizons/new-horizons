@@ -1,5 +1,5 @@
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;

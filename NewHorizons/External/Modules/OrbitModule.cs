@@ -1,8 +1,8 @@
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules
 {

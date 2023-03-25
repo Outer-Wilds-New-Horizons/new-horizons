@@ -10,7 +10,7 @@ using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 
 namespace NewHorizons.Builder.Body
 {

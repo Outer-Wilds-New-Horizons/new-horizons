@@ -1,7 +1,7 @@
 using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OWML;
 using OWML.Common;

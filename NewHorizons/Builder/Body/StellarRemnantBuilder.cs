@@ -1,6 +1,6 @@
 using NewHorizons.Builder.General;
 using NewHorizons.External;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;

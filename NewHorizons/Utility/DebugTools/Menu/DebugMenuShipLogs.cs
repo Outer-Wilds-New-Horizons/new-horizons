@@ -1,7 +1,7 @@
 using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using System.Linq;
