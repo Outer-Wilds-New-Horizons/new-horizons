@@ -120,7 +120,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
+            [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.Cloud;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.
@@ -197,7 +197,7 @@ namespace NewHorizons.External.Modules
         public string cloudRamp;
 
         [Obsolete("FluidType is deprecated, please use CloudInfo instead")]
-        public FluidType fluidType;
+        public NHFluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;

@@ -7,7 +7,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
     [JsonObject]
     public class LoadCreditsVolumeInfo : VolumeInfo
     {
-        [DefaultValue("fast")] public CreditsType creditsType = CreditsType.Fast;
+        [DefaultValue("fast")] public NHCreditsType creditsType = NHCreditsType.Fast;
 
         /// <summary>
         /// Text displayed in orange on game over. For localization, put translations under UI.
@@ -17,6 +17,6 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// <summary>
         /// The type of death the player will have if they enter this volume.
         /// </summary>
-        [DefaultValue("default")] public DeathType deathType = DeathType.Default;
+        [DefaultValue("default")] public NHDeathType deathType = NHDeathType.Default;
     }
 }

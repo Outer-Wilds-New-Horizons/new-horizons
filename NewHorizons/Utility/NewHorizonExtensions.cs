@@ -252,6 +252,6 @@ namespace NewHorizons.Utility
             return xCorrect && yCorrect && zCorrect;
         }
 
-        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+        public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     }
 }

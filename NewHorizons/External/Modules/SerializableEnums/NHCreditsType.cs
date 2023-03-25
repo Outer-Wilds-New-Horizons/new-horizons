@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace NewHorizons.External.Modules.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum CreditsType
+    public enum NHCreditsType
     {
         [EnumMember(Value = @"fast")] Fast = 0,
 

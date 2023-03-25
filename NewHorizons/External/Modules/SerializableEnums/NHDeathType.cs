@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace NewHorizons.External.Modules.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum DeathType
+    public enum NHDeathType
     {
         [EnumMember(Value = @"default")] Default,
         [EnumMember(Value = @"impact")] Impact,

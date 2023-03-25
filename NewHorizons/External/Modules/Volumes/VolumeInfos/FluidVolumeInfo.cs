@@ -15,7 +15,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// <summary>
         /// The type of fluid for this volume.
         /// </summary>
-        public FluidType type;
+        public NHFluidType type;
 
         /// <summary>
         /// Should the player and rafts align to this fluid.

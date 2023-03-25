@@ -12,7 +12,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Fluid type for sounds/effects when colliding with this ring.
         /// </summary>
-        public FluidType fluidType = FluidType.None;
+        public NHFluidType fluidType = NHFluidType.None;
 
         /// <summary>
         /// Angle between the rings and the equatorial plane of the planet.

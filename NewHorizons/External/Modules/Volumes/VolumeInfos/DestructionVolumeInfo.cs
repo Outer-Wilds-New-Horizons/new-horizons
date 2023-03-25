@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
 
@@ -9,7 +10,7 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// <summary>
         /// The type of death the player will have if they enter this volume.
         /// </summary>
-        [DefaultValue("default")] public DeathType deathType = DeathType.Default;
+        [DefaultValue("default")] public NHDeathType deathType = NHDeathType.Default;
     }
 
 }

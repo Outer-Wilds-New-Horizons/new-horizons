@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace NewHorizons.External.Modules.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum FluidType
+    public enum NHFluidType
     {
         [EnumMember(Value = @"none")] None = 0,
 
