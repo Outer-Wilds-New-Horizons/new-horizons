@@ -1,5 +1,5 @@
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWMLUtilities;
@@ -85,7 +85,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, NomaiWarpReceiverInfo info)
         {
-            var detailInfo = new PropModule.DetailInfo(info);
+            var detailInfo = new DetailInfo(info);
             var receiverObject = DetailBuilder.Make(planetGO, sector, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, detailInfo);
 
             Logger.Log($"Position is {detailInfo.position} was {info.position}");
@@ -106,7 +106,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Make(GameObject planetGO, Sector sector, NomaiWarpTransmitterInfo info)
         {
-            var transmitterObject = DetailBuilder.Make(planetGO, sector, _transmitterPrefab, new PropModule.DetailInfo(info));
+            var transmitterObject = DetailBuilder.Make(planetGO, sector, _transmitterPrefab, new DetailInfo(info));
 
             var transmitter = transmitterObject.GetComponentInChildren<NomaiWarpTransmitter>();
             transmitter._frequency = GetFrequency(info.frequency);
@@ -122,7 +122,7 @@ namespace NewHorizons.Builder.Props
 
         private static void CreateComputer(GameObject planetGO, Sector sector, NomaiWarpComputerLoggerInfo computerInfo, NomaiWarpReceiver receiver)
         {
-            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new PropModule.DetailInfo(computerInfo));
+            var computerObject = DetailBuilder.Make(planetGO, sector, TranslatorTextBuilder.ComputerPrefab, new DetailInfo(computerInfo));
 
             var computer = computerObject.GetComponentInChildren<NomaiComputer>();
             computer.SetSector(sector);

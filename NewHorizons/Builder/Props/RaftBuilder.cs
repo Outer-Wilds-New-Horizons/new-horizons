@@ -2,6 +2,7 @@ using NewHorizons.Components;
 using NewHorizons.Components.Achievement;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using UnityEngine;
@@ -46,7 +47,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.RaftInfo info, OWRigidbody planetBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, RaftInfo info, OWRigidbody planetBody)
         {
             InitPrefab();
 

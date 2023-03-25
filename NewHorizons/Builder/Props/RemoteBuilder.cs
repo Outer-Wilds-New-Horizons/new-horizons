@@ -1,5 +1,8 @@
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Remote;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWUtilities;
@@ -119,7 +122,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.RemoteInfo info, NewHorizonsBody nhBody)
+        public static void Make(GameObject go, Sector sector, RemoteInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
@@ -170,7 +173,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.WhiteboardInfo info, NewHorizonsBody nhBody)
+        public static void MakeWhiteboard(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, RemoteWhiteboardInfo info, NewHorizonsBody nhBody)
         {
             var whiteboard = DetailBuilder.Make(go, sector, _whiteboardPrefab, new DetailInfo(info));
             whiteboard.SetActive(false);
@@ -210,7 +213,7 @@ namespace NewHorizons.Builder.Props
             whiteboard.SetActive(true);
         }
 
-        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.PlatformInfo info, IModBehaviour mod)
+        public static void MakePlatform(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PlatformInfo info, IModBehaviour mod)
         {
             var platform = DetailBuilder.Make(go, sector, _remoteCameraPlatformPrefab, new DetailInfo(info));
             platform.SetActive(false);
@@ -236,7 +239,7 @@ namespace NewHorizons.Builder.Props
             platform.SetActive(true);
         }
 
-        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, PropModule.RemoteInfo.StoneInfo info, IModBehaviour mod)
+        public static void MakeStone(GameObject go, Sector sector, NomaiRemoteCameraPlatform.ID id, Texture2D decal, StoneInfo info, IModBehaviour mod)
         {
             var shareStone = GeneralPropBuilder.MakeFromPrefab(_shareStonePrefab, "ShareStone_" + id.ToString(), go, sector, info);
 

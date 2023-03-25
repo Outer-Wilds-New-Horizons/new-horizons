@@ -35,7 +35,7 @@ namespace NewHorizons.Utility
                 }
             }
 
-            if (EnumUtils.TryParse<AudioType>(audio, out AudioType type))
+            if (EnumUtils.TryParse(audio, out AudioType type))
             {
                 source._audioLibraryClip = type;
             }
@@ -62,7 +62,7 @@ namespace NewHorizons.Utility
                 _loadedAudioClips.Add(path, task.Result);
                 return task.Result;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 Logger.LogError($"Couldn't load Audio at {path} : {ex}");
                 return null;
@@ -89,13 +89,13 @@ namespace NewHorizons.Utility
 
             switch (extension)
             {
-                case (".wav"):
+                case ".wav":
                     audioType = UnityEngine.AudioType.WAV;
                     break;
-                case (".ogg"):
+                case ".ogg":
                     audioType = UnityEngine.AudioType.OGGVORBIS;
                     break;
-                case (".mp3"):
+                case ".mp3":
                     audioType = UnityEngine.AudioType.MPEG;
                     break;
                 default:

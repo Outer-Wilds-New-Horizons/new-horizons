@@ -1,11 +1,11 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Volumes;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class OxygenVolumeBuilder
     {
-        public static OxygenVolume Make(GameObject planetGO, Sector sector, VolumesModule.OxygenVolumeInfo info)
+        public static OxygenVolume Make(GameObject planetGO, Sector sector, OxygenVolumeInfo info)
         {
             var volume = VolumeBuilder.Make<OxygenVolume>(planetGO, sector, info);
 

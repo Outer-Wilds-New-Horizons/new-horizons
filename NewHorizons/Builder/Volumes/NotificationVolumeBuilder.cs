@@ -1,22 +1,15 @@
 using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules;
-using NewHorizons.Utility;
+using NewHorizons.External.Modules.Volumes;
 using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 using NHNotificationVolume = NewHorizons.Components.Volumes.NotificationVolume;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class NotificationVolumeBuilder
     {
-        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, VolumesModule.NotificationVolumeInfo info, IModBehaviour mod)
+        public static NHNotificationVolume Make(GameObject planetGO, Sector sector, NotificationVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("NotificationVolume", planetGO, sector, info);
             go.layer = Layer.BasicEffectVolume;

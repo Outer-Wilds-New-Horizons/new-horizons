@@ -12,6 +12,8 @@ using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.External.Modules.Props.Dialogue;
+using NewHorizons.External.Modules.Props;
 
 namespace NewHorizons
 {
@@ -158,7 +160,7 @@ namespace NewHorizons
             float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new PropModule.DetailInfo() {
+            var detailInfo = new DetailInfo() {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
@@ -192,7 +194,7 @@ namespace NewHorizons
             float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
             float remoteTriggerRadius = 0f)
         {
-            var info = new PropModule.DialogueInfo()
+            var info = new DialogueInfo()
             {
                 blockAfterPersistentCondition = blockAfterPersistentCondition,
                 lookAtRadius = lookAtRadius,
@@ -201,7 +203,7 @@ namespace NewHorizons
                 radius = radius,
                 range = range,
                 xmlFile = xmlFile,
-                remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo()
+                remoteTrigger = new RemoteTriggerInfo()
                 {
                     position = null,
                     radius = remoteTriggerRadius,

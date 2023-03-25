@@ -131,7 +131,7 @@ namespace NewHorizons.Utility
         {
             var size = 256;
 
-            var texture = (new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false));
+            var texture = new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false);
             texture.name = "SlideReelAtlas";
 
             var fillPixels = new Color[size * size * 4 * 4];
@@ -161,9 +161,9 @@ namespace NewHorizons.Utility
                             var x = xIndex * size + i;
                             // Want it to start from the first row from the bottom then go down then modulo around idk
                             // 5 because no pos mod idk
-                            var y = ((5 - yIndex) % 4) * size + j;
+                            var y = (5 - yIndex) % 4 * size + j;
 
-                            var pixelIndex = x + y * (size * 4);
+                            var pixelIndex = x + y * size * 4;
 
                             if (pixelIndex < fillPixels.Length && pixelIndex >= 0) fillPixels[pixelIndex] = colour;
                         }
@@ -230,7 +230,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
-            if(image == null)
+            if (image == null)
             {
                 Logger.LogError($"Tried to tint null image");
                 return null;
@@ -280,7 +280,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
-            var tex = (new Texture2D(1, 1, TextureFormat.ARGB32, false));
+            var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
             tex.name = "Clear";
             var fillColor = Color.clear;
             var fillPixels = new Color[tex.width * tex.height];
@@ -300,7 +300,7 @@ namespace NewHorizons.Utility
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
-            var tex = (new Texture2D(width, height, src.format, src.mipmapCount != 1));
+            var tex = new Texture2D(width, height, src.format, src.mipmapCount != 1);
             tex.name = src.name + "CanvasScaled";
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
@@ -345,13 +345,13 @@ namespace NewHorizons.Utility
         }
         public static Texture2D MakeSolidColorTexture(int width, int height, Color color)
         {
-            var pixels = new Color[width*height];
- 
-            for(int i = 0; i < pixels.Length; i++)
+            var pixels = new Color[width * height];
+
+            for (int i = 0; i < pixels.Length; i++)
             {
                 pixels[i] = color;
             }
- 
+
             var newTexture = new Texture2D(width, height);
             newTexture.SetPixels(pixels);
             newTexture.Apply();
@@ -370,10 +370,10 @@ namespace NewHorizons.Utility
         // Modified from https://stackoverflow.com/a/69141085/9643841
         public class AsyncImageLoader : MonoBehaviour
         {
-            public List<(int index, string path)> PathsToLoad { get; private set; } = new ();
+            public List<(int index, string path)> PathsToLoad { get; private set; } = new();
 
             public class ImageLoadedEvent : UnityEvent<Texture2D, int> { }
-            public ImageLoadedEvent imageLoadedEvent = new ();
+            public ImageLoadedEvent imageLoadedEvent = new();
 
             private readonly object _lockObj = new();
 
@@ -409,7 +409,7 @@ namespace NewHorizons.Utility
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                lock(_loadedTextures)
+                lock (_loadedTextures)
                 {
                     if (_loadedTextures.ContainsKey(url))
                     {
@@ -426,7 +426,7 @@ namespace NewHorizons.Utility
 
                 var hasError = uwr.error != null && uwr.error != "";
 
-                if (hasError) 
+                if (hasError)
                 {
                     Logger.LogError($"Failed to load {index}:{url} - {uwr.error}");
                 }

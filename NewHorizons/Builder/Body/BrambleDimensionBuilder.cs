@@ -1,16 +1,13 @@
-using HarmonyLib;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWMLUtilities;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
-using static NewHorizons.Main;
-using NewHorizons.Utility.OWMLUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -104,7 +101,7 @@ namespace NewHorizons.Builder.Body
                 default: geometryPrefab = _hubGeometry; break;
             }
 
-            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new PropModule.DetailInfo());
+            var geometry = DetailBuilder.Make(go, sector, geometryPrefab, new DetailInfo());
 
             var exitWarps = _exitWarps.InstantiateInactive();
             var repelVolume = _repelVolume.InstantiateInactive();

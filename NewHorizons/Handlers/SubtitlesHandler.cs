@@ -3,9 +3,9 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using NewHorizons.Utility;
 using OWML.Common;
 using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility;
 
 namespace NewHorizons.Handlers
 {

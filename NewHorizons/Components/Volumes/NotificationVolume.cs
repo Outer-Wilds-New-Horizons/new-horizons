@@ -1,8 +1,6 @@
+using NewHorizons.External.Modules.Volumes;
 using NewHorizons.Handlers;
 using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace NewHorizons.Components.Volumes
@@ -16,7 +14,7 @@ namespace NewHorizons.Components.Volumes
 
         public void SetPinned(bool pin) => _pin = pin;
 
-        public void SetTarget(External.Modules.VolumesModule.NotificationVolumeInfo.NotificationTarget target) => SetTarget(EnumUtils.Parse(target.ToString(), NotificationTarget.All));
+        public void SetTarget(NotificationVolumeInfo.NotificationTarget target) => SetTarget(EnumUtils.Parse(target.ToString(), NotificationTarget.All));
 
         public void SetTarget(NotificationTarget target) => _target = target;
 

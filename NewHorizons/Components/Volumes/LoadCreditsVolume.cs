@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Volumes;
 using NewHorizons.Handlers;
 using System.Collections;
 using UnityEngine;
@@ -8,7 +8,7 @@ namespace NewHorizons.Components.Volumes
 {
     internal class LoadCreditsVolume : BaseVolume
     {
-        public VolumesModule.LoadCreditsVolumeInfo.CreditsType creditsType = VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast;
+        public CreditsType creditsType = CreditsType.Fast;
 
         public string gameOverText;
         public DeathType deathType = DeathType.Default;
@@ -69,13 +69,13 @@ namespace NewHorizons.Components.Volumes
 
             switch (creditsType)
             {
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast:
+                case CreditsType.Fast:
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Final:
+                case CreditsType.Final:
                     LoadManager.LoadScene(OWScene.Credits_Final, LoadManager.FadeType.ToBlack);
                     break;
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Kazoo:
+                case CreditsType.Kazoo:
                     TimelineObliterationController.s_hasRealityEnded = true;
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;

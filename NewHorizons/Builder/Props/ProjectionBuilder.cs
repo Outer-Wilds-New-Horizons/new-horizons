@@ -1,4 +1,6 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using OWML.Common;
@@ -65,20 +67,20 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             switch (info.type)
             {
-                case PropModule.ProjectionInfo.SlideShowType.AutoProjector:
+                case ProjectionInfo.SlideShowType.AutoProjector:
                     MakeAutoProjector(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.SlideReel:
+                case ProjectionInfo.SlideShowType.SlideReel:
                     MakeSlideReel(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.VisionTorchTarget:
+                case ProjectionInfo.SlideShowType.VisionTorchTarget:
                     MakeMindSlidesTarget(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.StandingVisionTorch:
+                case ProjectionInfo.SlideShowType.StandingVisionTorch:
                     MakeStandingVisionTorch(go, sector, info, mod);
                     break;
                 default:
@@ -87,7 +89,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -160,7 +162,7 @@ namespace NewHorizons.Builder.Props
             return slideReelObj;
         }
 
-        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -195,7 +197,7 @@ namespace NewHorizons.Builder.Props
         }
 
         // Makes a target for a vision torch to scan
-        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -232,7 +234,7 @@ namespace NewHorizons.Builder.Props
             return g;
         }
 
-        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -327,48 +329,60 @@ namespace NewHorizons.Builder.Props
             return imageLoader;
         }
 
-        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
+        private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
             if (!String.IsNullOrEmpty(slideInfo.beatAudio))
             {
-                var audioBeat = new SlideBeatAudioModule();
-                audioBeat._audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod);
-                audioBeat._delay = slideInfo.beatDelay;
+                var audioBeat = new SlideBeatAudioModule
+                {
+                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod),
+                    _delay = slideInfo.beatDelay
+                };
                 modules.Add(audioBeat);
             }
             if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
             {
-                var audioBackdrop = new SlideBackdropAudioModule();
-                audioBackdrop._audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod);
-                audioBackdrop._fadeTime = slideInfo.backdropFadeTime;
+                var audioBackdrop = new SlideBackdropAudioModule
+                {
+                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod),
+                    _fadeTime = slideInfo.backdropFadeTime
+                };
                 modules.Add(audioBackdrop);
             }
             if (slideInfo.ambientLightIntensity > 0)
             {
-                var ambientLight = new SlideAmbientLightModule();
-                ambientLight._intensity = slideInfo.ambientLightIntensity;
-                ambientLight._range = slideInfo.ambientLightRange;
-                ambientLight._color = slideInfo.ambientLightColor.ToColor();
-                ambientLight._spotIntensityMod = slideInfo.spotIntensityMod;
+                var ambientLight = new SlideAmbientLightModule
+                {
+                    _intensity = slideInfo.ambientLightIntensity,
+                    _range = slideInfo.ambientLightRange,
+                    _color = slideInfo.ambientLightColor.ToColor(),
+                    _spotIntensityMod = slideInfo.spotIntensityMod
+                };
                 modules.Add(ambientLight);
             }
             if (slideInfo.playTimeDuration != 0)
             {
-                var playTime = new SlidePlayTimeModule();
-                playTime._duration = slideInfo.playTimeDuration;
+                var playTime = new SlidePlayTimeModule
+                {
+                    _duration = slideInfo.playTimeDuration
+                };
                 modules.Add(playTime);
             }
             if (slideInfo.blackFrameDuration != 0)
             {
-                var blackFrame = new SlideBlackFrameModule();
-                blackFrame._duration = slideInfo.blackFrameDuration;
+                var blackFrame = new SlideBlackFrameModule
+                {
+                    _duration = slideInfo.blackFrameDuration
+                };
                 modules.Add(blackFrame);
             }
             if (!String.IsNullOrEmpty(slideInfo.reveal))
             {
-                var shipLogEntry = new SlideShipLogEntryModule();
-                shipLogEntry._entryKey = slideInfo.reveal;
+                var shipLogEntry = new SlideShipLogEntryModule
+                {
+                    _entryKey = slideInfo.reveal
+                };
                 modules.Add(shipLogEntry);
             }
 

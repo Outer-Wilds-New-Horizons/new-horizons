@@ -1,5 +1,5 @@
 using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Volumes;
 using OWML.Utils;
 using UnityEngine;
 
@@ -7,7 +7,7 @@ namespace NewHorizons.Builder.Volumes
 {
     internal static class CreditsVolumeBuilder
     {
-        public static LoadCreditsVolume Make(GameObject planetGO, Sector sector, VolumesModule.LoadCreditsVolumeInfo info)
+        public static LoadCreditsVolume Make(GameObject planetGO, Sector sector, LoadCreditsVolumeInfo info)
         {
             var volume = VolumeBuilder.Make<LoadCreditsVolume>(planetGO, sector, info);
 
