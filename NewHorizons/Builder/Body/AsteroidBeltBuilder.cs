@@ -1,11 +1,13 @@
+using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.SerializableData;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using UnityEngine;
 using Random = UnityEngine.Random;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Body
 {
     public static class AsteroidBeltBuilder
@@ -20,7 +22,7 @@ namespace NewHorizons.Builder.Body
             if (belt.amount >= 0) count = belt.amount;
             if (count > 200) count = 200;
 
-            Logger.Log($"Generating {count} asteroid belt around {bodyName}");
+            NHLogger.Log($"Generating {count} asteroid belt around {bodyName}");
 
             Random.InitState(belt.randomSeed);
 

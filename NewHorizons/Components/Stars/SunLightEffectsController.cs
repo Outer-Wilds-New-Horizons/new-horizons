@@ -1,8 +1,8 @@
 using NewHorizons.Builder.Atmosphere;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components.Stars
 {
     [RequireComponent(typeof(SunLightController))]
@@ -43,13 +43,13 @@ namespace NewHorizons.Components.Stars
         {
             if (star == null) return;
 
-            Logger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
+            NHLogger.LogVerbose($"Adding new star to list: {star.gameObject.name}");
             Instance._stars.Add(star);
         }
 
         public static void RemoveStar(StarController star)
         {
-            Logger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
+            NHLogger.LogVerbose($"Removing star from list: {star?.gameObject?.name}");
             if (Instance._stars.Contains(star))
             {
                 if (Instance._activeStar != null && Instance._activeStar.Equals(star))
@@ -170,7 +170,7 @@ namespace NewHorizons.Components.Stars
 
             if (_activeStar != null) _activeStar.Disable();
 
-            Logger.LogVerbose($"Switching active star: {star.gameObject.name}");
+            NHLogger.LogVerbose($"Switching active star: {star.gameObject.name}");
 
             _activeStar = star;
 

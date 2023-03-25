@@ -1,9 +1,11 @@
 using NewHorizons.Components.ShipLog;
-using NewHorizons.Utility;
-using System.Collections.Generic;
+using NewHorizons.External;
 using NewHorizons.OtherMods.CustomShipLogModes;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
+using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public static class StarChartHandler
@@ -91,7 +93,7 @@ namespace NewHorizons.Handlers
         {
             if (_factIDToStarSystem.TryGetValue(factID, out var systemUnlocked))
             {
-                Logger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
+                NHLogger.Log($"Just learned [{factID}] and unlocked [{systemUnlocked}]");
                 if (!Main.HasWarpDrive)
                     Main.Instance.EnableWarpDrive();
                 if (ShipLogStarChartMode != null)
@@ -101,7 +103,7 @@ namespace NewHorizons.Handlers
 
         public static void RegisterFactForSystem(string factID, string system)
         {
-            Logger.LogVerbose($"Need to know [{factID}] to unlock [{system}]");
+            NHLogger.LogVerbose($"Need to know [{factID}] to unlock [{system}]");
             _starSystemToFactID.Add(system, factID);
             _factIDToStarSystem.Add(factID, system);
         }

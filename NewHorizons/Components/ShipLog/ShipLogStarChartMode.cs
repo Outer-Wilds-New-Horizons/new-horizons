@@ -1,13 +1,14 @@
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components.ShipLog
 {
     public class ShipLogStarChartMode : ShipLogMode
@@ -134,7 +135,7 @@ namespace NewHorizons.Components.ShipLog
                 else
                 {
                     var path = Path.Combine("planets", uniqueID + ".png");
-                    Logger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
+                    NHLogger.LogVerbose($"ShipLogStarChartManager - Trying to load {path}");
                     texture = ImageUtilities.GetTexture(Main.SystemDict[uniqueID].Mod, path);
                 }
             }

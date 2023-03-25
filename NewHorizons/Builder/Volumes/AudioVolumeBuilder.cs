@@ -1,22 +1,16 @@
 using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules;
-using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
     public static class AudioVolumeBuilder
     {
-        public static AudioVolume Make(GameObject planetGO, Sector sector, VolumesModule.AudioVolumeInfo info, IModBehaviour mod)
+        public static AudioVolume Make(GameObject planetGO, Sector sector, AudioVolumeInfo info, IModBehaviour mod)
         {
             var go = GeneralPropBuilder.MakeNew("AudioVolume", planetGO, sector, info);
             go.layer = Layer.AdvancedEffectVolume;

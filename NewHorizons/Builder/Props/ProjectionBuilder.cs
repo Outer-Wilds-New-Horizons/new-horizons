@@ -1,14 +1,15 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
-using static NewHorizons.External.Modules.PropModule;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -32,7 +33,7 @@ namespace NewHorizons.Builder.Props
             {
                 _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_Reel")?.DontDestroyOnLoad();
                 if (_slideReelPrefab == null)
-                    Logger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
                 else
                     _slideReelPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -41,7 +42,7 @@ namespace NewHorizons.Builder.Props
             {
                 _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_AutoProjector")?.DontDestroyOnLoad();
                 if (_autoPrefab == null)
-                    Logger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
                 else
                     _autoPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -50,7 +51,7 @@ namespace NewHorizons.Builder.Props
             {
                 _visionTorchDetectorPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchDetector")?.DontDestroyOnLoad();
                 if (_visionTorchDetectorPrefab == null)
-                    Logger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
                 else
                     _visionTorchDetectorPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -59,35 +60,35 @@ namespace NewHorizons.Builder.Props
             {
                 _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
                 if (_standingVisionTorchPrefab == null)
-                    Logger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
                 else
                     _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
         }
 
-        public static void Make(GameObject go, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             switch (info.type)
             {
-                case PropModule.ProjectionInfo.SlideShowType.AutoProjector:
+                case ProjectionInfo.SlideShowType.AutoProjector:
                     MakeAutoProjector(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.SlideReel:
+                case ProjectionInfo.SlideShowType.SlideReel:
                     MakeSlideReel(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.VisionTorchTarget:
+                case ProjectionInfo.SlideShowType.VisionTorchTarget:
                     MakeMindSlidesTarget(go, sector, info, mod);
                     break;
-                case PropModule.ProjectionInfo.SlideShowType.StandingVisionTorch:
+                case ProjectionInfo.SlideShowType.StandingVisionTorch:
                     MakeStandingVisionTorch(go, sector, info, mod);
                     break;
                 default:
-                    Logger.LogError($"Invalid projection type {info.type}");
+                    NHLogger.LogError($"Invalid projection type {info.type}");
                     break;
             }
         }
 
-        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        private static GameObject MakeSlideReel(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -160,7 +161,7 @@ namespace NewHorizons.Builder.Props
             return slideReelObj;
         }
 
-        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeAutoProjector(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -195,7 +196,7 @@ namespace NewHorizons.Builder.Props
         }
 
         // Makes a target for a vision torch to scan
-        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeMindSlidesTarget(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -206,7 +207,7 @@ namespace NewHorizons.Builder.Props
 
             if (g == null)
             {
-                Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
+                NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
             }
 
@@ -232,7 +233,7 @@ namespace NewHorizons.Builder.Props
             return g;
         }
 
-        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, PropModule.ProjectionInfo info, IModBehaviour mod)
+        public static GameObject MakeStandingVisionTorch(GameObject planetGO, Sector sector, ProjectionInfo info, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -243,7 +244,7 @@ namespace NewHorizons.Builder.Props
 
             if (standingTorch == null)
             {
-                Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
+                NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
             }
 
@@ -327,48 +328,60 @@ namespace NewHorizons.Builder.Props
             return imageLoader;
         }
 
-        private static void AddModules(PropModule.SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
+        private static void AddModules(SlideInfo slideInfo, ref Slide slide, IModBehaviour mod)
         {
             var modules = new List<SlideFunctionModule>();
             if (!String.IsNullOrEmpty(slideInfo.beatAudio))
             {
-                var audioBeat = new SlideBeatAudioModule();
-                audioBeat._audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod);
-                audioBeat._delay = slideInfo.beatDelay;
+                var audioBeat = new SlideBeatAudioModule
+                {
+                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.beatAudio, mod),
+                    _delay = slideInfo.beatDelay
+                };
                 modules.Add(audioBeat);
             }
             if (!String.IsNullOrEmpty(slideInfo.backdropAudio))
             {
-                var audioBackdrop = new SlideBackdropAudioModule();
-                audioBackdrop._audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod);
-                audioBackdrop._fadeTime = slideInfo.backdropFadeTime;
+                var audioBackdrop = new SlideBackdropAudioModule
+                {
+                    _audioType = AudioTypeHandler.GetAudioType(slideInfo.backdropAudio, mod),
+                    _fadeTime = slideInfo.backdropFadeTime
+                };
                 modules.Add(audioBackdrop);
             }
             if (slideInfo.ambientLightIntensity > 0)
             {
-                var ambientLight = new SlideAmbientLightModule();
-                ambientLight._intensity = slideInfo.ambientLightIntensity;
-                ambientLight._range = slideInfo.ambientLightRange;
-                ambientLight._color = slideInfo.ambientLightColor.ToColor();
-                ambientLight._spotIntensityMod = slideInfo.spotIntensityMod;
+                var ambientLight = new SlideAmbientLightModule
+                {
+                    _intensity = slideInfo.ambientLightIntensity,
+                    _range = slideInfo.ambientLightRange,
+                    _color = slideInfo.ambientLightColor.ToColor(),
+                    _spotIntensityMod = slideInfo.spotIntensityMod
+                };
                 modules.Add(ambientLight);
             }
             if (slideInfo.playTimeDuration != 0)
             {
-                var playTime = new SlidePlayTimeModule();
-                playTime._duration = slideInfo.playTimeDuration;
+                var playTime = new SlidePlayTimeModule
+                {
+                    _duration = slideInfo.playTimeDuration
+                };
                 modules.Add(playTime);
             }
             if (slideInfo.blackFrameDuration != 0)
             {
-                var blackFrame = new SlideBlackFrameModule();
-                blackFrame._duration = slideInfo.blackFrameDuration;
+                var blackFrame = new SlideBlackFrameModule
+                {
+                    _duration = slideInfo.blackFrameDuration
+                };
                 modules.Add(blackFrame);
             }
             if (!String.IsNullOrEmpty(slideInfo.reveal))
             {
-                var shipLogEntry = new SlideShipLogEntryModule();
-                shipLogEntry._entryKey = slideInfo.reveal;
+                var shipLogEntry = new SlideShipLogEntryModule
+                {
+                    _entryKey = slideInfo.reveal
+                };
                 modules.Add(shipLogEntry);
             }
 

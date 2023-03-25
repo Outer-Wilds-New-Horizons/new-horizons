@@ -1,6 +1,5 @@
 using NewHorizons.Utility.Geometry;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 namespace NewHorizons.Builder.Body.Geometry
 {
     static class CubeSphere

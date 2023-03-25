@@ -1,6 +1,3 @@
-using NewHorizons.Builder.Atmosphere;
-using UnityEngine;
-
 namespace NewHorizons.Components
 {
     /*

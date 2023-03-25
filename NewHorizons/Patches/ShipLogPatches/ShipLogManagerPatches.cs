@@ -1,11 +1,11 @@
 using HarmonyLib;
 using NewHorizons.Builder.ShipLog;
+using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.OtherMods.AchievementsPlus;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Patches.ShipLogPatches
 {
@@ -28,7 +28,7 @@ namespace NewHorizons.Patches.ShipLogPatches
                 currentStarSystem = Main.Instance.DefaultStarSystem;
             }
 
-            Logger.Log($"Beginning Ship Log Generation For: {currentStarSystem}");
+            NHLogger.Log($"Beginning Ship Log Generation For: {currentStarSystem}");
 
             if (currentStarSystem != "SolarSystem")
             {
@@ -68,7 +68,7 @@ namespace NewHorizons.Patches.ShipLogPatches
                 RumorModeBuilder.UpdateEntryCuriosity(ref logEntry);
             }
 
-            Logger.Log($"Ship Log Generation Complete For: {Main.Instance.CurrentStarSystem}");
+            NHLogger.Log($"Ship Log Generation Complete For: {Main.Instance.CurrentStarSystem}");
         }
 
         [HarmonyPrefix]

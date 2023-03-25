@@ -1,11 +1,8 @@
-using NewHorizons.Utility.OWMLUtilities;
-using OWML.Common;
+using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Handlers
 {
@@ -52,14 +49,14 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load platform id [{id}]:\n{e}");
+                NHLogger.LogError($"Couldn't load platform id [{id}]:\n{e}");
                 return NomaiRemoteCameraPlatform.ID.None;
             }
         }
 
         public static NomaiRemoteCameraPlatform.ID AddCustomPlatformID(string id)
         {
-            Logger.LogVerbose($"Registering new platform id [{id}]");
+            NHLogger.LogVerbose($"Registering new platform id [{id}]");
 
             var platformID = EnumUtilities.Create<NomaiRemoteCameraPlatform.ID>(id);
 

@@ -1,9 +1,8 @@
 using NewHorizons.Components.ShipLog;
-using NewHorizons.Utility;
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Xml.Linq;
 using UnityEngine;
 using static NewHorizons.External.Configs.StarSystemConfig;
 

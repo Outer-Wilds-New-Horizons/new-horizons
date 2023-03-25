@@ -1,15 +1,16 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Stars;
+using NewHorizons.External.SerializableData;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Components.SizeControllers
 {
@@ -351,7 +352,7 @@ namespace NewHorizons.Components.SizeControllers
         {
             if (_isCollapsing) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} started collapse");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} started collapse");
 
             CollapseStart.Invoke();
             _isCollapsing = true;
@@ -367,7 +368,7 @@ namespace NewHorizons.Components.SizeControllers
         {
             if (!_isCollapsing) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} stopped collapse");
 
             CollapseStop.Invoke();
             _isCollapsing = false;
@@ -381,7 +382,7 @@ namespace NewHorizons.Components.SizeControllers
             if (supernova == null) return;
             if (_isSupernova) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} started supernova");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} started supernova");
 
             SupernovaStart.Invoke();
             supernova.Activate();
@@ -399,7 +400,7 @@ namespace NewHorizons.Components.SizeControllers
         {
             if (!_isSupernova) return;
 
-            Logger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
+            NHLogger.LogVerbose($"{gameObject.transform.root.name} stopped supernova");
 
             SupernovaStop.Invoke();
             if (supernova != null) supernova.Deactivate();

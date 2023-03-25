@@ -25,10 +25,22 @@ namespace NewHorizons.Components
                 CurrentOpacity = 1;
             }
 
-            if (_ringFluidVolume != null)
+            if (_ringFluidVolume != null && _ringFluidVolume.gameObject.activeInHierarchy)
             {
-                if (Mathf.Approximately(CurrentOpacity, 0) && _ringFluidVolume.IsVolumeActive()) _ringFluidVolume.SetVolumeActivation(false);
-                else if (!_ringFluidVolume.IsVolumeActive()) _ringFluidVolume.SetVolumeActivation(true);
+                if (Mathf.Approximately(CurrentOpacity, 0))
+                {
+                    if (_ringFluidVolume.IsVolumeActive())
+                    {
+                        _ringFluidVolume.SetVolumeActivation(false);
+                    }
+                }
+                else
+                {
+                    if (!_ringFluidVolume.IsVolumeActive())
+                    {
+                        _ringFluidVolume.SetVolumeActivation(true);
+                    }
+                }
             }
 
             if (_meshRenderer == null) return;

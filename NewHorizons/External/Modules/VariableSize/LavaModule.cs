@@ -1,4 +1,4 @@
-﻿using NewHorizons.Utility;
+﻿using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.VariableSize

@@ -1,5 +1,5 @@
 using NewHorizons.Components.Volumes;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using OWML.Utils;
 using UnityEngine;
 
@@ -7,9 +7,9 @@ namespace NewHorizons.Builder.Volumes
 {
     public static class FluidVolumeBuilder
     {
-        public static FluidVolume Make(GameObject planetGO, Sector sector, VolumesModule.FluidVolumeInfo info)
+        public static FluidVolume Make(GameObject planetGO, Sector sector, FluidVolumeInfo info)
         {
-            var type = EnumUtils.Parse<FluidVolume.Type>(info.type.ToString(), FluidVolume.Type.NONE);
+            var type = EnumUtils.Parse(info.type.ToString(), FluidVolume.Type.NONE);
             FluidVolume volume = null;
             switch (type)
             {

@@ -413,7 +413,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
           "default": "cloud",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -476,7 +476,7 @@
         "transparent"
       ]
     },
-    "FluidType": {
+    "NHFluidType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -1188,6 +1188,10 @@
           "description": "The radius that the added sphere collider will use for physics collision.\nIf there's already good colliders on the detail, you can make this 0.",
           "format": "float",
           "default": 1.0
+        },
+        "ignoreSun": {
+          "type": "boolean",
+          "description": "Set to true if this object's lighting should ignore the effects of sunlight"
         }
       }
     },
@@ -1974,7 +1978,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         }
       }
     },
@@ -2234,7 +2238,7 @@
         },
         "whiteboard": {
           "description": "Whiteboard that the stones can put text onto",
-          "$ref": "#/definitions/WhiteboardInfo"
+          "$ref": "#/definitions/RemoteWhiteboardInfo"
         },
         "platform": {
           "description": "Camera platform that the stones can project to and from",
@@ -2249,7 +2253,7 @@
         }
       }
     },
-    "WhiteboardInfo": {
+    "RemoteWhiteboardInfo": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -2579,7 +2583,7 @@
       "properties": {
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         },
         "inclination": {
           "type": "number",
@@ -3219,12 +3223,12 @@
         },
         "clipSelection": {
           "default": "random",
-          "$ref": "#/definitions/ClipSelectionType"
+          "$ref": "#/definitions/NHClipSelectionType"
         },
         "track": {
           "description": "The audio track of this audio volume",
           "default": "environment",
-          "$ref": "#/definitions/AudioMixerTrackName"
+          "$ref": "#/definitions/NHAudioMixerTrackName"
         },
         "loop": {
           "type": "boolean",
@@ -3259,7 +3263,7 @@
         }
       }
     },
-    "ClipSelectionType": {
+    "NHClipSelectionType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3273,7 +3277,7 @@
         "manual"
       ]
     },
-    "AudioMixerTrackName": {
+    "NHAudioMixerTrackName": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3351,11 +3355,11 @@
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
           "default": "default",
-          "$ref": "#/definitions/DeathType"
+          "$ref": "#/definitions/NHDeathType"
         }
       }
     },
-    "DeathType": {
+    "NHDeathType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3439,7 +3443,7 @@
         },
         "type": {
           "description": "The type of fluid for this volume.",
-          "$ref": "#/definitions/FluidType2"
+          "$ref": "#/definitions/NHFluidType"
         },
         "alignmentFluid": {
           "type": "boolean",
@@ -3455,28 +3459,6 @@
           "description": "Disable this fluid volume immediately?"
         }
       }
-    },
-    "FluidType2": {
-      "type": "string",
-      "description": "",
-      "x-enumNames": [
-        "NONE",
-        "AIR",
-        "WATER",
-        "CLOUD",
-        "SAND",
-        "PLASMA",
-        "FOG"
-      ],
-      "enum": [
-        "none",
-        "air",
-        "water",
-        "cloud",
-        "sand",
-        "plasma",
-        "fog"
-      ]
     },
     "HazardVolumeInfo": {
       "type": "object",
@@ -4247,7 +4229,7 @@
         },
         "creditsType": {
           "default": "fast",
-          "$ref": "#/definitions/CreditsType"
+          "$ref": "#/definitions/NHCreditsType"
         },
         "gameOverText": {
           "type": "string",
@@ -4256,11 +4238,11 @@
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
           "default": "default",
-          "$ref": "#/definitions/DeathType"
+          "$ref": "#/definitions/NHDeathType"
         }
       }
     },
-    "CreditsType": {
+    "NHCreditsType": {
       "type": "string",
       "description": "",
       "x-enumNames": [

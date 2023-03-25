@@ -1,36 +1,37 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components.Achievement;
-using NewHorizons.External.Modules;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RevealBuilder
     {
-        public static void Make(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
+        public static void Make(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
             var newRevealGO = GeneralPropBuilder.MakeNew("Reveal Volume (" + info.revealOn + ")", go, sector, info);
             switch (info.revealOn)
             {
-                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Enter:
+                case RevealVolumeInfo.RevealVolumeType.Enter:
                     MakeTrigger(newRevealGO, sector, info, mod);
                     break;
-                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Observe:
+                case RevealVolumeInfo.RevealVolumeType.Observe:
                     MakeObservable(newRevealGO, sector, info, mod);
                     break;
-                case VolumesModule.RevealVolumeInfo.RevealVolumeType.Snapshot:
+                case RevealVolumeInfo.RevealVolumeType.Snapshot:
                     MakeSnapshot(newRevealGO, sector, info, mod);
                     break;
                 default:
-                    Logger.LogError("Invalid revealOn: " + info.revealOn);
+                    NHLogger.LogError("Invalid revealOn: " + info.revealOn);
                     break;
             }
             newRevealGO.SetActive(true);
         }
 
-        private static SphereShape MakeShape(GameObject go, VolumesModule.RevealVolumeInfo info, Shape.CollisionMode collisionMode)
+        private static SphereShape MakeShape(GameObject go, RevealVolumeInfo info, Shape.CollisionMode collisionMode)
         {
             SphereShape newShape = go.AddComponent<SphereShape>();
             newShape.radius = info.radius;
@@ -38,7 +39,7 @@ namespace NewHorizons.Builder.ShipLog
             return newShape;
         }
 
-        private static void MakeTrigger(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
+        private static void MakeTrigger(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
             var shape = MakeShape(go, info, Shape.CollisionMode.Volume);
 
@@ -51,15 +52,15 @@ namespace NewHorizons.Builder.ShipLog
                 factRevealVolume._factIDs = info.reveals;
                 switch (info.revealFor)
                 {
-                    case VolumesModule.RevealVolumeInfo.EnterType.Player:
+                    case RevealVolumeInfo.EnterType.Player:
                         factRevealVolume._player = true;
                         factRevealVolume._probe = false;
                         break;
-                    case VolumesModule.RevealVolumeInfo.EnterType.Probe:
+                    case RevealVolumeInfo.EnterType.Probe:
                         factRevealVolume._player = false;
                         factRevealVolume._probe = true;
                         break;
-                    case VolumesModule.RevealVolumeInfo.EnterType.Both:
+                    case RevealVolumeInfo.EnterType.Both:
                     default:
                         // if you want both player and probe to able to trigger the thing you have to set both player and probe to false. setting both to true will make nothing trigger it
                         factRevealVolume._player = false;
@@ -74,15 +75,15 @@ namespace NewHorizons.Builder.ShipLog
                 achievementVolume.achievementID = info.achievementID;
                 switch (info.revealFor)
                 {
-                    case VolumesModule.RevealVolumeInfo.EnterType.Player:
+                    case RevealVolumeInfo.EnterType.Player:
                         achievementVolume.player = true;
                         achievementVolume.probe = false;
                         break;
-                    case VolumesModule.RevealVolumeInfo.EnterType.Probe:
+                    case RevealVolumeInfo.EnterType.Probe:
                         achievementVolume.player = false;
                         achievementVolume.probe = true;
                         break;
-                    case VolumesModule.RevealVolumeInfo.EnterType.Both:
+                    case RevealVolumeInfo.EnterType.Both:
                     default:
                         achievementVolume.player = true;
                         achievementVolume.probe = true;
@@ -91,7 +92,7 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeObservable(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
+        private static void MakeObservable(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
             go.layer = Layer.Interactible;
 
@@ -122,7 +123,7 @@ namespace NewHorizons.Builder.ShipLog
             }
         }
 
-        private static void MakeSnapshot(GameObject go, Sector sector, VolumesModule.RevealVolumeInfo info, IModBehaviour mod)
+        private static void MakeSnapshot(GameObject go, Sector sector, RevealVolumeInfo info, IModBehaviour mod)
         {
             var shape = MakeShape(go, info, Shape.CollisionMode.Manual);
 

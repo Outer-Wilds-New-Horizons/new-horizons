@@ -1,10 +1,11 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Builder.StarSystem
 {
@@ -14,7 +15,7 @@ namespace NewHorizons.Builder.StarSystem
 
         public static void Make(StarSystemConfig.SkyboxModule module, IModBehaviour mod)
         {
-            Logger.Log("Building Skybox");
+            NHLogger.Log("Building Skybox");
             BuildSkySphere(module, mod);
         }
 
@@ -50,7 +51,7 @@ namespace NewHorizons.Builder.StarSystem
         {
             if (!tex)
             {
-                Logger.LogError($"Failed to load texture for skybox {name.ToLower()} face");
+                NHLogger.LogError($"Failed to load texture for skybox {name.ToLower()} face");
                 return null;
             }
 

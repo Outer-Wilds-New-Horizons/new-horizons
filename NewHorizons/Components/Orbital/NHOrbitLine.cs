@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+using NewHorizons.Utility.OWML;
+
 namespace NewHorizons.Components.Orbital
 {
     public class NHOrbitLine : OrbitLine
@@ -85,7 +86,7 @@ namespace NewHorizons.Components.Orbital
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
+                NHLogger.LogError($"Exception in OrbitLine for [{_astroObject?.name}]:\n{ex}");
                 enabled = false;
             }
         }

@@ -7,15 +7,16 @@ using NewHorizons.Builder.Volumes;
 using NewHorizons.Components.Orbital;
 using NewHorizons.Components.Quantum;
 using NewHorizons.Components.Stars;
+using NewHorizons.External;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Handlers
 {
@@ -115,7 +116,7 @@ namespace NewHorizons.Handlers
                 LoadBody(body);
             }
 
-            Logger.Log("Loading Deferred Bodies");
+            NHLogger.Log("Loading Deferred Bodies");
 
             // Make a copy of the next pass of bodies so that the array can be edited while we load them
             toLoad = _nextPassBodies.ToList();
@@ -129,7 +130,7 @@ namespace NewHorizons.Handlers
                 _nextPassBodies = new List<NewHorizonsBody>();
             }
 
-            Logger.Log("Done loading bodies");
+            NHLogger.Log("Done loading bodies");
 
             SingularityBuilder.PairAllSingularities();
 
@@ -150,7 +151,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception)
             {
-                if (body?.Config?.name == null) Logger.LogError($"How is there no name for {body}");
+                if (body?.Config?.name == null) NHLogger.LogError($"How is there no name for {body}");
                 else existingPlanet = SearchUtilities.Find(body.Config.name.Replace(" ", "") + "_Body", false);
             }
 
@@ -207,7 +208,7 @@ namespace NewHorizons.Handlers
                         }
                         catch (Exception ex)
                         {
-                            Logger.LogError($"Couldn't make quantum state for [{body.Config.name}]:\n{ex}");
+                            NHLogger.LogError($"Couldn't make quantum state for [{body.Config.name}]:\n{ex}");
                             body.UnloadCache();
                             return false;
                         }
@@ -223,7 +224,7 @@ namespace NewHorizons.Handlers
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't update body {body.Config?.name}:\n{e}");
+                    NHLogger.LogError($"Couldn't update body {body.Config?.name}:\n{e}");
                     body.UnloadCache();
                     return false;
                 }
@@ -243,7 +244,7 @@ namespace NewHorizons.Handlers
                 {
                     try
                     {
-                        Logger.Log($"Creating [{body.Config.name}]");
+                        NHLogger.Log($"Creating [{body.Config.name}]");
                         var planetObject = GenerateBody(body, defaultPrimaryToSun);
                         planetObject?.SetActive(true);
                         if (planetObject == null) 
@@ -261,7 +262,7 @@ namespace NewHorizons.Handlers
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError($"Couldn't generate body {body.Config?.name}:\n{e}");
+                        NHLogger.LogError($"Couldn't generate body {body.Config?.name}:\n{e}");
                         body.UnloadCache();
                         return false;
                     }
@@ -274,7 +275,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
+                NHLogger.LogError($"Error in event handler for OnPlanetLoaded on body {body.Config.name}: {e}");
             }
             
             body.UnloadCache(true);
@@ -303,7 +304,7 @@ namespace NewHorizons.Handlers
         // Called when updating an existing planet
         public static GameObject UpdateBody(NewHorizonsBody body, GameObject go)
         {
-            Logger.Log($"Updating existing Object {go.name}");
+            NHLogger.Log($"Updating existing Object {go.name}");
 
             var rb = go.GetAttachedOWRigidbody();
             var sector = go.GetComponentInChildren<Sector>() ?? CreateSectorFromParent(go, rb);
@@ -358,7 +359,7 @@ namespace NewHorizons.Handlers
             // Now that we're done move the planet into place
             SetPositionFromVector(go, body.Config.Orbit.staticPosition);
 
-            Logger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
+            NHLogger.LogVerbose($"Finished creating Bramble Dimension [{body.Config.name}]");
 
             return go;
         }
@@ -376,7 +377,7 @@ namespace NewHorizons.Handlers
                 {
                     if (defaultPrimaryToSun)
                     {
-                        Logger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
+                        NHLogger.LogError($"Couldn't find {body.Config.Orbit.primaryBody}, defaulting to center of solar system");
                         primaryBody = Locator.GetCenterOfTheUniverse().GetAttachedOWRigidbody().GetComponent<AstroObject>();
                     }
                     else
@@ -455,7 +456,7 @@ namespace NewHorizons.Handlers
             // Spawning on other planets is a bit hacky so we do it last
             if (body.Config.Spawn != null)
             {
-                Logger.LogVerbose("Making spawn point");
+                NHLogger.LogVerbose("Making spawn point");
                 var spawnPoint = SpawnPointBuilder.Make(go, body.Config.Spawn, owRigidBody);
                 if (Main.SystemDict[body.Config.starSystem].SpawnPoint == null || (body.Config.Spawn.playerSpawn?.isDefault ?? false))
                 {
@@ -486,7 +487,7 @@ namespace NewHorizons.Handlers
 
             RichPresenceHandler.SetUpPlanet(body.Config.name, go, sector, body.Config.Star != null, body.Config.Atmosphere != null);
 
-            Logger.LogVerbose($"Finished creating [{body.Config.name}]");
+            NHLogger.LogVerbose($"Finished creating [{body.Config.name}]");
 
             return go;
         }
@@ -679,7 +680,7 @@ namespace NewHorizons.Handlers
 
         public static void UpdateBodyOrbit(NewHorizonsBody body, GameObject go)
         {
-            Logger.Log($"Updating orbit of [{body.Config.name}]");
+            NHLogger.Log($"Updating orbit of [{body.Config.name}]");
 
             try
             {
@@ -785,7 +786,7 @@ namespace NewHorizons.Handlers
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't update orbit of [{body.Config.name}]:\n{ex}");
+                NHLogger.LogError($"Couldn't update orbit of [{body.Config.name}]:\n{ex}");
                 // If it doesn't work here there's no point trying again so we'll still return true
             }
 
@@ -794,7 +795,7 @@ namespace NewHorizons.Handlers
 
         public static void UpdatePosition(GameObject go, IOrbitalParameters orbit, AstroObject primaryBody, AstroObject secondaryBody)
         {
-            Logger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
+            NHLogger.LogVerbose($"Placing [{secondaryBody?.name}] around [{primaryBody?.name}]");
 
             if (primaryBody != null)
             {
@@ -863,7 +864,7 @@ namespace NewHorizons.Handlers
                     Delay.FireInNUpdates(() => childObj.gameObject.SetActive(false), 2);
                 }
 
-                if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
             }
         }
     }

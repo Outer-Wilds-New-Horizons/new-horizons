@@ -2,26 +2,13 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
-using NewHorizons.Utility;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.SerializableEnums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum FluidType
-    {
-        [EnumMember(Value = @"none")] None = 0,
-
-        [EnumMember(Value = @"water")] Water = 1,
-
-        [EnumMember(Value = @"cloud")] Cloud = 2,
-
-        [EnumMember(Value = @"sand")] Sand = 3,
-
-        [EnumMember(Value = @"plasma")] Plasma = 4
-    }
-
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CloudPrefabType
     {
@@ -133,7 +120,7 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Fluid type for sounds/effects when colliding with this cloud.
             /// </summary>
-            [DefaultValue("cloud")] public FluidType fluidType = FluidType.Cloud;
+            [DefaultValue("cloud")] public NHFluidType fluidType = NHFluidType.Cloud;
 
             /// <summary>
             /// Add lightning to this planet like on Giant's Deep.
@@ -210,7 +197,7 @@ namespace NewHorizons.External.Modules
         public string cloudRamp;
 
         [Obsolete("FluidType is deprecated, please use CloudInfo instead")]
-        public FluidType fluidType;
+        public NHFluidType fluidType;
 
         [Obsolete("UseBasicCloudShader is deprecated, please use CloudInfo instead")]
         public bool useBasicCloudShader;

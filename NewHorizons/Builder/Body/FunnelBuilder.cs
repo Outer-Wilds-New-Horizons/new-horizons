@@ -1,11 +1,10 @@
-using System.Runtime.Serialization;
 using NewHorizons.Utility;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Components.Orbital;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Components.SizeControllers;
 
 namespace NewHorizons.Builder.Body
@@ -201,8 +200,8 @@ namespace NewHorizons.Builder.Body
             var target = targetAO?.GetAttachedOWRigidbody();
             if (target == null)
             {
-                if (targetAO != null) Logger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
-                else Logger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
+                if (targetAO != null) NHLogger.LogError($"Found funnel target ({targetAO.name}) but couldn't find rigidbody for the funnel {funnelGO.name}");
+                else NHLogger.LogError($"Couldn't find the target ({module.target}) for the funnel {funnelGO.name}");
                 return;
             }
 

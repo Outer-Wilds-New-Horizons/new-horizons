@@ -1,13 +1,13 @@
 using NewHorizons.Builder.Body.Geometry;
-using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.IO;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Body
 {
     public static class HeightMapBuilder
@@ -25,17 +25,17 @@ namespace NewHorizons.Builder.Body
             {
                 if (!string.IsNullOrEmpty(module.heightMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
                 {
-                    Logger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
+                    NHLogger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
                     module.heightMap = null;
                 }
                 if (!string.IsNullOrEmpty(module.textureMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap)))
                 {
-                    Logger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
+                    NHLogger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
                     module.textureMap = null;
                 }
                 if (!string.IsNullOrEmpty(module.emissionMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap)))
                 {
-                    Logger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
+                    NHLogger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
                     module.emissionMap = null;
                 }
 
@@ -76,7 +76,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load HeightMap textures:\n{e}");
+                NHLogger.LogError($"Couldn't load HeightMap textures:\n{e}");
                 return null;
             }
 

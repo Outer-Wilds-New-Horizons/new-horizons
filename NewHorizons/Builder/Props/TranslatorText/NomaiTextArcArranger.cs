@@ -1,8 +1,8 @@
 using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props.TranslatorText
 {
@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         // if we couldn't put it inside the bounds, put it back how we found it (this increases stability of the rest of the spirals)
                         if (s1.Mirrored != originalMirror) s1.Mirror();
                         s1.PlaceOnParentPoint(start);
-                        Logger.LogVerbose("Unable to place spiral " + s1.gameObject.name + " within bounds.");
+                        NHLogger.LogVerbose("Unable to place spiral " + s1.gameObject.name + " within bounds.");
                     }
                 }
 
