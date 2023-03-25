@@ -1,14 +1,14 @@
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.Components.Volumes;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
-using NewHorizons.External.Modules;
 using UnityEngine;
 using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Components.Volumes;
-using NewHorizons.Utility.OWUtilities;
 
 namespace NewHorizons.Builder.Body
 {
@@ -64,14 +64,11 @@ namespace NewHorizons.Builder.Body
             // Properly lit shader doesnt work yet
             ring.unlit = true;
 
-            Texture2D ringTexture;
-            try
+            var ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
+
+            if (ringTexture == null)
             {
-                ringTexture = ImageUtilities.GetTexture(mod, ring.texture);
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Couldn't load Ring texture:\n{e}");
+                Logger.LogError($"Couldn't load Ring texture [{ring.texture}]");
                 return null;
             }
 
@@ -85,7 +82,6 @@ namespace NewHorizons.Builder.Body
             var ringMF = ringGO.AddComponent<MeshFilter>();
             var ringMesh = ringMF.mesh;
             var ringMR = ringGO.AddComponent<MeshRenderer>();
-            var texture = ringTexture;
 
             if (RingShader == null) RingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/Ring.shader");
             if (UnlitRingShader == null) UnlitRingShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitTransparent.shader");
@@ -93,14 +89,14 @@ namespace NewHorizons.Builder.Body
             if (UnlitRingShader1Pixel == null) UnlitRingShader1Pixel = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/UnlitRing1Pixel.shader");
 
             var mat = new Material(ring.unlit ? UnlitRingShader : RingShader);
-            if (texture.width == 1)
+            if (ringTexture.width == 1)
             {
                 mat = new Material(ring.unlit ? UnlitRingShader1Pixel : RingShader1Pixel);
                 mat.SetFloat(InnerRadius, 0);
             }
             ringMR.receiveShadows = !ring.unlit;
 
-            mat.mainTexture = texture;
+            mat.mainTexture = ringTexture;
 
             // Black holes vanish behind rings
             // However if we lower this to where black holes don't vanish, water becomes invisible when seen through rings
