@@ -1,10 +1,11 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class DetectorBuilder
@@ -154,7 +155,7 @@ namespace NewHorizons.Builder.General
 
         private static void SetBinaryForceDetectableFields(BinaryFocalPoint point, ConstantForceDetector primaryCFD, ConstantForceDetector secondaryCFD)
         {
-            Logger.Log($"Setting up binary focal point for {point.name}");
+            NHLogger.Log($"Setting up binary focal point for {point.name}");
 
             var primary = point.Primary;
             var secondary = point.Secondary;
@@ -165,7 +166,7 @@ namespace NewHorizons.Builder.General
 
             if (primaryGV._falloffType != secondaryGV._falloffType)
             {
-                Logger.LogError($"Binaries must have the same gravity falloff! {primaryGV._falloffType} != {secondaryGV._falloffType}");
+                NHLogger.LogError($"Binaries must have the same gravity falloff! {primaryGV._falloffType} != {secondaryGV._falloffType}");
                 return;
             }
 

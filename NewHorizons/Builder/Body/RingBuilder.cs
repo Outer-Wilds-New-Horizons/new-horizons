@@ -3,12 +3,12 @@ using NewHorizons.Components.SizeControllers;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -68,7 +68,7 @@ namespace NewHorizons.Builder.Body
 
             if (ringTexture == null)
             {
-                Logger.LogError($"Couldn't load Ring texture [{ring.texture}]");
+                NHLogger.LogError($"Couldn't load Ring texture [{ring.texture}]");
                 return null;
             }
 

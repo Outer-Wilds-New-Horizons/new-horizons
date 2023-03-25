@@ -1,5 +1,7 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.SerializableEnums;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Utils;
 using System;
@@ -124,7 +126,7 @@ namespace NewHorizons.Utility
                 }
                 catch (Exception)
                 {
-                    Logger.LogWarning($"Couldn't copy property {targetProperty.Name} from {source} to {destination}");
+                    NHLogger.LogWarning($"Couldn't copy property {targetProperty.Name} from {source} to {destination}");
                 }
             }
         }
@@ -151,7 +153,7 @@ namespace NewHorizons.Utility
                 }
                 catch (Exception)
                 {
-                    Logger.LogWarning($"Couldn't copy field {targetField.Name} from {source} to {destination}");
+                    NHLogger.LogWarning($"Couldn't copy field {targetField.Name} from {source} to {destination}");
                 }
             }
         }
@@ -248,10 +250,10 @@ namespace NewHorizons.Utility
             bool xCorrect = nomaiCoordinateInterface._nodeControllers[0].CheckCoordinate(coordinates.x);
             bool yCorrect = nomaiCoordinateInterface._nodeControllers[1].CheckCoordinate(coordinates.y);
             bool zCorrect = nomaiCoordinateInterface._nodeControllers[2].CheckCoordinate(coordinates.z);
-            Utility.Logger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
+            OWML.NHLogger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
             return xCorrect && yCorrect && zCorrect;
         }
 
-        public static FluidVolume.Type ConvertToOW(this FluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+        public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     }
 }

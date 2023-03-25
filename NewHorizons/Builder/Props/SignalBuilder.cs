@@ -1,12 +1,13 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Builder.Props
 {
@@ -27,7 +28,7 @@ namespace NewHorizons.Builder.Props
 
         public static void Init()
         {
-            Logger.LogVerbose($"Initializing SignalBuilder");
+            NHLogger.LogVerbose($"Initializing SignalBuilder");
             _customSignalNames = new Dictionary<SignalName, string>();
             _customFrequencyNames = new Dictionary<SignalFrequency, string>() {
                 { SignalFrequency.Statue, "FREQ_STATUE" },
@@ -59,11 +60,11 @@ namespace NewHorizons.Builder.Props
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
-            Logger.Log($"Registering new frequency name [{str}]");
+            NHLogger.Log($"Registering new frequency name [{str}]");
 
             if (NumberOfFrequencies == 31)
             {
-                Logger.LogWarning($"Can't store any more frequencies, skipping [{str}]");
+                NHLogger.LogWarning($"Can't store any more frequencies, skipping [{str}]");
                 return SignalFrequency.Default;
             }
 
@@ -93,7 +94,7 @@ namespace NewHorizons.Builder.Props
             var name = CollectionUtilities.KeyByValue(_customSignalNames, str);
             if (name != default) return name;
 
-            Logger.Log($"Registering new signal name [{str}]");
+            NHLogger.Log($"Registering new signal name [{str}]");
 
             name = EnumUtilities.Create<SignalName>(str);
             _customSignalNames.Add(name, str);

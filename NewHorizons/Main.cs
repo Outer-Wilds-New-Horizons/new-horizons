@@ -15,10 +15,9 @@ using NewHorizons.OtherMods.MenuFramework;
 using NewHorizons.OtherMods.OWRichPresence;
 using NewHorizons.OtherMods.VoiceActing;
 using NewHorizons.Utility;
-using NewHorizons.Utility.DebugMenu;
-using NewHorizons.Utility.DebugUtilities;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.ModHelper;
 using OWML.Utils;
@@ -30,7 +29,9 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.SceneManagement;
-using Logger = NewHorizons.Utility.Logger;
+
+using NewHorizons.Utility.DebugTools;
+using NewHorizons.Utility.DebugTools.Menu;
 
 namespace NewHorizons
 {
@@ -90,7 +91,7 @@ namespace NewHorizons
 
         public override void Configure(IModConfig config)
         {
-            Logger.LogVerbose("Settings changed");
+            NHLogger.LogVerbose("Settings changed");
 
             var currentScene = SceneManager.GetActiveScene().name;
 
@@ -103,9 +104,9 @@ namespace NewHorizons
                 DebugMenu.UpdatePauseMenuButton();
             }
 
-            if (VerboseLogs) Logger.UpdateLogLevel(Logger.LogType.Verbose);
-            else if (Debug) Logger.UpdateLogLevel(Logger.LogType.Log);
-            else Logger.UpdateLogLevel(Logger.LogType.Error);
+            if (VerboseLogs) NHLogger.UpdateLogLevel(NHLogger.LogType.Verbose);
+            else if (Debug) NHLogger.UpdateLogLevel(NHLogger.LogType.Log);
+            else NHLogger.UpdateLogLevel(NHLogger.LogType.Error);
 
             _defaultSystemOverride = config.GetSettingsValue<string>("Default System Override");
 
@@ -121,7 +122,7 @@ namespace NewHorizons
             // Don't reload if we haven't configured yet (called on game start)
             if (wasUsingCustomTitleScreen != _useCustomTitleScreen && SceneManager.GetActiveScene().name == "TitleScreen" && _wasConfigured)
             {
-                Logger.LogVerbose("Reloading");
+                NHLogger.LogVerbose("Reloading");
                 SceneManager.LoadScene("TitleScreen", LoadSceneMode.Single);
             }
 
@@ -200,7 +201,7 @@ namespace NewHorizons
 
             ResetConfigs(resetTranslation: false);
 
-            Logger.Log("Begin load of config files...");
+            NHLogger.Log("Begin load of config files...");
 
             try
             {
@@ -208,7 +209,7 @@ namespace NewHorizons
             }
             catch (Exception)
             {
-                Logger.LogWarning("Couldn't find planets folder");
+                NHLogger.LogWarning("Couldn't find planets folder");
             }
 
             Delay.FireOnNextUpdate(() => OnSceneLoaded(SceneManager.GetActiveScene(), LoadSceneMode.Single));
@@ -227,7 +228,7 @@ namespace NewHorizons
 
         public void OnDestroy()
         {
-            Logger.Log($"Destroying NewHorizons");
+            NHLogger.Log($"Destroying NewHorizons");
             SceneManager.sceneLoaded -= OnSceneLoaded;
             GlobalMessenger<DeathType>.RemoveListener("PlayerDeath", OnDeath);
             GlobalMessenger.RemoveListener("WakeUp", new Callback(OnWakeUp));
@@ -252,7 +253,7 @@ namespace NewHorizons
 
         private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            Logger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
+            NHLogger.Log($"Scene Loaded: {scene.name} {mode} OWScene.{LoadManager.NameToScene(scene.name)}");
 
             var isTitleScreen = scene.name == LoadManager.SceneToName(OWScene.TitleScreen);
             var isSolarSystem = scene.name == LoadManager.SceneToName(OWScene.SolarSystem);
@@ -302,7 +303,7 @@ namespace NewHorizons
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't init prefabs:\n{e}");
+                    NHLogger.LogError($"Couldn't init prefabs:\n{e}");
                 }
             }
 
@@ -321,7 +322,7 @@ namespace NewHorizons
 
             if (!SystemDict.ContainsKey(_currentStarSystem) || !BodyDict.ContainsKey(_currentStarSystem))
             {
-                Logger.LogError($"System \"{_currentStarSystem}\" does not exist!");
+                NHLogger.LogError($"System \"{_currentStarSystem}\" does not exist!");
                 _currentStarSystem = DefaultStarSystem;
             }
 
@@ -512,12 +513,12 @@ namespace NewHorizons
 
                 try
                 {
-                    Logger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
+                    NHLogger.Log($"Star system finished loading [{Instance.CurrentStarSystem}]");
                     Instance.OnStarSystemLoaded?.Invoke(Instance.CurrentStarSystem);
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
+                    NHLogger.LogError($"Exception thrown when invoking star system loaded event with parameter [{Instance.CurrentStarSystem}]:\n{e}");
                 }
             }
             else
@@ -553,7 +554,7 @@ namespace NewHorizons
 
         public void EnableWarpDrive()
         {
-            Logger.LogVerbose("Setting up warp drive");
+            NHLogger.LogVerbose("Setting up warp drive");
             PlanetCreationHandler.LoadBody(LoadConfig(this, "Assets/WarpDriveConfig.json"));
             HasWarpDrive = true;
         }
@@ -582,14 +583,14 @@ namespace NewHorizons
 
                     if(systemFiles.Length == 0)
                     {
-                        Logger.LogVerbose($"Found no JSON files in systems folder: {systemsFolder}");
+                        NHLogger.LogVerbose($"Found no JSON files in systems folder: {systemsFolder}");
                     }
 
                     foreach (var file in systemFiles)
                     {
                         var name = Path.GetFileNameWithoutExtension(file);
 
-                        Logger.LogVerbose($"Loading system {name}");
+                        NHLogger.LogVerbose($"Loading system {name}");
 
                         var relativePath = file.Replace(folder, "");
                         var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(relativePath, false);
@@ -626,7 +627,7 @@ namespace NewHorizons
 
                     if(planetFiles.Length == 0)
                     {
-                        Logger.LogVerbose($"Found no JSON files in planets folder: {planetsFolder}");
+                        NHLogger.LogVerbose($"Found no JSON files in planets folder: {planetsFolder}");
                     }
 
                     foreach (var file in planetFiles)
@@ -658,13 +659,13 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError(ex.ToString());
+                NHLogger.LogError(ex.ToString());
             }
         }
 
         private void LoadAddonManifest(string file, IModBehaviour mod)
         {
-            Logger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
+            NHLogger.LogVerbose($"Loading addon manifest for {mod.ModHelper.Manifest.Name}");
 
             var addonConfig = mod.ModHelper.Storage.Load<AddonConfig>(file, false);
 
@@ -694,7 +695,7 @@ namespace NewHorizons
 
                 if (File.Exists(Path.Combine(folder, relativeFile)))
                 {
-                    Logger.LogVerbose($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
+                    NHLogger.LogVerbose($"Registering {language} translation from {mod.ModHelper.Manifest.Name} from {relativeFile}");
 
                     var config = new TranslationConfig(Path.Combine(folder, relativeFile));
 
@@ -708,7 +709,7 @@ namespace NewHorizons
                     }
                 }
             }
-            if (!foundFile) Logger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
+            if (!foundFile) NHLogger.LogWarning($"{mod.ModHelper.Manifest.Name} has a folder for translations but none were loaded");
         }
 
         public NewHorizonsBody LoadConfig(IModBehaviour mod, string relativePath)
@@ -719,19 +720,19 @@ namespace NewHorizons
                 var config = mod.ModHelper.Storage.Load<PlanetConfig>(relativePath, false);
                 if (config == null)
                 {
-                    Logger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
+                    NHLogger.LogError($"Couldn't load {relativePath}. Is your Json formatted correctly?");
                     MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
                     return null;
                 }
 
-                Logger.LogVerbose($"Loaded {config.name}");
+                NHLogger.LogVerbose($"Loaded {config.name}");
 
                 if (!SystemDict.ContainsKey(config.starSystem))
                 {
                     // Since we didn't load it earlier there shouldn't be a star system config
                     var starSystemConfig = mod.ModHelper.Storage.Load<StarSystemConfig>(Path.Combine("systems", config.starSystem + ".json"), false);
                     if (starSystemConfig == null) starSystemConfig = new StarSystemConfig();
-                    else Logger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
+                    else NHLogger.LogWarning($"Loaded system config for {config.starSystem}. Why wasn't this loaded earlier?");
 
                     starSystemConfig.Migrate();
                     starSystemConfig.FixCoordinates();
@@ -751,7 +752,7 @@ namespace NewHorizons
             }
             catch (Exception e)
             {
-                Logger.LogError($"Error encounter when loading {relativePath}:\n{e}");
+                NHLogger.LogError($"Error encounter when loading {relativePath}:\n{e}");
                 MenuHandler.RegisterFailedConfig(Path.GetFileName(relativePath));
             }
 
@@ -797,7 +798,7 @@ namespace NewHorizons
             DidWarpFromVessel = false;
             OnChangeStarSystem?.Invoke(newStarSystem);
 
-            Logger.Log($"Warping to {newStarSystem}");
+            NHLogger.Log($"Warping to {newStarSystem}");
             if (warp && _shipWarpController) _shipWarpController.WarpOut();
             IsChangingStarSystem = true;
             WearingSuit = PlayerState.IsWearingSuit();

@@ -3,8 +3,8 @@ using NewHorizons.Utility;
 using NewHorizons.External.Configs;
 using NewHorizons.Components;
 using System.Linq;
-using NewHorizons.Handlers;
 using OWML.Common;
+using NewHorizons.Utility.Files;
 
 namespace NewHorizons.Builder.Body
 {

@@ -1,15 +1,12 @@
-using NewHorizons.Builder.Body;
 using NewHorizons.Builder.ShipLog;
-using NewHorizons.Builder.Volumes;
 using NewHorizons.Builder.Volumes.Rulesets;
 using NewHorizons.Builder.Volumes.VisorEffects;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
@@ -27,7 +24,7 @@ namespace NewHorizons.Builder.Volumes
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

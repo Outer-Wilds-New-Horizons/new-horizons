@@ -1,8 +1,7 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -42,7 +41,7 @@ namespace NewHorizons.Builder.Props
             }
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PropModule.VolcanoInfo info)
+        public static void Make(GameObject planetGO, Sector sector, VolcanoInfo info)
         {
             InitPrefab();
 
@@ -73,7 +72,7 @@ namespace NewHorizons.Builder.Props
             });
         }
 
-        private static void FixMeteor(MeteorController meteor, PropModule.VolcanoInfo info)
+        private static void FixMeteor(MeteorController meteor, VolcanoInfo info)
         {
             meteor.transform.localScale = Vector3.one * info.scale;
 

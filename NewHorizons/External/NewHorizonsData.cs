@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 
 namespace NewHorizons.External
 {
@@ -23,7 +23,7 @@ namespace NewHorizons.External
                 _activeProfileName = GetProfileName();
                 if (_activeProfileName == null)
                 {
-                    Logger.LogWarning("Couldn't find active profile, are you on Gamepass?");
+                    NHLogger.LogWarning("Couldn't find active profile, are you on Gamepass?");
                     _activeProfileName = "XboxGamepassDefaultProfile";
                 }
 
@@ -33,22 +33,22 @@ namespace NewHorizons.External
                     if (!_saveFile.Profiles.ContainsKey(_activeProfileName))
                         _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                     _activeProfile = _saveFile.Profiles[_activeProfileName];
-                    Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
+                    NHLogger.LogVerbose($"Loaded save data for {_activeProfileName}");
                 }
                 catch (Exception)
                 {
                     try
                     {
-                        Logger.LogVerbose($"Couldn't load save data from {FileName}, creating a new file");
+                        NHLogger.LogVerbose($"Couldn't load save data from {FileName}, creating a new file");
                         _saveFile = new NewHorizonsSaveFile();
                         _saveFile.Profiles.Add(_activeProfileName, new NewHorizonsProfile());
                         _activeProfile = _saveFile.Profiles[_activeProfileName];
                         Main.Instance.ModHelper.Storage.Save(_saveFile, FileName);
-                        Logger.LogVerbose($"Loaded save data for {_activeProfileName}");
+                        NHLogger.LogVerbose($"Loaded save data for {_activeProfileName}");
                     }
                     catch (Exception e)
                     {
-                        Logger.LogError($"Couldn't create save data:\n{e}");
+                        NHLogger.LogError($"Couldn't create save data:\n{e}");
                     }
                 }
             }
@@ -67,7 +67,7 @@ namespace NewHorizons.External
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't save data:\n{ex}");
+                    NHLogger.LogError($"Couldn't save data:\n{ex}");
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace NewHorizons.External
         public static void Reset()
         {
             if (_saveFile == null || _activeProfile == null) Load();
-            Logger.LogVerbose($"Resetting save data for {_activeProfileName}");
+            NHLogger.LogVerbose($"Resetting save data for {_activeProfileName}");
             _activeProfile = new NewHorizonsProfile();
             _saveFile.Profiles[_activeProfileName] = _activeProfile;
 

@@ -1,13 +1,12 @@
-using Epic.OnlineServices.Presence;
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using System;
 using System.Reflection;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class SpawnPointBuilder
@@ -52,7 +51,7 @@ namespace NewHorizons.Builder.General
 
                     if (Main.Instance.IsWarpingFromShip)
                     {
-                        Logger.LogVerbose("Overriding player spawn to be inside ship");
+                        NHLogger.LogVerbose("Overriding player spawn to be inside ship");
                         GameObject playerSpawnGO = new GameObject("PlayerSpawnPoint");
                         playerSpawnGO.transform.parent = ship.transform;
                         playerSpawnGO.layer = Layer.PlayerSafetyCollider;
@@ -72,7 +71,7 @@ namespace NewHorizons.Builder.General
                 Delay.RunWhen(() => Main.IsSystemReady, () => SuitUp());
             }
 
-            Logger.Log($"Made spawnpoint on [{planetGO.name}]");
+            NHLogger.Log($"Made spawnpoint on [{planetGO.name}]");
 
             return playerSpawn;
         }

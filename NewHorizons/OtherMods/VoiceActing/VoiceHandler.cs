@@ -1,4 +1,4 @@
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System;
 using System.IO;
 using System.Linq;
@@ -19,7 +19,7 @@ namespace NewHorizons.OtherMods.VoiceActing
 
                 if (API == null)
                 {
-                    Logger.LogVerbose("VoiceMod isn't installed");
+                    NHLogger.LogVerbose("VoiceMod isn't installed");
                     return;
                 }
 
@@ -29,7 +29,7 @@ namespace NewHorizons.OtherMods.VoiceActing
             }
             catch (Exception ex)
             {
-                Logger.LogError($"VoiceMod handler failed to initialize: {ex}");
+                NHLogger.LogError($"VoiceMod handler failed to initialize: {ex}");
                 Enabled = false;
             }
         }
@@ -45,12 +45,12 @@ namespace NewHorizons.OtherMods.VoiceActing
                 }
                 if (Directory.Exists(folder))
                 {
-                    Logger.Log($"Registering VoiceMod audio for {mod.ModHelper.Manifest.Name} from {folder}");
+                    NHLogger.Log($"Registering VoiceMod audio for {mod.ModHelper.Manifest.Name} from {folder}");
                     API.RegisterAssets(folder);
                 }
                 else
                 {
-                    Logger.LogVerbose($"Didn't find VoiceMod audio for {mod.ModHelper.Manifest.Name} at {folder}");
+                    NHLogger.LogVerbose($"Didn't find VoiceMod audio for {mod.ModHelper.Manifest.Name} at {folder}");
                 }
             }
         }

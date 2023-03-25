@@ -1,12 +1,12 @@
 using NewHorizons.Components.Orbital;
+using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Handlers;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Orbital
 {
     public static class FocalPointBuilder
@@ -40,7 +40,7 @@ namespace NewHorizons.Builder.Orbital
 
             if (primary == null || secondary == null)
             {
-                Logger.LogError($"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
+                NHLogger.LogError($"Couldn't make focal point between [{module.primary} = {primary}] and [{module.secondary} = {secondary}]");
                 return;
             }
         }

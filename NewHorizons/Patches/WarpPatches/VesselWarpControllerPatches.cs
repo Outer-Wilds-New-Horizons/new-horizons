@@ -1,6 +1,6 @@
 using HarmonyLib;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
 
 namespace NewHorizons.Patches.WarpPatches
 {

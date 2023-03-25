@@ -2,10 +2,10 @@ using HarmonyLib;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Patches.ShipLogPatches
 {
@@ -21,7 +21,7 @@ namespace NewHorizons.Patches.ShipLogPatches
             ShipLogAstroObject[][] navMatrix = MapModeBuilder.ConstructMapMode(Main.Instance.CurrentStarSystem, panRoot, __instance._astroObjects, sunObject.layer);
             if (navMatrix == null || navMatrix.Length <= 1)
             {
-                Logger.LogWarning("Skipping Map Mode Generation.");
+                NHLogger.LogWarning("Skipping Map Mode Generation.");
             }
             else
             {
@@ -41,7 +41,7 @@ namespace NewHorizons.Patches.ShipLogPatches
                 }
             }
 
-            Logger.Log("Map Mode Construction Complete");
+            NHLogger.Log("Map Mode Construction Complete");
         }
     }
 }

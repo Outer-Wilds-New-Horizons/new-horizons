@@ -1,11 +1,11 @@
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.OtherMods.MenuFramework
 {
@@ -34,7 +34,7 @@ namespace NewHorizons.OtherMods.MenuFramework
                     VersionUtility.RequiredVersionString,
                     Application.version);
 
-                Logger.LogError(warning);
+                NHLogger.LogError(warning);
                 _menuApi.RegisterStartupPopup(warning);
             }
 

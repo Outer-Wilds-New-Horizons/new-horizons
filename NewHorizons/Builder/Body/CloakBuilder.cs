@@ -1,10 +1,11 @@
 using NewHorizons.Components;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Builder.Body
 {
@@ -19,7 +20,7 @@ namespace NewHorizons.Builder.Body
                 _prefab = SearchUtilities.Find("RingWorld_Body/CloakingField_IP")?.InstantiateInactive()?.Rename("CloakingField")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a cloak but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else

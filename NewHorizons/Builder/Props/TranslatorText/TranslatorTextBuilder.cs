@@ -1,9 +1,11 @@
-using HarmonyLib;
-using NewHorizons.External.Modules;
+using NewHorizons.External;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.SerializableData;
+using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Utils;
 using System;
@@ -12,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props.TranslatorText
@@ -31,18 +33,18 @@ namespace NewHorizons.Builder.Props.TranslatorText
         private static GameObject _preCrashRecorderPrefab;
         private static GameObject _trailmarkerPrefab;
 
-        private static Dictionary<PropModule.NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.NomaiTextArcInfo, GameObject>();
-        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(PropModule.NomaiTextArcInfo arc)
+        private static Dictionary<NomaiTextArcInfo, GameObject> arcInfoToCorrespondingSpawnedGameObject = new Dictionary<NomaiTextArcInfo, GameObject>();
+        public static GameObject GetSpawnedGameObjectByNomaiTextArcInfo(NomaiTextArcInfo arc)
         {
             if (!arcInfoToCorrespondingSpawnedGameObject.ContainsKey(arc)) return null;
             return arcInfoToCorrespondingSpawnedGameObject[arc];
         }
 
-        private static Dictionary<PropModule.TranslatorTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<PropModule.TranslatorTextInfo, GameObject>();
+        private static Dictionary<TranslatorTextInfo, GameObject> conversationInfoToCorrespondingSpawnedGameObject = new Dictionary<TranslatorTextInfo, GameObject>();
         
-        public static GameObject GetSpawnedGameObjectByTranslatorTextInfo(PropModule.TranslatorTextInfo convo)
+        public static GameObject GetSpawnedGameObjectByTranslatorTextInfo(TranslatorTextInfo convo)
         {
-            Logger.LogVerbose("Retrieving wall text obj for " + convo);
+            NHLogger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
@@ -117,21 +119,21 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody)
+        public static GameObject Make(GameObject planetGO, Sector sector, TranslatorTextInfo info, NewHorizonsBody nhBody)
         {
             InitPrefabs();
 
             var xmlContent = !string.IsNullOrEmpty(info.xmlFile) ? File.ReadAllText(Path.Combine(nhBody.Mod.ModHelper.Manifest.ModFolderPath, info.xmlFile)) : null;
 
-            if (xmlContent == null && info.type != PropModule.NomaiTextType.Whiteboard)
+            if (xmlContent == null && info.type != NomaiTextType.Whiteboard)
             {
-                Logger.LogError($"Failed to create translator text because {nameof(info.xmlFile)} was not set to a valid text .xml file path");
+                NHLogger.LogError($"Failed to create translator text because {nameof(info.xmlFile)} was not set to a valid text .xml file path");
                 return null;
             }
 
             switch (info.type)
             {
-                case PropModule.NomaiTextType.Wall:
+                case NomaiTextType.Wall:
                     {
                         var nomaiWallTextObj = MakeWallText(planetGO, sector, info, xmlContent, nhBody).gameObject;
                         nomaiWallTextObj = GeneralPropBuilder.MakeFromExisting(nomaiWallTextObj, planetGO, sector, info);
@@ -155,7 +157,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return nomaiWallTextObj;
                     }
-                case PropModule.NomaiTextType.Scroll:
+                case NomaiTextType.Scroll:
                     {
                         var customScroll = GeneralPropBuilder.MakeFromPrefab(_scrollPrefab, _scrollPrefab.name, planetGO, sector, info);
 
@@ -190,7 +192,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         Delay.FireOnNextUpdate(
                             () =>
                             {
-                                Logger.LogVerbose("Fixing scroll!");
+                                NHLogger.LogVerbose("Fixing scroll!");
                                 scrollItem._nomaiWallText = nomaiWallText;
                                 scrollItem.SetSector(sector);
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;
@@ -207,7 +209,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return customScroll;
                     }
-                case PropModule.NomaiTextType.Computer:
+                case NomaiTextType.Computer:
                     {
                         var computerObject = GeneralPropBuilder.MakeFromPrefab(ComputerPrefab, ComputerPrefab.name, planetGO, sector, info);
 
@@ -228,9 +230,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextType.PreCrashComputer:
+                case NomaiTextType.PreCrashComputer:
                     {
-                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new PropModule.DetailInfo(info));
+                        var computerObject = DetailBuilder.Make(planetGO, sector, _preCrashComputerPrefab, new DetailInfo(info));
                         computerObject.SetActive(false);
 
                         var computer = computerObject.GetComponent<NomaiVesselComputer>();
@@ -267,10 +269,10 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         
                         return computerObject;
                     }
-                case PropModule.NomaiTextType.Cairn:
-                case PropModule.NomaiTextType.CairnVariant:
+                case NomaiTextType.Cairn:
+                case NomaiTextType.CairnVariant:
                     {
-                        var cairnPrefab = info.type == PropModule.NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
+                        var cairnPrefab = info.type == NomaiTextType.CairnVariant ? _cairnVariantPrefab : _cairnPrefab;
                         var cairnObject = GeneralPropBuilder.MakeFromPrefab(cairnPrefab, _cairnPrefab.name, planetGO, sector, info);
 
                         // Idk do we have to set it active before finding things?
@@ -306,11 +308,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                         return cairnObject;
                     }
-                case PropModule.NomaiTextType.PreCrashRecorder:
-                case PropModule.NomaiTextType.Recorder:
+                case NomaiTextType.PreCrashRecorder:
+                case NomaiTextType.Recorder:
                     {
-                        var prefab = (info.type == PropModule.NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
-                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new PropModule.DetailInfo(info));
+                        var prefab = (info.type == NomaiTextType.PreCrashRecorder ? _preCrashRecorderPrefab : _recorderPrefab);
+                        var recorderObject = DetailBuilder.Make(planetGO, sector, prefab, new DetailInfo(info));
                         recorderObject.SetActive(false);
 
                         var nomaiText = recorderObject.GetComponentInChildren<NomaiText>();
@@ -328,7 +330,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         conversationInfoToCorrespondingSpawnedGameObject[info] = recorderObject;
                         return recorderObject;
                     }
-                case PropModule.NomaiTextType.Trailmarker:
+                case NomaiTextType.Trailmarker:
                     {
                         var trailmarkerObject = GeneralPropBuilder.MakeFromPrefab(_trailmarkerPrefab, _trailmarkerPrefab.name, planetGO, sector, info);
 
@@ -353,9 +355,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                         return trailmarkerObject;
                     }
-                case PropModule.NomaiTextType.Whiteboard:
+                case NomaiTextType.Whiteboard:
                     {
-                        var whiteboardInfo = new PropModule.DetailInfo(info)
+                        var whiteboardInfo = new DetailInfo(info)
                         {
                             path = "BrittleHollow_Body/Sector_BH/Sector_NorthHemisphere/Sector_NorthPole/Sector_HangingCity/Sector_HangingCity_District2/Interactables_HangingCity_District2/VisibleFrom_HangingCity/Props_NOM_Whiteboard (1)",
                             rename = info.rename ?? "Props_NOM_Whiteboard",
@@ -367,9 +369,9 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         {
                             var scrollSocket = whiteboardObject.GetComponentInChildren<ScrollSocket>();
 
-                            var scrollInfo = new PropModule.TranslatorTextInfo()
+                            var scrollInfo = new TranslatorTextInfo()
                             {
-                                type = PropModule.NomaiTextType.Scroll,
+                                type = NomaiTextType.Scroll,
                                 arcInfo = info.arcInfo,
                                 seed = info.seed,
                                 xmlFile = info.xmlFile,
@@ -387,12 +389,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         return whiteboardObject;
                     }
                 default:
-                    Logger.LogError($"Unsupported NomaiText type {info.type}");
+                    NHLogger.LogError($"Unsupported NomaiText type {info.type}");
                     return null;
             }
         }
 
-        private static NomaiWallText MakeWallText(GameObject go, Sector sector, PropModule.TranslatorTextInfo info, string xmlPath, NewHorizonsBody nhBody)
+        private static NomaiWallText MakeWallText(GameObject go, Sector sector, TranslatorTextInfo info, string xmlPath, NewHorizonsBody nhBody)
         {
             GameObject nomaiWallTextObj = new GameObject("NomaiWallText");
             nomaiWallTextObj.SetActive(false);
@@ -421,7 +423,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             nomaiWallText.SetTextAsset(text);
 
             // #433 fuzzy stranger text
-            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger))
+            if (info.arcInfo != null && info.arcInfo.Any(x => x.type == NomaiTextArcInfo.NomaiTextArcType.Stranger))
             {
                 StreamingHandler.SetUpStreaming(AstroObject.Name.RingWorld, sector);
             }
@@ -429,7 +431,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             return nomaiWallText;
         }
 
-        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody)
+        internal static void BuildArcs(string xml, NomaiWallText nomaiWallText, GameObject conversationZone, TranslatorTextInfo info, NewHorizonsBody nhBody)
         {
             var dict = MakeNomaiTextDict(xml);
 
@@ -449,7 +451,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             public bool mirrored;
         }
 
-        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, PropModule.TranslatorTextInfo info, NewHorizonsBody nhBody, string cacheKey)
+        internal static void RefreshArcs(NomaiWallText nomaiWallText, GameObject conversationZone, TranslatorTextInfo info, NewHorizonsBody nhBody, string cacheKey)
         {
             var dict = nomaiWallText._dictNomaiTextData;
             Random.InitState(info.seed == 0 ? info.xmlFile.GetHashCode() : info.seed);
@@ -458,7 +460,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                Logger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
                 return;
             }
 
@@ -501,7 +503,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             // no need to arrange if the cache exists
             if (cachedData == null)
             { 
-                Logger.LogVerbose("Cache and/or cache entry was null, proceding with wall text arc arrangment.");
+                NHLogger.LogVerbose("Cache and/or cache entry was null, proceding with wall text arc arrangment.");
 
                 // auto placement
 
@@ -513,7 +515,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
                 }
 
-                if (overlapFound) Logger.LogVerbose("Overlap resolution failed!");
+                if (overlapFound) NHLogger.LogVerbose("Overlap resolution failed!");
 
                 // manual placement
 
@@ -549,27 +551,27 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
         }
 
-        internal static GameObject MakeArc(PropModule.NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
+        internal static GameObject MakeArc(NomaiTextArcInfo arcInfo, GameObject conversationZone, GameObject parent, int textEntryID, GameObject prebuiltArc = null)
         {
             GameObject arc;
-            var type = arcInfo != null ? arcInfo.type : PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult;
+            var type = arcInfo != null ? arcInfo.type : NomaiTextArcInfo.NomaiTextArcType.Adult;
             NomaiTextArcBuilder.SpiralProfile profile;
             Material mat;
             Mesh overrideMesh = null;
             Color? overrideColor = null;
             switch (type)
             {
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Child:
+                case NomaiTextArcInfo.NomaiTextArcType.Child:
                     profile = NomaiTextArcBuilder.childSpiralProfile;
                     mat = _childArcMaterial;
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
+                case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;
                     overrideMesh = MeshUtilities.RectangleMeshFromCorners(new Vector3[]{ new Vector3(-0.9f, 0.0f, 0.0f), new Vector3(0.9f, 0.0f, 0.0f), new Vector3(-0.9f, 2.0f, 0.0f), new Vector3(0.9f, 2.0f, 0.0f) });
                     overrideColor = new Color(0.0158f, 1.0f, 0.5601f, 1f);
                     break;
-                case PropModule.NomaiTextArcInfo.NomaiTextArcType.Adult:
+                case NomaiTextArcInfo.NomaiTextArcType.Adult:
                 default:
                     profile = NomaiTextArcBuilder.adultSpiralProfile;
                     mat = _adultArcMaterial;
@@ -628,13 +630,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                 if (entryIDNode != null && !int.TryParse(entryIDNode.InnerText, out textEntryID))
                 {
-                    Logger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
                     textEntryID = -1;
                 }
 
                 if (parentIDNode != null && !int.TryParse(parentIDNode.InnerText, out parentID))
                 {
-                    Logger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
                     parentID = -1;
                 }
 

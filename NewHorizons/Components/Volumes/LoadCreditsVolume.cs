@@ -1,14 +1,15 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.SerializableEnums;
 using NewHorizons.Handlers;
+using NewHorizons.Utility.OWML;
 using System.Collections;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Components.Volumes
 {
     internal class LoadCreditsVolume : BaseVolume
     {
-        public VolumesModule.LoadCreditsVolumeInfo.CreditsType creditsType = VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast;
+        public NHCreditsType creditsType = NHCreditsType.Fast;
 
         public string gameOverText;
         public DeathType deathType = DeathType.Default;
@@ -65,17 +66,17 @@ namespace NewHorizons.Components.Volumes
 
         private void LoadCreditsScene()
         {
-            Logger.LogVerbose($"Load credits {creditsType}");
+            NHLogger.LogVerbose($"Load credits {creditsType}");
 
             switch (creditsType)
             {
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Fast:
+                case NHCreditsType.Fast:
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Final:
+                case NHCreditsType.Final:
                     LoadManager.LoadScene(OWScene.Credits_Final, LoadManager.FadeType.ToBlack);
                     break;
-                case VolumesModule.LoadCreditsVolumeInfo.CreditsType.Kazoo:
+                case NHCreditsType.Kazoo:
                     TimelineObliterationController.s_hasRealityEnded = true;
                     LoadManager.LoadScene(OWScene.Credits_Fast, LoadManager.FadeType.ToBlack);
                     break;

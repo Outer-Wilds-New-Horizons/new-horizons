@@ -1,17 +1,20 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OWML.Common;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using UnityEngine;
 using UnityEngine.Events;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons
 {
@@ -31,7 +34,7 @@ namespace NewHorizons
             {
                 var name = (string)config["Name"];
 
-                Logger.LogWarning($"Recieved API request to create planet [{name}]");
+                NHLogger.LogWarning($"Recieved API request to create planet [{name}]");
 
                 if (name == null) return;
 
@@ -53,7 +56,7 @@ namespace NewHorizons
             }
             catch(Exception ex)
             {
-                Logger.LogError($"Error in Create API:\n{ex}");
+                NHLogger.LogError($"Error in Create API:\n{ex}");
             }
         }
 
@@ -96,7 +99,7 @@ namespace NewHorizons
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't get installed addons:\n{ex}");
+                NHLogger.LogError($"Couldn't get installed addons:\n{ex}");
                 return new string[] { };
             }
         }
@@ -116,7 +119,7 @@ namespace NewHorizons
             }
             catch (JsonException e)
             {
-                Logger.LogError(e.ToString());
+                NHLogger.LogError(e.ToString());
                 return null;
             }
         }
@@ -158,7 +161,7 @@ namespace NewHorizons
             float scale, bool alignRadial)
         {
             var prefab = SearchUtilities.Find(propToCopyPath);
-            var detailInfo = new PropModule.DetailInfo() {
+            var detailInfo = new DetailInfo() {
                 position = position,
                 rotation = eulerAngles,
                 scale = scale,
@@ -192,7 +195,7 @@ namespace NewHorizons
             float range = 1f, string blockAfterPersistentCondition = null, float lookAtRadius = 1f, string pathToAnimController = null, 
             float remoteTriggerRadius = 0f)
         {
-            var info = new PropModule.DialogueInfo()
+            var info = new DialogueInfo()
             {
                 blockAfterPersistentCondition = blockAfterPersistentCondition,
                 lookAtRadius = lookAtRadius,
@@ -201,7 +204,7 @@ namespace NewHorizons
                 radius = radius,
                 range = range,
                 xmlFile = xmlFile,
-                remoteTrigger = new PropModule.DialogueInfo.RemoteTriggerInfo()
+                remoteTrigger = new RemoteTriggerInfo()
                 {
                     position = null,
                     radius = remoteTriggerRadius,
