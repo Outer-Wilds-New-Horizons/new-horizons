@@ -12,7 +12,7 @@ on:
     branches: [main]
     paths:
       - docs/**
-      - NewHorizons/Schemas/*.xsd
+      - NewHorizons/Schemas/*
 
 env:
   URL_PREFIX: '/'
