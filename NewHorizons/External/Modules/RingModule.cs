@@ -1,7 +1,8 @@
-using System;
-using System.ComponentModel.DataAnnotations;
+using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.External.Modules.VariableSize;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace NewHorizons.External.Modules
 {

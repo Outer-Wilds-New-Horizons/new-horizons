@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;

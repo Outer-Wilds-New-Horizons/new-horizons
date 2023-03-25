@@ -2,26 +2,13 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace NewHorizons.External.Modules
 {
-    [JsonConverter(typeof(StringEnumConverter))]
-    public enum FluidType
-    {
-        [EnumMember(Value = @"none")] None = 0,
-
-        [EnumMember(Value = @"water")] Water = 1,
-
-        [EnumMember(Value = @"cloud")] Cloud = 2,
-
-        [EnumMember(Value = @"sand")] Sand = 3,
-
-        [EnumMember(Value = @"plasma")] Plasma = 4
-    }
-
     [JsonConverter(typeof(StringEnumConverter))]
     public enum CloudPrefabType
     {

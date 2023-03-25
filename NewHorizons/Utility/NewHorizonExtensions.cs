@@ -1,5 +1,5 @@
 using NewHorizons.External.Configs;
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.SerializableEnums;
 using Newtonsoft.Json;
 using OWML.Utils;
 using System;
