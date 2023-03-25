@@ -1,7 +1,7 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
-using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
 using UnityEngine;

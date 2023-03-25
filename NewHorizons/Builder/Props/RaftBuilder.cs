@@ -1,8 +1,9 @@
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class RaftBuilder
@@ -16,7 +17,7 @@ namespace NewHorizons.Builder.Props
                 _prefab = GameObject.FindObjectOfType<RaftController>()?.gameObject?.InstantiateInactive()?.Rename("Raft_Body_Prefab")?.DontDestroyOnLoad();
                 if (_prefab == null)
                 {
-                    Logger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make a raft but couldn't. Do you have the DLC installed?");
                     return;
                 }
                 else

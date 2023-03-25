@@ -2,7 +2,7 @@ using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using OWML.Common;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.External
 {
     public class NewHorizonsSystem
     {

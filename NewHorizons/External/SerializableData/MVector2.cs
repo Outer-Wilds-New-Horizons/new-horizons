@@ -5,7 +5,7 @@ using UnityEngine;
 
 #endregion
 
-namespace NewHorizons.Utility
+namespace NewHorizons.External.Modules.SerializableData
 {
     [JsonObject]
     public class MVector2

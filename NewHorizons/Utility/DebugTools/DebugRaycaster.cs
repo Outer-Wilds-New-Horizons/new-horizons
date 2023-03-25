@@ -1,9 +1,11 @@
 using NewHorizons.Handlers;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugTools
 {
     [RequireComponent(typeof(OWRigidbody))]
     public class DebugRaycaster : MonoBehaviour
@@ -70,7 +72,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             if (!data.hit)
             {
-                Logger.LogWarning("Debug Raycast Didn't Hit Anything! (Try moving closer)");
+                NHLogger.LogWarning("Debug Raycast Didn't Hit Anything! (Try moving closer)");
                 return;
             }
 
@@ -107,7 +109,7 @@ namespace NewHorizons.Utility.DebugUtilities
             _planeDownLeftSphere.transform.localPosition = data.plane.origin + data.plane.u * -1 * planeSize + data.plane.v * -1 * planeSize;
             _planeDownRightSphere.transform.localPosition = data.plane.origin + data.plane.u * 1 * planeSize + data.plane.v * -1 * planeSize;
 
-            Logger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
+            NHLogger.Log($"Raycast hit\n\n\"position\": {posText},\n\"rotation\": {rotText},\n\"normal\": {normText}\n\non collider [{data.colliderPath}] " +
                        (data.bodyPath != null ? $"at rigidbody [{data.bodyPath}]" : "not attached to a rigidbody"));
         }
         internal DebugRaycastData Raycast()
@@ -157,7 +159,7 @@ namespace NewHorizons.Utility.DebugUtilities
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 0, 1);
             if (Vector3.Cross(U, N) == Vector3.zero) U = new Vector3(0, 1, 0); // if 0,0,1 was actually the same vector U already was (lol), try (0,1,0) instead
 
-            Logger.LogVerbose("Up vector is " + U.ToString());
+            NHLogger.LogVerbose("Up vector is " + U.ToString());
 
             // stackoverflow.com/a/9605695
             // I don't know exactly how this works, but I'm projecting a point that is located above the plane's origin, relative to the planet, onto the plane. this gets us our v vector

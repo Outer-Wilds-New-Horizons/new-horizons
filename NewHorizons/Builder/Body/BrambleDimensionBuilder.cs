@@ -1,10 +1,11 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

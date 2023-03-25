@@ -1,10 +1,11 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components.Achievement;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RevealBuilder
@@ -24,7 +25,7 @@ namespace NewHorizons.Builder.ShipLog
                     MakeSnapshot(newRevealGO, sector, info, mod);
                     break;
                 default:
-                    Logger.LogError("Invalid revealOn: " + info.revealOn);
+                    NHLogger.LogError("Invalid revealOn: " + info.revealOn);
                     break;
             }
             newRevealGO.SetActive(true);

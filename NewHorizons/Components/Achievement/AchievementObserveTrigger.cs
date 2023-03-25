@@ -1,5 +1,5 @@
 using NewHorizons.OtherMods.AchievementsPlus;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 
 namespace NewHorizons.Components.Achievement

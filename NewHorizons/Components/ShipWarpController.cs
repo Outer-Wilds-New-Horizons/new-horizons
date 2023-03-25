@@ -1,8 +1,8 @@
 using NewHorizons.Builder.General;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components
 {
     public class ShipWarpController : MonoBehaviour
@@ -112,7 +112,7 @@ namespace NewHorizons.Components
 
         public void WarpIn(bool wearingSuit)
         {
-            Logger.LogVerbose("Starting warp-in");
+            NHLogger.LogVerbose("Starting warp-in");
             // Trying really hard to stop the player from dying while warping in
             _impactDeathSpeed = Locator.GetDeathManager()._impactDeathSpeed;
             Locator.GetDeathManager()._impactDeathSpeed = Mathf.Infinity;
@@ -125,7 +125,7 @@ namespace NewHorizons.Components
 
         public void WarpOut()
         {
-            Logger.LogVerbose("Starting warp-out");
+            NHLogger.LogVerbose("Starting warp-out");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
             _blackhole.Create();
         }
@@ -142,7 +142,7 @@ namespace NewHorizons.Components
             {
                 if (Locator.GetPlayerTransform().TryGetComponent<PlayerResources>(out var resources) && resources._currentHealth < 100f)
                 {
-                    Logger.LogVerbose("Player died in a warp drive accident, reviving them");
+                    NHLogger.LogVerbose("Player died in a warp drive accident, reviving them");
                     // Means the player was killed meaning they weren't teleported in
                     resources._currentHealth = 100f;
                     if (!PlayerState.AtFlightConsole()) TeleportToShip();
@@ -164,7 +164,7 @@ namespace NewHorizons.Components
 
         private void StartWarpInEffect()
         {
-            Logger.LogVerbose("Starting warp-in effect");
+            NHLogger.LogVerbose("Starting warp-in effect");
             _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
             if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
@@ -184,7 +184,7 @@ namespace NewHorizons.Components
 
         public void FinishWarpIn()
         {
-            Logger.LogVerbose("Finishing warp");
+            NHLogger.LogVerbose("Finishing warp");
             Locator.GetShipBody().GetComponentInChildren<ShipCockpitController>().OnPressInteract();
             _waitingToBeSeated = false;
             Delay.FireInNUpdates(() => _whitehole.Collapse(), 30);

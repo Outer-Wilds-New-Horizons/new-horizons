@@ -4,7 +4,7 @@ using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.OtherMods.AchievementsPlus;
 using NewHorizons.OtherMods.AchievementsPlus.NH;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -106,7 +106,7 @@ namespace NewHorizons.Patches.PlayerPatches
                 __result = PlayerData._currentGameSave.newlyRevealedFactIDs.Concat(newHorizonsNewlyRevealedFactIDs).ToList();
                 return false;
             }
-            Logger.LogError("Newly Revealed Fact IDs is null!");
+            NHLogger.LogError("Newly Revealed Fact IDs is null!");
             return true;
         }
 

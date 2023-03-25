@@ -2,12 +2,13 @@ using NewHorizons.Builder.General;
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 using Random = UnityEngine.Random;
+
 namespace NewHorizons.Components.Quantum
 {
     public class QuantumPlanet : QuantumObject
@@ -66,7 +67,7 @@ namespace NewHorizons.Components.Quantum
 
         public override bool ChangeQuantumState(bool skipInstantVisibilityCheck)
         {
-            Logger.LogVerbose($"QuantumPlanet - Trying to change quantum state");
+            NHLogger.LogVerbose($"QuantumPlanet - Trying to change quantum state");
 
             if (states.Count <= 1) return false;
 

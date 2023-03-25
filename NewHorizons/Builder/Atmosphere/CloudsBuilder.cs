@@ -1,13 +1,14 @@
-using NewHorizons.External.Modules;
 using NewHorizons.Components;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
-using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 using System.Collections.Generic;
 using Tessellation;
-using NewHorizons.Utility.OWUtilities;
+using UnityEngine;
 
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -206,7 +207,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}]:\n{e}");
+                NHLogger.LogError($"Couldn't load Cloud textures for [{atmo.clouds.texturePath}]:\n{e}");
                 return null;
             }
 
@@ -282,7 +283,7 @@ namespace NewHorizons.Builder.Atmosphere
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load Cloud texture for [{atmo.clouds.texturePath}]:\n{e}");
+                NHLogger.LogError($"Couldn't load Cloud texture for [{atmo.clouds.texturePath}]:\n{e}");
                 return null;
             }
 

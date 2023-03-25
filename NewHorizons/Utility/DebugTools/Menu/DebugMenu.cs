@@ -1,5 +1,7 @@
 using NewHorizons.External.Configs;
 using NewHorizons.Handlers;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Common;
 using OWML.Common.Menus;
@@ -9,7 +11,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 
-namespace NewHorizons.Utility.DebugMenu
+namespace NewHorizons.Utility.DebugTools.Menu
 {
     class DebugMenu : MonoBehaviour
     {
@@ -206,7 +208,7 @@ namespace NewHorizons.Utility.DebugMenu
             {
                 if (body.RelativePath == null)
                 {
-                    Logger.LogWarning($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
+                    NHLogger.LogWarning($"Error loading config for {body.Config.name} in {body.Config.starSystem}");
                     continue;
                 }
 
@@ -221,11 +223,11 @@ namespace NewHorizons.Utility.DebugMenu
 
             var backupFolderName = $"configBackups\\{DateTime.Now.ToString("yyyyMMddTHHmmss")}\\";
 
-            Logger.Log($"Potentially saving {loadedConfigFiles.Keys.Count} files");
+            NHLogger.Log($"Potentially saving {loadedConfigFiles.Keys.Count} files");
 
             foreach (var filePath in loadedConfigFiles.Keys)
             {
-                Logger.LogVerbose($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
+                NHLogger.LogVerbose($"Possibly Saving... {loadedConfigFiles[filePath].name} @ {filePath}");
 
                 if (loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) continue;
 
@@ -236,7 +238,7 @@ namespace NewHorizons.Utility.DebugMenu
                 try
                 {
                     var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, backupFolderName, relativePath);
-                    Logger.LogVerbose($"Backing up... {relativePath} to {path}");
+                    NHLogger.LogVerbose($"Backing up... {relativePath} to {path}");
                     var oldPath = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
                     var directoryName = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(directoryName);
@@ -248,12 +250,12 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
+                    NHLogger.LogError($"Failed to save backup file {backupFolderName}{relativePath}:\n{e}");
                 }
 
                 try
                 {
-                    Logger.Log($"Saving... {relativePath} to {filePath}");
+                    NHLogger.Log($"Saving... {relativePath} to {filePath}");
                     var path = Path.Combine(loadedMod.ModHelper.Manifest.ModFolderPath, relativePath);
                     var directoryName = Path.GetDirectoryName(path);
                     Directory.CreateDirectory(directoryName);
@@ -262,7 +264,7 @@ namespace NewHorizons.Utility.DebugMenu
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Failed to save file {relativePath}:\n{e}");
+                    NHLogger.LogError($"Failed to save file {relativePath}:\n{e}");
                 }
             }
         }

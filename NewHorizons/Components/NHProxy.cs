@@ -1,6 +1,6 @@
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Handlers;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;

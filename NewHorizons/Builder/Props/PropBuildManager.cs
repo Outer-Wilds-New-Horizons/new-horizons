@@ -1,13 +1,14 @@
 using NewHorizons.Builder.Body;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
+using NewHorizons.External;
 using NewHorizons.External.Configs;
-using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Props
 {
     public static class PropBuildManager
@@ -25,7 +26,7 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
+                    NHLogger.LogError($"Couldn't make planet scatter for [{go.name}]:\n{ex}");
                 }
             }
             if (config.Props.details != null)
@@ -38,7 +39,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make planet detail [{detail.path}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -52,7 +53,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make geyser for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make geyser for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -66,7 +67,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make raft for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make raft for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -80,7 +81,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make tornado for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make tornado for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -94,7 +95,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make volcano for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make volcano for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -109,7 +110,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -123,7 +124,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make entry location [{entryLocationInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -139,7 +140,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
 
                 }
@@ -155,7 +156,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make text [{nomaiTextInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
 
                 }
@@ -170,7 +171,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make slide reel for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make slide reel for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -197,7 +198,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make quantum group \"{quantumGroup.id}\" for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -211,7 +212,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}]::\n{ex}");
+                        NHLogger.LogError($"Couldn't make singularity \"{(string.IsNullOrEmpty(singularity.uniqueID) ? config.name : singularity.uniqueID)}\" for [{go.name}]::\n{ex}");
                     }
                 }
             }
@@ -232,7 +233,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make remote [{remoteInfo.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -246,7 +247,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make warp receiver [{warpReceiver.frequency}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make warp receiver [{warpReceiver.frequency}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -260,7 +261,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make warp transmitter [{warpTransmitter.frequency}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make warp transmitter [{warpTransmitter.frequency}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

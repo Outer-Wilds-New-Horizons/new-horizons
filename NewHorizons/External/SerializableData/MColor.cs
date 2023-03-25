@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using Newtonsoft.Json;
 using UnityEngine;
-namespace NewHorizons.Utility
+namespace NewHorizons.External.Modules.SerializableData
 {
     [JsonObject]
     public class MColor
@@ -17,25 +17,25 @@ namespace NewHorizons.Utility
         /// <summary>
         /// The red component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
+        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)]
         public int r;
 
         /// <summary>
         /// The green component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
+        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)]
         public int g;
 
         /// <summary>
         /// The blue component of this colour from 0-255, higher values will make the colour glow if applicable.
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)] 
+        [System.ComponentModel.DataAnnotations.Range(0, int.MaxValue)]
         public int b;
-        
+
         /// <summary>
         /// The alpha (opacity) component of this colour
         /// </summary>
-        [System.ComponentModel.DataAnnotations.Range(0, 255)] 
+        [System.ComponentModel.DataAnnotations.Range(0, 255)]
         [DefaultValue(255)]
         public int a = 255;
 

@@ -1,7 +1,6 @@
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using UnityEngine;
-
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Components.Quantum
 {
@@ -66,7 +65,7 @@ namespace NewHorizons.Components.Quantum
                     if (previousIndex >= 0 && previousIndex < _states.Length) _states[previousIndex].SetVisible(visible: false);
                     _states[_stateIndex].SetVisible(visible: true);
 
-                    Logger.LogVerbose($"MultiStateQuantumObject - Trying to change state {_stateIndex}");
+                    NHLogger.LogVerbose($"MultiStateQuantumObject - Trying to change state {_stateIndex}");
 
                     indices.Remove(_stateIndex);
                 } while (!CurrentStateIsValid() && indices.Count > 0);

@@ -1,6 +1,6 @@
 using System;
 
-namespace NewHorizons.Utility.OWMLUtilities
+namespace NewHorizons.Utility.OWML
 {
     public static class Delay
     {

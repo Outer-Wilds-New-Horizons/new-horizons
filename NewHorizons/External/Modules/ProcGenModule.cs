@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using NewHorizons.Utility;
+using NewHorizons.External.Modules.SerializableData;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules

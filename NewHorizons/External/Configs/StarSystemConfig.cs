@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
+using NewHorizons.External.Modules.SerializableData;
 using Newtonsoft.Json;
 using static NewHorizons.External.Modules.ShipLogModule;
 

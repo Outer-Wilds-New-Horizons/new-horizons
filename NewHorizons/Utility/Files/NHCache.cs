@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.Files
 {
-    public class Cache
+    public class NHCache
     {
         string filepath;
         IModBehaviour mod;
@@ -14,12 +14,12 @@ namespace NewHorizons.Utility
         HashSet<string> accessedKeys = new HashSet<string>();
         bool dirty;
 
-        public Cache(IModBehaviour mod, string cacheFilePath) 
+        public NHCache(IModBehaviour mod, string cacheFilePath)
         {
             this.mod = mod;
-            this.filepath = cacheFilePath;
+            filepath = cacheFilePath;
             var fullPath = mod.ModHelper.Manifest.ModFolderPath + cacheFilePath;
-            
+
             if (!File.Exists(fullPath))
             {
                 data = new Dictionary<string, string>();
@@ -27,7 +27,7 @@ namespace NewHorizons.Utility
                 return;
             }
 
-			var json = File.ReadAllText(fullPath);
+            var json = File.ReadAllText(fullPath);
             data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
             // the code above does exactly the same thing that the code below does, but the below for some reason always returns null. no clue why
             // data = mod.ModHelper.Storage.Load<Dictionary<string, string>>(filepath);
@@ -35,14 +35,14 @@ namespace NewHorizons.Utility
             dirty = false;
         }
 
-        public void WriteToFile() 
+        public void WriteToFile()
         {
             if (data.Count <= 0) return; // don't write empty caches
             if (!dirty) return; // don't write unmodified caches
-            mod.ModHelper.Storage.Save<Dictionary<string, string>>(data, filepath);
+            mod.ModHelper.Storage.Save(data, filepath);
         }
 
-        public bool ContainsKey(string key) 
+        public bool ContainsKey(string key)
         {
             return data.ContainsKey(key);
         }
@@ -61,10 +61,10 @@ namespace NewHorizons.Utility
             data[key] = JsonConvert.SerializeObject(value);
         }
 
-        public void ClearUnaccessed() 
+        public void ClearUnaccessed()
         {
             var keys = data.Keys.ToList();
-            foreach(var key in keys) 
+            foreach (var key in keys)
             {
                 if (accessedKeys.Contains(key)) continue;
                 data.Remove(key);

@@ -2,8 +2,8 @@ using System;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Runtime.Serialization;
+using NewHorizons.External.Modules.SerializableData;
 using NewHorizons.External.Modules.SerializableEnums;
-using NewHorizons.Utility;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 

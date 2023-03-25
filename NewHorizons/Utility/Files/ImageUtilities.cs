@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.Files
 {
     public static class ImageUtilities
     {
@@ -33,11 +34,11 @@ namespace NewHorizons.Utility
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             if (_loadedTextures.ContainsKey(path))
             {
-                Logger.LogVerbose($"Already loaded image at path: {path}");
+                NHLogger.LogVerbose($"Already loaded image at path: {path}");
                 return _loadedTextures[path];
             }
 
-            Logger.LogVerbose($"Loading image at path: {path}");
+            NHLogger.LogVerbose($"Loading image at path: {path}");
             try
             {
                 var data = File.ReadAllBytes(path);
@@ -52,7 +53,7 @@ namespace NewHorizons.Utility
             catch (Exception ex)
             {
                 // Half the time when a texture doesn't load it doesn't need to exist so just log verbose
-                Logger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
+                NHLogger.LogVerbose($"Exception thrown while loading texture [{filename}]:\n{ex}");
                 return null;
             }
         }
@@ -74,7 +75,7 @@ namespace NewHorizons.Utility
 
         public static void ClearCache()
         {
-            Logger.LogVerbose("Clearing image cache");
+            NHLogger.LogVerbose("Clearing image cache");
 
             foreach (var texture in _loadedTextures.Values)
             {
@@ -232,7 +233,7 @@ namespace NewHorizons.Utility
         {
             if (image == null)
             {
-                Logger.LogError($"Tried to tint null image");
+                NHLogger.LogError($"Tried to tint null image");
                 return null;
             }
 
@@ -401,7 +402,7 @@ namespace NewHorizons.Utility
 
                     if (_loadedCount >= PathsToLoad.Count)
                     {
-                        Logger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
+                        NHLogger.LogVerbose($"Finished loading all textures for {gameObject.name} (one was {PathsToLoad.FirstOrDefault()}");
                         FinishedLoading = true;
                     }
                 }
@@ -413,7 +414,7 @@ namespace NewHorizons.Utility
                 {
                     if (_loadedTextures.ContainsKey(url))
                     {
-                        Logger.LogVerbose($"Already loaded image {index}:{url}");
+                        NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                         var texture = _loadedTextures[url];
                         imageLoadedEvent?.Invoke(texture, index);
                         yield break;
@@ -428,7 +429,7 @@ namespace NewHorizons.Utility
 
                 if (hasError)
                 {
-                    Logger.LogError($"Failed to load {index}:{url} - {uwr.error}");
+                    NHLogger.LogError($"Failed to load {index}:{url} - {uwr.error}");
                 }
                 else
                 {
@@ -444,7 +445,7 @@ namespace NewHorizons.Utility
                     {
                         if (_loadedTextures.ContainsKey(url))
                         {
-                            Logger.LogVerbose($"Already loaded image {index}:{url}");
+                            NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
                             texture = _loadedTextures[url];
                         }

@@ -1,11 +1,12 @@
+using NewHorizons.External;
 using NewHorizons.External.Configs;
-using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Handlers
 {
     public class PlanetGraphHandler : IEnumerable<PlanetGraphHandler.PlanetNode>
@@ -49,7 +50,7 @@ namespace NewHorizons.Handlers
                 }
                 else
                 {
-                    Logger.LogError($"There must be one and only one centerOfSolarSystem! Found [{centers.Length}]");
+                    NHLogger.LogError($"There must be one and only one centerOfSolarSystem! Found [{centers.Length}]");
                 }
             }
         }
@@ -116,7 +117,7 @@ namespace NewHorizons.Handlers
             foreach (var node in nodeDict.Values.ToList())
             {
                 var childrenString = String.Join(", ", node.children.Select(x => x?.body?.Config?.name).ToList());
-                Logger.LogVerbose($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
+                NHLogger.LogVerbose($"NODE: [{node?.body?.Config?.name}], [{node?.parent?.body?.Config?.name}], [{childrenString}]");
             }
 
             // Return all tree roots (no parents)

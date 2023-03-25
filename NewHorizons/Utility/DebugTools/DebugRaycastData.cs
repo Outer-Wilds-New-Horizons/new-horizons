@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugTools
 {
     struct DebugRaycastData
     {

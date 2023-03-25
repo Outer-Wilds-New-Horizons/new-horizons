@@ -1,15 +1,16 @@
+using NewHorizons.External;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Handlers;
-using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.ShipLog
 {
     public static class RumorModeBuilder
@@ -57,7 +58,7 @@ namespace NewHorizons.Builder.ShipLog
             XElement astroBodyId = astroBodyFile.Element("ID");
             if (astroBodyId == null)
             {
-                Logger.LogError("Failed to load ship logs for " + systemName + "!");
+                NHLogger.LogError("Failed to load ship logs for " + systemName + "!");
             }
             else
             {
@@ -198,7 +199,7 @@ namespace NewHorizons.Builder.ShipLog
                 }
                 else
                 {
-                    Logger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
+                    NHLogger.LogError($"Couldn't find {raw}. Did you define the curiosity in a json config? Because you have to.");
                 }
             }
         }
@@ -215,7 +216,7 @@ namespace NewHorizons.Builder.ShipLog
             }
             catch (Exception)
             {
-                if (logError) Logger.LogError($"Couldn't load image for {entryId} at {relativePath}");
+                if (logError) NHLogger.LogError($"Couldn't load image for {entryId} at {relativePath}");
                 return null;
             }
         }

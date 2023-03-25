@@ -1,10 +1,11 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -16,7 +17,7 @@ namespace NewHorizons.Handlers
             
             if (subtitleContainer == null)
             {
-                Logger.LogError("No subtitle container found! Failed to load subtitles.");
+                NHLogger.LogError("No subtitle container found! Failed to load subtitles.");
                 return;
             }
 
@@ -35,7 +36,7 @@ namespace NewHorizons.Handlers
             var selectionCount = Mathf.Min(eligibleCount, 3);
             var indices = RandomUtility.GetUniqueRandomArray(0, eligible.Count(), selectionCount);
 
-            Logger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
+            NHLogger.LogVerbose($"Displaying {selectionCount} bodies on the title screen");
 
             GameObject body1, body2, body3;
 
@@ -75,7 +76,7 @@ namespace NewHorizons.Handlers
 
         private static GameObject LoadTitleScreenBody(NewHorizonsBody body)
         {
-            Logger.LogVerbose($"Displaying {body.Config.name} on the title screen");
+            NHLogger.LogVerbose($"Displaying {body.Config.name} on the title screen");
             var titleScreenGO = new GameObject(body.Config.name + "_TitleScreen");
 
             var maxSize = -1f;

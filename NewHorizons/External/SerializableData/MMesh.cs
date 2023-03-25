@@ -1,18 +1,18 @@
 using System.Linq;
 using Newtonsoft.Json;
 using UnityEngine;
-namespace NewHorizons.Utility
+namespace NewHorizons.External.Modules.SerializableData
 {
     [JsonObject]
     public class MMesh
     {
         public MMesh(MVector3[] vertices, int[] triangles, MVector3[] normals, MVector2[] uv, MVector2[] uv2)
         {
-            this.vertices = vertices; 
-            this.triangles = triangles; 
-            this.normals = normals; 
-            this.uv = uv; 
-            this.uv2 = uv2; 
+            this.vertices = vertices;
+            this.triangles = triangles;
+            this.normals = normals;
+            this.uv = uv;
+            this.uv2 = uv2;
         }
 
         public MVector3[] vertices;
@@ -20,15 +20,15 @@ namespace NewHorizons.Utility
         public MVector3[] normals;
         public MVector2[] uv;
         public MVector2[] uv2;
-        
+
         public static implicit operator MMesh(Mesh mesh)
         {
             return new MMesh
             (
-                mesh.vertices.Select(v => (MVector3)v).ToArray(), 
-                mesh.triangles, 
-                mesh.normals.Select(v => (MVector3)v).ToArray(), 
-                mesh.uv.Select(v => (MVector2)v).ToArray(), 
+                mesh.vertices.Select(v => (MVector3)v).ToArray(),
+                mesh.triangles,
+                mesh.normals.Select(v => (MVector3)v).ToArray(),
+                mesh.uv.Select(v => (MVector2)v).ToArray(),
                 mesh.uv2.Select(v => (MVector2)v).ToArray()
             );
         }

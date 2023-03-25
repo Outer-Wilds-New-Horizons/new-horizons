@@ -2,7 +2,7 @@ using OWML.Utils;
 using System;
 using System.Collections.Generic;
 
-namespace NewHorizons.Utility.OWMLUtilities
+namespace NewHorizons.Utility.OWML
 {
     public static class EnumUtilities
     {

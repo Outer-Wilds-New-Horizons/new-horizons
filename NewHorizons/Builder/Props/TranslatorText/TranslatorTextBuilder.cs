@@ -1,9 +1,11 @@
+using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.SerializableData;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using OWML.Utils;
 using System;
@@ -12,7 +14,7 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props.TranslatorText
@@ -42,7 +44,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
         
         public static GameObject GetSpawnedGameObjectByTranslatorTextInfo(TranslatorTextInfo convo)
         {
-            Logger.LogVerbose("Retrieving wall text obj for " + convo);
+            NHLogger.LogVerbose("Retrieving wall text obj for " + convo);
             if (!conversationInfoToCorrespondingSpawnedGameObject.ContainsKey(convo)) return null;
             return conversationInfoToCorrespondingSpawnedGameObject[convo];
         }
@@ -125,7 +127,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (xmlContent == null && info.type != NomaiTextType.Whiteboard)
             {
-                Logger.LogError($"Failed to create translator text because {nameof(info.xmlFile)} was not set to a valid text .xml file path");
+                NHLogger.LogError($"Failed to create translator text because {nameof(info.xmlFile)} was not set to a valid text .xml file path");
                 return null;
             }
 
@@ -190,7 +192,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         Delay.FireOnNextUpdate(
                             () =>
                             {
-                                Logger.LogVerbose("Fixing scroll!");
+                                NHLogger.LogVerbose("Fixing scroll!");
                                 scrollItem._nomaiWallText = nomaiWallText;
                                 scrollItem.SetSector(sector);
                                 customScroll.transform.Find("Props_NOM_Scroll/Props_NOM_Scroll_Geo").GetComponent<MeshRenderer>().enabled = true;
@@ -387,7 +389,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         return whiteboardObject;
                     }
                 default:
-                    Logger.LogError($"Unsupported NomaiText type {info.type}");
+                    NHLogger.LogError($"Unsupported NomaiText type {info.type}");
                     return null;
             }
         }
@@ -458,7 +460,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
             if (info.arcInfo != null && info.arcInfo.Count() != dict.Values.Count())
             {
-                Logger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
+                NHLogger.LogError($"Can't make NomaiWallText, arcInfo length [{info.arcInfo.Count()}] doesn't equal text entries [{dict.Values.Count()}]");
                 return;
             }
 
@@ -501,7 +503,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
             // no need to arrange if the cache exists
             if (cachedData == null)
             { 
-                Logger.LogVerbose("Cache and/or cache entry was null, proceding with wall text arc arrangment.");
+                NHLogger.LogVerbose("Cache and/or cache entry was null, proceding with wall text arc arrangment.");
 
                 // auto placement
 
@@ -513,7 +515,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     for(var a = 0; a < 10; a++) arranger.FDGSimulationStep();
                 }
 
-                if (overlapFound) Logger.LogVerbose("Overlap resolution failed!");
+                if (overlapFound) NHLogger.LogVerbose("Overlap resolution failed!");
 
                 // manual placement
 
@@ -628,13 +630,13 @@ namespace NewHorizons.Builder.Props.TranslatorText
 
                 if (entryIDNode != null && !int.TryParse(entryIDNode.InnerText, out textEntryID))
                 {
-                    Logger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ID in [{entryIDNode?.InnerText}] for [{xmlPath}]");
                     textEntryID = -1;
                 }
 
                 if (parentIDNode != null && !int.TryParse(parentIDNode.InnerText, out parentID))
                 {
-                    Logger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
+                    NHLogger.LogError($"Couldn't parse int ParentID in [{parentIDNode?.InnerText}] for [{xmlPath}]");
                     parentID = -1;
                 }
 

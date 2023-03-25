@@ -2,12 +2,12 @@ using NewHorizons.Components.Quantum;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.Utility.Geometry;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-using Logger = NewHorizons.Utility.Logger;
 
 // BUGS THAT REQUIRE REWRITING MOBIUS CODE
 // 1) FIXED!                              - MultiStateQuantumObjects don't check to see if the new state would be visible before choosing it
@@ -208,7 +208,7 @@ namespace NewHorizons.Builder.Props
 
         void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { Logger.LogVerbose("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;

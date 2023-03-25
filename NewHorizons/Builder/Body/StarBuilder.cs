@@ -5,7 +5,8 @@ using NewHorizons.External.Modules.VariableSize;
 using OWML.Common;
 using System.Linq;
 using NewHorizons.Components.Stars;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.Files;
 
 namespace NewHorizons.Builder.Body
 {

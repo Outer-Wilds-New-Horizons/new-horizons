@@ -1,9 +1,12 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Linq;
 using UnityEngine;
-namespace NewHorizons.Utility
+
+namespace NewHorizons.External
 {
     public class NewHorizonsBody
     {
@@ -18,7 +21,7 @@ namespace NewHorizons.Utility
 
         public PlanetConfig Config;
         public IModBehaviour Mod;
-        public Cache Cache;
+        public NHCache Cache;
         public string RelativePath;
 
         public GameObject Object;
@@ -26,26 +29,26 @@ namespace NewHorizons.Utility
         #region Cache
         public void LoadCache()
         {
-            if (RelativePath == null) 
+            if (RelativePath == null)
             {
                 return;
             }
 
-            try 
+            try
             {
                 var pathWithoutExtension = RelativePath.Substring(0, RelativePath.LastIndexOf('.'));
-                Cache = new Cache(Mod, pathWithoutExtension+".nhcache");
-            } 
-            catch (Exception e) 
-            { 
-                Logger.LogError("Cache failed to load: " + e.Message);
+                Cache = new NHCache(Mod, pathWithoutExtension + ".nhcache");
+            }
+            catch (Exception e)
+            {
+                NHLogger.LogError("Cache failed to load: " + e.Message);
                 Cache = null;
             }
         }
 
-        public void UnloadCache(bool writeBeforeUnload=false)
+        public void UnloadCache(bool writeBeforeUnload = false)
         {
-            if (writeBeforeUnload) 
+            if (writeBeforeUnload)
             {
                 Cache?.ClearUnaccessed();
                 Cache?.WriteToFile();

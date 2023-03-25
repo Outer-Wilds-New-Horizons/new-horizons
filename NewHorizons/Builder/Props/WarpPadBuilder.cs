@@ -2,10 +2,10 @@ using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Builder.Props
 {
@@ -88,7 +88,7 @@ namespace NewHorizons.Builder.Props
             var detailInfo = new DetailInfo(info);
             var receiverObject = DetailBuilder.Make(planetGO, sector, info.detailed ? _detailedReceiverPrefab : _receiverPrefab, detailInfo);
 
-            Logger.Log($"Position is {detailInfo.position} was {info.position}");
+            NHLogger.Log($"Position is {detailInfo.position} was {info.position}");
 
             var receiver = receiverObject.GetComponentInChildren<NomaiWarpReceiver>();
 

@@ -1,13 +1,13 @@
 ﻿using Newtonsoft.Json;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.External.Modules.SerializableData
 {
     [JsonObject]
     public class MGradient
     {
         public MGradient(float time, MColor tint)
         {
-            this.time = time; 
+            this.time = time;
             this.tint = tint;
         }
 

@@ -1,11 +1,13 @@
 using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.SerializableData;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using System.Linq;
 using UnityEngine;
 
-namespace NewHorizons.Utility.DebugMenu
+namespace NewHorizons.Utility.DebugTools.Menu
 {
     class DebugMenuShipLogs : DebugSubmenu
     {
@@ -73,7 +75,7 @@ namespace NewHorizons.Utility.DebugMenu
 
         internal override void PrintNewConfigSection(DebugMenu menu)
         {
-            Logger.Log(GetEntryPositionsJSON());
+            NHLogger.Log(GetEntryPositionsJSON());
         }
     }
 }

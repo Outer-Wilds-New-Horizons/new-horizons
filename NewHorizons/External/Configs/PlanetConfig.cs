@@ -5,13 +5,13 @@ using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.Modules.Volumes;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility.OWML;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.External.Configs
 {
@@ -220,18 +220,18 @@ namespace NewHorizons.External.Configs
                 Dictionary<string, QuantumGroupInfo> existingGroups = new Dictionary<string, QuantumGroupInfo>();
                 foreach (var quantumGroup in Props.quantumGroups)
                 {
-                    if (existingGroups.ContainsKey(quantumGroup.id)) { Logger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                    if (existingGroups.ContainsKey(quantumGroup.id)) { NHLogger.LogWarning($"Duplicate quantumGroup id found: {quantumGroup.id}"); quantumGroup.type = QuantumGroupType.FailedValidation; }
 
                     existingGroups[quantumGroup.id] = quantumGroup;
                     if (quantumGroup.type == QuantumGroupType.Sockets)
                     {
-                        if (quantumGroup.sockets?.Length == 0) { Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                        if (quantumGroup.sockets?.Length == 0) { NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" but has no defined sockets."); quantumGroup.type = QuantumGroupType.FailedValidation; }
                         else
                         {
                             foreach (var socket in quantumGroup.sockets)
                             {
                                 if (socket.rotation == null) socket.rotation = UnityEngine.Vector3.zero;
-                                if (socket.position == null) { Logger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
+                                if (socket.position == null) { NHLogger.LogError($"quantumGroup {quantumGroup.id} has a socket without a position."); quantumGroup.type = QuantumGroupType.FailedValidation; }
                             }
                         }
                     }
@@ -241,7 +241,7 @@ namespace NewHorizons.External.Configs
                 foreach (var prop in Props?.details)
                 {
                     if (prop.quantumGroupID == null) continue;
-                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) Logger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
+                    if (!existingGroups.ContainsKey(prop.quantumGroupID)) NHLogger.LogWarning($"A prop wants to be a part of quantum group {prop.quantumGroupID}, but this group does not exist.");
                     else existingGroupsPropCounts[prop.quantumGroupID] = existingGroupsPropCounts.GetValueOrDefault(prop.quantumGroupID) + 1;
                 }
 
@@ -249,7 +249,7 @@ namespace NewHorizons.External.Configs
                 {
                     if (quantumGroup.type == QuantumGroupType.Sockets && existingGroupsPropCounts.GetValueOrDefault(quantumGroup.id) >= quantumGroup.sockets?.Length)
                     {
-                        Logger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
+                        NHLogger.LogError($"quantumGroup {quantumGroup.id} is of type \"sockets\" and has more props than sockets.");
                         quantumGroup.type = QuantumGroupType.FailedValidation;
                     }
                 }

@@ -2,13 +2,14 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -32,7 +33,7 @@ namespace NewHorizons.Builder.Props
             {
                 _slideReelPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone1/Sector_SlideBurningRoom_Zone1/Interactables_SlideBurningRoom_Zone1/Prefab_IP_SecretAlcove/RotationPivot/SlideReelSocket/Prefab_IP_Reel_1_LibraryPath")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_Reel")?.DontDestroyOnLoad();
                 if (_slideReelPrefab == null)
-                    Logger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make slide reel prefab but couldn't. Do you have the DLC installed?");
                 else
                     _slideReelPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -41,7 +42,7 @@ namespace NewHorizons.Builder.Props
             {
                 _autoPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingInterior/Sector_Zone4/Sector_BlightedShore/Sector_JammingControlRoom_Zone4/Interactables_JammingControlRoom_Zone4/AutoProjector_SignalJammer/Prefab_IP_AutoProjector_SignalJammer")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_AutoProjector")?.DontDestroyOnLoad();
                 if (_autoPrefab == null)
-                    Logger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make auto projector prefab but couldn't. Do you have the DLC installed?");
                 else
                     _autoPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -50,7 +51,7 @@ namespace NewHorizons.Builder.Props
             {
                 _visionTorchDetectorPrefab = SearchUtilities.Find("DreamWorld_Body/Sector_DreamWorld/Sector_Underground/Sector_PrisonCell/Ghosts_PrisonCell/GhostDirector_Prisoner/Prefab_IP_GhostBird_Prisoner/Ghostbird_IP_ANIM/Ghostbird_Skin_01:Ghostbird_Rig_V01:Base/Ghostbird_Skin_01:Ghostbird_Rig_V01:Root/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine03/Ghostbird_Skin_01:Ghostbird_Rig_V01:Spine04/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck01/Ghostbird_Skin_01:Ghostbird_Rig_V01:Neck02/Ghostbird_Skin_01:Ghostbird_Rig_V01:Head/PrisonerHeadDetector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchDetector")?.DontDestroyOnLoad();
                 if (_visionTorchDetectorPrefab == null)
-                    Logger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make vision torch detector prefab but couldn't. Do you have the DLC installed?");
                 else
                     _visionTorchDetectorPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -59,7 +60,7 @@ namespace NewHorizons.Builder.Props
             {
                 _standingVisionTorchPrefab = SearchUtilities.Find("RingWorld_Body/Sector_RingWorld/Sector_SecretEntrance/Interactibles_SecretEntrance/Experiment_1/VisionTorchApparatus/VisionTorchRoot/Prefab_IP_VisionTorchProjector")?.gameObject?.InstantiateInactive()?.Rename("Prefab_IP_VisionTorchProjector")?.DontDestroyOnLoad();
                 if (_standingVisionTorchPrefab == null)
-                    Logger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
+                    NHLogger.LogWarning($"Tried to make standing vision torch prefab but couldn't. Do you have the DLC installed?");
                 else
                     _standingVisionTorchPrefab.AddComponent<DestroyOnDLC>()._destroyOnDLCNotOwned = true;
             }
@@ -82,7 +83,7 @@ namespace NewHorizons.Builder.Props
                     MakeStandingVisionTorch(go, sector, info, mod);
                     break;
                 default:
-                    Logger.LogError($"Invalid projection type {info.type}");
+                    NHLogger.LogError($"Invalid projection type {info.type}");
                     break;
             }
         }
@@ -206,7 +207,7 @@ namespace NewHorizons.Builder.Props
 
             if (g == null)
             {
-                Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
+                NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
             }
 
@@ -243,7 +244,7 @@ namespace NewHorizons.Builder.Props
 
             if (standingTorch == null)
             {
-                Logger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
+                NHLogger.LogWarning($"Tried to make a vision torch target but couldn't. Do you have the DLC installed?");
                 return null;
             }
 

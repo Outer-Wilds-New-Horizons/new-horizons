@@ -1,8 +1,9 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.Orbital
 {
     public static class InitialMotionBuilder
@@ -79,7 +80,7 @@ namespace NewHorizons.Builder.Orbital
             }
             else
             {
-                Logger.LogError($"No primary gravity or focal point for {primaryBody}");
+                NHLogger.LogError($"No primary gravity or focal point for {primaryBody}");
             }
         }
 
@@ -98,7 +99,7 @@ namespace NewHorizons.Builder.Orbital
 
         private static void SetBinaryInitialMotion(AstroObject baryCenter, NHAstroObject primaryBody, NHAstroObject secondaryBody)
         {
-            Logger.LogVerbose($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
+            NHLogger.LogVerbose($"Setting binary initial motion [{primaryBody.name}] [{secondaryBody.name}]");
 
             var primaryGravity = new Gravity(primaryBody._gravityVolume);
             var secondaryGravity = new Gravity(secondaryBody._gravityVolume);
@@ -171,7 +172,7 @@ namespace NewHorizons.Builder.Orbital
             secondaryInitialMotion._cachedInitVelocity = baryCenterVelocity + secondaryVelocity;
             secondaryInitialMotion._isInitVelocityDirty = false;
 
-            Logger.LogVerbose($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
+            NHLogger.LogVerbose($"Binary Initial Motion: {m1}, {m2}, {r1}, {r2}, {primaryVelocity}, {secondaryVelocity}");
         }
     }
 }

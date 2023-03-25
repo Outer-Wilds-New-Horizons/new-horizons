@@ -1,7 +1,7 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 namespace NewHorizons.Builder.Orbital
 {

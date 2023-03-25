@@ -1,5 +1,5 @@
 using NewHorizons.Components.ShipLog;
-using NewHorizons.Utility;
+using NewHorizons.External;
 using System;
 using System.Collections.Generic;
 using System.Linq;

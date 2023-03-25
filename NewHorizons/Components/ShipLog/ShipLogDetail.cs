@@ -1,7 +1,8 @@
 using NewHorizons.External.Modules;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 using UnityEngine.UI;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Components.ShipLog
 {
     public class ShipLogDetail : MonoBehaviour
@@ -44,7 +45,7 @@ namespace NewHorizons.Components.ShipLog
                     _outlineImage.enabled = false;
                     break;
                 default:
-                    Logger.LogError("Invalid ShipLogEntryState for " + _revealedImage.transform.parent.parent.gameObject.name);
+                    NHLogger.LogError("Invalid ShipLogEntryState for " + _revealedImage.transform.parent.parent.gameObject.name);
                     break;
             }
         }

@@ -3,10 +3,10 @@ using NewHorizons.Builder.Volumes.Rulesets;
 using NewHorizons.Builder.Volumes.VisorEffects;
 using NewHorizons.Components.Volumes;
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Volumes
 {
@@ -24,7 +24,7 @@ namespace NewHorizons.Builder.Volumes
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make reveal location [{revealInfo.reveals}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

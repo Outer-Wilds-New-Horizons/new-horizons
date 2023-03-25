@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using System.Linq;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-namespace NewHorizons.Utility.OWUtilities
+
+namespace NewHorizons.Utility.OuterWilds
 {
     public static class AstroObjectLocator
     {
@@ -64,12 +66,12 @@ namespace NewHorizons.Utility.OWUtilities
 
             if (_customAstroObjectDictionary.ContainsKey(key))
             {
-                Logger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
+                NHLogger.LogWarning($"Registering duplicate [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary[key] = ao;
             }
             else
             {
-                Logger.LogVerbose($"Registering [{ao.name}] as [{key}]");
+                NHLogger.LogVerbose($"Registering [{ao.name}] as [{key}]");
                 _customAstroObjectDictionary.Add(key, ao);
             }
         }

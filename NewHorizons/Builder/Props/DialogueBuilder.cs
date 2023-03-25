@@ -2,12 +2,12 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System.IO;
 using System.Xml;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -132,7 +132,7 @@ namespace NewHorizons.Builder.Props
 
             if (character == null)
             {
-                Logger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
+                NHLogger.LogError($"Couldn't find child of {go.transform.GetPath()} at {info.pathToAnimController}");
                 return;
             }
 

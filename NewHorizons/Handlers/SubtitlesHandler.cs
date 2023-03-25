@@ -1,11 +1,11 @@
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
+using OWML.Common;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
-using OWML.Common;
-using Logger = NewHorizons.Utility.Logger;
-using NewHorizons.Utility;
 
 namespace NewHorizons.Handlers
 {
@@ -69,7 +69,7 @@ namespace NewHorizons.Handlers
 
         public void AddSubtitle(IModBehaviour mod, string filepath)
         {
-            Logger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
+            NHLogger.Log($"Adding subtitle for {mod.ModHelper.Manifest.Name}");
 
             var tex = ImageUtilities.GetTexture(mod, filepath, false);
             if (tex == null) return;

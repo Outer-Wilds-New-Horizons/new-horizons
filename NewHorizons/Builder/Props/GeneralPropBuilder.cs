@@ -1,8 +1,9 @@
 using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.SerializableData;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -28,7 +29,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
+                    NHLogger.LogError($"Cannot find parent body named {solarSystemInfo.parentBody}");
                 }
             }
 
@@ -49,7 +50,7 @@ namespace NewHorizons.Builder.Props
                 }
                 else
                 {
-                    Logger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
+                    NHLogger.LogError($"Cannot find parent object at path: {planetGO.name}/{parentPath}");
                 }
             }
 

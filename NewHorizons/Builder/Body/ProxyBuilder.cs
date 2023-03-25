@@ -2,12 +2,13 @@ using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
 using NewHorizons.Components.SizeControllers;
+using NewHorizons.External;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Body
 {
@@ -61,7 +62,7 @@ namespace NewHorizons.Builder.Body
             // Add remnants
             if (remnant != null)
             {
-                Logger.LogVerbose($"Making custom remnant proxy");
+                NHLogger.LogVerbose($"Making custom remnant proxy");
 
                 var remnantGO = new GameObject("Remnant");
                 remnantGO.transform.parent = proxy.transform;
@@ -73,7 +74,7 @@ namespace NewHorizons.Builder.Body
             }
             else if (body.Config.Star != null && StellarRemnantBuilder.HasRemnant(body.Config.Star))
             {
-                Logger.LogVerbose($"Making remnant proxy");
+                NHLogger.LogVerbose($"Making remnant proxy");
 
                 var remnantGO = new GameObject("Remnant");
                 remnantGO.transform.parent = proxy.transform;
@@ -251,7 +252,7 @@ namespace NewHorizons.Builder.Body
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
+                NHLogger.LogError($"Exception thrown when generating proxy for [{body.Config.name}]:\n{ex}");
                 return false;
             }
         }

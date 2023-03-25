@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Utility.OWUtilities
+namespace NewHorizons.Utility.OuterWilds
 {
     public static class Layer
     {

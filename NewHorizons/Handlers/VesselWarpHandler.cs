@@ -1,11 +1,11 @@
 using UnityEngine;
 using NewHorizons.Components;
 using NewHorizons.Utility;
-using Logger = NewHorizons.Utility.Logger;
+
 using static NewHorizons.Main;
 using NewHorizons.Builder.Props;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 
 namespace NewHorizons.Handlers
 {
@@ -84,10 +84,10 @@ namespace NewHorizons.Handlers
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
-            Logger.LogVerbose("Checking for Vessel Prefab");
+            NHLogger.LogVerbose("Checking for Vessel Prefab");
             if (VesselPrefab == null) return null;
 
-            Logger.LogVerbose("Creating Vessel");
+            NHLogger.LogVerbose("Creating Vessel");
             var vesselObject = GeneralPropBuilder.MakeFromPrefab(VesselPrefab, VesselPrefab.name, null, null, system.Config.Vessel?.vesselSpawn);
             VesselObject = vesselObject;
 
@@ -203,7 +203,7 @@ namespace NewHorizons.Handlers
         {
             var system = SystemDict[Instance.CurrentStarSystem];
 
-            Logger.LogVerbose("Updating DB Vessel");
+            NHLogger.LogVerbose("Updating DB Vessel");
             var vectorSector = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension");
             VesselObject = vectorSector;
 

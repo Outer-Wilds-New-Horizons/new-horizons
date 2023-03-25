@@ -1,9 +1,10 @@
 using NewHorizons.Handlers;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Common.Menus;
 using System;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugTools
 {
     public static class DebugReload
     {
@@ -28,7 +29,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
         private static void ReloadConfigs()
         {
-            Logger.Log("Begin reload of config files...");
+            NHLogger.Log("Begin reload of config files...");
 
             Main.Instance.ResetConfigs();
 
@@ -41,7 +42,7 @@ namespace NewHorizons.Utility.DebugUtilities
             }
             catch (Exception)
             {
-                Logger.LogWarning("Error While Reloading");
+                NHLogger.LogWarning("Error While Reloading");
             }
 
             SearchUtilities.Find("/PauseMenu/PauseMenuManagers").GetComponent<PauseMenuManager>().OnSkipToNextTimeLoop();

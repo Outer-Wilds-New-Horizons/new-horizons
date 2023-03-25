@@ -1,3 +1,4 @@
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using OWML.Utils;
 using System;
@@ -6,7 +7,7 @@ using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.Files
 {
     public static class AudioUtilities
     {
@@ -30,7 +31,7 @@ namespace NewHorizons.Utility
                 }
                 catch
                 {
-                    Logger.LogError($"Could not load file {audio}");
+                    NHLogger.LogError($"Could not load file {audio}");
                 }
             }
 
@@ -41,7 +42,7 @@ namespace NewHorizons.Utility
             else
             {
                 var audioClip = SearchUtilities.FindResourceOfTypeAndName<AudioClip>(audio);
-                if (audioClip == null) Logger.Log($"Couldn't find audio clip {audio}");
+                if (audioClip == null) NHLogger.Log($"Couldn't find audio clip {audio}");
                 else source.clip = audioClip;
             }
         }
@@ -52,10 +53,10 @@ namespace NewHorizons.Utility
             {
                 if (_loadedAudioClips.ContainsKey(path))
                 {
-                    Logger.LogVerbose($"Already loaded audio at path: {path}");
+                    NHLogger.LogVerbose($"Already loaded audio at path: {path}");
                     return _loadedAudioClips[path];
                 }
-                Logger.LogVerbose($"Loading audio at path: {path}");
+                NHLogger.LogVerbose($"Loading audio at path: {path}");
                 var task = Task.Run(async () => await GetAudioClip(path));
                 task.Wait();
                 _loadedAudioClips.Add(path, task.Result);
@@ -63,14 +64,14 @@ namespace NewHorizons.Utility
             }
             catch (Exception ex)
             {
-                Logger.LogError($"Couldn't load Audio at {path} : {ex}");
+                NHLogger.LogError($"Couldn't load Audio at {path} : {ex}");
                 return null;
             }
         }
 
         public static void ClearCache()
         {
-            Logger.LogVerbose("Clearing audio cache");
+            NHLogger.LogVerbose("Clearing audio cache");
 
             foreach (var audioClip in _loadedAudioClips.Values)
             {
@@ -98,7 +99,7 @@ namespace NewHorizons.Utility
                     audioType = UnityEngine.AudioType.MPEG;
                     break;
                 default:
-                    Logger.LogError($"Couldn't load Audio at {path} : Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
+                    NHLogger.LogError($"Couldn't load Audio at {path} : Invalid audio file extension ({extension}) must be .wav or .ogg or .mp3");
                     return null;
             }
 
@@ -115,7 +116,7 @@ namespace NewHorizons.Utility
 
                     if (www.isNetworkError || www.isHttpError)
                     {
-                        Logger.LogError($"Couldn't load Audio at {path} : {www.error}");
+                        NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
                         return null;
                     }
                     else
@@ -134,7 +135,7 @@ namespace NewHorizons.Utility
 
                     if (www.isNetworkError || www.isHttpError)
                     {
-                        Logger.LogError($"Couldn't load Audio at {path} : {www.error}");
+                        NHLogger.LogError($"Couldn't load Audio at {path} : {www.error}");
                         return null;
                     }
                     else

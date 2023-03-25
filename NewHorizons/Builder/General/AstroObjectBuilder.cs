@@ -1,8 +1,8 @@
 using NewHorizons.Components.Orbital;
 using NewHorizons.External.Configs;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 namespace NewHorizons.Builder.General
 {
     public static class AstroObjectBuilder
@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.General
 
             if (config.Base.centerOfSolarSystem)
             {
-                Logger.Log($"Setting center of universe to {config.name}");
+                NHLogger.Log($"Setting center of universe to {config.name}");
 
                 Delay.RunWhen(
                     () => Locator._centerOfTheUniverse != null,

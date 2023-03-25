@@ -2,14 +2,15 @@ using NewHorizons.External.Configs;
 using NewHorizons.Utility;
 using NewHorizons.External.Modules.VariableSize;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using System.Collections.Generic;
 using NewHorizons.Components.SizeControllers;
 using Color = UnityEngine.Color;
 using NewHorizons.Components.Volumes;
 using NewHorizons.Builder.Props;
-using NewHorizons.Utility.OWMLUtilities;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.External.Modules.SerializableData;
 
 namespace NewHorizons.Builder.Body
 {
@@ -111,27 +112,27 @@ namespace NewHorizons.Builder.Body
                 var (blackHoleID, whiteHoleID) = pair;
                 if (!_singularitiesByID.TryGetValue(blackHoleID, out GameObject blackHole))
                 {
-                    Logger.LogWarning($"Black hole [{blackHoleID}] is missing.");
+                    NHLogger.LogWarning($"Black hole [{blackHoleID}] is missing.");
                     break;
                 }
                 if (!_singularitiesByID.TryGetValue(whiteHoleID, out GameObject whiteHole))
                 {
-                    Logger.LogWarning($"White hole [{whiteHoleID}] is missing.");
+                    NHLogger.LogWarning($"White hole [{whiteHoleID}] is missing.");
                     break;
                 }
                 var whiteHoleVolume = whiteHole.GetComponentInChildren<WhiteHoleVolume>();
                 var blackHoleVolume = blackHole.GetComponentInChildren<BlackHoleVolume>();
                 if (whiteHoleVolume == null || blackHoleVolume == null)
                 {
-                    Logger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
+                    NHLogger.LogWarning($"Singularities [{blackHoleID}] and [{whiteHoleID}] do not have compatible polarities.");
                     break;
                 }
                 if (blackHoleVolume._whiteHole != null && blackHoleVolume._whiteHole != whiteHoleVolume)
                 {
-                    Logger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
+                    NHLogger.LogWarning($"Black hole [{blackHoleID}] has already been linked!");
                     break;
                 }
-                Logger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
+                NHLogger.LogVerbose($"Pairing singularities [{blackHoleID}], [{whiteHoleID}]");
                 blackHoleVolume._whiteHole = whiteHoleVolume;
             }
         }

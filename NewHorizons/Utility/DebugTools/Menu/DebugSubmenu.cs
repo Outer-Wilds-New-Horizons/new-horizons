@@ -1,6 +1,6 @@
 using NewHorizons.External.Configs;
 
-namespace NewHorizons.Utility.DebugMenu
+namespace NewHorizons.Utility.DebugTools.Menu
 {
     abstract class DebugSubmenu
     {

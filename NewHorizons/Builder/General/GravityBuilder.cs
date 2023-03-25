@@ -1,6 +1,6 @@
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
 using UnityEngine;
 namespace NewHorizons.Builder.General
 {

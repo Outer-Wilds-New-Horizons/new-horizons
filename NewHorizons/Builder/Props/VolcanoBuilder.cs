@@ -1,6 +1,6 @@
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Props

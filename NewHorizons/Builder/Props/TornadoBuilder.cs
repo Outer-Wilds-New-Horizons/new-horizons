@@ -2,9 +2,10 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWMLUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 using Random = UnityEngine.Random;
 namespace NewHorizons.Builder.Props
 {
@@ -88,7 +89,7 @@ namespace NewHorizons.Builder.Props
             }
             else
             {
-                Logger.LogError($"Need either a position or an elevation for tornados");
+                NHLogger.LogError($"Need either a position or an elevation for tornados");
                 return;
             }
 

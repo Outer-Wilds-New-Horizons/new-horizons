@@ -1,6 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using UnityEngine;
 using NHNotificationVolume = NewHorizons.Components.Volumes.NotificationVolume;

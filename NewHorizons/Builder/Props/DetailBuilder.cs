@@ -3,14 +3,15 @@ using NewHorizons.Components;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -70,7 +71,7 @@ namespace NewHorizons.Builder.Props
             var prefab = SearchUtilities.Find(info.path);
             if (prefab == null)
             {
-                Logger.LogError($"Couldn't find detail {info.path}");
+                NHLogger.LogError($"Couldn't find detail {info.path}");
                 return null;
             }
             else
@@ -137,7 +138,7 @@ namespace NewHorizons.Builder.Props
                 {
                     if (t.GetComponents<Component>().Any(c => c == null))
                     {
-                        Logger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
+                        NHLogger.LogError($"Failed to instantiate component at {t.GetPath()}. This usually means there's a missing script.");
                     }
                 }
             }
@@ -163,7 +164,7 @@ namespace NewHorizons.Builder.Props
                         childObj.gameObject.SetActive(false);
                     }
 
-                    if (flag) Logger.LogWarning($"Couldn't find \"{childPath}\".");
+                    if (flag) NHLogger.LogWarning($"Couldn't find \"{childPath}\".");
                 }
             }
 
@@ -324,7 +325,7 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception e)
                 {
-                    Logger.LogError($"Couldn't update AnglerFish chase speed:\n{e}");
+                    NHLogger.LogError($"Couldn't update AnglerFish chase speed:\n{e}");
                 }
             }
 
@@ -376,7 +377,7 @@ namespace NewHorizons.Builder.Props
             {
                 var angler = GetComponent<AnglerfishAnimController>();
                 
-                Logger.LogVerbose("Fixing anglerfish animation");
+                NHLogger.LogVerbose("Fixing anglerfish animation");
 
                 // Remove any event reference to its angler
                 if (angler._anglerfishController)

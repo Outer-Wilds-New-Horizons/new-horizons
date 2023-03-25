@@ -1,8 +1,9 @@
 using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.Handlers;
+using NewHorizons.Utility.OWML;
 using System.Collections;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
+
 
 namespace NewHorizons.Components.Volumes
 {
@@ -65,7 +66,7 @@ namespace NewHorizons.Components.Volumes
 
         private void LoadCreditsScene()
         {
-            Logger.LogVerbose($"Load credits {creditsType}");
+            NHLogger.LogVerbose($"Load credits {creditsType}");
 
             switch (creditsType)
             {

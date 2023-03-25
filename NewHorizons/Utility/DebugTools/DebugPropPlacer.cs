@@ -2,13 +2,15 @@ using NewHorizons.Builder.Props;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.Handlers;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace NewHorizons.Utility.DebugUtilities
+namespace NewHorizons.Utility.DebugTools
 {
 
     //
@@ -130,7 +132,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             if (data.hitBodyGameObject == null)
             {
-                Logger.LogError($"Failed to place object {currentObject} on nothing.");
+                NHLogger.LogError($"Failed to place object {currentObject} on nothing.");
                 return;
             }
 
@@ -145,7 +147,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 if (!planetGO.name.EndsWith("_Body"))
                 {
-                    Logger.LogWarning("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
+                    NHLogger.LogWarning("Cannot place object on non-body object: " + data.hitBodyGameObject.name);
                 }
 
                 var sector = planetGO.GetComponentInChildren<Sector>();
@@ -162,7 +164,7 @@ namespace NewHorizons.Utility.DebugUtilities
             }
             catch
             {
-                Logger.LogError($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
+                NHLogger.LogError($"Failed to place object {currentObject} on body ${data.hitBodyGameObject} at location ${data.pos}.");
             }
         }
 
@@ -195,7 +197,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
                 if (spawnedProp == null)
                 {
-                    Logger.LogError("No spawned prop found for " + detail.path);
+                    NHLogger.LogError("No spawned prop found for " + detail.path);
                     continue;
                 }
 
@@ -224,7 +226,7 @@ namespace NewHorizons.Utility.DebugUtilities
 
             //var body = AstroObjectLocator.GetAstroObject(bodyGameObjectName);
 
-            Logger.LogVerbose($"Adding prop to {Main.Instance.CurrentStarSystem}::{body.name}");
+            NHLogger.LogVerbose($"Adding prop to {Main.Instance.CurrentStarSystem}::{body.name}");
 
 
             detailInfo = detailInfo == null ? new DetailInfo() : detailInfo;
@@ -256,7 +258,7 @@ namespace NewHorizons.Utility.DebugUtilities
                 if (bodyProps == null || bodyProps.Count == 0) continue;
                 if (bodyProps[0].body == null) continue;
                 var body = bodyProps[0].body;
-                Logger.LogVerbose("getting prop group for body " + body.name);
+                NHLogger.LogVerbose("getting prop group for body " + body.name);
                 //string bodyName = GetAstroObjectName(bodyProps[0].body);
 
                 DetailInfo[] infoArray = new DetailInfo[bodyProps.Count];

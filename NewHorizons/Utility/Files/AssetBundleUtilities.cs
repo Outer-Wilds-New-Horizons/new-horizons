@@ -1,10 +1,11 @@
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.Files
 {
     public static class AssetBundleUtilities
     {
@@ -14,7 +15,7 @@ namespace NewHorizons.Utility
         {
             foreach (var pair in AssetBundles)
             {
-                if (pair.Value == null) Logger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
+                if (pair.Value == null) NHLogger.LogError($"The asset bundle for {pair.Key} was null when trying to unload");
                 else pair.Value.Unload(true);
             }
             AssetBundles.Clear();
@@ -39,7 +40,7 @@ namespace NewHorizons.Utility
                     bundle = AssetBundle.LoadFromFile(completePath);
                     if (bundle == null)
                     {
-                        Logger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
+                        NHLogger.LogError($"Couldn't load AssetBundle at [{completePath}] for [{mod.ModHelper.Manifest.Name}]");
                         return null;
                     }
 
@@ -50,7 +51,7 @@ namespace NewHorizons.Utility
             }
             catch (Exception e)
             {
-                Logger.LogError($"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir}:\n{e}");
+                NHLogger.LogError($"Couldn't load asset {pathInBundle} from AssetBundle {assetBundleRelativeDir}:\n{e}");
                 return null;
             }
 

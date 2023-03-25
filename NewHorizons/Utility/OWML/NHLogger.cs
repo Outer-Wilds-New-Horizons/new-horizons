@@ -1,9 +1,9 @@
 using OWML.Common;
 using System;
 
-namespace NewHorizons.Utility
+namespace NewHorizons.Utility.OWML
 {
-    public static class Logger
+    public static class NHLogger
     {
 
         private static LogType _logLevel = LogType.Error;

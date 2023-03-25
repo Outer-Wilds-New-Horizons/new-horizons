@@ -1,15 +1,15 @@
 using HarmonyLib;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility.DebugUtilities;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.OWML;
+using NewHorizons.Utility.OuterWilds;
 using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace NewHorizons.Utility.DebugMenu
+namespace NewHorizons.Utility.DebugTools.Menu
 {
     class DebugMenuPropPlacer : DebugSubmenu
     {
@@ -226,7 +226,7 @@ namespace NewHorizons.Utility.DebugMenu
             Vector3 finalLocalPosition = CoordinateUtilities.SphericalToCartesian(newSpherical);
             Vector3 finalAbsolutePosition = astroObject.TransformPoint(finalLocalPosition);
             prop.transform.localPosition = prop.transform.parent.InverseTransformPoint(finalAbsolutePosition);
-            Logger.Log("new position: " + prop.transform.localPosition);
+            NHLogger.Log("new position: " + prop.transform.localPosition);
 
             var onlyChangingRAndRIsNegative = false;
 
@@ -339,21 +339,21 @@ namespace NewHorizons.Utility.DebugMenu
             var newDetails = _dpp.GetPropsConfigByBody();
 
             var newDetailsCountsByPlanet = string.Join(", ", newDetails.Keys.Select(x => $"{x.name} ({newDetails[x].Length})"));
-            Logger.Log($"Updating config files. New Details Counts by planet: {newDetailsCountsByPlanet}");
+            NHLogger.Log($"Updating config files. New Details Counts by planet: {newDetailsCountsByPlanet}");
 
             var planetToConfigPath = new Dictionary<AstroObject, string>();
 
             // Get all configs
             foreach (var filePath in menu.loadedConfigFiles.Keys)
             {
-                Logger.LogVerbose($"Potentially updating copy of config at {filePath}");
-                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
-                Logger.LogVerbose($"{menu.loadedConfigFiles[filePath].name}");
+                NHLogger.LogVerbose($"Potentially updating copy of config at {filePath}");
+                NHLogger.LogVerbose($"{menu.loadedConfigFiles[filePath].name} {AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name)?.name}");
+                NHLogger.LogVerbose($"{menu.loadedConfigFiles[filePath].name}");
 
                 if (menu.loadedConfigFiles[filePath].starSystem != Main.Instance.CurrentStarSystem) return;
                 if (menu.loadedConfigFiles[filePath].name == null || AstroObjectLocator.GetAstroObject(menu.loadedConfigFiles[filePath].name) == null) 
                 { 
-                    Logger.LogWarning("Failed to update copy of config at " + filePath); 
+                    NHLogger.LogWarning("Failed to update copy of config at " + filePath); 
                     continue; 
                 }
 
@@ -365,14 +365,14 @@ namespace NewHorizons.Utility.DebugMenu
                 if (menu.loadedConfigFiles[filePath].Props == null) menu.loadedConfigFiles[filePath].Props = new PropModule();
                 menu.loadedConfigFiles[filePath].Props.details = newDetails[astroObject];
 
-                Logger.Log($"Successfully updated copy of config file for {astroObject.name}");
+                NHLogger.Log($"Successfully updated copy of config file for {astroObject.name}");
             }
 
             // find all new planets that do not yet have config paths
             var planetsThatDoNotHaveConfigFiles = newDetails.Keys.Where(x => !planetToConfigPath.ContainsKey(x)).ToList();
             foreach (var astroObject in planetsThatDoNotHaveConfigFiles)
             {
-                Logger.Log("Fabricating new config file for " + astroObject.name);
+                NHLogger.Log("Fabricating new config file for " + astroObject.name);
 
                 var filepath = $"planets/{Main.Instance.CurrentStarSystem}/{astroObject.name}.json";
                 
@@ -394,7 +394,7 @@ namespace NewHorizons.Utility.DebugMenu
                     detail => "\t" + JsonConvert.SerializeObject(detail, DebugMenu.jsonSettings),
                     ",\n"
                 );
-                Logger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
+                NHLogger.Log($"{body.Key.name} ({body.Value.Length})\n[\n{json}\n]");
             }
         }
     }

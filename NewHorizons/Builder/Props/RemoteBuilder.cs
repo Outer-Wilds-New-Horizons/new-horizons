@@ -1,14 +1,17 @@
 using NewHorizons.Builder.Props.TranslatorText;
+using NewHorizons.External;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.Props.Remote;
+using NewHorizons.External.Modules.SerializableData;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
-using NewHorizons.Utility.OWUtilities;
+using NewHorizons.Utility.Files;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using UnityEngine;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Builder.Props
 {
@@ -128,7 +131,7 @@ namespace NewHorizons.Builder.Props
 
             Texture2D decal = Texture2D.whiteTexture;
             if (!string.IsNullOrWhiteSpace(info.decalPath)) decal = ImageUtilities.GetTexture(mod, info.decalPath, false, false);
-            else Logger.LogError($"Missing decal path on [{info.id}] for [{go.name}]");
+            else NHLogger.LogError($"Missing decal path on [{info.id}] for [{go.name}]");
 
             if (info.platform != null)
             {
@@ -138,7 +141,7 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make remote platform [{info.id}] for [{go.name}]:\n{ex}");
+                    NHLogger.LogError($"Couldn't make remote platform [{info.id}] for [{go.name}]:\n{ex}");
                 }
             }
 
@@ -150,7 +153,7 @@ namespace NewHorizons.Builder.Props
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Couldn't make remote whiteboard [{info.id}] for [{go.name}]:\n{ex}");
+                    NHLogger.LogError($"Couldn't make remote whiteboard [{info.id}] for [{go.name}]:\n{ex}");
                 }
             }
 
@@ -164,7 +167,7 @@ namespace NewHorizons.Builder.Props
                     }
                     catch (Exception ex)
                     {
-                        Logger.LogError($"Couldn't make remote stone [{info.id}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"Couldn't make remote stone [{info.id}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

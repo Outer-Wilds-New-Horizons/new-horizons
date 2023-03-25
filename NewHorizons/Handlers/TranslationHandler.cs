@@ -1,8 +1,8 @@
 using NewHorizons.External.Configs;
+using NewHorizons.Utility.OWML;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Logger = NewHorizons.Utility.Logger;
 
 namespace NewHorizons.Handlers
 {
@@ -38,7 +38,7 @@ namespace NewHorizons.Handlers
                     dictionary = _uiTranslationDictionary;
                     break;
                 default:
-                    if (warn) Logger.LogVerbose($"Invalid TextType {type}");
+                    if (warn) NHLogger.LogVerbose($"Invalid TextType {type}");
                     return text;
             }
 
@@ -47,14 +47,14 @@ namespace NewHorizons.Handlers
                 if (table.TryGetValue(text, out var translatedText))
                     return translatedText;
 
-            if (warn) Logger.LogVerbose($"Defaulting to english for {text}");
+            if (warn) NHLogger.LogVerbose($"Defaulting to english for {text}");
 
             // Try to default to English
             if (dictionary.TryGetValue(TextTranslation.Language.ENGLISH, out var englishTable))
                 if (englishTable.TryGetValue(text, out var englishText))
                     return englishText;
 
-            if (warn) Logger.LogVerbose($"Defaulting to key for {text}");
+            if (warn) NHLogger.LogVerbose($"Defaulting to key for {text}");
 
             // Default to the key
             return text;
