@@ -2,10 +2,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace NewHorizons.External.Modules.Audio
+namespace NewHorizons.External.Modules.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum AudioMixerTrackName
+    public enum NHAudioMixerTrackName
     {
         [EnumMember(Value = @"undefined")] Undefined = 0,
         [EnumMember(Value = @"menu")] Menu = 1,

@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.Audio;
+using NewHorizons.External.Modules.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -13,12 +13,12 @@ namespace NewHorizons.External.Modules.Volumes.VolumeInfos
         /// </summary>
         public string audio;
 
-        [DefaultValue("random")] public ClipSelectionType clipSelection = ClipSelectionType.RANDOM;
+        [DefaultValue("random")] public NHClipSelectionType clipSelection = NHClipSelectionType.RANDOM;
 
         /// <summary>
         /// The audio track of this audio volume
         /// </summary>
-        [DefaultValue("environment")] public AudioMixerTrackName track = AudioMixerTrackName.Environment;
+        [DefaultValue("environment")] public NHAudioMixerTrackName track = NHAudioMixerTrackName.Environment;
 
         /// <summary>
         /// Whether to loop this audio while in this audio volume or just play it once

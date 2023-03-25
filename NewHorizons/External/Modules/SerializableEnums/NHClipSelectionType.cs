@@ -2,10 +2,10 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using System.Runtime.Serialization;
 
-namespace NewHorizons.External.Modules.Audio
+namespace NewHorizons.External.Modules.SerializableEnums
 {
     [JsonConverter(typeof(StringEnumConverter))]
-    public enum ClipSelectionType
+    public enum NHClipSelectionType
     {
         [EnumMember(Value = @"random")] RANDOM,
         [EnumMember(Value = @"sequential")] SEQUENTIAL,
