@@ -413,7 +413,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this cloud.",
           "default": "cloud",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         },
         "hasLightning": {
           "type": "boolean",
@@ -476,7 +476,7 @@
         "transparent"
       ]
     },
-    "FluidType": {
+    "NHFluidType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -1978,7 +1978,7 @@
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this tornado.",
           "default": "cloud",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         }
       }
     },
@@ -2583,7 +2583,7 @@
       "properties": {
         "fluidType": {
           "description": "Fluid type for sounds/effects when colliding with this ring.",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         },
         "inclination": {
           "type": "number",
@@ -3223,12 +3223,12 @@
         },
         "clipSelection": {
           "default": "random",
-          "$ref": "#/definitions/ClipSelectionType"
+          "$ref": "#/definitions/NHClipSelectionType"
         },
         "track": {
           "description": "The audio track of this audio volume",
           "default": "environment",
-          "$ref": "#/definitions/AudioMixerTrackName"
+          "$ref": "#/definitions/NHAudioMixerTrackName"
         },
         "loop": {
           "type": "boolean",
@@ -3263,7 +3263,7 @@
         }
       }
     },
-    "ClipSelectionType": {
+    "NHClipSelectionType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3277,7 +3277,7 @@
         "manual"
       ]
     },
-    "AudioMixerTrackName": {
+    "NHAudioMixerTrackName": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3355,11 +3355,11 @@
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
           "default": "default",
-          "$ref": "#/definitions/DeathType"
+          "$ref": "#/definitions/NHDeathType"
         }
       }
     },
-    "DeathType": {
+    "NHDeathType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
@@ -3443,7 +3443,7 @@
         },
         "type": {
           "description": "The type of fluid for this volume.",
-          "$ref": "#/definitions/FluidType"
+          "$ref": "#/definitions/NHFluidType"
         },
         "alignmentFluid": {
           "type": "boolean",
@@ -4229,7 +4229,7 @@
         },
         "creditsType": {
           "default": "fast",
-          "$ref": "#/definitions/CreditsType"
+          "$ref": "#/definitions/NHCreditsType"
         },
         "gameOverText": {
           "type": "string",
@@ -4238,11 +4238,11 @@
         "deathType": {
           "description": "The type of death the player will have if they enter this volume.",
           "default": "default",
-          "$ref": "#/definitions/DeathType"
+          "$ref": "#/definitions/NHDeathType"
         }
       }
     },
-    "CreditsType": {
+    "NHCreditsType": {
       "type": "string",
       "description": "",
       "x-enumNames": [
