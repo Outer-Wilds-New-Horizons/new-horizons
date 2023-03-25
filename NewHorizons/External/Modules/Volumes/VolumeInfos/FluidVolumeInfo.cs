@@ -2,7 +2,7 @@ using NewHorizons.External.Modules.SerializableEnums;
 using Newtonsoft.Json;
 using System.ComponentModel;
 
-namespace NewHorizons.External.Modules.Volumes
+namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     [JsonObject]
     public class FluidVolumeInfo : PriorityVolumeInfo

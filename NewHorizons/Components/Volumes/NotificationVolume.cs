@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Handlers;
 using OWML.Utils;
 using UnityEngine;

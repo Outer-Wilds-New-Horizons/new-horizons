@@ -1,6 +1,6 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.Components.Achievement;
-using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility.OWUtilities;
 using OWML.Common;
 using UnityEngine;

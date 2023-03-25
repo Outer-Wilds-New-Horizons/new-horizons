@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace NewHorizons.External.Modules.Volumes
+namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     [JsonObject]
     public class AudioVolumeInfo : PriorityVolumeInfo

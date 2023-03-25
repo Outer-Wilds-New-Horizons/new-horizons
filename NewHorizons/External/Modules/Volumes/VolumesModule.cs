@@ -1,3 +1,4 @@
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
 
 namespace NewHorizons.External.Modules.Volumes

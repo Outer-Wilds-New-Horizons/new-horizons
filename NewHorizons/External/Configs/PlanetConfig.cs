@@ -4,6 +4,7 @@ using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;

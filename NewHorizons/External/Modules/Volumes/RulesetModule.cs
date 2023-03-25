@@ -1,88 +1,9 @@
-using NewHorizons.External.Modules.Audio;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Runtime.Serialization;
 
 namespace NewHorizons.External.Modules.Volumes
 {
-    [JsonObject]
-    public class VolumeInfo : GeneralPointPropInfo
-    {
-        /// <summary>
-        /// The radius of this volume.
-        /// </summary>
-        [DefaultValue(1f)] public float radius = 1f;
-    }
-
-
-
-
-
-
-
-    [JsonObject]
-    public class ProbeModule
-    {
-        /// <summary>
-        /// Add probe destruction volumes to this planet. These will delete your probe.
-        /// </summary>
-        public VolumeInfo[] destructionVolumes;
-
-        /// <summary>
-        /// Add probe safety volumes to this planet. These will stop the probe destruction volumes from working.
-        /// </summary>
-        public VolumeInfo[] safetyVolumes;
-    }
-
-    [JsonObject]
-    public class VisorEffectModule
-    {
-        /// <summary>
-        /// Add visor frost effect volumes to this planet. This is the ghost matter effect.
-        /// </summary>
-        public FrostEffectVolumeInfo[] frostEffectVolumes;
-
-        /// <summary>
-        /// Add visor rain effect volumes to this planet. You can see this on Giant's Deep.
-        /// </summary>
-        public RainEffectVolumeInfo[] rainEffectVolumes;
-
-        [JsonObject]
-        public class FrostEffectVolumeInfo : PriorityVolumeInfo
-        {
-            /// <summary>
-            /// The rate at which the frost effect will get stronger
-            /// </summary>
-            [DefaultValue(0.5f)]
-            public float frostRate = 0.5f;
-
-            /// <summary>
-            /// The maximum strength of frost this volume can give
-            /// </summary>
-            [Range(0f, 1f)]
-            [DefaultValue(0.91f)]
-            public float maxFrost = 0.91f;
-        }
-
-        [JsonObject]
-        public class RainEffectVolumeInfo : PriorityVolumeInfo
-        {
-            /// <summary>
-            /// The rate at which the rain droplet effect will happen
-            /// </summary>
-            [DefaultValue(0.1f)]
-            public float dropletRate = 10f;
-
-            /// <summary>
-            /// The rate at which the rain streak effect will happen
-            /// </summary>
-            [DefaultValue(1f)]
-            public float streakRate = 1f;
-        }
-    }
-
     [JsonObject]
     public class RulesetModule
     {
@@ -166,19 +87,4 @@ namespace NewHorizons.External.Modules.Volumes
         }
     }
 
-    [JsonObject]
-    public class SpeedTrapVolumeInfo : VolumeInfo
-    {
-        /// <summary>
-        /// The speed the volume will slow you down to when you enter it.
-        /// </summary>
-        [DefaultValue(10f)]
-        public float speedLimit = 10f;
-
-        /// <summary>
-        /// How fast it will slow down the player to the speed limit.
-        /// </summary>
-        [DefaultValue(3f)]
-        public float acceleration = 3f;
-    }
 }

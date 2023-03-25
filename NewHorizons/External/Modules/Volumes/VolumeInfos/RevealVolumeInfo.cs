@@ -3,7 +3,7 @@ using Newtonsoft.Json.Converters;
 using System.ComponentModel;
 using System.Runtime.Serialization;
 
-namespace NewHorizons.External.Modules.Volumes
+namespace NewHorizons.External.Modules.Volumes.VolumeInfos
 {
     [JsonObject]
     public class RevealVolumeInfo : VolumeInfo

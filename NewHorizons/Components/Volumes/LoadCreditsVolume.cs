@@ -1,4 +1,4 @@
-using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.SerializableEnums;
 using NewHorizons.Handlers;
 using System.Collections;
 using UnityEngine;

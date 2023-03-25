@@ -5,7 +5,7 @@ using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.Props.Remote;
 using NewHorizons.External.Modules.TranslatorText;
 using NewHorizons.External.Modules.VariableSize;
-using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.External.Modules.WarpPad;
 using Newtonsoft.Json;
 using System;

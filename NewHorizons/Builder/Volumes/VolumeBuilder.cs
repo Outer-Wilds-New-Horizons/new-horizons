@@ -1,5 +1,5 @@
 using NewHorizons.Builder.Props;
-using NewHorizons.External.Modules.Volumes;
+using NewHorizons.External.Modules.Volumes.VolumeInfos;
 using NewHorizons.Utility.OWUtilities;
 using UnityEngine;
 
