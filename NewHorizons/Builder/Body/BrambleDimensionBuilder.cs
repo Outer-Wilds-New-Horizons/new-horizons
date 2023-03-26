@@ -1,6 +1,6 @@
 using NewHorizons.Builder.Props;
-using NewHorizons.Components;
 using NewHorizons.Components.Orbital;
+using NewHorizons.Components.Sectored;
 using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;

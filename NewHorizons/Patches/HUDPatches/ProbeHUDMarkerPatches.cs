@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Sectored;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Patches.HUDPatches
@@ -30,7 +31,7 @@ namespace NewHorizons.Patches.HUDPatches
             bool insideQM = __instance._quantumMoon != null && (__instance._quantumMoon.IsPlayerInside() || __instance._quantumMoon.IsProbeInside());
             bool insideRW = Locator.GetRingWorldController() != null && Locator.GetRingWorldController().isPlayerInside == Locator.GetRingWorldController().isProbeInside;
             bool insideIP = Locator.GetCloakFieldController() != null && Locator.GetCloakFieldController().isPlayerInsideCloak == Locator.GetCloakFieldController().isProbeInsideCloak;
-            bool insideCloak = Components.CloakSectorController.isPlayerInside == Components.CloakSectorController.isProbeInside;
+            bool insideCloak = CloakSectorController.isPlayerInside == CloakSectorController.isProbeInside;
             bool sameInterference = InterferenceHandler.IsPlayerSameAsProbe();
             bool isActive = __instance.gameObject.activeInHierarchy || __instance._isTLCDuplicate;
 

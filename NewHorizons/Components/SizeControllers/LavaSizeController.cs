@@ -8,7 +8,7 @@ namespace NewHorizons.Components.SizeControllers
         public Material material;
         public Material proxyMaterial;
 
-        protected new void FixedUpdate()
+        public override void FixedUpdate()
         {
             base.FixedUpdate();
 

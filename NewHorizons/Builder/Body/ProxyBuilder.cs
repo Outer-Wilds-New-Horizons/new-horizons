@@ -1,6 +1,7 @@
 using NewHorizons.Builder.Atmosphere;
 using NewHorizons.Builder.Props;
 using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
 using NewHorizons.External.Modules.VariableSize;
@@ -196,7 +197,7 @@ namespace NewHorizons.Builder.Body
 
                 if (body.Config.CometTail != null)
                 {
-                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config.Base.surfaceSize);
+                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config);
                 }
 
                 if (body.Config.Props?.proxyDetails != null)

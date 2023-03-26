@@ -601,7 +601,7 @@ namespace NewHorizons.Handlers
 
             if (body.Config.CometTail != null)
             {
-                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config.Base.surfaceSize);
+                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config);
             }
 
             if (body.Config.Lava != null)

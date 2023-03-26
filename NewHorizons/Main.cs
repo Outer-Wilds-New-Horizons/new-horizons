@@ -4,7 +4,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.Components;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
@@ -32,6 +31,7 @@ using UnityEngine.SceneManagement;
 
 using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.DebugTools.Menu;
+using NewHorizons.Components.Ship;
 
 namespace NewHorizons
 {

@@ -21,5 +21,10 @@ namespace NewHorizons.External.Modules
         /// Inner radius of the comet tail, defaults to match surfaceSize
         /// </summary>
         public float? innerRadius;
+
+        /// <summary>
+        /// The body that the comet tail should always point away from
+        /// </summary>
+        public string primaryBody;
     }
 }

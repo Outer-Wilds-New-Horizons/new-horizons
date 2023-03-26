@@ -1,10 +1,10 @@
 using UnityEngine;
 using NewHorizons.Utility;
 using NewHorizons.External.Configs;
-using NewHorizons.Components;
 using System.Linq;
 using OWML.Common;
 using NewHorizons.Utility.Files;
+using NewHorizons.Components.Props;
 
 namespace NewHorizons.Builder.Body
 {

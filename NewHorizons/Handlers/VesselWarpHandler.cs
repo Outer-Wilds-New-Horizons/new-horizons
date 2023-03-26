@@ -1,11 +1,12 @@
 using UnityEngine;
-using NewHorizons.Components;
 using NewHorizons.Utility;
 
 using static NewHorizons.Main;
 using NewHorizons.Builder.Props;
 using NewHorizons.Utility.OWML;
 using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Components.Vessel;
+using NewHorizons.Components.EyeOfTheUniverse;
 
 namespace NewHorizons.Handlers
 {
