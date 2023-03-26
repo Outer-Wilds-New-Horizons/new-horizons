@@ -170,6 +170,8 @@ namespace NewHorizons.Builder.Props
 
             if (detail.removeComponents)
             {
+                NHLogger.LogVerbose($"Removing all components from [{prop.name}]");
+
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(prop.name);
                 newDetailGO.transform.position = prop.transform.position;
@@ -185,7 +187,8 @@ namespace NewHorizons.Builder.Props
                 {
                     child.parent = newDetailGO.transform;
                 }
-                GameObject.Destroy(prop);
+                // Have to destroy it right away, else parented props might get attached to the old one
+                GameObject.DestroyImmediate(prop);
                 prop = newDetailGO;
             }
             

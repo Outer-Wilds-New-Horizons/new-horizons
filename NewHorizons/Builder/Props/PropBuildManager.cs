@@ -106,11 +106,15 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                        var (dialogue, trigger) = DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                        if (dialogue == null)
+                        {
+                            NHLogger.LogVerbose($"[DIALOGUE] Failed to create dialogue [{dialogueInfo.xmlFile}]");
+                        }
                     }
                     catch (Exception ex)
                     {
-                        NHLogger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"[DIALOGUE] Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
                 }
             }

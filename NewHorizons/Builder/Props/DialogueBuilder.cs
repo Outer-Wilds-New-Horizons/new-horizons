@@ -16,9 +16,15 @@ namespace NewHorizons.Builder.Props
         // Returns the character dialogue tree and remote dialogue trigger, if applicable.
         public static (CharacterDialogueTree, RemoteDialogueTrigger) Make(GameObject go, Sector sector, DialogueInfo info, IModBehaviour mod)
         {
+            NHLogger.LogVerbose($"[DIALOGUE] Created a new character dialogue [{info.rename}] on [{info.parentPath}]");
+
             // In stock I think they disable dialogue stuff with conditions
             // Here we just don't make it at all
-            if (info.blockAfterPersistentCondition != null && PlayerData.GetPersistentCondition(info.blockAfterPersistentCondition)) return (null, null);
+            if (!string.IsNullOrEmpty(info.blockAfterPersistentCondition) && PlayerData.GetPersistentCondition(info.blockAfterPersistentCondition))
+            {
+                NHLogger.LogVerbose($"[DIALOGUE] Persistent condition [{info.blockAfterPersistentCondition}] was met for [{info.rename}], aborting");
+                return (null, null);
+            }
 
             var dialogue = MakeConversationZone(go, sector, info, mod.ModHelper);
             

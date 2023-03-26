@@ -35,13 +35,6 @@ jobs:
     with:
       artifact_name: NewHorizons-Schemas-Release
     secrets: inherit
-  Update_Docs:
-    name: 'Update Docs'
-    needs: Build
-    if: ${{ needs.Build.outputs.schemas_changed == 'true' && github.ref == 'refs/heads/main' }} # Same thing with docs
-    uses: './.github/workflows/docs_build.yml'
-    with:
-      schemas_artifact: NewHorizons-Schemas-Debug
   Update_Release:
     name: 'Create/Update Release Asset'
     needs: Build
