@@ -4278,6 +4278,14 @@
         "primaryBody": {
           "type": "string",
           "description": "The body that the comet tail should always point away from"
+        },
+        "dustTint": {
+          "description": "Colour of the dust tail (the shorter part)",
+          "$ref": "#/definitions/MColor"
+        },
+        "gasTint": {
+          "description": "Colour of the gas tail (the longer part)",
+          "$ref": "#/definitions/MColor"
         }
       }
     }
