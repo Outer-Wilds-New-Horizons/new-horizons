@@ -256,14 +256,19 @@ namespace NewHorizons.Utility
 
         public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     
-        public static void SmoothLookAt(this GameObject go, Vector3 direction, float dt, float angularVelocity)
+        public static void SmoothLookDir(this GameObject go, Vector3 direction, float dt, float angularVelocity)
         {
             var start = go.transform.rotation;
             var end = Quaternion.FromToRotation(Vector3.forward, direction);
 
             var angle = Quaternion.Angle(start, end);
 
-            go.transform.rotation = Quaternion.Slerp(start, end, angularVelocity / angle * dt * dt);
+            go.transform.rotation = Quaternion.Slerp(start, end, (angularVelocity / angle) * dt);
+        }
+
+        public static void LookDir(this GameObject go, Vector3 direction)
+        {
+            go.transform.rotation = Quaternion.FromToRotation(Vector3.forward, direction);
         }
     }
 }

@@ -21,5 +21,15 @@ namespace NewHorizons.External.Modules
         /// The body that the comet tail should always point away from
         /// </summary>
         public string primaryBody;
+
+        /// <summary>
+        /// Colour of the dust tail (the shorter part)
+        /// </summary>
+        public MColor dustTint;
+
+        /// <summary>
+        /// Colour of the gas tail (the longer part)
+        /// </summary>
+        public MColor gasTint;
     }
 }

@@ -2,6 +2,7 @@ using NewHorizons.Components.SizeControllers;
 using NewHorizons.External.Configs;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
+using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
@@ -92,6 +93,25 @@ namespace NewHorizons.Builder.Body
             gasTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
             gasTail.SetActive(true);
             controller.gasTail = gasTail;
+
+            if (cometTailModule.dustTint != null)
+            {
+                foreach (var dust in dustTail.GetComponentsInChildren<MeshRenderer>())
+                {
+                    var untintedDust = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_CO_DustTail_d.png");
+                    dust.material.mainTexture = ImageUtilities.TintImage(untintedDust, cometTailModule.dustTint.ToColor());
+                }
+            }
+
+            if (cometTailModule.gasTint != null)
+            {
+                foreach (var gas in gasTail.GetComponentsInChildren<MeshRenderer>())
+                {
+                    var untintedGas = ImageUtilities.GetTexture(Main.Instance, "Assets/textures/Effects_CO_GasTail_d.png");
+                    gas.material.mainTexture = untintedGas;
+                    gas.material.color = cometTailModule.gasTint.ToColor();
+                }
+            }
 
             rootObj.SetActive(true);
         }
