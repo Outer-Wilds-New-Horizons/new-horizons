@@ -4267,6 +4267,10 @@
           ],
           "description": "Inner radius of the comet tail, defaults to match surfaceSize",
           "format": "float"
+        },
+        "primaryBody": {
+          "type": "string",
+          "description": "The body that the comet tail should always point away from"
         }
       }
     }
