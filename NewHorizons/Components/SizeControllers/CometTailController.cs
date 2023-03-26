@@ -1,3 +1,5 @@
+using NewHorizons.Utility;
+using NewHorizons.Utility.OWML;
 using UnityEngine;
 
 namespace NewHorizons.Components.SizeControllers
@@ -10,9 +12,24 @@ namespace NewHorizons.Components.SizeControllers
         private bool _hasRotationOverride;
         private bool _hasPrimaryBody;
 
+        public GameObject gasTail;
+        public GameObject dustTail;
+
+        private Vector3 _gasTarget;
+        private Vector3 _dustTarget;
+
+        private float _angularVelocity = 1f;
+
         public void Start()
         {
             _body = transform.GetAttachedOWRigidbody();
+
+            if (!_hasRotationOverride && _hasPrimaryBody)
+            {
+                UpdateTargetPositions();
+                dustTail?.transform?.LookAt(_dustTarget);
+                gasTail?.transform?.LookAt(_gasTarget);
+            }
         }
 
         public override void FixedUpdate()
@@ -21,8 +38,22 @@ namespace NewHorizons.Components.SizeControllers
 
             if (!_hasRotationOverride && _hasPrimaryBody)
             {
-                transform.LookAt(_primaryBody, _body.GetVelocity().normalized);
+                UpdateTargetPositions();
+
+                dustTail?.SmoothLookAt(_dustTarget, Time.deltaTime, _angularVelocity);
+                gasTail?.SmoothLookAt(_gasTarget, Time.deltaTime, _angularVelocity);
             }
+        }
+
+        private void UpdateTargetPositions()
+        {
+            var toPrimary = (_body.transform.position - _primaryBody.transform.position).normalized;
+            var velocityDirection = -_body.GetVelocity(); // Accept that this is flipped ok
+
+            var tangentVel = Vector3.ProjectOnPlane(velocityDirection, toPrimary) / velocityDirection.magnitude;
+
+            _gasTarget = toPrimary;
+            _dustTarget = (toPrimary + tangentVel).normalized;
         }
 
         public void SetRotationOverride(Vector3 eulerAngles)

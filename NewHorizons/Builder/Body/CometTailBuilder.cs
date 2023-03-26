@@ -10,14 +10,53 @@ namespace NewHorizons.Builder.Body
 {
     public static class CometTailBuilder
     {
-        private static GameObject _tailPrefab;
+        private static GameObject _dustPrefab;
+        private static GameObject _gasPrefab;
 
         internal static void InitPrefab()
         {
-            if (_tailPrefab == null)
+            if (_dustPrefab == null)
             {
-                _tailPrefab = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes").InstantiateInactive().Rename("Prefab_CO_Tail").DontDestroyOnLoad();
-            } 
+                _dustPrefab = new GameObject("Prefab_CO_Dust").DontDestroyOnLoad();
+
+                var dust1 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_DustTail").Instantiate();
+                dust1.transform.parent = _dustPrefab.transform;
+                dust1.transform.localPosition = Vector3.zero;
+                dust1.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                var dust2 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_DustTail (1)").Instantiate();
+                dust2.transform.parent = _dustPrefab.transform;
+                dust2.transform.localPosition = Vector3.zero;
+                dust2.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                var dust3 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_DustTail (2)").Instantiate();
+                dust3.transform.parent = _dustPrefab.transform;
+                dust3.transform.localPosition = Vector3.zero;
+                dust3.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                _dustPrefab.SetActive(false);
+            }
+            if (_gasPrefab == null)
+            {
+                _gasPrefab = new GameObject("Prefab_CO_Gas").DontDestroyOnLoad();
+
+                var gas1 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_GasTail").Instantiate();
+                gas1.transform.parent = _gasPrefab.transform;
+                gas1.transform.localPosition = Vector3.zero;
+                gas1.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                var gas2 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_GasTail (1)").Instantiate();
+                gas2.transform.parent = _gasPrefab.transform;
+                gas2.transform.localPosition = Vector3.zero;
+                gas2.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                var gas3 = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes/Effects_CO_GasTail (2)").Instantiate();
+                gas3.transform.parent = _gasPrefab.transform;
+                gas3.transform.localPosition = Vector3.zero;
+                gas3.transform.localRotation = Quaternion.Euler(0, 270, 0);
+
+                _gasPrefab.SetActive(false);
+            }
         }
 
         public static void Make(GameObject planetGO, Sector sector, CometTailModule cometTailModule, PlanetConfig config)
@@ -26,11 +65,6 @@ namespace NewHorizons.Builder.Body
             rootObj.SetActive(false);
             rootObj.transform.parent = sector?.transform ?? planetGO.transform;
             rootObj.transform.localPosition = Vector3.zero;
-
-            var cometTail = GameObject.Instantiate(_tailPrefab, rootObj.transform).Rename("CometTail");
-            cometTail.transform.localPosition = Vector3.zero;
-            cometTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
-            cometTail.SetActive(true);
 
             var controller = rootObj.AddComponent<CometTailController>();
 
@@ -46,6 +80,18 @@ namespace NewHorizons.Builder.Body
             });
 
             controller.SetScaleCurve(cometTailModule.curve);
+
+            var dustTail = GameObject.Instantiate(_dustPrefab, rootObj.transform).Rename("DustTail");
+            dustTail.transform.localPosition = Vector3.zero;
+            dustTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
+            dustTail.SetActive(true);
+            controller.dustTail = dustTail;
+
+            var gasTail = GameObject.Instantiate(_gasPrefab, rootObj.transform).Rename("GasTail");
+            gasTail.transform.localPosition = Vector3.zero;
+            gasTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
+            gasTail.SetActive(true);
+            controller.gasTail = gasTail;
 
             rootObj.SetActive(true);
         }
