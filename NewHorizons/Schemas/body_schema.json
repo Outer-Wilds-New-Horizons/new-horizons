@@ -4256,6 +4256,13 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
+        "curve": {
+          "type": "array",
+          "description": "Scale this object over time",
+          "items": {
+            "$ref": "#/definitions/TimeValuePair"
+          }
+        },
         "rotationOverride": {
           "description": "Manually sets the local rotation",
           "$ref": "#/definitions/MVector3"
