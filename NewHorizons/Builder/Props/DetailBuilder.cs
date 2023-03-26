@@ -174,6 +174,7 @@ namespace NewHorizons.Builder.Props
 
                 // Just swap all the children to a new game object
                 var newDetailGO = new GameObject(prop.name);
+                newDetailGO.SetActive(false);
                 newDetailGO.transform.position = prop.transform.position;
                 newDetailGO.transform.parent = prop.transform.parent;
 
