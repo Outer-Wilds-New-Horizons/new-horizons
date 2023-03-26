@@ -1,16 +1,11 @@
+using NewHorizons.External.Modules.VariableSize;
 using NewHorizons.External.SerializableData;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NewHorizons.External.Modules
 {
     [JsonObject]
-    public class CometTailModule
+    public class CometTailModule : VariableSizeModule
     {
         /// <summary>
         /// Manually sets the local rotation

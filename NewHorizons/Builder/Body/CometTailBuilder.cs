@@ -45,6 +45,8 @@ namespace NewHorizons.Builder.Body
                 controller.SetPrimaryBody(AstroObjectLocator.GetAstroObject(cometTailModule.primaryBody).transform);
             });
 
+            controller.SetScaleCurve(cometTailModule.curve);
+
             rootObj.SetActive(true);
         }
     }
