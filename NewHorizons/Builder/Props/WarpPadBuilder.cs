@@ -2,6 +2,7 @@ using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.External.Modules.Props;
 using NewHorizons.External.Modules.WarpPad;
 using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Utils;
 using UnityEngine;
@@ -94,7 +95,26 @@ namespace NewHorizons.Builder.Props
 
             receiver._frequency = GetFrequency(info.frequency);
 
-            receiver._alignmentTarget = planetGO?.transform;
+            if (string.IsNullOrEmpty(info.alignmentTargetBody))
+            {
+                receiver._alignmentTarget = planetGO?.transform;
+            }
+            else
+            {
+                Delay.FireOnNextUpdate(() =>
+                {
+                    var targetAO = AstroObjectLocator.GetAstroObject(info.alignmentTargetBody);
+                    if (targetAO != null)
+                    {
+                        receiver._alignmentTarget = targetAO.transform;
+                    }
+                    else
+                    {
+                        NHLogger.LogError($"Could not find target body [{info.alignmentTargetBody}] for warp receiver.");
+                        receiver._alignmentTarget = null;
+                    }
+                });
+            }
 
             receiverObject.SetActive(true);
 
