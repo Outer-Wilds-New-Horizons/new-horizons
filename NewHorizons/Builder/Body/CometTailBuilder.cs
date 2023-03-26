@@ -1,6 +1,8 @@
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using UnityEngine;
+
 namespace NewHorizons.Builder.Body
 {
     public static class CometTailBuilder
@@ -12,17 +14,15 @@ namespace NewHorizons.Builder.Body
             if (_tailPrefab == null) _tailPrefab = SearchUtilities.Find("Comet_Body/Sector_CO/Effects_CO/Effects_CO_TailMeshes").InstantiateInactive().Rename("Prefab_CO_Tail").DontDestroyOnLoad();
         }
 
-        public static void Make(GameObject planetGO, Sector sector, PlanetConfig config)
+        public static void Make(GameObject planetGO, Sector sector, CometTailModule cometTailModule, float surfaceSize)
         {
-            InitPrefab();
-
             var cometTail = GameObject.Instantiate(_tailPrefab, sector?.transform ?? planetGO.transform);
             cometTail.transform.position = planetGO.transform.position;
             cometTail.name = "CometTail";
-            cometTail.transform.localScale = Vector3.one * config.Base.surfaceSize / 110;
+            cometTail.transform.localScale = Vector3.one * (cometTailModule.innerRadius ?? surfaceSize) / 110;
 
-            Vector3 alignment = new Vector3(0, 270, 90);
-            if (config.Base.cometTailRotation != null) alignment = config.Base.cometTailRotation;
+            var alignment = new Vector3(0, 270, 90);
+            if (cometTailModule.rotationOverride != null) alignment = cometTailModule.rotationOverride;
 
             cometTail.transform.rotation = Quaternion.Euler(alignment);
 

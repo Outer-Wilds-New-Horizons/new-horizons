@@ -599,9 +599,9 @@ namespace NewHorizons.Handlers
                 AsteroidBeltBuilder.Make(body.Config.name, body.Config, body.Mod);
             }
 
-            if (body.Config.Base.hasCometTail)
+            if (body.Config.CometTail != null)
             {
-                CometTailBuilder.Make(go, sector, body.Config);
+                CometTailBuilder.Make(go, sector, body.Config.CometTail, body.Config.Base.surfaceSize);
             }
 
             if (body.Config.Lava != null)

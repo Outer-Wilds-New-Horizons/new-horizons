@@ -194,9 +194,9 @@ namespace NewHorizons.Builder.Body
                     }
                 }
 
-                if (body.Config.Base.hasCometTail)
+                if (body.Config.CometTail != null)
                 {
-                    CometTailBuilder.Make(proxy, null, body.Config);
+                    CometTailBuilder.Make(proxy, null, body.Config.CometTail, body.Config.Base.surfaceSize);
                 }
 
                 if (body.Config.Props?.proxyDetails != null)
