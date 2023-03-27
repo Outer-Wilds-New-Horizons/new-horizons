@@ -1,5 +1,7 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.External.Configs;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;

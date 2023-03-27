@@ -1,4 +1,5 @@
 using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.Modules.Props.EchoesOfTheEye;
 using NewHorizons.External.Modules.Props.Quantum;
@@ -89,7 +90,7 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Add signalscope signals to this planet
         /// </summary>
-        public SignalModule.SignalInfo[] signals;
+        public SignalInfo[] signals;
 
         /// <summary>
         /// Add projection pools/platforms, whiteboards, and stones to this planet
@@ -105,6 +106,11 @@ namespace NewHorizons.External.Modules
         /// Add warp pad transmitters to this planet. These are the warp pads seen on the Ash Twin.
         /// </summary>
         public NomaiWarpTransmitterInfo[] warpTransmitters;
+
+        /// <summary>
+        /// Add audio point sources to this planet. For audio across an entire area, look for AudioVolumes under the Volumes module.
+        /// </summary>
+        public AudioSourceInfo[] audioSources;
 
         [Obsolete("reveal is deprecated. Use Volumes->revealVolumes instead.")] public RevealVolumeInfo[] reveal;
 
