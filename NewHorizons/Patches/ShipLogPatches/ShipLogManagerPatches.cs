@@ -91,8 +91,12 @@ namespace NewHorizons.Patches.ShipLogPatches
         [HarmonyPatch(nameof(ShipLogManager.CheckForCompletionAchievement))]
         public static bool ShipLogManager_CheckForCompletionAchievement(ShipLogManager __instance)
         {
+            // In other star systems they won't have the base game ship log facts, so they'll instantly get the achievement.
+            if (Main.Instance.CurrentStarSystem != "SolarSystem") return false;
+
             foreach (KeyValuePair<string, ShipLogFact> keyValuePair in __instance._factDict)
             {
+                // Don't want to include modded facts, otherwise this is the same as the vanilla method
                 if (!ShipLogHandler.IsModdedFact(keyValuePair.Key) && !keyValuePair.Value.IsRumor() && !keyValuePair.Value.IsRevealed() && !keyValuePair.Key.Equals("TH_VILLAGE_X3") && !keyValuePair.Key.Equals("GD_GABBRO_ISLAND_X1") && __instance.GetEntry(keyValuePair.Value.GetEntryID()).GetCuriosityName() != CuriosityName.InvisiblePlanet)
                 {
                     return false;
