@@ -32,6 +32,7 @@ using UnityEngine.SceneManagement;
 
 using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.DebugTools.Menu;
+using NewHorizons.Builder.Props.Audio;
 
 namespace NewHorizons
 {

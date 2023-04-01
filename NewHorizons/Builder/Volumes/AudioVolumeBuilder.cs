@@ -1,9 +1,9 @@
 using NewHorizons.Builder.Props;
 using NewHorizons.External.Modules.Volumes.VolumeInfos;
+using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
-using OWML.Utils;
 using UnityEngine;
 
 namespace NewHorizons.Builder.Volumes
@@ -21,8 +21,8 @@ namespace NewHorizons.Builder.Volumes
             owAudioSource._audioSource = audioSource;
             owAudioSource.loop = info.loop;
             owAudioSource.SetMaxVolume(info.volume);
-            owAudioSource.SetClipSelectionType(EnumUtils.Parse<OWAudioSource.ClipSelectionOnPlay>(info.clipSelection.ToString()));
-            owAudioSource.SetTrack(EnumUtils.Parse<OWAudioMixer.TrackName>(info.track.ToString()));
+            owAudioSource.SetClipSelectionType(info.clipSelection.ConvertToOW());
+            owAudioSource.SetTrack(info.track.ConvertToOW());
             AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
 
             var audioVolume = go.AddComponent<AudioVolume>();

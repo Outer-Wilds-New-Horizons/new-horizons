@@ -1,7 +1,9 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.External;
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
@@ -174,7 +176,7 @@ namespace NewHorizons
             float sourceRadius = 1f, float detectionRadius = 20f, float identificationRadius = 10f, bool insideCloak = false,
             bool onlyAudibleToScope = true, string reveals = "")
         {
-            var info = new SignalModule.SignalInfo()
+            var info = new SignalInfo()
             {
                 audio = audio,
                 detectionRadius = detectionRadius,

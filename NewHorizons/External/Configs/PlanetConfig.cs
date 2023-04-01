@@ -1,5 +1,6 @@
 using NewHorizons.External.Modules;
 using NewHorizons.External.Modules.Props;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.External.Modules.Props.Quantum;
 using NewHorizons.External.Modules.VariableSize;
@@ -408,7 +409,7 @@ namespace NewHorizons.External.Configs
             if (Signal?.signals != null)
             {
                 if (Props == null) Props = new PropModule();
-                if (Props.signals == null) Props.signals = new SignalModule.SignalInfo[0];
+                if (Props.signals == null) Props.signals = new SignalInfo[0];
                 Props.signals = Props.signals.Concat(Signal.signals).ToArray();
             }
 

@@ -7,14 +7,12 @@ using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
+using NewHorizons.External.Modules.Props.Audio;
 
-
-namespace NewHorizons.Builder.Props
+namespace NewHorizons.Builder.Props.Audio
 {
     public static class SignalBuilder
     {
-        private static AnimationCurve _customCurve = null;
-
         private static Dictionary<SignalName, string> _customSignalNames;
 
         private static Dictionary<SignalFrequency, string> _customFrequencyNames;
@@ -56,7 +54,7 @@ namespace NewHorizons.Builder.Props
         public static SignalFrequency AddFrequency(string str)
         {
             if (_customFrequencyNames == null) Init();
-            
+
             var freq = CollectionUtilities.KeyByValue(_customFrequencyNames, str);
             if (freq != default) return freq;
 
@@ -74,7 +72,7 @@ namespace NewHorizons.Builder.Props
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
             // This stuff happens after the signalscope is Awake so we have to change the number of frequencies now
-            GameObject.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
+            Object.FindObjectOfType<Signalscope>()._strongestSignals = new AudioSignal[NumberOfFrequencies + 1];
 
             return freq;
         }
@@ -90,7 +88,7 @@ namespace NewHorizons.Builder.Props
         public static SignalName AddSignalName(string str)
         {
             if (_customSignalNames == null) Init();
-            
+
             var name = CollectionUtilities.KeyByValue(_customSignalNames, str);
             if (name != default) return name;
 
@@ -110,14 +108,10 @@ namespace NewHorizons.Builder.Props
             return name;
         }
 
-        public static GameObject Make(GameObject planetGO, Sector sector, SignalModule.SignalInfo info, IModBehaviour mod)
+        public static GameObject Make(GameObject planetGO, Sector sector, SignalInfo info, IModBehaviour mod)
         {
-            var signalGO = GeneralPropBuilder.MakeNew($"Signal_{info.name}", planetGO, sector, info);
-            signalGO.layer = Layer.AdvancedEffectVolume;
-
-            var source = signalGO.AddComponent<AudioSource>();
-            var owAudioSource = signalGO.AddComponent<OWAudioSource>();
-            owAudioSource._audioSource = source;
+            var owAudioSource = GeneralAudioBuilder.Make(planetGO, sector, info, mod);
+            var signalGO = owAudioSource.gameObject;
 
             var audioSignal = signalGO.AddComponent<AudioSignal>();
             audioSignal._owAudioSource = owAudioSource;
@@ -137,36 +131,11 @@ namespace NewHorizons.Builder.Props
             audioSignal._identificationDistance = info.identificationRadius;
             audioSignal._canBePickedUpByScope = true;
             audioSignal._outerFogWarpVolume = planetGO.GetComponentInChildren<OuterFogWarpVolume>(); // shouldn't break non-bramble signals
-            
-            source.loop = true;
-            source.minDistance = 0;
-            source.maxDistance = 30;
-            source.velocityUpdateMode = AudioVelocityUpdateMode.Fixed;
-            source.rolloffMode = AudioRolloffMode.Custom;
 
-            if (_customCurve == null)
-            {
-                _customCurve = new AnimationCurve(
-                    new Keyframe(0.0333f, 1f, -30.012f, -30.012f, 0.3333f, 0.3333f),
-                    new Keyframe(0.0667f, 0.5f, -7.503f, -7.503f, 0.3333f, 0.3333f),
-                    new Keyframe(0.1333f, 0.25f, -1.8758f, -1.8758f, 0.3333f, 0.3333f),
-                    new Keyframe(0.2667f, 0.125f, -0.4689f, -0.4689f, 0.3333f, 0.3333f),
-                    new Keyframe(0.5333f, 0.0625f, -0.1172f, -0.1172f, 0.3333f, 0.3333f),
-                    new Keyframe(1f, 0f, -0.0333f, -0.0333f, 0.3333f, 0.3333f));
-            }
-
-            source.SetCustomCurve(AudioSourceCurveType.CustomRolloff, _customCurve);
             // If it can be heard regularly then we play it immediately
-            source.playOnAwake = !info.onlyAudibleToScope;
-            source.spatialBlend = 1f;
-            source.volume = 0.5f;
-            source.dopplerLevel = 0;
-
-            owAudioSource.SetTrack(OWAudioMixer.TrackName.Signal);
-            AudioUtilities.SetAudioClip(owAudioSource, info.audio, mod);
+            owAudioSource.playOnAwake = !info.onlyAudibleToScope;
 
             // Frequency detection trigger volume
-
             var sphereShape = signalGO.AddComponent<SphereShape>();
             var owTriggerVolume = signalGO.AddComponent<OWTriggerVolume>();
             var audioSignalDetectionTrigger = signalGO.AddComponent<AudioSignalDetectionTrigger>();
@@ -174,6 +143,8 @@ namespace NewHorizons.Builder.Props
             sphereShape.radius = info.detectionRadius == 0 ? info.sourceRadius + 30 : info.detectionRadius;
             audioSignalDetectionTrigger._signal = audioSignal;
             audioSignalDetectionTrigger._trigger = owTriggerVolume;
+
+            owAudioSource.SetTrack(OWAudioMixer.TrackName.Signal);
 
             signalGO.SetActive(true);
 
@@ -186,12 +157,12 @@ namespace NewHorizons.Builder.Props
 
         private static SignalFrequency StringToFrequency(string str)
         {
-            return EnumUtils.TryParse<SignalFrequency>(str, out SignalFrequency frequency) ? frequency : AddFrequency(str);
+            return EnumUtils.TryParse(str, out SignalFrequency frequency) ? frequency : AddFrequency(str);
         }
 
         public static SignalName StringToSignalName(string str)
         {
-            return EnumUtils.TryParse<SignalName>(str, out SignalName name) ? name : AddSignalName(str);
+            return EnumUtils.TryParse(str, out SignalName name) ? name : AddSignalName(str);
         }
     }
 }
