@@ -254,6 +254,13 @@ namespace NewHorizons.Utility
             return xCorrect && yCorrect && zCorrect;
         }
 
-        public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+        public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
+            => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+
+        public static OWAudioMixer.TrackName ConvertToOW(this NHAudioMixerTrackName trackName, OWAudioMixer.TrackName @default = OWAudioMixer.TrackName.Environment)
+            => EnumUtils.Parse(trackName.ToString().ToUpper(), @default);
+        
+        public static OWAudioSource.ClipSelectionOnPlay ConvertToOW(this NHClipSelectionType clipSelection, OWAudioSource.ClipSelectionOnPlay @default = OWAudioSource.ClipSelectionOnPlay.RANDOM)
+            => EnumUtils.Parse(clipSelection.ToString().ToUpper(), @default);
     }
 }

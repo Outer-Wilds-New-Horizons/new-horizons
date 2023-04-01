@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 
 namespace NewHorizons.Patches.SignalPatches
 {

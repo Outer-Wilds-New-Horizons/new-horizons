@@ -33,6 +33,7 @@ public class AddPhysics : MonoBehaviour
 
         var bodyGo = new GameObject($"{name}_Body");
         bodyGo.SetActive(false);
+        bodyGo.transform.parent = transform.parent;
         bodyGo.transform.position = transform.position;
         bodyGo.transform.rotation = transform.rotation;
 

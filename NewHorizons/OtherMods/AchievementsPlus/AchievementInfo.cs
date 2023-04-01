@@ -1,4 +1,4 @@
-using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Handlers;
 using Newtonsoft.Json;
 using System.Linq;
