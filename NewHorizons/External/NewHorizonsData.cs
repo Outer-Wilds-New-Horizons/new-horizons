@@ -128,6 +128,16 @@ namespace NewHorizons.External
             }
         }
 
+        public static void ForgetFrequency(string frequency)
+        {
+            if (_activeProfile == null) return;
+            if (KnowsFrequency(frequency))
+            {
+                _activeProfile.KnownFrequencies.Remove(frequency);
+                Save();
+            }
+        }
+
         public static bool KnowsMultipleFrequencies()
         {
             return _activeProfile != null && _activeProfile.KnownFrequencies.Count > 0;
