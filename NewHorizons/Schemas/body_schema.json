@@ -341,7 +341,6 @@
           "type": "number",
           "description": "How dense the fog is, if you put fog.",
           "format": "float",
-          "maximum": 1.0,
           "minimum": 0.0
         },
         "fogSize": {
@@ -353,6 +352,10 @@
         "fogTint": {
           "description": "Colour of fog on the planet, if you put fog.",
           "$ref": "#/definitions/MColor"
+        },
+        "fogRampPath": {
+          "type": "string",
+          "description": "Relative filepath to the fog color ramp texture, if you put fog.\nx axis is angle to sun (so time of day), y axis is distance to camera."
         },
         "hasOxygen": {
           "type": "boolean",
