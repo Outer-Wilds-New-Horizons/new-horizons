@@ -1,6 +1,7 @@
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
+using OWML.Common;
 using UnityEngine;
 namespace NewHorizons.Builder.Atmosphere
 {
@@ -35,7 +36,7 @@ namespace NewHorizons.Builder.Atmosphere
             if (_dbImpostorMaterials == null) _dbImpostorMaterials = SearchUtilities.Find("DarkBramble_Body/Atmosphere_DB/FogLOD").GetComponent<MeshRenderer>().sharedMaterials.MakePrefabMaterials();
         }
 
-        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo)
+        public static PlanetaryFogController Make(GameObject planetGO, Sector sector, AtmosphereModule atmo, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -59,6 +60,7 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
+            if (atmo.fogRampPath != null) colorRampTexture = ImageUtilities.GetTexture(mod, atmo.fogRampPath, wrap: false);
             PFC.fogColorRampTexture = colorRampTexture;
             PFC.fogColorRampIntensity = 1f;
             if (atmo.fogTint != null)
@@ -78,7 +80,7 @@ namespace NewHorizons.Builder.Atmosphere
             return PFC;
         }
 
-        public static Renderer MakeProxy(GameObject proxyGO, AtmosphereModule atmo)
+        public static Renderer MakeProxy(GameObject proxyGO, AtmosphereModule atmo, IModBehaviour mod)
         {
             InitPrefabs();
 
@@ -95,6 +97,7 @@ namespace NewHorizons.Builder.Atmosphere
             MR.allowOcclusionWhenDynamic = true;
 
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
+            if (atmo.fogRampPath != null) colorRampTexture = ImageUtilities.GetTexture(mod, atmo.fogRampPath, wrap: false);
             if (atmo.fogTint != null)
             {
                 MR.material.SetColor(Tint, atmo.fogTint.ToColor());
