@@ -60,6 +60,7 @@ namespace NewHorizons.Builder.Atmosphere
             PFC.fogDensity = atmo.fogDensity;
             PFC.fogExponent = 1f;
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
+            // maybe dont tint image since this overrides? oh well
             if (atmo.fogRampPath != null) colorRampTexture = ImageUtilities.GetTexture(mod, atmo.fogRampPath, wrap: false);
             PFC.fogColorRampTexture = colorRampTexture;
             PFC.fogColorRampIntensity = 1f;
@@ -97,6 +98,7 @@ namespace NewHorizons.Builder.Atmosphere
             MR.allowOcclusionWhenDynamic = true;
 
             var colorRampTexture = atmo.fogTint == null ? _ramp : ImageUtilities.TintImage(_ramp, atmo.fogTint.ToColor());
+            // maybe dont tint image since this overrides? oh well
             if (atmo.fogRampPath != null) colorRampTexture = ImageUtilities.GetTexture(mod, atmo.fogRampPath, wrap: false);
             if (atmo.fogTint != null)
             {
