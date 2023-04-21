@@ -53,8 +53,8 @@ namespace NewHorizons.External.Modules
         /// Multiplies with the alpha of the smoothness map if using one.
         /// </summary>
         [Range(0f, 1f)]
-        [DefaultValue(0f)] 
-        public float smoothness;
+        [DefaultValue(0f)]
+        public float smoothness = 0f;
 
         /// <summary>
         /// How metallic the surface is, from 0 to 1.
@@ -62,7 +62,7 @@ namespace NewHorizons.External.Modules
         /// </summary>
         [Range(0f, 1f)]
         [DefaultValue(0f)]
-        public float metallic;
+        public float metallic = 0f;
 
         /// <summary>
         /// Relative filepath to the texture used for the normal (aka bump) map. Optional.
@@ -72,8 +72,8 @@ namespace NewHorizons.External.Modules
         /// <summary>
         /// Strength of the normal map. Usually 0-1, but can go above, or negative to invert the map.
         /// </summary>
-        [DefaultValue(1f)] 
-        public float normalStrength;
+        [DefaultValue(1f)]
+        public float normalStrength = 1f;
 
         /// <summary>
         /// Relative filepath to the texture used for emission. Optional.
@@ -127,7 +127,9 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// How many times this tile will tile across each "side" of the planet, so around the equator, this tile will loop scale * 4 times.
             /// </summary>
-            [Range(0f, double.MaxValue)] public float scale;
+            [Range(0f, double.MaxValue)]
+            [DefaultValue(1f)]
+            public float scale = 1f;
 
             /// <summary>
             /// Relative filepath to a color texture. Optional.
@@ -153,7 +155,8 @@ namespace NewHorizons.External.Modules
             /// <summary>
             /// Strength of the tile normal. Usually 0-1, but can go above, or negative to invert the map.
             /// </summary>
-            public float normalStrength;
+            [DefaultValue(1f)]
+            public float normalStrength = 1f;
         }
     }
 }
