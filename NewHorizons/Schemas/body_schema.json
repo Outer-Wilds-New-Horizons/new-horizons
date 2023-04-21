@@ -929,6 +929,7 @@
           "type": "number",
           "description": "How many times this tile will tile across each \"side\" of the planet, so around the equator, this tile will loop scale * 4 times.",
           "format": "float",
+          "default": 1.0,
           "minimum": 0.0
         },
         "textureTile": {
@@ -946,7 +947,8 @@
         "normalStrength": {
           "type": "number",
           "description": "Strength of the tile normal. Usually 0-1, but can go above, or negative to invert the map.",
-          "format": "float"
+          "format": "float",
+          "default": 1.0
         }
       }
     },
