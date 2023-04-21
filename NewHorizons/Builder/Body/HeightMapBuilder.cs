@@ -13,14 +13,33 @@ namespace NewHorizons.Builder.Body
     public static class HeightMapBuilder
     {
         public static Shader PlanetShader;
-        private static readonly int EmissionMap = Shader.PropertyToID("_EmissionMap");
-        private static readonly int EmissionColor = Shader.PropertyToID("_EmissionColor");
 
+        // i will commit mass genocide
         public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
             var deleteHeightmapFlag = false;
 
-            Texture2D heightMap, textureMap, emissionMap;
+            Texture2D heightMap;
+            Texture2D textureMap;
+            Texture2D smoothnessMap;
+            Texture2D normalMap;
+            Texture2D emissionMap;
+            Texture2D tileBlendMap;
+            Texture2D baseTextureTile;
+            Texture2D baseSmoothnessTile;
+            Texture2D baseNormalTile;
+            Texture2D redTextureTile;
+            Texture2D redSmoothnessTile;
+            Texture2D redNormalTile;
+            Texture2D greenTextureTile;
+            Texture2D greenSmoothnessTile;
+            Texture2D greenNormalTile;
+            Texture2D blueTextureTile;
+            Texture2D blueSmoothnessTile;
+            Texture2D blueNormalTile;
+            Texture2D alphaTextureTile;
+            Texture2D alphaSmoothnessTile;
+            Texture2D alphaNormalTile;
             try
             {
                 if (!string.IsNullOrEmpty(module.heightMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
@@ -28,17 +47,6 @@ namespace NewHorizons.Builder.Body
                     NHLogger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
                     module.heightMap = null;
                 }
-                if (!string.IsNullOrEmpty(module.textureMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.textureMap)))
-                {
-                    NHLogger.LogError($"Bad path for {planetGO.name} textureMap: {module.textureMap} couldn't be found.");
-                    module.textureMap = null;
-                }
-                if (!string.IsNullOrEmpty(module.emissionMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.emissionMap)))
-                {
-                    NHLogger.LogError($"Bad path for {planetGO.name} emissionMap: {module.emissionMap} couldn't be found.");
-                    module.emissionMap = null;
-                }
-
                 if (string.IsNullOrEmpty(module.heightMap))
                 {
                     heightMap = Texture2D.whiteTexture;
@@ -52,27 +60,41 @@ namespace NewHorizons.Builder.Body
                     heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
                 }
 
-                if (string.IsNullOrEmpty(module.textureMap))
+                Texture2D Load(string path, string name, bool linear)
                 {
-                    textureMap = Texture2D.whiteTexture;
+                    if (string.IsNullOrEmpty(path)) return null;
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
+                    {
+                        NHLogger.LogError($"Bad path for {planetGO.name} {name}: {path} couldn't be found.");
+                        return null;
+                    }
+                    return ImageUtilities.GetTexture(mod, module.textureMap, wrap: true, linear: linear);
                 }
-                else
-                {
-                    textureMap = ImageUtilities.GetTexture(mod, module.textureMap);
-                }
-
-                if (string.IsNullOrEmpty(module.emissionMap))
-                {
-                    emissionMap = Texture2D.blackTexture;
-                }
-                else
-                {
-                    emissionMap = ImageUtilities.GetTexture(mod, module.emissionMap);
-                }
+                textureMap = Load(module.textureMap, "textureMap", false);
+                smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false);
+                normalMap = Load(module.normalMap, "normalMap", true);
+                emissionMap = Load(module.emissionMap, "emissionMap", false);
+                tileBlendMap = Load(module.tileBlendMap, "tileBlendMap", false);
+                baseTextureTile = Load(module.baseTile.textureTile, "baseTile textureTile", false);
+                baseSmoothnessTile = Load(module.baseTile.smoothnessTile, "baseTile smoothnessTile", false);
+                baseNormalTile = Load(module.baseTile.normalTile, "baseTile normalTile", true);
+                redTextureTile = Load(module.redTile.textureTile, "redTile textureTile", false);
+                redSmoothnessTile = Load(module.redTile.smoothnessTile, "redTile smoothnessTile", false);
+                redNormalTile = Load(module.redTile.normalTile, "redTile normalTile", true);
+                greenTextureTile = Load(module.greenTile.textureTile, "greenTile textureTile", false);
+                greenSmoothnessTile = Load(module.greenTile.smoothnessTile, "greenTile smoothnessTile", false);
+                greenNormalTile = Load(module.greenTile.normalTile, "greenTile normalTile", true);
+                blueTextureTile = Load(module.blueTile.textureTile, "blueTile textureTile", false);
+                blueSmoothnessTile = Load(module.blueTile.smoothnessTile, "blueTile smoothnessTile", false);
+                blueNormalTile = Load(module.blueTile.normalTile, "blueTile normalTile", true);
+                alphaTextureTile = Load(module.alphaTile.textureTile, "alphaTile textureTile", false);
+                alphaSmoothnessTile = Load(module.alphaTile.smoothnessTile, "alphaTile smoothnessTile", false);
+                alphaNormalTile = Load(module.alphaTile.normalTile, "alphaTile normalTile", true);
 
                 // If the texturemap is the same as the heightmap don't delete it #176
                 // Do the same with emissionmap
-                if (textureMap == heightMap || emissionMap == heightMap) deleteHeightmapFlag = false;
+                // honestly, if you do this with other maps, thats on you
+                if (heightMap == textureMap || heightMap == emissionMap) deleteHeightmapFlag = false;
             }
             catch (Exception e)
             {
@@ -84,14 +106,22 @@ namespace NewHorizons.Builder.Body
             cubeSphere.SetActive(false);
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
 
-            if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapper.shader");
+            if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
 
             var stretch = module.stretch != null ? (Vector3)module.stretch : Vector3.one;
 
-            var emissionColor = module.emissionColor != null ? module.emissionColor.ToColor() : Color.white;
+            var emissionColor = module.emissionColor?.ToColor() ?? Color.white;
 
-            var level1 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, resolution, stretch, 
-                emissionMap, emissionColor);
+            var level1 = MakeLODTerrain(
+                cubeSphere, heightMap, module.minHeight, module.maxHeight, resolution, stretch, 
+                textureMap, smoothnessMap, module.smoothness, module.metallic, normalMap, module.normalStrength, emissionMap, emissionColor,
+                tileBlendMap,
+                module.baseTile.scale, baseTextureTile, baseSmoothnessTile, baseNormalTile, module.baseTile.normalStrength,
+                module.redTile.scale, redTextureTile, redSmoothnessTile, redNormalTile, module.redTile.normalStrength,
+                module.greenTile.scale, greenTextureTile, greenSmoothnessTile, greenNormalTile, module.greenTile.normalStrength,
+                module.blueTile.scale, blueTextureTile, blueSmoothnessTile, blueNormalTile, module.blueTile.normalStrength,
+                module.alphaTile.scale, alphaTextureTile, alphaSmoothnessTile, alphaNormalTile, module.alphaTile.normalStrength
+            );
 
             var cubeSphereMC = cubeSphere.AddComponent<MeshCollider>();
             cubeSphereMC.sharedMesh = level1.gameObject.GetComponent<MeshFilter>().mesh;
@@ -99,8 +129,16 @@ namespace NewHorizons.Builder.Body
             if (useLOD)
             {
                 var level2Res = (int)Mathf.Clamp(resolution / 2f, 1 /*cube moment*/, 100);
-                var level2 = MakeLODTerrain(cubeSphere, heightMap, textureMap, module.minHeight, module.maxHeight, level2Res, stretch, 
-                    emissionMap, emissionColor);
+                var level2 = MakeLODTerrain(
+                    cubeSphere, heightMap, module.minHeight, module.maxHeight, level2Res, stretch, 
+                    textureMap, smoothnessMap, module.smoothness, module.metallic, normalMap, module.normalStrength, emissionMap, emissionColor,
+                    default,
+                    default, default, default, default, default,
+                    default, default, default, default, default,
+                    default, default, default, default, default,
+                    default, default, default, default, default,
+                    default, default, default, default, default
+                );
 
                 var LODGroup = cubeSphere.AddComponent<LODGroup>();
                 LODGroup.size = module.maxHeight;
@@ -123,9 +161,8 @@ namespace NewHorizons.Builder.Body
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
-            // Fix rotation in the end
-            // 90 degree rotation around x is because cube sphere uses Z as up, Unity uses Y
-            cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(90, 0, 0));
+            // rotate for back compat :P
+            cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, -90, 0));
             cubeSphere.transform.position = planetGO.transform.position;
 
             cubeSphere.SetActive(true);
@@ -136,7 +173,17 @@ namespace NewHorizons.Builder.Body
             return cubeSphere;
         }
 
-        private static MeshRenderer MakeLODTerrain(GameObject root, Texture2D heightMap, Texture2D textureMap, float minHeight, float maxHeight, int resolution, Vector3 stretch, Texture2D emissionMap, Color emissionColor)
+        // lol fuck the stack
+        private static MeshRenderer MakeLODTerrain(
+            GameObject root, Texture2D heightMap, float minHeight, float maxHeight, int resolution, Vector3 stretch,
+            Texture2D textureMap, Texture2D smoothnessMap, float smoothness, float metallic, Texture2D normalMap, float normalStrength, Texture2D emissionMap, Color emissionColor,
+            Texture2D tileBlendMap,
+            float baseScale, Texture2D baseTextureTile, Texture2D baseSmoothnessTile, Texture2D baseNormalTile, float baseNormalStrength,
+            float redScale, Texture2D redTextureTile, Texture2D redSmoothnessTile, Texture2D redNormalTile, float redNormalStrength,
+            float greenScale, Texture2D greenTextureTile, Texture2D greenSmoothnessTile, Texture2D greenNormalTile, float greenNormalStrength,
+            float blueScale, Texture2D blueTextureTile, Texture2D blueSmoothnessTile, Texture2D blueNormalTile, float blueNormalStrength,
+            float alphaScale, Texture2D alphaTextureTile, Texture2D alphaSmoothnessTile, Texture2D alphaNormalTile, float alphaNormalStrength
+        )
         {
             var LODCubeSphere = new GameObject("LODCubeSphere");
 
@@ -146,9 +193,80 @@ namespace NewHorizons.Builder.Body
             var material = new Material(PlanetShader);
             cubeSphereMR.material = material;
             material.name = textureMap.name;
+            // string based property lookup. cry about it
             material.mainTexture = textureMap;
-            material.SetTexture(EmissionMap, emissionMap);
-            material.SetColor(EmissionColor, emissionColor);
+            material.SetFloat("_Smoothness", smoothness);
+            material.SetFloat("_Metallic", metallic);
+            material.SetTexture("_SmoothnessMap", smoothnessMap);
+            material.SetFloat("_BumpStrength", normalStrength);
+            material.SetTexture("_BumpMap", normalMap);
+            material.SetTexture("_EmissionMap", emissionMap);
+            material.SetColor("_EmissionColor", emissionColor);
+            if (baseTextureTile || baseSmoothnessTile || baseNormalTile)
+            {
+                material.EnableKeyword("BASE_TILE"); 
+                material.SetFloat("_BaseTileScale", baseScale);
+                material.SetTexture("_BaseTileAlbedo", baseTextureTile);
+                material.SetTexture("_BaseTileSmoothnessMap", baseSmoothnessTile);
+                material.SetFloat("_BaseTileBumpStrength", baseNormalStrength);
+                material.SetTexture("_BaseTileBumpMap", baseNormalTile);
+            }
+            else
+            {
+                material.DisableKeyword("BASE_TILE");
+            }
+            if (redTextureTile || redSmoothnessTile || redNormalTile)
+            {
+                material.EnableKeyword("RED_TILE"); 
+                material.SetFloat("_RedTileScale", redScale);
+                material.SetTexture("_RedTileAlbedo", redTextureTile);
+                material.SetTexture("_RedTileSmoothnessMap", redSmoothnessTile);
+                material.SetFloat("_RedTileBumpStrength", redNormalStrength);
+                material.SetTexture("_RedTileBumpMap", redNormalTile);
+            }
+            else
+            {
+                material.DisableKeyword("RED_TILE");
+            }
+            if (greenTextureTile || greenSmoothnessTile || greenNormalTile)
+            {
+                material.EnableKeyword("GREEN_TILE"); 
+                material.SetFloat("_GreenTileScale", greenScale);
+                material.SetTexture("_GreenTileAlbedo", greenTextureTile);
+                material.SetTexture("_GreenTileSmoothnessMap", greenSmoothnessTile);
+                material.SetFloat("_GreenTileBumpStrength", greenNormalStrength);
+                material.SetTexture("_GreenTileBumpMap", greenNormalTile);
+            }
+            else
+            {
+                material.DisableKeyword("GREEN_TILE");
+            }
+            if (blueTextureTile || blueSmoothnessTile || blueNormalTile)
+            {
+                material.EnableKeyword("BLUE_TILE"); 
+                material.SetFloat("_BlueTileScale", blueScale);
+                material.SetTexture("_BlueTileAlbedo", blueTextureTile);
+                material.SetTexture("_BlueTileSmoothnessMap", blueSmoothnessTile);
+                material.SetFloat("_BlueTileBumpStrength", blueNormalStrength);
+                material.SetTexture("_BlueTileBumpMap", blueNormalTile);
+            }
+            else
+            {
+                material.DisableKeyword("BLUE_TILE");
+            }
+            if (alphaTextureTile || alphaSmoothnessTile || alphaNormalTile)
+            {
+                material.EnableKeyword("ALPHA_TILE"); 
+                material.SetFloat("_AlphaTileScale", alphaScale);
+                material.SetTexture("_AlphaTileAlbedo", alphaTextureTile);
+                material.SetTexture("_AlphaTileSmoothnessMap", alphaSmoothnessTile);
+                material.SetFloat("_AlphaTileBumpStrength", alphaNormalStrength);
+                material.SetTexture("_AlphaTileBumpMap", alphaNormalTile);
+            }
+            else
+            {
+                material.DisableKeyword("ALPHA_TILE");
+            }
 
             LODCubeSphere.transform.parent = root.transform;
             LODCubeSphere.transform.localPosition = Vector3.zero;
