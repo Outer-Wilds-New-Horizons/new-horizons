@@ -14,7 +14,6 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
-        // i will commit mass genocide
         public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
             var deleteHeightmapFlag = false;
