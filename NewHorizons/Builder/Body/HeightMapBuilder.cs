@@ -200,8 +200,9 @@ namespace NewHorizons.Builder.Body
             material.SetTexture("_SmoothnessMap", smoothnessMap);
             material.SetFloat("_BumpStrength", normalStrength);
             material.SetTexture("_BumpMap", normalMap);
-            material.SetTexture("_EmissionMap", emissionMap);
             material.SetColor("_EmissionColor", emissionColor);
+            material.SetTexture("_EmissionMap", emissionMap);
+            material.SetTexture("_BlendMap", tileBlendMap);
             if (baseTextureTile || baseSmoothnessTile || baseNormalTile)
             {
                 material.EnableKeyword("BASE_TILE"); 
