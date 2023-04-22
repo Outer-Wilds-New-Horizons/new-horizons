@@ -37,10 +37,10 @@ namespace NewHorizons.Builder.Body
                 emissionMap = Load(module.emissionMap, "emissionMap", false);
 
                 baseTile = new Tile(module.baseTile, "BASE_TILE", "_BaseTile");
-                redTile = new Tile(module.baseTile, "RED_TILE", "_RedTile");
-                greenTile = new Tile(module.baseTile, "GREEN_TILE", "_GreenTile");
-                blueTile = new Tile(module.baseTile, "BLUE_TILE", "_BlueTile");
-                alphaTile = new Tile(module.baseTile, "ALPHA_TILE", "_AlphaTile");
+                redTile = new Tile(module.redTile, "RED_TILE", "_RedTile");
+                greenTile = new Tile(module.greenTile, "GREEN_TILE", "_GreenTile");
+                blueTile = new Tile(module.blueTile, "BLUE_TILE", "_BlueTile");
+                alphaTile = new Tile(module.alphaTile, "ALPHA_TILE", "_AlphaTile");
 
                 tileBlendMap = useLOD ? Load(module.tileBlendMap, "tileBlendMap", false) : null;
 
