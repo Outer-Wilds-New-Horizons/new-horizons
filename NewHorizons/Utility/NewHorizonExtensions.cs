@@ -253,9 +253,16 @@ namespace NewHorizons.Utility
             OWML.NHLogger.LogVerbose($"Coordinate Check for {system}: {xCorrect}, {yCorrect}, {zCorrect} [{string.Join("-", coordinates.x)}, {string.Join("-", coordinates.y)}, {string.Join("-", coordinates.z)}]");
             return xCorrect && yCorrect && zCorrect;
         }
-
-        public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE) => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
     
+		public static FluidVolume.Type ConvertToOW(this NHFluidType fluidType, FluidVolume.Type @default = FluidVolume.Type.NONE)
+            => EnumUtils.Parse(fluidType.ToString().ToUpper(), @default);
+
+        public static OWAudioMixer.TrackName ConvertToOW(this NHAudioMixerTrackName trackName, OWAudioMixer.TrackName @default = OWAudioMixer.TrackName.Environment)
+            => EnumUtils.Parse(trackName.ToString().ToUpper(), @default);
+        
+        public static OWAudioSource.ClipSelectionOnPlay ConvertToOW(this NHClipSelectionType clipSelection, OWAudioSource.ClipSelectionOnPlay @default = OWAudioSource.ClipSelectionOnPlay.RANDOM)
+            => EnumUtils.Parse(clipSelection.ToString().ToUpper(), @default);
+	
         public static void SmoothLookDir(this GameObject go, Vector3 direction, float dt, float angularVelocity)
         {
             var start = go.transform.rotation;

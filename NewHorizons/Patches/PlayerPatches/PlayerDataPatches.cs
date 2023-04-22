@@ -1,5 +1,5 @@
 using HarmonyLib;
-using NewHorizons.Builder.Props;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.External;
 using NewHorizons.Handlers;
 using NewHorizons.OtherMods.AchievementsPlus;
@@ -41,6 +41,19 @@ namespace NewHorizons.Patches.PlayerPatches
         }
 
         [HarmonyPrefix]
+        [HarmonyPatch(nameof(PlayerData.ForgetFrequency))]
+        public static bool PlayerData_ForgetFrequency(SignalFrequency frequency)
+        {
+            var freqString = SignalBuilder.GetCustomFrequencyName(frequency);
+            if (!string.IsNullOrEmpty(freqString))
+            {
+                NewHorizonsData.ForgetFrequency(freqString);
+                return false;
+            }
+            return true;
+        }
+
+        [HarmonyPrefix]
         [HarmonyPatch(nameof(PlayerData.KnowsSignal))]
         public static bool PlayerData_KnowsSignal(SignalName signalName, ref bool __result)
         {
@@ -60,11 +73,7 @@ namespace NewHorizons.Patches.PlayerPatches
             var customSignalName = SignalBuilder.GetCustomSignalName(signalName);
             if (!string.IsNullOrEmpty(customSignalName))
             {
-                if (!NewHorizonsData.KnowsSignal(customSignalName))
-                {
-                    NewHorizonsData.LearnSignal(customSignalName);
-                }
-
+                NewHorizonsData.LearnSignal(customSignalName);
                 AchievementHandler.OnLearnSignal();
 
                 return false;

@@ -1,4 +1,5 @@
 using NewHorizons.Builder.Body;
+using NewHorizons.Builder.Props.Audio;
 using NewHorizons.Builder.Props.TranslatorText;
 using NewHorizons.Builder.ShipLog;
 using NewHorizons.External;
@@ -106,11 +107,15 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                        var (dialogue, trigger) = DialogueBuilder.Make(go, sector, dialogueInfo, mod);
+                        if (dialogue == null)
+                        {
+                            NHLogger.LogVerbose($"[DIALOGUE] Failed to create dialogue [{dialogueInfo.xmlFile}]");
+                        }
                     }
                     catch (Exception ex)
                     {
-                        NHLogger.LogError($"Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
+                        NHLogger.LogError($"[DIALOGUE] Couldn't make dialogue [{dialogueInfo.xmlFile}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
@@ -262,6 +267,20 @@ namespace NewHorizons.Builder.Props
                     catch (Exception ex)
                     {
                         NHLogger.LogError($"Couldn't make warp transmitter [{warpTransmitter.frequency}] for [{go.name}]:\n{ex}");
+                    }
+                }
+            }
+            if (config.Props.audioSources != null)
+            {
+                foreach (var audioSource in config.Props.audioSources)
+                {
+                    try
+                    {
+                        AudioSourceBuilder.Make(go, sector, audioSource, mod);
+                    }
+                    catch (Exception ex)
+                    {
+                        NHLogger.LogError($"Couldn't make audio source [{audioSource.audio}] for [{go.name}]:\n{ex}");
                     }
                 }
             }
