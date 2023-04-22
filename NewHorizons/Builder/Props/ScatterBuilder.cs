@@ -119,8 +119,8 @@ namespace NewHorizons.Builder.Props
                             continue;
                         }
 
-                        // Because heightmaps are dumb gotta rotate it 90 degrees around the x axis bc UHHHHHHHHHHHHH
-                        point = Quaternion.Euler(90, 0, 0) * point;
+                        // rotate in the same way heightmaps are rotated
+                        point = Quaternion.Euler(0, -90, 0) * point;
                     }
 
                     var prop = scatterPrefab.InstantiateInactive();
