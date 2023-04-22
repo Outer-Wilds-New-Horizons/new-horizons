@@ -565,6 +565,10 @@ namespace NewHorizons.Builder.Props.TranslatorText
                     profile = NomaiTextArcBuilder.childSpiralProfile;
                     mat = _childArcMaterial;
                     break;
+                case NomaiTextArcInfo.NomaiTextArcType.Teenager:
+                    profile = NomaiTextArcBuilder.adultSpiralProfile;
+                    mat = _childArcMaterial;
+                    break;
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcMaterial != null:
                     profile = NomaiTextArcBuilder.strangerSpiralProfile;
                     mat = _ghostArcMaterial;

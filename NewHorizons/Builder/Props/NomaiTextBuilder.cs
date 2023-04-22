@@ -24,6 +24,7 @@ namespace NewHorizons.Builder.Props
     {
         private static List<GameObject> _arcPrefabs;
         private static List<GameObject> _childArcPrefabs;
+        private static GameObject _teenagerArcPrefab;
         private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
@@ -52,6 +53,7 @@ namespace NewHorizons.Builder.Props
 
         public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static GameObject GetTeenagerArcPrefab() { return _teenagerArcPrefab; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static bool _isInit;
@@ -83,6 +85,12 @@ namespace NewHorizons.Builder.Props
                         _arcPrefabs.Add(existingArc.InstantiateInactive().Rename("Arc").DontDestroyOnLoad());
                     }
                 }
+            }
+
+            if (_teenagerArcPrefab == null)
+            {
+                _teenagerArcPrefab = GameObject.FindObjectsOfType<NomaiWallText>().FirstOrDefault(x => x.name.Equals("Arc_GD_StatueIsland_WindowNote"))
+                    ?.gameObject?.transform?.Find("Arc 1")?.gameObject.InstantiateInactive().Rename("Arc (Teenager)").DontDestroyOnLoad();
             }
 
             if (_ghostArcPrefabs == null)
@@ -666,6 +674,9 @@ namespace NewHorizons.Builder.Props
                         ? Random.Range(0, _childArcPrefabs.Count())
                         : (variation % _childArcPrefabs.Count());
                     arc = _childArcPrefabs[variation].InstantiateInactive();
+                    break;
+                case NomaiTextArcInfo.NomaiTextArcType.Teenager:
+                    arc = _teenagerArcPrefab.InstantiateInactive();
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
                     variation = variation < 0
