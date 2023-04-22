@@ -175,7 +175,7 @@ namespace NewHorizons.Builder.Body
                 {
                     _texture = Load(info.textureTile, $"{_prefix}TextureTile", false);
                     _smoothness = Load(info.smoothnessTile, $"{_prefix}SmoothnessTile", false);
-                    _normal = Load(info.normalTile, $"{_prefix}NormalTile", false);
+                    _normal = Load(info.normalTile, $"{_prefix}NormalTile", true);
                 }
                 else
                 {
