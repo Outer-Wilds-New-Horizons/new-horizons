@@ -925,9 +925,9 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "scale": {
+        "size": {
           "type": "number",
-          "description": "How many times this tile will tile across each \"side\" of the planet, so around the equator, this tile will loop scale * 4 times.",
+          "description": "The size, in meters, of each tile.",
           "format": "float",
           "default": 1.0,
           "minimum": 0.0
