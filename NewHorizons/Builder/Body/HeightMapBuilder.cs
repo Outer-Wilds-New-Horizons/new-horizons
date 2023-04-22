@@ -16,7 +16,8 @@ namespace NewHorizons.Builder.Body
 
         public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
-            var deleteHeightmapFlag = false;
+            // Only delete heightmap if it hasn't been loaded yet
+            var deleteHeightmapFlag = !string.IsNullOrEmpty(module.heightMap) && !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
 
             Texture2D heightMap;
             Texture2D textureMap;
@@ -24,41 +25,29 @@ namespace NewHorizons.Builder.Body
             Texture2D normalMap;
             Texture2D emissionMap;
             Texture2D tileBlendMap = null;
+
             Texture2D baseTextureTile = null;
             Texture2D baseSmoothnessTile = null;
             Texture2D baseNormalTile = null;
+
             Texture2D redTextureTile = null;
             Texture2D redSmoothnessTile = null;
             Texture2D redNormalTile = null;
+
             Texture2D greenTextureTile = null;
             Texture2D greenSmoothnessTile = null;
             Texture2D greenNormalTile = null;
+
             Texture2D blueTextureTile = null;
             Texture2D blueSmoothnessTile = null;
             Texture2D blueNormalTile = null;
+
             Texture2D alphaTextureTile = null;
             Texture2D alphaSmoothnessTile = null;
             Texture2D alphaNormalTile = null;
+
             try
             {
-                if (!string.IsNullOrEmpty(module.heightMap) && !File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
-                {
-                    NHLogger.LogError($"Bad path for {planetGO.name} heightMap: {module.heightMap} couldn't be found.");
-                    module.heightMap = null;
-                }
-                if (string.IsNullOrEmpty(module.heightMap))
-                {
-                    heightMap = Texture2D.whiteTexture;
-                }
-                else
-                {
-                    // TODO we gotta get this working better
-                    // If we've loaded a new heightmap we'll delete the texture after
-                    // Only delete it if it wasnt loaded before (something else is using it)
-                    deleteHeightmapFlag = !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
-                    heightMap = ImageUtilities.GetTexture(mod, module.heightMap);
-                }
-
                 Texture2D Load(string path, string name, bool linear)
                 {
                     if (string.IsNullOrEmpty(path)) return null;
@@ -67,9 +56,18 @@ namespace NewHorizons.Builder.Body
                         NHLogger.LogError($"Bad path for {planetGO.name} {name}: {path} couldn't be found.");
                         return null;
                     }
+
+                    if (name != "heightMap" && path == module.heightMap)
+                    {
+                        // If another texture uses the heightMap then don't delete it
+                        deleteHeightmapFlag = false;
+                    }
+
                     return ImageUtilities.GetTexture(mod, path, wrap: true, linear: linear);
                 }
-                textureMap = Load(module.textureMap, "textureMap", false);
+
+                heightMap = Load(module.heightMap, "heightMap", false) ?? Texture2D.whiteTexture;
+                textureMap = Load(module.textureMap, "textureMap", false) ?? Texture2D.whiteTexture;
                 smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false);
                 normalMap = Load(module.normalMap, "normalMap", true);
                 emissionMap = Load(module.emissionMap, "emissionMap", false);
@@ -171,8 +169,6 @@ namespace NewHorizons.Builder.Body
             if (deleteHeightmapFlag) ImageUtilities.DeleteTexture(mod, module.heightMap, heightMap);
 
             return cubeSphere;
-
-
 
             MeshRenderer MakeLODTerrain(int resolution, bool useTriplanar)
             {
