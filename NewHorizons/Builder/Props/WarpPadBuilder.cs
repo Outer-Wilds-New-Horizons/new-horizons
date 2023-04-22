@@ -52,7 +52,7 @@ namespace NewHorizons.Builder.Props
 
                 _detailedReceiverPrefab.DontDestroyOnLoad();
 
-                GameObject.Destroy(_detailedReceiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_detailedReceiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
             }
 
             if (_receiverPrefab == null)
@@ -60,7 +60,7 @@ namespace NewHorizons.Builder.Props
                 _receiverPrefab = SearchUtilities.Find("SunStation_Body/Sector_SunStation/Sector_WarpModule/Interactables_WarpModule/Prefab_NOM_WarpReceiver")
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
-                GameObject.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_receiverPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
                 var structure = _platformContainerPrefab.Instantiate();
                 structure.transform.parent = _receiverPrefab.transform;
@@ -74,7 +74,7 @@ namespace NewHorizons.Builder.Props
                 _transmitterPrefab = SearchUtilities.Find("TowerTwin_Body/Sector_TowerTwin/Sector_Tower_SS/Interactables_Tower_SS/Tower_SS_VisibleFrom_TowerTwin/Prefab_NOM_WarpTransmitter")
                     .InstantiateInactive()
                     .DontDestroyOnLoad();
-                GameObject.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
+                Object.Destroy(_transmitterPrefab.GetComponentInChildren<NomaiWarpStreaming>().gameObject);
 
                 var structure = _platformContainerPrefab.Instantiate();
                 structure.transform.parent = _transmitterPrefab.transform;

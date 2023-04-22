@@ -167,7 +167,7 @@ namespace NewHorizons.Builder.Body
 
             OWAudioSource oneShotOWAudioSource = null;
             
-            var singularityAmbience = GameObject.Instantiate(_blackHoleAmbience, singularity.transform);
+            var singularityAmbience = Object.Instantiate(_blackHoleAmbience, singularity.transform);
             singularityAmbience.name = polarity ? "BlackHoleAmbience" : "WhiteHoleAmbience";
             singularityAmbience.SetActive(true);
             singularityAmbience.GetComponent<SectorAudioGroup>().SetSector(sector);
@@ -202,7 +202,7 @@ namespace NewHorizons.Builder.Body
                 }
                 else
                 {
-                    var blackHoleOneShot = GameObject.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
+                    var blackHoleOneShot = Object.Instantiate(_blackHoleEmissionOneShot, singularity.transform);
                     blackHoleOneShot.name = "BlackHoleEmissionOneShot";
                     blackHoleOneShot.SetActive(true);
                     oneShotOWAudioSource = blackHoleOneShot.GetComponent<OWAudioSource>();
@@ -211,7 +211,7 @@ namespace NewHorizons.Builder.Body
                     oneShotAudioSource.minDistance = horizon;
                     if (sizeController != null) sizeController.oneShotAudioSource = oneShotAudioSource;
 
-                    var blackHoleVolume = GameObject.Instantiate(_blackHoleVolume, singularity.transform);
+                    var blackHoleVolume = Object.Instantiate(_blackHoleVolume, singularity.transform);
                     blackHoleVolume.name = "BlackHoleVolume";
                     blackHoleVolume.SetActive(true);
                     var bhVolume = blackHoleVolume.GetComponent<BlackHoleVolume>();
@@ -226,7 +226,7 @@ namespace NewHorizons.Builder.Body
                         {
                             foreach (var renderer in blackHoleVolume.GetComponentsInChildren<ParticleSystemRenderer>(true))
                             {
-                                UnityEngine.Object.Destroy(renderer);
+                                Object.Destroy(renderer);
                             } 
                         });
                     }
@@ -234,7 +234,7 @@ namespace NewHorizons.Builder.Body
             }
             else
             {
-                GameObject whiteHoleVolumeGO = GameObject.Instantiate(_whiteHoleVolume);
+                GameObject whiteHoleVolumeGO = Object.Instantiate(_whiteHoleVolume);
                 whiteHoleVolumeGO.transform.parent = singularity.transform;
                 whiteHoleVolumeGO.transform.localPosition = Vector3.zero;
                 whiteHoleVolumeGO.transform.localScale = Vector3.one;

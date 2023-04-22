@@ -1,4 +1,5 @@
 using NewHorizons.Components;
+using NewHorizons.Components.Sectored;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;

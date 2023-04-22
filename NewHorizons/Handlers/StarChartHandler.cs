@@ -35,7 +35,7 @@ namespace NewHorizons.Handlers
 
                 ShipLogStarChartMode = starChartLog.AddComponent<ShipLogStarChartMode>();
 
-                GameObject.Instantiate(reticleImage, starChartLog.transform);
+                Object.Instantiate(reticleImage, starChartLog.transform);
 
                 var scaleRoot = new GameObject("ScaleRoot");
                 scaleRoot.transform.parent = starChartLog.transform;

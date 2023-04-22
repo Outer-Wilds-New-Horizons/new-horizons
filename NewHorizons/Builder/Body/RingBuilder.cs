@@ -4,6 +4,7 @@ using NewHorizons.Components.Volumes;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
+using NewHorizons.Utility.Geometry;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;
 using OWML.Common;

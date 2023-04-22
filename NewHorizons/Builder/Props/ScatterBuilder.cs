@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace NewHorizons.Builder.Props
@@ -137,7 +138,7 @@ namespace NewHorizons.Builder.Props
                     prop.SetActive(true);
                 }
 
-                GameObject.Destroy(scatterPrefab);
+                Object.Destroy(scatterPrefab);
 
                 if (deleteHeightmapFlag && heightMapTexture != null)
                 {

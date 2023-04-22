@@ -1,4 +1,4 @@
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Props
 {
     public class NHCharacterDialogueTree : CharacterDialogueTree
     {

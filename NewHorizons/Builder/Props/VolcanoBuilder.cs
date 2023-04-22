@@ -28,7 +28,7 @@ namespace NewHorizons.Builder.Props
                 meteorLauncher._dynamicProbability = 0f;
                 var meteorPrefab = meteorLauncher._meteorPrefab.InstantiateInactive().Rename("Prefab_VM_MoltenMeteor").DontDestroyOnLoad();
                 var meteor = meteorPrefab.GetComponent<MeteorController>();
-                GameObject.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
+                Object.DestroyImmediate(meteorPrefab.FindChild("ConstantDetectors"));
                 var detectors = meteorPrefab.FindChild("DynamicDetector");
                 var rigidbody = meteor.GetComponent<OWRigidbody>();
                 meteor._owRigidbody = rigidbody;

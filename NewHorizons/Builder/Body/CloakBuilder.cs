@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.Sectored;
 using NewHorizons.External.Modules;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
@@ -36,12 +36,12 @@ namespace NewHorizons.Builder.Body
 
             var radius = module.radius;
 
-            var newCloak = GameObject.Instantiate(_prefab, sector?.transform ?? planetGO.transform);
+            var newCloak = Object.Instantiate(_prefab, sector?.transform ?? planetGO.transform);
             newCloak.transform.position = planetGO.transform.position;
             newCloak.transform.name = "CloakingField";
             newCloak.transform.localScale = Vector3.one * radius;
 
-            GameObject.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
+            Object.Destroy(newCloak.GetComponent<PlayerCloakEntryRedirector>());
 
             var cloakFieldController = newCloak.GetComponent<CloakFieldController>();
             cloakFieldController._cloakScaleDist = radius * 2000 / 3000f;

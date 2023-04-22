@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+
 namespace NewHorizons.Components
 {
     public class RingShape : Shape
@@ -185,7 +186,7 @@ namespace NewHorizons.Components
 
         public override bool PointInside(Vector3 point)
         {
-            return (!_innerCylinderShape.PointInside(point) && _outerCylinderShape.PointInside(point));
+            return !_innerCylinderShape.PointInside(point) && _outerCylinderShape.PointInside(point);
         }
 
         private List<Shape> _shapesInInner = new List<Shape>();

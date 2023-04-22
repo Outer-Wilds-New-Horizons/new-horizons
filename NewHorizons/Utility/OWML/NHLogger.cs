@@ -13,16 +13,16 @@ namespace NewHorizons.Utility.OWML
             _logLevel = newLevel;
         }
 
-        private static void Log(string text, LogType type)
+        private static void Log(object text, LogType type)
         {
             if (type < _logLevel) return;
             Main.Instance.ModHelper.Console.WriteLine($"{Enum.GetName(typeof(LogType), type)} : {text}", LogTypeToMessageType(type));
         }
 
-        public static void LogVerbose(string text) => Log(text, LogType.Verbose);
-        public static void Log(string text) => Log(text, LogType.Log);
-        public static void LogWarning(string text) => Log(text, LogType.Warning);
-        public static void LogError(string text) => Log(text, LogType.Error);
+        public static void LogVerbose(object text) => Log(text, LogType.Verbose);
+        public static void Log(object text) => Log(text, LogType.Log);
+        public static void LogWarning(object text) => Log(text, LogType.Warning);
+        public static void LogError(object text) => Log(text, LogType.Error);
 
         public enum LogType
         {

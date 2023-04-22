@@ -31,7 +31,7 @@ namespace NewHorizons.Builder.Atmosphere
             _isInit = true;
 
             if (_atmospherePrefab == null) _atmospherePrefab = SearchUtilities.Find("TimberHearth_Body/Atmosphere_TH/AtmoSphere").InstantiateInactive().Rename("Atmosphere").DontDestroyOnLoad();
-            if (_proxyAtmospherePrefab == null) _proxyAtmospherePrefab = GameObject.FindObjectOfType<DistantProxyManager>()._proxies.FirstOrDefault(apt => apt.astroName == AstroObject.Name.TimberHearth).proxyPrefab.FindChild("Atmosphere_TH/Atmosphere_LOD3").InstantiateInactive().Rename("ProxyAtmosphere").DontDestroyOnLoad();
+            if (_proxyAtmospherePrefab == null) _proxyAtmospherePrefab = Object.FindObjectOfType<DistantProxyManager>()._proxies.FirstOrDefault(apt => apt.astroName == AstroObject.Name.TimberHearth).proxyPrefab.FindChild("Atmosphere_TH/Atmosphere_LOD3").InstantiateInactive().Rename("ProxyAtmosphere").DontDestroyOnLoad();
         }
 
         public static GameObject Make(GameObject planetGO, Sector sector, AtmosphereModule atmosphereModule, float surfaceSize, bool proxy = false)
@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Atmosphere
 
                 if (prefab != null)
                 {
-                    GameObject atmo = GameObject.Instantiate(prefab, atmoGO.transform);
+                    GameObject atmo = Object.Instantiate(prefab, atmoGO.transform);
                     atmo.name = "Atmosphere";
                     atmo.transform.localPosition = Vector3.zero;
                     atmo.transform.localEulerAngles = Vector3.zero;

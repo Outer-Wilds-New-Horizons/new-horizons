@@ -1,7 +1,7 @@
 using HarmonyLib;
-using NewHorizons.Components;
 using NewHorizons.OtherMods.AchievementsPlus.NH;
 using NewHorizons.OtherMods.AchievementsPlus;
+using NewHorizons.Components.Props;
 
 namespace NewHorizons.Patches.DialoguePatches;
 

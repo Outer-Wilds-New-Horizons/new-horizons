@@ -22,6 +22,7 @@ namespace NewHorizons.External.Configs
     [JsonObject(Title = "Celestial Body")]
     public class PlanetConfig
     {
+        #region Fields
         /// <summary>
         /// Unique name of your planet
         /// </summary>
@@ -33,6 +34,34 @@ namespace NewHorizons.External.Configs
         /// </summary>
         [DefaultValue("SolarSystem")] public string starSystem = "SolarSystem";
 
+        /// <summary>
+        /// Does this config describe a quantum state of a custom planet defined in another file?
+        /// </summary>
+        public bool isQuantumState;
+
+        /// <summary>
+        /// Does this config describe a stellar remnant of a custom star defined in another file?
+        /// </summary>
+        public bool isStellarRemnant;
+
+        /// <summary>
+        /// Should this planet ever be shown on the title screen?
+        /// </summary>
+        [DefaultValue(true)] public bool canShowOnTitle = true;
+
+        /// <summary>
+        /// `true` if you want to delete this planet
+        /// </summary>
+        public bool destroy;
+
+        /// <summary>
+        /// A list of paths to child GameObjects to destroy on this planet
+        /// </summary>
+        public string[] removeChildren;
+
+        #endregion
+
+        #region Modules
         /// <summary>
         /// Add ambient lights to this body
         /// </summary>
@@ -59,35 +88,9 @@ namespace NewHorizons.External.Configs
         public BrambleModule Bramble;
 
         /// <summary>
-        /// Should this planet ever be shown on the title screen?
-        /// </summary>
-        [DefaultValue(true)] public bool canShowOnTitle = true;
-
-        #region Obsolete
-
-        [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
-        public string[] childrenToDestroy;
-
-        [Obsolete("Singularity is deprecated, please use Props->singularities")]
-        public SingularityModule Singularity;
-
-        [Obsolete("Signal is deprecated, please use Props->signals")]
-        public SignalModule Signal;
-
-        [Obsolete("Ring is deprecated, please use Rings")]
-        public RingModule Ring;
-
-        #endregion Obsolete
-
-        /// <summary>
         /// Add a cloaking field to this planet
         /// </summary>
         public CloakModule Cloak;
-
-        /// <summary>
-        /// `true` if you want to delete this planet
-        /// </summary>
-        public bool destroy;
 
         /// <summary>
         /// Make this body into a focal point (barycenter)
@@ -103,16 +106,6 @@ namespace NewHorizons.External.Configs
         /// Generate the surface of this planet using a heightmap
         /// </summary>
         public HeightMapModule HeightMap;
-
-        /// <summary>
-        /// Does this config describe a quantum state of a custom planet defined in another file?
-        /// </summary>
-        public bool isQuantumState;
-
-        /// <summary>
-        /// Does this config describe a stellar remnant of a custom star defined in another file?
-        /// </summary>
-        public bool isStellarRemnant;
 
         /// <summary>
         /// Add lava to this planet
@@ -138,11 +131,6 @@ namespace NewHorizons.External.Configs
         /// Reference frame properties of this body
         /// </summary>
         public ReferenceFrameModule ReferenceFrame;
-
-        /// <summary>
-        /// A list of paths to child GameObjects to destroy on this planet
-        /// </summary>
-        public string[] removeChildren;
 
         /// <summary>
         /// Create rings around the planet
@@ -185,10 +173,34 @@ namespace NewHorizons.External.Configs
         public VolumesModule Volumes;
 
         /// <summary>
+        /// Add a comet tail to this body, like the Interloper
+        /// </summary>
+        public CometTailModule CometTail;
+
+        /// <summary>
         /// Extra data that may be used by extension mods
         /// </summary>
         public object extras;
 
+        #endregion
+
+        #region Obsolete
+
+        [Obsolete("ChildrenToDestroy is deprecated, please use RemoveChildren instead")]
+        public string[] childrenToDestroy;
+
+        [Obsolete("Singularity is deprecated, please use Props->singularities")]
+        public SingularityModule Singularity;
+
+        [Obsolete("Signal is deprecated, please use Props->signals")]
+        public SignalModule Signal;
+
+        [Obsolete("Ring is deprecated, please use Rings")]
+        public RingModule Ring;
+
+        #endregion Obsolete
+
+        #region ctor validation and migration
         public PlanetConfig()
         {
             // Always have to have a base module
@@ -567,6 +579,16 @@ namespace NewHorizons.External.Configs
                     }
                 }
             }
+
+            if (Base.hasCometTail)
+            {
+                CometTail ??= new();
+                if (Base.cometTailRotation != null)
+                {
+                    CometTail.rotationOverride = Base.cometTailRotation;
+                }
+            }
         }
+        #endregion
     }
 }
