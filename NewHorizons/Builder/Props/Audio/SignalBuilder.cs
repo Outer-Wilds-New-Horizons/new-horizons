@@ -1,13 +1,10 @@
-using NewHorizons.External.Modules;
+using NewHorizons.External.Modules.Props.Audio;
 using NewHorizons.Utility;
-using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
-using NewHorizons.Utility.OuterWilds;
 using OWML.Common;
 using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
-using NewHorizons.External.Modules.Props.Audio;
 using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Builder.Props.Audio
@@ -20,8 +17,8 @@ namespace NewHorizons.Builder.Props.Audio
 
         public static int NumberOfFrequencies;
 
-        private static List<SignalName> _qmSignals;
-        private static List<SignalName> _cloakedSignals;
+        private static HashSet<SignalName> _qmSignals;
+        private static HashSet<SignalName> _cloakedSignals;
 
         public static bool Initialized;
 
@@ -36,8 +33,8 @@ namespace NewHorizons.Builder.Props.Audio
             };
             NumberOfFrequencies = EnumUtils.GetValues<SignalFrequency>().Length;
 
-            _qmSignals = new List<SignalName>() { SignalName.Quantum_QM };
-            _cloakedSignals = new List<SignalName>();
+            _qmSignals = new() { SignalName.Quantum_QM };
+            _cloakedSignals = new();
 
             Initialized = true;
 
@@ -55,7 +52,7 @@ namespace NewHorizons.Builder.Props.Audio
         private static void OnSceneLoaded(Scene scene, LoadSceneMode _)
         {
             // If its the base game solar system or eye we get all the main frequencies
-            if (scene.name == LoadManager.SceneToName(OWScene.EyeOfTheUniverse) || 
+            if (scene.name == LoadManager.SceneToName(OWScene.EyeOfTheUniverse) ||
                 (scene.name == LoadManager.SceneToName(OWScene.SolarSystem) && Main.Instance.CurrentStarSystem == "SolarSystem"))
             {
                 _frequenciesInUse.Add(SignalFrequency.Quantum);
