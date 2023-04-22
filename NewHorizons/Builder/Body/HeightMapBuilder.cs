@@ -158,11 +158,11 @@ namespace NewHorizons.Builder.Body
             return ImageUtilities.GetTexture(_currentMod, path, wrap: true, linear: linear);
         }
 
-        private struct Tile
+        private readonly struct Tile
         {
-            private HeightMapModule.HeightMapTileInfo _info;
-            private string _keyword, _prefix;
-            private Texture2D _texture, _smoothness, _normal;
+            private readonly HeightMapModule.HeightMapTileInfo _info;
+            private readonly string _keyword, _prefix;
+            private readonly Texture2D _texture, _smoothness, _normal;
 
             public Tile(HeightMapModule.HeightMapTileInfo info, string keyword, string prefix)
             {
@@ -176,6 +176,11 @@ namespace NewHorizons.Builder.Body
                     _texture = Load(info.textureTile, $"{_prefix}TextureTile", false);
                     _smoothness = Load(info.smoothnessTile, $"{_prefix}SmoothnessTile", false);
                     _normal = Load(info.normalTile, $"{_prefix}NormalTile", false);
+                }
+                else
+                {
+                    // Visual studio won't compile if you don't do this idk
+                    _texture = _smoothness = _normal = null;
                 }
             }
 
