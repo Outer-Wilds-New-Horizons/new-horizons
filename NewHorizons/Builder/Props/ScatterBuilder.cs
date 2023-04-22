@@ -98,7 +98,7 @@ namespace NewHorizons.Builder.Props
                     var height = radius;
                     if (heightMapTexture != null)
                     {
-                        var sphericals = CoordinateUtilities.CartesianToSpherical(point, false);
+                        var sphericals = CoordinateUtilities.CartesianToSpherical(point, true);
                         float longitude = sphericals.x;
                         float latitude = sphericals.y;
 

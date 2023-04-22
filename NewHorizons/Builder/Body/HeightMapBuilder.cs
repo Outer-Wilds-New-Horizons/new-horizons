@@ -161,7 +161,7 @@ namespace NewHorizons.Builder.Body
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
-            // rotate for back compat :P
+            // rotate for backwards compat :P
             cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, -90, 0));
             cubeSphere.transform.position = planetGO.transform.position;
 

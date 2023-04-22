@@ -125,7 +125,7 @@ namespace NewHorizons.Builder.Body.Geometry
             v.z = v2.z * Mathf.Sqrt(1f - x2 / 2f - y2 / 2f + x2 * y2 / 3f);
 
             // The shader uses real coords
-            var sphericals = CoordinateUtilities.CartesianToSpherical(v, false);
+            var sphericals = CoordinateUtilities.CartesianToSpherical(v, true);
             float longitude = sphericals.x;
             float latitude = sphericals.y;
 
