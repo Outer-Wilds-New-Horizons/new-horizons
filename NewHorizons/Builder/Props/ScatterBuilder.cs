@@ -3,14 +3,13 @@ using NewHorizons.External.Modules.Props;
 using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.Geometry;
-using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
+
 namespace NewHorizons.Builder.Props
 {
     public static class ScatterBuilder
@@ -23,6 +22,7 @@ namespace NewHorizons.Builder.Props
         private static void MakeScatter(GameObject go, ScatterInfo[] scatterInfo, float radius, Sector sector, IModBehaviour mod, PlanetConfig config)
         {
             var heightMap = config.HeightMap;
+            var deleteHeightmapFlag = false;
 
             var makeFibonacciSphere = scatterInfo.Any(x => x.preventOverlap);
 
@@ -46,10 +46,8 @@ namespace NewHorizons.Builder.Props
                 {
                     if (!string.IsNullOrEmpty(heightMap.heightMap))
                     {
-                        // TODO copy what heightmap builder does eventually 
+                        deleteHeightmapFlag = !ImageUtilities.IsTextureLoaded(mod, heightMap.heightMap);
                         heightMapTexture = ImageUtilities.GetTexture(mod, heightMap.heightMap);
-                        // defer remove texture to next frame
-                        Delay.FireOnNextUpdate(() => Object.Destroy(heightMapTexture));
                     }
                 }
                 catch (Exception) { }
@@ -140,6 +138,11 @@ namespace NewHorizons.Builder.Props
                 }
 
                 GameObject.Destroy(scatterPrefab);
+
+                if (deleteHeightmapFlag && heightMapTexture != null)
+                {
+                    ImageUtilities.DeleteTexture(mod, heightMap.heightMap, heightMapTexture);
+                }
             }
         }
     }
