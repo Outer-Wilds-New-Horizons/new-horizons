@@ -55,6 +55,9 @@ namespace NewHorizons.Builder.Body
                 return null;
             }
 
+            _currentMod = null;
+            _currentPlanetName = null;
+
             var cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
             cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
