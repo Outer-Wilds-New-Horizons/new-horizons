@@ -196,8 +196,19 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
+
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
+            if (NHAssetBundle == null)
+            {
+                NHLogger.LogError("Couldn't find NHAssetBundle: The mod will likely not work.");
+            }
+
             NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
+            if (NHPrivateAssetBundle == null)
+            {
+                NHLogger.LogError("Couldn't find NHPrivateAssetBundle: The mod will likely not work.");
+            }
+
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
@@ -353,7 +364,14 @@ namespace NewHorizons
 
             if (isTitleScreen && _useCustomTitleScreen)
             {
-                TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                try
+                {
+                    TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
+                }
                 TitleSceneHandler.InitSubtitles();
             }
 
