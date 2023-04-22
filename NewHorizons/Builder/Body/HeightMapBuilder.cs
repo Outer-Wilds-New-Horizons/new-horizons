@@ -158,11 +158,11 @@ namespace NewHorizons.Builder.Body
             return ImageUtilities.GetTexture(_currentMod, path, wrap: true, linear: linear);
         }
 
-        private readonly struct Tile
+        private struct Tile
         {
-            private readonly HeightMapModule.HeightMapTileInfo _info;
-            private readonly string _keyword, _prefix;
-            private readonly Texture2D _texture, _smoothness, _normal;
+            private HeightMapModule.HeightMapTileInfo _info;
+            private string _keyword, _prefix;
+            private Texture2D _texture, _smoothness, _normal;
 
             public Tile(HeightMapModule.HeightMapTileInfo info, string keyword, string prefix)
             {
