@@ -39,8 +39,9 @@ namespace NewHorizons.Components.SizeControllers
 
         private void UpdateTargetPositions()
         {
-            var toPrimary = (_body.transform.position - _dustTargetBody.transform.position).normalized;
-            var velocityDirection = (_primaryBody?.GetVelocity() ?? Vector3.zero) -_body.GetVelocity(); // Accept that this is flipped ok
+            // body is null for proxies
+            var toPrimary = ((_body ? _body.transform : transform).position - _dustTargetBody.transform.position).normalized;
+            var velocityDirection = (_primaryBody?.GetVelocity() ?? Vector3.zero) - (_body ? _body.GetVelocity() : Vector3.zero); // Accept that this is flipped ok
 
             var tangentVel = Vector3.ProjectOnPlane(velocityDirection, toPrimary) / velocityDirection.magnitude;
 
