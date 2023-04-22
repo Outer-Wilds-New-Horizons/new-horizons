@@ -61,7 +61,7 @@ namespace NewHorizons.Builder.Props
             {
                 Random.InitState(propInfo.seed);
 
-                // By default don't put underwater more than a mater
+                // By default don't put underwater more than a meter
                 // this is a backward compat thing lol
                 if (config.Water != null && propInfo.minHeight == null) propInfo.minHeight = config.Water.size - 1f;
 
