@@ -14,103 +14,40 @@ namespace NewHorizons.Builder.Body
     {
         public static Shader PlanetShader;
 
+        // I hate nested functions okay
+        private static IModBehaviour _currentMod;
+        private static string _currentPlanetName;
+
         public static GameObject Make(GameObject planetGO, Sector sector, HeightMapModule module, IModBehaviour mod, int resolution, bool useLOD = false)
         {
-            // Only delete heightmap if it hasn't been loaded yet
-            var deleteHeightmapFlag = !string.IsNullOrEmpty(module.heightMap) && !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
+            bool deleteHeightmapFlag;
 
-            Texture2D heightMap;
-            Texture2D textureMap;
-            Texture2D smoothnessMap;
-            Texture2D normalMap;
-            Texture2D emissionMap;
-            Texture2D tileBlendMap = null;
+            Texture2D heightMap, textureMap, smoothnessMap, normalMap, emissionMap, tileBlendMap;
 
-            Texture2D baseTextureTile = null;
-            Texture2D baseSmoothnessTile = null;
-            Texture2D baseNormalTile = null;
+            Tile baseTile, redTile, greenTile, blueTile, alphaTile;
 
-            Texture2D redTextureTile = null;
-            Texture2D redSmoothnessTile = null;
-            Texture2D redNormalTile = null;
-
-            Texture2D greenTextureTile = null;
-            Texture2D greenSmoothnessTile = null;
-            Texture2D greenNormalTile = null;
-
-            Texture2D blueTextureTile = null;
-            Texture2D blueSmoothnessTile = null;
-            Texture2D blueNormalTile = null;
-
-            Texture2D alphaTextureTile = null;
-            Texture2D alphaSmoothnessTile = null;
-            Texture2D alphaNormalTile = null;
+            _currentMod = mod;
+            _currentPlanetName = planetGO.name;
 
             try
             {
-                Texture2D Load(string path, string name, bool linear)
-                {
-                    if (string.IsNullOrEmpty(path)) return null;
-                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
-                    {
-                        NHLogger.LogError($"Bad path for {planetGO.name} {name}: {path} couldn't be found.");
-                        return null;
-                    }
-
-                    if (name != "heightMap" && path == module.heightMap)
-                    {
-                        // If another texture uses the heightMap then don't delete it
-                        deleteHeightmapFlag = false;
-                    }
-
-                    return ImageUtilities.GetTexture(mod, path, wrap: true, linear: linear);
-                }
-
-                heightMap = Load(module.heightMap, "heightMap", false) ?? Texture2D.whiteTexture;
                 textureMap = Load(module.textureMap, "textureMap", false) ?? Texture2D.whiteTexture;
                 smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false);
                 normalMap = Load(module.normalMap, "normalMap", true);
                 emissionMap = Load(module.emissionMap, "emissionMap", false);
 
-                if (useLOD)
-                {
-                    tileBlendMap = Load(module.tileBlendMap, "tileBlendMap", false);
-                    if (module.baseTile != null)
-                    {
-                        baseTextureTile = Load(module.baseTile.textureTile, "baseTile textureTile", false);
-                        baseSmoothnessTile = Load(module.baseTile.smoothnessTile, "baseTile smoothnessTile", false);
-                        baseNormalTile = Load(module.baseTile.normalTile, "baseTile normalTile", true);
-                    }
-                    if (module.redTile != null)
-                    {
-                        redTextureTile = Load(module.redTile.textureTile, "redTile textureTile", false);
-                        redSmoothnessTile = Load(module.redTile.smoothnessTile, "redTile smoothnessTile", false);
-                        redNormalTile = Load(module.redTile.normalTile, "redTile normalTile", true);
-                    }
-                    if (module.greenTile != null)
-                    {
-                        greenTextureTile = Load(module.greenTile.textureTile, "greenTile textureTile", false);
-                        greenSmoothnessTile = Load(module.greenTile.smoothnessTile, "greenTile smoothnessTile", false);
-                        greenNormalTile = Load(module.greenTile.normalTile, "greenTile normalTile", true);
-                    }
-                    if (module.blueTile != null)
-                    {
-                        blueTextureTile = Load(module.blueTile.textureTile, "blueTile textureTile", false);
-                        blueSmoothnessTile = Load(module.blueTile.smoothnessTile, "blueTile smoothnessTile", false);
-                        blueNormalTile = Load(module.blueTile.normalTile, "blueTile normalTile", true);
-                    }
-                    if (module.alphaTile != null)
-                    {
-                        alphaTextureTile = Load(module.alphaTile.textureTile, "alphaTile textureTile", false);
-                        alphaSmoothnessTile = Load(module.alphaTile.smoothnessTile, "alphaTile smoothnessTile", false);
-                        alphaNormalTile = Load(module.alphaTile.normalTile, "alphaTile normalTile", true);
-                    }
-                }
+                baseTile = new Tile(module.baseTile, "BASE_TILE", "_BaseTile");
+                redTile = new Tile(module.baseTile, "RED_TILE", "_RedTile");
+                greenTile = new Tile(module.baseTile, "GREEN_TILE", "_GreenTile");
+                blueTile = new Tile(module.baseTile, "BLUE_TILE", "_BlueTile");
+                alphaTile = new Tile(module.baseTile, "ALPHA_TILE", "_AlphaTile");
 
-                // If the texturemap is the same as the heightmap don't delete it #176
-                // Do the same with emissionmap
-                // todo? maybe do this with the other maps, if someone were to ever use heightmap for them (altho that wouldnt make any sense if they did)
-                if (textureMap == heightMap || emissionMap == heightMap) deleteHeightmapFlag = false;
+                tileBlendMap = useLOD ? Load(module.tileBlendMap, "tileBlendMap", false) : null;
+
+                // Only delete heightmap if it hasn't been loaded yet
+                deleteHeightmapFlag = !string.IsNullOrEmpty(module.heightMap) && !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
+
+                heightMap = Load(module.heightMap, "heightMap", false) ?? Texture2D.whiteTexture;
             }
             catch (Exception e)
             {
@@ -190,80 +127,71 @@ namespace NewHorizons.Builder.Body
                 material.SetColor("_EmissionColor", emissionColor);
                 material.SetTexture("_EmissionMap", emissionMap);
 
-                if (useTriplanar)
-                {
-                    material.SetTexture("_BlendMap", tileBlendMap);
-                    if (module.baseTile != null)
-                    {
-                        material.EnableKeyword("BASE_TILE");
-                        material.SetFloat("_BaseTileScale", 1 / module.baseTile.size);
-                        material.SetTexture("_BaseTileAlbedo", baseTextureTile);
-                        material.SetTexture("_BaseTileSmoothnessMap", baseSmoothnessTile);
-                        material.SetFloat("_BaseTileBumpStrength", module.baseTile.normalStrength);
-                        material.SetTexture("_BaseTileBumpMap", baseNormalTile);
-                    }
-                    else
-                    {
-                        material.DisableKeyword("BASE_TILE");
-                    }
-                    if (module.redTile != null)
-                    {
-                        material.EnableKeyword("RED_TILE");
-                        material.SetFloat("_RedTileScale", 1 / module.redTile.size);
-                        material.SetTexture("_RedTileAlbedo", redTextureTile);
-                        material.SetTexture("_RedTileSmoothnessMap", redSmoothnessTile);
-                        material.SetFloat("_RedTileBumpStrength", module.redTile.normalStrength);
-                        material.SetTexture("_RedTileBumpMap", redNormalTile);
-                    }
-                    else
-                    {
-                        material.DisableKeyword("RED_TILE");
-                    }
-                    if (module.greenTile != null)
-                    {
-                        material.EnableKeyword("GREEN_TILE");
-                        material.SetFloat("_GreenTileScale", 1 / module.greenTile.size);
-                        material.SetTexture("_GreenTileAlbedo", greenTextureTile);
-                        material.SetTexture("_GreenTileSmoothnessMap", greenSmoothnessTile);
-                        material.SetFloat("_GreenTileBumpStrength", module.greenTile.normalStrength);
-                        material.SetTexture("_GreenTileBumpMap", greenNormalTile);
-                    }
-                    else
-                    {
-                        material.DisableKeyword("GREEN_TILE");
-                    }
-                    if (module.blueTile != null)
-                    {
-                        material.EnableKeyword("BLUE_TILE");
-                        material.SetFloat("_BlueTileScale", 1 / module.blueTile.size);
-                        material.SetTexture("_BlueTileAlbedo", blueTextureTile);
-                        material.SetTexture("_BlueTileSmoothnessMap", blueSmoothnessTile);
-                        material.SetFloat("_BlueTileBumpStrength", module.blueTile.normalStrength);
-                        material.SetTexture("_BlueTileBumpMap", blueNormalTile);
-                    }
-                    else
-                    {
-                        material.DisableKeyword("BLUE_TILE");
-                    }
-                    if (module.alphaTile != null)
-                    {
-                        material.EnableKeyword("ALPHA_TILE");
-                        material.SetFloat("_AlphaTileScale", 1 / module.alphaTile.size);
-                        material.SetTexture("_AlphaTileAlbedo", alphaTextureTile);
-                        material.SetTexture("_AlphaTileSmoothnessMap", alphaSmoothnessTile);
-                        material.SetFloat("_AlphaTileBumpStrength", module.alphaTile.normalStrength);
-                        material.SetTexture("_AlphaTileBumpMap", alphaNormalTile);
-                    }
-                    else
-                    {
-                        material.DisableKeyword("ALPHA_TILE");
-                    }
-                }
+                if (useTriplanar) material.SetTexture("_BlendMap", tileBlendMap);
+
+                baseTile.TryApplyTile(material, useTriplanar);
+                redTile.TryApplyTile(material, useTriplanar);
+                greenTile.TryApplyTile(material, useTriplanar);
+                blueTile.TryApplyTile(material, useTriplanar);
+                alphaTile.TryApplyTile(material, useTriplanar);
 
                 LODCubeSphere.transform.parent = cubeSphere.transform;
                 LODCubeSphere.transform.localPosition = Vector3.zero;
 
                 return cubeSphereMR;
+            }
+        }
+
+        private static Texture2D Load(string path, string name, bool linear)
+        {
+            if (string.IsNullOrEmpty(path)) return null;
+
+            if (!File.Exists(Path.Combine(_currentMod.ModHelper.Manifest.ModFolderPath, path)))
+            {
+                NHLogger.LogError($"Bad path for {_currentPlanetName} {name}: {path} couldn't be found.");
+                return null;
+            }
+
+            return ImageUtilities.GetTexture(_currentMod, path, wrap: true, linear: linear);
+        }
+
+        internal class Tile
+        {
+            private HeightMapModule.HeightMapTileInfo _info;
+            private string _keyword, _prefix;
+            private Texture2D _texture, _smoothness, _normal;
+
+            public Tile(HeightMapModule.HeightMapTileInfo info, string keyword, string prefix)
+            {
+                _info = info;
+
+                _keyword = keyword;
+                _prefix = prefix;
+
+                if (_info != null)
+                {
+                    _texture = Load(info.textureTile, $"{_prefix}TextureTile", false);
+                    _smoothness = Load(info.smoothnessTile, $"{_prefix}SmoothnessTile", false);
+                    _normal = Load(info.normalTile, $"{_prefix}NormalTile", false);
+                }
+            }
+
+            public void TryApplyTile(Material material, bool applyTriplanar)
+            {
+                if (applyTriplanar && _info != null)
+                {
+                    material.EnableKeyword(_keyword);
+                    material.SetFloat($"{_prefix}Scale", 1 / _info.size);
+                    material.SetTexture($"{_prefix}Albedo", _texture);
+                    material.SetTexture($"{_prefix}SmoothnessMap", _smoothness);
+                    material.SetFloat($"{_prefix}BumpStrength", _info.normalStrength);
+                    material.SetTexture($"{_prefix}BumpMap", _normal);
+                }
+                else
+                {
+                    // This might just be disabled by default which would simplify a few things here but nobody wants to check (me included)
+                    material.DisableKeyword(_keyword);
+                }
             }
         }
     }
