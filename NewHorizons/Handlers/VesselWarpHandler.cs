@@ -1,6 +1,6 @@
 using NewHorizons.Builder.Props;
+using NewHorizons.Components;
 using NewHorizons.Components.EyeOfTheUniverse;
-using NewHorizons.Components.Vessel;
 using NewHorizons.Utility;
 using NewHorizons.Utility.OuterWilds;
 using NewHorizons.Utility.OWML;

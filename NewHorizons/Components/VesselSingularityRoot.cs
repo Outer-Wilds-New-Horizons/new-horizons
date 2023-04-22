@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components.Vessel
+namespace NewHorizons.Components
 {
     [UsedInUnityProject]
     public class VesselSingularityRoot : MonoBehaviour
