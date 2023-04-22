@@ -130,13 +130,16 @@ namespace NewHorizons.Builder.Body
                 material.SetColor("_EmissionColor", emissionColor);
                 material.SetTexture("_EmissionMap", emissionMap);
 
-                if (useTriplanar) material.SetTexture("_BlendMap", tileBlendMap);
+                if (useTriplanar)
+                {
+                    material.SetTexture("_BlendMap", tileBlendMap);
 
-                baseTile.TryApplyTile(material, useTriplanar);
-                redTile.TryApplyTile(material, useTriplanar);
-                greenTile.TryApplyTile(material, useTriplanar);
-                blueTile.TryApplyTile(material, useTriplanar);
-                alphaTile.TryApplyTile(material, useTriplanar);
+                    baseTile.TryApplyTile(material);
+                    redTile.TryApplyTile(material);
+                    greenTile.TryApplyTile(material);
+                    blueTile.TryApplyTile(material);
+                    alphaTile.TryApplyTile(material);
+                }
 
                 LODCubeSphere.transform.parent = cubeSphere.transform;
                 LODCubeSphere.transform.localPosition = Vector3.zero;
@@ -184,21 +187,18 @@ namespace NewHorizons.Builder.Body
                 }
             }
 
-            public void TryApplyTile(Material material, bool applyTriplanar)
+            public void TryApplyTile(Material material)
             {
-                if (applyTriplanar && _info != null)
+                if (_info != null)
                 {
+                    material.SetFloat(_prefix, 1);
                     material.EnableKeyword(_keyword);
+
                     material.SetFloat($"{_prefix}Scale", 1 / _info.size);
                     material.SetTexture($"{_prefix}Albedo", _texture);
                     material.SetTexture($"{_prefix}SmoothnessMap", _smoothness);
                     material.SetFloat($"{_prefix}BumpStrength", _info.normalStrength);
                     material.SetTexture($"{_prefix}BumpMap", _normal);
-                }
-                else
-                {
-                    // This might just be disabled by default which would simplify a few things here but nobody wants to check (me included)
-                    material.DisableKeyword(_keyword);
                 }
             }
         }
