@@ -23,7 +23,9 @@ namespace NewHorizons.Patches.SignalPatches
             __instance._frequencyFilterIndex = __instance._frequencyFilterIndex < 0 ? count - 1 : __instance._frequencyFilterIndex;
             SignalFrequency signalFrequency = AudioSignal.IndexToFrequency(__instance._frequencyFilterIndex);
 
-            if (!PlayerData.KnowsFrequency(signalFrequency) && (!__instance._isUnknownFreqNearby || __instance._unknownFrequency != signalFrequency))
+            // Cases where this frequency isnt used
+            if (!PlayerData.KnowsFrequency(signalFrequency) && SignalBuilder.IsFrequencyInUse(signalFrequency) && 
+                (!__instance._isUnknownFreqNearby || __instance._unknownFrequency != signalFrequency))
             {
                 __instance.SwitchFrequencyFilter(increment);
             }

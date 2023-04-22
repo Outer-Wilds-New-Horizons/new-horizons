@@ -8,6 +8,7 @@ using OWML.Utils;
 using System.Collections.Generic;
 using UnityEngine;
 using NewHorizons.External.Modules.Props.Audio;
+using UnityEngine.SceneManagement;
 
 namespace NewHorizons.Builder.Props.Audio
 {
@@ -39,7 +40,35 @@ namespace NewHorizons.Builder.Props.Audio
             _cloakedSignals = new List<SignalName>();
 
             Initialized = true;
+
+            SceneManager.sceneUnloaded += OnSceneUnloaded;
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
+
+        private static HashSet<SignalFrequency> _frequenciesInUse = new();
+
+        private static void OnSceneUnloaded(Scene _)
+        {
+            _frequenciesInUse.Clear();
+        }
+
+        private static void OnSceneLoaded(Scene scene, LoadSceneMode _)
+        {
+            // If its the base game solar system or eye we get all the main frequencies
+            if (scene.name == LoadManager.SceneToName(OWScene.EyeOfTheUniverse) || 
+                (scene.name == LoadManager.SceneToName(OWScene.SolarSystem) && Main.Instance.CurrentStarSystem == "SolarSystem"))
+            {
+                _frequenciesInUse.Add(SignalFrequency.Quantum);
+                _frequenciesInUse.Add(SignalFrequency.EscapePod);
+                _frequenciesInUse.Add(SignalFrequency.Radio);
+                _frequenciesInUse.Add(SignalFrequency.HideAndSeek);
+            }
+
+            // By default lets always have travelers
+            _frequenciesInUse.Add(SignalFrequency.Traveler);
+        }
+
+        public static bool IsFrequencyInUse(SignalFrequency freq) => _frequenciesInUse.Contains(freq);
 
         public static bool IsCloaked(this SignalName signalName)
         {
@@ -151,6 +180,8 @@ namespace NewHorizons.Builder.Props.Audio
             // Track certain special signal things
             if (planetGO.GetComponent<AstroObject>()?.GetAstroObjectName() == AstroObject.Name.QuantumMoon) _qmSignals.Add(name);
             if (info.insideCloak) _cloakedSignals.Add(name);
+
+            _frequenciesInUse.Add(frequency);
 
             return signalGO;
         }
