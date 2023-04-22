@@ -1,7 +1,7 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace NewHorizons.Utility.Geometry
+namespace NewHorizons.Components
 {
     public class RingShape : Shape
     {
