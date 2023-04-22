@@ -1,5 +1,5 @@
 using UnityEngine;
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Sectored
 {
     public class CloakSectorController : MonoBehaviour
     {

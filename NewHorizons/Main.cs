@@ -4,7 +4,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.Components;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
@@ -32,6 +31,7 @@ using UnityEngine.SceneManagement;
 
 using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.DebugTools.Menu;
+using NewHorizons.Components.Ship;
 using NewHorizons.Builder.Props.Audio;
 
 namespace NewHorizons
@@ -332,7 +332,7 @@ namespace NewHorizons
             {
                 TimeLoopUtilities.SetSecondsElapsed(SecondsElapsedInLoop);
                 // Prevent the OPC from firing
-                var launchController = GameObject.FindObjectOfType<OrbitalProbeLaunchController>();
+                var launchController = FindObjectOfType<OrbitalProbeLaunchController>();
                 if (launchController != null)
                 {
                     GlobalMessenger<int>.RemoveListener("StartOfTimeLoop", launchController.OnStartOfTimeLoop);
@@ -386,7 +386,7 @@ namespace NewHorizons
 
                 if (isSolarSystem)
                 {
-                    foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
+                    foreach (var supernovaPlanetEffectController in FindObjectsOfType<SupernovaPlanetEffectController>())
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
@@ -417,7 +417,7 @@ namespace NewHorizons
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
-                    var map = GameObject.FindObjectOfType<MapController>();
+                    var map = FindObjectOfType<MapController>();
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
                     // Fix the map satellite
@@ -499,7 +499,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = Main.FurthestOrbit * (4f / 3f);
+                ssrLight.range = FurthestOrbit * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();

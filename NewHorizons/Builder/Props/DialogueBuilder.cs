@@ -1,4 +1,4 @@
-using NewHorizons.Components;
+using NewHorizons.Components.Props;
 using NewHorizons.External.Modules.Props.Dialogue;
 using NewHorizons.Handlers;
 using NewHorizons.Utility;

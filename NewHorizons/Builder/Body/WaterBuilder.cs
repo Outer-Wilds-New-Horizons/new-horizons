@@ -123,7 +123,7 @@ namespace NewHorizons.Builder.Body
             fluidVolume._density = module.density;
             fluidVolume._layer = LayerMask.NameToLayer("BasicEffectVolume");
 
-            var fogGO = GameObject.Instantiate(_oceanFog, waterGO.transform);
+            var fogGO = Object.Instantiate(_oceanFog, waterGO.transform);
             fogGO.name = "OceanFog";
             fogGO.transform.localPosition = Vector3.zero;
             fogGO.transform.localScale = Vector3.one;

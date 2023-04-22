@@ -48,7 +48,7 @@ namespace NewHorizons.Builder.Body
             if (_starAtmosphere == null) _starAtmosphere = SearchUtilities.Find("Sun_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_Atmosphere_Star").DontDestroyOnLoad();
             if (_starAmbientLight == null) _starAmbientLight = SearchUtilities.Find("Sun_Body/AmbientLight_SUN").InstantiateInactive().Rename("Prefab_AmbientLight_Star").DontDestroyOnLoad();
             if (_sunLight == null) _sunLight = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SunLight").InstantiateInactive().Rename("Prefab_SunLight").DontDestroyOnLoad();
-            if (_starProxyAtmosphere == null) _starProxyAtmosphere = GameObject.FindObjectOfType<DistantProxyManager>()._sunProxyPrefab.FindChild("Sun_Proxy_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_ProxyAtmosphere_Star").DontDestroyOnLoad();
+            if (_starProxyAtmosphere == null) _starProxyAtmosphere = Object.FindObjectOfType<DistantProxyManager>()._sunProxyPrefab.FindChild("Sun_Proxy_Body/Atmosphere_SUN").InstantiateInactive().Rename("Prefab_ProxyAtmosphere_Star").DontDestroyOnLoad();
             if (_starSurface == null) _starSurface = SearchUtilities.Find("Sun_Body/Sector_SUN/Geometry_SUN/Surface").InstantiateInactive().Rename("Prefab_Surface_Star").DontDestroyOnLoad();
             if (_starSolarFlareEmitter == null) _starSolarFlareEmitter = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/SolarFlareEmitter").InstantiateInactive().Rename("Prefab_SolarFlareEmitter_Star").DontDestroyOnLoad();
             if (_supernovaPrefab == null) _supernovaPrefab = SearchUtilities.Find("Sun_Body/Sector_SUN/Effects_SUN/Supernova").InstantiateInactive().Rename("Prefab_Supernova").DontDestroyOnLoad();
@@ -69,7 +69,7 @@ namespace NewHorizons.Builder.Body
             var sunSurfaceAudio = sunAudio.GetComponentInChildren<SunSurfaceAudioController>();
             var surfaceAudio = sunSurfaceAudio.gameObject.AddComponent<StarSurfaceAudioController>();
             surfaceAudio._size = starModule.size;
-            GameObject.Destroy(sunSurfaceAudio);
+            Object.Destroy(sunSurfaceAudio);
             surfaceAudio.SetSector(sector);
 
             sunAudio.name = "Audio_Star";
@@ -96,7 +96,7 @@ namespace NewHorizons.Builder.Body
                 var fog = sunAtmosphere.transform.Find("FogSphere").GetComponent<PlanetaryFogController>();
                 fog.transform.localScale = Vector3.one;
                 fog.fogRadius = starModule.size * OuterRadiusRatio;
-                fog.lodFadeDistance = fog.fogRadius * (StarBuilder.OuterRadiusRatio - 1f);
+                fog.lodFadeDistance = fog.fogRadius * (OuterRadiusRatio - 1f);
 
                 fog.fogImpostor.material.SetFloat(Radius, starModule.size * OuterRadiusRatio);
                 if (starModule.tint != null)
@@ -416,7 +416,7 @@ namespace NewHorizons.Builder.Body
             stellarDeath.shockwaveAlpha = supernova._shockwaveAlpha;
             stellarDeath.shockwaveScale = supernova._shockwaveScale;
             stellarDeath.supernovaMaterial = supernova._supernovaMaterial;
-            GameObject.Destroy(supernova);
+            Object.Destroy(supernova);
 
             if (starModule.supernovaTint != null)
             {

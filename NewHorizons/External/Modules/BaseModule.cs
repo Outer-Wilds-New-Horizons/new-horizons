@@ -26,11 +26,6 @@ namespace NewHorizons.External.Modules
         public bool centerOfSolarSystem;
 
         /// <summary>
-        /// If it has a comet tail, it'll be oriented according to these Euler angles.
-        /// </summary>
-        public MVector3 cometTailRotation;
-
-        /// <summary>
         /// How gravity falls off with distance. Most planets use linear but the sun and some moons use inverseSquared.
         /// </summary>
         [DefaultValue("linear")] public GravityFallOff gravityFallOff = GravityFallOff.Linear;
@@ -40,11 +35,6 @@ namespace NewHorizons.External.Modules
         /// 0.
         /// </summary>
         public float groundSize;
-
-        /// <summary>
-        /// If you want the body to have a tail like the Interloper.
-        /// </summary>
-        public bool hasCometTail;
 
         /// <summary>
         /// If the body should have a marker on the map screen.
@@ -115,6 +105,12 @@ namespace NewHorizons.External.Modules
 
         [Obsolete("zeroGravityRadius is deprecated, please use Volumes->ZeroGravityVolumes instead")]
         public float zeroGravityRadius;
+
+        [Obsolete("hasCometTail is deprecated, please use CometTail instead")]
+        public bool hasCometTail;
+
+        [Obsolete("cometTailRotation is deprecated, please use CometTail->rotationOverride instead")]
+        public MVector3 cometTailRotation;
 
         #endregion Obsolete
     }

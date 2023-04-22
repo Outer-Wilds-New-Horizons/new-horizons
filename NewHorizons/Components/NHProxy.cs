@@ -1,3 +1,4 @@
+using NewHorizons.Components.Props;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.Handlers;
 using NewHorizons.Utility.OuterWilds;

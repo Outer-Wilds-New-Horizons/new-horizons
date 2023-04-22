@@ -67,7 +67,7 @@ namespace NewHorizons.Builder.Props
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {
                 // Just take every scroll and get the first arc
-                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                var existingArcs = UnityEngine.Object.FindObjectsOfType<ScrollItem>()
                     .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -95,7 +95,7 @@ namespace NewHorizons.Builder.Props
 
             if (_ghostArcPrefabs == null)
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                var existingGhostArcs = UnityEngine.Object.FindObjectsOfType<GhostWallText>()
                     .Select(x => x?._textLine?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -253,7 +253,7 @@ namespace NewHorizons.Builder.Props
                         var scrollItem = customScroll.GetComponent<ScrollItem>();
 
                         // Idk why this thing is always around
-                        GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+                        UnityEngine.Object.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
 
                         // This variable is the bane of my existence i dont get it
                         scrollItem._nomaiWallText = nomaiWallText;

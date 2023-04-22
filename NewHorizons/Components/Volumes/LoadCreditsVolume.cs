@@ -19,8 +19,8 @@ namespace NewHorizons.Components.Volumes
 
         public void Start()
         {
-            _gameOverController = GameObject.FindObjectOfType<GameOverController>();
-            _playerCameraEffectController = GameObject.FindObjectOfType<PlayerCameraEffectController>();
+            _gameOverController = FindObjectOfType<GameOverController>();
+            _playerCameraEffectController = FindObjectOfType<PlayerCameraEffectController>();
         }
 
         public override void OnTriggerVolumeEntry(GameObject hitObj)
