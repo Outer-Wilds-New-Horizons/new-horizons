@@ -111,8 +111,8 @@ namespace NewHorizons.Builder.Body
 
                 // If the texturemap is the same as the heightmap don't delete it #176
                 // Do the same with emissionmap
-                // honestly, if you do this with other maps, thats on you
-                if (heightMap == textureMap || heightMap == emissionMap) deleteHeightmapFlag = false;
+                // todo? maybe do this with the other maps, if someone were to ever use heightmap for them (altho that wouldnt make any sense if they did)
+                if (textureMap == heightMap || emissionMap == heightMap) deleteHeightmapFlag = false;
             }
             catch (Exception e)
             {
@@ -200,7 +200,7 @@ namespace NewHorizons.Builder.Body
                     if (module.baseTile != null)
                     {
                         material.EnableKeyword("BASE_TILE");
-                        material.SetFloat("_BaseTileScale", module.baseTile.scale);
+                        material.SetFloat("_BaseTileScale", 1 / module.baseTile.size);
                         material.SetTexture("_BaseTileAlbedo", baseTextureTile);
                         material.SetTexture("_BaseTileSmoothnessMap", baseSmoothnessTile);
                         material.SetFloat("_BaseTileBumpStrength", module.baseTile.normalStrength);
@@ -213,7 +213,7 @@ namespace NewHorizons.Builder.Body
                     if (module.redTile != null)
                     {
                         material.EnableKeyword("RED_TILE");
-                        material.SetFloat("_RedTileScale", module.redTile.scale);
+                        material.SetFloat("_RedTileScale", 1 / module.redTile.size);
                         material.SetTexture("_RedTileAlbedo", redTextureTile);
                         material.SetTexture("_RedTileSmoothnessMap", redSmoothnessTile);
                         material.SetFloat("_RedTileBumpStrength", module.redTile.normalStrength);
@@ -226,7 +226,7 @@ namespace NewHorizons.Builder.Body
                     if (module.greenTile != null)
                     {
                         material.EnableKeyword("GREEN_TILE");
-                        material.SetFloat("_GreenTileScale", module.greenTile.scale);
+                        material.SetFloat("_GreenTileScale", 1 / module.greenTile.size);
                         material.SetTexture("_GreenTileAlbedo", greenTextureTile);
                         material.SetTexture("_GreenTileSmoothnessMap", greenSmoothnessTile);
                         material.SetFloat("_GreenTileBumpStrength", module.greenTile.normalStrength);
@@ -239,7 +239,7 @@ namespace NewHorizons.Builder.Body
                     if (module.blueTile != null)
                     {
                         material.EnableKeyword("BLUE_TILE");
-                        material.SetFloat("_BlueTileScale", module.blueTile.scale);
+                        material.SetFloat("_BlueTileScale", 1 / module.blueTile.size);
                         material.SetTexture("_BlueTileAlbedo", blueTextureTile);
                         material.SetTexture("_BlueTileSmoothnessMap", blueSmoothnessTile);
                         material.SetFloat("_BlueTileBumpStrength", module.blueTile.normalStrength);
@@ -252,7 +252,7 @@ namespace NewHorizons.Builder.Body
                     if (module.alphaTile != null)
                     {
                         material.EnableKeyword("ALPHA_TILE");
-                        material.SetFloat("_AlphaTileScale", module.alphaTile.scale);
+                        material.SetFloat("_AlphaTileScale", 1 / module.alphaTile.size);
                         material.SetTexture("_AlphaTileAlbedo", alphaTextureTile);
                         material.SetTexture("_AlphaTileSmoothnessMap", alphaSmoothnessTile);
                         material.SetFloat("_AlphaTileBumpStrength", module.alphaTile.normalStrength);

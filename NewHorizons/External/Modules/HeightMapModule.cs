@@ -125,11 +125,11 @@ namespace NewHorizons.External.Modules
         public class HeightMapTileInfo
         {
             /// <summary>
-            /// How many times this tile will tile across each "side" of the planet, so around the equator, this tile will loop scale * 4 times.
+            /// The size, in meters, of each tile.
             /// </summary>
             [Range(0f, double.MaxValue)]
             [DefaultValue(1f)]
-            public float scale = 1f;
+            public float size = 1f;
 
             /// <summary>
             /// Relative filepath to a color texture. Optional.
