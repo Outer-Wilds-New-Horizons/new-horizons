@@ -1516,12 +1516,14 @@
       "x-enumNames": [
         "Adult",
         "Child",
-        "Stranger"
+        "Stranger",
+        "Teenager"
       ],
       "enum": [
         "adult",
         "child",
-        "stranger"
+        "stranger",
+        "teenager"
       ]
     },
     "MVector2": {
