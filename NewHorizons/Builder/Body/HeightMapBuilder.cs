@@ -62,12 +62,12 @@ namespace NewHorizons.Builder.Body
                 Texture2D Load(string path, string name, bool linear)
                 {
                     if (string.IsNullOrEmpty(path)) return null;
-                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, module.heightMap)))
+                    if (!File.Exists(Path.Combine(mod.ModHelper.Manifest.ModFolderPath, path)))
                     {
                         NHLogger.LogError($"Bad path for {planetGO.name} {name}: {path} couldn't be found.");
                         return null;
                     }
-                    return ImageUtilities.GetTexture(mod, module.textureMap, wrap: true, linear: linear);
+                    return ImageUtilities.GetTexture(mod, path, wrap: true, linear: linear);
                 }
                 textureMap = Load(module.textureMap, "textureMap", false);
                 smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false);
