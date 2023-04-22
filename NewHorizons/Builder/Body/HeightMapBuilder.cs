@@ -22,9 +22,9 @@ namespace NewHorizons.Builder.Body
         {
             bool deleteHeightmapFlag;
 
-            Texture2D heightMap, textureMap, smoothnessMap, normalMap, emissionMap, tileBlendMap;
+            Texture2D heightMap, textureMap, smoothnessMap, normalMap, emissionMap, tileBlendMap = null;
 
-            Tile baseTile, redTile, greenTile, blueTile, alphaTile;
+            Tile? baseTile = null, redTile = null, greenTile = null, blueTile = null, alphaTile = null;
 
             _currentMod = mod;
             _currentPlanetName = planetGO.name;
@@ -36,13 +36,16 @@ namespace NewHorizons.Builder.Body
                 normalMap = Load(module.normalMap, "normalMap", true);
                 emissionMap = Load(module.emissionMap, "emissionMap", false);
 
-                baseTile = new Tile(module.baseTile, "BASE_TILE", "_BaseTile");
-                redTile = new Tile(module.redTile, "RED_TILE", "_RedTile");
-                greenTile = new Tile(module.greenTile, "GREEN_TILE", "_GreenTile");
-                blueTile = new Tile(module.blueTile, "BLUE_TILE", "_BlueTile");
-                alphaTile = new Tile(module.alphaTile, "ALPHA_TILE", "_AlphaTile");
+                if (useLOD)
+                {
+                    tileBlendMap = Load(module.tileBlendMap, "tileBlendMap", false);
 
-                tileBlendMap = useLOD ? Load(module.tileBlendMap, "tileBlendMap", false) : null;
+                    baseTile = new Tile(module.baseTile, "BASE_TILE", "_BaseTile");
+                    redTile = new Tile(module.redTile, "RED_TILE", "_RedTile");
+                    greenTile = new Tile(module.greenTile, "GREEN_TILE", "_GreenTile");
+                    blueTile = new Tile(module.blueTile, "BLUE_TILE", "_BlueTile");
+                    alphaTile = new Tile(module.alphaTile, "ALPHA_TILE", "_AlphaTile");
+                }
 
                 // Only delete heightmap if it hasn't been loaded yet
                 deleteHeightmapFlag = !string.IsNullOrEmpty(module.heightMap) && !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
@@ -134,11 +137,11 @@ namespace NewHorizons.Builder.Body
                 {
                     material.SetTexture("_BlendMap", tileBlendMap);
 
-                    baseTile.TryApplyTile(material);
-                    redTile.TryApplyTile(material);
-                    greenTile.TryApplyTile(material);
-                    blueTile.TryApplyTile(material);
-                    alphaTile.TryApplyTile(material);
+                    baseTile?.TryApplyTile(material);
+                    redTile?.TryApplyTile(material);
+                    greenTile?.TryApplyTile(material);
+                    blueTile?.TryApplyTile(material);
+                    alphaTile?.TryApplyTile(material);
                 }
 
                 LODCubeSphere.transform.parent = cubeSphere.transform;
