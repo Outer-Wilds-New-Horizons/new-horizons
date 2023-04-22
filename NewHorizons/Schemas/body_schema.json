@@ -2525,7 +2525,8 @@
       "additionalProperties": false,
       "properties": {
         "frequency": {
-          "type": "string"
+          "type": "string",
+          "description": "This can be anything. To have a warp pad transmitter send you to a receiver you must give them the same frequency. \nTry to make it something unique so it does not overlap with other warp pad pairs.\nFuthermore, multiple transmitters can send you to the same receiver if they all have the same frequency."
         },
         "rotation": {
           "description": "Rotation of the object",
@@ -2606,7 +2607,8 @@
       "additionalProperties": false,
       "properties": {
         "frequency": {
-          "type": "string"
+          "type": "string",
+          "description": "This can be anything. To have a warp pad transmitter send you to a receiver you must give them the same frequency. \nTry to make it something unique so it does not overlap with other warp pad pairs.\nFuthermore, multiple transmitters can send you to the same receiver if they all have the same frequency."
         },
         "rotation": {
           "description": "Rotation of the object",

@@ -145,6 +145,7 @@ namespace NewHorizons.Handlers
 
             var hasParentBody = !string.IsNullOrEmpty(system.Config.Vessel?.vesselSpawn?.parentBody);
             var hasPhysics = system.Config.Vessel?.hasPhysics ?? !hasParentBody;
+            var planetGO = hasParentBody ? vesselObject.transform.parent.gameObject : null;
 
             if (hasPhysics)
             {
@@ -166,8 +167,6 @@ namespace NewHorizons.Handlers
 
             var attachWarpExitToVessel = system.Config.Vessel?.warpExit?.attachToVessel ?? false;
             var warpExitParent = vesselWarpController._targetWarpPlatform.transform.parent;
-
-            var planetGO = hasPhysics ? vesselObject.transform.parent.gameObject : null;
 
             var warpExit = GeneralPropBuilder.MakeFromExisting(vesselWarpController._targetWarpPlatform.gameObject, planetGO, null, system.Config.Vessel?.warpExit, parentOverride: attachWarpExitToVessel ? warpExitParent : null);
             if (attachWarpExitToVessel)
