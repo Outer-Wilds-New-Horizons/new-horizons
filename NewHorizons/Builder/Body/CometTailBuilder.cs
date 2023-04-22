@@ -62,6 +62,12 @@ namespace NewHorizons.Builder.Body
 
         public static void Make(GameObject planetGO, Sector sector, CometTailModule cometTailModule, PlanetConfig config)
         {
+            if (config.Orbit.primaryBody == null)
+            {
+                NHLogger.LogError($"Comet {planetGO.name} does not orbit anything. That makes no sense");
+                return;
+            }
+
             var rootObj = new GameObject("CometRoot");
             rootObj.SetActive(false);
             rootObj.transform.parent = sector?.transform ?? planetGO.transform;
@@ -77,7 +83,10 @@ namespace NewHorizons.Builder.Body
 
             Delay.FireOnNextUpdate(() =>
             {
-                controller.SetPrimaryBody(AstroObjectLocator.GetAstroObject(cometTailModule.primaryBody).transform);
+                controller.SetPrimaryBody(
+                    AstroObjectLocator.GetAstroObject(cometTailModule.primaryBody).transform, 
+                    AstroObjectLocator.GetAstroObject(config.Orbit.primaryBody).GetAttachedOWRigidbody()
+                );
             });
 
             controller.SetScaleCurve(cometTailModule.curve);

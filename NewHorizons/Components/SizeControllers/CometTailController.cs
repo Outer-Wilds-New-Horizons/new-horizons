@@ -6,7 +6,8 @@ namespace NewHorizons.Components.SizeControllers
 {
     public class CometTailController : SizeController
     {
-        private Transform _primaryBody;
+        private Transform _dustTargetBody;
+        private OWRigidbody _primaryBody;
         private OWRigidbody _body;
 
         private bool _hasRotationOverride;
@@ -38,8 +39,8 @@ namespace NewHorizons.Components.SizeControllers
 
         private void UpdateTargetPositions()
         {
-            var toPrimary = (_body.transform.position - _primaryBody.transform.position).normalized;
-            var velocityDirection = -_body.GetVelocity(); // Accept that this is flipped ok
+            var toPrimary = (_body.transform.position - _dustTargetBody.transform.position).normalized;
+            var velocityDirection = (_primaryBody?.GetVelocity() ?? Vector3.zero) -_body.GetVelocity(); // Accept that this is flipped ok
 
             var tangentVel = Vector3.ProjectOnPlane(velocityDirection, toPrimary) / velocityDirection.magnitude;
 
@@ -53,9 +54,10 @@ namespace NewHorizons.Components.SizeControllers
             transform.localRotation = Quaternion.Euler(eulerAngles);
         }
 
-        public void SetPrimaryBody(Transform primaryBody)
+        public void SetPrimaryBody(Transform dustTarget, OWRigidbody primaryBody)
         {
             _hasPrimaryBody = true;
+            _dustTargetBody = dustTarget;
             _primaryBody = primaryBody;
         }
     }
