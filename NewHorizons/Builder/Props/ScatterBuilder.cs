@@ -139,7 +139,7 @@ namespace NewHorizons.Builder.Props
                     prop.SetActive(true);
                 }
 
-                GameObject.Destroy(scatterPrefab);
+                Object.Destroy(scatterPrefab);
             }
         }
     }

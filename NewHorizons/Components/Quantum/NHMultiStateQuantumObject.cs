@@ -136,7 +136,7 @@ namespace NewHorizons.Components.Quantum
                     num += _probabilities[j];
                 }
             }
-            int num2 = UnityEngine.Random.Range(0, num);
+            int num2 = Random.Range(0, num);
             int num3 = 0;
             int num4 = 0;
             foreach (int k in indices)

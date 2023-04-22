@@ -133,7 +133,7 @@ namespace NewHorizons.Builder.ShipLog
                 astroObject._image = revealedImage;
             }
 
-            astroObject._unviewedObj = GameObject.Instantiate(unviewedReference, gameObject.transform, false);
+            astroObject._unviewedObj = UnityEngine.Object.Instantiate(unviewedReference, gameObject.transform, false);
             astroObject._invisibleWhenHidden = body.Config.ShipLog?.mapMode?.invisibleWhenHidden ?? false;
 
             Rect imageRect = astroObject._imageObj.GetComponent<RectTransform>().rect;

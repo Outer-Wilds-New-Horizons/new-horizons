@@ -52,15 +52,15 @@ namespace NewHorizons.Handlers
                 starController.Intensity = 0.9859f;
                 starController.SunColor = new Color(1f, 0.8845f, 0.6677f, 1f);
 
-                var starLightGO = GameObject.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
+                var starLightGO = UnityEngine.Object.Instantiate(sun.GetComponentInChildren<SunLightController>().gameObject);
                 foreach (var comp in starLightGO.GetComponents<Component>())
                 {
                     if (!(comp is SunLightController) && !(comp is SunLightParamUpdater) && !(comp is Light) && !(comp is Transform))
                     {
-                        GameObject.Destroy(comp);
+                        UnityEngine.Object.Destroy(comp);
                     }
                 }
-                GameObject.Destroy(starLightGO.GetComponent<Light>());
+                UnityEngine.Object.Destroy(starLightGO.GetComponent<Light>());
                 starLightGO.name = "StarLightController";
 
                 starLightGO.AddComponent<SunLightEffectsController>();
@@ -715,7 +715,7 @@ namespace NewHorizons.Handlers
                 // We need these for later
                 var children = AstroObjectLocator.GetChildren(ao).Concat(AstroObjectLocator.GetMoons(ao)).ToArray();
                 AstroObjectLocator.DeregisterCustomAstroObject(ao);
-                GameObject.Destroy(ao);
+                UnityEngine.Object.Destroy(ao);
                 Locator.RegisterAstroObject(newAO);
                 AstroObjectLocator.RegisterCustomAstroObject(newAO);
 
@@ -727,7 +727,7 @@ namespace NewHorizons.Handlers
 
                 // QM and stuff don't have orbit lines
                 var orbitLine = go.GetComponentInChildren<OrbitLine>()?.gameObject;
-                if (orbitLine != null) GameObject.Destroy(orbitLine);
+                if (orbitLine != null) UnityEngine.Object.Destroy(orbitLine);
 
                 var isMoon = newAO.GetAstroObjectType() is AstroObject.Type.Moon or AstroObject.Type.Satellite or AstroObject.Type.SpaceStation;
                 if (body.Config.Orbit.showOrbitLine) OrbitlineBuilder.Make(go, newAO, isMoon, body.Config);

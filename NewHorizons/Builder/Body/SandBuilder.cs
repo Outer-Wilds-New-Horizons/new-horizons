@@ -32,7 +32,7 @@ namespace NewHorizons.Builder.Body
             var sandGO = new GameObject("Sand");
             sandGO.SetActive(false);
 
-            var sandSphere = GameObject.Instantiate(_sandSphere, sandGO.transform);
+            var sandSphere = Object.Instantiate(_sandSphere, sandGO.transform);
             sandSphere.name = "Sphere";
             sandSphere.SetActive(true);
             if (module.tint != null)
@@ -46,20 +46,20 @@ namespace NewHorizons.Builder.Body
                     new Material(sandMaterials[0]),
                     new Material(sandMaterials[1])
                 };
-                GameObject.Destroy(oldMR);
+                Object.Destroy(oldMR);
                 sandMR.sharedMaterials[0].color = module.tint.ToColor();
                 sandMR.sharedMaterials[1].color = module.tint.ToColor();
             }
 
-            var collider = GameObject.Instantiate(_sandCollider, sandGO.transform);
+            var collider = Object.Instantiate(_sandCollider, sandGO.transform);
             collider.name = "Collider";
             collider.SetActive(true);
 
-            var occlusionSphere = GameObject.Instantiate(_sandOcclusion, sandGO.transform);
+            var occlusionSphere = Object.Instantiate(_sandOcclusion, sandGO.transform);
             occlusionSphere.name = "Occlusion";
             occlusionSphere.SetActive(true);
 
-            var proxyShadowCasterGO = GameObject.Instantiate(_sandProxyShadowCaster, sandGO.transform);
+            var proxyShadowCasterGO = Object.Instantiate(_sandProxyShadowCaster, sandGO.transform);
             proxyShadowCasterGO.name = "ProxyShadowCaster";
             var proxyShadowCaster = proxyShadowCasterGO.GetComponent<ProxyShadowCaster>();
             proxyShadowCaster.SetSuperGroup(sandGO.GetComponent<ProxyShadowCasterSuperGroup>());

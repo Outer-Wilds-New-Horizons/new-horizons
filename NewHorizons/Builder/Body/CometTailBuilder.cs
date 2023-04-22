@@ -91,13 +91,13 @@ namespace NewHorizons.Builder.Body
 
             controller.SetScaleCurve(cometTailModule.curve);
 
-            var dustTail = GameObject.Instantiate(_dustPrefab, rootObj.transform).Rename("DustTail");
+            var dustTail = Object.Instantiate(_dustPrefab, rootObj.transform).Rename("DustTail");
             dustTail.transform.localPosition = Vector3.zero;
             dustTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
             dustTail.SetActive(true);
             controller.dustTail = dustTail;
 
-            var gasTail = GameObject.Instantiate(_gasPrefab, rootObj.transform).Rename("GasTail");
+            var gasTail = Object.Instantiate(_gasPrefab, rootObj.transform).Rename("GasTail");
             gasTail.transform.localPosition = Vector3.zero;
             gasTail.transform.localRotation = Quaternion.Euler(90, 90, 0);
             gasTail.SetActive(true);

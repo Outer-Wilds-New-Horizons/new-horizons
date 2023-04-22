@@ -148,12 +148,12 @@ namespace NewHorizons.Builder.Props.TranslatorText
                 this.outerWidth = profile.outerWidth;
                 this.uvScale = profile.uvScale;
 
-                this.uvOffset = UnityEngine.Random.value;
+                this.uvOffset = Random.value;
             }
 
             public override void Randomize() {
                 base.Randomize();
-                uvOffset = UnityEngine.Random.value; // this way even two spirals that are exactly the same shape will look different (this changes the starting point of the handwriting texture)
+                uvOffset = Random.value; // this way even two spirals that are exactly the same shape will look different (this changes the starting point of the handwriting texture)
             }
 
             internal void updateMesh() {
@@ -288,11 +288,11 @@ namespace NewHorizons.Builder.Props.TranslatorText
             }
 
             public virtual void Randomize() {
-                this.a = UnityEngine.Random.Range(profile.a.x, profile.a.y);
-                this.b = UnityEngine.Random.Range(profile.b.x, profile.b.y);
-                this.endS = UnityEngine.Random.Range(profile.endS.x, profile.endS.y);
-                this.startS = UnityEngine.Random.Range(profile.startS.x, profile.startS.y);
-                this.scale = UnityEngine.Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
+                this.a = Random.Range(profile.a.x, profile.a.y);
+                this.b = Random.Range(profile.b.x, profile.b.y);
+                this.endS = Random.Range(profile.endS.x, profile.endS.y);
+                this.startS = Random.Range(profile.startS.x, profile.startS.y);
+                this.scale = Random.Range(profile.skeletonScale.x, profile.skeletonScale.y);
             }
 
             internal virtual void updateChild(MathematicalSpiral child) {

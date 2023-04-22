@@ -80,13 +80,13 @@ namespace NewHorizons.Utility.DebugTools
             var normText = Vector3ToString(data.norm);
             var rotText = Vector3ToString(data.rot.eulerAngles);
 
-            if (_surfaceSphere != null) GameObject.Destroy(_surfaceSphere);
-            if (_normalSphere1 != null) GameObject.Destroy(_normalSphere1);
-            if (_normalSphere2 != null) GameObject.Destroy(_normalSphere2);
-            if (_planeUpRightSphere != null) GameObject.Destroy(_planeUpRightSphere);
-            if (_planeUpLeftSphere != null) GameObject.Destroy(_planeUpLeftSphere);
-            if (_planeDownLeftSphere != null) GameObject.Destroy(_planeDownLeftSphere);
-            if (_planeDownRightSphere != null) GameObject.Destroy(_planeDownRightSphere);
+            if (_surfaceSphere != null) Destroy(_surfaceSphere);
+            if (_normalSphere1 != null) Destroy(_normalSphere1);
+            if (_normalSphere2 != null) Destroy(_normalSphere2);
+            if (_planeUpRightSphere != null) Destroy(_planeUpRightSphere);
+            if (_planeUpLeftSphere != null) Destroy(_planeUpLeftSphere);
+            if (_planeDownLeftSphere != null) Destroy(_planeDownLeftSphere);
+            if (_planeDownRightSphere != null) Destroy(_planeDownRightSphere);
 
             _surfaceSphere = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.1f, Color.green);
             _normalSphere1 = AddDebugShape.AddSphere(data.hitBodyGameObject, 0.01f, Color.red);

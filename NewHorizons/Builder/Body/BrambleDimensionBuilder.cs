@@ -134,11 +134,11 @@ namespace NewHorizons.Builder.Body
             if (config.vinePrefab == VinePrefabType.None)
             {
                 // Replace batched collision with our own if removing vines
-                GameObject.Destroy(geometry.FindChild("BatchedGroup"));
+                Object.Destroy(geometry.FindChild("BatchedGroup"));
                 var geoOtherComponentsGroup = geometry.FindChild("OtherComponentsGroup");
                 var dimensionWalls = geoOtherComponentsGroup.FindChild("Terrain_DB_BrambleSphere_Outer_v2");
                 dimensionWalls.transform.parent = geometry.transform;
-                GameObject.Destroy(geoOtherComponentsGroup);
+                Object.Destroy(geoOtherComponentsGroup);
 
                 var newCollider = _wallCollision.InstantiateInactive();
                 newCollider.transform.parent = dimensionWalls.transform;

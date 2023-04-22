@@ -68,15 +68,15 @@ namespace NewHorizons.Builder.Body
             scaleRoot.transform.localPosition = Vector3.zero;
             scaleRoot.transform.localScale = new Vector3(1, 1, 1);
 
-            var proxyGO = GameObject.Instantiate(_proxySandFunnel, scaleRoot.transform);
+            var proxyGO = Object.Instantiate(_proxySandFunnel, scaleRoot.transform);
             proxyGO.name = "Proxy_Funnel";
             proxyGO.SetActive(true);
 
-            var geoGO = GameObject.Instantiate(_geoSandFunnel, scaleRoot.transform);
+            var geoGO = Object.Instantiate(_geoSandFunnel, scaleRoot.transform);
             geoGO.name = "Geo_Funnel";
             geoGO.SetActive(true);
 
-            var volumesGO = GameObject.Instantiate(_volumesSandFunnel, scaleRoot.transform);
+            var volumesGO = Object.Instantiate(_volumesSandFunnel, scaleRoot.transform);
             volumesGO.name = "Volumes_Funnel";
             volumesGO.SetActive(true);
             var sfv = volumesGO.GetComponentInChildren<SimpleFluidVolume>();
@@ -90,7 +90,7 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Water:
                     sfv._fluidType = FluidVolume.Type.WATER;
 
-                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
                     var waterMaterials = _waterMaterials;
                     var materials = new Material[waterMaterials.Length];
@@ -138,7 +138,7 @@ namespace NewHorizons.Builder.Body
                 case FunnelType.Star:
                     sfv._fluidType = FluidVolume.Type.PLASMA;
 
-                    GameObject.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
+                    Object.Destroy(geoGO.transform.Find("Effects_HT_SandColumn/SandColumn_Interior").gameObject);
 
                     var lavaMaterial = new Material(_lavaMaterial);
                     lavaMaterial.mainTextureOffset = new Vector2(0.1f, 0.2f);

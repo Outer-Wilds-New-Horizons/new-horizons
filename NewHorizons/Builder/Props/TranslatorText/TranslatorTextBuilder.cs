@@ -176,7 +176,7 @@ namespace NewHorizons.Builder.Props.TranslatorText
                         var scrollItem = customScroll.GetComponent<ScrollItem>();
 
                         // Idk why this thing is always around
-                        GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+                        UnityEngine.Object.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
 
                         // This variable is the bane of my existence i dont get it
                         scrollItem._nomaiWallText = nomaiWallText;

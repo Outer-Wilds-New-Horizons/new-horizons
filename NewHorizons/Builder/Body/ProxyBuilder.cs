@@ -54,7 +54,7 @@ namespace NewHorizons.Builder.Body
             var success = SharedMake(planetGO, rootProxy, proxyController, body);
             if (!success)
             {
-                GameObject.Destroy(proxy);
+                UnityEngine.Object.Destroy(proxy);
                 return;
             }
 
@@ -215,8 +215,8 @@ namespace NewHorizons.Builder.Body
                 }
 
                 // Remove all collisions if there are any
-                foreach (var col in proxy.GetComponentsInChildren<Collider>()) GameObject.Destroy(col);
-                foreach (var col in proxy.GetComponentsInChildren<OWCollider>()) GameObject.Destroy(col);
+                foreach (var col in proxy.GetComponentsInChildren<Collider>()) UnityEngine.Object.Destroy(col);
+                foreach (var col in proxy.GetComponentsInChildren<OWCollider>()) UnityEngine.Object.Destroy(col);
 
                 foreach (var renderer in proxy.GetComponentsInChildren<Renderer>())
                 {
@@ -267,7 +267,7 @@ namespace NewHorizons.Builder.Body
             sphereGO.transform.localScale = Vector3.one * size;
             sphereGO.transform.position = rootObj.transform.position;
 
-            GameObject.Destroy(sphereGO.GetComponent<Collider>());
+            UnityEngine.Object.Destroy(sphereGO.GetComponent<Collider>());
 
             sphereGO.GetComponent<MeshRenderer>().material.color = color;
 

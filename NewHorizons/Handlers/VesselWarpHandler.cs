@@ -1,12 +1,11 @@
-using UnityEngine;
-using NewHorizons.Utility;
-
-using static NewHorizons.Main;
 using NewHorizons.Builder.Props;
-using NewHorizons.Utility.OWML;
-using NewHorizons.Utility.OuterWilds;
-using NewHorizons.Components.Vessel;
 using NewHorizons.Components.EyeOfTheUniverse;
+using NewHorizons.Components.Vessel;
+using NewHorizons.Utility;
+using NewHorizons.Utility.OuterWilds;
+using NewHorizons.Utility.OWML;
+using UnityEngine;
+using static NewHorizons.Main;
 
 namespace NewHorizons.Handlers
 {
@@ -21,7 +20,7 @@ namespace NewHorizons.Handlers
 
         public static void Initialize()
         {
-            VesselPrefab = Main.NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
+            VesselPrefab = NHPrivateAssetBundle.LoadAsset<GameObject>("Vessel_Body");
         }
 
         public static bool IsVesselPresentAndActive()
@@ -62,7 +61,7 @@ namespace NewHorizons.Handlers
 
         public static void TeleportToVessel()
         {
-            var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
+            var playerSpawner = Object.FindObjectOfType<PlayerSpawner>();
             playerSpawner.DebugWarp(_vesselSpawnPoint);
             Builder.General.SpawnPointBuilder.SuitUp();
 
@@ -110,34 +109,34 @@ namespace NewHorizons.Handlers
             GameObject warpBH = WarpPlatform.transform.Find("BlackHole").gameObject;
             GameObject warpWH = WarpPlatform.transform.Find("WhiteHole").gameObject;
 
-            GameObject sourceBH = GameObject.Instantiate(warpBH, vesselWarpController._sourceWarpPlatform.transform, false);
+            GameObject sourceBH = Object.Instantiate(warpBH, vesselWarpController._sourceWarpPlatform.transform, false);
             sourceBH.name = "BlackHole";
             vesselWarpController._sourceWarpPlatform._blackHole = sourceBH.GetComponentInChildren<SingularityController>();
             vesselWarpController._sourceWarpPlatform._blackHole.OnCollapse += vesselWarpController._sourceWarpPlatform.OnBlackHoleCollapse;
 
-            GameObject sourceWH = GameObject.Instantiate(warpWH, vesselWarpController._sourceWarpPlatform.transform, false);
+            GameObject sourceWH = Object.Instantiate(warpWH, vesselWarpController._sourceWarpPlatform.transform, false);
             sourceWH.name = "WhiteHole";
             vesselWarpController._sourceWarpPlatform._whiteHole = sourceWH.GetComponentInChildren<SingularityController>();
             vesselWarpController._sourceWarpPlatform._whiteHole.OnCollapse += vesselWarpController._sourceWarpPlatform.OnWhiteHoleCollapse;
 
-            GameObject targetBH = GameObject.Instantiate(warpBH, vesselWarpController._targetWarpPlatform.transform, false);
+            GameObject targetBH = Object.Instantiate(warpBH, vesselWarpController._targetWarpPlatform.transform, false);
             targetBH.name = "BlackHole";
             vesselWarpController._targetWarpPlatform._blackHole = targetBH.GetComponentInChildren<SingularityController>();
             vesselWarpController._targetWarpPlatform._blackHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnBlackHoleCollapse;
 
-            GameObject targetWH = GameObject.Instantiate(warpWH, vesselWarpController._targetWarpPlatform.transform, false);
+            GameObject targetWH = Object.Instantiate(warpWH, vesselWarpController._targetWarpPlatform.transform, false);
             targetWH.name = "WhiteHole";
             vesselWarpController._targetWarpPlatform._whiteHole = targetWH.GetComponentInChildren<SingularityController>();
             vesselWarpController._targetWarpPlatform._whiteHole.OnCollapse += vesselWarpController._targetWarpPlatform.OnWhiteHoleCollapse;
 
             GameObject blackHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/BlackHole");
-            GameObject newBlackHole = GameObject.Instantiate(blackHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newBlackHole = Object.Instantiate(blackHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
             newBlackHole.name = "BlackHole";
             vesselWarpController._blackHole = newBlackHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._blackHoleOneShot = vesselWarpController._blackHole.transform.parent.Find("BlackHoleAudio_OneShot").GetComponent<OWAudioSource>();
 
             GameObject whiteHole = SearchUtilities.Find("DB_VesselDimension_Body/Sector_VesselDimension/Sector_VesselBridge/Interactibles_VesselBridge/WhiteHole");
-            GameObject newWhiteHole = GameObject.Instantiate(whiteHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
+            GameObject newWhiteHole = Object.Instantiate(whiteHole, Vector3.zero, Quaternion.identity, singularityRoot.transform);
             newWhiteHole.name = "WhiteHole";
             vesselWarpController._whiteHole = newWhiteHole.GetComponentInChildren<SingularityController>();
             vesselWarpController._whiteHoleOneShot = vesselWarpController._whiteHole.transform.parent.Find("WhiteHoleAudio_OneShot").GetComponent<OWAudioSource>();
@@ -155,14 +154,14 @@ namespace NewHorizons.Handlers
             else
             {
                 vesselAO._owRigidbody = null;
-                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<KinematicRigidbody>());
-                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<CenterOfTheUniverseOffsetApplier>());
-                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<OWRigidbody>());
-                UnityEngine.Object.DestroyImmediate(vesselObject.GetComponent<Rigidbody>());
+                Object.DestroyImmediate(vesselObject.GetComponent<KinematicRigidbody>());
+                Object.DestroyImmediate(vesselObject.GetComponent<CenterOfTheUniverseOffsetApplier>());
+                Object.DestroyImmediate(vesselObject.GetComponent<OWRigidbody>());
+                Object.DestroyImmediate(vesselObject.GetComponent<Rigidbody>());
                 var rfVolume = vesselObject.transform.Find("RFVolume");
                 if (rfVolume != null)
                 {
-                    GameObject.Destroy(rfVolume.gameObject);
+                    Object.Destroy(rfVolume.gameObject);
                 }
             }
 
@@ -182,7 +181,7 @@ namespace NewHorizons.Handlers
                 var zeroGVolume = vesselObject.transform.Find("Sector_VesselBridge/Volumes_VesselBridge/ZeroGVolume");
                 if (zeroGVolume != null)
                 {
-                    GameObject.Destroy(zeroGVolume.gameObject);
+                    Object.Destroy(zeroGVolume.gameObject);
                 }
             }
 
@@ -233,7 +232,7 @@ namespace NewHorizons.Handlers
                 {
                     if (core.GetWarpCoreType().Equals(WarpCoreType.Vessel))
                     {
-                        var newCore = GameObject.Instantiate(core, AstroObjectLocator.GetAstroObject("Vessel Dimension")?.transform ?? Locator.GetPlayerBody()?.transform);
+                        var newCore = Object.Instantiate(core, AstroObjectLocator.GetAstroObject("Vessel Dimension")?.transform ?? Locator.GetPlayerBody()?.transform);
                         newCore._visible = true;
                         foreach (OWRenderer render in newCore._renderers)
                         {
