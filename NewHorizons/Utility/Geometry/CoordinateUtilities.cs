@@ -10,9 +10,9 @@ namespace NewHorizons.Utility.Geometry
             float x, y, z;
             if (useShaderCoords)
             {
-                // shader does some jank stuff to match standard shader
-                x = -v.z;
-                y = v.x;
+                // Y is DOWN is the shader
+                x = v.x;
+                y = v.z;
                 z = -v.y;
             }
             else

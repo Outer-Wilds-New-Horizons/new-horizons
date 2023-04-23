@@ -1,6 +1,5 @@
 using NewHorizons.Builder.Body.Geometry;
 using NewHorizons.External.Modules;
-using NewHorizons.Utility;
 using NewHorizons.Utility.Files;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
@@ -60,7 +59,7 @@ namespace NewHorizons.Builder.Body
 
             var cubeSphere = new GameObject("CubeSphere");
             cubeSphere.SetActive(false);
-            cubeSphere.transform.parent = sector?.transform ?? planetGO.transform;
+            cubeSphere.transform.SetParent(sector?.transform ?? planetGO.transform, false);
 
             if (PlanetShader == null) PlanetShader = Main.NHAssetBundle.LoadAsset<Shader>("Assets/Shaders/SphereTextureWrapperTriplanar.shader");
 
@@ -99,10 +98,6 @@ namespace NewHorizons.Builder.Body
             var superGroup = planetGO.GetComponent<ProxyShadowCasterSuperGroup>();
             if (superGroup != null) cubeSphere.AddComponent<ProxyShadowCaster>()._superGroup = superGroup;
 
-            // rotate for backwards compat :P
-            cubeSphere.transform.rotation = planetGO.transform.TransformRotation(Quaternion.Euler(0, -90, 0));
-            cubeSphere.transform.position = planetGO.transform.position;
-
             cubeSphere.SetActive(true);
 
             // Now that we've made the mesh we can delete the heightmap texture
@@ -113,6 +108,7 @@ namespace NewHorizons.Builder.Body
             MeshRenderer MakeLODTerrain(int resolution, bool useTriplanar)
             {
                 var LODCubeSphere = new GameObject("LODCubeSphere");
+                LODCubeSphere.transform.SetParent(cubeSphere.transform, false);
 
                 LODCubeSphere.AddComponent<MeshFilter>().mesh = CubeSphere.Build(resolution, heightMap, module.minHeight, module.maxHeight, stretch);
 
@@ -140,9 +136,6 @@ namespace NewHorizons.Builder.Body
                     blueTile.TryApplyTile(material);
                     alphaTile.TryApplyTile(material);
                 }
-
-                LODCubeSphere.transform.parent = cubeSphere.transform;
-                LODCubeSphere.transform.localPosition = Vector3.zero;
 
                 return cubeSphereMR;
             }

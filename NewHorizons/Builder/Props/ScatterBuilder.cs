@@ -118,9 +118,6 @@ namespace NewHorizons.Builder.Props
                             i--;
                             continue;
                         }
-
-                        // rotate in the same way heightmaps are rotated
-                        point = Quaternion.Euler(0, -90, 0) * point;
                     }
 
                     var prop = scatterPrefab.InstantiateInactive();
