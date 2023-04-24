@@ -30,12 +30,13 @@ namespace NewHorizons.Builder.Body
 
             try
             {
-                textureMap = Load(module.textureMap, "textureMap", false) ?? Texture2D.whiteTexture;
-                smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false);
-                normalMap = Load(module.normalMap, "normalMap", true);
-                emissionMap = Load(module.emissionMap, "emissionMap", false);
+                // tiles sample from this so we must wrap
+                textureMap = Load(module.textureMap, "textureMap", true, false) ?? Texture2D.whiteTexture;
+                smoothnessMap = Load(module.smoothnessMap, "smoothnessMap", false, false);
+                normalMap = Load(module.normalMap, "normalMap", false, true);
+                emissionMap = Load(module.emissionMap, "emissionMap", false, false);
 
-                tileBlendMap = useLOD ? Load(module.tileBlendMap, "tileBlendMap", false) : null;
+                tileBlendMap = useLOD ? Load(module.tileBlendMap, "tileBlendMap", false, false) : null;
 
                 baseTile = new Tile(useLOD ? module.baseTile : null, "BASE_TILE", "_BaseTile");
                 redTile = new Tile(useLOD ? module.redTile : null, "RED_TILE", "_RedTile");
@@ -46,7 +47,7 @@ namespace NewHorizons.Builder.Body
                 // Only delete heightmap if it hasn't been loaded yet
                 deleteHeightmapFlag = !string.IsNullOrEmpty(module.heightMap) && !ImageUtilities.IsTextureLoaded(mod, module.heightMap);
 
-                heightMap = Load(module.heightMap, "heightMap", false) ?? Texture2D.whiteTexture;
+                heightMap = Load(module.heightMap, "heightMap", false, false) ?? Texture2D.whiteTexture;
             }
             catch (Exception e)
             {
@@ -141,7 +142,7 @@ namespace NewHorizons.Builder.Body
             }
         }
 
-        private static Texture2D Load(string path, string name, bool linear)
+        private static Texture2D Load(string path, string name, bool wrap, bool linear)
         {
             if (string.IsNullOrEmpty(path)) return null;
 
@@ -151,7 +152,7 @@ namespace NewHorizons.Builder.Body
                 return null;
             }
 
-            return ImageUtilities.GetTexture(_currentMod, path, wrap: true, linear: linear);
+            return ImageUtilities.GetTexture(_currentMod, path, wrap: wrap, linear: linear);
         }
 
         private readonly struct Tile
@@ -169,9 +170,9 @@ namespace NewHorizons.Builder.Body
 
                 if (_info != null)
                 {
-                    _texture = Load(info.textureTile, $"{_prefix}TextureTile", false);
-                    _smoothness = Load(info.smoothnessTile, $"{_prefix}SmoothnessTile", false);
-                    _normal = Load(info.normalTile, $"{_prefix}NormalTile", true);
+                    _texture = Load(info.textureTile, $"{_prefix}TextureTile", true, false);
+                    _smoothness = Load(info.smoothnessTile, $"{_prefix}SmoothnessTile", true, false);
+                    _normal = Load(info.normalTile, $"{_prefix}NormalTile", true, true);
                 }
                 else
                 {
