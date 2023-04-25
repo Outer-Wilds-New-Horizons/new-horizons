@@ -14,13 +14,13 @@ namespace NewHorizons.Utility.Files
     public static class ImageUtilities
     {
         private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
-        private static readonly List<Texture> _generatedTextures = new();
+        private static readonly Dictionary<string, Texture> _generatedTextures = new();
 
         /// <summary>
         /// Track textures generated outside of this file so they can be cleaned up on scene unload
         /// </summary>
         /// <param name="texture"></param>
-        public static void TrackGeneratedTexture(Texture texture) => _generatedTextures.Add(texture);
+        public static void TrackGeneratedTexture(Texture texture) => _generatedTextures.Add(texture.name, texture);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {

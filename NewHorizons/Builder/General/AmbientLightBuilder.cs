@@ -36,7 +36,7 @@ namespace NewHorizons.Builder.General
                 var tint = config.tint.ToColor();
                 var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
                 var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
-                cubemap.name = baseCubemap.name + "Tinted";
+                cubemap.name = $"{baseCubemap.name} > tint {tint}";
                 cubemap.wrapMode = baseCubemap.wrapMode;
                 for (int i = 0; i < 6; i++)
                 {
