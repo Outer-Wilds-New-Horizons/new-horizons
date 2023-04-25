@@ -18,18 +18,18 @@ namespace NewHorizons.Builder.General
 
             var light = lightGO.GetComponent<Light>();
             /*
-            * R is inner radius
-            * G is shell (1 for shell, 0 for no shell)
-            * B is always 1
-            * A is falloff exponent
-            */
+             * R is inner radius
+             * G is shell (1 for shell, 0 for no shell)
+             * B is always 1
+             * A is falloff exponent
+             */
 
             light.intensity = config.intensity;
             light.range = config.outerRadius ?? surfaceSize * 2;
             var innerRadius = config.innerRadius ?? surfaceSize;
             innerRadius = Mathf.Sqrt(innerRadius / light.range);
             var shell = config.isShell ? 1f : 0f;
-            light.color = new Color(innerRadius, shell, 1f, 0.0225f /*from timber hearth*/);
+            light.color = new Color(innerRadius, shell, 1f, 0.0225f/*from timber hearth*/);
 
             if (config.tint != null)
             {
