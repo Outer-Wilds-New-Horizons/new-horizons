@@ -28,7 +28,8 @@ namespace NewHorizons.Utility.Files
             return _loadedTextures.ContainsKey(path);
         }
 
-        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false)
+        // bug: cache only considers file path, not wrap/mips/linear. oh well
+        public static Texture2D GetTexture(IModBehaviour mod, string filename, bool useMipmaps = true, bool wrap = false, bool linear = false)
         {
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
@@ -42,7 +43,7 @@ namespace NewHorizons.Utility.Files
             try
             {
                 var data = File.ReadAllBytes(path);
-                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps);
+                var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
                 texture.name = Path.GetFileNameWithoutExtension(path);
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);

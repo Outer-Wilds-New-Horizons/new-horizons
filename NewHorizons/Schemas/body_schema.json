@@ -841,10 +841,6 @@
           "description": "The scale of the terrain.",
           "$ref": "#/definitions/MVector3"
         },
-        "textureMap": {
-          "type": "string",
-          "description": "Relative filepath to the texture used for the terrain."
-        },
         "resolution": {
           "type": "integer",
           "description": "Resolution of the heightmap.\nHigher values means more detail but also more memory/cpu/gpu usage.\nThis value will be 1:1 with the heightmap texture width, but only at the equator.",
@@ -853,6 +849,40 @@
           "maximum": 2000.0,
           "minimum": 4.0
         },
+        "textureMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain colors."
+        },
+        "smoothnessMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the terrain's smoothness and metallic, which are controlled by the texture's alpha and red channels respectively. Optional.\nTypically black with variable transparency, when metallic isn't wanted."
+        },
+        "smoothness": {
+          "type": "number",
+          "description": "How \"glossy\" the surface is, where 0 is diffuse, and 1 is like a mirror.\nMultiplies with the alpha of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "metallic": {
+          "type": "number",
+          "description": "How metallic the surface is, from 0 to 1.\nMultiplies with the red of the smoothness map if using one.",
+          "format": "float",
+          "default": 0.0,
+          "maximum": 1.0,
+          "minimum": 0.0
+        },
+        "normalMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for the normal (aka bump) map. Optional."
+        },
+        "normalStrength": {
+          "type": "number",
+          "description": "Strength of the normal map. Usually 0-1, but can go above, or negative to invert the map.",
+          "format": "float",
+          "default": 1.0
+        },
         "emissionMap": {
           "type": "string",
           "description": "Relative filepath to the texture used for emission. Optional."
@@ -860,6 +890,61 @@
         "emissionColor": {
           "description": "Color multiplier of the emission texture. Defaults to white.",
           "$ref": "#/definitions/MColor"
+        },
+        "tileBlendMap": {
+          "type": "string",
+          "description": "Relative filepath to the texture used for blending up to 5 tiles together, using the red, green, blue, and alpha channels, plus a lack of all 4 for a fifth \"base\" tile.\nOptional, even if using tiles (defaults to white, therefore either base or all other channels will be active)."
+        },
+        "baseTile": {
+          "description": "An optional set of textures that can tile and combine with the main maps. This tile will appear when all other tile channels are absent in the blend map, or when no other tiles are defined.\nNote that tiles will not be active from afar, so it is recommended to make the main textures control the general appearance, and make the tiles handle up close details.",
+          "$ref": "#/definitions/HeightMapTileInfo"
+        },
+        "redTile": {
+          "description": "An optional set of textures that can tile and combine with the main maps. The distribution of this tile is controlled by red channel of the blend map.\nNote that tiles will not be active from afar, so it is recommended to make the main maps control the general appearance more than the tiles.",
+          "$ref": "#/definitions/HeightMapTileInfo"
+        },
+        "greenTile": {
+          "description": "An optional set of textures that can tile and combine with the main maps. The distribution of this tile is controlled by green channel of the blend map.\nNote that tiles will not be active from afar, so it is recommended to make the main maps control the general appearance more than the tiles.",
+          "$ref": "#/definitions/HeightMapTileInfo"
+        },
+        "blueTile": {
+          "description": "An optional set of textures that can tile and combine with the main maps. The distribution of this tile is controlled by blue channel of the blend map.\nNote that tiles will not be active from afar, so it is recommended to make the main maps control the general appearance more than the tiles.",
+          "$ref": "#/definitions/HeightMapTileInfo"
+        },
+        "alphaTile": {
+          "description": "An optional set of textures that can tile and combine with the main maps. The distribution of this tile is controlled by alpha channel of the blend map.\nNote that tiles will not be active from afar, so it is recommended to make the main maps control the general appearance more than the tiles.",
+          "$ref": "#/definitions/HeightMapTileInfo"
+        }
+      }
+    },
+    "HeightMapTileInfo": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "size": {
+          "type": "number",
+          "description": "The size, in meters, of each tile.",
+          "format": "float",
+          "default": 1.0,
+          "minimum": 0.0
+        },
+        "textureTile": {
+          "type": "string",
+          "description": "Relative filepath to a color texture. Optional.\nNote that this tile texture will be multiplied with the main texture map. This means that white will multiply by 2, black by 0, and grey by 1.\nThus, a texture that stays near (128, 128, 128) will blend nicely with the main texture map below.\nColors other than greyscale can be used, but they might multiply strangely."
+        },
+        "smoothnessTile": {
+          "type": "string",
+          "description": "Relative filepath to a texture for smoothness and metallic, which are controlled by the texture's alpha and red channels respectively. Optional.\nNote that this tile texture will be multiplied with the main smoothness map and/or values. This means that black/red will multiply by 2, transparent by 0, and half transparent by 1.\nThus, a texture that stays near half alpha/red will blend nicely with the main smoothness map below."
+        },
+        "normalTile": {
+          "type": "string",
+          "description": "Relative filepath to a normal (aka bump) texture. Optional.\nBlends additively with the main normal map."
+        },
+        "normalStrength": {
+          "type": "number",
+          "description": "Strength of the tile normal. Usually 0-1, but can go above, or negative to invert the map.",
+          "format": "float",
+          "default": 1.0
         }
       }
     },
