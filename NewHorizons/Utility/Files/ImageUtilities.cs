@@ -84,13 +84,6 @@ namespace NewHorizons.Utility.Files
                 UnityEngine.Object.Destroy(texture);
             }
             _textureCache.Clear();
-
-            foreach (var texture in _textureCache.Values)
-            {
-                if (texture == null) continue;
-                UnityEngine.Object.Destroy(texture);
-            }
-            _textureCache.Clear();
         }
 
         public static Texture2D Invert(Texture2D texture)
