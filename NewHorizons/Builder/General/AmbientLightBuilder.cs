@@ -34,9 +34,12 @@ namespace NewHorizons.Builder.General
             if (config.tint != null)
             {
                 var tint = config.tint.ToColor();
+                var key = $"AmbientLight_QM > tint {tint}";
+                if (ImageUtilities.CheckGeneratedTexture(key, out var existingTexture)) light.cookie = existingTexture;
+                
                 var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
                 var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
-                cubemap.name = $"{baseCubemap.name} > tint {tint}";
+                cubemap.name = key;
                 cubemap.wrapMode = baseCubemap.wrapMode;
                 for (int i = 0; i < 6; i++)
                 {
@@ -51,7 +54,7 @@ namespace NewHorizons.Builder.General
                     cubemap.SetPixels(newColors, cubemapFace);
                 }
                 cubemap.Apply();
-                ImageUtilities.TrackGeneratedTexture(cubemap);
+                ImageUtilities.TrackGeneratedTexture(key, cubemap);
                 
                 light.cookie = cubemap;
             }

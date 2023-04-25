@@ -1,3 +1,4 @@
+using HarmonyLib;
 using NewHorizons.Utility.OWML;
 using OWML.Common;
 using System;
@@ -13,14 +14,13 @@ namespace NewHorizons.Utility.Files
 {
     public static class ImageUtilities
     {
+        // key is the path
         private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
+        // key is path + applied effects
         private static readonly Dictionary<string, Texture> _generatedTextures = new();
 
-        /// <summary>
-        /// Track textures generated outside of this file so they can be cleaned up on scene unload
-        /// </summary>
-        /// <param name="texture"></param>
-        public static void TrackGeneratedTexture(Texture texture) => _generatedTextures.Add(texture.name, texture);
+        public static bool CheckGeneratedTexture(string key, out Texture existingTexture) => _generatedTextures.TryGetValue(key, out existingTexture);
+        public static void TrackGeneratedTexture(string key, Texture texture) => _generatedTextures.Add(key, texture);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
@@ -44,7 +44,7 @@ namespace NewHorizons.Utility.Files
             {
                 var data = File.ReadAllBytes(path);
                 var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
-                texture.name = Path.GetFileNameWithoutExtension(path);
+                texture.name = path;
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
                 _loadedTextures.Add(path, texture);
@@ -85,7 +85,7 @@ namespace NewHorizons.Utility.Files
             }
             _loadedTextures.Clear();
 
-            foreach (var texture in _generatedTextures)
+            foreach (var texture in _generatedTextures.Values)
             {
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
@@ -95,6 +95,9 @@ namespace NewHorizons.Utility.Files
 
         public static Texture2D Invert(Texture2D texture)
         {
+            var key = $"{texture.name} > invert";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = texture.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -118,23 +121,26 @@ namespace NewHorizons.Utility.Files
             }
 
             var newTexture = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
-            newTexture.name = texture.name + "Inverted";
+            newTexture.name = key;
             newTexture.SetPixels(pixels);
             newTexture.Apply();
 
             newTexture.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(newTexture);
+            _generatedTextures.Add(key, newTexture);
 
             return newTexture;
         }
 
         public static Texture2D MakeReelTexture(Texture2D[] textures)
         {
+            var key = $"SlideReelAtlas of {textures.Join(x => x.name)}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var size = 256;
 
             var texture = new Texture2D(size * 4, size * 4, TextureFormat.ARGB32, false);
-            texture.name = "SlideReelAtlas";
+            texture.name = key;
 
             var fillPixels = new Color[size * size * 4 * 4];
             for (int xIndex = 0; xIndex < 4; xIndex++)
@@ -176,15 +182,18 @@ namespace NewHorizons.Utility.Files
             texture.SetPixels(fillPixels);
             texture.Apply();
 
-            _generatedTextures.Add(texture);
+            _generatedTextures.Add(key, texture);
 
             return texture;
         }
 
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
+            var key = $"{texture.name} > outline {color} {thickness}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var outline = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
-            outline.name = texture.name + "Outline";
+            outline.name = key;
             var outlinePixels = new Color[texture.width * texture.height];
             var pixels = texture.GetPixels();
 
@@ -207,7 +216,7 @@ namespace NewHorizons.Utility.Files
 
             outline.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(outline);
+            _generatedTextures.Add(key, outline);
 
             return outline;
         }
@@ -232,6 +241,9 @@ namespace NewHorizons.Utility.Files
 
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
+            var key = $"{image.name} > tint {tint}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             if (image == null)
             {
                 NHLogger.LogError($"Tried to tint null image");
@@ -247,19 +259,22 @@ namespace NewHorizons.Utility.Files
             }
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
-            newImage.name = image.name + "Tinted";
+            newImage.name = key;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(newImage);
+            _generatedTextures.Add(key, newImage);
 
             return newImage;
         }
 
         public static Texture2D LerpGreyscaleImage(Texture2D image, Color lightTint, Color darkTint)
         {
+            var key = $"{image.name} > lerp greyscale {lightTint} {darkTint}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var pixels = image.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
             {
@@ -269,21 +284,24 @@ namespace NewHorizons.Utility.Files
             }
 
             var newImage = new Texture2D(image.width, image.height, image.format, image.mipmapCount != 1);
-            newImage.name = image.name + "LerpedGrayscale";
+            newImage.name = key;
             newImage.SetPixels(pixels);
             newImage.Apply();
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(newImage);
+            _generatedTextures.Add(key, newImage);
 
             return newImage;
         }
 
         public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
+            var key = $"Clear {width} {height} {wrap}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-            tex.name = "Clear";
+            tex.name = key;
             var fillColor = Color.clear;
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < fillPixels.Length; i++)
@@ -295,15 +313,18 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
-            _generatedTextures.Add(tex);
+            _generatedTextures.Add(key, tex);
 
             return tex;
         }
 
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
+            var key = $"{src.name} > canvas scaled {width} {height}";
+            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+
             var tex = new Texture2D(width, height, src.format, src.mipmapCount != 1);
-            tex.name = src.name + "CanvasScaled";
+            tex.name = key;
             var fillPixels = new Color[tex.width * tex.height];
             for (int i = 0; i < tex.width; i++)
             {
@@ -323,7 +344,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = src.wrapMode;
 
-            _generatedTextures.Add(tex);
+            _generatedTextures.Add(key, tex);
 
             return tex;
         }
@@ -434,10 +455,9 @@ namespace NewHorizons.Utility.Files
                 }
                 else
                 {
-                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false)
-                    {
-                        wrapMode = TextureWrapMode.Clamp
-                    };
+                    var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
+                    texture.name = url;
+                    texture.wrapMode = TextureWrapMode.Clamp;
 
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
                     texture.LoadImage(handler.data);
