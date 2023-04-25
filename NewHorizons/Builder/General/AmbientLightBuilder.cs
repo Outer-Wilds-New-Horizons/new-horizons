@@ -18,45 +18,50 @@ namespace NewHorizons.Builder.General
 
             var light = lightGO.GetComponent<Light>();
             /*
-             * R is inner radius
-             * G is shell (1 for shell, 0 for no shell)
-             * B is always 1
-             * A is falloff exponent
-             */
+            * R is inner radius
+            * G is shell (1 for shell, 0 for no shell)
+            * B is always 1
+            * A is falloff exponent
+            */
 
             light.intensity = config.intensity;
             light.range = config.outerRadius ?? surfaceSize * 2;
             var innerRadius = config.innerRadius ?? surfaceSize;
             innerRadius = Mathf.Sqrt(innerRadius / light.range);
             var shell = config.isShell ? 1f : 0f;
-            light.color = new Color(innerRadius, shell, 1f, 0.0225f/*from timber hearth*/);
+            light.color = new Color(innerRadius, shell, 1f, 0.0225f /*from timber hearth*/);
 
             if (config.tint != null)
             {
                 var tint = config.tint.ToColor();
                 var key = $"AmbientLight_QM > tint {tint}";
-                if (ImageUtilities.CheckGeneratedTexture(key, out var existingTexture)) light.cookie = existingTexture;
-                
-                var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
-                var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
-                cubemap.name = key;
-                cubemap.wrapMode = baseCubemap.wrapMode;
-                for (int i = 0; i < 6; i++)
+                if (ImageUtilities.CheckGeneratedTexture(key, out var existingTexture))
                 {
-                    var cubemapFace = (CubemapFace)i;
-                    var sourceColors = baseCubemap.GetPixels(cubemapFace);
-                    var newColors = new Color[sourceColors.Length];
-                    for (int j = 0; j < sourceColors.Length; j++)
-                    {
-                        var grey = sourceColors[j].grayscale * 2; // looks nicer with multiplier
-                        newColors[j] = new Color(grey, grey, grey) * tint;
-                    }
-                    cubemap.SetPixels(newColors, cubemapFace);
+                    light.cookie = existingTexture;
                 }
-                cubemap.Apply();
-                ImageUtilities.TrackGeneratedTexture(key, cubemap);
-                
-                light.cookie = cubemap;
+                else
+                {
+                    var baseCubemap = Main.NHPrivateAssetBundle.LoadAsset<Cubemap>("AmbientLight_QM");
+                    var cubemap = new Cubemap(baseCubemap.width, baseCubemap.format, baseCubemap.mipmapCount != 1);
+                    cubemap.name = key;
+                    cubemap.wrapMode = baseCubemap.wrapMode;
+                    for (int i = 0; i < 6; i++)
+                    {
+                        var cubemapFace = (CubemapFace)i;
+                        var sourceColors = baseCubemap.GetPixels(cubemapFace);
+                        var newColors = new Color[sourceColors.Length];
+                        for (int j = 0; j < sourceColors.Length; j++)
+                        {
+                            var grey = sourceColors[j].grayscale * 2; // looks nicer with multiplier
+                            newColors[j] = new Color(grey, grey, grey) * tint;
+                        }
+                        cubemap.SetPixels(newColors, cubemapFace);
+                    }
+                    cubemap.Apply();
+                    ImageUtilities.TrackGeneratedTexture(key, cubemap);
+
+                    light.cookie = cubemap;
+                }
             }
 
             return light;
