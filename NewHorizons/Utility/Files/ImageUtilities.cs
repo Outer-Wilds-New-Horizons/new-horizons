@@ -33,7 +33,7 @@ namespace NewHorizons.Utility.Files
         {
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = path.Substring(0, Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
             if (_loadedTextures.TryGetValue(key, out var existingTexture))
             {
                 NHLogger.LogVerbose($"Already loaded image at path: {path}");
@@ -433,7 +433,7 @@ namespace NewHorizons.Utility.Files
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                var key = url.Substring(0, Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+                var key = url.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
                 lock (_loadedTextures)
                 {
                     if (_loadedTextures.TryGetValue(key, out var existingTexture))
