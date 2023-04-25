@@ -14,18 +14,16 @@ namespace NewHorizons.Utility.Files
 {
     public static class ImageUtilities
     {
-        // key is the path
-        private static readonly Dictionary<string, Texture2D> _loadedTextures = new();
         // key is path + applied effects
-        private static readonly Dictionary<string, Texture> _generatedTextures = new();
-
-        public static bool CheckGeneratedTexture(string key, out Texture existingTexture) => _generatedTextures.TryGetValue(key, out existingTexture);
-        public static void TrackGeneratedTexture(string key, Texture texture) => _generatedTextures.Add(key, texture);
+        private static readonly Dictionary<string, Texture> _textureCache = new();
+        public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
+        public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
 
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            return _loadedTextures.ContainsKey(path);
+            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            return _textureCache.ContainsKey(key);
         }
 
         // bug: cache only considers file path, not wrap/mips/linear. oh well
@@ -34,10 +32,10 @@ namespace NewHorizons.Utility.Files
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
             var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
-            if (_loadedTextures.TryGetValue(key, out var existingTexture))
+            if (_textureCache.TryGetValue(key, out var existingTexture))
             {
                 NHLogger.LogVerbose($"Already loaded image at path: {path}");
-                return existingTexture;
+                return (Texture2D)existingTexture;
             }
 
             NHLogger.LogVerbose($"Loading image at path: {path}");
@@ -48,7 +46,7 @@ namespace NewHorizons.Utility.Files
                 texture.name = key;
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
-                _loadedTextures.Add(key, texture);
+                _textureCache.Add(key, texture);
 
                 return texture;
             }
@@ -63,11 +61,12 @@ namespace NewHorizons.Utility.Files
         public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            if (_loadedTextures.ContainsKey(path))
+            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            if (_textureCache.ContainsKey(key))
             {
-                if (_loadedTextures[path] == texture)
+                if (_textureCache[key] == texture)
                 {
-                    _loadedTextures.Remove(path);
+                    _textureCache.Remove(key);
                     UnityEngine.Object.Destroy(texture);
                 }
             }
@@ -79,25 +78,25 @@ namespace NewHorizons.Utility.Files
         {
             NHLogger.LogVerbose("Clearing image cache");
 
-            foreach (var texture in _loadedTextures.Values)
+            foreach (var texture in _textureCache.Values)
             {
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
             }
-            _loadedTextures.Clear();
+            _textureCache.Clear();
 
-            foreach (var texture in _generatedTextures.Values)
+            foreach (var texture in _textureCache.Values)
             {
                 if (texture == null) continue;
                 UnityEngine.Object.Destroy(texture);
             }
-            _generatedTextures.Clear();
+            _textureCache.Clear();
         }
 
         public static Texture2D Invert(Texture2D texture)
         {
             var key = $"{texture.name} > invert";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var pixels = texture.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
@@ -128,7 +127,7 @@ namespace NewHorizons.Utility.Files
 
             newTexture.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(key, newTexture);
+            _textureCache.Add(key, newTexture);
 
             return newTexture;
         }
@@ -136,7 +135,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D MakeReelTexture(Texture2D[] textures)
         {
             var key = $"SlideReelAtlas of {textures.Join(x => x.name)}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var size = 256;
 
@@ -183,7 +182,7 @@ namespace NewHorizons.Utility.Files
             texture.SetPixels(fillPixels);
             texture.Apply();
 
-            _generatedTextures.Add(key, texture);
+            _textureCache.Add(key, texture);
 
             return texture;
         }
@@ -191,7 +190,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D MakeOutline(Texture2D texture, Color color, int thickness)
         {
             var key = $"{texture.name} > outline {color} {thickness}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var outline = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount != 1);
             outline.name = key;
@@ -217,7 +216,7 @@ namespace NewHorizons.Utility.Files
 
             outline.wrapMode = texture.wrapMode;
 
-            _generatedTextures.Add(key, outline);
+            _textureCache.Add(key, outline);
 
             return outline;
         }
@@ -243,7 +242,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D TintImage(Texture2D image, Color tint)
         {
             var key = $"{image.name} > tint {tint}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             if (image == null)
             {
@@ -266,7 +265,7 @@ namespace NewHorizons.Utility.Files
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(key, newImage);
+            _textureCache.Add(key, newImage);
 
             return newImage;
         }
@@ -274,7 +273,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D LerpGreyscaleImage(Texture2D image, Color lightTint, Color darkTint)
         {
             var key = $"{image.name} > lerp greyscale {lightTint} {darkTint}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var pixels = image.GetPixels();
             for (int i = 0; i < pixels.Length; i++)
@@ -291,7 +290,7 @@ namespace NewHorizons.Utility.Files
 
             newImage.wrapMode = image.wrapMode;
 
-            _generatedTextures.Add(key, newImage);
+            _textureCache.Add(key, newImage);
 
             return newImage;
         }
@@ -299,7 +298,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D ClearTexture(int width, int height, bool wrap = false)
         {
             var key = $"Clear {width} {height} {wrap}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var tex = new Texture2D(1, 1, TextureFormat.ARGB32, false);
             tex.name = key;
@@ -314,7 +313,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
 
-            _generatedTextures.Add(key, tex);
+            _textureCache.Add(key, tex);
 
             return tex;
         }
@@ -322,7 +321,7 @@ namespace NewHorizons.Utility.Files
         public static Texture2D CanvasScaled(Texture2D src, int width, int height)
         {
             var key = $"{src.name} > canvas scaled {width} {height}";
-            if (_generatedTextures.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
+            if (_textureCache.TryGetValue(key, out var existingTexture)) return (Texture2D)existingTexture;
 
             var tex = new Texture2D(width, height, src.format, src.mipmapCount != 1);
             tex.name = key;
@@ -345,7 +344,7 @@ namespace NewHorizons.Utility.Files
 
             tex.wrapMode = src.wrapMode;
 
-            _generatedTextures.Add(key, tex);
+            _textureCache.Add(key, tex);
 
             return tex;
         }
@@ -434,12 +433,12 @@ namespace NewHorizons.Utility.Files
             IEnumerator DownloadTexture(string url, int index)
             {
                 var key = url.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
-                lock (_loadedTextures)
+                lock (_textureCache)
                 {
-                    if (_loadedTextures.TryGetValue(key, out var existingTexture))
+                    if (_textureCache.TryGetValue(key, out var existingTexture))
                     {
                         NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                        imageLoadedEvent?.Invoke(existingTexture, index);
+                        imageLoadedEvent?.Invoke((Texture2D)existingTexture, index);
                         yield break;
                     }
                 }
@@ -463,17 +462,17 @@ namespace NewHorizons.Utility.Files
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
                     texture.LoadImage(handler.data);
 
-                    lock (_loadedTextures)
+                    lock (_textureCache)
                     {
-                        if (_loadedTextures.TryGetValue(key, out var existingTexture))
+                        if (_textureCache.TryGetValue(key, out var existingTexture))
                         {
                             NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
-                            texture = existingTexture;
+                            texture = (Texture2D)existingTexture;
                         }
                         else
                         {
-                            _loadedTextures.Add(key, texture);
+                            _textureCache.Add(key, texture);
                         }
 
                         imageLoadedEvent?.Invoke(texture, index);

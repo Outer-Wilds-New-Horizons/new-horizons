@@ -35,7 +35,7 @@ namespace NewHorizons.Builder.General
             {
                 var tint = config.tint.ToColor();
                 var key = $"AmbientLight_QM > tint {tint}";
-                if (ImageUtilities.CheckGeneratedTexture(key, out var existingTexture))
+                if (ImageUtilities.CheckCachedTexture(key, out var existingTexture))
                 {
                     light.cookie = existingTexture;
                 }
@@ -58,7 +58,7 @@ namespace NewHorizons.Builder.General
                         cubemap.SetPixels(newColors, cubemapFace);
                     }
                     cubemap.Apply();
-                    ImageUtilities.TrackGeneratedTexture(key, cubemap);
+                    ImageUtilities.TrackCachedTexture(key, cubemap);
 
                     light.cookie = cubemap;
                 }
