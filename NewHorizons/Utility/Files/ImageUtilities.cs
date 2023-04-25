@@ -19,10 +19,12 @@ namespace NewHorizons.Utility.Files
         public static bool CheckCachedTexture(string key, out Texture existingTexture) => _textureCache.TryGetValue(key, out existingTexture);
         public static void TrackCachedTexture(string key, Texture texture) => _textureCache.Add(key, texture);
 
+        private static string GetKey(string path) => path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+
         public static bool IsTextureLoaded(IModBehaviour mod, string filename)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            var key = GetKey(path);
             return _textureCache.ContainsKey(key);
         }
 
@@ -31,7 +33,7 @@ namespace NewHorizons.Utility.Files
         {
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            var key = GetKey(path);
             if (_textureCache.TryGetValue(key, out var existingTexture))
             {
                 NHLogger.LogVerbose($"Already loaded image at path: {path}");
@@ -61,7 +63,7 @@ namespace NewHorizons.Utility.Files
         public static void DeleteTexture(IModBehaviour mod, string filename, Texture2D texture)
         {
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            var key = path.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            var key = GetKey(path);
             if (_textureCache.ContainsKey(key))
             {
                 if (_textureCache[key] == texture)
@@ -425,7 +427,7 @@ namespace NewHorizons.Utility.Files
 
             IEnumerator DownloadTexture(string url, int index)
             {
-                var key = url.Substring(Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+                var key = GetKey(url);
                 lock (_textureCache)
                 {
                     if (_textureCache.TryGetValue(key, out var existingTexture))
