@@ -44,8 +44,13 @@ public class AddPhysics : MonoBehaviour
         bodyGo.tag = "DynamicPropDetector";
         // this collider is not included in groups. oh well
         bodyGo.AddComponent<SphereCollider>().radius = Radius;
+        var shape = bodyGo.AddComponent<SphereShape>();
+        shape._collisionMode = Shape.CollisionMode.Detector;
+        shape.radius = Radius;
         bodyGo.AddComponent<DynamicForceDetector>();
-        bodyGo.AddComponent<DynamicFluidDetector>();
+        var fluidDetector = bodyGo.AddComponent<DynamicFluidDetector>();
+        fluidDetector._buoyancy = Locator.GetProbe().GetOWRigidbody()._attachedFluidDetector._buoyancy;
+        fluidDetector._splashEffects = Locator.GetProbe().GetOWRigidbody()._attachedFluidDetector._splashEffects;
 
         var impactSensor = bodyGo.AddComponent<ImpactSensor>();
         var audioSource = bodyGo.AddComponent<AudioSource>();
