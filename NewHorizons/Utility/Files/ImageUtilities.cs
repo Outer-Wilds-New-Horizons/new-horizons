@@ -33,10 +33,11 @@ namespace NewHorizons.Utility.Files
         {
             // Copied from OWML but without the print statement lol
             var path = Path.Combine(mod.ModHelper.Manifest.ModFolderPath, filename);
-            if (_loadedTextures.ContainsKey(path))
+            var key = path.Substring(0, Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
+            if (_loadedTextures.TryGetValue(key, out var existingTexture))
             {
                 NHLogger.LogVerbose($"Already loaded image at path: {path}");
-                return _loadedTextures[path];
+                return existingTexture;
             }
 
             NHLogger.LogVerbose($"Loading image at path: {path}");
@@ -44,10 +45,10 @@ namespace NewHorizons.Utility.Files
             {
                 var data = File.ReadAllBytes(path);
                 var texture = new Texture2D(2, 2, TextureFormat.RGBA32, useMipmaps, linear);
-                texture.name = path;
+                texture.name = key;
                 texture.wrapMode = wrap ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
                 texture.LoadImage(data);
-                _loadedTextures.Add(path, texture);
+                _loadedTextures.Add(key, texture);
 
                 return texture;
             }
@@ -432,13 +433,13 @@ namespace NewHorizons.Utility.Files
 
             IEnumerator DownloadTexture(string url, int index)
             {
+                var key = url.Substring(0, Main.Instance.ModHelper.OwmlConfig.ModsPath.Length);
                 lock (_loadedTextures)
                 {
-                    if (_loadedTextures.ContainsKey(url))
+                    if (_loadedTextures.TryGetValue(key, out var existingTexture))
                     {
                         NHLogger.LogVerbose($"Already loaded image {index}:{url}");
-                        var texture = _loadedTextures[url];
-                        imageLoadedEvent?.Invoke(texture, index);
+                        imageLoadedEvent?.Invoke(existingTexture, index);
                         yield break;
                     }
                 }
@@ -456,7 +457,7 @@ namespace NewHorizons.Utility.Files
                 else
                 {
                     var texture = new Texture2D(2, 2, TextureFormat.RGBA32, false);
-                    texture.name = url;
+                    texture.name = key;
                     texture.wrapMode = TextureWrapMode.Clamp;
 
                     var handler = (DownloadHandlerTexture)uwr.downloadHandler;
@@ -464,15 +465,15 @@ namespace NewHorizons.Utility.Files
 
                     lock (_loadedTextures)
                     {
-                        if (_loadedTextures.ContainsKey(url))
+                        if (_loadedTextures.TryGetValue(key, out var existingTexture))
                         {
                             NHLogger.LogVerbose($"Already loaded image {index}:{url}");
                             Destroy(texture);
-                            texture = _loadedTextures[url];
+                            texture = existingTexture;
                         }
                         else
                         {
-                            _loadedTextures.Add(url, texture);
+                            _loadedTextures.Add(key, texture);
                         }
 
                         imageLoadedEvent?.Invoke(texture, index);
