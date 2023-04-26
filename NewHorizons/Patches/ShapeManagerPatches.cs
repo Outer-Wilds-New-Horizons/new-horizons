@@ -12,13 +12,13 @@ namespace NewHorizons.Patches
         {
             ShapeManager._exists = true;
 
-            ShapeManager._detectors = new ShapeManager.Layer(1024);
-            for (int index = 0; index < 1024; ++index)
+            ShapeManager._detectors = new ShapeManager.Layer(256 * 4);
+            for (int index = 0; index < 256 * 4; ++index)
                 ShapeManager._detectors[index].contacts = new List<ShapeManager.ContactData>(64);
 
             ShapeManager._volumes = new ShapeManager.Layer[4];
             for (int index = 0; index < 4; ++index)
-                ShapeManager._volumes[index] = new ShapeManager.Layer(2048);
+                ShapeManager._volumes[index] = new ShapeManager.Layer(1024 * 2);
 
             ShapeManager._locked = false;
             ShapeManager._frameFlag = false;
