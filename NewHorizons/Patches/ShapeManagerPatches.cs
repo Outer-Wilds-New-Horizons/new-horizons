@@ -12,8 +12,8 @@ namespace NewHorizons.Patches
         {
             ShapeManager._exists = true;
 
-            ShapeManager._detectors = new ShapeManager.Layer(256);
-            for (int index = 0; index < 256; ++index)
+            ShapeManager._detectors = new ShapeManager.Layer(1024);
+            for (int index = 0; index < 1024; ++index)
                 ShapeManager._detectors[index].contacts = new List<ShapeManager.ContactData>(64);
 
             ShapeManager._volumes = new ShapeManager.Layer[4];
