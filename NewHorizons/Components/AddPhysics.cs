@@ -46,7 +46,7 @@ public class AddPhysics : MonoBehaviour
         bodyGo.AddComponent<SphereCollider>().radius = Radius;
         var shape = bodyGo.AddComponent<SphereShape>();
         shape._collisionMode = Shape.CollisionMode.Detector;
-        shape.radius = Radius;
+        shape._radius = Radius;
         bodyGo.AddComponent<DynamicForceDetector>();
         var fluidDetector = bodyGo.AddComponent<DynamicFluidDetector>();
         fluidDetector._buoyancy = Locator.GetProbe().GetOWRigidbody()._attachedFluidDetector._buoyancy;
