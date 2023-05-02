@@ -189,6 +189,7 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
             ShapeManager.Initialize();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
