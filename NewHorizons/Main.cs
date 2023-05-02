@@ -189,6 +189,7 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            ShapeManager.Initialize();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
