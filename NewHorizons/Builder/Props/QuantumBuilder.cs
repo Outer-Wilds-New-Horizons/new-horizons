@@ -208,7 +208,7 @@ namespace NewHorizons.Builder.Props
 
         void Update()
         {
-            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); GameObject.DestroyImmediate(this); }
+            if (meshFilter == null && skinnedMeshRenderer == null) { NHLogger.LogVerbose("Useless BoxShapeFixer, destroying"); DestroyImmediate(this); }
 
             Mesh sharedMesh = null;
             if (meshFilter != null) sharedMesh = meshFilter.sharedMesh;
@@ -220,7 +220,7 @@ namespace NewHorizons.Builder.Props
             shape.size = sharedMesh.bounds.size;
             shape.center = sharedMesh.bounds.center;
 
-            GameObject.DestroyImmediate(this);
+            DestroyImmediate(this);
         }
     }
 }

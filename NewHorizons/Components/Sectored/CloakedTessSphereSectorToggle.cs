@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Sectored
 {
     [RequireComponent(typeof(TessellatedSphereRenderer))]
     public class CloakedTessSphereSectorToggle : SectoredMonoBehaviour

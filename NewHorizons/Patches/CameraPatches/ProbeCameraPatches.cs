@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Sectored;
 using NewHorizons.Handlers;
 
 namespace NewHorizons.Patches.CameraPatches
@@ -10,7 +11,7 @@ namespace NewHorizons.Patches.CameraPatches
         [HarmonyPatch(nameof(ProbeCamera.HasInterference))]
         public static void ProbeCamera_HasInterference(ProbeCamera __instance, ref bool __result)
         {
-            __result = __result || (__instance._id != ProbeCamera.ID.PreLaunch && (Components.CloakSectorController.isPlayerInside != Components.CloakSectorController.isProbeInside || !InterferenceHandler.IsPlayerSameAsProbe()));
+            __result = __result || (__instance._id != ProbeCamera.ID.PreLaunch && (CloakSectorController.isPlayerInside != CloakSectorController.isProbeInside || !InterferenceHandler.IsPlayerSameAsProbe()));
         }
     }
 }

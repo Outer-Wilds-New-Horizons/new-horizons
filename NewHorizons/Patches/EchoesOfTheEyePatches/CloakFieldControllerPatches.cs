@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Sectored;
 
 namespace NewHorizons.Patches.EchoesOfTheEyePatches
 {
@@ -16,21 +17,21 @@ namespace NewHorizons.Patches.EchoesOfTheEyePatches
         [HarmonyPatch(nameof(CloakFieldController.isPlayerInsideCloak), MethodType.Getter)]
         public static void CloakFieldController_isPlayerInsideCloak(ref bool __result)
         {
-            __result = __result || Components.CloakSectorController.isPlayerInside;
+            __result = __result || CloakSectorController.isPlayerInside;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(CloakFieldController.isProbeInsideCloak), MethodType.Getter)]
         public static void CloakFieldController_isProbeInsideCloak(ref bool __result)
         {
-            __result = __result || Components.CloakSectorController.isProbeInside;
+            __result = __result || CloakSectorController.isProbeInside;
         }
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(CloakFieldController.isShipInsideCloak), MethodType.Getter)]
         public static void CloakFieldController_isShipInsideCloak(ref bool __result)
         {
-            __result = __result || Components.CloakSectorController.isShipInside;
+            __result = __result || CloakSectorController.isShipInside;
         }
     }
 }

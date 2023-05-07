@@ -24,6 +24,7 @@ namespace NewHorizons.Builder.Props
     {
         private static List<GameObject> _arcPrefabs;
         private static List<GameObject> _childArcPrefabs;
+        private static GameObject _teenagerArcPrefab;
         private static List<GameObject> _ghostArcPrefabs;
         private static GameObject _scrollPrefab;
         private static GameObject _computerPrefab;
@@ -52,6 +53,7 @@ namespace NewHorizons.Builder.Props
 
         public static List<GameObject> GetArcPrefabs() { return _arcPrefabs; }
         public static List<GameObject> GetChildArcPrefabs() { return _childArcPrefabs; }
+        public static GameObject GetTeenagerArcPrefab() { return _teenagerArcPrefab; }
         public static List<GameObject> GetGhostArcPrefabs() { return _ghostArcPrefabs; }
 
         private static bool _isInit;
@@ -65,7 +67,7 @@ namespace NewHorizons.Builder.Props
             if (_arcPrefabs == null || _childArcPrefabs == null)
             {
                 // Just take every scroll and get the first arc
-                var existingArcs = GameObject.FindObjectsOfType<ScrollItem>()
+                var existingArcs = UnityEngine.Object.FindObjectsOfType<ScrollItem>()
                     .Select(x => x?._nomaiWallText?.gameObject?.transform?.Find("Arc 1")?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -85,9 +87,15 @@ namespace NewHorizons.Builder.Props
                 }
             }
 
+            if (_teenagerArcPrefab == null)
+            {
+                _teenagerArcPrefab = GameObject.FindObjectsOfType<NomaiWallText>().FirstOrDefault(x => x.name.Equals("Arc_GD_StatueIsland_WindowNote"))
+                    ?.gameObject?.transform?.Find("Arc 1")?.gameObject.InstantiateInactive().Rename("Arc (Teenager)").DontDestroyOnLoad();
+            }
+
             if (_ghostArcPrefabs == null)
             {
-                var existingGhostArcs = GameObject.FindObjectsOfType<GhostWallText>()
+                var existingGhostArcs = UnityEngine.Object.FindObjectsOfType<GhostWallText>()
                     .Select(x => x?._textLine?.gameObject)
                     .Where(x => x != null)
                     .OrderBy(x => x.transform.GetPath()) // order by path so game updates dont break things
@@ -245,7 +253,7 @@ namespace NewHorizons.Builder.Props
                         var scrollItem = customScroll.GetComponent<ScrollItem>();
 
                         // Idk why this thing is always around
-                        GameObject.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
+                        UnityEngine.Object.Destroy(customScroll.transform.Find("Arc_BH_City_Forum_2").gameObject);
 
                         // This variable is the bane of my existence i dont get it
                         scrollItem._nomaiWallText = nomaiWallText;
@@ -666,6 +674,9 @@ namespace NewHorizons.Builder.Props
                         ? Random.Range(0, _childArcPrefabs.Count())
                         : (variation % _childArcPrefabs.Count());
                     arc = _childArcPrefabs[variation].InstantiateInactive();
+                    break;
+                case NomaiTextArcInfo.NomaiTextArcType.Teenager:
+                    arc = _teenagerArcPrefab.InstantiateInactive();
                     break;
                 case NomaiTextArcInfo.NomaiTextArcType.Stranger when _ghostArcPrefabs.Any():
                     variation = variation < 0

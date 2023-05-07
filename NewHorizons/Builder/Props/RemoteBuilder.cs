@@ -65,7 +65,7 @@ namespace NewHorizons.Builder.Props
                 quad.AddComponent<OWRenderer>();
                 quad.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
                 quad.name = "AstroBodySymbolRenderer";
-                GameObject.DestroyImmediate(AstroBodySymbolRenderer);
+                UnityEngine.Object.DestroyImmediate(AstroBodySymbolRenderer);
             }
 
             if (_whiteboardPrefab == null)
@@ -86,7 +86,7 @@ namespace NewHorizons.Builder.Props
                 quadW.AddComponent<OWRenderer>();
                 quadW.GetComponent<MeshRenderer>().sharedMaterial = _decalMaterial;
                 quadW.name = "AstroBodySymbolRenderer";
-                GameObject.DestroyImmediate(AstroBodySymbolRendererW);
+                UnityEngine.Object.DestroyImmediate(AstroBodySymbolRendererW);
             }
 
             if (_shareStonePrefab == null)
@@ -109,7 +109,7 @@ namespace NewHorizons.Builder.Props
                 TransformAnimator transformAnimator = animRoot.AddComponent<TransformAnimator>();
                 item._animator = transformAnimator;
                 OWRenderer renderer = SearchUtilities.FindResourceOfTypeAndName<OWRenderer>("Props_NOM_SharedStone");
-                if (renderer != null) GameObject.Instantiate(renderer.gameObject, animRoot.transform);
+                if (renderer != null) UnityEngine.Object.Instantiate(renderer.gameObject, animRoot.transform);
                 GameObject planetDecal = GameObject.CreatePrimitive(PrimitiveType.Quad);
                 planetDecal.name = "PlanetDecal";
                 planetDecal.transform.parent = animRoot.transform;
@@ -137,7 +137,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    RemoteBuilder.MakePlatform(go, sector, id, decal, info.platform, mod);
+                    MakePlatform(go, sector, id, decal, info.platform, mod);
                 }
                 catch (Exception ex)
                 {
@@ -149,7 +149,7 @@ namespace NewHorizons.Builder.Props
             {
                 try
                 {
-                    RemoteBuilder.MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
+                    MakeWhiteboard(go, sector, id, decal, info.whiteboard, nhBody);
                 }
                 catch (Exception ex)
                 {
@@ -163,7 +163,7 @@ namespace NewHorizons.Builder.Props
                 {
                     try
                     {
-                        RemoteBuilder.MakeStone(go, sector, id, decal, stoneInfo, mod);
+                        MakeStone(go, sector, id, decal, stoneInfo, mod);
                     }
                     catch (Exception ex)
                     {

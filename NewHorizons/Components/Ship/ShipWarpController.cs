@@ -3,7 +3,7 @@ using NewHorizons.Utility;
 using NewHorizons.Utility.OWML;
 using UnityEngine;
 
-namespace NewHorizons.Components
+namespace NewHorizons.Components.Ship
 {
     public class ShipWarpController : MonoBehaviour
     {
@@ -65,7 +65,7 @@ namespace NewHorizons.Components
             if (blackHoleShader == null) blackHoleShader = _blackHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var blackHoleRender = new GameObject("BlackHoleRender");
-            blackHoleRender.transform.parent = base.transform;
+            blackHoleRender.transform.parent = transform;
             blackHoleRender.transform.localPosition = new Vector3(0, 1, 0);
             blackHoleRender.transform.localScale = Vector3.one * size;
 
@@ -92,7 +92,7 @@ namespace NewHorizons.Components
             if (whiteHoleShader == null) whiteHoleShader = _whiteHolePrefab.GetComponent<MeshRenderer>().sharedMaterial.shader;
 
             var whiteHoleRenderer = new GameObject("WhiteHoleRenderer");
-            whiteHoleRenderer.transform.parent = base.transform;
+            whiteHoleRenderer.transform.parent = transform;
             whiteHoleRenderer.transform.localPosition = new Vector3(0, 1, 0);
             whiteHoleRenderer.transform.localScale = Vector3.one * size * 2.8f;
 
@@ -126,7 +126,7 @@ namespace NewHorizons.Components
         public void WarpOut()
         {
             NHLogger.LogVerbose("Starting warp-out");
-            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCreate, 1f);
+            _oneShotSource.PlayOneShot(AudioType.VesselSingularityCreate, 1f);
             _blackhole.Create();
         }
 
@@ -165,7 +165,7 @@ namespace NewHorizons.Components
         private void StartWarpInEffect()
         {
             NHLogger.LogVerbose("Starting warp-in effect");
-            _oneShotSource.PlayOneShot(global::AudioType.VesselSingularityCollapse, 1f);
+            _oneShotSource.PlayOneShot(AudioType.VesselSingularityCollapse, 1f);
             Locator.GetDeathManager()._invincible = true;
             if (Main.Instance.CurrentStarSystem.Equals("SolarSystem")) TeleportToShip();
             _whitehole.Create();
@@ -178,7 +178,7 @@ namespace NewHorizons.Components
 
         private void TeleportToShip()
         {
-            var playerSpawner = GameObject.FindObjectOfType<PlayerSpawner>();
+            var playerSpawner = FindObjectOfType<PlayerSpawner>();
             playerSpawner.DebugWarp(playerSpawner.GetSpawnPoint(SpawnLocation.Ship));
         }
 

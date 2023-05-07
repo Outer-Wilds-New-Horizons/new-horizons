@@ -4,7 +4,6 @@ using NewHorizons.Builder.Body;
 using NewHorizons.Builder.General;
 using NewHorizons.Builder.Props;
 using NewHorizons.Builder.Props.TranslatorText;
-using NewHorizons.Components;
 using NewHorizons.Components.Fixers;
 using NewHorizons.Components.SizeControllers;
 using NewHorizons.External;
@@ -32,6 +31,7 @@ using UnityEngine.SceneManagement;
 
 using NewHorizons.Utility.DebugTools;
 using NewHorizons.Utility.DebugTools.Menu;
+using NewHorizons.Components.Ship;
 using NewHorizons.Builder.Props.Audio;
 
 namespace NewHorizons
@@ -189,6 +189,8 @@ namespace NewHorizons
         {
             // Patches
             Harmony.CreateAndPatchAll(Assembly.GetExecutingAssembly());
+            // the campfire on the title screen calls this from RegisterShape before it gets patched, so we have to call it again. lol 
+            ShapeManager.Initialize();
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
@@ -196,8 +198,19 @@ namespace NewHorizons
             GlobalMessenger<DeathType>.AddListener("PlayerDeath", OnDeath);
 
             GlobalMessenger.AddListener("WakeUp", OnWakeUp);
+
             NHAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_public");
+            if (NHAssetBundle == null)
+            {
+                NHLogger.LogError("Couldn't find NHAssetBundle: The mod will likely not work.");
+            }
+
             NHPrivateAssetBundle = ModHelper.Assets.LoadBundle("Assets/newhorizons_private");
+            if (NHPrivateAssetBundle == null)
+            {
+                NHLogger.LogError("Couldn't find NHPrivateAssetBundle: The mod will likely not work.");
+            }
+
             VesselWarpHandler.Initialize();
 
             ResetConfigs(resetTranslation: false);
@@ -332,7 +345,7 @@ namespace NewHorizons
             {
                 TimeLoopUtilities.SetSecondsElapsed(SecondsElapsedInLoop);
                 // Prevent the OPC from firing
-                var launchController = GameObject.FindObjectOfType<OrbitalProbeLaunchController>();
+                var launchController = FindObjectOfType<OrbitalProbeLaunchController>();
                 if (launchController != null)
                 {
                     GlobalMessenger<int>.RemoveListener("StartOfTimeLoop", launchController.OnStartOfTimeLoop);
@@ -353,7 +366,14 @@ namespace NewHorizons
 
             if (isTitleScreen && _useCustomTitleScreen)
             {
-                TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                try
+                {
+                    TitleSceneHandler.DisplayBodyOnTitleScreen(BodyDict.Values.ToList().SelectMany(x => x).ToList());
+                }
+                catch (Exception e)
+                {
+                    NHLogger.LogError($"Failed to make title screen bodies: {e}");
+                }
                 TitleSceneHandler.InitSubtitles();
             }
 
@@ -386,7 +406,7 @@ namespace NewHorizons
 
                 if (isSolarSystem)
                 {
-                    foreach (var supernovaPlanetEffectController in GameObject.FindObjectsOfType<SupernovaPlanetEffectController>())
+                    foreach (var supernovaPlanetEffectController in FindObjectsOfType<SupernovaPlanetEffectController>())
                     {
                         SupernovaEffectBuilder.ReplaceVanillaWithNH(supernovaPlanetEffectController);
                     }
@@ -417,7 +437,7 @@ namespace NewHorizons
                     IsWarpingFromVessel = false;
                     DidWarpFromVessel = shouldWarpInFromVessel;
 
-                    var map = GameObject.FindObjectOfType<MapController>();
+                    var map = FindObjectOfType<MapController>();
                     if (map != null) map._maxPanDistance = FurthestOrbit * 1.5f;
 
                     // Fix the map satellite
@@ -499,7 +519,7 @@ namespace NewHorizons
                 var ssrLight = solarSystemRoot.AddComponent<Light>();
                 ssrLight.innerSpotAngle = 0;
                 ssrLight.spotAngle = 179;
-                ssrLight.range = Main.FurthestOrbit * (4f / 3f);
+                ssrLight.range = FurthestOrbit * (4f / 3f);
                 ssrLight.intensity = 0.001f;
 
                 var fluid = playerBody.FindChild("PlayerDetector").GetComponent<DynamicFluidDetector>();

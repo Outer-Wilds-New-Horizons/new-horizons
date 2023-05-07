@@ -29,7 +29,7 @@ namespace NewHorizons.Builder.Props
         {
             foreach (var prefab in _fixedPrefabCache.Values)
             {
-                GameObject.Destroy(prefab.prefab);
+                UnityEngine.Object.Destroy(prefab.prefab);
             }
             _fixedPrefabCache.Clear();
             _detailInfoToCorrespondingSpawnedGameObject.Clear();
@@ -189,7 +189,7 @@ namespace NewHorizons.Builder.Props
                     child.parent = newDetailGO.transform;
                 }
                 // Have to destroy it right away, else parented props might get attached to the old one
-                GameObject.DestroyImmediate(prop);
+                UnityEngine.Object.DestroyImmediate(prop);
                 prop = newDetailGO;
             }
             
@@ -225,7 +225,7 @@ namespace NewHorizons.Builder.Props
             // renderers/colliders get enabled later so we dont have to do that here
             if (keepLoaded && component is SectorCullGroup or SectorCollisionGroup or SectorLightsCullGroup)
             {
-                Component.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
 
@@ -283,7 +283,7 @@ namespace NewHorizons.Builder.Props
         {
             if (component is FogLight or SectoredMonoBehaviour or ISectorGroup)
             {
-                GameObject.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return true;
             }
             return false;
@@ -306,7 +306,7 @@ namespace NewHorizons.Builder.Props
             // I forget why this is here
             else if (component is GhostIK or GhostEffects)
             {
-                Component.DestroyImmediate(component);
+                UnityEngine.Object.DestroyImmediate(component);
                 return;
             }
             else if (component is DarkMatterVolume)

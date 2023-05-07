@@ -1,4 +1,5 @@
 using HarmonyLib;
+using NewHorizons.Components.Sectored;
 
 namespace NewHorizons.Patches.HUDPatches
 {
@@ -14,7 +15,7 @@ namespace NewHorizons.Patches.HUDPatches
             bool insideQM = __instance._quantumMoon != null && __instance._quantumMoon.IsPlayerInside();
             bool insideRW = Locator.GetRingWorldController() != null && Locator.GetRingWorldController().isPlayerInside && ShipLogEntryHUDMarker.s_entryLocationID == "IP_RING_WORLD";
             bool insideIP = hasEntryLocation && ShipLogEntryHUDMarker.s_entryLocation.IsWithinCloakField() || !(Locator.GetCloakFieldController() != null && Locator.GetCloakFieldController().isPlayerInsideCloak);
-            bool insideCloak = hasEntryLocation && ShipLogEntryHUDMarker.s_entryLocation.IsWithinCloakField() || !Components.CloakSectorController.isPlayerInside;
+            bool insideCloak = hasEntryLocation && ShipLogEntryHUDMarker.s_entryLocation.IsWithinCloakField() || !CloakSectorController.isPlayerInside;
 
             __instance._isVisible = !insideEYE && !insideQM && !insideRW && !__instance._translatorEquipped && !__instance._inConversation && hasEntryLocation && (__instance._isWearingHelmet || __instance._atFlightConsole) && insideIP && insideCloak;
 

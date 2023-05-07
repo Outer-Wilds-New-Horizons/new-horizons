@@ -26,5 +26,7 @@ namespace NewHorizons.External.SerializableData
         {
             return new Vector3(vec.x, vec.y, vec.z);
         }
+
+        public override string ToString() => $"{x}, {y}, {z}";
     }
 }
