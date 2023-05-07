@@ -73,11 +73,11 @@ namespace NewHorizons.Patches.ShipLogPatches
 
         [HarmonyPrefix]
         [HarmonyPatch(nameof(ShipLogManager.IsFactRevealed))]
-        public static bool ShipLogManager_IsFactRevealed(ShipLogManager __instance, ref bool __result, string __0)
+        public static bool ShipLogManager_IsFactRevealed(ShipLogManager __instance, ref bool __result, string id)
         {
-            if (__instance._factDict != null && __instance._factDict.ContainsKey(__0))
+            if (__instance._factDict != null && __instance._factDict.ContainsKey(id))
             {
-                __result = __instance._factDict[__0].IsRevealed();
+                __result = __instance._factDict[id].IsRevealed();
             }
             else
             {
@@ -129,10 +129,9 @@ namespace NewHorizons.Patches.ShipLogPatches
 
         [HarmonyPostfix]
         [HarmonyPatch(nameof(ShipLogManager.RevealFact))]
-        public static void ShipLogManager_RevealFact(string __0)
+        public static void ShipLogManager_RevealFact(string id)
         {
-            StarChartHandler.OnRevealFact(__0);
-
+            StarChartHandler.OnRevealFact(id);
             AchievementHandler.OnRevealFact();
         }
     }
